@@ -8,11 +8,12 @@ import { broadcastChannelOptions } from '../../utils/utils'
 class AbstractLoginHandler {
   nonce = randomId()
 
-  constructor(_clientId, _verifier, _redirect_uri, _redirectToOpener = false) {
-    this.clientId = _clientId
-    this.verifier = _verifier
-    this.redirect_uri = _redirect_uri
-    this.redirectToOpener = _redirectToOpener
+  constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false }) {
+    this.clientId = clientId
+    this.verifier = verifier
+    this.preopenInstanceId = preopenInstanceId
+    this.redirect_uri = redirect_uri
+    this.redirectToOpener = redirectToOpener
   }
 
   get state() {
@@ -50,7 +51,7 @@ class AbstractLoginHandler {
           reject(error)
         }
       }
-      const verifierWindow = new PopupHandler({ url: this.finalURL })
+      const verifierWindow = new PopupHandler({ url: this.finalURL, preopenInstanceId: this.preopenInstanceId })
       let bc
       if (!this.redirectToOpener) {
         bc = new BroadcastChannel(`redirect_channel_${this.nonce}`, broadcastChannelOptions)

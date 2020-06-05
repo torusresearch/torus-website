@@ -50,12 +50,12 @@ export default {
     [WEIBO]: 'dhFGlWQMoACOI5oS5A1jFglp772OAWr1',
   },
   loginToConnectionMap: {
-    [EMAIL_PASSWORD]: 'Username-Password-Authentication',
-    [PASSWORDLESS]: 'email',
-    [GITHUB]: 'github',
-    [LINKEDIN]: 'linkedin',
-    [TWITTER]: 'twitter',
-    [WEIBO]: 'weibo',
+    [EMAIL_PASSWORD]: { connection: 'Username-Password-Authentication', domain: 'https://torus-test.auth0.com' },
+    [PASSWORDLESS]: { connection: 'email', domain: 'https://torus-test.auth0.com' },
+    [GITHUB]: { connection: 'github', domain: 'https://torus-test.auth0.com' },
+    [LINKEDIN]: { connection: 'linkedin', domain: 'https://torus-test.auth0.com' },
+    [TWITTER]: { connection: 'twitter', domain: 'https://torus-test.auth0.com' },
+    [WEIBO]: { connection: 'weibo', domain: 'https://torus-test.auth0.com' },
   },
   verifierMap: {
     [GOOGLE]: 'google',

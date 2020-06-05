@@ -14,13 +14,15 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   PROMPT = 'login'
 
-  constructor(_clientId, _verifier, _redirect_uri, _typeofLogin, _redirectToOpener, _jwtParameters) {
-    super(_clientId, _verifier, _redirect_uri, _redirectToOpener)
+  constructor(clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false, typeofLogin, jwtParameters) {
+    super({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
+    this.typeofLogin = typeofLogin
+    this.jwtParameters = jwtParameters
     this.setFinalUrl()
   }
 
   setFinalUrl() {
-    const { domain, login_hint } = this.jwtParams
+    const { domain, login_hint } = this.jwtParameters
     if (!login_hint) {
       throw new Error('Pls provide login_hint')
     }
@@ -32,7 +34,7 @@ export default class JwtHandler extends AbstractLoginHandler {
   async getUserInfo(parameters) {
     const { idToken, accessToken } = parameters
     try {
-      const { domain } = this.jwtParams
+      const { domain } = this.jwtParameters
       const domainUrl = new URL(domain)
       const userInfo = await get(`${padUrlString(domainUrl)}userinfo`, {
         headers: {
@@ -94,7 +96,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         bc.close()
       })
       try {
-        const { connection = 'email', login_hint: loginHint } = this.jwtParams
+        const { connection = 'email', login_hint: loginHint } = this.jwtParameters
         const finalJwtParameters = deepmerge(
           {
             client_id: this.clientId,
@@ -111,7 +113,7 @@ export default class JwtHandler extends AbstractLoginHandler {
             },
           },
           {
-            authParams: this.jwtParams,
+            authParams: this.jwtParameters,
           }
         )
         // using stringify and parse to remove undefined params

@@ -6,8 +6,8 @@ export default class DiscordHandler extends AbstractLoginHandler {
 
   SCOPE = 'identify email'
 
-  constructor(_clientId, _verifier, _redirect_uri, _redirectToOpener = false) {
-    super(_clientId, _verifier, _redirect_uri, _redirectToOpener)
+  constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false }) {
+    super({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
     this.setFinalUrl()
   }
 

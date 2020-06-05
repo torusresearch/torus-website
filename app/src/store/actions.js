@@ -1,5 +1,6 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import clone from 'clone'
+import deepmerge from 'deepmerge'
 import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
@@ -11,12 +12,9 @@ import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   DISCORD,
   FACEBOOK,
-  GOOGLE,
-  REDDIT,
   RPC,
   SUPPORTED_NETWORK_TYPES,
   TOKEN_METHOD_TRANSFER_FROM,
-  TWITCH,
   USER_INFO_REQUEST_APPROVED,
   USER_INFO_REQUEST_REJECTED,
 } from '../utils/enums'
@@ -39,7 +37,7 @@ import {
   transactionControllerHandler,
   typedMessageManagerHandler,
 } from './controllerSubscriptions'
-import { discordHandler, facebookHandler, googleHandler, handleLoginWindow, redditHandler, twitchHandler } from './loginHandlers'
+import { HandlerFactory as createHandler } from './Handlers'
 import initialState from './state'
 
 const { baseRoute } = config
@@ -310,66 +308,35 @@ export default {
     }
     return networkController.setProviderType(networkType.host)
   },
-  async triggerLogin({ dispatch, commit }, { calledFromEmbed, verifier, preopenInstanceId }) {
+  async triggerLogin({ dispatch, commit }, { calledFromEmbed, verifier, preopenInstanceId, typeOfLogin, jwtParameters, redirectToOpener }) {
     try {
-      log.info('Verifier: ', verifier)
-      const state = encodeURIComponent(
-        window.btoa(
-          JSON.stringify({
-            instanceId: torus.instanceId,
-            verifier,
-          })
-        )
-      )
-      let verifierHandler
-      let finalUrl
-      if (verifier === GOOGLE) {
-        const scope = 'profile email openid'
-        const responseType = 'token id_token'
-        const prompt = 'consent select_account'
-        finalUrl =
-          `https://accounts.google.com/o/oauth2/v2/auth?response_type=${responseType}&client_id=${config.GOOGLE_CLIENT_ID}` +
-          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}&prompt=${prompt}`
-        verifierHandler = googleHandler
-      } else if (verifier === FACEBOOK) {
-        const scope = 'public_profile email'
-        const responseType = 'token'
-        finalUrl =
-          `https://www.facebook.com/v6.0/dialog/oauth?response_type=${responseType}&client_id=${config.FACEBOOK_CLIENT_ID}` +
-          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
-        verifierHandler = facebookHandler
-      } else if (verifier === TWITCH) {
-        finalUrl =
-          `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
-          `${config.redirect_uri}&response_type=token&scope=user:read:email&state=${state}&force_verify=true`
-        verifierHandler = twitchHandler
-      } else if (verifier === REDDIT) {
-        finalUrl =
-          `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
-          `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`
-        verifierHandler = redditHandler
-      } else if (verifier === DISCORD) {
-        const scope = encodeURIComponent('identify email')
-        finalUrl =
-          `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
-          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
-        verifierHandler = discordHandler
-      }
-      const { profileImage, name, email, verifierId, verifierParams, token } = await handleLoginWindow(
-        verifier,
-        finalUrl,
-        verifierHandler,
-        preopenInstanceId
-      )
+      log.info('Verifier: ', verifier, ' typeOfLogin: ', typeOfLogin)
+      // This is to maintain backward compatibility
+      let internalTypeOfLogin = typeOfLogin
+      if (!internalTypeOfLogin) internalTypeOfLogin = verifier
+      const { domain, connection } = config.loginToConnectionMap[internalTypeOfLogin] || {}
+      const loginHandler = createHandler({
+        typeofLogin: internalTypeOfLogin,
+        clientId: config.clientIdMap[internalTypeOfLogin],
+        verifier: config.verifierMap[internalTypeOfLogin] || verifier,
+        redirect_uri: config.redirect_uri,
+        preopenInstanceId,
+        redirectToOpener,
+        jwtParameters: deepmerge({ domain, connection }, jwtParameters || {}),
+      })
+      const loginParameters = await loginHandler.handleLoginWindow()
+      const { accessToken, idToken } = loginParameters
+      const userInfo = await loginHandler.getUserInfo(loginParameters)
+      const { profileImage, name, email, verifierId } = userInfo
       commit('setUserInfo', {
         profileImage,
         name,
         email,
         verifierId,
         verifier,
-        verifierParams,
+        verifierParams: { verifier_id: verifierId },
       })
-      await dispatch('handleLogin', { calledFromEmbed, oAuthToken: token })
+      await dispatch('handleLogin', { calledFromEmbed, oAuthToken: idToken || accessToken })
     } catch (error) {
       log.error(error)
       oauthStream.write({ err: error })

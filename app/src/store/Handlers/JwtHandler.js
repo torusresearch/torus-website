@@ -2,7 +2,6 @@ import deepmerge from 'deepmerge'
 import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 
-import config from '../../config'
 import { get } from '../../utils/httpHelpers'
 import { padUrlString } from '../../utils/utils'
 import AbstractLoginHandler from './AbstractLoginHandler'
@@ -14,16 +13,18 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   PROMPT = 'login'
 
-  constructor(_clientId, _verifier, _redirect_uri, _typeofLogin, _redirectToOpener, _jwtParameters) {
-    super(_clientId, _verifier, _redirect_uri, _redirectToOpener)
+  constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false, typeofLogin, jwtParameters }) {
+    super({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
+    this.typeofLogin = typeofLogin
+    this.jwtParameters = jwtParameters
     this.setFinalUrl()
   }
 
   setFinalUrl() {
-    const { domain } = this.jwtParams
+    const { domain, connection } = this.jwtParameters
     const finalUrl = new URL(domain)
     finalUrl.pathname = '/authorize'
-    const clonedParameters = JSON.parse(JSON.stringify(this.jwtParams))
+    const clonedParameters = JSON.parse(JSON.stringify(this.jwtParameters))
     delete clonedParameters.domain
     const finalJwtParameters = deepmerge(
       {
@@ -33,7 +34,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         prompt: this.PROMPT,
         redirect_uri: this.redirect_uri,
         scope: this.SCOPE,
-        connection: config.loginToConnectionMap[this.typeofLogin],
+        connection,
         nonce: this.nonce,
       },
       clonedParameters
@@ -47,7 +48,7 @@ export default class JwtHandler extends AbstractLoginHandler {
   async getUserInfo(parameters) {
     const { idToken, accessToken } = parameters
     try {
-      const { domain } = this.jwtParams
+      const { domain } = this.jwtParameters
       const domainUrl = new URL(domain)
       const userInfo = await get(`${padUrlString(domainUrl)}userinfo`, {
         headers: {
