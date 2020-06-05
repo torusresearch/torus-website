@@ -48,9 +48,13 @@ import TrashIcon from './TrashIcon.vue'
 import VerifierDiscordIcon from './VerifierDiscordIcon.vue'
 import VerifierEnsIcon from './VerifierEnsIcon.vue'
 import VerifierFacebookIcon from './VerifierFacebookIcon.vue'
+import VerifierGithubIcon from './VerifierGithubIcon.vue'
 import VerifierGoogleIcon from './VerifierGoogleIcon.vue'
+import VerifierLinkedinIcon from './VerifierLinkedinIcon.vue'
 import VerifierRedditIcon from './VerifierRedditIcon.vue'
 import VerifierTwitchIcon from './VerifierTwitchIcon.vue'
+import VerifierTwitterIcon from './VerifierTwitterIcon.vue'
+import VerifierWeiboIcon from './VerifierWeiboIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
 
@@ -219,5 +223,17 @@ export default {
   },
   account: {
     component: AccountIcon,
+  },
+  github: {
+    component: VerifierGithubIcon,
+  },
+  twitter: {
+    component: VerifierTwitterIcon,
+  },
+  weibo: {
+    component: VerifierWeiboIcon,
+  },
+  linkedin: {
+    component: VerifierLinkedinIcon,
   },
 }

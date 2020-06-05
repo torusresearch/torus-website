@@ -1,7 +1,9 @@
 import {
   DISCORD,
   FACEBOOK,
+  GITHUB,
   GOOGLE,
+  LINKEDIN,
   LOCALE_EN,
   MAINNET,
   MAINNET_CODE,
@@ -10,7 +12,9 @@ import {
   SUPPORTED_NETWORK_TYPES,
   THEME_LIGHT_BLUE_NAME,
   TWITCH,
+  TWITTER,
   USER_INFO_REQUEST_NEW,
+  WEIBO,
 } from '../utils/enums'
 
 const initialState = {
@@ -57,7 +61,17 @@ const initialState = {
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },
   embedState: {
-    enabledVerifiers: { [GOOGLE]: true, [FACEBOOK]: true, [REDDIT]: true, [TWITCH]: true, [DISCORD]: true },
+    enabledVerifiers: {
+      [GOOGLE]: true,
+      [FACEBOOK]: true,
+      [REDDIT]: true,
+      [TWITCH]: true,
+      [DISCORD]: true,
+      [GITHUB]: true,
+      [LINKEDIN]: true,
+      [TWITTER]: true,
+      [WEIBO]: true,
+    },
     isOAuthModalVisible: false,
     buttonPosition: 'bottom-left',
     torusWidgetVisibility: true,
