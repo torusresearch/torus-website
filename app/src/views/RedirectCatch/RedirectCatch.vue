@@ -2,10 +2,14 @@
   <v-container fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <BeatLoader :color="$vuetify.theme.dark ? $vuetify.theme.themes.dark.torusBrand1 : $vuetify.theme.themes.light.torusBrand1" />
-        <!-- <div class="redirect-title font-weight-bold mt-3">
+        <BeatLoader
+          margin="24px 4px 0"
+          size="12px"
+          :color="$vuetify.theme.dark ? $vuetify.theme.themes.dark.torusBrand1 : $vuetify.theme.themes.light.torusBrand1"
+        />
+        <div class="redirect-title font-weight-bold mt-2">
           {{ t('dappGeneral.loading') }}
-        </div> -->
+        </div>
       </v-flex>
     </v-layout>
   </v-container>
