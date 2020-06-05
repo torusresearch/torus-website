@@ -263,7 +263,7 @@ import {
   WalletTransferLoader,
   WalletTransferLoaderMobile,
 } from '../../content-loader'
-import { DISCORD, FACEBOOK, GOOGLE, REDDIT, TWITCH } from '../../utils/enums'
+import { DISCORD, FACEBOOK, GITHUB, GOOGLE, LINKEDIN, REDDIT, TWITCH, TWITTER, WEIBO } from '../../utils/enums'
 
 export default {
   name: 'Login',
@@ -276,8 +276,8 @@ export default {
       REDDIT,
       TWITCH,
       DISCORD,
-      loginButtons: [GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD],
-      loginButtonsMobile: [FACEBOOK, REDDIT, TWITCH, DISCORD],
+      loginButtons: [GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD, GITHUB, LINKEDIN, TWITTER, WEIBO],
+      loginButtonsMobile: [FACEBOOK, REDDIT, TWITCH, DISCORD, GITHUB, LINKEDIN, TWITTER, WEIBO],
       activeButton: GOOGLE,
       selectedCarouselItem: 0,
       loginInProgress: false,
