@@ -8,6 +8,10 @@ import RedditHandler from './RedditHandler'
 import TwitchHandler from './TwitchHandler'
 
 const createHandler = ({ typeOfLogin, clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false, jwtParameters }) => {
+  if (!verifier || !typeOfLogin || !clientId) {
+    throw new Error('Invalid params')
+  }
+  const { domain, login_hint } = jwtParameters
   switch (typeOfLogin) {
     case GOOGLE:
       return new GoogleHandler({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
@@ -20,6 +24,7 @@ const createHandler = ({ typeOfLogin, clientId, verifier, redirect_uri, preopenI
     case DISCORD:
       return new DiscordHandler({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
     case PASSWORDLESS:
+      if (!domain || !login_hint) throw new Error('Invalid params')
       return new PasswordlessHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener, jwtParameters })
     case GITHUB:
     case LINKEDIN:
@@ -27,6 +32,7 @@ const createHandler = ({ typeOfLogin, clientId, verifier, redirect_uri, preopenI
     case WEIBO:
     case EMAIL_PASSWORD:
     case JWT:
+      if (!domain) throw new Error('Invalid params')
       return new JwtHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener, jwtParameters })
     default:
       throw new Error('Invalid login type')

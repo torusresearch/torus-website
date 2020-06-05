@@ -103,7 +103,7 @@
 
   <body>
     <div id="message" class="container">
-      <div class="spinner content">
+      <div class="spinner content" id="spinner">
         <div class="beat beat-odd"></div>
         <div class="beat beat-even"></div>
         <div class="beat beat-odd"></div>
@@ -144,8 +144,12 @@
       }
       function showCloseText() {
         var closeText = document.getElementById('closeText')
+        var spinner = document.getElementById('spinner')
         if (closeText) {
           closeText.style.display = 'block'
+        }
+        if (spinner) {
+          spinner.style.display = "none";
         }
       }
       var isLocalStorageAvailable = storageAvailable('localStorage')
