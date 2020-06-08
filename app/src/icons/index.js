@@ -46,6 +46,7 @@ import TopupIcon from './TopupIcon.vue'
 import TransactionIcon from './TransactionIcon.vue'
 import TrashIcon from './TrashIcon.vue'
 import VerifierDiscordIcon from './VerifierDiscordIcon.vue'
+import VerifierEmailIcon from './VerifierEmailIcon.vue'
 import VerifierEnsIcon from './VerifierEnsIcon.vue'
 import VerifierFacebookIcon from './VerifierFacebookIcon.vue'
 import VerifierGithubIcon from './VerifierGithubIcon.vue'
@@ -235,5 +236,8 @@ export default {
   },
   linkedin: {
     component: VerifierLinkedinIcon,
+  },
+  email: {
+    component: VerifierEmailIcon,
   },
 }

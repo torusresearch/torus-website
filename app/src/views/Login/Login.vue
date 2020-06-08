@@ -156,7 +156,27 @@
                     <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">{{ `$vuetify.icons.${verifier}` }}</v-icon>
                   </v-btn>
                 </v-flex>
-                <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-12>
+                <v-flex xs10 sm8 ml-auto mr-auto mt-4 class="text-center email-container">
+                  <div class="or-container">
+                    <v-divider></v-divider>
+                    <div class="text-container">
+                      <div class="body-2 text_2--text">or</div>
+                    </div>
+                  </div>
+                  <div class="mt-4">
+                    <v-btn
+                      id="emailLoginBtn"
+                      :color="$vuetify.theme.dark ? '' : 'white'"
+                      block
+                      :class="$vuetify.theme.dark ? 'torus-dark' : ''"
+                      class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-email"
+                    >
+                      <v-icon class="mr-4">$vuetify.icons.email</v-icon>
+                      Sign up/in with Email
+                    </v-btn>
+                  </div>
+                </v-flex>
+                <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-2>
                   <span class="body-1 text_2--text">
                     {{ t('login.acceptTerms') }}
                     <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">

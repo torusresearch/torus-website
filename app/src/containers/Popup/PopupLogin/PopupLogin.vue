@@ -64,7 +64,16 @@
                   >
                     <img
                       v-if="verifier === activeButton || $vuetify.breakpoint.xsOnly"
-                      :src="require(`../../../assets/img/icons/login-${verifier}.svg`)"
+                      :src="
+                        customLogins[verifier] && customLogins[verifier].imageURLActive
+                          ? customLogins[verifier].imageURLActive
+                          : require(`../../../assets/img/icons/login-${verifier}.svg`)
+                      "
+                      :alt="`${verifier} Icon`"
+                    />
+                    <img
+                      v-else-if="customLogins[verifier] && customLogins[verifier].imageURLGrey"
+                      :src="customLogins[verifier].imageURLGrey"
                       :alt="`${verifier} Icon`"
                     />
                     <v-icon v-else size="30" :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
@@ -74,7 +83,36 @@
                 </v-flex>
               </v-layout>
             </v-flex>
-            <v-flex mt-8 mb-4>
+            <v-flex v-if="enabledVerifiers[EMAIL_PASSWORD]" xs12 mt-4 class="text-center email-container">
+              <div class="or-container">
+                <v-divider></v-divider>
+                <div class="text-container">
+                  <div class="body-2 text_2--text">or</div>
+                </div>
+              </div>
+              <div class="mt-4">
+                <v-btn
+                  id="emailLoginBtn"
+                  :color="$vuetify.theme.dark ? '' : 'white'"
+                  block
+                  :class="$vuetify.theme.dark ? 'torus-dark' : ''"
+                  class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-email"
+                >
+                  <img
+                    v-if="customLogins[EMAIL_PASSWORD] && customLogins[EMAIL_PASSWORD].imageURLGrey"
+                    class="mr-4"
+                    height="20"
+                    :src="customLogins[EMAIL_PASSWORD].imageURLGrey"
+                    alt="JWT Icon"
+                  />
+                  <v-icon v-else class="mr-4">$vuetify.icons.email</v-icon>
+                  {{
+                    customLogins[EMAIL_PASSWORD] && customLogins[EMAIL_PASSWORD].text ? t(customLogins[EMAIL_PASSWORD].text) : 'Sign up/in with Email'
+                  }}
+                </v-btn>
+              </div>
+            </v-flex>
+            <v-flex mt-8 mb-2>
               <span class="caption torus_text--text">
                 {{ t('login.acceptTerms') }}
                 <a :href="tncLink" target="_blank" rel="noreferrer noopener" :style="{ textDecoration: 'none' }">
@@ -93,7 +131,7 @@
 import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
-import { DISCORD, FACEBOOK, GOOGLE, REDDIT, TWITCH } from '../../../utils/enums'
+import { DISCORD, EMAIL_PASSWORD, FACEBOOK, GOOGLE, REDDIT, TWITCH } from '../../../utils/enums'
 
 export default {
   name: 'PopupLogin',
@@ -110,6 +148,7 @@ export default {
       REDDIT,
       TWITCH,
       DISCORD,
+      EMAIL_PASSWORD,
       activeButton: GOOGLE,
       showModal: true,
     }
@@ -117,9 +156,10 @@ export default {
   computed: {
     ...mapState({
       enabledVerifiers: (state) => state.embedState.enabledVerifiers,
+      customLogins: (state) => state.embedState.customLogins,
     }),
     loginButtons() {
-      return Object.keys(this.enabledVerifiers).filter((x) => this.enabledVerifiers[x])
+      return Object.keys(this.enabledVerifiers).filter((x) => this.enabledVerifiers[x] && x !== EMAIL_PASSWORD)
     },
     localeSelected() {
       return this.$vuetify.lang.current

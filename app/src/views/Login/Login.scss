@@ -90,6 +90,27 @@
   }
 }
 
+.login-btn-email {
+  &.v-btn {
+    background: #FFFFFF !important;
+    border: 1px solid #F1F2F6 !important;
+    box-sizing: border-box;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+    border-radius: 9px;
+    height: 60px;
+  }
+  ::v-deep .v-btn__content {
+    justify-content: left;
+  }
+
+  &.torus-dark {
+    background: #2F3136 !important;
+    border: 1px solid #404145 !important;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+    color: #ffffff !important;
+  }
+}
+
 .login-btn.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
   background: #FFFFFF;
   border: 1px solid #F1F2F6;
@@ -214,6 +235,17 @@ html {
     background-color: var(--v-torusGray1-base);
     &.v-btn--active {
       background-color: var(--v-torusGray3-base);
+    }
+  }
+}
+
+.or-container {
+  .text-container {
+    margin-top: -14px;
+    div {
+      width: 30px;
+      display: inline-block;
+      background: white;
     }
   }
 }
