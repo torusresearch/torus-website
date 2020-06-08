@@ -55,23 +55,23 @@ export default class JwtHandler extends AbstractLoginHandler {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-      const { sub, picture, name, email } = userInfo
+      const { picture, name, email } = userInfo
       return {
         email,
         name,
         profileImage: picture,
-        verifierId: sub,
+        verifierId: email.toLowerCase(),
         verifier: this.verifier,
       }
     } catch (error) {
       log.error(error)
       const decodedToken = jwtDecode(idToken)
-      const { name, email, picture, sub } = decodedToken
+      const { name, email, picture } = decodedToken
       return {
         profileImage: picture,
         name,
         email,
-        verifierId: sub,
+        verifierId: email.toLowerCase(),
         verifier: this.verifier,
       }
     }

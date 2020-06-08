@@ -97,6 +97,7 @@
                   block
                   :class="$vuetify.theme.dark ? 'torus-dark' : ''"
                   class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-email"
+                  @click="startLogin(EMAIL_PASSWORD)"
                 >
                   <img
                     v-if="customLogins[EMAIL_PASSWORD] && customLogins[EMAIL_PASSWORD].imageURLGrey"
