@@ -14,6 +14,7 @@
                 :touch="{ up: scrollUp, down: scrollDown }"
                 next-icon="$vuetify.icons.login_more"
                 prev-icon="$vuetify.icons.login_more"
+                height="100%"
               >
                 <v-carousel-item reverse-transition="fade-transition" transition="fade-transition">
                   <v-layout wrap>
@@ -260,6 +261,15 @@
       {{ snackbarText }}
       <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
     </v-snackbar>
+    <PasswordlessLogin
+      :passwordless-login-dialog="passwordlessLoginDialog"
+      :passwordless-email-sent="passwordlessEmailSent"
+      @cancel="
+        passwordlessLoginDialog = false
+        passwordlessEmailSent = false
+      "
+      @sendLink="passwordlessEmailSent = true"
+    />
   </div>
 </template>
 
@@ -267,6 +277,7 @@
 import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
+import PasswordlessLogin from '../../components/helpers/PasswordLessLogin'
 import {
   WalletActivityLoader,
   WalletActivityLoaderMobile,
@@ -283,11 +294,11 @@ import {
   WalletTransferLoader,
   WalletTransferLoaderMobile,
 } from '../../content-loader'
-import { DISCORD, FACEBOOK, GITHUB, GOOGLE, LINKEDIN, REDDIT, TWITCH, TWITTER, WEIBO } from '../../utils/enums'
+import { DISCORD, FACEBOOK, GITHUB, GOOGLE, LINKEDIN, PASSWORDLESS, REDDIT, TWITCH, TWITTER, WEIBO } from '../../utils/enums'
 
 export default {
   name: 'Login',
-  components: { WalletLoginLoader, WalletLoginLoaderMobile },
+  components: { WalletLoginLoader, WalletLoginLoaderMobile, PasswordlessLogin },
   data() {
     return {
       isLogout: false,
@@ -296,14 +307,16 @@ export default {
       REDDIT,
       TWITCH,
       DISCORD,
-      loginButtons: [GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD, GITHUB, LINKEDIN, TWITTER, WEIBO],
-      loginButtonsMobile: [FACEBOOK, REDDIT, TWITCH, DISCORD, GITHUB, LINKEDIN, TWITTER, WEIBO],
+      loginButtons: [GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD, GITHUB, LINKEDIN, TWITTER, WEIBO, PASSWORDLESS],
+      loginButtonsMobile: [FACEBOOK, REDDIT, TWITCH, DISCORD, GITHUB, LINKEDIN, TWITTER, WEIBO, PASSWORDLESS],
       activeButton: GOOGLE,
       selectedCarouselItem: 0,
       loginInProgress: false,
       snackbar: false,
       snackbarText: '',
       snackbarColor: 'error',
+      passwordlessLoginDialog: false,
+      passwordlessEmailSent: false,
     }
   },
   computed: {
@@ -351,6 +364,10 @@ export default {
       triggerLogin: 'triggerLogin',
     }),
     async startLogin(verifier) {
+      if (verifier === PASSWORDLESS) {
+        this.passwordlessLoginDialog = true
+        return
+      }
       try {
         this.loginInProgress = true
         await this.triggerLogin({ verifier, calledFromEmbed: false })
