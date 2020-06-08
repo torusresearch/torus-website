@@ -333,7 +333,7 @@ export default {
         name,
         email,
         verifierId,
-        verifier,
+        verifier: config.verifierMap[internalTypeOfLogin] || verifier,
         verifierParams: { verifier_id: verifierId },
       })
       await dispatch('handleLogin', { calledFromEmbed, oAuthToken: idToken || accessToken })
