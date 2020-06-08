@@ -52,6 +52,7 @@ import VerifierFacebookIcon from './VerifierFacebookIcon.vue'
 import VerifierGithubIcon from './VerifierGithubIcon.vue'
 import VerifierGoogleIcon from './VerifierGoogleIcon.vue'
 import VerifierLinkedinIcon from './VerifierLinkedinIcon.vue'
+import VerifierPasswordlessIcon from './VerifierPasswordlessIcon.vue'
 import VerifierRedditIcon from './VerifierRedditIcon.vue'
 import VerifierTwitchIcon from './VerifierTwitchIcon.vue'
 import VerifierTwitterIcon from './VerifierTwitterIcon.vue'
@@ -239,5 +240,8 @@ export default {
   },
   email: {
     component: VerifierEmailIcon,
+  },
+  passwordless: {
+    component: VerifierPasswordlessIcon,
   },
 }
