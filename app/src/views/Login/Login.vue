@@ -36,9 +36,6 @@
                         {{ t('login.digitalWallet') }}
                       </div>
                     </v-flex>
-                    <v-flex xs10 sm8 ml-auto mr-auto mt-8>
-                      <div class="headline font-weight-light text_2--text">{{ t('login.signUpIn') }}</div>
-                    </v-flex>
                     <v-flex xs10 sm8 ml-auto mt-2 mr-auto>
                       <v-btn
                         id="loginBtn"
@@ -133,6 +130,11 @@
                       <span v-else-if="activeButton === REDDIT" class="verifier-title__reddit">Reddit</span>
                       <span v-else-if="activeButton === TWITCH" class="verifier-title__twitch">Twitch</span>
                       <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span>
+                      <span v-else-if="activeButton === GITHUB" class="verifier-title__github">Github</span>
+                      <span v-else-if="activeButton === LINKEDIN" class="verifier-title__linkedin">Linkedin</span>
+                      <span v-else-if="activeButton === TWITTER" class="verifier-title__twitter">Twitter</span>
+                      <span v-else-if="activeButton === WEIBO" class="verifier-title__weibo">Weibo</span>
+                      <span v-else-if="activeButton === PASSWORDLESS" class="verifier-title__passwordless">Passwordless</span>
                     </span>
                   </div>
                   <div class="font-weight-bold text_2--text" :class="[$vuetify.breakpoint.xsOnly ? 'headline' : 'display-2']">
@@ -157,12 +159,13 @@
                     <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">{{ `$vuetify.icons.${verifier}` }}</v-icon>
                   </v-btn>
                 </v-flex>
-                <v-flex xs10 sm8 ml-auto mr-auto mt-4 class="text-center email-container">
-                  <div class="or-container">
+                <v-flex xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
+                  <div class="d-flex align-center">
                     <v-divider></v-divider>
-                    <div class="text-container">
+                    <div :style="{ width: $vuetify.breakpoint.xsOnly ? '40px' : '60px' }">
                       <div class="body-2 text_2--text">or</div>
                     </div>
+                    <v-divider></v-divider>
                   </div>
                   <div class="mt-4">
                     <v-btn
@@ -261,6 +264,7 @@
       {{ snackbarText }}
       <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
     </v-snackbar>
+    <!-- TODO trigger sendLink  -->
     <PasswordlessLogin
       :passwordless-login-dialog="passwordlessLoginDialog"
       :passwordless-email-sent="passwordlessEmailSent"
@@ -307,6 +311,11 @@ export default {
       REDDIT,
       TWITCH,
       DISCORD,
+      GITHUB,
+      LINKEDIN,
+      TWITTER,
+      WEIBO,
+      PASSWORDLESS,
       loginButtons: [GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD, GITHUB, LINKEDIN, TWITTER, WEIBO, PASSWORDLESS],
       loginButtonsMobile: [FACEBOOK, REDDIT, TWITCH, DISCORD, GITHUB, LINKEDIN, TWITTER, WEIBO, PASSWORDLESS],
       activeButton: GOOGLE,

@@ -41,6 +41,11 @@
                   <span v-else-if="activeButton === REDDIT" class="verifier-title__reddit">Reddit</span>
                   <span v-else-if="activeButton === TWITCH" class="verifier-title__twitch">Twitch</span>
                   <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span>
+                  <span v-else-if="activeButton === GITHUB" class="verifier-title__github">Github</span>
+                  <span v-else-if="activeButton === LINKEDIN" class="verifier-title__linkedin">Linkedin</span>
+                  <span v-else-if="activeButton === TWITTER" class="verifier-title__twitter">Twitter</span>
+                  <span v-else-if="activeButton === WEIBO" class="verifier-title__weibo">Weibo</span>
+                  <span v-else-if="activeButton === PASSWORDLESS" class="verifier-title__passwordless">Passwordless</span>
                 </span>
               </div>
               <div class="font-weight-bold verifier-subtitle torus_text--text">
@@ -84,11 +89,12 @@
               </v-layout>
             </v-flex>
             <v-flex v-if="enabledVerifiers[EMAIL_PASSWORD]" xs12 mt-4 class="text-center email-container">
-              <div class="or-container">
+              <div class="d-flex align-center">
                 <v-divider></v-divider>
-                <div class="text-container">
+                <div :style="{ width: $vuetify.breakpoint.xsOnly ? '40px' : '60px' }">
                   <div class="body-2 text_2--text">or</div>
                 </div>
+                <v-divider></v-divider>
               </div>
               <div class="mt-4">
                 <v-btn
@@ -113,7 +119,7 @@
                 </v-btn>
               </div>
             </v-flex>
-            <v-flex mt-8 mb-2>
+            <v-flex mt-2 mb-2>
               <span class="caption torus_text--text">
                 {{ t('login.acceptTerms') }}
                 <a :href="tncLink" target="_blank" rel="noreferrer noopener" :style="{ textDecoration: 'none' }">
@@ -124,6 +130,15 @@
           </v-layout>
         </v-card>
       </v-dialog>
+      <PasswordlessLogin
+        :passwordless-login-dialog="passwordlessLoginDialog"
+        :passwordless-email-sent="passwordlessEmailSent"
+        @cancel="
+          passwordlessLoginDialog = false
+          passwordlessEmailSent = false
+        "
+        @sendLink="passwordlessEmailSent = true"
+      />
     </v-flex>
   </v-layout>
 </template>
@@ -132,10 +147,12 @@
 import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
-import { DISCORD, EMAIL_PASSWORD, FACEBOOK, GOOGLE, REDDIT, TWITCH } from '../../../utils/enums'
+import PasswordlessLogin from '../../../components/helpers/PasswordLessLogin'
+import { DISCORD, EMAIL_PASSWORD, FACEBOOK, GITHUB, GOOGLE, LINKEDIN, PASSWORDLESS, REDDIT, TWITCH, TWITTER, WEIBO } from '../../../utils/enums'
 
 export default {
   name: 'PopupLogin',
+  components: { PasswordlessLogin },
   props: {
     loginDialog: {
       type: Boolean,
@@ -149,9 +166,16 @@ export default {
       REDDIT,
       TWITCH,
       DISCORD,
+      GITHUB,
+      LINKEDIN,
+      TWITTER,
+      WEIBO,
+      PASSWORDLESS,
       EMAIL_PASSWORD,
       activeButton: GOOGLE,
       showModal: true,
+      passwordlessLoginDialog: false,
+      passwordlessEmailSent: false,
     }
   },
   computed: {
@@ -179,6 +203,10 @@ export default {
       if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
     },
     async startLogin(verifier) {
+      if (verifier === PASSWORDLESS) {
+        this.passwordlessLoginDialog = true
+        return
+      }
       try {
         this.showModal = false
         await this.triggerLogin({ verifier, calledFromEmbed: true })

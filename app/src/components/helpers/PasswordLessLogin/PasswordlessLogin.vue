@@ -33,6 +33,7 @@
             </div>
           </div>
           <v-form v-else v-model="formValid" class="pa-9" @submit.prevent="sendLink">
+            <div class="headline font-weight-regular text_2--text mb-4">Enter your email</div>
             <v-text-field
               id="login-email"
               v-model="email"

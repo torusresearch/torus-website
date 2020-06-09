@@ -167,6 +167,21 @@
   &__discord {
     color: #7289DA;
   }
+  &__github {
+    color: #000000;
+  }
+  &__linkedin {
+    color: #2867B2;
+  }
+  &__twitter {
+    color: #55ACEE;
+  }
+  &__weibo {
+    color: #E71F19;
+  }
+  &__passwordless {
+    color: #000000;
+  }
 }
 
 .logout-btn {
@@ -235,17 +250,6 @@ html {
     background-color: var(--v-torusGray1-base);
     &.v-btn--active {
       background-color: var(--v-torusGray3-base);
-    }
-  }
-}
-
-.or-container {
-  .text-container {
-    margin-top: -14px;
-    div {
-      width: 30px;
-      display: inline-block;
-      background: white;
     }
   }
 }
