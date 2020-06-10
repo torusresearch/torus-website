@@ -228,28 +228,15 @@ html {
   overflow-y: hidden;
 }
 
-
-::v-deep .v-carousel.mobile-carousel {
-  .v-window__next {
+.mobile-login-container {
+  section {
+    min-height: 100vh;
+  }
+  .more-icon {
+    position: fixed;
     bottom: 0;
-    right: calc(50% - 20px);
-    top: inherit;
-    background: none;
-  }
-  .v-window__prev {
-    display: none;
-  }
-}
-
-::v-deep .v-carousel__controls {
-  background: none;
-  bottom: -15px;
-  .v-btn.v-btn--icon {
-    width: 14px;
-    height: 14px;
-    background-color: var(--v-torusGray1-base);
-    &.v-btn--active {
-      background-color: var(--v-torusGray3-base);
-    }
+    left: 50%;
+    transform: translate(-50%, 20%);
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
   }
 }

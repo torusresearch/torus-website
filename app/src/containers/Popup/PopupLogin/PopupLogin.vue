@@ -91,8 +91,8 @@
             <v-flex v-if="enabledVerifiers[EMAIL_PASSWORD]" xs12 mt-4 class="text-center email-container">
               <div class="d-flex align-center">
                 <v-divider></v-divider>
-                <div :style="{ width: $vuetify.breakpoint.xsOnly ? '40px' : '60px' }">
-                  <div class="body-2 text_2--text">or</div>
+                <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
+                  <div class="body-2 text_2--text">{{ t('login.or') }}</div>
                 </div>
                 <v-divider></v-divider>
               </div>
@@ -114,7 +114,7 @@
                   />
                   <v-icon v-else class="mr-4">$vuetify.icons.email</v-icon>
                   {{
-                    customLogins[EMAIL_PASSWORD] && customLogins[EMAIL_PASSWORD].text ? t(customLogins[EMAIL_PASSWORD].text) : 'Sign up/in with Email'
+                    customLogins[EMAIL_PASSWORD] && customLogins[EMAIL_PASSWORD].text ? t(customLogins[EMAIL_PASSWORD].text) : t('login.signUpEmail')
                   }}
                 </v-btn>
               </div>
