@@ -228,6 +228,19 @@ html {
   overflow-y: hidden;
 }
 
+::v-deep .v-carousel__controls {
+  background: none;
+  bottom: -15px;
+  .v-btn.v-btn--icon {
+    width: 14px;
+    height: 14px;
+    background-color: var(--v-torusGray1-base);
+    &.v-btn--active {
+      background-color: var(--v-torusGray3-base);
+    }
+  }
+}
+
 .mobile-login-container {
   section {
     min-height: 100vh;
