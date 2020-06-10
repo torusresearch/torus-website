@@ -168,6 +168,24 @@
         }
       }
 
+      if (isSessionStorageAvailable) {	
+          const torusWhiteLabel = sessionStorage.getItem('torus-white-label')	
+          if (torusWhiteLabel !== null) {	
+            try {	
+              const whiteLabelData = JSON.parse(torusWhiteLabel)	
+              if(whiteLabelData.theme) {	
+                theme = whiteLabelData.theme.isDark ? 'dark' : 'light'	
+                if(whiteLabelData.theme.colors && whiteLabelData.theme.colors.torusBrand1) {	
+                  const beats = document.querySelectorAll('.spinner .beat')	
+                  beats.forEach((beat) => beat.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1)	
+                }              	
+              }	
+            } catch (error) {	
+              console.error(error)	
+            }	
+          }	
+        }
+
       if (theme === 'dark') {
         document.querySelector('body').style.backgroundColor = '#24252A'
       }
