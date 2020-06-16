@@ -51,6 +51,7 @@
     "ethereumjs-wallet": "^0.6.3",
     "ethjs-query": "^0.3.8",
     "fast-json-patch": "^2.2.1",
+    "fast-json-stable-stringify": "^2.1.0",
     "human-standard-collectible-abi": "^1.0.2",
     "human-standard-token-abi": "^2.0.0",
     "json-rpc-engine": "^5.1.8",

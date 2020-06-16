@@ -30,6 +30,7 @@ export default class PermissionsController {
       createMethodMiddleware({
         getAccounts: this.getAccounts.bind(this, origin),
         requestAccountsPermission: this._requestPermissions.bind(this, origin, { eth_accounts: {} }),
+        requestPermissions: this._torusRequestPermissions.bind(this),
         setSiteMetadata: this.setSiteMetadata.bind(this),
         getPermissions: this.getPermissions.bind(this),
       })
@@ -83,6 +84,10 @@ export default class PermissionsController {
         }
       }
     })
+  }
+
+  _torusRequestPermissions(permission) {
+    // todo: request user permission
   }
 
   /**

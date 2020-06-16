@@ -3,6 +3,7 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable no-unreachable */
 import { ethErrors } from 'eth-json-rpc-errors'
+import stringify from 'fast-json-stable-stringify'
 import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'
 
 import { evaluatePermissions } from './permissionUtils'
@@ -10,7 +11,7 @@ import { evaluatePermissions } from './permissionUtils'
 /**
  * Create middleware for handling certain methods and preprocessing permissions requests.
  */
-export default function createMethodMiddleware({ getAccounts, requestAccountsPermission, setSiteMetadata, getPermissions }) {
+export default function createMethodMiddleware({ getAccounts, requestAccountsPermission, requestPermission, setSiteMetadata, getPermissions }) {
   return createAsyncMiddleware(async (request, res, next) => {
     if (typeof request.method !== 'string') {
       res.error = ethErrors.rpc.invalidRequest({ data: request })
@@ -18,6 +19,19 @@ export default function createMethodMiddleware({ getAccounts, requestAccountsPer
     }
 
     switch (request.method) {
+      case 'torus_requestPermissions':
+        const permission = getPermissions((p) => stringify(request.params[0]) === stringify(p))
+        if (permission) {
+          res.result = permission
+          return
+        }
+        try {
+          res.result = await requestPermission(permission)
+          return
+        } catch (error) {
+          res.error = error
+          return
+        }
       // intercepting eth_accounts requests for backwards compatibility,
       // i.e. return an empty array instead of an error
       // For now, let's not break the flow for login.

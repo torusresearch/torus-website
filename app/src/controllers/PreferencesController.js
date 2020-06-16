@@ -151,7 +151,17 @@ class PreferencesController {
         }),
       ])
       if (user && user.data) {
-        const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
+        const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, jsonPermissions } = user.data || {}
+
+        const permissions = jsonPermissions
+          .map((permission) => {
+            try {
+              return JSON.parse(permission)
+            } catch (error) {
+              return undefined
+            }
+          })
+          .filter((x) => x)
         let whiteLabelLocale
         let badgesCompletion = DEFAULT_BADGES_COMPLETION
 
