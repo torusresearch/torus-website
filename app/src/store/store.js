@@ -57,7 +57,8 @@ const VuexStore = new Vuex.Store({
   actions: {
     ...actions,
     ...paymentActions,
-    showPopup({ state, getters }) {
+    showPopup({ state, getters }, payload) {
+      const { request } = payload
       const confirmHandler = new ConfirmHandler(torus.instanceId)
       const isTx = isTorusTransaction()
       confirmHandler.isTx = isTx
@@ -83,7 +84,7 @@ const VuexStore = new Vuex.Store({
       }
       if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
-      } else if (confirmHandler.txType === TX_MESSAGE && isTorusSignedMessage(confirmHandler.msgParams)) {
+      } else if (request._autoApprove) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
       } else {
         confirmHandler.open(handleConfirm, handleDeny)
@@ -91,15 +92,6 @@ const VuexStore = new Vuex.Store({
     },
   },
 })
-
-function isTorusSignedMessage(messageParameters) {
-  if (messageParameters.customPrefix !== '\u0019Torus Signed Message:\n') return false
-  const { origin } = messageParameters
-  if (!/.+\.tor\.us$/.exec(origin) && origin !== 'tor.us') {
-    return false
-  }
-  return true
-}
 
 function handleConfirm(ev) {
   const { torusController } = torus

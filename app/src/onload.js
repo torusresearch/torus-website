@@ -28,9 +28,9 @@ export function injectStore(s) {
   deferredDispatch = []
 }
 
-function triggerUi(type) {
+function triggerUi(type, request) {
   log.info(`TRIGGERUI:${type}`)
-  getStore().dispatch('showPopup')
+  getStore().dispatch('showPopup', { request })
 }
 
 function onloadTorus(torus) {
@@ -48,10 +48,18 @@ function onloadTorus(torus) {
 
   const torusController = new TorusController({
     sessionCachedNetwork,
-    showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
-    unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
-    showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
-    openPopup: triggerUi.bind(window, 'bindopenPopup'),
+    showUnconfirmedMessage: (request) => {
+      triggerUi('showUnconfirmedMessage', request)
+    },
+    unlockAccountMessage: (request) => {
+      triggerUi('unlockAccountMessage', request)
+    },
+    showUnapprovedTx: (request) => {
+      triggerUi('showUnapprovedTx', request)
+    },
+    openPopup: (request) => {
+      triggerUi('bindopenPopup', request)
+    },
     storeProps: () => {
       const { state } = getStore()
       const { selectedAddress, wallet } = state || {}

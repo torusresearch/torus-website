@@ -1,5 +1,5 @@
 import { ethErrors } from 'eth-json-rpc-errors'
-import { bufferToHex, keccak256 } from 'ethereumjs-util'
+import { bufferToHex } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import ObservableStore from 'obs-store'
 
@@ -118,22 +118,6 @@ export default class MessageManager extends EventEmitter {
       time,
       status: 'unapproved',
       type: 'eth_sign',
-    }
-
-    if (messageParameters.customPrefix && messageParameters.customMessage) {
-      const hashBuffer = keccak256(
-        Buffer.from(
-          `${messageParameters.customPrefix}${messageParameters.customMessage.length.toString()}${messageParameters.customMessage}`,
-          'utf-8'
-        )
-      )
-      const hash = `0x${hashBuffer.toString('hex').toLowerCase()}`
-      if (hash === messageParameters.data.toLowerCase()) {
-        messageData.customPrefix = messageParameters.customPrefix
-        messageData.customMessage = messageParameters.customMessage
-      } else {
-        throw new Error(`Message data ${messageParameters.data.toLowerCase()} does not match derived hash ${hash}`)
-      }
     }
 
     this.addMsg(messageData)

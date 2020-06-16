@@ -5,10 +5,12 @@
 import { ethErrors } from 'eth-json-rpc-errors'
 import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'
 
+import { evaluatePermissions } from './permissionUtils'
+
 /**
  * Create middleware for handling certain methods and preprocessing permissions requests.
  */
-export default function createMethodMiddleware({ getAccounts, requestAccountsPermission, setSiteMetadata }) {
+export default function createMethodMiddleware({ getAccounts, requestAccountsPermission, setSiteMetadata, getPermissions }) {
   return createAsyncMiddleware(async (request, res, next) => {
     if (typeof request.method !== 'string') {
       res.error = ethErrors.rpc.invalidRequest({ data: request })
@@ -19,7 +21,24 @@ export default function createMethodMiddleware({ getAccounts, requestAccountsPer
       // intercepting eth_accounts requests for backwards compatibility,
       // i.e. return an empty array instead of an error
       // For now, let's not break the flow for login.
-      // TODO: refactor later
+      case 'eth_sign':
+      case 'eth_signTypedData':
+      case 'eth_signTypedData_v0':
+      case 'eth_signTypedData_v3':
+      case 'eth_signTypedData_v4':
+      case 'personal_sign':
+        if (request._autoApprove !== undefined) {
+          res.error = new Error('_autoApprove is an internal field and should not be passed in the rpc.')
+          return
+        }
+        const relevantPermissions = getPermissions((permission) => permission.method === request.method)
+        try {
+          request._autoApprove = evaluatePermissions(request, relevantPermissions)
+        } catch (error) {
+          res.error = error
+          return
+        }
+        return next()
       case 'eth_accounts':
         return next()
         res.result = await getAccounts()

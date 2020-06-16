@@ -193,7 +193,6 @@ class PreferencesController {
         this.fetchedPastTx = transactions
         this.calculatePastTx(transactions)
         if (callback) return callback(user)
-        // this.permissionsController._initializePermissions(permissions)
       }
       return undefined
     } catch (error) {

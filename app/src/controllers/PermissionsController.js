@@ -19,6 +19,7 @@ export default class PermissionsController {
     this.getKeyringAccounts = getKeyringAccounts
     this.setSiteMetadata = setSiteMetadata
     this._restrictedMethods = getRestrictedMethods(this)
+    this.permissions = []
     // this._initializePermissions({})
   }
 
@@ -30,6 +31,7 @@ export default class PermissionsController {
         getAccounts: this.getAccounts.bind(this, origin),
         requestAccountsPermission: this._requestPermissions.bind(this, origin, { eth_accounts: {} }),
         setSiteMetadata: this.setSiteMetadata.bind(this),
+        getPermissions: this.getPermissions.bind(this),
       })
     )
 
@@ -201,11 +203,25 @@ export default class PermissionsController {
   }
 
   /**
-   * A convenience method for retrieving a login object
-   * or creating a new one if needed.
-   *
-   * @param {string} origin = The origin string representing the domain.
+   * Sets all permissions
    */
+  setPermissions(permissions) {
+    this.permission = permissions
+  }
+
+  /**
+   * Sets all permissions
+   */
+  getPermissions(filterFn) {
+    return this.permissions.filter((x) => filterFn(x))
+  }
+
+  // /**
+  //  * A convenience method for retrieving a login object
+  //  * or creating a new one if needed.
+  //  *
+  //  * @param {string} origin = The origin string representing the domain.
+  //  */
   // _initializePermissions(restoredState) {
   //   // these permission requests are almost certainly stale
   //   const initState = { ...restoredState, permissionsRequests: [] }

@@ -135,7 +135,6 @@ export default class TorusController extends EventEmitter {
     this.txController = new TransactionController({
       networkStore: this.networkController.networkStore,
       txHistoryLimit: 40,
-      // TODO: pass in methods to check permissions for transactions. Do the same for other types of txs
       getNetwork: this.networkController.getNetworkState.bind(this),
       // signs ethTx
       signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
@@ -144,7 +143,7 @@ export default class TorusController extends EventEmitter {
       getGasPrice: this.getGasPrice.bind(this),
       storeProps: this.opts.storeProps,
     })
-    this.txController.on('newUnapprovedTx', () => options.showUnapprovedTx())
+    this.txController.on('newUnapprovedTx', ({ request }) => options.showUnapprovedTx(request))
 
     this.txController.on('tx:status-update', (txId, status) => {
       if (status === 'confirmed' || status === 'failed') {
@@ -420,7 +419,7 @@ export default class TorusController extends EventEmitter {
   newUnsignedMessage(messageParameters, request) {
     const promise = this.messageManager.addUnapprovedMessageAsync(messageParameters, request)
     this.sendUpdate()
-    this.opts.showUnconfirmedMessage()
+    this.opts.showUnconfirmedMessage(request)
     return promise
   }
 
@@ -478,7 +477,7 @@ export default class TorusController extends EventEmitter {
   async newUnsignedPersonalMessage(messageParameters, request) {
     const promise = this.personalMessageManager.addUnapprovedMessageAsync(messageParameters, request)
     this.sendUpdate()
-    this.opts.showUnconfirmedMessage()
+    this.opts.showUnconfirmedMessage(request)
     return promise
   }
 
@@ -531,7 +530,7 @@ export default class TorusController extends EventEmitter {
   newUnsignedTypedMessage(messageParameters, request, messageVersion) {
     const promise = this.typedMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageVersion)
     this.sendUpdate()
-    this.opts.showUnconfirmedMessage()
+    this.opts.showUnconfirmedMessage(request)
     return promise
   }
 
