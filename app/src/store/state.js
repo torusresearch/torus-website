@@ -1,23 +1,14 @@
+import clone from 'clone'
+
+import config from '../config'
 import {
-  DISCORD,
-  EMAIL_PASSWORD,
-  FACEBOOK,
-  GITHUB,
-  GOOGLE,
-  JWT,
-  LINKEDIN,
   LOCALE_EN,
   MAINNET,
   MAINNET_CODE,
   MAINNET_DISPLAY_NAME,
-  PASSWORDLESS,
-  REDDIT,
   SUPPORTED_NETWORK_TYPES,
   THEME_LIGHT_BLUE_NAME,
-  TWITCH,
-  TWITTER,
   USER_INFO_REQUEST_NEW,
-  WEIBO,
 } from '../utils/enums'
 
 const initialState = {
@@ -64,24 +55,10 @@ const initialState = {
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },
   embedState: {
-    enabledVerifiers: {
-      [GOOGLE]: true,
-      [FACEBOOK]: true,
-      [REDDIT]: true,
-      [TWITCH]: true,
-      [DISCORD]: true,
-      [GITHUB]: true,
-      [LINKEDIN]: true,
-      [TWITTER]: true,
-      [WEIBO]: true,
-      [EMAIL_PASSWORD]: true,
-      [PASSWORDLESS]: true,
-      [JWT]: false,
-    },
+    loginConfig: clone(config.loginConfig),
     isOAuthModalVisible: false,
     buttonPosition: 'bottom-left',
     torusWidgetVisibility: true,
-    customLogins: {},
   },
   whiteLabel: {
     isActive: false,

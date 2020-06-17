@@ -1,6 +1,5 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import clone from 'clone'
-import deepmerge from 'deepmerge'
 import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
@@ -308,21 +307,17 @@ export default {
     }
     return networkController.setProviderType(networkType.host)
   },
-  async triggerLogin({ dispatch, commit }, { calledFromEmbed, verifier, preopenInstanceId, typeOfLogin, jwtParameters, redirectToOpener }) {
+  async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId }) {
     try {
       // This is to maintain backward compatibility
-      let internalTypeOfLogin = typeOfLogin
-      if (!internalTypeOfLogin) internalTypeOfLogin = verifier
-      log.info('Verifier: ', verifier, ' typeOfLogin: ', internalTypeOfLogin)
-      const { domain, connection } = config.loginToConnectionMap[internalTypeOfLogin] || {}
+      const { typeOfLogin, clientId, jwtParameters } = state.embedState.loginConfig[verifier]
       const loginHandler = createHandler({
-        typeOfLogin: internalTypeOfLogin,
-        clientId: config.clientIdMap[internalTypeOfLogin],
-        verifier: config.verifierMap[internalTypeOfLogin] || verifier,
+        typeOfLogin,
+        clientId,
+        verifier,
         redirect_uri: config.redirect_uri,
         preopenInstanceId,
-        redirectToOpener,
-        jwtParameters: deepmerge({ domain, connection }, jwtParameters || {}),
+        jwtParameters,
       })
       const loginParameters = await loginHandler.handleLoginWindow()
       const { accessToken, idToken } = loginParameters
@@ -333,7 +328,7 @@ export default {
         name,
         email,
         verifierId,
-        verifier: config.verifierMap[internalTypeOfLogin] || verifier,
+        verifier,
         verifierParams: { verifier_id: verifierId },
       })
       await dispatch('handleLogin', { calledFromEmbed, oAuthToken: idToken || accessToken })
