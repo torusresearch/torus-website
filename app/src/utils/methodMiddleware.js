@@ -6,7 +6,7 @@ import { ethErrors } from 'eth-json-rpc-errors'
 import stringify from 'fast-json-stable-stringify'
 import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'
 
-import { evaluatePermissions } from './permissionUtils'
+import { evaluatePermissions, permissionsScope } from './permissionUtils'
 
 /**
  * Create middleware for handling certain methods and preprocessing permissions requests.
@@ -58,7 +58,7 @@ export default function createMethodMiddleware({ getAccounts, requestAccountsPer
           res.error = new Error('_autoApprove is an internal field and should not be passed in the rpc.')
           return
         }
-        const relevantPermissions = getPermissions((p) => p.method === request.method)
+        const relevantPermissions = getPermissions((p) => permissionsScope[p.permissionType].includes(request.method))
         try {
           request._autoApprove = evaluatePermissions(request, relevantPermissions)
         } catch (error) {

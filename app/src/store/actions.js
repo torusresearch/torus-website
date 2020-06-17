@@ -211,7 +211,7 @@ export default {
         reject(new Error('user rejected permission request'))
       }
       const handleSuccess = async () => {
-        await torus.torusController.prefsController.postNewPermission(payload)
+        await torus.torusController.prefsController.postNewPermission({ json_data: JSON.stringify(payload) })
         await torus.torusController.prefsController.sync()
         resolve(payload)
       }

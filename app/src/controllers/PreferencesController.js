@@ -152,12 +152,13 @@ class PreferencesController {
         }),
       ])
       if (user && user.data) {
-        const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, jsonPermissions = [] } = user.data || {}
+        const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions: jsonPermissions } =
+          user.data || {}
 
         const permissions = jsonPermissions
           .map((permission) => {
             try {
-              return JSON.parse(permission)
+              return JSON.parse(permission.json_data)
             } catch (error) {
               return undefined
             }
