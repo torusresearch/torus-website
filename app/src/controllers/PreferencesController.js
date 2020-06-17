@@ -89,6 +89,7 @@ class PreferencesController {
     this.pastTransactionsStore = new ObservableStore([])
     this.paymentTxStore = new ObservableStore([])
     this.etherscanTxStore = new ObservableStore([])
+    this.permissionsStore = new ObservableStore([])
   }
 
   set jwtToken(token) {
@@ -151,7 +152,7 @@ class PreferencesController {
         }),
       ])
       if (user && user.data) {
-        const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, jsonPermissions } = user.data || {}
+        const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, jsonPermissions = [] } = user.data || {}
 
         const permissions = jsonPermissions
           .map((permission) => {
@@ -162,6 +163,8 @@ class PreferencesController {
             }
           })
           .filter((x) => x)
+        this.permissionsStore.putState(permissions)
+
         let whiteLabelLocale
         let badgesCompletion = DEFAULT_BADGES_COMPLETION
 
@@ -191,7 +194,6 @@ class PreferencesController {
           theme,
           selectedCurrency: defaultCurrency,
           locale: whiteLabelLocale || locale || getUserLanguage(),
-          permissions,
           badgesCompletion,
         })
         if (paymentTx && paymentTx.data) {
@@ -315,6 +317,15 @@ class PreferencesController {
     }, [])
 
     this.etherscanTxStore.putState(finalTxs)
+  }
+
+  async postNewPermission(permission) {
+    try {
+      const response = await post(`${config.api}/permission`, permission, this.headers)
+      log.info('successfully added', response)
+    } catch (error) {
+      log.error(error, 'unable to insert permission')
+    }
   }
 
   async patchNewTx(tx) {

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+import PermissionConfirm from './components/Confirm/PermissionConfirm'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
@@ -68,6 +69,12 @@ const router = new Router({
       path: '/userinforequest',
       name: 'userInfoRequest',
       component: UserInfoRequest,
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/toruspermission',
+      name: 'torusPermission',
+      component: PermissionConfirm,
       meta: { requiresAuth: false },
     },
     {

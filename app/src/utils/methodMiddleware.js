@@ -11,7 +11,7 @@ import { evaluatePermissions } from './permissionUtils'
 /**
  * Create middleware for handling certain methods and preprocessing permissions requests.
  */
-export default function createMethodMiddleware({ getAccounts, requestAccountsPermission, requestPermission, setSiteMetadata, getPermissions }) {
+export default function createMethodMiddleware({ getAccounts, requestAccountsPermission, requestTorusPermission, setSiteMetadata, getPermissions }) {
   return createAsyncMiddleware(async (request, res, next) => {
     if (typeof request.method !== 'string') {
       res.error = ethErrors.rpc.invalidRequest({ data: request })
@@ -19,22 +19,35 @@ export default function createMethodMiddleware({ getAccounts, requestAccountsPer
     }
 
     switch (request.method) {
-      case 'torus_requestPermissions':
-        const permission = getPermissions((p) => stringify(request.params[0]) === stringify(p))
-        if (permission) {
-          res.result = permission
-          return
-        }
+      // intercepting eth_accounts requests for backwards compatibility,
+      // i.e. return an empty array instead of an error
+      // For now, let's not break the flow for login.
+      case 'torus_requestPermission':
+        let permissions
+        let permission
         try {
-          res.result = await requestPermission(permission)
-          return
+          ;[permission] = request.params
+          if (!permission.permissionDomain) {
+            permission.permissionDomain = request.origin
+          }
+          permissions = getPermissions((p) => stringify(p) === stringify(permission))
+          if (permissions.length > 0) {
+            ;[res.result] = permissions
+            return
+          }
+          await requestTorusPermission(permission)
         } catch (error) {
           res.error = error
           return
         }
-      // intercepting eth_accounts requests for backwards compatibility,
-      // i.e. return an empty array instead of an error
-      // For now, let's not break the flow for login.
+        permissions = getPermissions((p) => stringify(p) === stringify(permission))
+        if (permissions.length > 0) {
+          ;[res.result] = permissions
+          return
+        }
+        // this should never happen
+        res.error = ethErrors.rpc.internal('Permissions unexpectedly unavailable. Please report this bug.')
+        return
       case 'eth_sign':
       case 'eth_signTypedData':
       case 'eth_signTypedData_v0':
@@ -45,7 +58,7 @@ export default function createMethodMiddleware({ getAccounts, requestAccountsPer
           res.error = new Error('_autoApprove is an internal field and should not be passed in the rpc.')
           return
         }
-        const relevantPermissions = getPermissions((permission) => permission.method === request.method)
+        const relevantPermissions = getPermissions((p) => p.method === request.method)
         try {
           request._autoApprove = evaluatePermissions(request, relevantPermissions)
         } catch (error) {

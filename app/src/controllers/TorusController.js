@@ -129,6 +129,12 @@ export default class TorusController extends EventEmitter {
     this.permissionsController = new PermissionsController({
       getKeyringAccounts: this.keyringController.getAccounts.bind(this.keyringController),
       setSiteMetadata: this.prefsController.setSiteMetadata.bind(this.prefsController),
+      requestTorusPermission: this.opts.requestTorusPermission.bind(this.permissionsController),
+    })
+
+    this.prefsController.permissionsStore.on('update', (data) => {
+      log.info('got update in prefs controller for permissions')
+      this.permissionsController.setPermissions(data)
     })
 
     // tx mgmt
@@ -177,12 +183,12 @@ export default class TorusController extends EventEmitter {
     this.typedMessageManager = new TypedMessageManager({ networkController: this.networkController })
     this.store.updateStructure({
       AssetController: this.assetController.store,
-      // PermissionsController: this.permissionsController.permissions,
       TransactionController: this.txController.store,
       NetworkController: this.networkController.store,
       MessageManager: this.messageManager.store,
       CurrencyController: this.currencyController.store,
       PersonalMessageManager: this.personalMessageManager.store,
+      // PermissionsController: this.permissionsController.store,
       TypedMessageManager: this.typedMessageManager.store,
     })
     this.updateAndApproveTransaction = nodeify(this.txController.updateAndApproveTransaction, this.txController)
@@ -221,7 +227,6 @@ export default class TorusController extends EventEmitter {
       processTypedMessageV3: this.newUnsignedTypedMessage.bind(this),
       processTypedMessageV4: this.newUnsignedTypedMessage.bind(this),
       processPersonalMessage: this.newUnsignedPersonalMessage.bind(this),
-      processPermissionMessage: this.newUnsignedPermissionMessage.bind(this), // TODO: hook
       getPendingNonce: this.getPendingNonce.bind(this),
       getPendingTransactionByHash: (hash) => this.txController.getFilteredTxList({ hash, status: 'submitted' })[0],
     }
@@ -460,6 +465,10 @@ export default class TorusController extends EventEmitter {
       return callback(null, this.getState())
     }
     return undefined
+  }
+
+  async newUnsignedPermissionMessage(messageParameters, request) {
+    return this.opts.showUnconfirmedMessage(request)
   }
 
   // personal_sign methods:

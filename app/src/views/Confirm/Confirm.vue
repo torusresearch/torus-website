@@ -298,6 +298,7 @@
         </v-flex>
       </v-layout>
     </template>
+
     <template v-if="type === 'none'">
       <PopupScreenLoader />
     </template>
@@ -345,7 +346,6 @@ export default {
     PopupScreenLoader,
     TransactionSpeedSelect,
     TransferConfirm,
-    // PermissionConfirm,
     NetworkDisplay,
     ShowToolTip,
   },

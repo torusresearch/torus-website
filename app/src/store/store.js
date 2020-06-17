@@ -190,6 +190,7 @@ function getLatestMessageParameters() {
       type = TX_TYPED_MESSAGE
     }
   }
+
   return message ? { msgParams: message.msgParams, id: finalId, type } : {}
 }
 

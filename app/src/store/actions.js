@@ -196,6 +196,57 @@ export default {
       handleProviderChangeDeny('user denied provider change request')
     })
   },
+  showPermissionPopup({ state }, payload) {
+    log.info('SHOWPERMISSIONPOPUP', payload)
+    return new Promise((resolve, reject) => {
+      const bc = new BroadcastChannel(`torus_permission_channel_${torus.instanceId}`, broadcastChannelOptions)
+      const finalUrl = `${baseRoute}toruspermission?integrity=true&instanceId=${torus.instanceId}`
+      const torusPermissionPopup = new PopupHandler({
+        url: finalUrl,
+        target: '_blank',
+        features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500',
+      })
+
+      const handleDeny = () => {
+        reject(new Error('user rejected permission request'))
+      }
+      const handleSuccess = async () => {
+        await torus.torusController.prefsController.postNewPermission(payload)
+        await torus.torusController.prefsController.sync()
+        resolve(payload)
+      }
+
+      bc.addEventListener('message', async (ev) => {
+        log.info('PERMISSIONPOPUPMESSAGE', ev)
+        const { type = '', approve = false } = ev.data
+        if (type === 'popup-loaded') {
+          await bc.postMessage({
+            data: {
+              origin: getIFrameOriginObject(),
+              payload,
+              whiteLabel: state.whiteLabel,
+            },
+          })
+        } else if (type === 'torus-request-permission') {
+          try {
+            if (approve) handleSuccess()
+            else handleDeny()
+          } catch (error) {
+            log.error(error)
+            handleDeny()
+          } finally {
+            bc.close()
+            torusPermissionPopup.close()
+          }
+        }
+      })
+
+      torusPermissionPopup.open()
+      torusPermissionPopup.once('close', () => {
+        handleDeny()
+      })
+    })
+  },
   showUserInfoRequestPopup({ dispatch, state }, payload) {
     const { preopenInstanceId } = payload
     log.info(preopenInstanceId, 'userinfo')

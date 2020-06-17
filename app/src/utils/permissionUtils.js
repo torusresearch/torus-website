@@ -2,10 +2,13 @@ import { keccak256 } from 'ethereumjs-util'
 
 import { TORUS_METHOD_PREFIX, WALLET_METHOD_PREFIX } from './enums'
 
+export const ETH_SIGN_INDRA_PREFIX_MESSAGE = 'eth_sign_indra_prefix_message'
+export const ETH_SIGN_TORUS_PREFIX_MESSAGE = 'eth_sign_torus_prefix_message'
+
 // Custom permissions specifications
-const permissionsSpec = {
+export const permissionsSpec = {
   // Connext prefixed messages
-  eth_sign_indra_prefix_message: (request, permission) => {
+  [ETH_SIGN_INDRA_PREFIX_MESSAGE]: (request, permission) => {
     const { method, params } = request
     // ignore if not eth_sign
     if (method !== 'eth_sign') {
@@ -30,7 +33,7 @@ const permissionsSpec = {
     }
     return false
   },
-  eth_sign_torus_prefix_message: (request, permission) => {
+  [ETH_SIGN_TORUS_PREFIX_MESSAGE]: (request, permission) => {
     const { method, origin, params } = request
     // ignore if not eth_sign
     if (method !== 'eth_sign') {
@@ -57,6 +60,14 @@ const permissionsSpec = {
     }
     return false
   },
+}
+
+// Custom permission descriptions
+export const permissionsDesc = {
+  [ETH_SIGN_INDRA_PREFIX_MESSAGE]: (domain) =>
+    `Allow this site (${domain}) to sign Connext messages on your behalf. This does not allow the site to make Ethereum transactions.`,
+  [ETH_SIGN_TORUS_PREFIX_MESSAGE]: (domain) =>
+    `Allow this site (${domain}) to sign Torus messages on your behalf. This does not allow the site to make Ethereum transactions.`,
 }
 
 export const addInternalMethodPrefix = (method) => `${WALLET_METHOD_PREFIX}_${method}`

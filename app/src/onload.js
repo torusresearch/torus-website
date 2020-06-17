@@ -33,6 +33,11 @@ function triggerUi(type, request) {
   getStore().dispatch('showPopup', { request })
 }
 
+function showPermissionPopup(request) {
+  log.info(`PERMISSIONPOPUP:${JSON.stringify(request)}`)
+  return getStore().dispatch('showPermissionPopup', request)
+}
+
 function onloadTorus(torus) {
   let sessionData
 
@@ -50,6 +55,9 @@ function onloadTorus(torus) {
     sessionCachedNetwork,
     showUnconfirmedMessage: (request) => {
       triggerUi('showUnconfirmedMessage', request)
+    },
+    requestTorusPermission: (request) => {
+      return showPermissionPopup(request)
     },
     unlockAccountMessage: (request) => {
       triggerUi('unlockAccountMessage', request)

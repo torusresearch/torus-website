@@ -70,6 +70,7 @@
     "pump": "^3.0.0",
     "readable-stream": "^3.6.0",
     "register-service-worker": "^1.7.1",
+    "rpc-cap": "^2.1.0",
     "safe-event-emitter": "^1.0.1",
     "single-call-balance-checker-abi": "^1.0.0",
     "swappable-obj-proxy": "^1.1.0",

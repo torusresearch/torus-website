@@ -1,9 +1,9 @@
 import { ethErrors } from 'eth-json-rpc-errors'
+import stringify from 'fast-json-stable-stringify'
 import JsonRpcEngine from 'json-rpc-engine'
 import asMiddleware from 'json-rpc-engine/src/asMiddleware'
 import log from 'loglevel'
 
-// import ObservableStore from 'obs-store'
 // import { CapabilitiesController as RpcCap } from 'rpc-cap'
 // Methods that do not require any permissions to use:
 import {
@@ -15,7 +15,8 @@ import createMethodMiddleware from '../utils/methodMiddleware'
 import getRestrictedMethods from '../utils/restrictedMethods'
 
 export default class PermissionsController {
-  constructor({ getKeyringAccounts, setSiteMetadata } = {}) {
+  constructor({ getKeyringAccounts, setSiteMetadata, requestTorusPermission } = {}) {
+    this._requestTorusPermission = requestTorusPermission
     this.getKeyringAccounts = getKeyringAccounts
     this.setSiteMetadata = setSiteMetadata
     this._restrictedMethods = getRestrictedMethods(this)
@@ -30,7 +31,7 @@ export default class PermissionsController {
       createMethodMiddleware({
         getAccounts: this.getAccounts.bind(this, origin),
         requestAccountsPermission: this._requestPermissions.bind(this, origin, { eth_accounts: {} }),
-        requestPermissions: this._torusRequestPermissions.bind(this),
+        requestTorusPermission: this._requestTorusPermission.bind(this),
         setSiteMetadata: this.setSiteMetadata.bind(this),
         getPermissions: this.getPermissions.bind(this),
       })
@@ -86,9 +87,7 @@ export default class PermissionsController {
     })
   }
 
-  _torusRequestPermissions(permission) {
-    // todo: request user permission
-  }
+  // _torusRequestPermissions(permission) {}
 
   /**
    * User approval callback. The request can fail if the request is invalid.
@@ -200,18 +199,19 @@ export default class PermissionsController {
     })
   }
 
-  /**
-   * Removes all known domains and their related permissions.
-   */
-  clearPermissions() {
-    this.permissions.clearDomains()
+  addPermission(permission) {
+    this.permissions.push(permission)
+  }
+
+  removePermission(permission) {
+    this.permissions = this.permissions.filter((x) => stringify(x) === stringify(permission))
   }
 
   /**
    * Sets all permissions
    */
   setPermissions(permissions) {
-    this.permission = permissions
+    this.permissions = permissions
   }
 
   /**
