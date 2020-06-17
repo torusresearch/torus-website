@@ -4,7 +4,7 @@ import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 
 import { get, post } from '../../utils/httpHelpers'
-import { broadcastChannelOptions, padUrlString } from '../../utils/utils'
+import { broadcastChannelOptions, getVerifierId, padUrlString } from '../../utils/utils'
 import AbstractLoginHandler from './AbstractLoginHandler'
 
 export default class JwtHandler extends AbstractLoginHandler {
@@ -38,23 +38,23 @@ export default class JwtHandler extends AbstractLoginHandler {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-      const { sub, picture, name, email } = userInfo
+      const { picture, name, email } = userInfo
       return {
         email,
         name,
         profileImage: picture,
-        verifierId: sub,
+        verifierId: getVerifierId(userInfo, this.typeOfLogin),
         verifier: this.verifier,
       }
     } catch (error) {
       log.error(error)
       const decodedToken = jwtDecode(idToken)
-      const { name, email, picture, sub } = decodedToken
+      const { name, email, picture } = decodedToken
       return {
         profileImage: picture,
         name,
         email,
-        verifierId: sub,
+        verifierId: getVerifierId(decodedToken, this.typeOfLogin),
         verifier: this.verifier,
       }
     }

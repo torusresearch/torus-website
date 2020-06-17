@@ -310,7 +310,9 @@ export default {
   async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId }) {
     try {
       // This is to maintain backward compatibility
-      const { typeOfLogin, clientId, jwtParameters } = state.embedState.loginConfig[verifier]
+      const currentVeriferConfig = state.embedState.loginConfig[verifier]
+      if (!currentVeriferConfig) throw new Error('Invalid verifier')
+      const { typeOfLogin, clientId, jwtParameters } = currentVeriferConfig
       const loginHandler = createHandler({
         typeOfLogin,
         clientId,

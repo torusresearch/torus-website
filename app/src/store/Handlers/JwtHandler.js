@@ -3,7 +3,7 @@ import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 
 import { get } from '../../utils/httpHelpers'
-import { padUrlString } from '../../utils/utils'
+import { getVerifierId, padUrlString } from '../../utils/utils'
 import AbstractLoginHandler from './AbstractLoginHandler'
 
 export default class JwtHandler extends AbstractLoginHandler {
@@ -40,15 +40,15 @@ export default class JwtHandler extends AbstractLoginHandler {
       clonedParameters
     )
     Object.keys(finalJwtParameters).forEach((key) => {
-      finalUrl.searchParams.append(key, finalJwtParameters[key])
+      if (finalJwtParameters[key]) finalUrl.searchParams.append(key, finalJwtParameters[key])
     })
     this.finalURL = finalUrl
   }
 
   async getUserInfo(parameters) {
     const { idToken, accessToken } = parameters
+    const { domain, verifierIdField } = this.jwtParameters
     try {
-      const { domain } = this.jwtParameters
       const domainUrl = new URL(domain)
       const userInfo = await get(`${padUrlString(domainUrl)}userinfo`, {
         headers: {
@@ -60,7 +60,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         email,
         name,
         profileImage: picture,
-        verifierId: email.toLowerCase(),
+        verifierId: getVerifierId(userInfo, this.typeOfLogin, verifierIdField),
         verifier: this.verifier,
       }
     } catch (error) {
@@ -71,7 +71,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         profileImage: picture,
         name,
         email,
-        verifierId: email.toLowerCase(),
+        verifierId: getVerifierId(decodedToken, this.typeOfLogin, verifierIdField),
         verifier: this.verifier,
       }
     }

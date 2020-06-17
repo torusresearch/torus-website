@@ -10,22 +10,28 @@ import {
   ACTIVE,
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
+  APPLE,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   DISCORD,
+  EMAIL_PASSWORD,
   ENVIRONMENT_TYPE_FULLSCREEN,
   ENVIRONMENT_TYPE_NOTIFICATION,
   ENVIRONMENT_TYPE_POPUP,
   ETH,
+  GITHUB,
   GOERLI,
   GOERLI_CHAIN_ID,
   GOERLI_CODE,
   GOERLI_DISPLAY_NAME,
   GOOGLE,
+  JWT,
   KOVAN,
   KOVAN_CHAIN_ID,
   KOVAN_CODE,
   KOVAN_DISPLAY_NAME,
+  LINE,
+  LINKEDIN,
   MAINNET,
   MAINNET_CHAIN_ID,
   MAINNET_CODE,
@@ -33,6 +39,7 @@ import {
   MATIC_CHAIN_ID,
   MATIC_CODE,
   MOONPAY,
+  PASSWORDLESS,
   PLATFORM_BRAVE,
   PLATFORM_CHROME,
   PLATFORM_EDGE,
@@ -52,6 +59,8 @@ import {
   SIMPLEX,
   SVG,
   THEME_DARK_BLACK_NAME,
+  TWITTER,
+  WEIBO,
   WYRE,
   XANPOOL,
 } from './enums'
@@ -554,4 +563,25 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
 
 export const padUrlString = (url) => {
   return url.href.endsWith('/') ? url.href : `${url.href}/`
+}
+
+export const getVerifierId = (userInfo, typeOfLogin, verifierIdField) => {
+  const { name, nickname, sub } = userInfo
+  if (verifierIdField) return userInfo[verifierIdField]
+  switch (typeOfLogin) {
+    case GITHUB:
+    case TWITTER:
+      return nickname
+    case WEIBO:
+    case PASSWORDLESS:
+    case EMAIL_PASSWORD:
+      return name
+    case APPLE:
+    case LINKEDIN:
+    case LINE:
+    case JWT:
+      return sub
+    default:
+      throw new Error('Invalid login type')
+  }
 }
