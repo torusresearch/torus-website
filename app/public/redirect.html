@@ -168,23 +168,23 @@
         }
       }
 
-      if (isSessionStorageAvailable) {	
-          const torusWhiteLabel = sessionStorage.getItem('torus-white-label')	
-          if (torusWhiteLabel !== null) {	
-            try {	
-              const whiteLabelData = JSON.parse(torusWhiteLabel)	
-              if(whiteLabelData.theme) {	
-                theme = whiteLabelData.theme.isDark ? 'dark' : 'light'	
-                if(whiteLabelData.theme.colors && whiteLabelData.theme.colors.torusBrand1) {	
-                  const beats = document.querySelectorAll('.spinner .beat')	
-                  beats.forEach((beat) => beat.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1)	
-                }              	
-              }	
-            } catch (error) {	
-              console.error(error)	
-            }	
-          }	
+      if (isSessionStorageAvailable) {
+        const torusWhiteLabel = sessionStorage.getItem('torus-white-label')
+        if (torusWhiteLabel !== null) {
+          try {
+            const whiteLabelData = JSON.parse(torusWhiteLabel)
+            if (whiteLabelData.theme) {
+              theme = whiteLabelData.theme.isDark ? 'dark' : 'light'
+              if (whiteLabelData.theme.colors && whiteLabelData.theme.colors.torusBrand1) {
+                const beats = document.querySelectorAll('.spinner .beat')
+                beats.forEach((beat) => (beat.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1))
+              }
+            }
+          } catch (error) {
+            console.error(error)
+          }
         }
+      }
 
       if (theme === 'dark') {
         document.querySelector('body').style.backgroundColor = '#24252A'
@@ -226,43 +226,28 @@
           } catch (e) {
             console.error(e)
           }
-          if (instanceParams.redirectToOpener) {
-            // communicate to window.opener
-            window.opener.postMessage(
-              {
-                channel: 'redirect_channel_' + instanceParams.instanceId,
-                data: {
-                  instanceParams: instanceParams,
-                  hashParams: hashParams,
-                  queryParams: queryParams,
-                },
-                error: error,
-              },
-              '*'
-            )
-          } else {
-            // communicate via broadcast channel
-            bc = new broadcastChannelLib.BroadcastChannel('redirect_channel_' + instanceParams.instanceId, broadcastChannelOptions)
-            bc.postMessage({
-              data: {
-                instanceParams: instanceParams,
-                hashParams: hashParams,
-                queryParams: queryParams,
-              },
-              error: error,
-            }).then(function () {
-              bc.close()
-              console.log('posted', {
-                queryParams,
-                instanceParams,
-                hashParams,
-              })
-              setTimeout(function () {
-                window.close()
-                showCloseText()
-              }, 5000)
+
+          // communicate via broadcast channel
+          bc = new broadcastChannelLib.BroadcastChannel('redirect_channel_' + instanceParams.instanceId, broadcastChannelOptions)
+          bc.postMessage({
+            data: {
+              instanceParams: instanceParams,
+              hashParams: hashParams,
+              queryParams: queryParams,
+            },
+            error: error,
+          }).then(function () {
+            bc.close()
+            console.log('posted', {
+              queryParams,
+              instanceParams,
+              hashParams,
             })
-          }
+            setTimeout(function () {
+              window.close()
+              showCloseText()
+            }, 5000)
+          })
         } catch (err) {
           console.error(err, 'service worker error in redirect')
           bc && bc.close()
