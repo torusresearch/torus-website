@@ -90,7 +90,7 @@
   }
 }
 
-.login-btn-email {
+.login-btn-long {
   &.v-btn {
     background: #FFFFFF !important;
     border: 1px solid #F1F2F6 !important;
@@ -180,6 +180,12 @@
     color: #E71F19;
   }
   &__passwordless {
+    color: #000000;
+  }
+  &__line {
+    color: #00B900;
+  }
+  &__apple {
     color: #000000;
   }
 }

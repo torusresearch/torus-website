@@ -37,15 +37,7 @@
                     <span class="verifier-title__google-green">l</span>
                     <span class="verifier-title__google-red">e</span>
                   </span>
-                  <span v-else-if="activeButton === FACEBOOK" class="verifier-title__facebook">Facebook</span>
-                  <span v-else-if="activeButton === REDDIT" class="verifier-title__reddit">Reddit</span>
-                  <span v-else-if="activeButton === TWITCH" class="verifier-title__twitch">Twitch</span>
-                  <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span>
-                  <span v-else-if="activeButton === GITHUB" class="verifier-title__github">Github</span>
-                  <span v-else-if="activeButton === LINKEDIN" class="verifier-title__linkedin">Linkedin</span>
-                  <span v-else-if="activeButton === TWITTER" class="verifier-title__twitter">Twitter</span>
-                  <span v-else-if="activeButton === WEIBO" class="verifier-title__weibo">Weibo</span>
-                  <span v-else-if="activeButton === PASSWORDLESS" class="verifier-title__passwordless">Passwordless</span>
+                  <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButton}`">{{ activeButton }}</span>
                 </span>
               </div>
               <div class="font-weight-bold verifier-subtitle torus_text--text">
@@ -57,38 +49,31 @@
             </v-flex>
             <v-flex xs12>
               <v-layout wrap mx-n1>
-                <v-flex v-for="verifier in loginButtons" :key="verifier" xs4 px-1 mt-2>
+                <v-flex v-for="verifier in loginButtons" :key="verifier.typeOfLogin" xs4 px-1 mt-2>
                   <v-btn
                     block
                     class="login-btn"
-                    :class="{ active: verifier === activeButton }"
+                    :class="{ active: verifier.typeOfLogin === activeButton }"
                     type="button"
-                    :title="`${t('login.loginWith')} ${verifier}`"
-                    @mouseover="loginBtnHover(verifier)"
-                    @click="startLogin(verifier)"
+                    :title="`${t('login.loginWith')} ${verifier.typeOfLogin}`"
+                    @mouseover="loginBtnHover(verifier.typeOfLogin)"
+                    @click="startLogin(verifier.verifier)"
                   >
                     <img
-                      v-if="verifier === activeButton || $vuetify.breakpoint.xsOnly"
-                      :src="
-                        customLogins[verifier] && customLogins[verifier].imageURLActive
-                          ? customLogins[verifier].imageURLActive
-                          : require(`../../../assets/img/icons/login-${verifier}.svg`)
-                      "
-                      :alt="`${verifier} Icon`"
+                      v-if="verifier.typeOfLogin === activeButton || $vuetify.breakpoint.xsOnly"
+                      :src="verifier.logoHover || require(`../../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)"
+                      :alt="`${verifier.typeOfLogin} Icon`"
                     />
-                    <img
-                      v-else-if="customLogins[verifier] && customLogins[verifier].imageURLGrey"
-                      :src="customLogins[verifier].imageURLGrey"
-                      :alt="`${verifier} Icon`"
-                    />
+                    <img v-else-if="$vuetify.theme.isDark && verifier.logoLight" :src="verifier.logoLight" :alt="`${verifier.typeOfLogin} Icon`" />
+                    <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark" :src="verifier.logoDark" :alt="`${verifier.typeOfLogin} Icon`" />
                     <v-icon v-else size="30" :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
-                      {{ `$vuetify.icons.${verifier}` }}
+                      {{ `$vuetify.icons.${verifier.typeOfLogin}` }}
                     </v-icon>
                   </v-btn>
                 </v-flex>
               </v-layout>
             </v-flex>
-            <v-flex v-if="enabledVerifiers[EMAIL_PASSWORD]" xs12 mt-4 class="text-center email-container">
+            <v-flex v-if="loginButtonsLong.length > 0" xs12 mt-4 class="text-center">
               <div class="d-flex align-center">
                 <v-divider></v-divider>
                 <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
@@ -96,26 +81,31 @@
                 </div>
                 <v-divider></v-divider>
               </div>
-              <div class="mt-4">
+              <div v-for="verifier in loginButtonsLong" :key="verifier.typeOfLogin" class="mt-4">
                 <v-btn
-                  id="emailLoginBtn"
+                  :id="`${verifier.typeOfLogin}LoginBtn`"
                   :color="$vuetify.theme.dark ? '' : 'white'"
                   block
-                  :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                  class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-email"
-                  @click="startLogin(EMAIL_PASSWORD)"
+                  :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-${verifier.typeOfLogin}`]"
+                  class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
+                  @click="startLogin(verifier.verifier)"
                 >
                   <img
-                    v-if="customLogins[EMAIL_PASSWORD] && customLogins[EMAIL_PASSWORD].imageURLGrey"
+                    v-if="$vuetify.theme.isDark && verifier.logoLight"
                     class="mr-4"
                     height="20"
-                    :src="customLogins[EMAIL_PASSWORD].imageURLGrey"
-                    alt="JWT Icon"
+                    :src="verifier.logoLight"
+                    :alt="`${verifier.typeOfLogin} Icon`"
                   />
-                  <v-icon v-else class="mr-4">$vuetify.icons.email</v-icon>
-                  {{
-                    customLogins[EMAIL_PASSWORD] && customLogins[EMAIL_PASSWORD].text ? t(customLogins[EMAIL_PASSWORD].text) : t('login.signUpEmail')
-                  }}
+                  <img
+                    v-if="!$vuetify.theme.isDark && verifier.logoDark"
+                    class="mr-4"
+                    height="20"
+                    :src="verifier.logoDark"
+                    :alt="`${verifier.typeOfLogin} Icon`"
+                  />
+                  <v-icon v-else class="mr-4">{{ `$vuetify.icons.${verifier.typeOfLogin}` }}</v-icon>
+                  {{ t(verifier.description) }}
                 </v-btn>
               </div>
             </v-flex>
@@ -148,7 +138,7 @@ import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
 import PasswordlessLogin from '../../../components/helpers/PasswordLessLogin'
-import { DISCORD, EMAIL_PASSWORD, FACEBOOK, GITHUB, GOOGLE, LINKEDIN, PASSWORDLESS, REDDIT, TWITCH, TWITTER, WEIBO } from '../../../utils/enums'
+import { GOOGLE, PASSWORDLESS } from '../../../utils/enums'
 
 export default {
   name: 'PopupLogin',
@@ -162,16 +152,7 @@ export default {
   data() {
     return {
       GOOGLE,
-      FACEBOOK,
-      REDDIT,
-      TWITCH,
-      DISCORD,
-      GITHUB,
-      LINKEDIN,
-      TWITTER,
-      WEIBO,
       PASSWORDLESS,
-      EMAIL_PASSWORD,
       activeButton: GOOGLE,
       showModal: true,
       passwordlessLoginDialog: false,
@@ -181,10 +162,20 @@ export default {
   computed: {
     ...mapState({
       enabledVerifiers: (state) => state.embedState.enabledVerifiers,
-      customLogins: (state) => state.embedState.customLogins,
+      embedState: 'embedState',
     }),
+    loginButtonsArr() {
+      return Object.entries(this.embedState.loginConfig).reduce((newArray, [key, value]) => {
+        value.verifier = key
+        newArray.push(value)
+        return newArray
+      }, [])
+    },
     loginButtons() {
-      return Object.keys(this.enabledVerifiers).filter((x) => this.enabledVerifiers[x] && x !== EMAIL_PASSWORD)
+      return this.loginButtonsArr.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
+    },
+    loginButtonsLong() {
+      return this.loginButtonsArr.filter((button) => button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     localeSelected() {
       return this.$vuetify.lang.current

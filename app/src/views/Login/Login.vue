@@ -72,10 +72,10 @@
                         :color="$vuetify.theme.dark ? '' : 'white'"
                         block
                         :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-${verifier.typeOfLogin}`]"
-                        class="body-1 font-weight-bold card-shadow-v8 text_2--text"
+                        class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
                         @click="startLogin(verifier.verifier)"
                       >
-                        <v-icon class="mr-4">$vuetify.icons.email</v-icon>
+                        <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.typeOfLogin}` }}</v-icon>
                         {{ t(verifier.description) }}
                       </v-btn>
                     </div>
@@ -181,10 +181,10 @@
                       :color="$vuetify.theme.dark ? '' : 'white'"
                       block
                       :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                      class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-email"
+                      class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
                       @click="startLogin(verifier.verifier)"
                     >
-                      <v-icon class="mr-4">$vuetify.icons.email</v-icon>
+                      <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.typeOfLogin}` }}</v-icon>
                       {{ t(verifier.description) }}
                     </v-btn>
                   </div>
