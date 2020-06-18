@@ -32,7 +32,7 @@
                       block
                       :class="$vuetify.theme.dark ? 'torus-dark' : ''"
                       class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google gmt-login gmt-login-google"
-                      @click="startLogin(GOOGLE)"
+                      @click="startLogin(GOOGLE_VERIFIER)"
                     >
                       <img
                         class="mr-5"
@@ -45,21 +45,20 @@
                   </v-flex>
                   <v-flex xs10 sm8 ml-auto mr-auto>
                     <v-layout wrap mx-n1>
-                      <v-flex v-for="verifier in loginButtonsMobile" :key="verifier" xs6 px-1 mt-2>
+                      <v-flex v-for="verifier in loginButtonsMobile" :key="verifier.typeOfLogin" xs6 px-1 mt-2>
                         <v-btn
                           class="login-btn login-btn--mobile gmt-login"
-                          :class="[{ active: verifier === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier}`]"
+                          :class="[{ isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
                           type="button"
-                          :title="`${t('login.loginWith')} ${verifier}`"
-                          @click="startLogin(verifier)"
-                          @mouseover="loginBtnHover(verifier)"
+                          :title="`${t('login.loginWith')} ${verifier.typeOfLogin}`"
+                          @click="startLogin(verifier.verifier)"
                         >
-                          <img :src="require(`../../assets/img/icons/login-${verifier}.svg`)" :alt="`${verifier} Icon`" />
+                          <img :src="require(`../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)" :alt="`${verifier.typeOfLogin} Icon`" />
                         </v-btn>
                       </v-flex>
                     </v-layout>
                   </v-flex>
-                  <v-flex xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
+                  <v-flex v-if="loginButtonsMobileLong.length > 0" xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
                     <div class="d-flex align-center">
                       <v-divider></v-divider>
                       <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
@@ -67,17 +66,17 @@
                       </div>
                       <v-divider></v-divider>
                     </div>
-                    <div class="mt-4">
+                    <div v-for="verifier in loginButtonsMobileLong" :key="verifier.typeOfLogin" class="mt-4">
                       <v-btn
-                        id="emailLoginBtn"
+                        :id="`${verifier.typeOfLogin}LoginBtn`"
                         :color="$vuetify.theme.dark ? '' : 'white'"
                         block
-                        :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                        class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-email"
-                        @click="startLogin(EMAIL_PASSWORD)"
+                        :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-${verifier.typeOfLogin}`]"
+                        class="body-1 font-weight-bold card-shadow-v8 text_2--text"
+                        @click="startLogin(verifier.verifier)"
                       >
                         <v-icon class="mr-4">$vuetify.icons.email</v-icon>
-                        {{ t('login.signUpEmail') }}
+                        {{ t(verifier.description) }}
                       </v-btn>
                     </div>
                   </v-flex>
@@ -137,15 +136,7 @@
                         <span class="verifier-title__google-green">l</span>
                         <span class="verifier-title__google-red">e</span>
                       </span>
-                      <span v-else-if="activeButton === FACEBOOK" class="verifier-title__facebook">Facebook</span>
-                      <span v-else-if="activeButton === REDDIT" class="verifier-title__reddit">Reddit</span>
-                      <span v-else-if="activeButton === TWITCH" class="verifier-title__twitch">Twitch</span>
-                      <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span>
-                      <span v-else-if="activeButton === GITHUB" class="verifier-title__github">Github</span>
-                      <span v-else-if="activeButton === LINKEDIN" class="verifier-title__linkedin">Linkedin</span>
-                      <span v-else-if="activeButton === TWITTER" class="verifier-title__twitter">Twitter</span>
-                      <span v-else-if="activeButton === WEIBO" class="verifier-title__weibo">Weibo</span>
-                      <span v-else-if="activeButton === PASSWORDLESS" class="verifier-title__passwordless">Passwordless</span>
+                      <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButton}`">{{ activeButton }}</span>
                     </span>
                   </div>
                   <div class="font-weight-bold text_2--text" :class="[$vuetify.breakpoint.xsOnly ? 'headline' : 'display-2']">
@@ -158,37 +149,43 @@
                 <v-flex xs10 sm8 ml-auto mr-auto mt-4>
                   <v-btn
                     v-for="verifier in loginButtons"
-                    :key="verifier"
+                    :key="verifier.typeOfLogin"
                     class="login-btn gmt-login"
-                    :class="[{ active: verifier === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier}`]"
+                    :class="[{ active: verifier.typeOfLogin === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
                     type="button"
-                    :title="`${t('login.loginWith')} ${verifier}`"
-                    @click="startLogin(verifier)"
-                    @mouseover="activeButton = verifier"
+                    :title="`${t('login.loginWith')} ${verifier.typeOfLogin}`"
+                    @click="startLogin(verifier.verifier)"
+                    @mouseover="activeButton = verifier.typeOfLogin"
                   >
-                    <img v-if="verifier === activeButton" :src="require(`../../assets/img/icons/login-${verifier}.svg`)" :alt="`${verifier} Icon`" />
-                    <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">{{ `$vuetify.icons.${verifier}` }}</v-icon>
+                    <img
+                      v-if="verifier.typeOfLogin === activeButton"
+                      :src="require(`../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)"
+                      :alt="`${verifier.typeOfLogin} Icon`"
+                    />
+                    <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
+                      {{ `$vuetify.icons.${verifier.typeOfLogin}` }}
+                    </v-icon>
                   </v-btn>
                 </v-flex>
-                <v-flex xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
-                  <div class="d-flex align-center">
+                <v-flex v-if="loginButtonsLong.length > 0" xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
+                  <div class="d-flex align-center mb-4">
                     <v-divider></v-divider>
                     <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
                       <div class="body-2 text_2--text">{{ t('login.or') }}</div>
                     </div>
                     <v-divider></v-divider>
                   </div>
-                  <div class="mt-4">
+                  <div v-for="verifier in loginButtonsLong" :key="verifier.typeOfLogin" class="mt-2">
                     <v-btn
                       id="emailLoginBtn"
                       :color="$vuetify.theme.dark ? '' : 'white'"
                       block
                       :class="$vuetify.theme.dark ? 'torus-dark' : ''"
                       class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-email"
-                      @click="startLogin(EMAIL_PASSWORD)"
+                      @click="startLogin(verifier.verifier)"
                     >
                       <v-icon class="mr-4">$vuetify.icons.email</v-icon>
-                      {{ t('login.signUpEmail') }}
+                      {{ t(verifier.description) }}
                     </v-btn>
                   </div>
                 </v-flex>
@@ -310,7 +307,7 @@ import {
   WalletTransferLoader,
   WalletTransferLoaderMobile,
 } from '../../content-loader'
-import { DISCORD, EMAIL_PASSWORD, FACEBOOK, GITHUB, GOOGLE, LINKEDIN, PASSWORDLESS, REDDIT, TWITCH, TWITTER, WEIBO } from '../../utils/enums'
+import { GOOGLE, GOOGLE_VERIFIER, PASSWORDLESS } from '../../utils/enums'
 
 export default {
   name: 'Login',
@@ -319,18 +316,8 @@ export default {
     return {
       isLogout: false,
       GOOGLE,
-      FACEBOOK,
-      REDDIT,
-      TWITCH,
-      DISCORD,
-      GITHUB,
-      LINKEDIN,
-      TWITTER,
-      WEIBO,
+      GOOGLE_VERIFIER,
       PASSWORDLESS,
-      EMAIL_PASSWORD,
-      loginButtons: [GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD, GITHUB, LINKEDIN, TWITTER, WEIBO, PASSWORDLESS],
-      loginButtonsMobile: [FACEBOOK, REDDIT, TWITCH, DISCORD, GITHUB, LINKEDIN, TWITTER, WEIBO, PASSWORDLESS],
       activeButton: GOOGLE,
       loginInProgress: false,
       snackbar: false,
@@ -342,7 +329,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['selectedAddress']),
+    ...mapState(['selectedAddress', 'embedState']),
     loggedIn() {
       return this.selectedAddress !== '' && !this.loginInProgress
     },
@@ -365,6 +352,25 @@ export default {
         return this.$vuetify.breakpoint.xsOnly ? WalletCollectiblesLoaderMobile : WalletCollectiblesLoader
       }
       return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
+    },
+    loginButtonsArr() {
+      return Object.entries(this.embedState.loginConfig).reduce((newArray, [key, value]) => {
+        value.verifier = key
+        newArray.push(value)
+        return newArray
+      }, [])
+    },
+    loginButtons() {
+      return this.loginButtonsArr.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
+    },
+    loginButtonsMobile() {
+      return this.loginButtonsArr.filter((button) => button.verifier !== GOOGLE && !button.description && button.typeOfLogin !== PASSWORDLESS)
+    },
+    loginButtonsLong() {
+      return this.loginButtonsArr.filter((button) => button.description && button.typeOfLogin !== PASSWORDLESS)
+    },
+    loginButtonsMobileLong() {
+      return this.loginButtonsArr.filter((button) => button.verifier !== GOOGLE && button.description && button.typeOfLogin !== PASSWORDLESS)
     },
   },
   watch: {
@@ -399,7 +405,7 @@ export default {
         log.error(error)
         this.snackbar = true
         this.snackbarColor = 'error'
-        this.snackbarText = this.t('login.loginError')
+        this.snackbarText = error.message.includes('email_verified') ? 'Please verify your email first' : this.t('login.loginError')
       } finally {
         this.loginInProgress = false
       }

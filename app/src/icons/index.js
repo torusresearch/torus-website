@@ -45,12 +45,14 @@ import TokenIcon from './TokenIcon.vue'
 import TopupIcon from './TopupIcon.vue'
 import TransactionIcon from './TransactionIcon.vue'
 import TrashIcon from './TrashIcon.vue'
+import VerifierAppleIcon from './VerifierAppleIcon.vue'
 import VerifierDiscordIcon from './VerifierDiscordIcon.vue'
 import VerifierEmailIcon from './VerifierEmailIcon.vue'
 import VerifierEnsIcon from './VerifierEnsIcon.vue'
 import VerifierFacebookIcon from './VerifierFacebookIcon.vue'
 import VerifierGithubIcon from './VerifierGithubIcon.vue'
 import VerifierGoogleIcon from './VerifierGoogleIcon.vue'
+import VerifierLineIcon from './VerifierLineIcon.vue'
 import VerifierLinkedinIcon from './VerifierLinkedinIcon.vue'
 import VerifierPasswordlessIcon from './VerifierPasswordlessIcon.vue'
 import VerifierRedditIcon from './VerifierRedditIcon.vue'
@@ -243,5 +245,11 @@ export default {
   },
   passwordless: {
     component: VerifierPasswordlessIcon,
+  },
+  apple: {
+    component: VerifierAppleIcon,
+  },
+  line: {
+    component: VerifierLineIcon,
   },
 }

@@ -1,4 +1,19 @@
-import { DISCORD, EMAIL_PASSWORD, FACEBOOK, GITHUB, GOOGLE, JWT, LINKEDIN, PASSWORDLESS, REDDIT, TWITCH, TWITTER, WEIBO } from '../../utils/enums'
+import {
+  APPLE,
+  DISCORD,
+  EMAIL_PASSWORD,
+  FACEBOOK,
+  GITHUB,
+  GOOGLE,
+  JWT,
+  LINE,
+  LINKEDIN,
+  PASSWORDLESS,
+  REDDIT,
+  TWITCH,
+  TWITTER,
+  WEIBO,
+} from '../../utils/enums'
 import DiscordHandler from './DiscordHandler'
 import FacebookHandler from './FacebookHandler'
 import GoogleHandler from './GoogleHandler'
@@ -27,6 +42,8 @@ const createHandler = ({ typeOfLogin, clientId, verifier, redirect_uri, preopenI
       if (!domain || !login_hint) throw new Error('Invalid params')
       return new PasswordlessHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener, jwtParameters })
     case GITHUB:
+    case APPLE:
+    case LINE:
     case LINKEDIN:
     case TWITTER:
     case WEIBO:
