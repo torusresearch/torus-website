@@ -50,13 +50,13 @@ if (!isMain) {
   initStream.on('data', (chunk) => {
     const {
       name,
-      data: { enabledVerifiers = {}, whiteLabel = {}, buttonPosition = '', torusWidgetVisibility = true },
+      data: { enabledVerifiers = {}, whiteLabel = {}, buttonPosition = '', torusWidgetVisibility = true, loginConfig = {} },
     } = chunk
     if (name === 'init_stream') {
-      VuexStore.commit('setEnabledVerifiers', enabledVerifiers)
       VuexStore.commit('setButtonPosition', buttonPosition)
       if (Object.keys(whiteLabel).length > 0) VuexStore.commit('setWhiteLabel', whiteLabel)
       VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
+      VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
     }
   })
 
