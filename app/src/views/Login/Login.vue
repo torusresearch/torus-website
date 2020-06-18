@@ -25,7 +25,7 @@
                       {{ t('login.digitalWallet') }}
                     </div>
                   </v-flex>
-                  <v-flex xs10 sm8 ml-auto mt-2 mr-auto>
+                  <v-flex v-if="showGoogleLogin" xs10 sm8 ml-auto mt-2 mr-auto>
                     <v-btn
                       id="loginBtn"
                       :color="$vuetify.theme.dark ? '' : 'white'"
@@ -288,7 +288,7 @@
 
 <script>
 import log from 'loglevel'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import PasswordlessLogin from '../../components/helpers/PasswordLessLogin'
 import {
@@ -329,7 +329,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['selectedAddress', 'embedState']),
+    ...mapState({
+      selectedAddress: 'selectedAddress',
+      loginConfig: (state) => state.embedState.loginConfig,
+    }),
+    ...mapGetters(['loginButtonsArray']),
     loggedIn() {
       return this.selectedAddress !== '' && !this.loginInProgress
     },
@@ -353,24 +357,20 @@ export default {
       }
       return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
     },
-    loginButtonsArr() {
-      return Object.entries(this.embedState.loginConfig).reduce((newArray, [key, value]) => {
-        value.verifier = key
-        newArray.push(value)
-        return newArray
-      }, [])
-    },
     loginButtons() {
-      return this.loginButtonsArr.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsMobile() {
-      return this.loginButtonsArr.filter((button) => button.verifier !== GOOGLE && !button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.verifier !== GOOGLE && !button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsLong() {
-      return this.loginButtonsArr.filter((button) => button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsMobileLong() {
-      return this.loginButtonsArr.filter((button) => button.verifier !== GOOGLE && button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.verifier !== GOOGLE && button.description && button.typeOfLogin !== PASSWORDLESS)
+    },
+    showGoogleLogin() {
+      return this.loginConfig[GOOGLE_VERIFIER].showOnModal
     },
   },
   watch: {

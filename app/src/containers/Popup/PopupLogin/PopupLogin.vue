@@ -135,7 +135,7 @@
 
 <script>
 import log from 'loglevel'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 import PasswordlessLogin from '../../../components/helpers/PasswordLessLogin'
 import { GOOGLE, PASSWORDLESS } from '../../../utils/enums'
@@ -160,22 +160,12 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      enabledVerifiers: (state) => state.embedState.enabledVerifiers,
-      embedState: 'embedState',
-    }),
-    loginButtonsArr() {
-      return Object.entries(this.embedState.loginConfig).reduce((newArray, [key, value]) => {
-        value.verifier = key
-        newArray.push(value)
-        return newArray
-      }, [])
-    },
+    ...mapGetters(['loginButtonsArray']),
     loginButtons() {
-      return this.loginButtonsArr.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsLong() {
-      return this.loginButtonsArr.filter((button) => button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     localeSelected() {
       return this.$vuetify.lang.current
