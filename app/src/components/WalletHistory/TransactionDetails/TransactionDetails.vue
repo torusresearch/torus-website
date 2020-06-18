@@ -4,55 +4,82 @@
       <v-flex
         px-4
         :class="$vuetify.breakpoint.xsOnly ? 'order-2 pt-2' : 'order-0'"
-        :style="{ marginLeft: $vuetify.breakpoint.xsOnly ? '48px' : '0', maxWidth: '105px' }"
+        :style="{ marginLeft: $vuetify.breakpoint.xsOnly ? '48px' : '0', maxWidth: $vuetify.breakpoint.xsOnly ? '150px' : '105px' }"
       >
-        <div class="caption text_1--text font-weight-medium">{{ transaction.dateFormatted }}</div>
+        <div class="caption text_1--text" :class="{ 'font-weight-medium': !$vuetify.breakpoint.xsOnly }">{{ transaction.dateFormatted }}</div>
         <div class="info text_2--text font-weight-light">{{ transaction.timeFormatted }}</div>
       </v-flex>
       <v-divider v-if="!$vuetify.breakpoint.xsOnly" vertical class="mx-4"></v-divider>
-      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs8 order-0 pr-4 pl-3' : 'xs4 order-1 pl-0 pr-4'">
+      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs8 order-0 pr-4 pl-3' : 'xs5 order-1 pl-0 pr-4'">
         <div
           class="icon-holder float-left"
           :class="{
             circle: !(
-              transaction.type === CONTRACT_TYPE_ERC20 ||
+              (transaction.type === CONTRACT_TYPE_ERC20 && transaction.actionIcon !== 'n/a') ||
               transaction.action === ACTIVITY_ACTION_TOPUP ||
-              transaction.type === CONTRACT_TYPE_ERC721
+              (transaction.type === CONTRACT_TYPE_ERC721 && transaction.actionIcon !== 'n/a')
             ),
           }"
         >
           <img
-            v-if="transaction.type === CONTRACT_TYPE_ERC20"
+            v-if="transaction.type === CONTRACT_TYPE_ERC20 && transaction.actionIcon !== 'n/a'"
             :src="`${logosUrl}/${transaction.actionIcon}`"
-            :alt="`${transaction.from} Icon`"
+            :alt="`${transaction.type_name} Icon`"
             class="mr-2 ml-2"
             width="36"
             onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
           />
+          <v-icon v-else-if="transaction.type === CONTRACT_TYPE_ERC20" class="float-left" size="24" color="torusBrand1">
+            $vuetify.icons.token
+          </v-icon>
           <img
             v-else-if="transaction.action === ACTIVITY_ACTION_TOPUP"
             :src="require(`../../../assets/images/${transaction.actionIcon}`)"
-            :alt="`${transaction.from} Icon`"
+            :alt="`${transaction.type_name} Icon`"
             class="mr-2 ml-2"
             width="36"
           />
           <img
-            v-else-if="transaction.type === CONTRACT_TYPE_ERC721"
+            v-else-if="transaction.type === CONTRACT_TYPE_ERC721 && transaction.actionIcon !== 'n/a'"
             :src="transaction.actionIcon"
             class="mr-3 ml-1"
             height="36"
             large
-            :alt="`${transaction.from} Icon`"
+            :alt="`${transaction.type_name} Icon`"
+            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
           />
+          <v-icon v-else-if="transaction.type === CONTRACT_TYPE_ERC721" class="float-left" size="24" color="torusBrand1">
+            $vuetify.icons.collectibles
+          </v-icon>
           <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
         </div>
-        <div class="caption text_1--text font-weight-medium">{{ transaction.actionText }}</div>
+        <div class="caption text_1--text d-flex" :class="{ 'font-weight-medium': !$vuetify.breakpoint.xsOnly }">
+          <span>{{ transaction.actionText }}</span>
+          <v-chip
+            v-if="transaction.isEtherscan && !$vuetify.breakpoint.xsOnly"
+            class="etherscan-chip ml-2"
+            :class="{ isDark: $vuetify.theme.isDark }"
+            x-small
+          >
+            {{ $vuetify.breakpoint.smAndDown ? t('walletActivity.external') : t('walletActivity.externalTransaction') }}
+          </v-chip>
+        </div>
         <div class="info text_2--text font-weight-light">
-          {{
-            transaction.action === ACTIVITY_ACTION_SEND
-              ? `${t('walletActivity.to')} ${transaction.slicedTo}`
-              : `${t('walletActivity.from')} ${transaction.slicedFrom}`
-          }}
+          <span>
+            {{
+              transaction.action === ACTIVITY_ACTION_SEND
+                ? `${t('walletActivity.to')} ${transaction.slicedTo}`
+                : `${t('walletActivity.from')} ${transaction.slicedFrom}`
+            }}
+          </span>
+          <v-chip
+            v-if="transaction.isEtherscan && $vuetify.breakpoint.xsOnly"
+            class="etherscan-chip ml-1"
+            :class="{ isDark: $vuetify.theme.isDark }"
+            x-small
+          >
+            External
+          </v-chip>
         </div>
       </v-flex>
       <v-flex class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4 order-1' : 'xs2 order-2'" px-4>
@@ -62,7 +89,6 @@
         </div>
         <div class="info text_2--text font-weight-light">{{ transaction.currencyAmountString }}</div>
       </v-flex>
-      <v-flex v-if="!$vuetify.breakpoint.smAndDown" class="order-3" xs2></v-flex>
       <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs6 ml-auto text-right mt-3 order-3' : 'xs2 ml-auto text-right order-4'" px-4>
         <v-chip class="status-chip black--text" :color="getChipColor(transaction.statusText)" small>
           {{ t(transaction.statusText) }}
@@ -103,7 +129,7 @@
               </div>
             </v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
-              <span>{{ transaction.ethRate }} {{ transaction.currencyUsed }}</span>
+              <span>{{ transaction.isEtherscan ? t('walletActivity.unavailable') : `${transaction.ethRate} ${transaction.currencyUsed}` }}</span>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721">
@@ -114,7 +140,7 @@
               </div>
             </v-list-item-content>
             <v-list-item-content class="details-value text_2--text amount-text">
-              {{ transaction.totalAmountString }} /{{ transaction.currencyAmountString }}
+              {{ transaction.totalAmountString }} {{ transaction.currencyAmountString ? `/${transaction.currencyAmountString}` : '' }}
             </v-list-item-content>
           </v-list-item>
           <v-list-item>

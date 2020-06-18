@@ -121,3 +121,7 @@ export function pastTransactionsHandler(state) {
 export function paymentTxHandler(state) {
   getStore().commit('setPaymentTx', state)
 }
+
+export function etherscanTxHandler(state) {
+  getStore().commit('setEtherscanTx', state)
+}

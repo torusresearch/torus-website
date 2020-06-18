@@ -1,17 +1,39 @@
 import clone from 'clone'
+import erc20Contracts from 'eth-contract-metadata'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import Web3 from 'web3'
+import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
+import erc721Contracts from '../assets/assets-map.json'
 import config from '../config'
-import { ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_TOPUP, ERROR_TIME, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
-import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
+import {
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_TOPUP,
+  BADGES_COLLECTIBLE,
+  BADGES_TOPUP,
+  BADGES_TRANSACTION,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ETH,
+  ERROR_TIME,
+  MAINNET,
+  SUCCESS_TIME,
+  THEME_LIGHT_BLUE_NAME,
+} from '../utils/enums'
+import { get, getEtherscanTransactions, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { notifyUser } from '../utils/notifications'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
 
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
+const DEFAULT_BADGES_COMPLETION = {
+  [BADGES_COLLECTIBLE]: false,
+  [BADGES_TOPUP]: false,
+  [BADGES_TRANSACTION]: false,
+}
 
 class PreferencesController {
   /**
@@ -46,6 +68,7 @@ class PreferencesController {
       billboard: {},
       contacts: [],
       permissions: [],
+      badgesCompletion: {},
       ...initialState,
     }
 
@@ -65,6 +88,7 @@ class PreferencesController {
     this.successStore = new ObservableStore('')
     this.pastTransactionsStore = new ObservableStore([])
     this.paymentTxStore = new ObservableStore([])
+    this.etherscanTxStore = new ObservableStore([])
   }
 
   set jwtToken(token) {
@@ -115,17 +139,21 @@ class PreferencesController {
 
   async sync(callback, errorCallback) {
     try {
-      const [user, paymentTx] = await Promise.all([
+      const [user, paymentTx, etherscanTx] = await Promise.all([
         get(`${config.api}/user`, this.headers).catch((_) => {
           if (errorCallback) errorCallback()
         }),
         getPastOrders({}, this.headers.headers).catch((error) => {
           log.error('unable to fetch past orders', error)
         }),
+        getEtherscanTransactions({}, this.headers.headers).catch((error) => {
+          log.error('unable to fetch etherscan transactions', error)
+        }),
       ])
       if (user && user.data) {
-        const { transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
+        const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         let whiteLabelLocale
+        let badgesCompletion = DEFAULT_BADGES_COMPLETION
 
         // White Label override
         if (storageAvailable('sessionStorage')) {
@@ -140,15 +168,27 @@ class PreferencesController {
           }
         }
 
+        if (userBadges) {
+          try {
+            badgesCompletion = JSON.parse(userBadges)
+          } catch (error) {
+            log.error(error)
+          }
+        }
+
         this.store.updateState({
           contacts,
           theme,
           selectedCurrency: defaultCurrency,
           locale: whiteLabelLocale || locale || getUserLanguage(),
           permissions,
+          badgesCompletion,
         })
         if (paymentTx && paymentTx.data) {
           this.calculatePaymentTx(paymentTx.data)
+        }
+        if (etherscanTx && etherscanTx.data) {
+          this.calculateEtherscanTx(etherscanTx.data)
         }
         this.fetchedPastTx = transactions
         this.calculatePastTx(transactions)
@@ -220,6 +260,55 @@ class PreferencesController {
         this.patchPastTx(element.id, finalObject.status)
     }
     this.pastTransactionsStore.putState(pastTx)
+  }
+
+  async calculateEtherscanTx(txs) {
+    const finalTxs = txs.reduce((accumulator, x) => {
+      const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
+      const etherscanTransaction = {
+        type: CONTRACT_TYPE_ETH,
+        symbol: 'ETH',
+        type_image_link: 'n/a',
+        type_name: 'n/a',
+        total_amount: totalAmount,
+        created_at: x.timeStamp * 1000,
+        from: x.from,
+        to: x.to,
+        transaction_hash: x.hash,
+        network: MAINNET,
+        status: x.txreceipt_status && x.txreceipt_status === '0' ? 'failed' : 'success',
+        isEtherscan: true,
+      }
+
+      if (x.contractAddress) {
+        const transactionType = x.tokenID ? CONTRACT_TYPE_ERC721 : CONTRACT_TYPE_ERC20
+        let contract
+        if (transactionType === CONTRACT_TYPE_ERC20) {
+          let checkSummedTo = x.contractAddress
+          if (isAddress(x.contractAddress)) checkSummedTo = toChecksumAddress(x.contractAddress)
+          contract = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
+        } else {
+          contract = Object.prototype.hasOwnProperty.call(erc721Contracts, x.contractAddress.toLowerCase())
+            ? erc721Contracts[x.contractAddress.toLowerCase()]
+            : {}
+        }
+
+        if (Object.keys(contract).length > 0) {
+          etherscanTransaction.symbol = transactionType === CONTRACT_TYPE_ERC20 ? contract.symbol : x.tokenID
+          etherscanTransaction.type_image_link = contract.logo
+          etherscanTransaction.type_name = contract.name
+        } else {
+          etherscanTransaction.symbol = x.tokenID
+          etherscanTransaction.type_name = x.tokenName
+        }
+        etherscanTransaction.type = transactionType
+      }
+
+      accumulator.push(formatPastTx(etherscanTransaction))
+      return accumulator
+    }, [])
+
+    this.etherscanTxStore.putState(finalTxs)
   }
 
   async patchNewTx(tx) {
@@ -444,6 +533,16 @@ class PreferencesController {
       if (!this._jwtToken) return
       this.sync()
     }, interval)
+  }
+
+  async setUserBadge(payload) {
+    const newBadgeCompletion = { ...this.state.badgesCompletion, ...{ [payload]: true } }
+    this.store.updateState({ badgesCompletion: newBadgeCompletion })
+    try {
+      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers)
+    } catch (error) {
+      log.error('unable to set badge', error)
+    }
   }
 }
 

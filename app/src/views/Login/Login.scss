@@ -90,6 +90,27 @@
   }
 }
 
+.login-btn-long {
+  &.v-btn {
+    background: #FFFFFF !important;
+    border: 1px solid #F1F2F6 !important;
+    box-sizing: border-box;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+    border-radius: 9px;
+    height: 60px;
+  }
+  ::v-deep .v-btn__content {
+    justify-content: left;
+  }
+
+  &.torus-dark {
+    background: #2F3136 !important;
+    border: 1px solid #404145 !important;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+    color: #ffffff !important;
+  }
+}
+
 .login-btn.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
   background: #FFFFFF;
   border: 1px solid #F1F2F6;
@@ -146,6 +167,27 @@
   &__discord {
     color: #7289DA;
   }
+  &__github {
+    color: #000000;
+  }
+  &__linkedin {
+    color: #2867B2;
+  }
+  &__twitter {
+    color: #55ACEE;
+  }
+  &__weibo {
+    color: #E71F19;
+  }
+  &__passwordless {
+    color: #000000;
+  }
+  &__line {
+    color: #00B900;
+  }
+  &__apple {
+    color: #000000;
+  }
 }
 
 .logout-btn {
@@ -192,19 +234,6 @@ html {
   overflow-y: hidden;
 }
 
-
-::v-deep .v-carousel.mobile-carousel {
-  .v-window__next {
-    bottom: 0;
-    right: calc(50% - 20px);
-    top: inherit;
-    background: none;
-  }
-  .v-window__prev {
-    display: none;
-  }
-}
-
 ::v-deep .v-carousel__controls {
   background: none;
   bottom: -15px;
@@ -215,5 +244,18 @@ html {
     &.v-btn--active {
       background-color: var(--v-torusGray3-base);
     }
+  }
+}
+
+.mobile-login-container {
+  section {
+    min-height: 100vh;
+  }
+  .more-icon {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 20%);
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
   }
 }

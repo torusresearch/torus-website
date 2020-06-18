@@ -1,15 +1,13 @@
+import clone from 'clone'
+
+import config from '../config'
 import {
-  DISCORD,
-  FACEBOOK,
-  GOOGLE,
   LOCALE_EN,
   MAINNET,
   MAINNET_CODE,
   MAINNET_DISPLAY_NAME,
-  REDDIT,
   SUPPORTED_NETWORK_TYPES,
   THEME_LIGHT_BLUE_NAME,
-  TWITCH,
   USER_INFO_REQUEST_NEW,
 } from '../utils/enums'
 
@@ -57,7 +55,7 @@ const initialState = {
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },
   embedState: {
-    enabledVerifiers: { [GOOGLE]: true, [FACEBOOK]: true, [REDDIT]: true, [TWITCH]: true, [DISCORD]: true },
+    loginConfig: clone(config.loginConfig),
     isOAuthModalVisible: false,
     buttonPosition: 'bottom-left',
     torusWidgetVisibility: true,
@@ -69,6 +67,8 @@ const initialState = {
     topupHide: false,
     featuredBillboardHide: false,
   },
+  etherscanTx: [],
+  badgesCompletion: {},
 }
 
 export default initialState

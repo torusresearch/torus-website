@@ -2,10 +2,14 @@
   <v-container fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <BeatLoader :color="$vuetify.theme.dark ? $vuetify.theme.themes.dark.torusBrand1 : $vuetify.theme.themes.light.torusBrand1" />
-        <!-- <div class="redirect-title font-weight-bold mt-3">
+        <BeatLoader
+          margin="24px 4px 0"
+          size="12px"
+          :color="$vuetify.theme.dark ? $vuetify.theme.themes.dark.torusBrand1 : $vuetify.theme.themes.light.torusBrand1"
+        />
+        <div v-if="showCloseText" class="redirect-title font-weight-bold mt-2">
           {{ t('dappGeneral.loading') }}
-        </div> -->
+        </div>
       </v-flex>
     </v-layout>
   </v-container>
@@ -21,6 +25,11 @@ import { broadcastChannelOptions } from '../../utils/utils'
 export default {
   name: 'Redirect',
   components: { BeatLoader },
+  data() {
+    return {
+      showCloseText: false,
+    }
+  },
   async mounted() {
     let bc
     try {
@@ -63,6 +72,7 @@ export default {
         log.info('posted', { queryParameters, hashParameters, instanceParameters })
         setTimeout(() => {
           window.close()
+          this.showCloseText = true
         }, 5000)
       } else {
         bc = new BroadcastChannel(`preopen_channel_${queryParameters.preopenInstanceId}`, broadcastChannelOptions)
@@ -88,6 +98,7 @@ export default {
       log.info(error, 'something went wrong')
       if (bc) bc.close()
       window.close()
+      this.showCloseText = true
     }
   },
 }

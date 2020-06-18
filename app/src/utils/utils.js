@@ -10,22 +10,28 @@ import {
   ACTIVE,
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
+  APPLE,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   DISCORD,
+  EMAIL_PASSWORD,
   ENVIRONMENT_TYPE_FULLSCREEN,
   ENVIRONMENT_TYPE_NOTIFICATION,
   ENVIRONMENT_TYPE_POPUP,
   ETH,
+  GITHUB,
   GOERLI,
   GOERLI_CHAIN_ID,
   GOERLI_CODE,
   GOERLI_DISPLAY_NAME,
   GOOGLE,
+  JWT,
   KOVAN,
   KOVAN_CHAIN_ID,
   KOVAN_CODE,
   KOVAN_DISPLAY_NAME,
+  LINE,
+  LINKEDIN,
   MAINNET,
   MAINNET_CHAIN_ID,
   MAINNET_CODE,
@@ -33,6 +39,7 @@ import {
   MATIC_CHAIN_ID,
   MATIC_CODE,
   MOONPAY,
+  PASSWORDLESS,
   PLATFORM_BRAVE,
   PLATFORM_CHROME,
   PLATFORM_EDGE,
@@ -52,6 +59,8 @@ import {
   SIMPLEX,
   SVG,
   THEME_DARK_BLACK_NAME,
+  TWITTER,
+  WEIBO,
   WYRE,
   XANPOOL,
 } from './enums'
@@ -525,7 +534,7 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
   else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol, true)
   else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH', true)
   const currencyAmountString =
-    x.type === CONTRACT_TYPE_ERC721 ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
+    x.type === CONTRACT_TYPE_ERC721 || x.isEtherscan ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
   const finalObject = {
     id: x.created_at.toString(),
     date: new Date(x.created_at),
@@ -548,6 +557,32 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     type_name: x.type_name,
     type_image_link: x.type_image_link,
     transaction_hash: x.transaction_hash,
+    isEtherscan: x.isEtherscan,
   }
   return finalObject
+}
+
+export const padUrlString = (url) => {
+  return url.href.endsWith('/') ? url.href : `${url.href}/`
+}
+
+export const getVerifierId = (userInfo, typeOfLogin, verifierIdField) => {
+  const { name, nickname, sub } = userInfo
+  if (verifierIdField) return userInfo[verifierIdField]
+  switch (typeOfLogin) {
+    case GITHUB:
+    case TWITTER:
+      return nickname
+    case WEIBO:
+    case PASSWORDLESS:
+    case EMAIL_PASSWORD:
+      return name
+    case APPLE:
+    case LINKEDIN:
+    case LINE:
+    case JWT:
+      return sub
+    default:
+      throw new Error('Invalid login type')
+  }
 }

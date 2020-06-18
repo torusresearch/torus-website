@@ -105,6 +105,7 @@ export default {
   computed: {
     ...mapState({
       pastTx: 'pastTransactions',
+      etherscanTx: (state) => (state.networkType.host === MAINNET ? state.etherscanTx : []),
       paymentTx: (state) => (state.networkType.host === MAINNET ? state.paymentTx : []),
       wallets: (state) => Object.keys(state.wallet),
     }),
@@ -149,7 +150,7 @@ export default {
       ]
     },
     calculatedFinalTx() {
-      let finalTx = this.paymentTx.concat(this.pastTx)
+      let finalTx = this.paymentTx.concat(this.pastTx, this.etherscanTx)
       finalTx = finalTx.reduce((accumulator, x) => {
         x.actionIcon = this.getIcon(x)
         x.actionText = this.getActionText(x)
@@ -209,7 +210,7 @@ export default {
           return activity.type_image_link // will be an opensea image url
         }
         if (activity.type === CONTRACT_TYPE_ERC20) {
-          return `${activity.type_image_link === 'n/a' ? 'eth.svg' : activity.type_image_link}`
+          return activity.type_image_link
         }
         const action = activity.action.split('.')
         return action.length >= 1 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''

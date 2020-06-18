@@ -2,6 +2,17 @@
   .info {
     font-size: 10px;
   }
+  
+  .etherscan-chip {
+    background: #F6F5F7;
+    color: #5C6C7F;
+    font-weight: normal;
+    font-size: 10px;
+    line-height: 12px;
+    &.isDark {
+      background: #242529;
+    }
+  }
 
   .v-chip.status-chip {
     color: #0f1222;
@@ -34,6 +45,7 @@
     }
     img {
       margin-left: 8px;
+      max-height: 50px;
     }
   }
 }
