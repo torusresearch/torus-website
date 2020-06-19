@@ -2,7 +2,7 @@
   <v-container px-0 py-6 class="permission-container">
     <v-layout wrap>
       <v-flex class="card-shadow text-center" py-6 mb-4 xs12>
-        <img src="../../../assets/images/security.svg" alt="Security Icon" />
+        <img src="../../assets/images/security.svg" alt="Security Icon" />
         <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="headline font-weight-bold">
           {{ t('dappPermission.permission') }}
         </div>
@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     permissionDescription(permissionType, domain) {
-      return permissionsDesc[permissionType](domain)
+      return permissionsDesc[permissionType](domain, this.state.locale)
     },
     async triggerAllow() {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)

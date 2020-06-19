@@ -1,7 +1,7 @@
 import { keccak256 } from 'ethereumjs-util'
 import log from 'loglevel'
 
-import { TORUS_METHOD_PREFIX, WALLET_METHOD_PREFIX } from './enums'
+import { LOCALE_JA, TORUS_METHOD_PREFIX, WALLET_METHOD_PREFIX } from './enums'
 
 export const ETH_SIGN_INDRA_PREFIX_MESSAGE = 'eth_sign_indra_prefix_message'
 export const ETH_SIGN_TORUS_PREFIX_MESSAGE = 'eth_sign_torus_prefix_message'
@@ -67,8 +67,14 @@ export const permissionsSpec = {
 export const permissionsDesc = {
   [ETH_SIGN_INDRA_PREFIX_MESSAGE]: (domain) =>
     `Allow this site (${domain}) to sign Connext messages on your behalf. This does not allow the site to make Ethereum transactions.`,
-  [ETH_SIGN_TORUS_PREFIX_MESSAGE]: (domain) =>
-    `Allow this site (${domain}) to sign Torus messages on your behalf. This does not allow the site to make Ethereum transactions.`,
+  [ETH_SIGN_TORUS_PREFIX_MESSAGE]: (domain, locale) => {
+    switch (locale) {
+      case LOCALE_JA:
+        return `このウェブサイト(${domain})があなたに代わってTorusメッセージに署名できるようにします. これはウェブサイトがイーサリアム取引を行うことを許可しません.`
+      default:
+        return `Allow this site (${domain}) to sign Torus messages on your behalf. This does not allow the site to make Ethereum transactions.`
+    }
+  },
 }
 
 // Custom permission scopes
