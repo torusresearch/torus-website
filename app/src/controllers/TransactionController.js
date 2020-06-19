@@ -192,7 +192,7 @@ class TransactionController extends EventEmitter {
   @returns {txMeta}
   */
 
-  async addUnapprovedTransaction(txParameters, request) {
+  async addUnapprovedTransaction(txParameters, request = {}) {
     // validate
     log.debug(`MetaMaskController addUnapprovedTransaction ${JSON.stringify(txParameters)}`)
     const normalizedTxParameters = txUtils.normalizeTxParams(txParameters)
