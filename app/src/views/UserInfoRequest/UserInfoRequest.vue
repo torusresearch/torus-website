@@ -75,14 +75,12 @@
 import { BroadcastChannel } from 'broadcast-channel'
 
 import { UserInfoScreenLoader } from '../../content-loader'
-// import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
 import { broadcastChannelOptions, capitalizeFirstLetter } from '../../utils/utils'
 
 export default {
   name: 'UserInfoRequest',
   components: {
     UserInfoScreenLoader,
-    // PermissionConfirm
   },
   data() {
     return {

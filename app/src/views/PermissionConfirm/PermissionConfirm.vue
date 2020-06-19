@@ -36,9 +36,9 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
-import config from '../../../config'
-import { permissionsDesc } from '../../../utils/permissionUtils'
-import { broadcastChannelOptions } from '../../../utils/utils'
+import config from '../../config'
+import { permissionsDesc } from '../../utils/permissionUtils'
+import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   name: 'PermissionConfirm',

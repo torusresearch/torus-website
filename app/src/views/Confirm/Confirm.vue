@@ -334,7 +334,6 @@ import {
   TX_TYPED_MESSAGE,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
-// import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
 import { addressSlicer, broadcastChannelOptions, significantDigits } from '../../utils/utils'
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
