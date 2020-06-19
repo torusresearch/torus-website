@@ -155,15 +155,14 @@ class PreferencesController {
         const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions: jsonPermissions } =
           user.data || {}
 
-        const permissions = jsonPermissions
-          .map((permission) => {
-            try {
-              return JSON.parse(permission.json_data)
-            } catch (error) {
-              return undefined
-            }
-          })
-          .filter((x) => x)
+        const permissions = jsonPermissions.reduce((accumulator, permission) => {
+          try {
+            accumulator.push(JSON.parse(permission.json_data))
+          } catch (error) {
+            log.error(error)
+          }
+          return accumulator
+        }, [])
         this.permissionsStore.putState(permissions)
 
         let whiteLabelLocale

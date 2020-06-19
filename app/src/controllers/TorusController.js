@@ -467,10 +467,6 @@ export default class TorusController extends EventEmitter {
     return undefined
   }
 
-  async newUnsignedPermissionMessage(messageParameters, request) {
-    return this.opts.showUnconfirmedMessage(request)
-  }
-
   // personal_sign methods:
 
   /**
