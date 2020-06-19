@@ -1,5 +1,6 @@
 import merge from 'deepmerge'
 
+import config from '../config'
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
 import { LOCALES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
@@ -117,10 +118,17 @@ export default {
       ...value,
     }
   },
-  setEnabledVerifiers(state, payload) {
+  setLoginConfig(state, payload) {
+    const { enabledVerifiers, loginConfig } = payload
+    const finalLoginConfig = merge(config.loginConfig, loginConfig)
+    Object.keys(enabledVerifiers).forEach((x) => {
+      if (finalLoginConfig[x]) {
+        finalLoginConfig[x].showOnModal = enabledVerifiers[x]
+      }
+    })
     state.embedState = {
       ...state.embedState,
-      enabledVerifiers: { ...state.embedState.enabledVerifiers, ...payload },
+      loginConfig: finalLoginConfig,
     }
   },
   setButtonPosition(state, payload) {

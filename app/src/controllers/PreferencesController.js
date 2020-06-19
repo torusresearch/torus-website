@@ -305,10 +305,13 @@ class PreferencesController {
             : {}
         }
 
-        if (contract) {
+        if (Object.keys(contract).length > 0) {
           etherscanTransaction.symbol = transactionType === CONTRACT_TYPE_ERC20 ? contract.symbol : x.tokenID
           etherscanTransaction.type_image_link = contract.logo
           etherscanTransaction.type_name = contract.name
+        } else {
+          etherscanTransaction.symbol = x.tokenID
+          etherscanTransaction.type_name = x.tokenName
         }
         etherscanTransaction.type = transactionType
       }

@@ -15,35 +15,42 @@
           class="icon-holder float-left"
           :class="{
             circle: !(
-              transaction.type === CONTRACT_TYPE_ERC20 ||
+              (transaction.type === CONTRACT_TYPE_ERC20 && transaction.actionIcon !== 'n/a') ||
               transaction.action === ACTIVITY_ACTION_TOPUP ||
-              transaction.type === CONTRACT_TYPE_ERC721
+              (transaction.type === CONTRACT_TYPE_ERC721 && transaction.actionIcon !== 'n/a')
             ),
           }"
         >
           <img
-            v-if="transaction.type === CONTRACT_TYPE_ERC20"
+            v-if="transaction.type === CONTRACT_TYPE_ERC20 && transaction.actionIcon !== 'n/a'"
             :src="`${logosUrl}/${transaction.actionIcon}`"
-            :alt="`${transaction.from} Icon`"
+            :alt="`${transaction.type_name} Icon`"
             class="mr-2 ml-2"
             width="36"
             onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
           />
+          <v-icon v-else-if="transaction.type === CONTRACT_TYPE_ERC20" class="float-left" size="24" color="torusBrand1">
+            $vuetify.icons.token
+          </v-icon>
           <img
             v-else-if="transaction.action === ACTIVITY_ACTION_TOPUP"
             :src="require(`../../../assets/images/${transaction.actionIcon}`)"
-            :alt="`${transaction.from} Icon`"
+            :alt="`${transaction.type_name} Icon`"
             class="mr-2 ml-2"
             width="36"
           />
           <img
-            v-else-if="transaction.type === CONTRACT_TYPE_ERC721"
+            v-else-if="transaction.type === CONTRACT_TYPE_ERC721 && transaction.actionIcon !== 'n/a'"
             :src="transaction.actionIcon"
             class="mr-3 ml-1"
             height="36"
             large
-            :alt="`${transaction.from} Icon`"
+            :alt="`${transaction.type_name} Icon`"
+            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
           />
+          <v-icon v-else-if="transaction.type === CONTRACT_TYPE_ERC721" class="float-left" size="24" color="torusBrand1">
+            $vuetify.icons.collectibles
+          </v-icon>
           <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
         </div>
         <div class="caption text_1--text d-flex" :class="{ 'font-weight-medium': !$vuetify.breakpoint.xsOnly }">

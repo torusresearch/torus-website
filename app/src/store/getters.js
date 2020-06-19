@@ -42,6 +42,16 @@ const walletBalances = (state) => {
   return walletsFinal
 }
 
+const loginButtonsArray = (state) => {
+  const loginButtons = Object.entries(state.embedState.loginConfig).reduce((newArray, [key, value]) => {
+    value.verifier = key
+    if (value.showOnModal) newArray.push(value)
+    return newArray
+  }, [])
+
+  return loginButtons
+}
+
 function calculateBalances(state, y) {
   const { weiBalance, tokenData: tokenDataState, tokenRates: tokenRatesState, selectedCurrency, networkType } = state || {}
   let tokenData = tokenDataState
@@ -95,4 +105,5 @@ export default {
   collectibleBalances,
   walletBalances,
   currencyMultiplier,
+  loginButtonsArray,
 }
