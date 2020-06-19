@@ -154,15 +154,13 @@ export default {
       GOOGLE,
       PASSWORDLESS,
       showModal: true,
+      activeButton: '',
       passwordlessLoginDialog: false,
       passwordlessEmailSent: false,
     }
   },
   computed: {
     ...mapGetters(['loginButtonsArray']),
-    activeButton() {
-      return (this.loginButtons.concat(this.loginButtonsLong)[0] || { typeOfLogin: GOOGLE }).typeOfLogin
-    },
     loginButtons() {
       return this.loginButtonsArray.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
     },
@@ -180,6 +178,9 @@ export default {
       }
       return finalLink
     },
+  },
+  mounted() {
+    this.activeButton = (this.loginButtons.concat(this.loginButtonsLong)[0] || { typeOfLogin: GOOGLE }).typeOfLogin
   },
   methods: {
     loginBtnHover(verifier) {
