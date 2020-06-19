@@ -153,7 +153,6 @@ export default {
     return {
       GOOGLE,
       PASSWORDLESS,
-      activeButton: GOOGLE,
       showModal: true,
       passwordlessLoginDialog: false,
       passwordlessEmailSent: false,
@@ -161,6 +160,9 @@ export default {
   },
   computed: {
     ...mapGetters(['loginButtonsArray']),
+    activeButton() {
+      return (this.loginButtons.concat(this.loginButtonsLong)[0] || { typeOfLogin: GOOGLE }).typeOfLogin
+    },
     loginButtons() {
       return this.loginButtonsArray.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
     },
