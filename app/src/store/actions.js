@@ -338,7 +338,7 @@ export default {
       await dispatch('handleLogin', { calledFromEmbed, oAuthToken: idToken || accessToken })
     } catch (error) {
       log.error(error)
-      oauthStream.write({ err: error })
+      oauthStream.write({ err: { message: error.message } })
       commit('setOAuthModalStatus', false)
       throw error
     }
