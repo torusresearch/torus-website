@@ -80,7 +80,7 @@ const handleProviderChangeDeny = (error) => {
     name: 'provider_change_status',
     data: {
       success: false,
-      err: error,
+      err: error.message || 'Provider change status error',
     },
   })
 }
