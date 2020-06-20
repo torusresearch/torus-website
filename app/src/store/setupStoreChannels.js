@@ -5,7 +5,7 @@ import stream from 'stream'
 
 import { injectStore as onloadInjection } from '../onload'
 import torus from '../torus'
-import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_NEW, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
+// import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_NEW, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
 import { broadcastChannelOptions, isMain } from '../utils/utils'
 import { injectStore as controllerInjection } from './controllerSubscriptions'
 import VuexStore from './store'
@@ -94,16 +94,17 @@ if (!isMain) {
     const payload = { ...VuexStore.state.userInfo }
     delete payload.verifierParams
     if (chunk.name === 'user_info_access_request') {
-      switch (VuexStore.state.userInfoAccess) {
-        case USER_INFO_REQUEST_APPROVED:
-          userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
-          break
-        case USER_INFO_REQUEST_REJECTED:
-        case USER_INFO_REQUEST_NEW:
-        default:
-          userInfoAccessStream.write({ name: 'user_info_access_response', data: { newRequest: true } })
-          break
-      }
+      userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
+      // switch (VuexStore.state.userInfoAccess) {
+      //   case USER_INFO_REQUEST_APPROVED:
+      //     userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
+      //     break
+      //   case USER_INFO_REQUEST_REJECTED:
+      //   case USER_INFO_REQUEST_NEW:
+      //   default:
+      //     userInfoAccessStream.write({ name: 'user_info_access_response', data: { newRequest: true } })
+      //     break
+      // }
     }
   })
 

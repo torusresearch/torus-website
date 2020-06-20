@@ -12,7 +12,7 @@ export default class RedditHandler extends AbstractLoginHandler {
   }
 
   setFinalUrl() {
-    const finalUrl = new URL('https://www.reddit.com/api/v1/authorize')
+    const finalUrl = new URL(`https://www.reddit.com/api/v1/authorize${window.innerWidth < 600 ? '.compact' : ''}`)
     finalUrl.searchParams.append('response_type', this.RESPONSE_TYPE)
     finalUrl.searchParams.append('client_id', this.clientId)
     finalUrl.searchParams.append('state', this.state)
