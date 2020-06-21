@@ -256,7 +256,7 @@ class PreferencesController {
       const finalObject = formatPastTx(element, lowerCaseSelectedAddress)
       finalObject.status = resolvedTxStatuses[index]
       pastTx.push(finalObject)
-      if (lowerCaseSelectedAddress === element.from.toLowerCase() && finalObject.status !== element.status)
+      if (lowerCaseSelectedAddress === element.from.toLowerCase() && finalObject.status && finalObject.status !== element.status)
         this.patchPastTx(element.id, finalObject.status)
     }
     this.pastTransactionsStore.putState(pastTx)
