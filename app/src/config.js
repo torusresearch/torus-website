@@ -26,7 +26,7 @@ export default {
   coindirectTestMerchantID: 'c21e690c-bb95-42fe-ae17-f962c582b26c',
   coindirectLiveHost: 'https://business.coindirect.com/buy',
   coindirectLiveMerchantID: 'b08d7b18-da82-4dfc-990f-313ea26ac66b',
-  GOOGLE_CLIENT_ID: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com',
+  GOOGLE_CLIENT_ID: '238941746713-qqe4a7rduuk256d8oi5l0q34qtu9gpfg.apps.googleusercontent.com',
   FACEBOOK_APP_ID: '2554219104599979',
   TWITCH_CLIENT_ID: 'tfppratfiloo53g1x133ofa4rc29px',
   REDDIT_CLIENT_ID: 'dcQJYPaG481XyQ',
