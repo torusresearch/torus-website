@@ -342,7 +342,7 @@ export default {
         window.btoa(
           JSON.stringify({
             instanceId: torus.instanceId,
-            verifier: GOOGLE
+            verifier: 'google-shubs'
           })
         )
       )
