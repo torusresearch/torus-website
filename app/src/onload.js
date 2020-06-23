@@ -74,12 +74,10 @@ function onloadTorus(torus) {
     .then((nodeDetails) => log.info(nodeDetails))
     .catch((error) => log.error(error))
 
-  // You are not inside an iframe
-  if (isMain) {
-    // we use this to start accounttracker balances
-    torusController.setupControllerConnection()
-    return torus
-  }
+  // we use this to start accounttracker balances
+  torusController.setupControllerConnection()
+
+  if (isMain) return torus
 
   const metamaskStream = new LocalMessageDuplexStream({
     name: 'iframe_metamask',
