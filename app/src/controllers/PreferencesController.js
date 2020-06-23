@@ -263,6 +263,7 @@ class PreferencesController {
   }
 
   async calculateEtherscanTx(txs) {
+    const lowerCaseSelectedAddress = this.state.selectedAddress.toLowerCase()
     const finalTxs = txs.reduce((accumulator, x) => {
       const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
       const etherscanTransaction = {
@@ -303,8 +304,7 @@ class PreferencesController {
         }
         etherscanTransaction.type = transactionType
       }
-
-      accumulator.push(formatPastTx(etherscanTransaction))
+      if (!(x.contractAddress === '' && x.value === '0')) accumulator.push(formatPastTx(etherscanTransaction, lowerCaseSelectedAddress))
       return accumulator
     }, [])
 

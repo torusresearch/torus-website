@@ -287,8 +287,8 @@ export default {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
     else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
-  updateSelectedAddress({ commit, state }, payload) {
-    commit('setSelectedAddress', payload.selectedAddress)
+  updateSelectedAddress({ state }, payload) {
+    prefsController.setSelectedAddress(payload.selectedAddress)
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
     torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
   },
@@ -501,8 +501,8 @@ export default {
       if (selectedAddress && wallet[selectedAddress]) {
         setTimeout(() => dispatch('subscribeToControllers'), 50)
         await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
+        await dispatch('updateSelectedAddress', { selectedAddress })
         await dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true })
-        dispatch('updateSelectedAddress', { selectedAddress })
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
