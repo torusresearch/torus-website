@@ -7,7 +7,6 @@ const fallBackLogoDark = require('#/assets/images/torus-logo-blue.svg')
 const fallBackLogoLight = require('#/assets/images/torus-logo-white.svg')
 
 const fallBackIconDark = require('#/assets/img/icons/torus-icon-light.svg')
-const fallBackIconLight = require('#/assets/img/icons/torus-icon-dark.svg')
 
 const getLogo = (state) => {
   const { whiteLabel, theme } = state
@@ -28,20 +27,10 @@ const getLogo = (state) => {
 }
 
 const getIcon = (state) => {
-  const { whiteLabel, theme } = state
-  const { logoDark, logoLight, isActive } = whiteLabel
-  let finalLogo = theme === THEME_DARK_BLACK_NAME ? fallBackIconLight : fallBackIconDark
-  let isExternal = false
-  if (isActive) {
-    if (theme === THEME_DARK_BLACK_NAME && logoDark) {
-      finalLogo = logoDark
-      isExternal = true
-    }
-    if (theme === THEME_LIGHT_BLUE_NAME && logoLight) {
-      finalLogo = logoLight
-      isExternal = true
-    }
-  }
+  const { whiteLabel } = state
+  const { logoLight, isActive } = whiteLabel
+  const finalLogo = logoLight || fallBackIconDark
+  const isExternal = isActive && logoLight
   return { logo: finalLogo, isExternal }
 }
 
