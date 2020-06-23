@@ -23,13 +23,28 @@ import {
   // WEIBO_VERIFIER,
 } from './utils/enums'
 
-const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
+const {
+  VUE_APP_BASE_ROUTE,
+  VUE_APP_GOOGLE_CLIENT_ID,
+  // VUE_APP_APPLE_CLIENT_ID,
+  VUE_APP_DISCORD_CLIENT_ID,
+  VUE_APP_FACEBOOK_CLIENT_ID,
+  // VUE_APP_GITHUB_CLIENT_ID,
+  // VUE_APP_LINE_CLIENT_ID,
+  // VUE_APP_LINKEDIN_CLIENT_ID,
+  VUE_APP_REDDIT_CLIENT_ID,
+  VUE_APP_TWITCH_CLIENT_ID,
+  // VUE_APP_TWITTER_CLIENT_ID,
+  // VUE_APP_LOGIN_DOMAIN,
+} = process.env
+
+const baseUrl = VUE_APP_BASE_ROUTE || 'https://localhost:3000'
 
 const baseRoute = baseUrl + process.env.BASE_URL
 
 const redirectURI = `${baseUrl}/redirect`
 
-// const LOGIN_DOMAIN = 'https://torus-test.auth0.com'
+// const LOGIN_DOMAIN = VUE_APP_LOGIN_DOMAIN
 
 // In Modal, show 6 by default (view more)
 export default {
@@ -67,7 +82,7 @@ export default {
     [GOOGLE_VERIFIER]: {
       typeOfLogin: GOOGLE,
       description: '',
-      clientId: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com',
+      clientId: VUE_APP_GOOGLE_CLIENT_ID,
       logoHover: '',
       logoLight: '',
       logoDark: '',
@@ -76,7 +91,7 @@ export default {
     [FACEBOOK_VERIFIER]: {
       description: '',
       typeOfLogin: FACEBOOK,
-      clientId: '2554219104599979',
+      clientId: VUE_APP_FACEBOOK_CLIENT_ID,
       logoHover: '',
       logoLight: '',
       logoDark: '',
@@ -85,7 +100,7 @@ export default {
     [REDDIT_VERIFIER]: {
       description: '',
       typeOfLogin: REDDIT,
-      clientId: 'dcQJYPaG481XyQ',
+      clientId: VUE_APP_REDDIT_CLIENT_ID,
       logoHover: '',
       logoLight: '',
       logoDark: '',
@@ -94,7 +109,7 @@ export default {
     [TWITCH_VERIFIER]: {
       description: '',
       typeOfLogin: TWITCH,
-      clientId: 'tfppratfiloo53g1x133ofa4rc29px',
+      clientId: VUE_APP_TWITCH_CLIENT_ID,
       logoHover: '',
       logoLight: '',
       logoDark: '',
@@ -103,7 +118,7 @@ export default {
     [DISCORD_VERIFIER]: {
       description: '',
       typeOfLogin: DISCORD,
-      clientId: '630308572013527060',
+      clientId: VUE_APP_DISCORD_CLIENT_ID,
       logoHover: '',
       logoLight: '',
       logoDark: '',
@@ -112,7 +127,7 @@ export default {
     // [APPLE_VERIFIER]: {
     //   description: '',
     //   typeOfLogin: APPLE,
-    //   clientId: 'm1Q0gvDfOyZsJCZ3cucSQEe9XMvl9d9L',
+    //   clientId: VUE_APP_APPLE_CLIENT_ID,
     //   logoHover: '',
     //   logoLight: '',
     //   logoDark: '',
@@ -125,7 +140,7 @@ export default {
     // [GITHUB_VERIFIER]: {
     //   description: '',
     //   typeOfLogin: GITHUB,
-    //   clientId: 'PC2a4tfNRvXbT48t89J5am0oFM21Nxff',
+    //   clientId: VUE_APP_GITHUB_CLIENT_ID,
     //   logoHover: '',
     //   logoLight: '',
     //   logoDark: '',
@@ -138,8 +153,7 @@ export default {
     // [LINKEDIN_VERIFIER]: {
     //   description: '',
     //   typeOfLogin: LINKEDIN,
-    //   clientId: '59YxSgx79Vl3Wi7tQUBqQTRTxWroTuoc',
-    //   verifier: 'torus-auth0-linkedin',
+    //   clientId: VUE_APP_LINKEDIN_CLIENT_ID,
     //   logoHover: '',
     //   logoLight: '',
     //   logoDark: '',
@@ -152,8 +166,7 @@ export default {
     // [TWITTER_VERIFIER]: {
     //   description: '',
     //   typeOfLogin: TWITTER,
-    //   clientId: 'A7H8kkcmyFRlusJQ9dZiqBLraG2yWIsO',
-    //   verifier: 'torus-auth0-twitter',
+    //   clientId: VUE_APP_TWITTER_CLIENT_ID,
     //   logoHover: '',
     //   logoLight: '',
     //   logoDark: '',
@@ -166,8 +179,7 @@ export default {
     // [WEIBO_VERIFIER]: {
     //   description: '',
     //   typeOfLogin: WEIBO,
-    //   clientId: 'dhFGlWQMoACOI5oS5A1jFglp772OAWr1',
-    //   verifier: 'torus-auth0-weibo',
+    //   clientId: VUE_APP_WEIBO_CLIENT_ID,
     //   logoHover: '',
     //   logoLight: '',
     //   logoDark: '',
@@ -180,8 +192,7 @@ export default {
     // [LINE_VERIFIER]: {
     //   description: '',
     //   typeOfLogin: LINE,
-    //   clientId: 'WN8bOmXKNRH1Gs8k475glfBP5gDZr9H1',
-    //   verifier: 'torus-auth0-line',
+    //   clientId: VUE_APP_LINE_CLIENT_ID,
     //   logoHover: '',
     //   logoLight: '',
     //   logoDark: '',

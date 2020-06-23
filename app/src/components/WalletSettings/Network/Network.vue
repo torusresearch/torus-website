@@ -48,8 +48,8 @@
                     <v-btn
                       large
                       class="torus-btn1 py-1"
-                      :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                      :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
+                      :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+                      :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
                       block
                       :disabled="!formValid"
                       depressed

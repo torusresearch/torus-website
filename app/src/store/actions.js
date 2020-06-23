@@ -80,7 +80,7 @@ const handleProviderChangeDeny = (error) => {
     name: 'provider_change_status',
     data: {
       success: false,
-      err: error,
+      err: error.message || 'Provider change status error',
     },
   })
 }
@@ -338,7 +338,7 @@ export default {
       await dispatch('handleLogin', { calledFromEmbed, oAuthToken: idToken || accessToken })
     } catch (error) {
       log.error(error)
-      oauthStream.write({ err: error })
+      oauthStream.write({ err: { message: error.message } })
       commit('setOAuthModalStatus', false)
       throw error
     }
@@ -475,7 +475,7 @@ export default {
       )
     })
   },
-  async rehydrate({ state, dispatch }) {
+  async rehydrate({ state, dispatch, commit }) {
     const {
       selectedAddress,
       wallet,
@@ -509,6 +509,7 @@ export default {
         log.info('rehydrated wallet')
         torus.updateStaticData({ isUnlocked: true })
       }
+      commit('setRehydrationStatus', true)
     } catch (error) {
       log.error('Failed to rehydrate', error)
     }
