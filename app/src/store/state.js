@@ -24,6 +24,7 @@ const initialState = {
   weiBalanceLoaded: false, // Use on showing spinners
   tokenDataLoaded: false, // Use on showing spinners
   isNewUser: false,
+  isRehydrationComplete: false,
   // account handled
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object

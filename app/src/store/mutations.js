@@ -174,6 +174,9 @@ export default {
   setBadgesCompletion(state, payload) {
     state.badgesCompletion = payload
   },
+  setRehydrationStatus(state, payload) {
+    state.isRehydrationComplete = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
@@ -190,7 +193,9 @@ function localThemeSet(payload, state) {
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
   }
-  if (storageAvailable('localStorage') && payload) localStorage.setItem('torus-theme', payload)
+  const isLocalStorageAvailable = storageAvailable('localStorage')
+  if (isLocalStorageAvailable && payload) localStorage.setItem('torus-theme', payload)
+  if (isLocalStorageAvailable && !localStorage.getItem('torus-theme')) localStorage.setItem('torus-theme', state.theme)
 }
 function updateDefaultLanguage(state, language) {
   state.locale = language

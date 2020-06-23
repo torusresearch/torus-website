@@ -475,7 +475,7 @@ export default {
       )
     })
   },
-  async rehydrate({ state, dispatch }) {
+  async rehydrate({ state, dispatch, commit }) {
     const {
       selectedAddress,
       wallet,
@@ -509,6 +509,7 @@ export default {
         log.info('rehydrated wallet')
         torus.updateStaticData({ isUnlocked: true })
       }
+      commit('setRehydrationStatus', true)
     } catch (error) {
       log.error('Failed to rehydrate', error)
     }
