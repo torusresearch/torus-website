@@ -131,6 +131,9 @@ export default {
       loginConfig: finalLoginConfig,
     }
   },
+  setAPIKey(state, payload) {
+    state.apiKey = payload || 'torus-default'
+  },
   setButtonPosition(state, payload) {
     state.embedState = { ...state.embedState, buttonPosition: payload || 'bottom-left' }
   },

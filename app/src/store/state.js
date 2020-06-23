@@ -12,6 +12,7 @@ import {
 } from '../utils/enums'
 
 const initialState = {
+  apiKey: 'torus-default',
   userInfo: {
     name: '', // first + last name
     profileImage: '', // image url
