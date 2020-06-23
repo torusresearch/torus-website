@@ -240,7 +240,10 @@ export default {
   linkedin: {
     component: VerifierLinkedinIcon,
   },
-  email: {
+  email_password: {
+    component: VerifierEmailIcon,
+  },
+  jwt: {
     component: VerifierEmailIcon,
   },
   passwordless: {

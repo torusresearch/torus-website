@@ -39,8 +39,8 @@
           <v-btn
             large
             class="torus-btn1 px-10"
-            :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-            :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
+            :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+            :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
             href="https://opensea.io/"
             target="_blank"
             rel="noreferrer noopener"
