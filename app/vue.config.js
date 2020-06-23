@@ -44,6 +44,8 @@ module.exports = {
   chainWebpack: (config) => {
     config.resolve.alias.set('bn.js', path.resolve(__dirname, 'node_modules/bn.js'))
     config.resolve.alias.set('lodash', path.resolve(__dirname, 'node_modules/lodash'))
+    config.resolve.alias.set('#', path.resolve(__dirname, 'src/'))
+    config.resolve.extensions.add('.vue')
     if (process.env.NODE_ENV === 'production') {
       config
         .plugin('service-worker-integrity')

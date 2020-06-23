@@ -6,17 +6,7 @@
     <template v-else>
       <v-layout py-6 class="elevation-1">
         <v-flex xs12 text-center>
-          <img
-            class="home-link mr-1"
-            alt="Torus Logo"
-            width="70"
-            :height="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo ? 'inherit' : '17'"
-            :src="
-              whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
-                ? whiteLabelGlobal.logo
-                : require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
-            "
-          />
+          <img class="home-link mr-1" alt="Torus Logo" width="70" :height="getLogo.isExternal ? 'inherit' : '17'" :src="getLogo.logo" />
           <div class="display-1 text_2--text">{{ t('dappInfo.permission') }}</div>
         </v-flex>
       </v-layout>
@@ -87,6 +77,7 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
+import { mapGetters } from 'vuex'
 
 import { ChangeProviderScreenLoader } from '../../content-loader'
 import { SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
@@ -107,6 +98,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['getLogo']),
     headline() {
       return this.t('dappPermission.allowNetworkChange')
         .replace(/{host}/gi, this.origin.hostname)

@@ -179,10 +179,12 @@ function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
   if (state.whiteLabel.isActive) {
     const { theme: whiteLabelTheme } = state.whiteLabel
-    theme = themes[whiteLabelTheme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
+    const localThemeEngine = whiteLabelTheme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME
+    theme = themes[localThemeEngine]
     if (whiteLabelTheme.colors) {
       theme.theme = { ...theme.theme, ...whiteLabelTheme.colors }
     }
+    state.theme = localThemeEngine
   }
   if (payload || state.whiteLabel.isActive) {
     vuetify.framework.theme.dark = theme.isDark

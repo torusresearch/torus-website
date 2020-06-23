@@ -1,8 +1,49 @@
-/* eslint-disable no-restricted-syntax */
 import BigNumber from 'bignumber.js'
 
-import { MAINNET } from '../utils/enums'
+import { MAINNET, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { significantDigits } from '../utils/utils'
+
+const fallBackLogoDark = require('#/assets/images/torus-logo-blue.svg')
+const fallBackLogoLight = require('#/assets/images/torus-logo-white.svg')
+
+const fallBackIconDark = require('#/assets/img/icons/torus-icon-light.svg')
+const fallBackIconLight = require('#/assets/img/icons/torus-icon-dark.svg')
+
+const getLogo = (state) => {
+  const { whiteLabel, theme } = state
+  const { logoDark, logoLight, isActive } = whiteLabel
+  let finalLogo = theme === THEME_DARK_BLACK_NAME ? fallBackLogoLight : fallBackLogoDark
+  let isExternal = false
+  if (isActive) {
+    if (theme === THEME_DARK_BLACK_NAME && logoLight) {
+      finalLogo = logoLight
+      isExternal = true
+    }
+    if (theme === THEME_LIGHT_BLUE_NAME && logoDark) {
+      finalLogo = logoDark
+      isExternal = true
+    }
+  }
+  return { logo: finalLogo, isExternal }
+}
+
+const getIcon = (state) => {
+  const { whiteLabel, theme } = state
+  const { logoDark, logoLight, isActive } = whiteLabel
+  let finalLogo = theme === THEME_DARK_BLACK_NAME ? fallBackIconLight : fallBackIconDark
+  let isExternal = false
+  if (isActive) {
+    if (theme === THEME_DARK_BLACK_NAME && logoDark) {
+      finalLogo = logoDark
+      isExternal = true
+    }
+    if (theme === THEME_LIGHT_BLUE_NAME && logoLight) {
+      finalLogo = logoLight
+      isExternal = true
+    }
+  }
+  return { logo: finalLogo, isExternal }
+}
 
 const unApprovedTransactions = (state) => {
   const transactions = []
@@ -106,4 +147,6 @@ export default {
   walletBalances,
   currencyMultiplier,
   loginButtonsArray,
+  getLogo,
+  getIcon,
 }

@@ -5,16 +5,7 @@
         <v-card class="login-dialog-container">
           <v-layout wrap>
             <v-flex text-center class="login-header" xs12 pt-8 pb-6 px-6>
-              <img
-                class="home-link mr-1"
-                alt="Torus Logo"
-                :height="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo ? '50' : '30'"
-                :src="
-                  whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
-                    ? whiteLabelGlobal.logo
-                    : require(`../../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
-                "
-              />
+              <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? '50' : '30'" :src="getLogo.logo" />
               <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="closeDialog">
                 <v-icon>$vuetify.icons.close</v-icon>
               </v-btn>
@@ -98,7 +89,7 @@
                     :alt="`${verifier.typeOfLogin} Icon`"
                   />
                   <img
-                    v-if="!$vuetify.theme.isDark && verifier.logoDark"
+                    v-else-if="!$vuetify.theme.isDark && verifier.logoDark"
                     class="mr-4"
                     height="20"
                     :src="verifier.logoDark"
@@ -160,7 +151,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['loginButtonsArray']),
+    ...mapGetters(['loginButtonsArray', 'getLogo']),
     loginButtons() {
       return this.loginButtonsArray.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
     },
@@ -172,8 +163,8 @@ export default {
     },
     tncLink() {
       let finalLink = 'https://docs.tor.us/legal/terms-and-conditions'
-      const { isWhiteLabelActive, tncLink } = this.whiteLabelGlobal
-      if (isWhiteLabelActive && tncLink) {
+      const { isActive, tncLink } = this.$store.state.whiteLabel
+      if (isActive && tncLink) {
         finalLink = tncLink[this.localeSelected] || tncLink[Object.keys(tncLink)[0]]
       }
       return finalLink

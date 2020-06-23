@@ -9,7 +9,6 @@ import App from './App.vue'
 import { vuetify } from './plugins'
 import router from './router'
 import store from './store'
-import { storageAvailable } from './utils/utils'
 // import torus from './torus'
 
 log.enableAll()
@@ -47,29 +46,6 @@ Vue.use(VueGtm, {
 })
 
 Vue.mixin({
-  computed: {
-    whiteLabelGlobal() {
-      if (!storageAvailable('sessionStorage')) return { isWhiteLabelActive: false }
-
-      let torusWhiteLabel = sessionStorage.getItem('torus-white-label')
-      if (torusWhiteLabel === null) return { isWhiteLabelActive: false }
-
-      try {
-        torusWhiteLabel = JSON.parse(torusWhiteLabel)
-        if (!torusWhiteLabel) return { isWhiteLabelActive: false }
-
-        return {
-          logo: this.$vuetify.theme.isDark ? torusWhiteLabel.logoLight : torusWhiteLabel.logoDark,
-          logoDark: torusWhiteLabel.logoDark,
-          logoLight: torusWhiteLabel.logoLight,
-          tncLink: torusWhiteLabel.tncLink,
-          isWhiteLabelActive: true,
-        }
-      } catch (error) {
-        return { isWhiteLabelActive: false }
-      }
-    },
-  },
   methods: {
     t(data) {
       if (data === '') return data

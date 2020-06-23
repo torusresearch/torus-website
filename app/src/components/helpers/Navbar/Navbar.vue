@@ -5,13 +5,9 @@
         <img
           class="home-link mr-1"
           alt="Torus Logo"
-          :width="whiteLabelGlobal.isWhiteLabelActive ? '' : '135'"
-          :height="whiteLabelGlobal.isWhiteLabelActive ? '50' : '30'"
-          :src="
-            whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
-              ? whiteLabelGlobal.logo
-              : require(`../../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
-          "
+          :width="$store.state.whiteLabel.isActive ? '' : '135'"
+          :height="$store.state.whiteLabel.isActive ? '50' : '30'"
+          :src="getLogo.logo"
         />
       </router-link>
       <router-link v-if="$vuetify.breakpoint.xsOnly" id="logo-home-lnk" :to="{ name: 'walletHome' }">
@@ -101,7 +97,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import { capitalizeFirstLetter } from '../../../utils/utils'
 import AccountMenu from '../../WalletAccount/AccountMenu'
@@ -125,6 +121,7 @@ export default {
   },
   computed: {
     ...mapState(['userInfo', 'successMsg', 'errorMsg']),
+    ...mapGetters(['getLogo']),
     bannerColor() {
       return this.$vuetify.theme.isDark ? this.$vuetify.theme.themes.dark.infoBanner : this.$vuetify.theme.themes.light.infoBanner
     },

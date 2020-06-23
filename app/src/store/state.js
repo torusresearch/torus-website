@@ -63,7 +63,8 @@ const initialState = {
   whiteLabel: {
     isActive: false,
     theme: {},
-    logo: '',
+    logoDark: '',
+    logoLight: '',
     topupHide: false,
     featuredBillboardHide: false,
   },
