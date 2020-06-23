@@ -67,8 +67,8 @@
                 block
                 large
                 class="torus-btn1 gtm-topup-cta"
-                :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
+                :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+                :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
                 @click="topup"
               >
                 <v-icon left>$vuetify.icons.add</v-icon>
@@ -80,8 +80,8 @@
                 block
                 large
                 class="torus-btn1 gtm-transfer-cta"
-                :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
+                :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+                :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
                 @click="initiateTransfer"
               >
                 <v-icon left>$vuetify.icons.send</v-icon>

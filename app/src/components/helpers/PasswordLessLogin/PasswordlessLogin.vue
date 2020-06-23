@@ -3,16 +3,7 @@
     <v-card>
       <v-layout wrap>
         <v-flex text-center class="login-header" xs12 px-6>
-          <img
-            class="home-link mr-1"
-            alt="Torus Logo"
-            height="42"
-            :src="
-              whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
-                ? whiteLabelGlobal.logo
-                : require(`../../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
-            "
-          />
+          <img class="home-link mr-1" alt="Torus Logo" height="42" :src="getLogo.logo" />
           <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="cancel">
             <v-icon>$vuetify.icons.close</v-icon>
           </v-btn>
@@ -63,6 +54,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 import { GOOGLE } from '../../../utils/enums'
 import { validateVerifierId } from '../../../utils/utils'
 
@@ -83,6 +76,9 @@ export default {
       email: '',
       formValid: false,
     }
+  },
+  computed: {
+    ...mapGetters(['getLogo']),
   },
   methods: {
     cancel() {
