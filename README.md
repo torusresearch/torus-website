@@ -11,7 +11,7 @@ Ask one of the developers for these keys.
 To install dependencies and build the website,
 see [README here](app/README.md)
 
-[CHANGE LOG](https://docs.tor.us/features/changelog)
+[CHANGE LOG](https://docs.tor.us/torus-wallet/changelog)
 
 
 To see the current production app, navigate to https://app.tor.us
