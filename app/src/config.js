@@ -1,24 +1,24 @@
 import {
-  // APPLE,
-  // APPLE_VERIFIER,
+  APPLE,
+  APPLE_VERIFIER,
   DISCORD,
   DISCORD_VERIFIER,
   FACEBOOK,
   FACEBOOK_VERIFIER,
-  // GITHUB,
-  // GITHUB_VERIFIER,
+  GITHUB,
+  GITHUB_VERIFIER,
   GOOGLE,
   GOOGLE_VERIFIER,
-  // LINE,
-  // LINE_VERIFIER,
-  // LINKEDIN,
-  // LINKEDIN_VERIFIER,
+  LINE,
+  LINE_VERIFIER,
+  LINKEDIN,
+  LINKEDIN_VERIFIER,
   REDDIT,
   REDDIT_VERIFIER,
   TWITCH,
   TWITCH_VERIFIER,
-  // TWITTER,
-  // TWITTER_VERIFIER,
+  TWITTER,
+  TWITTER_VERIFIER,
   // WEIBO,
   // WEIBO_VERIFIER,
 } from './utils/enums'
@@ -26,16 +26,16 @@ import {
 const {
   VUE_APP_BASE_ROUTE,
   VUE_APP_GOOGLE_CLIENT_ID,
-  // VUE_APP_APPLE_CLIENT_ID,
+  VUE_APP_APPLE_CLIENT_ID,
   VUE_APP_DISCORD_CLIENT_ID,
   VUE_APP_FACEBOOK_CLIENT_ID,
-  // VUE_APP_GITHUB_CLIENT_ID,
-  // VUE_APP_LINE_CLIENT_ID,
-  // VUE_APP_LINKEDIN_CLIENT_ID,
+  VUE_APP_GITHUB_CLIENT_ID,
+  VUE_APP_LINE_CLIENT_ID,
+  VUE_APP_LINKEDIN_CLIENT_ID,
   VUE_APP_REDDIT_CLIENT_ID,
   VUE_APP_TWITCH_CLIENT_ID,
-  // VUE_APP_TWITTER_CLIENT_ID,
-  // VUE_APP_LOGIN_DOMAIN,
+  VUE_APP_TWITTER_CLIENT_ID,
+  VUE_APP_LOGIN_DOMAIN,
 } = process.env
 
 const baseUrl = VUE_APP_BASE_ROUTE || 'https://localhost:3000'
@@ -44,7 +44,7 @@ const baseRoute = baseUrl + process.env.BASE_URL
 
 const redirectURI = `${baseUrl}/redirect`
 
-// const LOGIN_DOMAIN = VUE_APP_LOGIN_DOMAIN
+const LOGIN_DOMAIN = VUE_APP_LOGIN_DOMAIN
 
 // In Modal, show 6 by default (view more)
 export default {
@@ -124,58 +124,72 @@ export default {
       logoDark: '',
       showOnModal: true,
     },
-    // [APPLE_VERIFIER]: {
-    //   description: '',
-    //   typeOfLogin: APPLE,
-    //   clientId: VUE_APP_APPLE_CLIENT_ID,
-    //   logoHover: '',
-    //   logoLight: '',
-    //   logoDark: '',
-    //   showOnModal: true,
-    //   jwtParameters: {
-    //     domain: LOGIN_DOMAIN,
-    //     connection: 'apple',
-    //   },
-    // },
-    // [GITHUB_VERIFIER]: {
-    //   description: '',
-    //   typeOfLogin: GITHUB,
-    //   clientId: VUE_APP_GITHUB_CLIENT_ID,
-    //   logoHover: '',
-    //   logoLight: '',
-    //   logoDark: '',
-    //   showOnModal: true,
-    //   jwtParameters: {
-    //     domain: LOGIN_DOMAIN,
-    //     connection: 'github',
-    //   },
-    // },
-    // [LINKEDIN_VERIFIER]: {
-    //   description: '',
-    //   typeOfLogin: LINKEDIN,
-    //   clientId: VUE_APP_LINKEDIN_CLIENT_ID,
-    //   logoHover: '',
-    //   logoLight: '',
-    //   logoDark: '',
-    //   showOnModal: true,
-    //   jwtParameters: {
-    //     domain: LOGIN_DOMAIN,
-    //     connection: 'linkedin',
-    //   },
-    // },
-    // [TWITTER_VERIFIER]: {
-    //   description: '',
-    //   typeOfLogin: TWITTER,
-    //   clientId: VUE_APP_TWITTER_CLIENT_ID,
-    //   logoHover: '',
-    //   logoLight: '',
-    //   logoDark: '',
-    //   showOnModal: true,
-    //   jwtParameters: {
-    //     domain: LOGIN_DOMAIN,
-    //     connection: 'twitter',
-    //   },
-    // },
+
+    [APPLE_VERIFIER]: {
+      description: '',
+      typeOfLogin: APPLE,
+      clientId: VUE_APP_APPLE_CLIENT_ID,
+      logoHover: '',
+      logoLight: '',
+      logoDark: '',
+      showOnModal: true,
+      jwtParameters: {
+        domain: LOGIN_DOMAIN,
+        connection: 'apple',
+      },
+    },
+    [GITHUB_VERIFIER]: {
+      description: '',
+      typeOfLogin: GITHUB,
+      clientId: VUE_APP_GITHUB_CLIENT_ID,
+      logoHover: '',
+      logoLight: '',
+      logoDark: '',
+      showOnModal: true,
+      jwtParameters: {
+        domain: LOGIN_DOMAIN,
+        connection: 'github',
+      },
+    },
+    [LINKEDIN_VERIFIER]: {
+      description: '',
+      typeOfLogin: LINKEDIN,
+      clientId: VUE_APP_LINKEDIN_CLIENT_ID,
+      logoHover: '',
+      logoLight: '',
+      logoDark: '',
+      showOnModal: true,
+      jwtParameters: {
+        domain: LOGIN_DOMAIN,
+        connection: 'linkedin',
+      },
+    },
+    [TWITTER_VERIFIER]: {
+      description: '',
+      typeOfLogin: TWITTER,
+      clientId: VUE_APP_TWITTER_CLIENT_ID,
+      logoHover: '',
+      logoLight: '',
+      logoDark: '',
+      showOnModal: true,
+      jwtParameters: {
+        domain: LOGIN_DOMAIN,
+        connection: 'twitter',
+      },
+    },
+    [LINE_VERIFIER]: {
+      description: '',
+      typeOfLogin: LINE,
+      clientId: VUE_APP_LINE_CLIENT_ID,
+      logoHover: '',
+      logoLight: '',
+      logoDark: '',
+      showOnModal: true,
+      jwtParameters: {
+        domain: LOGIN_DOMAIN,
+        connection: 'line',
+      },
+    },
     // [WEIBO_VERIFIER]: {
     //   description: '',
     //   typeOfLogin: WEIBO,
@@ -187,19 +201,6 @@ export default {
     //   jwtParameters: {
     //     domain: LOGIN_DOMAIN,
     //     connection: 'weibo',
-    //   },
-    // },
-    // [LINE_VERIFIER]: {
-    //   description: '',
-    //   typeOfLogin: LINE,
-    //   clientId: VUE_APP_LINE_CLIENT_ID,
-    //   logoHover: '',
-    //   logoLight: '',
-    //   logoDark: '',
-    //   showOnModal: true,
-    //   jwtParameters: {
-    //     domain: LOGIN_DOMAIN,
-    //     connection: 'line',
     //   },
     // },
   },
