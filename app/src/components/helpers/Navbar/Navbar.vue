@@ -127,7 +127,7 @@ export default {
     },
     lrcMsg() {
       if (process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc') {
-        return 'You are using the test cluster on torus network'
+        return 'navBar.lrcMsg'
       }
       return ''
     },
