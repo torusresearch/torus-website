@@ -337,7 +337,7 @@ export default {
   triggerLogin({ dispatch, commit }, { calledFromEmbed, verifier, preopenInstanceId }) {
     log.info('Verifier: ', verifier)
 
-    if (verifier === GOOGLE) {
+    if (verifier === 'google-shubs') {
       const state = encodeURIComponent(
         window.btoa(
           JSON.stringify({
@@ -362,7 +362,7 @@ export default {
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             oauthStream.write({ err: ev.error })
-          } else if (ev.data && verifier === GOOGLE) {
+          } else if (ev.data && verifier === 'google-shubs') {
             log.info(ev.data)
             const { access_token: accessToken, id_token: idToken } = verifierParams
             const userInfo = await get('https://www.googleapis.com/userinfo/v2/me', {
@@ -376,7 +376,7 @@ export default {
               name,
               email,
               verifierId: email.toString().toLowerCase(),
-              verifier: GOOGLE,
+              verifier: 'google-shubs',
               verifierParams: { verifier_id: email.toString().toLowerCase() }
             })
             dispatch('handleLogin', { calledFromEmbed, idToken })
