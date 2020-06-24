@@ -355,7 +355,7 @@ export function validateVerifierId(selectedVerifier, value) {
   }
 
   if (selectedVerifier === GITHUB_VERIFIER) {
-    return /\B([\da-z](?:-?[\da-z]){0,38})/gi.test(value) || 'Invalid Github username'
+    return /^(?!.*(-{2}))(?!^-.*$)(?!^.*-$)[\w-]{1,39}$/.test(value) || 'Invalid Github username'
   }
 
   return true
