@@ -13,18 +13,19 @@ import {
   APPLE,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
-  DISCORD,
+  DISCORD_VERIFIER,
   EMAIL_PASSWORD,
   ENVIRONMENT_TYPE_FULLSCREEN,
   ENVIRONMENT_TYPE_NOTIFICATION,
   ENVIRONMENT_TYPE_POPUP,
   ETH,
   GITHUB,
+  GITHUB_VERIFIER,
   GOERLI,
   GOERLI_CHAIN_ID,
   GOERLI_CODE,
   GOERLI_DISPLAY_NAME,
-  GOOGLE,
+  GOOGLE_VERIFIER,
   JWT,
   KOVAN,
   KOVAN_CHAIN_ID,
@@ -47,7 +48,7 @@ import {
   PLATFORM_OPERA,
   PNG,
   RAMPNETWORK,
-  REDDIT,
+  REDDIT_VERIFIER,
   RINKEBY,
   RINKEBY_CHAIN_ID,
   RINKEBY_CODE,
@@ -60,6 +61,7 @@ import {
   SVG,
   THEME_DARK_BLACK_NAME,
   TWITTER,
+  TWITTER_VERIFIER,
   WEIBO,
   WYRE,
   XANPOOL,
@@ -334,18 +336,26 @@ export function validateVerifierId(selectedVerifier, value) {
   if (selectedVerifier === ETH) {
     return isAddress(value) || 'Invalid ETH Address'
   }
-  if (selectedVerifier === GOOGLE) {
+  if (selectedVerifier === GOOGLE_VERIFIER) {
     return (
       // eslint-disable-next-line max-len
       /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
       'Invalid Email Address'
     )
   }
-  if (selectedVerifier === REDDIT) {
+  if (selectedVerifier === REDDIT_VERIFIER) {
     return (/^[\w-]+$/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
   }
-  if (selectedVerifier === DISCORD) {
+  if (selectedVerifier === DISCORD_VERIFIER) {
     return (/^\d*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
+  }
+
+  if (selectedVerifier === TWITTER_VERIFIER) {
+    return /^@?(\w){1,15}$/.test(value) || 'Invalid Twitter username'
+  }
+
+  if (selectedVerifier === GITHUB_VERIFIER) {
+    return /\B([\da-z](?:-?[\da-z]){0,38})/gi.test(value) || 'Invalid Github username'
   }
 
   return true

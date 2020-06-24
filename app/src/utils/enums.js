@@ -154,6 +154,8 @@ export const REDDIT_LABEL = 'walletSettings.redditId'
 export const DISCORD_LABEL = 'walletSettings.discordId'
 export const TWITCH_LABEL = 'walletSettings.twitchId'
 export const ENS_LABEL = 'walletSettings.ensId'
+export const TWITTER_LABEL = 'walletSettings.twitterId'
+export const GITHUB_LABEL = 'walletSettings.githubId'
 
 // Format: [dark/light]-[colorName]
 export const THEME_DARK_BLACK_NAME = 'dark-black'
@@ -176,19 +178,27 @@ export const ALLOWED_VERIFIERS = [
   },
   {
     name: GOOGLE_LABEL,
-    value: GOOGLE,
+    value: GOOGLE_VERIFIER,
   },
   {
     name: REDDIT_LABEL,
-    value: REDDIT,
+    value: REDDIT_VERIFIER,
   },
   {
     name: DISCORD_LABEL,
-    value: DISCORD,
+    value: DISCORD_VERIFIER,
   },
   {
     name: ENS_LABEL,
     value: ENS,
+  },
+  {
+    name: TWITTER_LABEL,
+    value: TWITTER_VERIFIER,
+  },
+  {
+    name: GITHUB_LABEL,
+    value: GITHUB_VERIFIER,
   },
 ]
 
