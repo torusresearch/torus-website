@@ -22,7 +22,7 @@ import {
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
-import { get, getEtherscanTransactions, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
+import { get, getEtherscanTransactions, getPastOrders, getWalletOrders, patch, post, remove } from '../utils/httpHelpers'
 import { notifyUser } from '../utils/notifications'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
@@ -139,9 +139,9 @@ class PreferencesController {
 
   async sync(callback, errorCallback) {
     try {
-      const [user, paymentTx, etherscanTx] = await Promise.all([
-        get(`${config.api}/user`, this.headers).catch((_) => {
-          if (errorCallback) errorCallback()
+      Promise.all([
+        getWalletOrders({}, this.headers.headers).catch((error) => {
+          log.error('unable to fetch wallet orders', error)
         }),
         getPastOrders({}, this.headers.headers).catch((error) => {
           log.error('unable to fetch past orders', error)
@@ -150,8 +150,26 @@ class PreferencesController {
           log.error('unable to fetch etherscan transactions', error)
         }),
       ])
+        .then((data) => {
+          const [walletTx, paymentTx, etherscanTx] = data
+          log.info(walletTx, paymentTx)
+          if (paymentTx?.data) {
+            this.calculatePaymentTx(paymentTx.data)
+          }
+          if (etherscanTx?.data) {
+            this.calculateEtherscanTx(etherscanTx.data)
+          }
+          this.fetchedPastTx = walletTx.data
+          this.calculatePastTx(walletTx.data)
+        })
+        .catch((error) => log.error(error))
+
+      const user = await get(`${config.api}/user?fetchTx=false`, this.headers).catch((_) => {
+        if (errorCallback) errorCallback()
+      })
+
       if (user && user.data) {
-        const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
+        const { badge: userBadges, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         let whiteLabelLocale
         let badgesCompletion = DEFAULT_BADGES_COMPLETION
 
@@ -184,14 +202,6 @@ class PreferencesController {
           permissions,
           badgesCompletion,
         })
-        if (paymentTx && paymentTx.data) {
-          this.calculatePaymentTx(paymentTx.data)
-        }
-        if (etherscanTx && etherscanTx.data) {
-          this.calculateEtherscanTx(etherscanTx.data)
-        }
-        this.fetchedPastTx = transactions
-        this.calculatePastTx(transactions)
         if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
       }
