@@ -8,8 +8,8 @@ export default class GoogleHandler extends AbstractLoginHandler {
 
   PROMPT = 'consent select_account'
 
-  constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false }) {
-    super({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
+  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener = false }) {
+    super({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener })
     this.setFinalUrl()
   }
 
@@ -39,6 +39,7 @@ export default class GoogleHandler extends AbstractLoginHandler {
       profileImage,
       verifier: this.verifier,
       verifierId: email.toLowerCase(),
+      typeOfLogin: this.typeOfLogin,
     }
   }
 }

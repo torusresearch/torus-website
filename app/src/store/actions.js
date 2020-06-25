@@ -326,7 +326,7 @@ export default {
       const loginParameters = await loginHandler.handleLoginWindow()
       const { accessToken, idToken } = loginParameters
       const userInfo = await loginHandler.getUserInfo(loginParameters)
-      const { profileImage, name, email, verifierId } = userInfo
+      const { profileImage, name, email, verifierId, typeOfLogin: returnTypeOfLogin } = userInfo
       commit('setUserInfo', {
         profileImage,
         name,
@@ -334,6 +334,7 @@ export default {
         verifierId,
         verifier,
         verifierParams: { verifier_id: verifierId },
+        typeOfLogin: returnTypeOfLogin,
       })
       await dispatch('handleLogin', { calledFromEmbed, oAuthToken: idToken || accessToken })
     } catch (error) {
