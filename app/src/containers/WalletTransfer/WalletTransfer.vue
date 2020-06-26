@@ -790,8 +790,23 @@ export default {
               verifierId: this.toAddress,
             })
           } catch (error) {
+            // Show error body
+            this.messageModalShow = true
+            this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+            this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+            this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
             log.error(error)
+            return
           }
+        }
+        if (!isAddress(toAddress)) {
+          // Show error body
+          this.messageModalShow = true
+          this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+          this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+          this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+          log.error('Invalid to Address')
+          return
         }
         this.toEthAddress = toAddress
         this.gas = await this.calculateGas(toAddress)
