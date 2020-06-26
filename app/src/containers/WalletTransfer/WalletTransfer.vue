@@ -790,7 +790,13 @@ export default {
               verifierId: this.toAddress,
             })
           } catch (error) {
+            // Show error body
+            this.messageModalShow = true
+            this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+            this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+            this.messageModalDetails = error || this.t('walletTransfer.transferFailMessage')
             log.error(error)
+            return
           }
         }
         this.toEthAddress = toAddress
