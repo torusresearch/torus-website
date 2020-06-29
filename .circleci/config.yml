@@ -163,7 +163,7 @@ jobs:
           name: "Deploy Over SSH"
           command: |
             ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh torus@testing.tor.us "rm -rf ~/testing-torus-website/* && tar -zxf - -C ~/testing-torus-website/"
+            tar czf - dist/ | ssh ubuntu@testing.tor.us "rm -rf ~/testing-torus-website/* && tar -zxf - -C ~/testing-torus-website/"
   deploy-lrc:
     <<: *job_common_base
     steps:
@@ -174,7 +174,7 @@ jobs:
           name: "Deploy Over SSH"
           command: |
             ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh torus@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
+            tar czf - dist/ | ssh ubuntu@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
 
 workflows:
   version: 2
