@@ -165,9 +165,9 @@ jobs:
               command: |
                 npm run build:alpha4
           - persist_to_workspace:
-              root: ~/torus-website/
+              root: ~/
               paths:
-                - .
+                - torus-website/app/dist
           - <<: *step_save_cache
   deploy-testing:
     <<: *job_common_base
@@ -179,7 +179,7 @@ jobs:
           name: "Deploy Over SSH"
           command: |
             ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh torus@testing.tor.us "rm -rf ~/testing-torus-website/* && tar -zxf - -C ~/testing-torus-website/"
+            tar czf - dist/ | ssh ubuntu@testing.tor.us "rm -rf ~/testing-torus-website/* && tar -zxf - -C ~/testing-torus-website/"
   deploy-lrc:
     <<: *job_common_base
     steps:
@@ -190,20 +190,18 @@ jobs:
           name: "Deploy Over SSH"
           command: |
             ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh torus@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
+            tar czf - dist/ | ssh ubuntu@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
   deploy-alpha4:
-    <<: *job_common
+    <<: *job_common_base
     steps:
       - attach_workspace:
-          at: ~/torus-website
+          at: ~/
       - add_ssh_keys
       - run:
           name: "Deploy Over SSH"
           command: |
             ssh-keyscan -H alpha4.tor.us >> ~/.ssh/known_hosts
-            ssh torus@alpha4.tor.us "rm -rf ~/alpha4-torus-website/*"
-            tar czf - dist/ | ssh torus@alpha4.tor.us "cat > ~/alpha4-torus-website/dist.tgz"
-            ssh torus@alpha4.tor.us "cd ~/alpha4-torus-website && tar zxvf dist.tgz"
+            tar czf - dist/ | ssh ubuntu@alpha4.tor.us "rm -rf ~/alpha4-torus-website/* && tar -zxf - -C ~/alpha4-torus-website/"
 
 workflows:
   version: 2
