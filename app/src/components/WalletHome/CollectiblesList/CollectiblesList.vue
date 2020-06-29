@@ -2,7 +2,7 @@
   <v-layout v-if="collectibleBalances.length > 0" class="collectibles-tab-container mx-n4" wrap align-center>
     <v-flex v-for="(collectible, i) in collectibleBalances" :key="i" class="xs12 sm6 md4 lg3 px-4 mb-4">
       <v-card class="elevation-1" :class="$vuetify.breakpoint.xsOnly ? 'pt-1 pb-2 px-5' : 'py-2 px-5'">
-        <v-list-item class="px-0" router-link :to="{ name: 'walletHomeCollectible', params: { address: collectible.address } }">
+        <v-list-item class="px-0" router-link :to="{ name: 'walletHomeCollectible', params: { address: collectible.address } }" title="View Assets">
           <v-list-item-avatar :size="$vuetify.breakpoint.xsOnly ? 36 : 50">
             <v-img :src="collectible.logo" :alt="collectible.name"></v-img>
           </v-list-item-avatar>
@@ -26,7 +26,7 @@
           <div class="mr-2">
             <img
               :width="$vuetify.breakpoint.xsOnly ? 51 : 51"
-              :src="require(`../../../../public/images/opensea-logo${$vuetify.theme.isDark ? '-dark' : ''}.svg`)"
+              :src="require(`../../../assets/images/opensea-logo${$vuetify.theme.isDark ? '-dark' : ''}.svg`)"
               alt="Explore Opensea"
             />
           </div>
@@ -39,10 +39,11 @@
           <v-btn
             large
             class="torus-btn1 px-10"
-            :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-            :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
+            :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+            :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
             href="https://opensea.io/"
             target="_blank"
+            rel="noreferrer noopener"
           >
             {{ t('walletHome.explore') }}
           </v-btn>

@@ -9,6 +9,14 @@
     <meta name="author" content="Torus Labs" />
     <link rel="shortcut icon" href="<%= BASE_URL %>favicon.png" />
     <title>Torus</title>
+    <link rel="preconnect" href="https://www.google-analytics.com" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <link rel="preconnect" href="https://min-api.cryptocompare.com" />
+    <link rel="dns-prefetch" href="https://min-api.cryptocompare.com" />
+    <link rel="preconnect" href="https://api.infura.io" />
+    <link rel="dns-prefetch" href="https://api.infura.io" />
     <link rel="stylesheet" href="<%= BASE_URL %>css/skeleton.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" />
     <style>
@@ -38,7 +46,7 @@
             <div class="beat beat-even"></div>
             <div class="beat beat-odd"></div>
           </div>
-          <h1 class="title content">Loading</h1>
+          <!-- <h1 class="title content">Loading</h1> -->
         </div>
       </div>
 
@@ -408,18 +416,28 @@
           )
         }
       }
+
       if (storageAvailable('localStorage')) {
         const torusTheme = localStorage.getItem('torus-theme')
-        const torusWhiteLabel = localStorage.getItem('torus-white-label')
-        if (torusWhiteLabel !== null) {
-          try {
-            const whiteLabelData = JSON.parse(torusWhiteLabel)
-            theme = whiteLabelData.whiteLabelIsDark ? 'dark' : 'light'
-          } catch (error) {
-            console.error(error)
-          }
-        } else if (torusTheme) {
+        if (torusTheme) {
           theme = torusTheme.split('-')[0]
+        }
+        if (storageAvailable('sessionStorage')) {
+          const torusWhiteLabel = sessionStorage.getItem('torus-white-label')
+          if (torusWhiteLabel !== null) {
+            try {
+              const whiteLabelData = JSON.parse(torusWhiteLabel)
+              if (whiteLabelData.theme) {
+                theme = whiteLabelData.theme.isDark ? 'dark' : 'light'
+                if (whiteLabelData.theme.colors && whiteLabelData.theme.colors.torusBrand1) {
+                  const beats = document.querySelectorAll('.spinner .beat')
+                  beats.forEach((beat) => (beat.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1))
+                }
+              }
+            } catch (error) {
+              console.error(error)
+            }
+          }
         }
       }
 

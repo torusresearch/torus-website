@@ -5,8 +5,8 @@ import stream from 'stream'
 
 import { injectStore as onloadInjection } from '../onload'
 import torus from '../torus'
-import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_NEW, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
-import { broadcastChannelOptions, isMain, storageAvailable } from '../utils/utils'
+// import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_NEW, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
+import { broadcastChannelOptions, isMain } from '../utils/utils'
 import { injectStore as controllerInjection } from './controllerSubscriptions'
 import VuexStore from './store'
 
@@ -23,7 +23,13 @@ if (!isMain) {
 
   // Oauth section
   torus.communicationMux.getStream('oauth').on('data', (chunk) => {
-    VuexStore.dispatch('triggerLogin', chunk.data)
+    const { name, data } = chunk
+    if (name === 'oauth_modal') {
+      // show modal route
+      VuexStore.commit('setOAuthModalStatus', true)
+    } else if (name === 'oauth') {
+      VuexStore.dispatch('triggerLogin', data)
+    }
   })
   pump(torus.communicationMux.getStream('oauth'), passthroughStream, (error) => {
     if (error) log.error(error)
@@ -38,6 +44,46 @@ if (!isMain) {
   // topup section
   torus.communicationMux.getStream('topup').on('data', (chunk) => {
     VuexStore.dispatch('initiateTopup', chunk.data)
+  })
+
+  const initStream = torus.communicationMux.getStream('init_stream')
+  initStream.on('data', (chunk) => {
+    const {
+      name,
+      data: { enabledVerifiers = {}, whiteLabel = {}, buttonPosition = '', torusWidgetVisibility = true, loginConfig = {} },
+    } = chunk
+    if (name === 'init_stream') {
+      VuexStore.commit('setButtonPosition', buttonPosition)
+      if (Object.keys(whiteLabel).length > 0) VuexStore.commit('setWhiteLabel', whiteLabel)
+      VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
+      VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
+      const { isRehydrationComplete } = VuexStore.state
+      if (isRehydrationComplete) {
+        initStream.write({
+          name: 'init_complete',
+          data: { success: true },
+        })
+      } else {
+        const unWatcher = VuexStore.watch(
+          (state) => state.isRehydrationComplete,
+          (newValue, oldValue) => {
+            if (newValue !== oldValue && newValue === true) {
+              initStream.write({
+                name: 'init_complete',
+                data: { success: true },
+              })
+              unWatcher()
+            }
+          }
+        )
+      }
+    }
+  })
+
+  const widgetVisibilityStream = torus.communicationMux.getStream('torus-widget-visibility')
+  widgetVisibilityStream.on('data', (chunk) => {
+    const { data } = chunk
+    VuexStore.commit('setTorusWidgetVisibility', data)
   })
 
   // Provider change section
@@ -68,18 +114,17 @@ if (!isMain) {
     const payload = { ...VuexStore.state.userInfo }
     delete payload.verifierParams
     if (chunk.name === 'user_info_access_request') {
-      switch (VuexStore.state.userInfoAccess) {
-        case USER_INFO_REQUEST_APPROVED:
-          userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
-          break
-        case USER_INFO_REQUEST_REJECTED:
-          userInfoAccessStream.write({ name: 'user_info_access_response', data: { rejected: true } })
-          break
-        case USER_INFO_REQUEST_NEW:
-        default:
-          userInfoAccessStream.write({ name: 'user_info_access_response', data: { newRequest: true } })
-          break
-      }
+      userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
+      // switch (VuexStore.state.userInfoAccess) {
+      //   case USER_INFO_REQUEST_APPROVED:
+      //     userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
+      //     break
+      //   case USER_INFO_REQUEST_REJECTED:
+      //   case USER_INFO_REQUEST_NEW:
+      //   default:
+      //     userInfoAccessStream.write({ name: 'user_info_access_response', data: { newRequest: true } })
+      //     break
+      // }
     }
   })
 
@@ -118,12 +163,6 @@ if (!isMain) {
         VuexStore.dispatch('setProviderType', ev.data.payload)
       }
     }
-  })
-
-  // White Label section
-  const whiteLabelStream = torus.communicationMux.getStream('white_label')
-  whiteLabelStream.on('data', (chunk) => {
-    if (storageAvailable('localStorage')) localStorage.setItem('torus-white-label', JSON.stringify(chunk.data))
   })
 }
 

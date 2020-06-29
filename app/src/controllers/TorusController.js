@@ -1,7 +1,7 @@
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
-import * as sigUtil from 'eth-sig-util'
+import { normalize } from 'eth-sig-util'
 import { BN } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import RpcEngine from 'json-rpc-engine'
@@ -37,7 +37,6 @@ import TokenRatesController from './TokenRatesController'
 import KeyringController from './TorusKeyring'
 import TransactionController from './TransactionController'
 import TypedMessageManager from './TypedMessageManager'
-// const Dnode = require('dnode')
 // defaults and constants
 const GWEI_BN = new BN('1000000000')
 
@@ -102,6 +101,11 @@ export default class TorusController extends EventEmitter {
       tokensStore: this.detectTokensController.detectedTokensStore,
     })
 
+    this.prefsController = new PreferencesController({
+      network: this.networkController,
+      provider: this.provider,
+    })
+
     // start and stop polling for balances based on activeControllerConnections
     this.on('controllerConnectionChanged', (activeControllerConnections) => {
       if (activeControllerConnections > 0) {
@@ -116,13 +120,11 @@ export default class TorusController extends EventEmitter {
       this.accountTracker._updateAccounts()
       this.detectTokensController.restartTokenDetection()
       this.assetDetectionController.restartAssetDetection()
-      // TODO: trigger asset detection
+      this.prefsController.recalculatePastTx()
     })
 
     // key mgmt
     this.keyringController = new KeyringController()
-    this.prefsController = new PreferencesController()
-
     this.publicConfigStore = this.initPublicConfigStore()
 
     this.permissionsController = new PermissionsController({
@@ -557,7 +559,7 @@ export default class TorusController extends EventEmitter {
     const { version: messageVersion } = messageParameters
     try {
       const cleanMessageParameters = await this.typedMessageManager.approveMessage(messageParameters)
-      const address = toChecksumAddress(sigUtil.normalize(cleanMessageParameters.from))
+      const address = toChecksumAddress(normalize(cleanMessageParameters.from))
       const signature = await this.keyringController.signTypedData(address, cleanMessageParameters.data, messageVersion)
       this.typedMessageManager.setMsgStatusSigned(messageId, signature)
       this.getState()

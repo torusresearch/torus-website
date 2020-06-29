@@ -2,14 +2,8 @@
   <v-container px-0 py-0 class="confirm-container">
     <template v-if="type === TX_TRANSACTION">
       <v-layout pa-6 class="elevation-1">
-        <v-flex xs12>
-          <img
-            class="home-link mr-1"
-            alt="Torus Logo"
-            width="70"
-            height="16"
-            :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
-          />
+        <v-flex text-center xs12>
+          <img class="home-link mr-1" alt="Torus Logo" width="70" :height="getLogo.isExternal ? 'inherit' : '17'" :src="getLogo.logo" />
           <div class="display-1 text_2--text">{{ t('dappTransfer.confirmation') }}</div>
         </v-flex>
       </v-layout>
@@ -19,7 +13,7 @@
         </v-flex>
         <v-flex v-if="transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM" xs12>
           <ShowToolTip :address="amountTo">
-            <div class="caption">To: {{ amountTo }}</div>
+            <div class="caption">{{ t('dappTransfer.to') }}: {{ amountTo }}</div>
           </ShowToolTip>
         </v-flex>
         <v-flex v-else-if="transactionCategory === TOKEN_METHOD_APPROVE" xs12 class="text-center">
@@ -32,12 +26,12 @@
             v-if="[TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(transactionCategory) >= 0"
             :address="amountTo"
           >
-            <div class="caption">To: {{ amountTo }}</div>
+            <div class="caption">{{ t('dappTransfer.to') }}: {{ amountTo }}</div>
           </ShowToolTip>
           <ShowToolTip v-else-if="[SEND_ETHER_ACTION_KEY, CONTRACT_INTERACTION_KEY].indexOf(transactionCategory) >= 0" :address="receiver">
-            <div class="caption">To: {{ receiver }}</div>
+            <div class="caption">{{ t('dappTransfer.to') }}: {{ receiver }}</div>
           </ShowToolTip>
-          <div v-else class="caption">To: {{ displayAmountTo }}</div>
+          <div v-else class="caption">{{ t('dappTransfer.to') }}: {{ displayAmountTo }}</div>
         </v-flex>
       </v-layout>
       <v-divider class="mx-6 my-4"></v-divider>
@@ -45,7 +39,6 @@
         <v-flex xs3 class="pt-3">
           <div class="caption">
             {{ t('walletTransfer.totalCost') }}
-            <!-- {{ t('dappTransfer.total') }} -->
           </div>
         </v-flex>
         <v-flex xs9>
@@ -137,7 +130,7 @@
           </v-dialog>
         </v-flex>
         <v-flex v-if="(topUpErrorShow || canShowError)" xs12 mb-4 class="text-right">
-          <div class="caption error--text">{{ errorMsg }}</div>
+          <div class="caption error--text">{{ errorMsg === 'dappTransfer.insufficientFunds' ? t('dappTransfer.insufficientFunds') : errorMsg }}</div>
           <div v-if="topUpErrorShow" class="caption mt-1">
             {{ t('dappTransfer.pleaseTopup1') }}
             <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">{{ t('dappTransfer.pleaseTopup2') }}</v-btn>
@@ -200,13 +193,7 @@
     <template v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE">
       <v-layout py-6 class="elevation-1">
         <v-flex xs12 text-center>
-          <img
-            class="home-link mr-1"
-            alt="Torus Logo"
-            width="70"
-            height="16"
-            :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
-          />
+          <img class="home-link mr-1" alt="Torus Logo" width="70" :height="getLogo.isExternal ? 'inherit' : '17'" :src="getLogo.logo" />
           <div class="display-1 text_2--text">{{ t('dappTransfer.permission') }}</div>
         </v-flex>
       </v-layout>
@@ -217,9 +204,19 @@
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
               <div class="d-flex request-from align-center">
-                <a :href="origin.href" target="_blank" class="caption font-weight-medium torusBrand1--text">{{ origin.hostname }}</a>
-                <v-btn x-small :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'" class="link-icon ml-auto" :href="origin.href" target="_blank">
-                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+                <a :href="origin.href" target="_blank" rel="noreferrer noopener" class="caption font-weight-medium torusBrand1--text">
+                  {{ origin.hostname }}
+                </a>
+                <v-btn
+                  x-small
+                  :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'"
+                  class="link-icon ml-auto"
+                  :href="origin.href"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  :aria-label="`Open ${origin.hostname} Link`"
+                >
+                  <img src="../../assets/img/icons/open-in-new-grey.svg" class="card-upper-icon" alt="Origin Link Icon" />
                 </v-btn>
               </div>
             </v-card-text>
@@ -230,9 +227,10 @@
         <v-flex xs12 mt-0 mb-2 mx-6>
           <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
-              <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+              <v-icon v-if="$store.state.whiteLabel.isActive" small class="torusBrand1--text">$vuetify.icons.check_circle</v-icon>
+              <img v-else src="../../assets/img/icons/check-circle-primary.svg" width="12" alt="Data Icon" />
             </div>
-            <div class="caption text_2--text text-capitalize">{{ t('dappTransfer.dataSmall') }}</div>
+            <div class="caption text_2--text text-capitalize">{{ t('dappTransfer.data') }}</div>
           </div>
         </v-flex>
         <v-flex xs12 mb-4 mx-6>
@@ -293,6 +291,7 @@ import collectibleABI from 'human-standard-collectible-abi'
 import tokenABI from 'human-standard-token-abi'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
+import { mapGetters } from 'vuex'
 import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
@@ -389,6 +388,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['getLogo']),
     header() {
       switch (this.transactionCategory) {
         case DEPLOY_CONTRACT_ACTION_KEY:
@@ -482,11 +482,6 @@ export default {
       const totalCost = this.isOtherToken ? significantDigits(cost, false, 5) : this.totalUsdCost
       return `~ ${totalCost} ${this.selectedCurrency}`
     },
-    imageType() {
-      return this.transactionCategory === DEPLOY_CONTRACT_ACTION_KEY || this.transactionCategory === CONTRACT_INTERACTION_KEY
-        ? 'images/file-signature.svg'
-        : 'images/user.svg'
-    },
     currencyMultiplier() {
       const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
       return new BigNumber(currencyMultiplierNumber)
@@ -509,7 +504,7 @@ export default {
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
         this.totalUsdCost = significantDigits(ethCost.times(this.currencyMultiplier))
         if (this.balance.lt(ethCost) && !this.canShowError) {
-          this.errorMsg = this.t('dappTransfer.insufficientFunds')
+          this.errorMsg = 'dappTransfer.insufficientFunds'
           this.topUpErrorShow = true
         }
       }
@@ -523,7 +518,10 @@ export default {
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
       if (ev.name !== 'send-params') return
-      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, currencyData, network } = ev.data || {}
+      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, whiteLabel, currencyData, network } = ev.data || {}
+
+      this.$store.commit('setWhiteLabel', whiteLabel)
+
       this.selectedCurrency = selectedCurrency
       this.currencyData = currencyData
       if (txParams && txParams.id.toString() !== queryParameterId) return
@@ -637,7 +635,7 @@ export default {
           this.canShowError = true
         }
         if (this.balance.lt(ethCost) && !this.canShowError) {
-          this.errorMsg = this.t('dappTransfer.insufficientFunds')
+          this.errorMsg = 'dappTransfer.insufficientFunds'
           this.topUpErrorShow = true
         }
       }

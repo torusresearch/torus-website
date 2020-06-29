@@ -124,6 +124,28 @@ export const FACEBOOK = 'facebook'
 export const REDDIT = 'reddit'
 export const DISCORD = 'discord'
 export const TWITCH = 'twitch'
+export const APPLE = 'apple'
+export const LINE = 'line'
+export const GITHUB = 'github'
+export const LINKEDIN = 'linkedin'
+export const TWITTER = 'twitter'
+export const WEIBO = 'weibo'
+export const EMAIL_PASSWORD = 'email_password'
+export const PASSWORDLESS = 'passwordless'
+export const JWT = 'jwt'
+
+export const GOOGLE_VERIFIER = process.env.VUE_APP_GOOGLE_VERIFIER
+export const FACEBOOK_VERIFIER = process.env.VUE_APP_FACEBOOK_VERIFIER
+export const REDDIT_VERIFIER = process.env.VUE_APP_REDDIT_VERIFIER
+export const DISCORD_VERIFIER = process.env.VUE_APP_DISCORD_VERIFIER
+export const TWITCH_VERIFIER = process.env.VUE_APP_TWITCH_VERIFIER
+export const GITHUB_VERIFIER = process.env.VUE_APP_GITHUB_VERIFIER
+export const LINKEDIN_VERIFIER = process.env.VUE_APP_LINKEDIN_VERIFIER
+export const TWITTER_VERIFIER = process.env.VUE_APP_TWITTER_VERIFIER
+export const WEIBO_VERIFIER = process.env.VUE_APP_WEIBO_VERIFIER
+export const LINE_VERIFIER = process.env.VUE_APP_LINE_VERIFIER
+export const APPLE_VERIFIER = process.env.VUE_APP_APPLE_VERIFIER
+
 export const ENS = 'ENS'
 export const ETH_LABEL = 'walletSettings.ethAddress'
 export const GOOGLE_LABEL = 'walletSettings.googleId'
@@ -294,3 +316,7 @@ export const SAFE_METHODS = [
   'metamask_watchAsset',
   'wallet_watchAsset',
 ]
+
+export const BADGES_TOPUP = 'topUp'
+export const BADGES_TRANSACTION = 'transaction'
+export const BADGES_COLLECTIBLE = 'collectible'

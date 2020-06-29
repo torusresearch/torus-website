@@ -7,7 +7,7 @@
     </div>
     <div class="ml-2">
       <ShowToolTip :address="selectedAddress">
-        <v-btn small class="address-btn">
+        <v-btn small class="address-btn" aria-label="Copy Address">
           <v-icon left size="9" v-text="'$vuetify.icons.address'" />
           <span>{{ slicedAddress }}</span>
         </v-btn>

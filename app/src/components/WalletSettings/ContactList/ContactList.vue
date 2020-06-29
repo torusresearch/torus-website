@@ -52,9 +52,10 @@
                 <v-list-item-avatar class="ma-0">
                   <img
                     v-if="contact.verifier === 'eth'"
-                    :src="require(`../../../../public/img/icons/eth-grey${$vuetify.theme.dark ? '-black' : '-white'}.svg`)"
+                    :src="require(`../../../assets/img/icons/eth-grey${$vuetify.theme.dark ? '-black' : '-white'}.svg`)"
                     style="width: 16px;"
                     class="ma-1"
+                    :alt="`${contact.verifier} Icon`"
                   />
                   <v-icon v-else size="16" class="torusGray1--text">
                     {{ `$vuetify.icons.${contact.verifier.toLowerCase()}` }}
@@ -68,7 +69,7 @@
                   </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action class="ma-0">
-                  <v-btn class="delete-btn" color="text_2" icon small:aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
+                  <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
                     <v-icon x-small>$vuetify.icons.trash</v-icon>
                   </v-btn>
                 </v-list-item-action>
@@ -124,8 +125,8 @@
                   id="contact-submit-btn"
                   large
                   class="torus-btn1 py-1 gmt-add-address"
-                  :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                  :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
+                  :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+                  :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
                   block
                   type="submit"
                   :disabled="!contactFormValid"

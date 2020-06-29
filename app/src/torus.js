@@ -1,6 +1,6 @@
 import randomId from '@chaitanyapotti/random-id'
 import Torus from '@toruslabs/torus.js'
-import * as ethUtil from 'ethereumjs-util'
+import { hashPersonalMessage } from 'ethereumjs-util'
 import log from 'loglevel'
 
 import config from './config'
@@ -14,14 +14,7 @@ class TorusExtended extends Torus {
   constructor() {
     super()
     this.instanceId = randomId()
-
     this.setupMultiplex = setupMultiplex
-  }
-
-  continueEnable(selectedAddress) {
-    log.info('ENABLE WITH: ', selectedAddress)
-    const oauthStream = this.communicationMux.getStream('oauth')
-    oauthStream.write({ selectedAddress })
   }
 
   updateStaticData(payload) {
@@ -35,7 +28,9 @@ class TorusExtended extends Torus {
     } else if (payload.networkId) {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
       if (payload.networkId !== 'loading') {
-        publicConfigOutStream.write(JSON.stringify({ chainId: selectChainId(payload.networkId.toString(), this.torusController.provider) }))
+        publicConfigOutStream.write(
+          JSON.stringify({ chainId: selectChainId(payload.networkId.toString(), this.torusController.networkController.networkStore) })
+        )
       }
     } else if (payload.isUnlocked) {
       publicConfigOutStream.write(JSON.stringify({ isUnlocked: payload.isUnlocked }))
@@ -60,7 +55,7 @@ class TorusExtended extends Torus {
 
   hashMessage(message) {
     const bufferedMessage = Buffer.from(message)
-    return ethUtil.hashPersonalMessage(bufferedMessage)
+    return hashPersonalMessage(bufferedMessage).toString('hex')
   }
 }
 

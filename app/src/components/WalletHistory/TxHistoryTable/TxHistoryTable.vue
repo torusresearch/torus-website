@@ -7,14 +7,9 @@
       :items-per-page.sync="itemsPerPage"
       :page.sync="page"
       hide-default-footer
-      :loading="loadingTransactions"
-      no-data-text=""
     >
       <template v-slot:default="props">
-        <TransactionDetails v-for="transaction in props.items" :key="transaction.id" :transaction="transaction" />
-      </template>
-      <template v-slot:loading>
-        <ComponentLoader class="mt-2" />
+        <TransactionDetails v-for="transaction in props.items" :key="transaction.transaction_hash || transaction.id" :transaction="transaction" />
       </template>
     </v-data-iterator>
 
@@ -32,13 +27,11 @@
 
 <script>
 import { ACTIVITY_ACTION_ALL, ACTIVITY_PERIOD_ALL, ACTIVITY_PERIOD_MONTH_ONE, ACTIVITY_PERIOD_WEEK_ONE } from '../../../utils/enums'
-import ComponentLoader from '../../helpers/ComponentLoader'
 import TransactionDetails from '../TransactionDetails'
 
 export default {
   components: {
     TransactionDetails,
-    ComponentLoader,
   },
   props: {
     transactions: {
@@ -54,9 +47,6 @@ export default {
     selectedPeriod: {
       type: String,
       default: '',
-    },
-    loadingTransactions: {
-      type: Boolean,
     },
   },
   data() {

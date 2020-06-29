@@ -9,7 +9,7 @@
           <v-list>
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require('../../../../public/img/icons/file-text-grey.svg')" />
+                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" src="../../../assets/img/icons/file-text-grey.svg" alt="Download JSON Icon" />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.downloadSoftCopy') }} (JSON)</div>
@@ -25,7 +25,7 @@
                           :type="showJsonPassword ? 'text' : 'password'"
                         >
                           <template v-slot:append>
-                            <v-btn icon @click="showJsonPassword = !showJsonPassword">
+                            <v-btn icon aria-label="Show/Hide JSON Password" @click="showJsonPassword = !showJsonPassword">
                               <v-icon class="text_3--text">
                                 {{ showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}
                               </v-icon>
@@ -100,8 +100,12 @@
                 </v-expand-transition>
               </v-list-item-content>
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
-                <v-btn id="show-download-form-btn" icon small @click="isShowGetPassword = true">
-                  <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require('../../../../public/img/icons/download-primary.svg')" />
+                <v-btn id="show-download-form-btn" aria-label="Show/Hide Download JSON form" icon small @click="isShowGetPassword = true">
+                  <img
+                    :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
+                    src="../../../assets/img/icons/download-primary.svg"
+                    alt="Show/Hide Download JSON form"
+                  />
                 </v-btn>
               </v-list-item-icon>
             </v-list-item>
@@ -110,7 +114,7 @@
 
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require(`../../../../public/img/icons/key.svg`)" />
+                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" src="../../../assets/img/icons/key.svg" alt="Key Icon" />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.showPrivateKey') }}</div>
@@ -124,9 +128,10 @@
                     <ShowToolTip :address="selectedKey">
                       <v-btn id="click-to-copy-btn" text small class="torusBrand1--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
                         <img
-                          :src="require('../../../../public/img/icons/copy-primary.svg')"
+                          src="../../../assets/img/icons/copy-primary.svg"
                           class="mr-1"
                           :width="$vuetify.breakpoint.xsOnly ? '12' : '20'"
+                          alt="Copy Icon"
                         />
                         {{ t('walletSettings.clickCopy') }}
                       </v-btn>
@@ -135,10 +140,17 @@
                 </v-layout>
               </v-list-item-content>
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
-                <v-btn id="show-private-key-btn gmt-private-key-show" icon small @click="isShowPrivateKey = !isShowPrivateKey">
+                <v-btn
+                  id="show-private-key-btn gmt-private-key-show"
+                  icon
+                  small
+                  aria-label="Show/Hide Private Key"
+                  @click="isShowPrivateKey = !isShowPrivateKey"
+                >
                   <img
                     :width="$vuetify.breakpoint.xsOnly ? '20' : ''"
-                    :src="require(`../../../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"
+                    :src="require(`../../../assets/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"
+                    alt="Toggle Password Icon"
                   />
                 </v-btn>
               </v-list-item-icon>
@@ -155,8 +167,8 @@
 </template>
 
 <script>
-import * as ethUtil from 'ethereumjs-util'
-import Wallet from 'ethereumjs-wallet'
+import { stripHexPrefix } from 'ethereumjs-util'
+import { fromPrivateKey } from 'ethereumjs-wallet'
 import { mapState } from 'vuex'
 
 import ShowToolTip from '../../helpers/ShowToolTip'
@@ -228,9 +240,9 @@ export default {
       return createdWallet
     },
     generateWallet(privateKey) {
-      const stripped = ethUtil.stripHexPrefix(privateKey)
+      const stripped = stripHexPrefix(privateKey)
       const buffer = Buffer.from(stripped, 'hex')
-      const wallet = Wallet.fromPrivateKey(buffer)
+      const wallet = fromPrivateKey(buffer)
       return wallet
     },
     createBlob(mime, string_) {

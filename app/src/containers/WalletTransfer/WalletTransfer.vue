@@ -58,9 +58,9 @@
                       >
                         <v-list-item-icon class="mr-1">
                           <img
-                            :src="require(`../../../public/images/logos/${token.logo}`)"
+                            :src="`${logosUrl}/${token.logo}`"
                             height="20px"
-                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
+                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
                             :alt="token.name"
                           />
                         </v-list-item-icon>
@@ -76,9 +76,9 @@
                       <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
                         <v-list-item-icon class="ml-8 mr-1">
                           <img
-                            :src="require(`../../../public/images/logos/${token.logo}`)"
+                            :src="`${logosUrl}/${token.logo}`"
                             height="20px"
-                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
+                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
                             :alt="token.name"
                           />
                         </v-list-item-icon>
@@ -93,7 +93,7 @@
                       </v-subheader>
                       <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
                         <v-list-item-icon class="ml-8 mr-1">
-                          <img :src="collectible.logo" height="20px" />
+                          <img :src="collectible.logo" height="20px" :alt="`${collectible.name} Logo`" />
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>
@@ -125,7 +125,14 @@
                       @input="contactChanged"
                     >
                       <template v-slot:append>
-                        <v-btn icon small color="torusBrand1" aria-label="QR Capture Button" @click="() => $refs && $refs.captureQr.$el.click()">
+                        <v-btn
+                          icon
+                          small
+                          color="torusBrand1"
+                          title="Capture QR"
+                          aria-label="Capture QR"
+                          @click="() => $refs && $refs.captureQr.$el.click()"
+                        >
                           <v-icon small>$vuetify.icons.scan</v-icon>
                         </v-btn>
                       </template>
@@ -424,6 +431,7 @@ export default {
       CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721,
+      logosUrl: config.logosUrl,
     }
   },
   computed: {
@@ -602,9 +610,7 @@ export default {
           currency: this.selectedCurrency,
           currencyAmount: significantDigits(this.amount.times(this.getCurrencyTokenRate).toFormat(2)) || '',
           tokenImageUrl:
-            this.contractType !== CONTRACT_TYPE_ERC721
-              ? `https://app.tor.us/images/logos/${this.selectedItemDisplay.logo}`
-              : this.selectedItemDisplay.logo,
+            this.contractType !== CONTRACT_TYPE_ERC721 ? `${this.logosUrl}/${this.selectedItemDisplay.logo}` : this.selectedItemDisplay.logo,
         }
         post(`${config.api}/transaction/sendemail`, emailObject, {
           headers: {
@@ -784,8 +790,23 @@ export default {
               verifierId: this.toAddress,
             })
           } catch (error) {
+            // Show error body
+            this.messageModalShow = true
+            this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+            this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+            this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
             log.error(error)
+            return
           }
+        }
+        if (!isAddress(toAddress)) {
+          // Show error body
+          this.messageModalShow = true
+          this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+          this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+          this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+          log.error('Invalid to Address')
+          return
         }
         this.toEthAddress = toAddress
         this.gas = await this.calculateGas(toAddress)

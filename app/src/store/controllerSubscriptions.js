@@ -53,8 +53,8 @@ export function transactionControllerHandler({ transactions }) {
         updatedTransactions.push(transactions[id])
       }
     }
-    // log.info(updatedTransactions, 'txs')
     getStore().commit('setTransactions', updatedTransactions)
+    getStore().dispatch('updateCalculatedTx', updatedTransactions)
   }
 }
 
@@ -112,4 +112,16 @@ export function errorMsgHandler(error) {
 
 export function metadataHandler(state) {
   getStore().commit('setMetaData', state)
+}
+
+export function pastTransactionsHandler(state) {
+  getStore().commit('setPastTransactions', state)
+}
+
+export function paymentTxHandler(state) {
+  getStore().commit('setPaymentTx', state)
+}
+
+export function etherscanTxHandler(state) {
+  getStore().commit('setEtherscanTx', state)
 }

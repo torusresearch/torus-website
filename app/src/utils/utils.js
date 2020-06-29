@@ -1,6 +1,6 @@
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
-import * as ethUtil from 'ethereumjs-util'
+import { addHexPrefix, BN, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import { isAddress } from 'web3-utils'
 
@@ -8,20 +8,30 @@ import config from '../config'
 import languages from '../plugins/locales'
 import {
   ACTIVE,
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  APPLE,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
   DISCORD,
+  EMAIL_PASSWORD,
   ENVIRONMENT_TYPE_FULLSCREEN,
   ENVIRONMENT_TYPE_NOTIFICATION,
   ENVIRONMENT_TYPE_POPUP,
   ETH,
+  GITHUB,
   GOERLI,
   GOERLI_CHAIN_ID,
   GOERLI_CODE,
   GOERLI_DISPLAY_NAME,
   GOOGLE,
+  JWT,
   KOVAN,
   KOVAN_CHAIN_ID,
   KOVAN_CODE,
   KOVAN_DISPLAY_NAME,
+  LINE,
+  LINKEDIN,
   MAINNET,
   MAINNET_CHAIN_ID,
   MAINNET_CODE,
@@ -29,6 +39,7 @@ import {
   MATIC_CHAIN_ID,
   MATIC_CODE,
   MOONPAY,
+  PASSWORDLESS,
   PLATFORM_BRAVE,
   PLATFORM_CHROME,
   PLATFORM_EDGE,
@@ -48,11 +59,11 @@ import {
   SIMPLEX,
   SVG,
   THEME_DARK_BLACK_NAME,
+  TWITTER,
+  WEIBO,
   WYRE,
   XANPOOL,
 } from './enums'
-
-const { BN } = ethUtil
 
 const networkToNameMap = {
   [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
@@ -65,6 +76,8 @@ const networkToNameMap = {
   [KOVAN_CODE]: KOVAN_DISPLAY_NAME,
   [GOERLI_CODE]: GOERLI_DISPLAY_NAME,
 }
+
+const ETHERSCAN_SUPPORTED_NETWORKS = new Set([MAINNET, RINKEBY, ROPSTEN, GOERLI, KOVAN])
 
 export const getNetworkDisplayName = (key) => networkToNameMap[key]
 
@@ -179,7 +192,7 @@ export function sufficientBalance(txParameters, hexBalance) {
  *
  */
 export function bnToHex(inputBn) {
-  return ethUtil.addHexPrefix(inputBn.toString(16))
+  return addHexPrefix(inputBn.toString(16))
 }
 
 /**
@@ -190,7 +203,7 @@ export function bnToHex(inputBn) {
  *
  */
 export function hexToBn(inputHex) {
-  return new BN(ethUtil.stripHexPrefix(inputHex), 16)
+  return new BN(stripHexPrefix(inputHex), 16)
 }
 
 /**
@@ -216,7 +229,7 @@ export function BnMultiplyByFraction(targetBN, numerator, denominator) {
  */
 export function hexToText(hex) {
   try {
-    const stripped = ethUtil.stripHexPrefix(hex)
+    const stripped = stripHexPrefix(hex)
     const buff = Buffer.from(stripped, 'hex')
     return buff.toString('utf8')
   } catch (error) {
@@ -284,9 +297,9 @@ export async function isSmartContractAddress(address, web3) {
   return !codeIsEmpty
 }
 
-export function getEtherScanHashLink(txHash, network = null) {
-  const localNetwork = network === null ? 'mainnet' : network
-  return network === 'mainnet' ? `https://etherscan.io/tx/${txHash}` : `https://${localNetwork}.etherscan.io/tx/${txHash}`
+export function getEtherScanHashLink(txHash, network) {
+  if (!ETHERSCAN_SUPPORTED_NETWORKS.has(network)) return ''
+  return network === 'mainnet' ? `https://etherscan.io/tx/${txHash}` : `https://${network}.etherscan.io/tx/${txHash}`
 }
 
 export const statusObject = {
@@ -338,8 +351,9 @@ export function validateVerifierId(selectedVerifier, value) {
   return true
 }
 
-export function formatDate(date) {
+export function formatDate(inputDate) {
   const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const date = new Date(inputDate)
   const day = date.getDate()
   const month = monthList[date.getMonth()]
   const year = date.getFullYear()
@@ -475,9 +489,9 @@ export const standardNetworkId = {
   [MATIC_CODE.toString()]: MATIC_CHAIN_ID,
 }
 
-export function selectChainId(network, provider) {
-  const { chainId } = provider
-  return standardNetworkId[network] || `0x${Number.parseInt(chainId, 10).toString(16)}`
+export function selectChainId(network, store) {
+  const networkId = store.getState()
+  return standardNetworkId[network] || `0x${Number.parseInt(networkId, 10).toString(16)}`
 }
 
 export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
@@ -512,4 +526,63 @@ export const getUserLanguage = () => {
   userLanguage = userLanguage.split('-')
   userLanguage = Object.prototype.hasOwnProperty.call(languages, userLanguage[0]) ? userLanguage[0] : 'en'
   return userLanguage
+}
+
+export const formatPastTx = (x, lowerCaseSelectedAddress) => {
+  let totalAmountString = ''
+  if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
+  else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol, true)
+  else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH', true)
+  const currencyAmountString =
+    x.type === CONTRACT_TYPE_ERC721 || x.isEtherscan ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
+  const finalObject = {
+    id: x.created_at.toString(),
+    date: new Date(x.created_at),
+    from: x.from,
+    slicedFrom: addressSlicer(x.from),
+    to: x.to,
+    slicedTo: addressSlicer(x.to),
+    action: lowerCaseSelectedAddress === x.to.toLowerCase() ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
+    totalAmount: x.total_amount,
+    totalAmountString,
+    currencyAmount: x.currency_amount,
+    currencyAmountString,
+    amount: `${totalAmountString} / ${currencyAmountString}`,
+    status: x.status,
+    etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network || MAINNET),
+    networkType: x.network,
+    ethRate: `1 ${x.symbol} = ${significantDigits(Number.parseFloat(x.currency_amount) / Number.parseFloat(x.total_amount))}`,
+    currencyUsed: x.selected_currency,
+    type: x.type,
+    type_name: x.type_name,
+    type_image_link: x.type_image_link,
+    transaction_hash: x.transaction_hash,
+    isEtherscan: x.isEtherscan,
+  }
+  return finalObject
+}
+
+export const padUrlString = (url) => {
+  return url.href.endsWith('/') ? url.href : `${url.href}/`
+}
+
+export const getVerifierId = (userInfo, typeOfLogin, verifierIdField) => {
+  const { name, nickname, sub } = userInfo
+  if (verifierIdField) return userInfo[verifierIdField]
+  switch (typeOfLogin) {
+    case GITHUB:
+    case TWITTER:
+      return nickname
+    case WEIBO:
+    case PASSWORDLESS:
+    case EMAIL_PASSWORD:
+      return name
+    case APPLE:
+    case LINKEDIN:
+    case LINE:
+    case JWT:
+      return sub
+    default:
+      throw new Error('Invalid login type')
+  }
 }

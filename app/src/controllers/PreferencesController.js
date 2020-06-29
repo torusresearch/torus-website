@@ -1,14 +1,39 @@
+import clone from 'clone'
+import erc20Contracts from 'eth-contract-metadata'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
+import Web3 from 'web3'
+import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
+import erc721Contracts from '../assets/assets-map.json'
 import config from '../config'
-import { ERROR_TIME, LOCALES, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
-import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
+import {
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_TOPUP,
+  BADGES_COLLECTIBLE,
+  BADGES_TOPUP,
+  BADGES_TRANSACTION,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ETH,
+  ERROR_TIME,
+  MAINNET,
+  SUCCESS_TIME,
+  THEME_LIGHT_BLUE_NAME,
+} from '../utils/enums'
+import { get, getEtherscanTransactions, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
+import { notifyUser } from '../utils/notifications'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
-import { getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
+import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
 
-// By default, poll every 1 minute
+// By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
+const DEFAULT_BADGES_COMPLETION = {
+  [BADGES_COLLECTIBLE]: false,
+  [BADGES_TOPUP]: false,
+  [BADGES_TRANSACTION]: false,
+}
 
 class PreferencesController {
   /**
@@ -18,7 +43,6 @@ class PreferencesController {
    * @property {object} store The stored object containing a users preferences, stored in torus-backend
    * @property {string} store.selectedAddress A hex string that matches the currently selected address in the app
    * @property {string} store.selectedCurrency A string showing the user selected currency
-   * @property {Array} store.pastTransactions A list of past Transactions of user
    * @property {string} store.theme the user selected theme
    * @property {string} store.locale the user selected locale
    * @property {Array} store.billboard the contents of torus-billboard (depends on the locale)
@@ -34,18 +58,26 @@ class PreferencesController {
         theme = torusTheme
       }
     }
+    const { initialState = {}, network, provider } = options
+
     const initState = {
       selectedAddress: '',
       selectedCurrency: 'USD',
-      pastTransactions: [],
       theme,
       locale: getUserLanguage(),
       billboard: {},
       contacts: [],
       permissions: [],
-      paymentTx: [],
-      ...options.initState,
+      badgesCompletion: {},
+      ...initialState,
     }
+
+    this.initState = clone(initState)
+
+    this.network = network
+    this.web3 = new Web3(provider)
+
+    this.fetchedPastTx = []
 
     this.interval = options.interval || DEFAULT_INTERVAL
     this.jwtToken = ''
@@ -54,6 +86,9 @@ class PreferencesController {
     this.metadataStore = new ObservableStore({})
     this.errorStore = new ObservableStore('')
     this.successStore = new ObservableStore('')
+    this.pastTransactionsStore = new ObservableStore([])
+    this.paymentTxStore = new ObservableStore([])
+    this.etherscanTxStore = new ObservableStore([])
   }
 
   set jwtToken(token) {
@@ -104,32 +139,38 @@ class PreferencesController {
 
   async sync(callback, errorCallback) {
     try {
-      const [user, paymentTx] = await Promise.all([
+      const [user, paymentTx, etherscanTx] = await Promise.all([
         get(`${config.api}/user`, this.headers).catch((_) => {
           if (errorCallback) errorCallback()
         }),
         getPastOrders({}, this.headers.headers).catch((error) => {
           log.error('unable to fetch past orders', error)
         }),
+        getEtherscanTransactions({}, this.headers.headers).catch((error) => {
+          log.error('unable to fetch etherscan transactions', error)
+        }),
       ])
       if (user && user.data) {
-        const { transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
+        const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         let whiteLabelLocale
-        let torusWhiteLabel
+        let badgesCompletion = DEFAULT_BADGES_COMPLETION
 
         // White Label override
-        if (storageAvailable('localStorage')) {
-          torusWhiteLabel = localStorage.getItem('torus-white-label')
+        if (storageAvailable('sessionStorage')) {
+          let torusWhiteLabel = sessionStorage.getItem('torus-white-label')
+          if (torusWhiteLabel) {
+            try {
+              torusWhiteLabel = JSON.parse(torusWhiteLabel)
+              whiteLabelLocale = torusWhiteLabel.defaultLanguage
+            } catch (error) {
+              log.error(error)
+            }
+          }
         }
-        if (torusWhiteLabel) {
-          try {
-            torusWhiteLabel = JSON.parse(torusWhiteLabel)
-            whiteLabelLocale = torusWhiteLabel.defaultLanguage
 
-            const selectedLocale = LOCALES.find((localeInner) => {
-              return localeInner.value === torusWhiteLabel.defaultLanguage
-            })
-            if (selectedLocale) whiteLabelLocale = selectedLocale.value
+        if (userBadges) {
+          try {
+            badgesCompletion = JSON.parse(userBadges)
           } catch (error) {
             log.error(error)
           }
@@ -137,13 +178,20 @@ class PreferencesController {
 
         this.store.updateState({
           contacts,
-          pastTransactions: transactions,
           theme,
           selectedCurrency: defaultCurrency,
           locale: whiteLabelLocale || locale || getUserLanguage(),
-          paymentTx: (paymentTx && paymentTx.data) || [],
           permissions,
+          badgesCompletion,
         })
+        if (paymentTx && paymentTx.data) {
+          this.calculatePaymentTx(paymentTx.data)
+        }
+        if (etherscanTx && etherscanTx.data) {
+          this.calculateEtherscanTx(etherscanTx.data)
+        }
+        this.fetchedPastTx = transactions
+        this.calculatePastTx(transactions)
         if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
       }
@@ -154,8 +202,153 @@ class PreferencesController {
     }
   }
 
+  calculatePaymentTx(txs) {
+    const accumulator = []
+    for (const x of txs) {
+      let action = ''
+      const lowerCaseAction = x.action.toLowerCase()
+      if (ACTIVITY_ACTION_TOPUP.includes(lowerCaseAction)) action = ACTIVITY_ACTION_TOPUP
+      else if (ACTIVITY_ACTION_SEND.includes(lowerCaseAction)) action = ACTIVITY_ACTION_SEND
+      else if (ACTIVITY_ACTION_RECEIVE.includes(lowerCaseAction)) action = ACTIVITY_ACTION_RECEIVE
+
+      accumulator.push({
+        id: x.id,
+        date: new Date(x.date),
+        from: x.from,
+        slicedFrom: x.slicedFrom,
+        action,
+        to: x.to,
+        slicedTo: x.slicedTo,
+        totalAmount: x.totalAmount,
+        totalAmountString: x.totalAmountString,
+        currencyAmount: x.currencyAmount,
+        currencyAmountString: x.currencyAmountString,
+        amount: x.amount,
+        ethRate: x.ethRate,
+        status: x.status.toLowerCase(),
+        etherscanLink: x.etherscanLink || '',
+        currencyUsed: x.currencyUsed,
+      })
+    }
+    this.paymentTxStore.putState(accumulator)
+  }
+
+  async calculatePastTx(txs) {
+    const pastTx = []
+    const pendingTx = []
+    const lowerCaseSelectedAddress = this.state.selectedAddress.toLowerCase()
+    for (const x of txs) {
+      if (
+        x.network === this.network.getNetworkNameFromNetworkCode() &&
+        (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase())
+      ) {
+        if (x.status !== 'confirmed') {
+          pendingTx.push(x)
+        } else {
+          const finalObject = formatPastTx(x, lowerCaseSelectedAddress)
+          pastTx.push(finalObject)
+        }
+      }
+    }
+    const pendingTxPromises = pendingTx.map((x) => getEthTxStatus(x.transaction_hash, this.web3).catch((error) => log.error(error)))
+    const resolvedTxStatuses = await Promise.all(pendingTxPromises)
+    for (const [index, element] of pendingTx.entries()) {
+      const finalObject = formatPastTx(element, lowerCaseSelectedAddress)
+      finalObject.status = resolvedTxStatuses[index]
+      pastTx.push(finalObject)
+      if (lowerCaseSelectedAddress === element.from.toLowerCase() && finalObject.status && finalObject.status !== element.status)
+        this.patchPastTx(element.id, finalObject.status)
+    }
+    this.pastTransactionsStore.putState(pastTx)
+  }
+
+  async calculateEtherscanTx(txs) {
+    const finalTxs = txs.reduce((accumulator, x) => {
+      const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
+      const etherscanTransaction = {
+        type: CONTRACT_TYPE_ETH,
+        symbol: 'ETH',
+        type_image_link: 'n/a',
+        type_name: 'n/a',
+        total_amount: totalAmount,
+        created_at: x.timeStamp * 1000,
+        from: x.from,
+        to: x.to,
+        transaction_hash: x.hash,
+        network: MAINNET,
+        status: x.txreceipt_status && x.txreceipt_status === '0' ? 'failed' : 'success',
+        isEtherscan: true,
+      }
+
+      if (x.contractAddress) {
+        const transactionType = x.tokenID ? CONTRACT_TYPE_ERC721 : CONTRACT_TYPE_ERC20
+        let contract
+        if (transactionType === CONTRACT_TYPE_ERC20) {
+          let checkSummedTo = x.contractAddress
+          if (isAddress(x.contractAddress)) checkSummedTo = toChecksumAddress(x.contractAddress)
+          contract = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
+        } else {
+          contract = Object.prototype.hasOwnProperty.call(erc721Contracts, x.contractAddress.toLowerCase())
+            ? erc721Contracts[x.contractAddress.toLowerCase()]
+            : {}
+        }
+
+        if (Object.keys(contract).length > 0) {
+          etherscanTransaction.symbol = transactionType === CONTRACT_TYPE_ERC20 ? contract.symbol : x.tokenID
+          etherscanTransaction.type_image_link = contract.logo
+          etherscanTransaction.type_name = contract.name
+        } else {
+          etherscanTransaction.symbol = x.tokenID
+          etherscanTransaction.type_name = x.tokenName
+        }
+        etherscanTransaction.type = transactionType
+      }
+
+      accumulator.push(formatPastTx(etherscanTransaction))
+      return accumulator
+    }, [])
+
+    this.etherscanTxStore.putState(finalTxs)
+  }
+
+  async patchNewTx(tx) {
+    const formattedTx = formatPastTx(tx)
+    const storePastTx = this.pastTransactionsStore.getState()
+    const duplicateIndex = storePastTx.findIndex((x) => x.transaction_hash === tx.transaction_hash && x.networkType === tx.network)
+    if (tx.status === 'submitted' || tx.status === 'confirmed') {
+      if (duplicateIndex === -1 && tx.status === 'submitted') {
+        // No duplicate found
+        this.pastTransactionsStore.putState(storePastTx.concat([formattedTx]))
+        this.postPastTx(tx)
+        try {
+          notifyUser(formattedTx.etherscanLink)
+        } catch (error) {
+          log.error(error)
+        }
+      } else {
+        storePastTx[duplicateIndex] = formattedTx
+        this.pastTransactionsStore.putState([...storePastTx])
+      }
+    }
+  }
+
+  async postPastTx(tx) {
+    try {
+      const response = await post(`${config.api}/transaction`, tx, this.headers)
+      log.info('successfully added', response)
+    } catch (error) {
+      log.error(error, 'unable to insert transaction')
+    }
+  }
+
   /* istanbul ignore next */
-  createUser(selectedCurrency, theme, verifier, verifierId, locale) {
+  recalculatePastTx() {
+    // This triggers store update which calculates past Tx status for that network
+    this.calculatePastTx(this.fetchedPastTx)
+  }
+
+  /* istanbul ignore next */
+  createUser(selectedCurrency, theme, verifier, verifierId) {
     return post(
       `${config.api}/user`,
       {
@@ -163,7 +356,6 @@ class PreferencesController {
         theme,
         verifier,
         verifierId,
-        locale,
       },
       this.headers
     )
@@ -300,6 +492,23 @@ class PreferencesController {
     }
   }
 
+  /* istanbul ignore next */
+  async patchPastTx(txId, status) {
+    try {
+      const response = await patch(
+        `${config.api}/transaction`,
+        {
+          id: txId,
+          status,
+        },
+        this.headers
+      )
+      log.info('successfully patched', response)
+    } catch (error) {
+      log.error('unable to patch tx', error)
+    }
+  }
+
   setSiteMetadata(origin, domainMetadata) {
     this.metadataStore.updateState({ [origin]: domainMetadata })
   }
@@ -307,6 +516,7 @@ class PreferencesController {
   setSelectedAddress(address) {
     if (this.state.selectedAddress === address) return
     this.store.updateState({ selectedAddress: address })
+    this.recalculatePastTx()
     // this.sync()
   }
 
@@ -323,6 +533,16 @@ class PreferencesController {
       if (!this._jwtToken) return
       this.sync()
     }, interval)
+  }
+
+  async setUserBadge(payload) {
+    const newBadgeCompletion = { ...this.state.badgesCompletion, ...{ [payload]: true } }
+    this.store.updateState({ badgesCompletion: newBadgeCompletion })
+    try {
+      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers)
+    } catch (error) {
+      log.error('unable to set badge', error)
+    }
   }
 }
 

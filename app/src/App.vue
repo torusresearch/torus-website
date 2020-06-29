@@ -6,10 +6,24 @@
 
 <script>
 /* eslint-disable vue-scoped-css/require-scoped */
-export default {}
-</script>
+export default {
+  mounted() {
+    const pageHtml = document.querySelector('html')
+    const pageBody = document.querySelector('body')
+    const pageApplication = document.querySelector('.v-application')
 
-<style src="../public/css/circles.css"></style>
+    if (this.$route.name === 'popup') {
+      pageHtml.style.background = 'none'
+      pageBody.style.background = 'none'
+      pageApplication.style.background = 'none'
+    } else {
+      pageHtml.style.background = ''
+      pageBody.style.background = ''
+      pageApplication.style.background = ''
+    }
+  },
+}
+</script>
 
 <style lang="scss">
 @import 'App.scss';

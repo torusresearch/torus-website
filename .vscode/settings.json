@@ -44,6 +44,7 @@
       "sourceType": "module"
     },
     "rules": {
+      "camelcase": 0,
       "unicorn/no-null": 0,
       "unicorn/no-abusive-eslint-disable": 0,
       "class-methods-use-this": 0,

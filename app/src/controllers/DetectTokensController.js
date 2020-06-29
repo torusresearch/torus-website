@@ -24,6 +24,7 @@ class DetectTokensController {
   constructor({ interval = DEFAULT_INTERVAL, network, provider } = {}) {
     this.interval = interval
     this.network = network
+    this.initState = { tokens: [] }
     this.detectedTokensStore = new ObservableStore({ tokens: [] })
     this._provider = provider
     this.web3 = new Web3(this._provider)
@@ -90,6 +91,7 @@ class DetectTokensController {
 
   async refreshTokenBalances() {
     if (this.network.store.getState().provider.type !== MAINNET || this.selectedAddress === '') {
+      this.detectedTokensStore.putState({ tokens: [] })
       return
     }
     const oldTokens = this.detectedTokensStore.getState().tokens

@@ -22,6 +22,9 @@ export default {
       variant: 'hosted-auto',
       webhookStatusUrl: `${config.rampApiHost}/transaction`,
       hostUrl: '*',
+      hostLogoUrl: 'https://app.tor.us/images/torus-logo-blue.svg',
+      hostAppName: 'Torus',
+      hostApiKey: config.rampAPIKEY,
     }
     return dispatch('openWidget', { path: config.rampHost, params: parameters, preopenInstanceId })
   },

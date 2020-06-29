@@ -77,7 +77,7 @@
 
     <v-divider></v-divider>
 
-    <v-list v-if="$vuetify.breakpoint.xsOnly" class="py-1" :style="{ marginLeft: '6px' }">
+    <v-list v-if="$vuetify.breakpoint.smAndDown" class="py-1" :style="{ marginLeft: '6px' }">
       <v-list-item
         v-for="headerItem in filteredMenu"
         :id="`${headerItem.name}-link-mobile`"
@@ -94,16 +94,15 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
-
-    <v-divider v-if="$vuetify.breakpoint.xsOnly"></v-divider>
+    <v-divider v-if="$vuetify.breakpoint.smAndDown"></v-divider>
     <v-list class="ml-1">
-      <v-list-item href="https://docs.tor.us/#users" target="_blank">
+      <v-list-item href="https://docs.tor.us/#users" target="_blank" rel="noreferrer noopener">
         <v-list-item-action class="mr-2">
           <v-icon size="20" class="text_2--text" v-text="'$vuetify.icons.info'" />
         </v-list-item-action>
         <v-list-item-content class="caption font-weight-bold">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
       </v-list-item>
-      <LanguageSelector v-if="$vuetify.breakpoint.xsOnly"></LanguageSelector>
+      <LanguageSelector v-if="$vuetify.breakpoint.smAndDown"></LanguageSelector>
     </v-list>
 
     <v-divider></v-divider>
@@ -115,7 +114,7 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { DISCORD } from '../../../utils/enums'
 import { addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
@@ -174,6 +173,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['logOut', 'updateSelectedAddress']),
     async logout() {
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
       if (urlInstance && urlInstance !== '') {
@@ -181,11 +181,11 @@ export default {
         await bc.postMessage({ data: { type: 'logout' } })
         bc.close()
       }
-      this.$store.dispatch('logOut')
+      this.logOut()
       this.$router.push({ path: '/logout' }).catch((_) => {})
     },
     async changeAccount(newAddress) {
-      this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
+      this.updateSelectedAddress({ selectedAddress: newAddress })
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
       if (urlInstance && urlInstance !== '') {
         const selectedAddressChannel = new BroadcastChannel(`selected_address_channel_${urlInstance}`, broadcastChannelOptions)

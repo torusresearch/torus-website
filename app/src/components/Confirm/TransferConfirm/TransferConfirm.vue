@@ -2,13 +2,7 @@
   <v-card class="confirm-transaction">
     <v-layout py-6 class="elevation-1">
       <v-flex xs12 text-center>
-        <img
-          class="home-link mr-1"
-          alt="Torus Logo"
-          width="135"
-          height="30"
-          :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
-        />
+        <img class="home-link mr-1" alt="Torus Logo" width="70" :height="getLogo.isExternal ? 'inherit' : '17'" :src="getLogo.logo" />
         <div class="headline">{{ t('walletTransfer.confirmTransaction') }}</div>
       </v-flex>
     </v-layout>
@@ -62,7 +56,7 @@
           </div>
           <div v-if="isNonFungibleToken" class="ml-auto caption d-flex align-center text-right" :style="{ maxWidth: '200px' }">
             <span class="mr-2">{{ assetSelected.name }}</span>
-            <img :src="assetSelected.image" height="30px" />
+            <img :src="assetSelected.image" height="30px" :alt="assetSelected.name" />
           </div>
           <div v-else class="ml-auto">
             <div class="caption text-right font-weight-medium">{{ displayAmount }}</div>
@@ -116,6 +110,7 @@
 
 <script>
 import BigNumber from 'bignumber.js'
+import { mapGetters } from 'vuex'
 
 import { ETH, MAINNET } from '../../../utils/enums'
 import { addressSlicer, significantDigits } from '../../../utils/utils'
@@ -206,6 +201,9 @@ export default {
     return {
       ETH,
     }
+  },
+  computed: {
+    ...mapGetters(['getLogo']),
   },
   methods: {
     onCancel() {

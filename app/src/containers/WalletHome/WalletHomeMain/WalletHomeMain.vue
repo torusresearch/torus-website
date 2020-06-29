@@ -26,7 +26,15 @@
                 </span>
                 <v-menu offset-y max-height="300" z-index="20">
                   <template v-slot:activator="{ on }">
-                    <v-btn x-small text class="text_3--text" :class="{ 'currency-selector': $vuetify.breakpoint.mAndUp }" v-on="on">
+                    <v-btn
+                      x-small
+                      text
+                      class="text_3--text"
+                      :class="{ 'currency-selector': $vuetify.breakpoint.mAndUp }"
+                      title="Select currency"
+                      aria-label="Select currency"
+                      v-on="on"
+                    >
                       <span id="selected-currency" class="description">{{ selectedCurrency }}</span>
                       <v-icon class="text_3--text" small>$vuetify.icons.select</v-icon>
                     </v-btn>
@@ -58,9 +66,9 @@
                 v-show="canShowLrc && !whiteLabel.topupHide"
                 block
                 large
-                class="torus-btn1"
-                :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
+                class="torus-btn1 gtm-topup-cta"
+                :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+                :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
                 @click="topup"
               >
                 <v-icon left>$vuetify.icons.add</v-icon>
@@ -71,9 +79,9 @@
               <v-btn
                 block
                 large
-                class="torus-btn1"
-                :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
+                class="torus-btn1 gtm-transfer-cta"
+                :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+                :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
                 @click="initiateTransfer"
               >
                 <v-icon left>$vuetify.icons.send</v-icon>
@@ -103,8 +111,9 @@
               </v-flex>
               <v-flex xs4 pt-4 class="text-right hidden-xs-only">
                 <img
-                  :src="require(`../../../../public/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)"
+                  :src="require(`../../../assets/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)"
                   style="height: 120px;"
+                  alt="Onboarding"
                 />
               </v-flex>
             </v-layout>
@@ -130,7 +139,14 @@
         ></PromotionCard>
       </v-flex>
     </v-layout>
-    <v-layout wrap class="mt-12">
+
+    <v-layout class="mt-8">
+      <v-flex xs12>
+        <Badges />
+      </v-flex>
+    </v-layout>
+
+    <v-layout wrap class="mt-6">
       <v-flex xs12>
         <v-tabs v-model="activeTab" class="home-tab" centered>
           <v-tab :key="t('walletHome.tokens')" class="home-tab-token gmt-tokens-tab font-weight-bold">
@@ -163,15 +179,35 @@
         <CollectiblesList></CollectiblesList>
       </v-tab-item>
     </v-tabs-items>
+
+    <v-layout class="mt-12">
+      <v-flex xs12 class="refresh text-right">
+        <v-btn
+          class="gmt-refresh-tokens"
+          :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
+          height="24"
+          width="24"
+          fab
+          aria-label="Refresh Balances"
+          @click="refreshBalances"
+        >
+          <v-icon color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
+        </v-btn>
+        <v-chip :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'" class="text_2--text ml-2" small>
+          {{ t('walletHome.lastUpdate') }} {{ lastUpdated }}
+        </v-chip>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../../components/helpers/QuickAddress'
+import Badges from '../../../components/WalletHome/Badges'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 import Onboarding from '../../../components/WalletHome/Onboarding'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
@@ -181,7 +217,7 @@ import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 
 export default {
   name: 'WalletHome',
-  components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, Onboarding, ComponentLoader, NetworkDisplay },
+  components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, Onboarding, ComponentLoader, NetworkDisplay, Badges },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
@@ -246,6 +282,7 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
+    ...mapActions(['forceFetchTokens', 'setSelectedCurrency']),
     select(selectedItem) {
       // this is so that we don't break their api
       this.selected = []
@@ -256,29 +293,20 @@ export default {
       })
     },
     onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'home' })
+      this.setSelectedCurrency({ selectedCurrency: value, origin: 'home' })
     },
     refreshBalances() {
-      this.$store.dispatch('forceFetchTokens')
+      this.forceFetchTokens()
       this.setDateUpdated()
     },
     initiateTransfer() {
-      // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
       this.$router.push({ name: 'walletTransfer' }).catch((_) => {})
     },
     topup() {
       this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
     },
     setDateUpdated() {
-      const currentDateTime = new Date()
-      const day = currentDateTime.getDate().toString().padStart(2, '0')
-      const month = (currentDateTime.getMonth() + 1).toString().padStart(2, '0')
-      const date = `${day}/${month}/${currentDateTime.getFullYear().toString().slice(2, 4)}`
-
-      const hours = currentDateTime.getHours().toString().padStart(2, '0')
-      const mins = currentDateTime.getMinutes().toString().padStart(2, '0')
-      const time = `${hours}:${mins}`
-      this.lastUpdated = `${date}, ${time}`
+      this.lastUpdated = new Date().toLocaleString()
     },
   },
 }

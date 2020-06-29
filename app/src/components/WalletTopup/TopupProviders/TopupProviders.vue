@@ -17,7 +17,7 @@
             <v-icon v-else :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBlack--text'">$vuetify.icons.radioOff</v-icon>
           </v-list-item-icon>
           <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 100 : 130" height="100%" tile class="align-self-center mr-2">
-            <img :src="require(`../../../../public/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
+            <img :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
           </v-list-item-avatar>
           <v-list-item-content class="align-self-center text-right text_1--text caption">
             <div>{{ t('walletTopUp.paywith') }} {{ targetProvider.line1 }}</div>
@@ -47,7 +47,7 @@
                 <v-icon color="grey">$vuetify.icons.radioOff</v-icon>
               </v-list-item-icon>
               <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
-                <img :src="require(`../../../../public/images/${targetProvider.logo}`)" />
+                <img :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
               </v-list-item-avatar>
               <v-list-item-content class="align-self-center text-right text_1--text caption">
                 <div>{{ targetProvider.line1 }}</div>
@@ -64,7 +64,7 @@
       <div id="write-to-us" class="mt-4 py-4 px-1 text-gray caption">
         <div>
           {{ t('walletTopUp.otherMode') }}
-          <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank" :style="{ textDecoration: 'none' }">
+          <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank" rel="noreferrer noopener" :style="{ textDecoration: 'none' }">
             {{ t('walletTopUp.writeToUs') }}
           </a>
         </div>

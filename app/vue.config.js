@@ -42,37 +42,30 @@ module.exports = {
     }
   },
   chainWebpack: (config) => {
-    config.resolve.alias.set('bn.js', 'fork-bn.js')
+    config.resolve.alias.set('bn.js', path.resolve(__dirname, 'node_modules/bn.js'))
+    config.resolve.alias.set('lodash', path.resolve(__dirname, 'node_modules/lodash'))
+    config.resolve.alias.set('#', path.resolve(__dirname, 'src/'))
+    config.resolve.extensions.add('.vue')
     if (process.env.NODE_ENV === 'production') {
       config
         .plugin('service-worker-integrity')
         .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
         .after('workbox')
     }
-    // config.module
-    //   .rule('worker')
-    //   .test(/\.worker\.js$/)
-    //   .use('worker-loader')
-    //   .loader('worker-loader')
-    //   .tap(options => {
-    //     return options
-    //   })
   },
 
   publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',
-
   integrity: true,
   crossorigin: 'anonymous',
-
   productionSourceMap: false,
-
   pwa: {
     name: 'Torus',
-    themeColor: '#3996ff',
+    themeColor: '#0364ff',
     msTileColor: '#000000',
     appleMobileWebAppCapable: 'yes',
-    appleMobileWebAppStatusBarStyle: 'black',
+    appleMobileWebAppStatusBarStyle: 'black-translucent',
     workboxPluginMode: 'InjectManifest',
+    orientation: 'potrait',
     workboxOptions: {
       importWorkboxFrom: 'disabled',
       swSrc: 'sw.js',
@@ -80,38 +73,45 @@ module.exports = {
       precacheManifestFilename: 'precache-manifest.[manifestHash].js',
       exclude: [/^.*images\/logos\/.*$/],
     },
-    mainfestPath:
-      process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
-        ? `/${version}/manifest.json`
-        : '/manifest.json',
+    iconPaths: {
+      favicon32: 'img/icons/favicon-32x32.png',
+      favicon16: 'img/icons/favicon-16x16.png',
+      appleTouchIcon: 'img/icons/apple-touch-icon-180x180.png',
+      maskIcon: 'img/icons/safari-pinned-tab.svg',
+      msTileImage: 'img/icons/msapplication-icon-144x144.png',
+    },
+    mainfestPath: getValueForCurrentEnvironment('manifest.json'),
     manifestOptions: {
       name: 'Torus',
       short_name: 'Torus',
-      start_url:
-        process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
-          ? `/${version}/index.html`
-          : '/index.html',
+      start_url: getValueForCurrentEnvironment('index.html'),
       display: 'standalone',
-      theme_color: '#3996ff',
+      theme_color: '#0364ff',
       icons: [
-        {
-          src:
-            process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
-              ? `/${version}/img/icons/android-chrome-192x192.png`
-              : './img/icons/android-chrome-192x192.png',
-          sizes: '192x192',
-          type: 'image/png',
-        },
-        {
-          src:
-            process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
-              ? `/${version}/img/icons/android-chrome-512x512.png`
-              : './img/icons/android-chrome-192x192.png',
-          sizes: '512x512',
-          type: 'image/png',
-        },
+        getAndroidIcon('72x72'),
+        getAndroidIcon('96x96'),
+        getAndroidIcon('128x128'),
+        getAndroidIcon('144x144'),
+        getAndroidIcon('152x152'),
+        getAndroidIcon('192x192'),
+        getAndroidIcon('384x384'),
+        getAndroidIcon('512x512'),
       ],
     },
   },
   parallel: !process.env.CIRCLECI,
+}
+
+function getAndroidIcon(size) {
+  return {
+    src: getValueForCurrentEnvironment(`img/icons/android-chrome-${size}.png`),
+    sizes: size,
+    type: 'image/png',
+  }
+}
+
+function getValueForCurrentEnvironment(value) {
+  return process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
+    ? `/${version}/${value}`
+    : `/${value}`
 }

@@ -1,8 +1,9 @@
 /* eslint-disable */
 import assert from 'assert'
 import EventEmitter from 'events'
-import * as ethUtil from 'ethereumjs-util'
-import EthTx from 'ethereumjs-tx'
+import { toBuffer } from 'ethereumjs-util'
+import Common from 'ethereumjs-common'
+import { Transaction as EthTx } from 'ethereumjs-tx'
 import ObservableStore from 'obs-store'
 import sinon from 'sinon'
 import TransactionController from '../../../../src/controllers/TransactionController'
@@ -340,8 +341,29 @@ describe('Transaction Controller', function () {
       txController
         .signTransaction('1')
         .then((rawTx) => {
-          const ethTx = new EthTx(ethUtil.toBuffer(rawTx))
+          const ethTx = new EthTx(toBuffer(rawTx), { chain: currentNetworkId })
           assert.equal(ethTx.getChainId(), currentNetworkId)
+          done()
+        })
+        .catch(done)
+    })
+
+    it('prepares a tx with the custom chainId set', function (done) {
+      txController.addTx({ id: '1', status: 'unapproved', metamaskNetworkId: 100, txParams: {} }, noop)
+      txController.networkStore.putState(100)
+      txController
+        .signTransaction('1')
+        .then((rawTx) => {
+          const chain = Common.forCustomChain(
+            1,
+            {
+              chainId: 100,
+              url: 'https://xdai.poanetwork.dev',
+            },
+            'istanbul'
+          )
+          const ethTx = new EthTx(toBuffer(rawTx), { common: chain })
+          assert.equal(ethTx.getChainId(), 100)
           done()
         })
         .catch(done)

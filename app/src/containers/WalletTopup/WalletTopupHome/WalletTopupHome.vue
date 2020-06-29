@@ -44,6 +44,7 @@ import { mapState } from 'vuex'
 
 import QuickAddress from '../../../components/helpers/QuickAddress'
 import TopupProviders from '../../../components/WalletTopup/TopupProviders'
+import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../../../utils/enums'
 import { getPaymentProviders } from '../../../utils/utils'
 
 export default {
@@ -57,8 +58,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['theme']),
+    ...mapState(['theme', 'whiteLabel']),
     providers() {
+      if (this.whiteLabel.isActive) {
+        return getPaymentProviders(this.whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME)
+      }
       return getPaymentProviders(this.theme)
     },
   },

@@ -5,17 +5,13 @@
         <img
           class="home-link mr-1"
           alt="Torus Logo"
-          :width="whiteLabelGlobal.isWhiteLabelActive ? '' : '135'"
-          :height="whiteLabelGlobal.isWhiteLabelActive ? '50' : '30'"
-          :src="
-            whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
-              ? whiteLabelGlobal.logo
-              : require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
-          "
+          :width="$store.state.whiteLabel.isActive ? '' : '135'"
+          :height="$store.state.whiteLabel.isActive ? '50' : '30'"
+          :src="getLogo.logo"
         />
       </router-link>
       <router-link v-if="$vuetify.breakpoint.xsOnly" id="logo-home-lnk" :to="{ name: 'walletHome' }">
-        <img :src="require('../../../../public/img/icons/t-fill.svg')" width="35" height="30" alt="Torus Logo" />
+        <img src="../../../assets/img/icons/t-fill.svg" width="35" height="30" alt="Torus Logo" />
       </router-link>
     </div>
     <v-spacer></v-spacer>
@@ -38,7 +34,7 @@
     <LanguageSelector v-if="!$vuetify.breakpoint.smAndDown"></LanguageSelector>
     <v-menu v-if="!$vuetify.breakpoint.smAndDown" offset-y bottom left z-index="20" :close-on-content-click="false">
       <template v-slot:activator="{ on }">
-        <v-btn id="menu-dropdown-btn" small text v-on="on">
+        <v-btn id="menu-dropdown-btn" small text aria-label="View Account Menu" v-on="on">
           <span class="text-capitalize subtitle-2">{{ userInfo.name }}</span>
           <v-icon class="ml-2 mt-0" small>$vuetify.icons.select</v-icon>
         </v-btn>
@@ -101,7 +97,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import { capitalizeFirstLetter } from '../../../utils/utils'
 import AccountMenu from '../../WalletAccount/AccountMenu'
@@ -125,12 +121,13 @@ export default {
   },
   computed: {
     ...mapState(['userInfo', 'successMsg', 'errorMsg']),
+    ...mapGetters(['getLogo']),
     bannerColor() {
       return this.$vuetify.theme.isDark ? this.$vuetify.theme.themes.dark.infoBanner : this.$vuetify.theme.themes.light.infoBanner
     },
     lrcMsg() {
       if (process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc') {
-        return 'You are using the test cluster on torus network'
+        return 'navBar.lrcMsg'
       }
       return ''
     },

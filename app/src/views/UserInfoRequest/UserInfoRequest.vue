@@ -6,23 +6,16 @@
     <template v-else>
       <v-layout py-6 class="elevation-1">
         <v-flex xs12 text-center>
-          <img
-            class="home-link mr-1"
-            alt="Torus Logo"
-            width="70"
-            height="16"
-            :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
-          />
+          <img class="home-link mr-1" alt="Torus Logo" width="70" :height="getLogo.isExternal ? 'inherit' : '17'" :src="getLogo.logo" />
           <div class="display-1 text_2--text">{{ t('dappInfo.permission') }}</div>
         </v-flex>
       </v-layout>
       <v-layout wrap align-center mx-8 my-6>
-        <v-flex class="text-center">
-          <span class="headline text_2--text">Allow {{ origin.hostname }} to access your Google Email Address, Profile Photo and Name</span>
-          <!-- <br />
-          <v-btn small text class="caption torusBrand1--text" @click="editPermissions">
-            Edit permissions
-          </v-btn> -->
+        <v-flex class="text-center" xs12>
+          <span class="headline text_2--text">{{ t('dappPermission.allowAccess').replace(/{host}/gi, origin.hostname) }}</span>
+        </v-flex>
+        <v-flex v-if="message" class="text-center" xs12>
+          <span class="headline text_2--text">{{ message }}</span>
         </v-flex>
       </v-layout>
       <v-divider class="mx-6"></v-divider>
@@ -33,9 +26,19 @@
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
               <div class="d-flex request-from align-center">
-                <a :href="origin.href" target="_blank" class="caption font-weight-medium torusBrand1--text">{{ origin.hostname }}</a>
-                <v-btn x-small :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'" class="link-icon ml-auto" :href="origin.href" target="_blank">
-                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+                <a :href="origin.href" target="_blank" rel="noreferrer noopener" class="caption font-weight-medium torusBrand1--text">
+                  {{ origin.hostname }}
+                </a>
+                <v-btn
+                  x-small
+                  :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'"
+                  class="link-icon ml-auto"
+                  :href="origin.href"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  :aria-label="`Open ${origin.hostname} Link`"
+                >
+                  <img src="../../assets/img/icons/open-in-new-grey.svg" class="card-upper-icon" alt="Link Icon" />
                 </v-btn>
               </div>
             </v-card-text>
@@ -60,6 +63,7 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
+import { mapGetters } from 'vuex'
 
 import { UserInfoScreenLoader } from '../../content-loader'
 // import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
@@ -81,6 +85,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['getLogo']),
     accessText() {
       return this.t(`dappInfo.toAccess${capitalizeFirstLetter(this.verifier)}`)
     },
@@ -92,11 +97,13 @@ export default {
       const {
         payload: { verifier = '', message = '' },
         origin = '',
+        whiteLabel,
       } = ev.data
       this.origin = origin // origin of tx: website url
       this.type = 'userInfo'
       this.verifier = verifier
       this.message = message
+      this.$store.commit('setWhiteLabel', whiteLabel)
       bc.close()
     })
     bc.postMessage({ data: { type: 'popup-loaded' } })

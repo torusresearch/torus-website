@@ -48,8 +48,8 @@
                     <v-btn
                       large
                       class="torus-btn1 py-1"
-                      :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                      :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
+                      :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+                      :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
                       block
                       :disabled="!formValid"
                       depressed
@@ -74,23 +74,14 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
+import { RPC, RPC_DISPLAY_NAME } from '../../../utils/enums'
 import { broadcastChannelOptions } from '../../../utils/utils'
-
-const { RPC, RPC_DISPLAY_NAME, SUPPORTED_NETWORK_TYPES } = require('../../../utils/enums')
 
 export default {
   name: 'NetworkSettings',
   data() {
     return {
       selectedNetwork: {},
-      networks: [
-        ...Object.values(SUPPORTED_NETWORK_TYPES),
-        {
-          networkName: RPC_DISPLAY_NAME,
-          host: RPC,
-          chainId: '',
-        },
-      ],
       rpc: { chainId: '', networkName: '', host: '' },
       formValid: true,
       rules: {
@@ -99,7 +90,17 @@ export default {
     }
   },
   computed: {
-    ...mapState(['networkType']),
+    ...mapState(['networkType', 'supportedNetworks']),
+    networks() {
+      return [
+        ...Object.values(this.supportedNetworks),
+        {
+          networkName: RPC_DISPLAY_NAME,
+          host: RPC,
+          chainId: '',
+        },
+      ]
+    },
     isRPCSelected() {
       return this.selectedNetwork.host === RPC
     },
@@ -132,11 +133,11 @@ export default {
     },
     setRPC() {
       if (this.$refs.networkForm.validate()) {
-        // this.selectedNetwork = RPC
         const payload = { network: this.rpc, type: RPC }
         this.$store
           .dispatch('setProviderType', payload)
           .then(() => {
+            this.selectedNetwork = this.networks.find((x) => x.host === this.rpc.host)
             this.showNotification(true)
             this.sendToIframe(payload)
           })

@@ -2,7 +2,7 @@
   <v-container px-0 py-6 class="permission-container">
     <v-layout wrap>
       <v-flex class="card-shadow text-center" py-6 mb-4 xs12>
-        <img :src="require(`../../../../public/images/security.svg`)" />
+        <img src="../../../assets/images/security.svg" alt="Security Icon" />
         <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="headline font-weight-bold">
           {{ t('dappPermission.permission') }}
         </div>
@@ -12,7 +12,7 @@
           <v-flex xs3 style="position: relative;">
             <div class="logo-container d-flex align-center justify-center float-right">
               <!-- Update with proper logo -->
-              <img class="logo-from" :src="require(`../../../../public/images/logos/augur_logo.png`)" />
+              <img class="logo-from" :src="`${logosUrl}/augur_logo.png`" :alt="`${origin} Logo`" />
             </div>
             <br />
             <br />
@@ -29,7 +29,7 @@
           <v-flex xs3>
             <!-- Update with proper target -->
             <div class="logo-container d-flex align-center justify-center float-left">
-              <img :src="require(`../../../../public/images/oval-google.svg`)" />
+              <img src="../../../assets/images/oval-google.svg" alt="Target Logo" />
             </div>
             <br />
             <br />
@@ -74,9 +74,11 @@
 
         <v-card class="card-shadow px-3 py-4 mb-8">
           <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="caption permission-note">
-            <img :src="require(`../../../../public/images/exclamation-triangle.png`)" />
+            <img src="../../../assets/images/exclamation-triangle.png" alt="Alert Icon" />
             {{ t('dappPermission.note').replace(/\{num\}/gi, 6) }}.
-            <a class="font-italic" :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'">{{ t('dappPermission.learnMore') }}</a>
+            <a class="font-italic" rel="noreferrer noopener" :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'">
+              {{ t('dappPermission.learnMore') }}
+            </a>
           </div>
         </v-card>
 
@@ -98,19 +100,25 @@
 <script>
 import { mapState } from 'vuex'
 
-import { SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
+import config from '../../../config'
 
 export default {
   name: 'PermissionConfirm',
+  data() {
+    return {
+      logosUrl: config.logosUrl,
+    }
+  },
   computed: {
     ...mapState({
       networkType: 'networkType',
       whiteLabel: 'whiteLabel',
+      supportedNetworks: 'supportedNetworks',
       selectedNetwork(state) {
         let finalNetwork = ''
 
         if (this.network) {
-          return SUPPORTED_NETWORK_TYPES[this.network].networkName
+          return this.supportedNetworks[this.network].networkName
         }
 
         finalNetwork = !state.networkType.networkName ? state.networkType.host : state.networkType.networkName
