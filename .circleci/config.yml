@@ -165,7 +165,7 @@ jobs:
               command: |
                 npm run build:alpha1
           - persist_to_workspace:
-              root: ~/torus-website/
+              root: ~/
               paths:
                 - torus-website/app/dist
           - <<: *step_save_cache
