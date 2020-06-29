@@ -1,35 +1,37 @@
-::v-deep .button-speed {
-  &.v-size--large {
-    padding: inherit;
+.btn-speed {
+  padding: 14px;
+  opacity: 0.3;
+  &.is-confirm {
+    padding: 8px 14px;
   }
-  &.v-btn {
-    height: inherit;
-    border: 1px solid var(--v-text_2-lighten3);
-    color: var(--v-text_2-base);
-  }
-  &.v-btn.selected {
-    border: 1px solid var(--v-primary-base);
-    color: var(--v-primary-base);
-  }
-  .v-btn__content {
-    flex-direction: column;
-    padding: 12px 0;
-    line-height: 1em;
-  }
-}
-
-
-::v-deep .theme--dark.button-speed {
-  &.v-btn {
-    border: 1px solid var(--v-text_2-base);
-    color: var(--v-text_2-base);
-  }
-  &.v-btn.selected {
-    border: 1px solid var(--v-text_1-base);
-    color: var(--v-text_1-base);
-  }
-}
-
-.advance-option {
   cursor: pointer;
+  > div {
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 12px;
+  }
+  &__speed {
+    color: #4a4a4a;
+  }
+  &__price {
+    color: #5c6c7f;
+  }
+  &.selected {
+    opacity: 1;
+    font-weight: bold;
+  }
+  &.theme--dark {
+    background-color: var(--v-torusBlack2-base);
+    opacity: 0.4;
+    .btn-speed__speed {
+      color: #d3d3d4;
+    }
+    .btn-speed__price {
+      color: #979797;
+    }
+    &.selected {
+      opacity: 1;
+      font-weight: bold;
+    }
+  }
 }

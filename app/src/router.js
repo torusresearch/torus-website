@@ -1,34 +1,26 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import store from './store'
-import Popup from './views/Popup'
-import ProviderChange from './views/ProviderChange'
-import UserInfoRequest from './views/UserInfoRequest'
-import RedirectCatch from './views/RedirectCatch'
-import Login from './views/Login'
-import Confirm from './views/Confirm'
-import Wallet from './views/Wallet'
-import { WalletHome, WalletHomeMain, WalletHomeCollectible } from './containers/WalletHome'
+
 import WalletHistory from './containers/WalletHistory'
+import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
-import WalletTransfer from './containers/WalletTransfer'
 import {
   WalletTopupHome,
-  WalletTopupSimplex,
   WalletTopupMoonpay,
+  WalletTopupRampNetwork,
+  WalletTopupSimplex,
   WalletTopupWyre,
-  WalletTopupCrypto,
-  WalletTopupCoinDirect
+  WalletTopupXanpool,
 } from './containers/WalletTopup'
-
-// const Popup = () => import('./views/Popup.vue')
-// const Confirm = () => import('./views/Confirm.vue')
-// const Wallet = () => import('./views/Wallet.vue')
-// const Login = () => import('./containers/Login.vue')
-// const WalletHome = () => import('./containers/WalletHome.vue')
-// const WalletHistory = () => import('./containers/WalletHistory.vue')
-// const WalletSettings = () => import('./containers/WalletSettings.vue')
-// const WalletAccounts = () => import('./containers/WalletAccounts.vue')
+import WalletTransfer from './containers/WalletTransfer'
+import store from './store'
+import Confirm from './views/Confirm'
+import Login from './views/Login'
+import Popup from './views/Popup'
+import ProviderChange from './views/ProviderChange'
+import RedirectCatch from './views/RedirectCatch'
+import UserInfoRequest from './views/UserInfoRequest'
+import Wallet from './views/Wallet'
 
 Vue.use(Router)
 
@@ -40,40 +32,43 @@ const router = new Router({
       path: '/',
       name: 'login',
       component: Login,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
     },
     {
       path: '/logout',
       name: 'logout',
       component: Login,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
     },
     {
       path: '/popup',
       name: 'popup',
       component: Popup,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
     },
     {
       path: '/redirect',
       name: 'redirect',
       component: RedirectCatch,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
     },
     {
       path: '/confirm',
       name: 'confirm',
-      component: Confirm
+      component: Confirm,
+      meta: { requiresAuth: false },
     },
     {
       path: '/providerchange',
       name: 'providerchange',
-      component: ProviderChange
+      component: ProviderChange,
+      meta: { requiresAuth: false },
     },
     {
       path: '/userinforequest',
       name: 'userInfoRequest',
-      component: UserInfoRequest
+      component: UserInfoRequest,
+      meta: { requiresAuth: false },
     },
     {
       path: '/wallet',
@@ -83,7 +78,7 @@ const router = new Router({
           path: '/',
           name: 'walletDefault',
           component: WalletHome,
-          redirect: { name: 'walletHomeMain' }
+          redirect: { name: 'walletHomeMain' },
         },
         {
           path: 'home',
@@ -94,29 +89,29 @@ const router = new Router({
             {
               path: '',
               name: 'walletHomeMain',
-              component: WalletHomeMain
+              component: WalletHomeMain,
             },
             {
               path: 'collectibles/:address',
               name: 'walletHomeCollectible',
-              component: WalletHomeCollectible
-            }
-          ]
+              component: WalletHomeCollectible,
+            },
+          ],
         },
         {
           path: 'history',
           name: 'walletHistory',
-          component: WalletHistory
+          component: WalletHistory,
         },
         {
           path: 'settings',
           name: 'walletSettings',
-          component: WalletSettings
+          component: WalletSettings,
         },
         {
           path: 'transfer',
           name: 'walletTransfer',
-          component: WalletTransfer
+          component: WalletTransfer,
         },
         {
           path: 'topup',
@@ -124,64 +119,73 @@ const router = new Router({
           component: WalletTopupHome,
           children: [
             {
+              path: 'rampnetwork',
+              name: 'walletTopupRampNetwork',
+              component: WalletTopupRampNetwork,
+            },
+            {
               path: 'simplex',
               name: 'walletTopupSimplex',
-              component: WalletTopupSimplex
+              component: WalletTopupSimplex,
             },
             {
               path: 'moonpay',
               name: 'walletTopupMoonpay',
-              component: WalletTopupMoonpay
+              component: WalletTopupMoonpay,
             },
             {
               path: 'wyre',
               name: 'walletTopupWyre',
-              component: WalletTopupWyre
+              component: WalletTopupWyre,
             },
             {
-              path: 'crypto',
-              name: 'walletTopupCrypto',
-              component: WalletTopupCrypto
+              path: 'xanpool',
+              name: 'walletTopupXanpool',
+              component: WalletTopupXanpool,
             },
-            {
-              path: 'coindirect',
-              name: 'walletTopupCoindirect',
-              component: WalletTopupCoinDirect
+          ],
+          beforeEnter(to, from, next) {
+            if (store.state.whiteLabel.topupHide) {
+              return next({ name: 'walletHome' })
             }
-          ]
-        }
-      ]
+            return next()
+          },
+        },
+      ],
     },
-    { path: '*', component: Login }
-  ]
+    { path: '*', component: Login },
+  ],
 })
 
-function hasQueryParams(route) {
+function hasQueryParameters(route) {
   return Object.prototype.hasOwnProperty.call(route.query, 'instanceId')
 }
 
 router.beforeResolve((to, from, next) => {
-  if (to.hasOwnProperty('meta') && to.meta.hasOwnProperty('requiresAuth') && to.meta.requiresAuth === false) {
+  if (
+    Object.prototype.hasOwnProperty.call(to, 'meta') &&
+    Object.prototype.hasOwnProperty.call(to.meta, 'requiresAuth') &&
+    to.meta.requiresAuth === false
+  ) {
     if (to.name === 'logout') {
-      next()
-    } else if (!hasQueryParams(to) && hasQueryParams(from)) {
-      next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
-    } else {
-      next()
+      return next()
     }
-  } else {
-    if (store.state.selectedAddress === '') {
-      next({ name: 'login', query: { redirect: to.fullPath } })
-    } else if (!hasQueryParams(to) && hasQueryParams(from)) {
-      if (to.name !== 'walletTransfer') {
-        Object.keys(from.query).forEach(key => key === 'instanceId' || delete from.query[key])
-      }
-      next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
-      // next()
-    } else {
-      next()
+    if (!hasQueryParameters(to) && hasQueryParameters(from)) {
+      return next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
     }
+    return next()
   }
+  if (store.state.selectedAddress === '') {
+    return next({ name: 'login', query: { redirect: to.fullPath } })
+  }
+  if (!hasQueryParameters(to) && hasQueryParameters(from)) {
+    if (to.name !== 'walletTransfer') {
+      Object.keys(from.query).forEach((key) => key === 'instanceId' || delete from.query[key])
+    }
+    return next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
+    // next()
+  }
+  return next()
 })
 
 export default router

@@ -1,7 +1,40 @@
+.v-btn.v-btn--icon.qr-btn {
+  background-color: var(--v-torusGray4-base);
+  color: var(--v-torusFont2-base);
+  &.theme--dark {
+    background-color: var(--v-torusBlack2-base);
+    color: #5C6C7F;
+  }
+}
+
+.card-header {
+  background: #FFFFFF;
+  box-sizing: border-box;
+  border-radius: 6px;
+  line-height: 0;
+
+  .close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: var(--v-text_1-base);
+  }
+}
+
 .qr-container img {
-  width: 260px;
+  width: 177px;
   @media screen and (max-width: 600px) {
-    max-width: 260px;
+    max-width: 177px;
     width: inherit;
+  }
+}
+
+.public-address {
+  font-size: 12px;
+}
+
+.theme--dark {
+  .card-header {
+    background: var(--v-torusBlack2-base);
   }
 }

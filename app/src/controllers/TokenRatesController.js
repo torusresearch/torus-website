@@ -1,6 +1,6 @@
-const ObservableStore = require('obs-store')
-const log = require('loglevel')
-const normalizeAddress = require('eth-sig-util').normalize
+import { normalize as normalizeAddress } from 'eth-sig-util'
+import log from 'loglevel'
+import ObservableStore from 'obs-store'
 
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
@@ -28,13 +28,13 @@ class TokenRatesController {
   async updateExchangeRates() {
     const contractExchangeRates = {}
     const nativeCurrency = this.currency ? this.currency.getState().nativeCurrency.toLowerCase() : 'eth'
-    const pairs = this._tokens.map(token => token.tokenAddress).join(',')
+    const pairs = this._tokens.map((token) => token.tokenAddress).join(',')
     const query = `contract_addresses=${pairs}&vs_currencies=${nativeCurrency}`
     if (this._tokens.length > 0) {
       try {
         const response = await fetch(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
         const prices = await response.json()
-        this._tokens.forEach(token => {
+        this._tokens.forEach((token) => {
           const price = prices[token.tokenAddress.toLowerCase()]
           contractExchangeRates[normalizeAddress(token.tokenAddress)] = price ? price[nativeCurrency] : 0
         })
@@ -49,7 +49,7 @@ class TokenRatesController {
    * @type {Number}
    */
   set interval(interval) {
-    this._handle && clearInterval(this._handle)
+    if (this._handle) clearInterval(this._handle)
     if (!interval) {
       return
     }
@@ -57,20 +57,22 @@ class TokenRatesController {
       this.updateExchangeRates()
     }, interval)
   }
+
   /**
    * @type {Array}
    */
   set tokensStore(tokensStore) {
-    this._tokensStore && this._tokensStore.unsubscribe()
+    if (this._tokensStore) this._tokensStore.unsubscribe()
     if (!tokensStore) {
       return
     }
     this._tokensStore = tokensStore
     this.tokens = tokensStore.getState().tokens
     tokensStore.subscribe(({ tokens = [] }) => {
-      const tokenAddresses = tokens.map(x => x.tokenAddress)
-      const presentAddresses = (this._tokens && this._tokens.map(x => x.tokenAddress)) || []
-      if (tokenAddresses.sort().toString() !== presentAddresses.sort().toString()) this.tokens = tokens
+      this.tokens = tokens
+      // const tokenAddresses = tokens.map(x => x.tokenAddress)
+      // const presentAddresses = (this._tokens && this._tokens.map(x => x.tokenAddress)) || []
+      // if (tokenAddresses.sort().toString() !== presentAddresses.sort().toString()) this.tokens = tokens
     })
   }
 

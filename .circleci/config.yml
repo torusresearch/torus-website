@@ -167,7 +167,7 @@ jobs:
           - persist_to_workspace:
               root: ~/torus-website/
               paths:
-                - .
+                - torus-website/app/dist
           - <<: *step_save_cache
   deploy-testing:
     <<: *job_common_base

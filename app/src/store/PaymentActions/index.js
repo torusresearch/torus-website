@@ -1,90 +1,118 @@
-import simplex from './simplex'
-import moonpay from './moonpay'
-import wyre from './wyre'
-import coindirect from './coindirect'
-import { paymentProviders } from '../../utils/utils'
-import { SIMPLEX, MOONPAY, WYRE, COINDIRECT, ETH } from '../../utils/enums'
-import torus from '../../torus'
 import vuetify from '../../plugins/vuetify'
+import torus from '../../torus'
+import { MOONPAY, RAMPNETWORK, WYRE, XANPOOL } from '../../utils/enums'
+import { fakeStream, paymentProviders } from '../../utils/utils'
+import moonpay from './moonpay'
+import rampnetwork from './rampnetwork'
+import simplex from './simplex'
+import wyre from './wyre'
+import xanpool from './xanpool'
 
-const topupStream = torus.communicationMux.getStream('topup')
+const topupStream = (torus && torus.communicationMux && torus.communicationMux.getStream('topup')) || fakeStream
+
+const handleSuccess = (success) => {
+  topupStream.write({
+    name: 'topup_response',
+    data: {
+      success,
+    },
+  })
+}
+
+const handleFailure = (error) => {
+  topupStream.write({
+    name: 'topup_response',
+    data: {
+      success: false,
+      error: error.message || 'Internal error',
+    },
+  })
+}
 
 export default {
   ...simplex,
+  ...rampnetwork,
   ...moonpay,
   ...wyre,
-  ...coindirect,
+  ...xanpool,
   async initiateTopup({ state, dispatch }, { provider, params, preopenInstanceId }) {
-    const handleSuccess = success => {
-      topupStream.write({
-        name: 'topup_response',
-        data: {
-          success: success
-        }
-      })
-    }
-
-    const handleFailure = error => {
-      topupStream.write({
-        name: 'topup_response',
-        data: {
-          success: false,
-          error: error.message || 'Internal error'
-        }
-      })
-    }
     if (paymentProviders[provider] && paymentProviders[provider].api) {
       try {
         const selectedProvider = paymentProviders[provider]
-        const selectedParams = params || {}
+        const selectedParameters = params || {}
 
         // set default values
-        if (!selectedParams.selectedCurrency) selectedParams.selectedCurrency = 'USD'
-        if (!selectedParams.fiatValue) selectedParams.fiatValue = selectedProvider.minOrderValue
-        if (!selectedParams.selectedCryptoCurrency) selectedParams.selectedCryptoCurrency = 'ETH'
-        if (!selectedParams.selectedAddress) selectedParams.selectedAddress = state.selectedAddress
+        // if (!selectedParameters.selectedCurrency) [selectedParameters.selectedCurrency] = selectedProvider.validCurrencies
+        // if (!selectedParameters.fiatValue) selectedParameters.fiatValue = selectedProvider.minOrderValue
+        // if (!selectedParameters.selectedCryptoCurrency) [selectedParameters.selectedCryptoCurrency] = selectedProvider.validCryptoCurrencies
+        if (!selectedParameters.selectedAddress) selectedParameters.selectedAddress = state.selectedAddress
 
         // validations
-        const requestedOrderAmount = +parseFloat(selectedParams.fiatValue)
-        if (requestedOrderAmount < selectedProvider.minOrderValue) throw new Error('Requested amount is lower than supported')
-        if (requestedOrderAmount > selectedProvider.maxOrderValue) throw new Error('Requested amount is higher than supported')
-        if (!selectedProvider.validCurrencies.includes(selectedParams.selectedCurrency)) throw new Error('Unsupported currency')
-        if (!selectedProvider.validCryptoCurrencies.includes(selectedParams.selectedCryptoCurrency)) throw new Error('Unsupported cryptoCurrency')
+        if (selectedParameters.fiatValue) {
+          const requestedOrderAmount = +Number.parseFloat(selectedParameters.fiatValue) || 0
+          if (requestedOrderAmount < selectedProvider.minOrderValue) throw new Error('Requested amount is lower than supported')
+          if (requestedOrderAmount > selectedProvider.maxOrderValue && selectedProvider.enforceMax)
+            throw new Error('Requested amount is higher than supported')
+        }
+        if (selectedParameters.selectedCurrency && !selectedProvider.validCurrencies.includes(selectedParameters.selectedCurrency))
+          throw new Error('Unsupported currency')
+        if (selectedParameters.selectedCryptoCurrency && !selectedProvider.validCryptoCurrencies.includes(selectedParameters.selectedCryptoCurrency))
+          throw new Error('Unsupported cryptoCurrency')
 
-        // simplex
-        if (provider === SIMPLEX) {
-          const { result: currentOrder } = await dispatch('fetchSimplexQuote', selectedParams)
-          const { success } = await dispatch('fetchSimplexOrder', {
+        if (provider === RAMPNETWORK) {
+          // rampnetwork
+          const currentOrder = { cryptoCurrencyValue: '', cryptoCurrencySymbol: selectedParameters.selectedCryptoCurrency || '' }
+          if (selectedParameters.fiatValue && selectedParameters.selectedCurrency && selectedParameters.selectedCryptoCurrency) {
+            const result = await dispatch('fetchRampNetworkQuote', selectedParameters)
+            let cryptoValue = 0
+            const asset = result.assets.find((item) => item.symbol === selectedParameters.selectedCryptoCurrency)
+            const fiat = selectedParameters.fiatValue
+            const feeRate = asset.maxFeePercent[selectedParameters.selectedCurrency] / 100
+            const rate = asset.price[selectedParameters.selectedCurrency]
+            const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
+            cryptoValue = fiatWithoutFee / rate // Final Crypto amount
+            currentOrder.cryptoCurrencyValue = Math.trunc(cryptoValue * 10 ** asset.decimals) || ''
+            currentOrder.cryptoCurrencySymbol = asset.symbol || ''
+          }
+
+          const { success } = await dispatch('fetchRampNetworkOrder', {
             currentOrder,
             preopenInstanceId,
-            selectedAddress: selectedParams.selectedAddress
+            selectedAddress: selectedParameters.selectedAddress,
           })
           handleSuccess(success)
-        }
-        // moonpay
-        else if (provider === MOONPAY) {
-          const currentOrder = await dispatch('fetchMoonpayQuote', selectedParams)
+        } else if (provider === MOONPAY) {
+          // moonpay
+          const currentOrder = {
+            currency: { code: selectedParameters.selectedCryptoCurrency || '' },
+            baseCurrencyAmount: selectedParameters.fiatValue || '',
+            baseCurrency: { code: selectedParameters.selectedCurrency || '' },
+          }
           const { success } = await dispatch('fetchMoonpayOrder', {
             currentOrder,
             colorCode: vuetify.framework.theme.themes.light.primary.base,
             preopenInstanceId,
-            selectedAddress: selectedParams.selectedAddress
+            selectedAddress: selectedParameters.selectedAddress,
           })
           handleSuccess(success)
-        }
-        // wyre
-        else if (provider === WYRE) {
-          const { data: currentOrder } = await dispatch('fetchWyreQuote', selectedParams)
-          const { success } = await dispatch('fetchWyreOrder', { currentOrder, preopenInstanceId, selectedAddress: selectedParams.selectedAddress })
-          handleSuccess(success)
-        }
-        // coindirect
-        else if (provider === COINDIRECT) {
-          const currentOrder = await dispatch('fetchCoindirectQuote', selectedParams)
-          const { success } = await dispatch('fetchCoindirectOrder', {
-            currentOrder,
+        } else if (provider === WYRE) {
+          // wyre
+          const { success } = await dispatch('fetchWyreOrder', {
+            currentOrder: { destCurrency: selectedParameters.selectedCryptoCurrency || '', sourceAmount: selectedParameters.fiatValue || '' },
             preopenInstanceId,
-            selectedAddress: selectedParams.selectedAddress
+            selectedAddress: selectedParameters.selectedAddress,
+          })
+          handleSuccess(success)
+        } else if (provider === XANPOOL) {
+          // xanpool
+          const { success } = await dispatch('fetchXanpoolOrder', {
+            currentOrder: {
+              selectedCryptoCurrency: selectedParameters.selectedCryptoCurrency || 'ETH',
+              fiatValue: selectedParameters.fiatValue || '',
+              selectedCurrency: selectedParameters.selectedCurrency || '',
+            },
+            preopenInstanceId,
+            selectedAddress: selectedParameters.selectedAddress,
           })
           handleSuccess(success)
         }
@@ -94,5 +122,5 @@ export default {
     } else {
       handleFailure(new Error('Unsupported/Invalid provider selected'))
     }
-  }
+  },
 }

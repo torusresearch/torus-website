@@ -1,6 +1,8 @@
-const EthQuery = require('ethjs-query')
-const { hexToBn, BnMultiplyByFraction, bnToHex } = require('./utils')
-const { addHexPrefix } = require('ethereumjs-util')
+import { addHexPrefix } from 'ethereumjs-util'
+import EthQuery from 'ethjs-query'
+
+import { BnMultiplyByFraction, bnToHex, hexToBn } from './utils'
+
 const SIMPLE_GAS_COST = '0x5208' // Hex for 21000, cost of a simple send.
 
 /**
@@ -24,15 +26,15 @@ class TxGasUtil {
     let estimatedGasHex
     try {
       estimatedGasHex = await this.estimateTxGas(txMeta, block.gasLimit)
-    } catch (err) {
+    } catch (error) {
       txMeta.simulationFails = {
-        reason: err.message,
-        errorKey: err.errorKey,
-        debug: { blockNumber: block.number, blockGasLimit: block.gasLimit }
+        reason: error.message,
+        errorKey: error.errorKey,
+        debug: { blockNumber: block.number, blockGasLimit: block.gasLimit },
       }
 
-      if (err.errorKey === 'transactionErrorNoContract') {
-        txMeta.simulationFails.debug.getCodeResponse = err.getCodeResponse
+      if (error.errorKey === 'transactionErrorNoContract') {
+        txMeta.simulationFails.debug.getCodeResponse = error.getCodeResponse
       }
 
       return txMeta
@@ -48,7 +50,7 @@ class TxGasUtil {
     @returns {string} the estimated gas limit as a hex string
   */
   async estimateTxGas(txMeta, blockGasLimitHex) {
-    const txParams = txMeta.txParams
+    const { txParams } = txMeta
 
     // check if gasLimit is already specified
     txMeta.gasLimitSpecified = Boolean(txParams.gas)
@@ -70,13 +72,13 @@ class TxGasUtil {
       if (codeIsEmpty) {
         // if there's data in the params, but there's no contract code, it's not a valid transaction
         if (txParams.data) {
-          const err = new Error('TxGasUtil - Trying to call a function on a non-contract address')
+          const error = new Error('TxGasUtil - Trying to call a function on a non-contract address')
           // set error key so ui can display localized error message
-          err.errorKey = 'transactionErrorNoContract'
+          error.errorKey = 'transactionErrorNoContract'
 
           // set the response on the error so that we can see in logs what the actual response was
-          err.getCodeResponse = code
-          throw err
+          error.getCodeResponse = code
+          throw error
         }
 
         // This is a standard ether simple send, gas requirement is exactly 21k
@@ -104,7 +106,7 @@ class TxGasUtil {
   */
   setTxGas(txMeta, blockGasLimitHex, estimatedGasHex) {
     txMeta.estimatedGas = addHexPrefix(estimatedGasHex)
-    const txParams = txMeta.txParams
+    const { txParams } = txMeta
 
     // if gasLimit was specified and doesnt OOG,
     // use original specified amount

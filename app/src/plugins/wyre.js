@@ -1,23 +1,25 @@
-import config from '../config'
-import { get } from '../utils/httpHelpers'
 import log from 'loglevel'
 
-const getQuote = (params = {}, headers) => {
+import config from '../config'
+import { get } from '../utils/httpHelpers'
+
+const getQuote = (parameters = {}, headers) => {
   try {
     const options = {
       mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        ...headers
-      }
+        ...headers,
+      },
     }
     const url = new URL(`${config.wyreApiHost}/quote`)
-    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-    return get(url, options)
-  } catch (e) {
-    log.error(e)
+    Object.keys(parameters).forEach((key) => url.searchParams.append(key, parameters[key]))
+    return get(url.href, options)
+  } catch (error) {
+    log.error(error)
   }
+  return undefined
 }
 
-export { getQuote }
+export default getQuote

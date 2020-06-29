@@ -1,8 +1,10 @@
-const createStore = require('redux').createStore
-const applyMiddleware = require('redux').applyMiddleware
+/* eslint-disable */
+const { createStore } = require('redux')
+const { applyMiddleware } = require('redux')
 const thunkMiddleware = require('redux-thunk').default
-const createLogger = require('redux-logger').createLogger
-const rootReducer = function() {}
+const { createLogger } = require('redux-logger')
+
+const rootReducer = function () {}
 
 module.exports = configureStore
 

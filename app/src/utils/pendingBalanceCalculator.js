@@ -1,5 +1,5 @@
-const BN = require('ethereumjs-util').BN
-const normalize = require('eth-sig-util').normalize
+import { normalize } from 'eth-sig-util'
+import { BN } from 'ethereumjs-util'
 
 class PendingBalanceCalculator {
   /**
@@ -30,9 +30,7 @@ class PendingBalanceCalculator {
     const [balance, pending] = results
     if (!balance) return undefined
 
-    const pendingValue = pending.reduce((total, tx) => {
-      return total.add(this.calculateMaxCost(tx))
-    }, new BN(0))
+    const pendingValue = pending.reduce((total, tx) => total.add(this.calculateMaxCost(tx)), new BN(0))
 
     return `0x${balance.sub(pendingValue).toString(16)}`
   }
@@ -51,8 +49,8 @@ class PendingBalanceCalculator {
     const value = this.hexToBn(txValue)
     const gasPrice = this.hexToBn(tx.txParams.gasPrice)
 
-    const gas = tx.txParams.gas
-    const gasLimit = tx.txParams.gasLimit
+    const { gas } = tx.txParams
+    const { gasLimit } = tx.txParams
     const gasLimitBn = this.hexToBn(gas || gasLimit)
 
     const gasCost = gasPrice.mul(gasLimitBn)
@@ -67,7 +65,7 @@ class PendingBalanceCalculator {
    *
    */
   hexToBn(hex) {
-    return new BN(normalize(hex).substring(2), 16)
+    return new BN(normalize(hex).slice(2), 16)
   }
 }
 

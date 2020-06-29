@@ -1,103 +1,104 @@
-const assert = require('assert')
-const nock = require('nock')
-const NetworkController = require('../../../src/controllers/NetworkController').default
-// const { getNetworkDisplayName } = require('../../../../app/scripts/controllers/network/util')
+/* eslint-disable */
+import assert from 'assert'
+import nock from 'nock'
+import NetworkController from '../../../src/controllers/NetworkController'
+import { getNetworkDisplayName } from '../../../src/utils/utils'
 
-describe('# Network Controller', function() {
-  let networkController
-  const noop = () => {}
-  const networkControllerProviderConfig = {
-    getAccounts: noop
-  }
+describe('NetworkController', function () {
+  describe('controller', function () {
+    let networkController
+    const noop = () => {}
+    const networkControllerProviderConfig = {
+      getAccounts: noop,
+    }
 
-  beforeEach(function() {
-    nock('https://rinkeby.infura.io')
-      .persist()
-      .post('/metamask')
-      .reply(200)
+    beforeEach(function () {
+      nock('https://rinkeby.infura.io').persist().post('/metamask').reply(200)
 
-    networkController = new NetworkController()
+      networkController = new NetworkController()
+      networkController.initializeProvider(networkControllerProviderConfig)
+    })
 
-    networkController.initializeProvider(networkControllerProviderConfig)
-  })
+    afterEach(function () {
+      nock.cleanAll()
+    })
 
-  afterEach(function() {
-    nock.cleanAll()
-  })
-
-  describe('network', function() {
-    describe('#provider', function() {
-      it('provider should be updatable without reassignment', function() {
+    describe('#provider', function () {
+      it('provider should be updatable without reassignment', function () {
         networkController.initializeProvider(networkControllerProviderConfig)
         const providerProxy = networkController.getProviderAndBlockTracker().provider
-        assert.strictEqual(providerProxy.test, undefined)
+        assert.equal(providerProxy.test, undefined)
         providerProxy.setTarget({ test: true })
-        assert.strictEqual(providerProxy.test, true)
+        assert.equal(providerProxy.test, true)
       })
     })
-    describe('#getNetworkState', function() {
-      it('should return loading when new', function() {
+    describe('#getNetworkState', function () {
+      it('should return loading when new', function () {
         const networkState = networkController.getNetworkState()
-        assert.strictEqual(networkState, 'loading', 'network is loading')
+        assert.equal(networkState, 'loading', 'network is loading')
       })
     })
 
-    describe('#setNetworkState', function() {
-      it('should update the network', function() {
+    describe('#setNetworkState', function () {
+      it('should update the network', function () {
         networkController.setNetworkState(1, 'rpc')
         const networkState = networkController.getNetworkState()
-        assert.strictEqual(networkState, 1, 'network is 1')
+        assert.equal(networkState, 1, 'network is 1')
       })
     })
 
-    describe('#setProviderType', function() {
-      it('should update provider.type', function() {
+    describe('#setProviderType', function () {
+      it('should update provider.type', function () {
         networkController.setProviderType('mainnet')
         const type = networkController.getProviderConfig().type
-        assert.strictEqual(type, 'mainnet', 'provider type is updated')
+        assert.equal(type, 'mainnet', 'provider type is updated')
       })
-      it('should set the network to loading', function() {
+      it('should set the network to loading', function () {
         networkController.setProviderType('mainnet')
         const loading = networkController.isNetworkLoading()
         assert.ok(loading, 'network is loading')
       })
     })
   })
+
+  describe('utils', function () {
+    it('getNetworkDisplayName should return the correct network name', function () {
+      const tests = [
+        {
+          input: 3,
+          expected: 'Ropsten Test Network',
+        },
+        {
+          input: 4,
+          expected: 'Rinkeby Test Network',
+        },
+        {
+          input: 42,
+          expected: 'Kovan Test Network',
+        },
+        {
+          input: 'ropsten',
+          expected: 'Ropsten Test Network',
+        },
+        {
+          input: 'rinkeby',
+          expected: 'Rinkeby Test Network',
+        },
+        {
+          input: 'kovan',
+          expected: 'Kovan Test Network',
+        },
+        {
+          input: 'mainnet',
+          expected: 'Main Ethereum Network',
+        },
+        {
+          input: 'goerli',
+          expected: 'Goerli Test Network',
+        },
+      ]
+
+      tests.forEach(({ input, expected }) => assert.equal(getNetworkDisplayName(input), expected))
+    })
+  })
 })
-
-// describe('Network utils', () => {
-//   it('getNetworkDisplayName should return the correct network name', () => {
-//     const tests = [
-//       {
-//         input: 3,
-//         expected: 'Ropsten'
-//       },
-//       {
-//         input: 4,
-//         expected: 'Rinkeby'
-//       },
-//       {
-//         input: 42,
-//         expected: 'Kovan'
-//       },
-//       {
-//         input: 'ropsten',
-//         expected: 'Ropsten'
-//       },
-//       {
-//         input: 'rinkeby',
-//         expected: 'Rinkeby'
-//       },
-//       {
-//         input: 'kovan',
-//         expected: 'Kovan'
-//       },
-//       {
-//         input: 'mainnet',
-//         expected: 'Main Ethereum Network'
-//       }
-//     ]
-
-//     tests.forEach(({ input, expected }) => assert.strictEqual(getNetworkDisplayName(input), expected))
-//   })
-// })

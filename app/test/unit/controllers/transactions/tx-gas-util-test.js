@@ -1,27 +1,28 @@
-const assert = require('assert')
-const Transaction = require('ethereumjs-tx')
+/* eslint-disable */
+import assert from 'assert'
+import { Transaction } from 'ethereumjs-tx'
 
-const { hexToBn, bnToHex } = require('../../../../src/utils/utils')
-const TxUtils = require('../../../../src/utils/TxGasUtil').default
+import { hexToBn, bnToHex } from '../../../../src/utils/utils'
+import TxUtils from '../../../../src/utils/TxGasUtil'
 
-describe('txUtils', function() {
+describe('txUtils', function () {
   let txUtils
 
-  beforeEach(function() {
+  before(function () {
     txUtils = new TxUtils(
       new Proxy(
         {},
         {
-          get: (obj, name) => {
+          get: () => {
             return () => {}
-          }
+          },
         }
       )
     )
   })
 
-  describe('chain Id', function() {
-    it('prepares a transaction with the provided chainId', function() {
+  describe('chain Id', function () {
+    it('prepares a transaction with the provided chainId', function () {
       const txParams = {
         to: '0x70ad465e0bab6504002ad58c744ed89c7da38524',
         from: '0x69ad465e0bab6504002ad58c744ed89c7da38525',
@@ -30,15 +31,15 @@ describe('txUtils', function() {
         gasPrice: '0x199c82cc00',
         data: '0x',
         nonce: '0x3',
-        chainId: 42
+        chainId: 42,
       }
-      const ethTx = new Transaction(txParams)
-      assert.strictEqual(ethTx.getChainId(), 42, 'chainId is set from tx params')
+      const ethTx = new Transaction(txParams, { chain: txParams.chainId })
+      assert.equal(ethTx.getChainId(), 42, 'chainId is set from tx params')
     })
   })
 
-  describe('addGasBuffer', function() {
-    it('multiplies by 1.5, when within block gas limit', function() {
+  describe('addGasBuffer', function () {
+    it('multiplies by 1.5, when within block gas limit', function () {
       // naive estimatedGas: 0x16e360 (1.5 mil)
       const inputHex = '0x16e360'
       // dummy gas limit: 0x3d4c52 (4 mil)
@@ -50,7 +51,7 @@ describe('txUtils', function() {
       assert(outputBn.eq(expectedBn), 'returns 1.5 the input value')
     })
 
-    it('uses original estimatedGas, when above block gas limit', function() {
+    it('uses original estimatedGas, when above block gas limit', function () {
       // naive estimatedGas: 0x16e360 (1.5 mil)
       const inputHex = '0x16e360'
       // dummy gas limit: 0x0f4240 (1 mil)
@@ -62,7 +63,7 @@ describe('txUtils', function() {
       assert(outputBn.eq(expectedBn), 'returns the original estimatedGas value')
     })
 
-    it('buffers up to recommend gas limit recommended ceiling', function() {
+    it('buffers up to recommend gas limit recommended ceiling', function () {
       // naive estimatedGas: 0x16e360 (1.5 mil)
       const inputHex = '0x16e360'
       // dummy gas limit: 0x1e8480 (2 mil)
@@ -73,7 +74,7 @@ describe('txUtils', function() {
       // const inputBn = hexToBn(inputHex)
       // const outputBn = hexToBn(output)
       const expectedHex = bnToHex(ceilGasLimitBn)
-      assert.strictEqual(output, expectedHex, 'returns the gas limit recommended ceiling value')
+      assert.equal(output, expectedHex, 'returns the gas limit recommended ceiling value')
     })
   })
 })

@@ -1,4 +1,15 @@
-import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME, LOCALE_EN } from '../utils/enums'
+import clone from 'clone'
+
+import config from '../config'
+import {
+  LOCALE_EN,
+  MAINNET,
+  MAINNET_CODE,
+  MAINNET_DISPLAY_NAME,
+  SUPPORTED_NETWORK_TYPES,
+  THEME_LIGHT_BLUE_NAME,
+  USER_INFO_REQUEST_NEW,
+} from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -7,13 +18,13 @@ const initialState = {
     email: '',
     verifier: '', // enum like GOOGLE
     verifierId: '', // usually email or facebook id
-    verifierParams: {} // general params
+    verifierParams: {}, // general params
   },
   // loaders
-  loginInProgress: false,
   weiBalanceLoaded: false, // Use on showing spinners
-  loadingUserTransactions: true,
+  tokenDataLoaded: false, // Use on showing spinners
   isNewUser: false,
+  isRehydrationComplete: false,
   // account handled
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
@@ -30,17 +41,36 @@ const initialState = {
   // preferences
   selectedAddress: '',
   jwtToken: '',
+  supportedNetworks: { ...SUPPORTED_NETWORK_TYPES },
 
   selectedCurrency: 'USD',
   pastTransactions: [],
+  paymentTx: [],
   theme: THEME_LIGHT_BLUE_NAME,
   locale: LOCALE_EN,
   billboard: [],
   contacts: [],
-  permissions: {},
+  permissions: [],
   userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
   errorMsg: '',
-  successMsg: ''
+  successMsg: '',
+  iframeMetadata: { origin: '', name: '', icon: '' },
+  embedState: {
+    loginConfig: clone(config.loginConfig),
+    isOAuthModalVisible: false,
+    buttonPosition: 'bottom-left',
+    torusWidgetVisibility: true,
+  },
+  whiteLabel: {
+    isActive: false,
+    theme: {},
+    logoDark: '',
+    logoLight: '',
+    topupHide: false,
+    featuredBillboardHide: false,
+  },
+  etherscanTx: [],
+  badgesCompletion: {},
 }
 
 export default initialState

@@ -1,4 +1,4 @@
-const ObservableStore = require('./ObservableStore.js').default
+import ObservableStore from 'obs-store'
 
 /**
  * An ObservableStore that can composes a flat
@@ -25,7 +25,7 @@ class ComposableObservableStore extends ObservableStore {
     this.config = config
     this.removeAllListeners()
     for (const key in config) {
-      config[key].subscribe(state => {
+      config[key].subscribe((state) => {
         this.updateState({ [key]: state })
       })
     }

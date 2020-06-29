@@ -5,7 +5,7 @@ import StreamWindow from './StreamWindow'
 class PopupHandler extends EventEmitter {
   constructor({ url, target, features, preopenInstanceId }) {
     super()
-    this.url = url
+    this.url = url instanceof URL ? url.href : url
     this.target = target || '_blank'
     this.features = features || 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200'
     this.window = undefined
@@ -35,15 +35,15 @@ class PopupHandler extends EventEmitter {
       if (!this.window) {
         this.window = new StreamWindow(undefined, this.url)
       }
-    } else {
-      this.window = new StreamWindow(this.preopenInstanceId)
-      this.window.open(this.url)
+      return Promise.resolve()
     }
+    this.window = new StreamWindow(this.preopenInstanceId)
+    return this.window.open(this.url)
   }
 
   close() {
     this.iClosedWindow = true
-    this.window && this.window.close()
+    if (this.window) this.window.close()
   }
 }
 

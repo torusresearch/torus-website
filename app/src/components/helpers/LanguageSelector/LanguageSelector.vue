@@ -1,20 +1,20 @@
 <template>
-  <v-menu offset-y :bottom="!$vuetify.breakpoint.xsOnly" :top="$vuetify.breakpoint.xsOnly" left z-index="20">
+  <v-menu offset-y :bottom="!$vuetify.breakpoint.smAndDown" :top="$vuetify.breakpoint.smAndDown" left z-index="20">
     <template v-slot:activator="{ on }">
-      <v-btn v-if="!$vuetify.breakpoint.xsOnly" id="locale-dropdown-btn" class="locale-selector" small text v-on="on">
-        <img :src="require('../../../../public/img/icons/globe.svg')" width="15" height="30" alt="Torus language globe" />
-        <span class="subtitle-2 ml-1">{{ selectedLabel }}</span>
+      <v-btn v-if="!$vuetify.breakpoint.smAndDown" id="locale-dropdown-btn" class="locale-selector" small text aria-label="Select Language" v-on="on">
+        <img src="../../../assets/img/icons/globe.svg" width="15" height="30" alt="Language Icon" />
+        <span class="ml-1" :class="$vuetify.breakpoint.smAndDown">{{ selectedLabel }}</span>
         <v-icon class="ml-2" small>$vuetify.icons.select</v-icon>
       </v-btn>
 
-      <v-list-item v-on="on" v-else>
-        <v-list-item-action class="ml-1 mr-1">
-          <img :src="require('../../../../public/img/icons/globe.svg')" width="15" height="30" alt="Torus language globe" />
+      <v-list-item v-else v-on="on">
+        <v-list-item-action class="ml-1 mr-1" :class="{ isMobile: $vuetify.breakpoint.smAndDown }">
+          <img src="../../../assets/img/icons/globe.svg" width="15" height="30" alt="Language Icon" />
         </v-list-item-action>
-        <v-list-item-content class="text_1--text">
-          <span class="subtitle-2">
+        <v-list-item-content>
+          <span class="caption font-weight-bold">
             {{ selectedLabel }}
-            <v-icon class="mb-1" small>$vuetify.icons.select</v-icon>
+            <v-icon small>$vuetify.icons.select</v-icon>
           </span>
         </v-list-item-content>
       </v-list-item>
@@ -22,11 +22,11 @@
 
     <v-card class="pa-3">
       <v-list min-width="190" dense>
-        <v-list-item-group color="primary">
+        <v-list-item-group color="torusBrand1">
           <v-list-item
-            :class="localeSelected === locale.value ? 'active' : ''"
             v-for="locale in LOCALES"
             :key="locale.value"
+            :class="localeSelected === locale.value ? 'active' : ''"
             @click="changeLocale(locale.value)"
           >
             <v-list-item-content>
@@ -40,12 +40,14 @@
 </template>
 
 <script>
-import { LOCALES, LOCALE_EN } from '../../../utils/enums'
+import { mapActions } from 'vuex'
+
+import { LOCALES } from '../../../utils/enums'
 
 export default {
   data() {
     return {
-      LOCALES
+      LOCALES,
     }
   },
   computed: {
@@ -53,14 +55,15 @@ export default {
       return this.$vuetify.lang.current
     },
     selectedLabel() {
-      return LOCALES.find(locale => locale.value === this.localeSelected).name
-    }
+      return LOCALES.find((locale) => locale.value === this.localeSelected).name
+    },
   },
   methods: {
+    ...mapActions(['setUserLocale']),
     changeLocale(locale) {
-      this.$store.dispatch('setUserLocale', locale)
-    }
-  }
+      this.setUserLocale(locale)
+    },
+  },
 }
 </script>
 

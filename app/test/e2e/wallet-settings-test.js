@@ -1,3 +1,4 @@
+/* eslint-disable */
 const puppeteer = require('puppeteer')
 const assert = require('assert')
 const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, GOOGLE_LABEL } = require('../../src/utils/enums')
@@ -9,25 +10,25 @@ describe('Tests Wallet Settings Page', () => {
   let browser
   let page
 
-  before(async function() {
+  before(async () => {
     browser = await puppeteer.launch({
       headless: config.isHeadless,
       slowMo: config.slowMo,
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox'],
     })
 
     page = (await browser.pages())[0]
     await page.setDefaultTimeout(config.waitingTimeout)
     await page.setViewport({
       width: config.viewportWidth,
-      height: config.viewportHeight
+      height: config.viewportHeight,
     })
   })
 
-  after(async function() {
+  after(async () => {
     await browser.close()
   })
 
@@ -48,7 +49,7 @@ describe('Tests Wallet Settings Page', () => {
     const textToSelect = RINKEBY_DISPLAY_NAME
     await selectItem(page, '#select-network', '.select-network-container', textToSelect)
     await page.waitFor(100)
-    const networkSelected = await page.$eval('.select-network-container .v-select__selection', el => el.textContent)
+    const networkSelected = await page.$eval('.select-network-container .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, networkSelected)
@@ -72,7 +73,7 @@ describe('Tests Wallet Settings Page', () => {
 
     // wait for download wallet to appear
     await page.waitForResponse(
-      response => response.url().indexOf('https://api.infura.io/v1/jsonrpc/rinkeby') >= 0 && (response.status() >= 200 || response.status() < 300),
+      (response) => response.url().includes('https://api.infura.io/v1/jsonrpc/rinkeby') && (response.status() >= 200 || response.status() < 300),
       { timeout: 60000 }
     )
 
@@ -98,7 +99,7 @@ describe('Tests Wallet Settings Page', () => {
     const textToSelect = GOOGLE_LABEL
     await selectItem(page, '#select-verifier', '.select-verifier-container', textToSelect)
     await page.waitFor(100)
-    const verifierSelected = await page.$eval('.select-verifier-container .v-select__selection', el => el.textContent)
+    const verifierSelected = await page.$eval('.select-verifier-container .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, verifierSelected)

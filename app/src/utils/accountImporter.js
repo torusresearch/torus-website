@@ -1,55 +1,56 @@
-const Wallet = require('ethereumjs-wallet')
-const importers = require('ethereumjs-wallet/thirdparty')
-const ethUtil = require('ethereumjs-util')
-const log = require('loglevel')
+import { addHexPrefix, isValidPrivate, stripHexPrefix, toBuffer } from 'ethereumjs-util'
+import { fromV3 } from 'ethereumjs-wallet'
+import { fromEtherWallet } from 'ethereumjs-wallet/thirdparty'
+import log from 'loglevel'
 
 const accountImporter = {
-  importAccount(strategy, args) {
+  importAccount(strategy, arguments_) {
     try {
       const importer = this.strategies[strategy]
-      const privateKeyHex = importer.apply(null, args)
+      // eslint-disable-next-line prefer-spread
+      const privateKeyHex = importer.apply(null, arguments_)
       return Promise.resolve(privateKeyHex)
-    } catch (e) {
-      return Promise.reject(e)
+    } catch (error) {
+      return Promise.reject(error)
     }
   },
 
   strategies: {
-    'Private Key': privateKey => {
+    'Private Key': (privateKey) => {
       if (!privateKey) {
         throw new Error('Cannot import an empty key.')
       }
 
-      const prefixed = ethUtil.addHexPrefix(privateKey)
-      const buffer = ethUtil.toBuffer(prefixed)
+      const prefixed = addHexPrefix(privateKey)
+      const buffer = toBuffer(prefixed)
 
-      if (!ethUtil.isValidPrivate(buffer)) {
+      if (!isValidPrivate(buffer)) {
         throw new Error('Cannot import invalid private key.')
       }
 
-      const stripped = ethUtil.stripHexPrefix(prefixed)
+      const stripped = stripHexPrefix(prefixed)
       return stripped
     },
     'JSON File': (input, password) => {
       let wallet
       try {
-        wallet = importers.fromEtherWallet(input, password)
-      } catch (e) {
+        wallet = fromEtherWallet(input, password)
+      } catch (error) {
         log.info('Attempt to import as EtherWallet format failed, trying V3...')
       }
 
       if (!wallet) {
-        wallet = Wallet.fromV3(input, password, true)
+        wallet = fromV3(input, password, true)
       }
 
       return walletToPrivateKey(wallet)
-    }
-  }
+    },
+  },
 }
 
 function walletToPrivateKey(wallet) {
-  const privateKeyBuffer = wallet.getPrivateKey()
-  return ethUtil.stripHexPrefix(ethUtil.bufferToHex(privateKeyBuffer))
+  const privateKeyString = wallet.getPrivateKeyString()
+  return stripHexPrefix(privateKeyString)
 }
 
-module.exports = accountImporter
+export default accountImporter

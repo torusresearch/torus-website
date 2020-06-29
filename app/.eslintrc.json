@@ -1,11 +1,90 @@
 {
-  "extends": ["plugin:vue/essential", "prettier"],
-  "plugins": ["prettier", "vue"],
+  "extends": [
+    "standard",
+    "@vue/standard",
+    "plugin:vue/recommended",
+    "prettier/babel",
+    "plugin:prettier/recommended",
+    "prettier/vue",
+    "eslint:recommended",
+    "airbnb-base",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:flowtype/recommended",
+    "problems",
+    "plugin:vue-scoped-css/recommended",
+    "plugin:promise/recommended",
+    "plugin:switch-case/recommended",
+    "plugin:unicorn/recommended",
+    "prettier"
+  ],
+  "plugins": [
+    "prettier",
+    "vue",
+    "babel",
+    "promise",
+    "import",
+    "flowtype",
+    "standard",
+    "vue-scoped-css",
+    "simple-import-sort",
+    "switch-case",
+    "unicorn"
+  ],
+  "parser": "vue-eslint-parser",
   "parserOptions": {
     "parser": "babel-eslint",
-    "ecmaVersion": 6
+    "ecmaVersion": 9,
+    "sourceType": "module"
   },
   "rules": {
+    "camelcase": 0,
+    "unicorn/no-null": 0,
+    "unicorn/no-abusive-eslint-disable": 0,
+    "class-methods-use-this": 0,
+    "no-restricted-syntax": 0,
+    "guard-for-in": 0,
+    "no-underscore-dangle": 0,
+    "simple-import-sort/sort": "error",
+    "operator-linebreak": 0,
+    "promise/always-return": 0,
+    "unicorn/filename-case": 0,
+    "vue/no-v-html": 0,
+    "vue/array-bracket-spacing": 2,
+    "vue/arrow-spacing": 2,
+    "vue/block-spacing": 2,
+    "vue/brace-style": 2,
+    "vue/component-definition-name-casing": 2,
+    "vue/component-name-in-template-casing": 2,
+    "vue/component-tags-order": [
+      2,
+      {
+        "order": ["template", "script", "style"]
+      }
+    ],
+    "vue/dot-location": 2,
+    "vue/eqeqeq": 2,
+    "vue/key-spacing": 2,
+    "vue/keyword-spacing": 2,
+    "vue/no-reserved-component-names": 2,
+    "vue/no-restricted-syntax": 2,
+    "vue/space-infix-ops": 2,
+    "vue/space-unary-ops": 2,
+    "vue/v-on-function-call": 2,
+    "vue/valid-v-bind-sync": 2,
+    "vue/valid-v-slot": 2,
+    "object-curly-newline": 0,
+    "semi": [2, "never"],
+    "vue/max-attributes-per-line": [
+      2,
+      {
+        "singleline": 20,
+        "multiline": {
+          "max": 1,
+          "allowFirstLine": false
+        }
+      }
+    ],
     "quotes": [2, "single"],
     "max-len": [
       2,
@@ -13,21 +92,19 @@
         "code": 150
       }
     ],
-    "react/jsx-filename-extension": 0,
-    "jsx-a11y/label-has-for": 0,
-    "no-console": 0,
-    "import/prefer-default-export": 0,
+    "no-extra-semi": 0,
+    "no-unused-vars": [2, { "args": "after-used", "argsIgnorePattern": "_" }],
+    "no-console": 2,
     "no-nested-ternary": 0,
-    "no-confusing-arrow": 0,
     "linebreak-style": 0,
     "no-param-reassign": [
-      "error",
+      2,
       {
         "props": false
       }
     ],
     "prettier/prettier": [
-      "error",
+      2,
       {
         "singleQuote": true,
         "printWidth": 150,
@@ -41,13 +118,16 @@
     "node": true
   },
   "globals": {
-    "document": true,
-    "fetch": true,
-    "jest": true,
-    "it": true,
-    "beforeEach": true,
-    "afterEach": true,
-    "describe": true,
-    "expect": true
+    "document": "readonly",
+    "fetch": "readonly",
+    "it": "readonly",
+    "beforeEach": "readonly",
+    "afterEach": "readonly",
+    "describe": "readonly",
+    "expect": "readonly",
+    "serviceworker": "readonly"
+  },
+  "settings": {
+    "polyfills": ["BroadcastChannel"]
   }
 }

@@ -1,8 +1,9 @@
-const mergeMiddleware = require('json-rpc-engine/src/mergeMiddleware')
-const createScaffoldMiddleware = require('json-rpc-engine/src/createScaffoldMiddleware')
-const createWalletSubprovider = require('eth-json-rpc-middleware/wallet')
-const createAsyncMiddleware = require('json-rpc-engine/src/createAsyncMiddleware')
-const { formatTxMetaForRpcResult } = require('../utils/utils')
+import createWalletSubprovider from 'eth-json-rpc-middleware/wallet'
+import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'
+import createScaffoldMiddleware from 'json-rpc-engine/src/createScaffoldMiddleware'
+import mergeMiddleware from 'json-rpc-engine/src/mergeMiddleware'
+
+import { formatTxMetaForRpcResult } from './utils'
 
 export default function createMetamaskMiddleware({
   version,
@@ -14,13 +15,13 @@ export default function createMetamaskMiddleware({
   processTypedMessageV4,
   processPersonalMessage,
   getPendingNonce,
-  getPendingTransactionByHash
+  getPendingTransactionByHash,
 }) {
   const metamaskMiddleware = mergeMiddleware([
     createScaffoldMiddleware({
       // staticSubprovider
       eth_syncing: false,
-      web3_clientVersion: `MetaMask/v${version}`
+      web3_clientVersion: `MetaMask/v${version}`,
     }),
     createWalletSubprovider({
       getAccounts,
@@ -29,28 +30,29 @@ export default function createMetamaskMiddleware({
       processTypedMessage,
       processTypedMessageV3,
       processTypedMessageV4,
-      processPersonalMessage
+      processPersonalMessage,
     }),
     createRequestAccountsMiddleware({ getAccounts }),
     createPendingNonceMiddleware({ getPendingNonce }),
-    createPendingTxMiddleware({ getPendingTransactionByHash })
+    createPendingTxMiddleware({ getPendingTransactionByHash }),
   ])
   return metamaskMiddleware
 }
 
 export function createPendingNonceMiddleware({ getPendingNonce }) {
-  return createAsyncMiddleware(async (req, res, next) => {
-    if (req.method !== 'eth_getTransactionCount') return next()
-    const address = req.params[0]
-    const blockRef = req.params[1]
-    if (blockRef !== 'pending') return next()
-    res.result = await getPendingNonce(address)
+  return createAsyncMiddleware(async (request, response, next) => {
+    if (request.method !== 'eth_getTransactionCount') return next()
+    const address = request.params[0]
+    const blockReference = request.params[1]
+    if (blockReference !== 'pending') return next()
+    response.result = await getPendingNonce(address)
+    return undefined
   })
 }
 
 export function createPendingTxMiddleware({ getPendingTransactionByHash }) {
-  return createAsyncMiddleware(async (req, res, next) => {
-    const { method, params } = req
+  return createAsyncMiddleware(async (request, response, next) => {
+    const { method, params } = request
     if (method !== 'eth_getTransactionByHash') return next()
 
     const [hash] = params
@@ -58,17 +60,19 @@ export function createPendingTxMiddleware({ getPendingTransactionByHash }) {
     if (!txMeta) {
       return next()
     }
-    res.result = formatTxMetaForRpcResult(txMeta)
+    response.result = formatTxMetaForRpcResult(txMeta)
+    return undefined
   })
 }
 
 export function createRequestAccountsMiddleware({ getAccounts }) {
-  return createAsyncMiddleware(async (req, res, next) => {
-    const { method } = req
+  return createAsyncMiddleware(async (request, response, next) => {
+    const { method } = request
     if (method !== 'eth_requestAccounts') return next()
 
     if (!getAccounts) throw new Error('WalletMiddleware - opts.getAccounts not provided')
-    const accounts = await getAccounts(req)
-    res.result = accounts
+    const accounts = await getAccounts(request)
+    response.result = accounts
+    return undefined
   })
 }

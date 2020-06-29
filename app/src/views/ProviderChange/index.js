@@ -1,1 +1,1 @@
-export { default } from './ProviderChange'
+export { default } from './ProviderChange.vue'

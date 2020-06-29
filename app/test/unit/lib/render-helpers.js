@@ -1,23 +1,25 @@
-import { BrowserRouter } from 'react-router-dom'
+/* eslint-disable */
 import { shape } from 'prop-types'
+import { BrowserRouter } from 'react-router-dom'
+
 const { shallow, mount } = require('enzyme')
 
 module.exports = {
   shallowWithStore,
   mountWithStore,
-  mountWithRouter
+  mountWithRouter,
 }
 
 function shallowWithStore(component, store) {
   const context = {
-    store
+    store,
   }
   return shallow(component, { context })
 }
 
 function mountWithStore(component, store) {
   const context = {
-    store
+    store,
   }
   return mount(component, { context })
 }
@@ -28,13 +30,13 @@ function mountWithRouter(node) {
     history: new BrowserRouter().history,
     route: {
       location: {},
-      match: {}
-    }
+      match: {},
+    },
   }
 
   const createContext = () => ({
     context: { router, t: () => {} },
-    childContextTypes: { router: shape({}), t: () => {} }
+    childContextTypes: { router: shape({}), t: () => {} },
   })
 
   return mount(node, createContext())

@@ -1,8 +1,8 @@
 import WalletTopupHome from './WalletTopupHome'
 import WalletTopupMoonpay from './WalletTopupMoonpay'
-import WalletTopupCrypto from './WalletTopupCrypto'
+import WalletTopupRampNetwork from './WalletTopupRampNetwork'
 import WalletTopupSimplex from './WalletTopupSimplex'
 import WalletTopupWyre from './WalletTopupWyre'
-import WalletTopupCoinDirect from './WalletTopupCoinDirect'
+import WalletTopupXanpool from './WalletTopupXanpool'
 
-export { WalletTopupHome, WalletTopupMoonpay, WalletTopupSimplex, WalletTopupCrypto, WalletTopupWyre, WalletTopupCoinDirect }
+export { WalletTopupHome, WalletTopupMoonpay, WalletTopupRampNetwork, WalletTopupSimplex, WalletTopupWyre, WalletTopupXanpool }

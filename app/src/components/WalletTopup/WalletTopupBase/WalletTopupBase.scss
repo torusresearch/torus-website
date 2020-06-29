@@ -3,7 +3,7 @@
     height: 13px;
     vertical-align: middle;
   }
-  
+
   .unique-hint {
     ::v-deep .v-text-field__details {
       display: none;
@@ -22,5 +22,9 @@
 
   ::v-deep .v-text-field__details {
     padding: 0;
+  }
+
+  .curency-selector {
+    margin-top: 23px;
   }
 }

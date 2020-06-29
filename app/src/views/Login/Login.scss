@@ -1,22 +1,27 @@
-.login-panel-right {
-  background-image: url('/images/login-bg.jpg');
-  background-repeat: no-repeat;
-  background-size: auto 100%;
-  background-color: #0364FF;
-  background-position: 70% bottom;
+.login-panel-left.torus-dark {
+  background: linear-gradient(43.08deg, #26272C 0.89%, rgba(43, 44, 49, 0.975926) 19.43%, rgba(42, 43, 48, 0.980053) 37.98%, rgba(42, 43, 48, 0.97911) 60.77%, rgba(42, 43, 48, 0.979198) 70.3%);
+}
 
-  @media only screen and (min-width: 960px) {
-    background-position: 80% bottom;
-  }
+.login-panel-right {
+  background: linear-gradient(36.97deg, #F1F4FB 39.12%, rgba(241, 244, 251, 0) 83.1%);
 
   .caption {
     width: 80%;
-    margin: auto
+    margin: auto;
   }
 
   &.torus-dark {
-    background-image: url('/images/login-bg-dark.jpg');
-    background-color: #242529;
+    background: linear-gradient(222.08deg, #26272C 1.73%, rgba(40, 41, 46, 0.988961) 42.88%, rgba(40, 41, 46, 0.989349) 61.68%, rgba(46, 47, 52, 0.960249) 86.96%);
+  }
+
+  &.login-panel-right--mobile {
+    background: none;
+  }
+
+  &__image {
+    width: 85%;
+    height: auto;
+    max-width: 550px;
   }
 
   .right-panel-header {
@@ -34,37 +39,160 @@
       width: 60%;
     }
   }
+
+  .learn-more-btn {
+    height: inherit;
+    padding: 16px 40px;
+    margin-top: 32px;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 16px;
+    color: #5C6C7F;
+    background: #FFFFFF !important;
+    box-sizing: border-box;
+    box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
+    border-radius: 9px;
+    border: thin solid #F1F2F6;
+    &.isDark {
+      color: #D3D3D4;
+      border: thin solid #D3D3D4;
+      background: none !important;
+      box-sizing: border-box;
+      box-shadow: 0px 9.40298px 18.806px rgba(46, 91, 255, 0.06);
+    }
+    &.isMobile {
+      padding: 12px 25px;
+    }
+  }
 }
 
-.login-btn {
+.login-btn-google {
   &.v-btn {
-    width: 70%;
+    background: #FFFFFF !important;
+    border: 1px solid #F1F2F6 !important;
+    box-sizing: border-box;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
     border-radius: 9px;
     height: 60px;
-    border: 1px solid #F1F2F6;
     img {
       height: 26px;
     }
   }
   ::v-deep .v-btn__content {
-    justify-content: left; 
+    justify-content: left;
   }
 
   &.torus-dark {
-    border: 1px solid #36373B;
-    padding-left: 2px;
-    background-color: #4285F4 !important; //temporary until v8 is global
+    background: #2F3136 !important;
+    border: 1px solid #404145 !important;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
     color: #ffffff !important;
+  }
+}
 
-    img {
-      height: 56px;
-    }
+.login-btn-long {
+  &.v-btn {
+    background: #FFFFFF !important;
+    border: 1px solid #F1F2F6 !important;
+    box-sizing: border-box;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+    border-radius: 9px;
+    height: 60px;
+  }
+  ::v-deep .v-btn__content {
+    justify-content: left;
+  }
+
+  &.torus-dark {
+    background: #2F3136 !important;
+    border: 1px solid #404145 !important;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+    color: #ffffff !important;
+  }
+}
+
+.login-btn.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+  background: #FFFFFF;
+  border: 1px solid #F1F2F6;
+  box-sizing: border-box;
+  box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
+  min-width: inherit;
+  padding: 0;
+  margin-right: 7px;
+  margin-bottom: 7px;
+  width: 56px;
+  height: 56px;
+  img {
+    width: 26px;
+    height: 26px;
+  }
+  &.isDark {
+    background: #2F3136 !important;
+    border: 1px solid #404145 !important;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+  }
+  &.login-btn--mobile {
+    width: 100%;
+    margin: 0;
+    border-radius: 6px;
+  }
+}
+
+.verifier-title {
+  img {
+    height: 23px;
+    margin-bottom: -5px;
+  }
+  &__google-blue {
+    color: #4285F4;
+  }
+  &__google-red {
+    color: #EA4335;
+  }
+  &__google-yellow {
+    color: #FBBC05;
+  }
+  &__google-green {
+    color: #34A853;
+  }
+  &__facebook {
+    color: #3478EA;
+  }
+  &__reddit {
+    color: #FF4500;
+  }
+  &__twitch {
+    color: #695790;
+  }
+  &__discord {
+    color: #7289DA;
+  }
+  &__github {
+    color: #000000;
+  }
+  &__linkedin {
+    color: #2867B2;
+  }
+  &__twitter {
+    color: #55ACEE;
+  }
+  &__weibo {
+    color: #E71F19;
+  }
+  &__passwordless {
+    color: #000000;
+  }
+  &__line {
+    color: #00B900;
+  }
+  &__apple {
+    color: #000000;
   }
 }
 
 .logout-btn {
-  &.v-btn{
-    border: 1px solid #F1F2F6 !important;
+  &.v-btn {
+    border: 1px solid #f1f2f6 !important;
     height: inherit;
   }
   &.theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
@@ -77,18 +205,6 @@ a {
   text-decoration: none;
 }
 
-.other-login-container {
-  margin: 0 -4px;
-  .other-login-btn {
-    border-radius: 9px;
-    height: 60px;
-    margin-bottom: 8px;
-    &.theme--dark.torus-dark {
-      border: 1px solid #343539;
-      background-color: #424242;
-    }
-  }
-}
 
 .background-login {
   position: relative;
@@ -116,4 +232,30 @@ body,
 html {
   height: 100%;
   overflow-y: hidden;
+}
+
+::v-deep .v-carousel__controls {
+  background: none;
+  bottom: -15px;
+  .v-btn.v-btn--icon {
+    width: 14px;
+    height: 14px;
+    background-color: var(--v-torusGray1-base);
+    &.v-btn--active {
+      background-color: var(--v-torusGray3-base);
+    }
+  }
+}
+
+.mobile-login-container {
+  section {
+    min-height: 100vh;
+  }
+  .more-icon {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 20%);
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+  }
 }

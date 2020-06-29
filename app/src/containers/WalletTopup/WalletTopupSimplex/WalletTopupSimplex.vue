@@ -1,28 +1,29 @@
 <template>
   <WalletTopupBase
-    selectedProvider="simplex"
+    selected-provider="simplex"
+    :crypto-currency-value="cryptoCurrencyValue"
+    :currency-rate="currencyRate"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
     @clearQuote="clearQuote"
-    :cryptoCurrencyValue="cryptoCurrencyValue"
-    :currencyRate="currencyRate"
   />
 </template>
 
 <script>
 import throttle from 'lodash.throttle'
-import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 import log from 'loglevel'
+
+import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 
 export default {
   components: {
-    WalletTopupBase
+    WalletTopupBase,
   },
   data() {
     return {
       cryptoCurrencyValue: 0,
       currencyRate: 0,
-      currentOrder: {}
+      currentOrder: {},
     }
   },
   methods: {
@@ -31,24 +32,24 @@ export default {
       throttle(() => {
         self.$store
           .dispatch('fetchSimplexQuote', payload)
-          .then(result => {
+          .then((result) => {
             self.cryptoCurrencyValue = result.result.digital_money.amount
             self.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
             self.currentOrder = result.result
           })
-          .catch(err => log.error(err))
+          .catch((error) => log.error(error))
       }, 0)()
     },
-    sendOrder(cb) {
-      cb(this.$store.dispatch('fetchSimplexOrder', { currentOrder: this.currentOrder }))
+    sendOrder(callback) {
+      callback(this.$store.dispatch('fetchSimplexOrder', { currentOrder: this.currentOrder }))
     },
     clearQuote(payload) {
       this.cryptoCurrencyValue = 0
       this.currencyRate = 0
       this.currentOrder = {}
       this.fetchQuote(payload)
-    }
-  }
+    },
+  },
 }
 </script>
 

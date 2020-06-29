@@ -1,6 +1,6 @@
-const EthQuery = require('ethjs-query')
-const assert = require('assert')
-const Mutex = require('await-semaphore').Mutex
+import assert from 'assert'
+import { Mutex } from 'await-semaphore'
+import EthQuery from 'ethjs-query'
 /**
   @param opts {Object}
     @param {Object} opts.provider a ethereum provider
@@ -40,7 +40,6 @@ class NonceTracker {
   /**
   this will return an object with the `nextNonce` `nonceDetails`, and the releaseLock
   Note: releaseLock must be called after adding a signed tx to pending transactions (or discarding).
-
   @param address {string} the hex string for the address whose nonce we are calculating
   @returns {Promise<NonceDetails>}
   */
@@ -63,7 +62,7 @@ class NonceTracker {
       nonceDetails.params = {
         highestLocallyConfirmed,
         highestSuggested,
-        nextNetworkNonce
+        nextNetworkNonce,
       }
       nonceDetails.local = localNonceResult
       nonceDetails.network = networkNonceResult
@@ -73,10 +72,10 @@ class NonceTracker {
 
       // return nonce and release cb
       return { nextNonce, nonceDetails, releaseLock }
-    } catch (err) {
+    } catch (error) {
       // release lock if we encounter an error
       releaseLock()
-      throw err
+      throw error
     }
   }
 
@@ -120,10 +119,10 @@ class NonceTracker {
   }
 
   _getHighestNonce(txList) {
-    const nonces = txList.map(txMeta => {
-      const nonce = txMeta.txParams.nonce
+    const nonces = txList.map((txMeta) => {
+      const { nonce } = txMeta.txParams
       assert(typeof nonce, 'string', 'nonces should be hex strings')
-      return parseInt(nonce, 16)
+      return Number.parseInt(nonce, 16)
     })
     const highestNonce = Math.max.apply(null, nonces)
     return highestNonce
@@ -141,15 +140,17 @@ class NonceTracker {
     @returns {highestContinuousFrom}
   */
   _getHighestContinuousFrom(txList, startPoint) {
-    const nonces = txList.map(txMeta => {
-      const nonce = txMeta.txParams.nonce
-      assert(typeof nonce, 'string', 'nonces should be hex strings')
-      return parseInt(nonce, 16)
-    })
+    const nonces = new Set(
+      txList.map((txMeta) => {
+        const { nonce } = txMeta.txParams
+        assert(typeof nonce, 'string', 'nonces should be hex strings')
+        return Number.parseInt(nonce, 16)
+      })
+    )
 
     let highest = startPoint
-    while (nonces.includes(highest)) {
-      highest++
+    while (nonces.has(highest)) {
+      highest += 1
     }
 
     return { name: 'local', nonce: highest, details: { startPoint, highest } }

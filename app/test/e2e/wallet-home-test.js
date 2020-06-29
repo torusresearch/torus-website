@@ -1,3 +1,4 @@
+/* eslint-disable */
 const puppeteer = require('puppeteer')
 const assert = require('assert')
 const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME } = require('../../src/utils/enums')
@@ -10,25 +11,25 @@ describe('Tests Wallet Home', () => {
   let page
   let isFreshAccount
 
-  before(async function() {
+  before(async () => {
     browser = await puppeteer.launch({
       headless: config.isHeadless,
       slowMo: config.slowMo,
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox'],
     })
 
     page = (await browser.pages())[0]
     await page.setDefaultTimeout(config.waitingTimeout)
     await page.setViewport({
       width: config.viewportWidth,
-      height: config.viewportHeight
+      height: config.viewportHeight,
     })
   })
 
-  after(async function() {
+  after(async () => {
     await browser.close()
   })
 
@@ -48,7 +49,7 @@ describe('Tests Wallet Home', () => {
     const textToSelect = RINKEBY_DISPLAY_NAME
     await selectItem(page, '#select-network', '.select-network-container', textToSelect)
     await page.waitFor(100)
-    const networkSelected = await page.$eval('.select-network-container .v-select__selection', el => el.textContent)
+    const networkSelected = await page.$eval('.select-network-container .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, networkSelected)

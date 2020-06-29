@@ -5,11 +5,11 @@ import ko from './i18n/korean.json'
 import zh from './i18n/mandarin.json'
 
 const languages = {
-  en: en,
-  de: de,
+  en,
+  de,
   ja,
   ko,
-  zh
+  zh,
 }
 
 export default languages

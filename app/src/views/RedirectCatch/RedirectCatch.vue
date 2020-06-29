@@ -2,8 +2,12 @@
   <v-container fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <beat-loader :color="$vuetify.theme.themes.dark.primary.base" />
-        <div class="redirect-title font-weight-bold mt-3">
+        <BeatLoader
+          margin="24px 4px 0"
+          size="12px"
+          :color="$vuetify.theme.dark ? $vuetify.theme.themes.dark.torusBrand1 : $vuetify.theme.themes.light.torusBrand1"
+        />
+        <div v-if="showCloseText" class="redirect-title font-weight-bold mt-2">
           {{ t('dappGeneral.loading') }}
         </div>
       </v-flex>
@@ -13,23 +17,29 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import BeatLoader from 'vue-spinner/src/BeatLoader'
-import { broadcastChannelOptions } from '../../utils/utils'
 import log from 'loglevel'
+import BeatLoader from 'vue-spinner/src/BeatLoader'
+
+import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
-  name: 'redirect',
+  name: 'Redirect',
   components: { BeatLoader },
+  data() {
+    return {
+      showCloseText: false,
+    }
+  },
   async mounted() {
     let bc
     try {
-      const hash = this.$router.currentRoute.hash.substr(1)
-      const hashParams = hash.split('&').reduce(function(result, item) {
-        const parts = item.split('=')
-        result[parts[0]] = parts[1]
+      const hash = this.$router.currentRoute.hash.slice(1)
+      const hashParameters = hash.split('&').reduce((result, item) => {
+        const [part0, part1] = item.split('=')
+        result[part0] = part1
         return result
       }, {})
-      const queryParams = this.$router.currentRoute.query
+      const queryParameters = this.$router.currentRoute.query
       // reddit error - hash params
       // error: "access_denied"
       // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJyZWRkaXQifQ%3D%3D"
@@ -37,43 +47,60 @@ export default {
       // error: "access_denied"
       // error_description: "The user denied you access"
       // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJ0d2l0Y2gifQ=="
-      log.info(hashParams, queryParams)
-      if (!queryParams.preopenInstanceId) {
+      log.info(hashParameters, queryParameters)
+      if (!queryParameters.preopenInstanceId) {
         this.textVisible = true
-        let instanceParams = {}
+        let instanceParameters = {}
         let error = ''
-        if (Object.keys(hashParams).length > 0 && hashParams.state) {
-          instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {}
-          if (hashParams.error) error = hashParams.error
-        } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
-          instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
-          if (queryParams.error) error = queryParams.error
+        if (Object.keys(hashParameters).length > 0 && hashParameters.state) {
+          instanceParameters = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {}
+          if (hashParameters.error) error = hashParameters.error
+        } else if (Object.keys(queryParameters).length > 0 && queryParameters.state) {
+          instanceParameters = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {}
+          if (queryParameters.error) error = queryParameters.error
         }
-        bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
+        bc = new BroadcastChannel(`redirect_channel_${instanceParameters.instanceId}`, broadcastChannelOptions)
         await bc.postMessage({
           data: {
-            instanceParams: instanceParams,
-            hashParams: hashParams
+            instanceParams: instanceParameters,
+            hashParams: hashParameters,
+            queryParams: queryParameters,
           },
-          error: error
+          error,
         })
         bc.close()
+        log.info('posted', { queryParameters, hashParameters, instanceParameters })
+        setTimeout(() => {
+          window.close()
+          this.showCloseText = true
+        }, 5000)
       } else {
-        bc = new BroadcastChannel('preopen_channel_' + queryParams.preopenInstanceId, broadcastChannelOptions)
-        bc.onmessage = function(ev) {
+        bc = new BroadcastChannel(`preopen_channel_${queryParameters.preopenInstanceId}`, broadcastChannelOptions)
+        bc.addEventListener('message', (ev) => {
+          const { preopenInstanceId: oldId, payload, message } = ev.data
+          if (oldId === queryParameters.preopenInstanceId && payload && payload.url) {
+            window.location.href = payload.url
+          } else if (oldId === queryParameters.preopenInstanceId && message === 'setup_complete') {
+            bc.postMessage({
+              data: {
+                preopenInstanceId: queryParameters.preopenInstanceId,
+                message: 'popup_loaded',
+              },
+            })
+          }
           if (ev.error && ev.error !== '') {
-            console.error(ev.error)
+            log.error(ev.error)
             bc.close()
           }
-          window.location.href = ev.data.payload.url
-        }
+        })
       }
     } catch (error) {
       log.info(error, 'something went wrong')
-      bc.close()
+      if (bc) bc.close()
       window.close()
+      this.showCloseText = true
     }
-  }
+  },
 }
 </script>
 

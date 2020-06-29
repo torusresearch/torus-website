@@ -1,37 +1,73 @@
 <template>
-  <v-chip v-if="selectedNetwork !== ''" small class="caption network-chip" :class="!isUrlNetwork ? `network-chip--${host} text-capitalize` : ''">
-    <v-icon size="12" v-text="'$vuetify.icons.network'"></v-icon>
-    <span>{{ selectedNetwork }}</span>
-  </v-chip>
+  <div class="d-flex network-chip align-center" :class="[chipClass, minimal ? 'network-chip--minimal' : '']">
+    <v-icon v-text="'$vuetify.icons.network'"></v-icon>
+    <span class="network-chip__name text-clamp-one" :class="{ 'network-chip__name--mobile': $vuetify.breakpoint.xsOnly }">
+      {{ $vuetify.breakpoint.xsOnly && !minimal ? shortSelectedNetwork : selectedNetwork }}
+    </span>
+  </div>
 </template>
 
 <script>
-import { SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
+import { MAINNET, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
 
 export default {
-  props: ['network'],
+  props: {
+    network: {
+      type: String,
+      default: '',
+    },
+    storeNetworkType: {
+      type: Object,
+      default() {
+        return { host: MAINNET, networkName: '', chainId: '' }
+      },
+    },
+    isPlain: {
+      type: Boolean,
+      default: false,
+    },
+    minimal: {
+      type: Boolean,
+      default: false,
+    },
+  },
   computed: {
     selectedNetwork() {
-      let finalNetwork = ''
-
-      if (this.network) {
+      if (this.network && SUPPORTED_NETWORK_TYPES[this.network]) {
         return SUPPORTED_NETWORK_TYPES[this.network].networkName
       }
 
-      finalNetwork =
-        !this.$store.state.networkType.networkName || this.$store.state.networkType.networkName === ''
-          ? this.$store.state.networkType.host
-          : this.$store.state.networkType.networkName
-      return finalNetwork
+      if (this.storeNetworkType) {
+        const { host, networkName } = this.storeNetworkType
+        return networkName || host
+      }
+
+      return ''
+    },
+    shortSelectedNetwork() {
+      return this.selectedNetwork.replace(' Network', '')
     },
     host() {
-      return this.$store.state.networkType.host
+      return this.storeNetworkType.host
     },
     isUrlNetwork() {
       // Checks if input is a url including localhost, ip address and domain name
-      return /^((?:http(s)?:\/\/)?([\w.-]+(?:\.[\w\.-]+)+|localhost?)[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+)$/.test(this.selectedNetwork)
-    }
-  }
+      return /^((?:http(s)?:\/\/)?([\w-.]+(?:\.[\w-.]+)+|localhost?)[\w!#$&'()*+,./:;=?@[\]~-]+)$/.test(this.selectedNetwork)
+    },
+    chipClass() {
+      const classArray = []
+      if (!this.isUrlNetwork) {
+        classArray.push(`network-chip--${this.host}`)
+        classArray.push('text-capitalize')
+      }
+      if (this.$vuetify.theme.isDark) classArray.push('theme--dark')
+
+      if (this.isPlain) {
+        classArray.push('is-plain')
+      }
+      return classArray
+    },
+  },
 }
 </script>
 

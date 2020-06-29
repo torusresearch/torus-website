@@ -1,71 +1,101 @@
 <template>
-  <v-dialog v-model="qrDialoag" width="450">
+  <v-dialog v-model="qrDialoag" width="350">
     <template v-slot:activator="{ on }">
-      <v-btn icon small v-on="on" id="openQr" aria-label="Open QR">
-        <v-icon small class="primary--text" v-text="'$vuetify.icons.qr'" />
+      <v-btn id="openQr" class="qr-btn" icon small aria-label="Open Export QR" title="Open Export QR" v-on="on">
+        <slot></slot>
       </v-btn>
     </template>
     <v-card>
-      <div class="text-right">
-        <v-btn icon small @click="qrDialoag = false">
-          <v-icon size="8">$vuetify.icons.close</v-icon>
-        </v-btn>
-      </div>
-      <v-card-text class="text-center qr-container">
-        <div class="headline font-weight-bold">{{ t('walletHome.yourPublicAddress') }}</div>
-        <div class="caption text_2--text mb-4">
-          <show-tool-tip :address="selectedAddress">{{ slicedAddress }}</show-tool-tip>
-        </div>
-        <vue-qr
-          ref="address-qr"
-          :logoSrc="require(`../../../../public/images/torus-circle.svg`)"
-          :margin="10"
-          :logoScale="0.4"
-          :logoCornerRadius="145"
-          logoBackgroundColor="white"
-          :text="selectedAddress"
-          :size="800"
-          :dotScale="1"
-          :correctLevel="3"
-        ></vue-qr>
-        <div class="mt-8">
-          <v-btn depressed color="primary" class="px-12" @click="downloadQr">
-            <v-icon small>$vuetify.icons.download</v-icon>
+      <v-layout wrap>
+        <v-flex class="card-header text-center" xs12 py-10 px-6>
+          <img
+            class="home-link mx-auto"
+            alt="Torus Logo"
+            width="104"
+            height="24"
+            :src="require(`../../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+          />
+          <v-btn class="close-btn" icon aria-label="Close Export QR" title="Close Export QR" @click="qrDialoag = false">
+            <v-icon>$vuetify.icons.close</v-icon>
           </v-btn>
-        </div>
-      </v-card-text>
+        </v-flex>
+        <v-flex xs12 class="text-center pb-10">
+          <div class="display-1 text_1--text mb-2">{{ t('walletHome.yourPublicAddress') }}</div>
+          <div class="mb-2">
+            <ShowToolTip :address="selectedAddress">
+              <span class="public-address torusFont2--text">{{ selectedAddress }}</span>
+              <v-icon size="12" class="torusFont2--text ml-1" v-text="'$vuetify.icons.copy'" />
+            </ShowToolTip>
+          </div>
+          <div class="qr-container mb-8">
+            <VueQr
+              v-show="$vuetify.theme.dark"
+              :color-dark="'#252529'"
+              :color-light="'#FCFCFC'"
+              :background-color="'#2F3136'"
+              :logo-background-color="'#2F3136'"
+              :logo-src="require('../../../assets/img/icons/t-fill.svg')"
+              :logo-scale="0.28"
+              :margin="1"
+              :text="selectedAddress"
+              :size="800"
+              :dot-scale="0.6"
+              :correct-level="3"
+            ></VueQr>
+            <VueQr
+              v-show="!$vuetify.theme.dark"
+              ref="address-qr"
+              :logo-src="require('../../../assets/img/icons/t-fill.svg')"
+              :margin="20"
+              :logo-scale="0.28"
+              :text="selectedAddress"
+              :size="800"
+              :dot-scale="0.6"
+              :correct-level="3"
+            ></VueQr>
+          </div>
+          <div>
+            <v-btn large depressed color="torusBrand1 white--text caption font-weight-bold" class="px-10" @click="downloadQr">
+              {{ t('walletHome.downloadQR') }}
+            </v-btn>
+          </div>
+        </v-flex>
+      </v-layout>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
 import VueQr from 'vue-qr'
-import ShowToolTip from '../../helpers/ShowToolTip'
-import config from '../../../config'
-const baseRoute = config.baseRoute
+import { mapState } from 'vuex'
+
+import ShowToolTip from '../ShowToolTip'
 
 export default {
   components: {
     ShowToolTip,
-    VueQr
+    VueQr,
+  },
+  props: {
+    customAddress: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
-      qrDialoag: false
+      qrDialoag: false,
     }
   },
   computed: {
-    selectedAddress() {
-      return this.$store.state.selectedAddress
-    },
+    ...mapState({
+      selectedAddress(state) {
+        return this.customAddress || state.selectedAddress
+      },
+    }),
     slicedAddress() {
-      return `${this.selectedAddress.slice(0, 20)}...${this.selectedAddress.slice(-10)}`
-    }
-    // transferUrl() {
-    //   let urlPath = this.$router.resolve({ name: 'walletTransfer', query: { to: this.selectedAddress } }).href
-    //   if (urlPath.indexOf('/') === 0) urlPath = urlPath.substr(1)
-    //   return `${baseRoute}${urlPath}`
-    // }
+      return `${this.selectedAddress.slice(0, 11)}...${this.selectedAddress.slice(-13)}`
+    },
   },
   methods: {
     downloadQr() {
@@ -74,11 +104,12 @@ export default {
 
       downloadLink.href = qrImage
       downloadLink.download = 'qrcode.png'
-      document.body.appendChild(downloadLink)
+      document.body.append(downloadLink)
       downloadLink.click()
-      document.body.removeChild(downloadLink)
-    }
-  }
+      downloadLink.remove()
+      // document.body.removeChild(downloadLink)
+    },
+  },
 }
 </script>
 

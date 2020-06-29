@@ -23,27 +23,28 @@
     ::v-deep tr > td {
       cursor: pointer;
     }
-  
+
     ::v-deep tr.v-data-table__expanded__content {
       box-shadow: none;
     }
-  
+
     ::v-deep .address-col {
       min-width: 150px;
     }
   }
 
-  ::v-deep .v-pagination__item, ::v-deep .v-pagination__navigation {
+  ::v-deep .v-pagination__item,
+  ::v-deep .v-pagination__navigation {
     border: 0;
     background: none;
-    color: var(--v-text_1-base);
+    color: var(--v-torusFont1-base);
     font-weight: 500;
     box-shadow: none;
     opacity: 0.7;
-    &.primary {
+    &.torusBrand1 {
       background: none;
       background-color: transparent !important;
-      color: var(--v-primary-base);
+      color: var(--v-torusBrand1-base);
       opacity: 1;
     }
   }

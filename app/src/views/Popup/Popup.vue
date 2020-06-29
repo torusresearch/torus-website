@@ -1,15 +1,33 @@
 <template>
-  <v-container fluid>
-    <v-layout wrap>
-      <v-flex xs12 sm6 md3>
-        Welcome to Torus
-      </v-flex>
-    </v-layout>
+  <v-container class="pa-0">
+    <PopupLogin :login-dialog="loginDialog" @closeDialog="cancelLogin" />
+    <PopupWidget v-if="torusWidgetVisibility" :login-dialog="loginDialog" :logged-in="loggedIn" @onLogin="startLogin" />
   </v-container>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
+
+import PopupLogin from '../../containers/Popup/PopupLogin'
+import PopupWidget from '../../containers/Popup/PopupWidget'
+
 export default {
-  name: 'popup'
+  name: 'Popup',
+  components: { PopupLogin, PopupWidget },
+  computed: mapState({
+    loggedIn: (state) => state.selectedAddress !== '',
+    loginDialog: (state) => state.embedState.isOAuthModalVisible,
+    torusWidgetVisibility: (state) => state.embedState.torusWidgetVisibility,
+  }),
+  methods: {
+    ...mapActions({
+      cancelLogin: 'cancelLogin',
+      startLogin: 'startLogin',
+    }),
+  },
 }
 </script>
+
+<style lang="scss" scoped>
+@import 'Popup.scss';
+</style>

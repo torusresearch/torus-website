@@ -1,6 +1,6 @@
-const EventEmitter = require('safe-event-emitter')
-const log = require('loglevel')
-const EthQuery = require('ethjs-query')
+import EthQuery from 'ethjs-query'
+import log from 'loglevel'
+import EventEmitter from 'safe-event-emitter'
 
 /**
 
@@ -39,10 +39,10 @@ class PendingTransactionTracker extends EventEmitter {
     const nonceGlobalLock = await this.nonceTracker.getGlobalLock()
     try {
       const pendingTxs = this.getPendingTransactions()
-      await Promise.all(pendingTxs.map(txMeta => this._checkPendingTx(txMeta)))
-    } catch (err) {
+      await Promise.all(pendingTxs.map((txMeta) => this._checkPendingTx(txMeta)))
+    } catch (error) {
       log.error('PendingTransactionTracker - Error updating pending transactions')
-      log.error(err)
+      log.error(error)
     }
     nonceGlobalLock.releaseLock()
   }
@@ -55,9 +55,9 @@ class PendingTransactionTracker extends EventEmitter {
   resubmitPendingTxs(blockNumber) {
     const pending = this.getPendingTransactions()
     // only try resubmitting if their are transactions to resubmit
-    if (!pending.length) return
-    pending.forEach(txMeta =>
-      this._resubmitTx(txMeta, blockNumber).catch(err => {
+    if (pending.length === 0) return
+    pending.forEach((txMeta) => {
+      this._resubmitTx(txMeta, blockNumber).catch((error) => {
         /*
       Dont marked as failed if the error is a "known" transaction warning
       "there is already a transaction with the same sender-nonce
@@ -66,7 +66,7 @@ class PendingTransactionTracker extends EventEmitter {
       Also don't mark as failed if it has ever been broadcast successfully.
       A successful broadcast means it may still be mined.
       */
-        const errorMessage = err.message.toLowerCase()
+        const errorMessage = error.message.toLowerCase()
         const isKnownTx =
           // geth
           errorMessage.includes('replacement transaction underpriced') ||
@@ -82,11 +82,11 @@ class PendingTransactionTracker extends EventEmitter {
         // encountered real error - transition to error state
         txMeta.warning = {
           error: errorMessage,
-          message: 'There was an error when resubmitting this transaction.'
+          message: 'There was an error when resubmitting this transaction.',
         }
-        this.emit('tx:warning', txMeta, err)
+        this.emit('tx:warning', txMeta, error)
       })
-    )
+    })
   }
 
   /**
@@ -107,12 +107,12 @@ class PendingTransactionTracker extends EventEmitter {
     const retryCount = txMeta.retryCount || 0
 
     // Exponential backoff to limit retries at publishing
-    if (txBlockDistance <= Math.pow(2, retryCount) - 1) return
+    if (txBlockDistance <= 2 ** retryCount - 1) return undefined
 
     // Only auto-submit already-signed txs:
     if (!('rawTx' in txMeta)) return this.approveTransaction(txMeta.id)
 
-    const rawTx = txMeta.rawTx
+    const { rawTx } = txMeta
     const txHash = await this.publishTransaction(rawTx)
 
     // Increment successful tries:
@@ -137,9 +137,9 @@ class PendingTransactionTracker extends EventEmitter {
     // extra check in case there was an uncaught error during the
     // signature and submission process
     if (!txHash) {
-      const noTxHashErr = new Error('We had an error while submitting this transaction, please try again.')
-      noTxHashErr.name = 'NoTxHashError'
-      this.emit('tx:failed', txId, noTxHashErr)
+      const noTxHashError = new Error('We had an error while submitting this transaction, please try again.')
+      noTxHashError.name = 'NoTxHashError'
+      this.emit('tx:failed', txId, noTxHashError)
       return
     }
 
@@ -165,17 +165,19 @@ class PendingTransactionTracker extends EventEmitter {
       // 3 block count buffer
       if (dropped && this.droppedBuffer[txHash] < 3) {
         dropped = false
+        // eslint-disable-next-line no-plusplus
         ++this.droppedBuffer[txHash]
       }
       if (dropped && this.droppedBuffer[txHash] === 3) {
         // clean up
         delete this.droppedBuffer[txHash]
       }
-    } catch (e) {
-      log.error(e)
+    } catch (error) {
+      log.error(error)
     }
     if (taken || dropped) {
-      return this.emit('tx:dropped', txId)
+      this.emit('tx:dropped', txId)
+      return
     }
 
     // get latest transaction status
@@ -184,12 +186,12 @@ class PendingTransactionTracker extends EventEmitter {
       if (blockNumber) {
         this.emit('tx:confirmed', txId, transactionReceipt)
       }
-    } catch (err) {
+    } catch (error) {
       txMeta.warning = {
-        error: err.message,
-        message: 'There was a problem loading this transaction.'
+        error: error.message,
+        message: 'There was a problem loading this transaction.',
       }
-      this.emit('tx:warning', txMeta, err)
+      this.emit('tx:warning', txMeta, error)
     }
   }
 
@@ -200,12 +202,12 @@ class PendingTransactionTracker extends EventEmitter {
     @returns {boolean}
   */
 
-  async _checkIftxWasDropped(txMeta, { blockNumber = '' }) {
+  async _checkIftxWasDropped(txMeta, { blockNumber }) {
     const {
-      txParams: { nonce, from }
+      txParams: { nonce, from },
     } = txMeta
     const nextNonce = await this.query.getTransactionCount(from)
-    if (!blockNumber && parseInt(nextNonce) > parseInt(nonce)) {
+    if (!blockNumber && Number.parseInt(nextNonce.toString(16), 16) > Number.parseInt(nonce, 16)) {
       return true
     }
     return false
@@ -220,7 +222,7 @@ class PendingTransactionTracker extends EventEmitter {
   async _checkIfNonceIsTaken(txMeta) {
     const address = txMeta.txParams.from
     const completed = this.getCompletedTransactions(address)
-    const sameNonce = completed.filter(otherMeta => {
+    const sameNonce = completed.filter((otherMeta) => {
       if (otherMeta.id === txMeta.id) {
         return false
       }

@@ -1,7 +1,9 @@
+/* eslint-disable */
+
 // Trigger React's synthetic change events on input, textarea and select elements
 // https://github.com/vitalyq/react-trigger-change
 
-/** ****************IMPORTANT NOTE******************/
+/** ****************IMPORTANT NOTE***************** */
 /* This file is a modification of the             */
 /* 'react-trigger-change' library linked above.   */
 /* That library breaks when 'onFocus' events are  */
@@ -11,14 +13,12 @@
 /* This modification removes the accomodations    */
 /* 'react-trigger-change' makes for IE to ensure  */
 /* our tests can pass in chrome and firefox.      */
-/** ************************************************/
-
-'use strict'
+/** *********************************************** */
 
 // Constants and functions are declared inside the closure.
 // In this way, reactTriggerChange can be passed directly to executeScript in Selenium.
 module.exports = function reactTriggerChange(node) {
-  var supportedInputTypes = {
+  const supportedInputTypes = {
     color: true,
     date: true,
     datetime: true,
@@ -33,31 +33,31 @@ module.exports = function reactTriggerChange(node) {
     text: true,
     time: true,
     url: true,
-    week: true
+    week: true,
   }
-  var nodeName = node.nodeName.toLowerCase()
-  var type = node.type
-  var event
-  var descriptor
-  var initialValue
-  var initialChecked
-  var initialCheckedRadio
+  const nodeName = node.nodeName.toLowerCase()
+  const { type } = node
+  let event
+  let descriptor
+  let initialValue
+  let initialChecked
+  let initialCheckedRadio
 
   // Do not try to delete non-configurable properties.
   // Value and checked properties on DOM elements are non-configurable in PhantomJS.
-  function deletePropertySafe(elem, prop) {
-    var desc = Object.getOwnPropertyDescriptor(elem, prop)
+  function deletePropertySafe(element, property) {
+    const desc = Object.getOwnPropertyDescriptor(element, property)
     if (desc && desc.configurable) {
-      delete elem[prop]
+      delete element[property]
     }
   }
 
   function getCheckedRadio(radio) {
-    var name = radio.name
-    var radios
-    var i
+    const { name } = radio
+    let radios
+    let i
     if (name) {
-      radios = document.querySelectorAll('input[type="radio"][name="' + name + '"]')
+      radios = document.querySelectorAll(`input[type="radio"][name="${name}"]`)
       for (i = 0; i < radios.length; i += 1) {
         if (radios[i].checked) {
           return radios[i] !== radio ? radios[i] : null
@@ -93,7 +93,7 @@ module.exports = function reactTriggerChange(node) {
     // Remove artificial value property.
     // Restore initial value to trigger event with it.
     initialValue = node.value
-    node.value = initialValue + '#'
+    node.value = `${initialValue}#`
     deletePropertySafe(node, 'value')
     node.value = initialValue
 

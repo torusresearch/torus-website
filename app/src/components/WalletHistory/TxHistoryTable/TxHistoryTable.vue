@@ -7,23 +7,18 @@
       :items-per-page.sync="itemsPerPage"
       :page.sync="page"
       hide-default-footer
-      :loading="loadingTransactions"
-      no-data-text=""
     >
       <template v-slot:default="props">
-        <transaction-details v-for="transaction in props.items" :key="transaction.id" :transaction="transaction" />
-      </template>
-      <template v-slot:loading>
-        <component-loader class="mt-2" />
+        <TransactionDetails v-for="transaction in props.items" :key="transaction.transaction_hash || transaction.id" :transaction="transaction" />
       </template>
     </v-data-iterator>
 
-    <div class="text-center pt-6" v-if="!$vuetify.breakpoint.xsOnly && pageCount > 1">
+    <div v-if="!$vuetify.breakpoint.xsOnly && pageCount > 1" class="text-center pt-6">
       <v-pagination
+        v-model="page"
         class="activity-pagination"
         prev-icon="$vuetify.icons.page_prev"
         next-icon="$vuetify.icons.page_next"
-        v-model="page"
         :length="pageCount"
       ></v-pagination>
     </div>
@@ -31,27 +26,28 @@
 </template>
 
 <script>
+import { ACTIVITY_ACTION_ALL, ACTIVITY_PERIOD_ALL, ACTIVITY_PERIOD_MONTH_ONE, ACTIVITY_PERIOD_WEEK_ONE } from '../../../utils/enums'
 import TransactionDetails from '../TransactionDetails'
-import ComponentLoader from '../../helpers/ComponentLoader'
-import {
-  SUPPORTED_NETWORK_TYPES,
-  ACTIVITY_ACTION_ALL,
-  ACTIVITY_ACTION_TOPUP,
-  ACTIVITY_ACTION_RECEIVE,
-  ACTIVITY_ACTION_SEND,
-  ACTIVITY_PERIOD_ALL,
-  ACTIVITY_PERIOD_MONTH_ONE,
-  ACTIVITY_PERIOD_WEEK_ONE,
-  ACTIVITY_STATUS_SUCCESSFUL,
-  ACTIVITY_STATUS_UNSUCCESSFUL,
-  ACTIVITY_STATUS_PENDING
-} from '../../../utils/enums'
 
 export default {
-  props: ['transactions', 'selectedAction', 'selectedPeriod', 'loadingTransactions'],
   components: {
     TransactionDetails,
-    ComponentLoader
+  },
+  props: {
+    transactions: {
+      type: Array,
+      default() {
+        return []
+      },
+    },
+    selectedAction: {
+      type: String,
+      default: '',
+    },
+    selectedPeriod: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -59,7 +55,7 @@ export default {
       itemsPerPage: 8,
       expanded: [],
       pagination: {},
-      defaultSort: 'date'
+      defaultSort: 'date',
     }
   },
   computed: {
@@ -70,29 +66,29 @@ export default {
       return Math.ceil(this.filteredTransactions.length / this.itemsPerPage)
     },
     oneWeekAgoDate() {
-      let minDate = new Date()
+      const minDate = new Date()
       return minDate.setDate(minDate.getDate() - 7)
     },
     oneMonthAgoDate() {
-      let minDate = new Date()
+      const minDate = new Date()
       return minDate.setMonth(minDate.getMonth() - 1)
     },
     sixMonthAgoDate() {
-      let minDate = new Date()
+      const minDate = new Date()
       return minDate.setMonth(minDate.getMonth() - 6)
     },
     filteredTransactions() {
       const selectedAction = this.selectedAction === ACTIVITY_ACTION_ALL ? '' : this.selectedAction
-      var regExAction = new RegExp(selectedAction, 'i')
+      const regExAction = new RegExp(selectedAction, 'i')
 
-      return this.transactions.filter(item => {
+      return this.transactions.filter((item) => {
         // GET Date Scope
         let isScoped = false
         if (this.selectedPeriod === ACTIVITY_PERIOD_ALL) {
           isScoped = true
         } else {
           let minDate
-          let itemDate = new Date(item.date)
+          const itemDate = new Date(item.date)
           if (this.selectedPeriod === ACTIVITY_PERIOD_WEEK_ONE) {
             minDate = this.oneWeekAgoDate
           } else if (this.selectedPeriod === ACTIVITY_PERIOD_MONTH_ONE) {
@@ -105,11 +101,10 @@ export default {
 
         if (item.action) {
           return item.action.match(regExAction) && isScoped
-        } else {
-          return isScoped
         }
+        return isScoped
       })
-    }
+    },
   },
   methods: {
     changeSort(column) {
@@ -121,13 +116,13 @@ export default {
       }
     },
     rowClicked(item) {
-      if (this.expanded.indexOf(item) >= 0) {
+      if (this.expanded.includes(item)) {
         this.expanded = []
       } else {
         this.expanded = [item]
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
