@@ -1,4 +1,12 @@
 version: 2
+job_common_node: &job_common_node
+  docker:
+    - image: circleci/node
+  working_directory: ~/torus-website/app
+job_common_base: &job_common_base
+  docker:
+    - image: skyuppercut/buildpack-deps
+  working_directory: ~/torus-website/app
 job_common: &job_common
   docker:
     - image: skyuppercut/node-puppeteer
@@ -15,25 +23,24 @@ step_setup_global_packages: &step_setup_global_packages
   run:
     name: "Set up global packages"
     command: |
-      npm install
-      find ./node_modules/ -name ".git" -type d -exec rm -rf {} +
+      [ ! -d "node_modules" ] && npm install && find ./node_modules/ -name ".git" -type d -exec rm -rf {} + || echo "node_modules exist"
 update_lambda_job: &update_lambda_job
   <<: *job_common
   steps:
     - attach_workspace:
-        at: ~/torus-website
+        at: ~/
     - add_ssh_keys
     - run:
         name: "Update lambda version"
         command: |
-          mkdir -p ~/.ssh
+          mkdir -p ~/.ssh 
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateLambda.sh
 update_iframeIntegrity: &update_iframeIntegrity
-  <<: *job_common
+  <<: *job_common_node
   steps:
     - attach_workspace:
-        at: ~/torus-website
+        at: ~/
     - add_ssh_keys
     - run:
         name: "Update iframe integrity"
@@ -42,30 +49,16 @@ update_iframeIntegrity: &update_iframeIntegrity
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateIframeIntegrity.sh
 deploy_function: &deploy_function
-  <<: *job_common
+  <<: *job_common_base
   steps:
     - attach_workspace:
-        at: ~/torus-website
+        at: ~/
     - add_ssh_keys
     - run:
         name: "Deploy Over SSH to AWS"
         command: |
           . ./scripts/uploadToAws.sh
 jobs:
-  unit-test:
-    <<: *job_common
-    steps:
-      - checkout:
-          path: ~/torus-website
-      - <<: *step_restore_cache
-      - <<: *step_setup_global_packages
-      - run:
-          name: "Run Tests for torus website"
-          command: (npm run build:dev & sleep 60) && (npm start & sleep 10 && npm run test:e2e)
-      - <<: *step_save_cache
-      # Save test results
-      - store_test_results:
-          path: ~/test-results
   test-coverage:
     <<: *job_common
     steps:
@@ -73,15 +66,16 @@ jobs:
           path: ~/torus-website
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
-      - setup_remote_docker
       - run:
           name: "Running unit tests with coverage"
           command: npm run test:coverage-codecov
+      - <<: *step_save_cache
       # Save coverage artifacts
       - store_artifacts:
-          path: coverage
+          path: ~/torus-website/app/coverage
   build:
     <<: *job_common
+    resource_class: large
     steps:
       - checkout:
           path: ~/torus-website
@@ -92,12 +86,13 @@ jobs:
           command: |
             npm version patch -m 'Updating version to %s [skip ci]' && npm run build && . ./scripts/gitPush.sh
       - persist_to_workspace:
-          root: ~/torus-website/
+          root: ~/
           paths:
-            - .
+            - torus-website
       - <<: *step_save_cache
   build-staging:
     <<: *job_common
+    resource_class: large
     steps:
       - checkout:
           path: ~/torus-website
@@ -108,9 +103,9 @@ jobs:
           command: |
             npm version patch -m 'Updating version to %s [skip ci]' && npm run build:staging && . ./scripts/gitPush.sh
       - persist_to_workspace:
-          root: ~/torus-website/
+          root: ~/
           paths:
-            - .
+            - torus-website
       - <<: *step_save_cache
   deploy:
     <<: *deploy_function
@@ -126,6 +121,7 @@ jobs:
     <<: *update_iframeIntegrity
   build-testing:
     <<: *job_common
+    resource_class: large
     steps:
       - checkout:
           path: ~/torus-website
@@ -136,12 +132,13 @@ jobs:
           command: |
             npm run build:testing
       - persist_to_workspace:
-          root: ~/torus-website/
+          root: ~/
           paths:
-            - .
+            - torus-website/app/dist
       - <<: *step_save_cache
   build-lrc:
         <<: *job_common
+        resource_class: large
         steps:
           - checkout:
               path: ~/torus-website
@@ -152,9 +149,9 @@ jobs:
               command: |
                 npm run build:lrc
           - persist_to_workspace:
-              root: ~/torus-website/
+              root: ~/
               paths:
-                - .
+                - torus-website/app/dist
           - <<: *step_save_cache
   build-alpha3:
         <<: *job_common
@@ -168,49 +165,43 @@ jobs:
               command: |
                 npm run build:alpha3
           - persist_to_workspace:
-              root: ~/torus-website/
+              root: ~/
               paths:
-                - .
+                - torus-website/app/dist
           - <<: *step_save_cache
   deploy-testing:
-    <<: *job_common
+    <<: *job_common_base
     steps:
       - attach_workspace:
-          at: ~/torus-website
+          at: ~/
       - add_ssh_keys
       - run:
           name: "Deploy Over SSH"
           command: |
             ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
-            ssh torus@testing.tor.us "rm -rf ~/testing-torus-website/*"
-            tar czf - dist/ | ssh torus@testing.tor.us "cat > ~/testing-torus-website/dist.tgz"
-            ssh torus@testing.tor.us "cd ~/testing-torus-website && tar zxvf dist.tgz"
+            tar czf - dist/ | ssh ubuntu@testing.tor.us "rm -rf ~/testing-torus-website/* && tar -zxf - -C ~/testing-torus-website/"
   deploy-lrc:
-    <<: *job_common
+    <<: *job_common_base
     steps:
       - attach_workspace:
-          at: ~/torus-website
+          at: ~/
       - add_ssh_keys
       - run:
           name: "Deploy Over SSH"
           command: |
             ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
-            ssh torus@lrc.tor.us "rm -rf ~/lrc-torus-website/*"
-            tar czf - dist/ | ssh torus@lrc.tor.us "cat > ~/lrc-torus-website/dist.tgz"
-            ssh torus@lrc.tor.us "cd ~/lrc-torus-website && tar zxvf dist.tgz"
+            tar czf - dist/ | ssh ubuntu@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
   deploy-alpha3:
-    <<: *job_common
+    <<: *job_common_base
     steps:
       - attach_workspace:
-          at: ~/torus-website
+          at: ~/
       - add_ssh_keys
       - run:
           name: "Deploy Over SSH"
           command: |
             ssh-keyscan -H alpha3.tor.us >> ~/.ssh/known_hosts
-            ssh torus@alpha3.tor.us "rm -rf ~/alpha3-torus-website/*"
-            tar czf - dist/ | ssh torus@alpha3.tor.us "cat > ~/alpha3-torus-website/dist.tgz"
-            ssh torus@alpha3.tor.us "cd ~/alpha3-torus-website && tar zxvf dist.tgz"
+            tar czf - dist/ | ssh ubuntu@alpha3.tor.us "rm -rf ~/alpha3-torus-website/* && tar -zxf - -C ~/alpha3-torus-website/"
 
 workflows:
   version: 2
