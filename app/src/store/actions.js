@@ -224,7 +224,7 @@ export default {
         await bc.postMessage({
           data: {
             origin: getIFrameOriginObject(),
-            payload: { ...payload, verifier: state.userInfo.verifier },
+            payload: { ...payload, typeOfLogin: state.userInfo.typeOfLogin },
             whiteLabel: state.whiteLabel,
           },
         })
@@ -403,14 +403,14 @@ export default {
   },
   cleanupOAuth({ state }, payload) {
     const {
-      userInfo: { verifier },
+      userInfo: { typeOfLogin },
     } = state
     const { oAuthToken } = payload
-    if (verifier === FACEBOOK) {
+    if (typeOfLogin === FACEBOOK) {
       remove(`https://graph.facebook.com/me/permissions?access_token=${oAuthToken}`)
         .then((resp) => log.info(resp))
         .catch((error) => log.error(error))
-    } else if (verifier === DISCORD) {
+    } else if (typeOfLogin === DISCORD) {
       prefsController.revokeDiscord(oAuthToken)
     }
   },

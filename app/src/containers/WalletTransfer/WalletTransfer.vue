@@ -278,7 +278,7 @@
                     :to-verifier="selectedVerifier"
                     :from-address="selectedAddress"
                     :from-verifier-id="userInfo.verifierId"
-                    :from-verifier="userInfo.verifier"
+                    :from-verifier="userInfo.typeOfLogin"
                     :network-type="networkType"
                     :converted-amount="
                       convertedAmount
@@ -785,10 +785,14 @@ export default {
           }
         } else {
           try {
-            toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
-              verifier: this.selectedVerifier,
-              verifierId: this.toAddress,
-            })
+            const { loginConfig } = this.$store.state.embedState
+            const foundLoginConfig = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
+            if (foundLoginConfig) {
+              toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
+                verifier: foundLoginConfig,
+                verifierId: this.toAddress,
+              })
+            }
           } catch (error) {
             log.error(error)
           }

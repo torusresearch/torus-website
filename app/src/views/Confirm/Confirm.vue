@@ -165,7 +165,7 @@
                   :dapp-name="origin.hostname"
                   :from-address="sender"
                   :from-verifier-id="userInfo.verifierId"
-                  :from-verifier="userInfo.verifier"
+                  :from-verifier="userInfo.typeOfLogin"
                   :to-address="amountTo"
                   :network-type="network"
                   :converted-amount="displayAmountConverted"

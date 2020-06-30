@@ -10,7 +10,7 @@
           </div>
           <div class="details-container d-flex flex-column ml-2 pr-2">
             <div class="d-flex align-center">
-              <v-icon size="12" class="details-container__icon torusGray1--text">{{ `$vuetify.icons.${userInfo.verifier}` }}</v-icon>
+              <v-icon size="12" class="details-container__icon torusGray1--text">{{ `$vuetify.icons.${userInfo.typeOfLogin}` }}</v-icon>
               <div class="details-container__text ml-2">{{ userInfo.verifierId }}</div>
               <!-- Will add when dropdown available -->
               <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->

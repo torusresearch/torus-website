@@ -13,19 +13,18 @@ import {
   APPLE,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
-  DISCORD_VERIFIER,
+  DISCORD,
   EMAIL_PASSWORD,
   ENVIRONMENT_TYPE_FULLSCREEN,
   ENVIRONMENT_TYPE_NOTIFICATION,
   ENVIRONMENT_TYPE_POPUP,
   ETH,
   GITHUB,
-  GITHUB_VERIFIER,
   GOERLI,
   GOERLI_CHAIN_ID,
   GOERLI_CODE,
   GOERLI_DISPLAY_NAME,
-  GOOGLE_VERIFIER,
+  GOOGLE,
   JWT,
   KOVAN,
   KOVAN_CHAIN_ID,
@@ -48,7 +47,7 @@ import {
   PLATFORM_OPERA,
   PNG,
   RAMPNETWORK,
-  REDDIT_VERIFIER,
+  REDDIT,
   RINKEBY,
   RINKEBY_CHAIN_ID,
   RINKEBY_CODE,
@@ -61,7 +60,6 @@ import {
   SVG,
   THEME_DARK_BLACK_NAME,
   TWITTER,
-  TWITTER_VERIFIER,
   WEIBO,
   WYRE,
   XANPOOL,
@@ -332,29 +330,29 @@ export const broadcastChannelOptions = {
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
-export function validateVerifierId(selectedVerifier, value) {
-  if (selectedVerifier === ETH) {
+export function validateVerifierId(selectedTypeOfLogin, value) {
+  if (selectedTypeOfLogin === ETH) {
     return isAddress(value) || 'Invalid ETH Address'
   }
-  if (selectedVerifier === GOOGLE_VERIFIER) {
+  if (selectedTypeOfLogin === GOOGLE) {
     return (
       // eslint-disable-next-line max-len
       /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
       'Invalid Email Address'
     )
   }
-  if (selectedVerifier === REDDIT_VERIFIER) {
+  if (selectedTypeOfLogin === REDDIT) {
     return (/^[\w-]+$/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
   }
-  if (selectedVerifier === DISCORD_VERIFIER) {
+  if (selectedTypeOfLogin === DISCORD) {
     return (/^\d*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
   }
 
-  if (selectedVerifier === TWITTER_VERIFIER) {
+  if (selectedTypeOfLogin === TWITTER) {
     return /^@?(\w){1,15}$/.test(value) || 'Invalid Twitter username'
   }
 
-  if (selectedVerifier === GITHUB_VERIFIER) {
+  if (selectedTypeOfLogin === GITHUB) {
     return /^(?!.*(-{2}))(?!^-.*$)(?!^.*-$)[\w-]{1,39}$/.test(value) || 'Invalid Github username'
   }
 
@@ -582,11 +580,11 @@ export const getVerifierId = (userInfo, typeOfLogin, verifierIdField) => {
   switch (typeOfLogin) {
     case GITHUB:
     case TWITTER:
-      return nickname
+      return nickname.toLowerCase()
     case WEIBO:
     case PASSWORDLESS:
     case EMAIL_PASSWORD:
-      return name
+      return name.toLowerCase()
     case APPLE:
     case LINKEDIN:
     case LINE:

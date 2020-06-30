@@ -32,7 +32,7 @@
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
             <v-icon :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
-              {{ `$vuetify.icons.${index === 0 ? userInfo.verifier.toLowerCase() : 'account'}` }}
+              {{ `$vuetify.icons.${index === 0 ? userInfo.typeOfLogin.toLowerCase() : 'account'}` }}
             </v-icon>
           </div>
           <div class="caption text_1--text font-weight-bold" :style="{ paddingLeft: '2px' }">
@@ -44,7 +44,7 @@
         </div>
         <div class="d-flex align-start mt-1">
           <div class="account-list__address-container pt-1" :style="{ maxWidth: $vuetify.breakpoint.xsOnly ? '140px' : 'inherit' }">
-            <div v-if="userInfo.verifier === DISCORD && index === 0" class="account-list__address">Discord ID: {{ userInfo.verifierId }}</div>
+            <div v-if="userInfo.typeOfLogin === DISCORD && index === 0" class="account-list__address">Discord ID: {{ userInfo.verifierId }}</div>
             <div class="account-list__address mt-1">{{ acc.address }}</div>
           </div>
           <div class="ml-auto">
@@ -148,11 +148,11 @@ export default {
       wallets: 'walletBalances',
     }),
     userEmail() {
-      const verifierLabel = `${this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1)}: `
-      return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
+      const typeOfLoginLabel = `${this.userInfo.typeOfLogin.charAt(0).toUpperCase() + this.userInfo.typeOfLogin.slice(1)}: `
+      return typeOfLoginLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
     },
     userId() {
-      return this.userInfo.verifier === DISCORD ? `Discord ID: ${this.userInfo.verifierId.toString()}` : ''
+      return this.userInfo.typeOfLogin === DISCORD ? `Discord ID: ${this.userInfo.verifierId.toString()}` : ''
     },
     userName() {
       let userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)

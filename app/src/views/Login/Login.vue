@@ -361,13 +361,13 @@ export default {
       return this.loginButtonsArray.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsMobile() {
-      return this.loginButtonsArray.filter((button) => button.verifier !== GOOGLE && !button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.typeOfLogin !== GOOGLE && !button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsLong() {
       return this.loginButtonsArray.filter((button) => button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsMobileLong() {
-      return this.loginButtonsArray.filter((button) => button.verifier !== GOOGLE && button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.typeOfLogin !== GOOGLE && button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     showGoogleLogin() {
       return this.loginConfig[GOOGLE_VERIFIER].showOnModal

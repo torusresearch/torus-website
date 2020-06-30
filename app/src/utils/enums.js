@@ -178,15 +178,15 @@ export const ALLOWED_VERIFIERS = [
   },
   {
     name: GOOGLE_LABEL,
-    value: GOOGLE_VERIFIER,
+    value: GOOGLE,
   },
   {
     name: REDDIT_LABEL,
-    value: REDDIT_VERIFIER,
+    value: REDDIT,
   },
   {
     name: DISCORD_LABEL,
-    value: DISCORD_VERIFIER,
+    value: DISCORD,
   },
   {
     name: ENS_LABEL,
@@ -194,11 +194,11 @@ export const ALLOWED_VERIFIERS = [
   },
   {
     name: TWITTER_LABEL,
-    value: TWITTER_VERIFIER,
+    value: TWITTER,
   },
   {
     name: GITHUB_LABEL,
-    value: GITHUB_VERIFIER,
+    value: GITHUB,
   },
 ]
 
