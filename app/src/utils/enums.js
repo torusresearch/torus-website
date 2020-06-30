@@ -19,6 +19,7 @@ export const LOCALHOST = 'localhost'
 export const GOERLI = 'goerli'
 export const RPC = 'rpc'
 export const MATIC = 'matic'
+export const MUMBAI = 'mumbai'
 
 export const MAINNET_CODE = 1
 export const ROPSTEN_CODE = 3
@@ -26,6 +27,7 @@ export const RINKEBY_CODE = 4
 export const KOVAN_CODE = 42
 export const GOERLI_CODE = 5
 export const MATIC_CODE = 4626
+export const MUMBAI_CODE = 80001
 export const LOCALHOST_CODE = 5777
 
 export const MAINNET_CHAIN_ID = '0x1'
@@ -34,6 +36,7 @@ export const RINKEBY_CHAIN_ID = '0x4'
 export const KOVAN_CHAIN_ID = '0x2a'
 export const GOERLI_CHAIN_ID = '0x5'
 export const MATIC_CHAIN_ID = '0x1212'
+export const MUMBAI_CHAIN_ID = '0x13881'
 
 export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
 export const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
@@ -43,8 +46,10 @@ export const GOERLI_DISPLAY_NAME = 'Goerli Test Network'
 export const RPC_DISPLAY_NAME = 'RPC'
 export const LOCALHOST_DISPLAY_NAME = 'https://localhost:8545'
 export const MATIC_DISPLAY_NAME = 'Matic Alpha-Mainnet'
+export const MUMBAI_DISPLAY_NAME = 'Mumbai Matic-Testnet'
 
 export const MATIC_URL = 'https://alpha.ethereum.matic.network'
+export const MUMBAI_URL = 'https://rpc-mumbai.matic.today'
 
 export const TX_MESSAGE = 'message'
 export const TX_PERSONAL_MESSAGE = 'personal_message'
@@ -98,6 +103,7 @@ export const SUPPORTED_NETWORK_TYPES = {
   [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE),
   [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE),
   [MATIC]: createNetwork(MATIC, MATIC_DISPLAY_NAME, MATIC_CODE),
+  [MUMBAI]: createNetwork(MUMBAI, MUMBAI_DISPLAY_NAME, MUMBAI_CODE),
 }
 
 export const WALLET_HEADERS_HOME = 'My Wallet'
