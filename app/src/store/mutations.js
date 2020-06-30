@@ -4,6 +4,7 @@ import config from '../config'
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
 import { LOCALES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { setAPIKey as setHelperApiKey } from '../utils/httpHelpers'
 import { storageAvailable } from '../utils/utils'
 
 export default {
@@ -132,7 +133,11 @@ export default {
     }
   },
   setAPIKey(state, payload) {
-    state.apiKey = payload || 'torus-default'
+    setHelperApiKey(payload || 'torus-default')
+    state.embedState = {
+      ...state.embedState,
+      apiKey: payload || 'torus-default',
+    }
   },
   setButtonPosition(state, payload) {
     state.embedState = { ...state.embedState, buttonPosition: payload || 'bottom-left' }

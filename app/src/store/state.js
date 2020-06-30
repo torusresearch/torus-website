@@ -12,7 +12,6 @@ import {
 } from '../utils/enums'
 
 const initialState = {
-  apiKey: 'torus-default',
   userInfo: {
     name: '', // first + last name
     profileImage: '', // image url
@@ -60,6 +59,7 @@ const initialState = {
     isOAuthModalVisible: false,
     buttonPosition: 'bottom-left',
     torusWidgetVisibility: true,
+    apiKey: 'torus-default',
   },
   whiteLabel: {
     isActive: false,

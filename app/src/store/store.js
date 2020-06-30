@@ -8,6 +8,7 @@ import config from '../config'
 import torus from '../torus'
 import ConfirmHandler from '../utils/ConfirmHandler'
 import { TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
+import { setAPIKey } from '../utils/httpHelpers'
 import { storageAvailable } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
@@ -238,5 +239,9 @@ if (storageAvailable('localStorage')) {
     VuexStore.commit('setTheme', torusTheme)
   }
 }
+
+// Another location
+
+setAPIKey(VuexStore.state.embedState.apiKey)
 
 export default VuexStore

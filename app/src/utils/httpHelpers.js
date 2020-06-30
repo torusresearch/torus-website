@@ -2,6 +2,20 @@ import log from 'loglevel'
 
 import config from '../config'
 
+let apiKey = 'torus-default'
+export const gatewayAuthHeader = 'x-api-key'
+export function setAPIKey(a) {
+  apiKey = a
+}
+
+export function clearAPIKey() {
+  apiKey = 'torus-default'
+}
+
+export function getAPIKey() {
+  return apiKey
+}
+
 export const promiseTimeout = (ms, promise) => {
   const timeout = new Promise((resolve, reject) => {
     const id = setTimeout(() => {
@@ -17,6 +31,7 @@ export const post = (url = '', data = {}, options_ = {}) => {
     mode: 'cors',
     cache: 'no-cache',
     headers: {
+      [gatewayAuthHeader]: apiKey,
       'Content-Type': 'application/json; charset=utf-8',
     },
     body: options_.isUrlEncodedData ? data : JSON.stringify(data),
@@ -42,6 +57,7 @@ export const remove = (url = '', _data = {}, options_ = {}) => {
     mode: 'cors',
     cache: 'no-cache',
     headers: {
+      [gatewayAuthHeader]: apiKey,
       'Content-Type': 'application/json; charset=utf-8',
     },
   }
