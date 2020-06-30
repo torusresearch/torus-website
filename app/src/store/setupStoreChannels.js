@@ -58,6 +58,26 @@ if (!isMain) {
       if (Object.keys(whiteLabel).length > 0) VuexStore.commit('setWhiteLabel', whiteLabel)
       VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
       VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
+      const { isRehydrationComplete } = VuexStore.state
+      if (isRehydrationComplete) {
+        initStream.write({
+          name: 'init_complete',
+          data: { success: true },
+        })
+      } else {
+        const unWatcher = VuexStore.watch(
+          (state) => state.isRehydrationComplete,
+          (newValue, oldValue) => {
+            if (newValue !== oldValue && newValue === true) {
+              initStream.write({
+                name: 'init_complete',
+                data: { success: true },
+              })
+              unWatcher()
+            }
+          }
+        )
+      }
     }
   })
 

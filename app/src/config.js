@@ -124,6 +124,7 @@ export default {
       logoDark: '',
       showOnModal: true,
     },
+
     [APPLE_VERIFIER]: {
       description: '',
       typeOfLogin: APPLE,
@@ -176,19 +177,6 @@ export default {
         connection: 'twitter',
       },
     },
-    // [WEIBO_VERIFIER]: {
-    //   description: '',
-    //   typeOfLogin: WEIBO,
-    //   clientId: VUE_APP_WEIBO_CLIENT_ID,
-    //   logoHover: '',
-    //   logoLight: '',
-    //   logoDark: '',
-    //   showOnModal: true,
-    //   jwtParameters: {
-    //     domain: LOGIN_DOMAIN,
-    //     connection: 'weibo',
-    //   },
-    // },
     [LINE_VERIFIER]: {
       description: '',
       typeOfLogin: LINE,
@@ -202,6 +190,19 @@ export default {
         connection: 'line',
       },
     },
+    // [WEIBO_VERIFIER]: {
+    //   description: '',
+    //   typeOfLogin: WEIBO,
+    //   clientId: VUE_APP_WEIBO_CLIENT_ID,
+    //   logoHover: '',
+    //   logoLight: '',
+    //   logoDark: '',
+    //   showOnModal: true,
+    //   jwtParameters: {
+    //     domain: LOGIN_DOMAIN,
+    //     connection: 'weibo',
+    //   },
+    // },
   },
 
   redirect_uri: redirectURI,
