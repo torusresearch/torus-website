@@ -790,7 +790,7 @@ export default {
             if (foundLoginConfig) {
               toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
                 verifier: foundLoginConfig,
-                verifierId: this.toAddress,
+                verifierId: this.toAddress.toLowerCase(),
               })
             }
           } catch (error) {
