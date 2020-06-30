@@ -21,7 +21,22 @@ import ComposedStore from 'obs-store/lib/composed'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 
 import createMetamaskMiddleware from '../utils/createMetamaskMiddleware'
-import { GOERLI, KOVAN, LOCALHOST, MAINNET, MATIC, MATIC_CODE, MATIC_URL, RINKEBY, ROPSTEN, RPC, SUPPORTED_NETWORK_TYPES } from '../utils/enums'
+import {
+  GOERLI,
+  KOVAN,
+  LOCALHOST,
+  MAINNET,
+  MATIC,
+  MATIC_CODE,
+  MATIC_URL,
+  MUMBAI,
+  MUMBAI_CODE,
+  MUMBAI_URL,
+  RINKEBY,
+  ROPSTEN,
+  RPC,
+  SUPPORTED_NETWORK_TYPES,
+} from '../utils/enums'
 
 // defaults and constants
 const defaultProviderConfig = { type: 'mainnet' }
@@ -179,7 +194,10 @@ export default class NetworkController extends EventEmitter {
    */
   async setProviderType(type, rpcTarget = '', ticker = 'ETH', nickname = '') {
     assert.notStrictEqual(type, 'rpc', 'NetworkController - cannot call "setProviderType" with type \'rpc\'. use "setRpcTarget"')
-    assert(INFURA_PROVIDER_TYPES.has(type) || type === LOCALHOST || type === MATIC, `NetworkController - Unknown rpc type "${type}"`)
+    assert(
+      INFURA_PROVIDER_TYPES.has(type) || type === LOCALHOST || type === MATIC || type === MUMBAI,
+      `NetworkController - Unknown rpc type "${type}"`
+    )
     const providerConfig = { type, rpcTarget, ticker, nickname }
     this.providerConfig = providerConfig
   }
@@ -223,6 +241,8 @@ export default class NetworkController extends EventEmitter {
       // url-based rpc endpoints
     } else if (type === MATIC) {
       this._configureStandardProvider({ rpcUrl: MATIC_URL, chainId: MATIC_CODE, ticker: MATIC, nickname: MATIC })
+    } else if (type === MUMBAI) {
+      this._configureStandardProvider({ rpcUrl: MUMBAI_URL, chainId: MUMBAI_CODE, ticker: MUMBAI, nickname: MUMBAI })
     } else if (type === 'rpc') {
       this._configureStandardProvider({ rpcUrl: rpcTarget, chainId, ticker, nickname })
     } else {

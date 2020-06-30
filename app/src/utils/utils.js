@@ -39,6 +39,8 @@ import {
   MATIC_CHAIN_ID,
   MATIC_CODE,
   MOONPAY,
+  MUMBAI_CHAIN_ID,
+  MUMBAI_CODE,
   PASSWORDLESS,
   PLATFORM_BRAVE,
   PLATFORM_CHROME,
@@ -495,6 +497,7 @@ export const standardNetworkId = {
   [KOVAN_CODE.toString()]: KOVAN_CHAIN_ID,
   [GOERLI_CODE.toString()]: GOERLI_CHAIN_ID,
   [MATIC_CODE.toString()]: MATIC_CHAIN_ID,
+  [MUMBAI_CODE.toString()]: MUMBAI_CHAIN_ID,
 }
 
 export function selectChainId(network, store) {

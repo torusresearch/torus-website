@@ -176,15 +176,14 @@ export default {
     recentTransaction() {
       const oldTx = this.pastTransactions
       const [recent] = oldTx.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) || []
-
       if (!recent) return undefined
 
       const { id, type, created_at: createdAt, to, from } = recent
       let totalAmountString = ''
       if (recent.type === CONTRACT_TYPE_ERC721) totalAmountString = recent.symbol
       else if (recent.type === CONTRACT_TYPE_ERC20)
-        totalAmountString = `${significantDigits(Number.parseFloat(recent.total_amount))} ${recent.symbol}`
-      else totalAmountString = `${significantDigits(Number.parseFloat(recent.total_amount))} ETH`
+        totalAmountString = `${significantDigits(Number.parseFloat(recent.total_amount || recent.totalAmount))} ${recent.symbol}`
+      else totalAmountString = `${significantDigits(Number.parseFloat(recent.total_amount || recent.totalAmount))} ETH`
       recent.action = this.wallets.includes(to) ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
       return {
         id,
