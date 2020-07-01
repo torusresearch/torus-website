@@ -10,8 +10,8 @@
           </div>
           <div class="details-container d-flex flex-column ml-2 pr-2">
             <div class="d-flex align-center">
-              <v-icon size="12" class="details-container__icon torusGray1--text">{{ `$vuetify.icons.${userInfo.typeOfLogin}` }}</v-icon>
-              <div class="details-container__text ml-2">{{ userInfo.verifierId }}</div>
+              <v-icon size="12" class="details-container__icon torusGray1--text">{{ `$vuetify.icons.${userInfo.typeOfLogin.toLowerCase()}` }}</v-icon>
+              <div class="details-container__text ml-2" :title="userEmail">{{ userEmail }}</div>
               <!-- Will add when dropdown available -->
               <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->
             </div>
@@ -109,6 +109,9 @@
               <span class="caption text_2--text">{{ recentTransaction.totalAmountString }}</span>
             </div>
           </div>
+          <div v-else class="text-center">
+            <span class="caption text_2--text">{{ t('walletActivity.noTransaction') }}</span>
+          </div>
         </div>
       </div>
     </v-dialog>
@@ -196,6 +199,11 @@ export default {
         slicedFrom: addressSlicer(from),
         totalAmountString,
       }
+    },
+    userEmail() {
+      const verifierIdArray = this.userInfo.verifierId.split('|')
+      const verifierId = verifierIdArray[1] ? verifierIdArray[1] : verifierIdArray[0]
+      return this.userInfo.email ? this.userInfo.email : verifierId
     },
   },
   methods: {

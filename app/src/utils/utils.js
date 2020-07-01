@@ -334,28 +334,28 @@ export const broadcastChannelOptions = {
 
 export function validateVerifierId(selectedTypeOfLogin, value) {
   if (selectedTypeOfLogin === ETH) {
-    return isAddress(value) || 'Invalid ETH Address'
+    return isAddress(value) || 'walletSettings.invalidEth'
   }
   if (selectedTypeOfLogin === GOOGLE) {
     return (
       // eslint-disable-next-line max-len
       /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
-      'Invalid Email Address'
+      'walletSettings.invalidEmail'
     )
   }
   if (selectedTypeOfLogin === REDDIT) {
-    return (/^[\w-]+$/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
+    return (/^[\w-]+$/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'walletSettings.invalidReddit'
   }
   if (selectedTypeOfLogin === DISCORD) {
-    return (/^\d*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
+    return (/^\d*$/.test(value) && value.length === 18) || 'walletSettings.invalidDiscord'
   }
 
   if (selectedTypeOfLogin === TWITTER) {
-    return /^@?(\w){1,15}$/.test(value) || 'Invalid Twitter username'
+    return /^@?(\w){1,15}$/.test(value) || 'walletSettings.invalidTwitter'
   }
 
   if (selectedTypeOfLogin === GITHUB) {
-    return /^(?!.*(-{2}))(?!^-.*$)(?!^.*-$)[\w-]{1,39}$/.test(value) || 'Invalid Github username'
+    return /^(?!.*(-{2}))(?!^-.*$)(?!^.*-$)[\w-]{1,39}$/.test(value) || 'walletSettings.invalidGithub'
   }
 
   return true

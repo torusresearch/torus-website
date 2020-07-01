@@ -36,7 +36,7 @@
             </v-icon>
           </div>
           <div class="caption text_1--text font-weight-bold" :style="{ paddingLeft: '2px' }">
-            <span>{{ index === 0 ? userInfo.email : `${t('accountMenu.account')} #${index + 1}` }}</span>
+            <span>{{ userEmail }}</span>
           </div>
           <div class="caption ml-auto text_2--text text-right">
             <span>{{ acc.totalPortfolioValue }} {{ selectedCurrency }}</span>
@@ -148,8 +148,9 @@ export default {
       wallets: 'walletBalances',
     }),
     userEmail() {
-      const typeOfLoginLabel = `${this.userInfo.typeOfLogin.charAt(0).toUpperCase() + this.userInfo.typeOfLogin.slice(1)}: `
-      return typeOfLoginLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
+      const verifierIdArray = this.userInfo.verifierId.split('|')
+      const verifierId = verifierIdArray[1] ? verifierIdArray[1] : verifierIdArray[0]
+      return this.userInfo.email ? this.userInfo.email : verifierId
     },
     userId() {
       return this.userInfo.typeOfLogin === DISCORD ? `Discord ID: ${this.userInfo.verifierId.toString()}` : ''

@@ -136,6 +136,9 @@
                           <v-icon small>$vuetify.icons.scan</v-icon>
                         </v-btn>
                       </template>
+                      <template v-slot:message="props">
+                        {{ t(props.message) }}
+                      </template>
                     </v-combobox>
                     <QrcodeCapture ref="captureQr" style="display: none;" @decode="onDecodeQr" />
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
