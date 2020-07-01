@@ -30,8 +30,8 @@ describe('Preferences Controller', () => {
     assert.deepStrictEqual(preferencesController.headers, {
       headers: {
         Authorization: 'Bearer hello',
-        'Content-Type': 'application/json; charset=utf-8',
-      },
+        'Content-Type': 'application/json; charset=utf-8'
+      }
     })
   })
 
@@ -81,11 +81,14 @@ describe('Preferences Controller', () => {
       sandbox.restore()
     })
     it('user sync error', async () => {
-      nock('https://api.tor.us').get(/.*/).replyWithError(new TypeError('Invalid request')).log(noop)
+      nock('https://api.tor.us')
+        .get(/.*/)
+        .replyWithError(new TypeError('Invalid request'))
+        .log(noop)
       nock('https://common-api.tor.us')
         .get('/transaction')
         .reply(200, {
-          data: {},
+          data: {}
         })
         .log(noop)
       const successCallback = sinon.fake()
@@ -108,9 +111,15 @@ describe('Preferences Controller', () => {
         .reply(400)
         .log(noop)
 
-      nock('https://api.tor.us').get(/user/).reply(200, { data: {} }).log(noop)
+      nock('https://api.tor.us')
+        .get(/user/)
+        .reply(200, { data: {} })
+        .log(noop)
 
-      nock('https://common-api.tor.us').get(/.*/).reply(400).log(noop)
+      nock('https://common-api.tor.us')
+        .get(/.*/)
+        .reply(400)
+        .log(noop)
       const successCallback = sinon.fake()
       const errorCallback = sinon.fake()
       await preferencesController.sync(successCallback, errorCallback)
@@ -127,33 +136,33 @@ describe('Preferences Controller', () => {
         locale: 'en',
         verifier: 'google',
         verifier_id: 'hc@njv.com',
-        permissions: {},
+        permissions: {}
       }
       nock('https://api.tor.us')
         .get(/user/)
         .reply(200, {
-          data: userData,
+          data: userData
         })
         .log(noop)
 
       nock('https://api.tor.us')
         .get(/transaction/)
         .reply(200, {
-          data: [],
+          data: []
         })
         .log(noop)
 
       nock('https://api.tor.us')
         .get(/etherscan/)
         .reply(200, {
-          data: [],
+          data: []
         })
         .log(noop)
 
       nock('https://common-api.tor.us')
         .get('/transaction')
         .reply(200, {
-          data: [],
+          data: []
         })
         .log(noop)
       await preferencesController.sync()
@@ -193,10 +202,10 @@ describe('Preferences Controller', () => {
               description: '특집 앱 확인-DeFiZap',
               callToActionLink: 'https://google.com',
               callToActionText: 'DeFiZap 방문',
-              locale: 'ko',
-            },
+              locale: 'ko'
+            }
           ],
-          success: true,
+          success: true
         })
         .log(noop)
       nock('https://api.tor.us')
@@ -206,18 +215,18 @@ describe('Preferences Controller', () => {
             id: 1,
             verifier: 'google',
             contact: 'hello@tor.us',
-            name: 'torus',
+            name: 'torus'
           },
-          success: true,
+          success: true
         })
         .log(noop)
       nock('https://api.tor.us')
         .delete('/contact/1')
         .reply(200, {
           data: {
-            id: 1,
+            id: 1
           },
-          success: true,
+          success: true
         })
         .log(noop)
       handleSuccessStub = sandbox.stub(preferencesController, 'handleSuccess')
@@ -298,7 +307,7 @@ describe('Preferences Controller', () => {
   })
 
   it('should not poll user without jwt', () =>
-    new Promise((resolve) => {
+    new Promise(resolve => {
       const clock = sandbox.useFakeTimers()
       const prefsController = new PreferencesController()
       const mockSync = sandbox.stub(prefsController, 'sync')
@@ -311,7 +320,7 @@ describe('Preferences Controller', () => {
     }))
 
   it('should poll user with jwt', () =>
-    new Promise((resolve) => {
+    new Promise(resolve => {
       const clock = sandbox.useFakeTimers()
       const prefsController = new PreferencesController({ interval: 100 })
       const mockSync = sandbox.stub(prefsController, 'sync')
