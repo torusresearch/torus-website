@@ -4,7 +4,7 @@ import log from 'loglevel'
 import config from '../../config'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MOONPAY, RAMPNETWORK, SIMPLEX, WYRE, XANPOOL } from '../../utils/enums'
+import { MOONPAY, RAMPNETWORK, WYRE, XANPOOL } from '../../utils/enums'
 import PopupHandler from '../../utils/PopupHandler'
 import { broadcastChannelOptions, fakeStream, paymentProviders } from '../../utils/utils'
 import moonpay from './moonpay'
@@ -137,19 +137,13 @@ export default {
         const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
         bc.addEventListener('message', (ev) => {
           try {
-            const {
-              instanceParams: { provider: returnedProvider },
-              queryParams: { transactionStatus = '' } = {},
-            } = ev.data || {}
-
+            const { queryParams: { transactionStatus = '' } = {} } = ev.data || {}
             if (ev.error && ev.error !== '') {
               log.error(ev.error)
               throw new Error(ev.error)
-            } else if (returnedProvider === SIMPLEX || returnedProvider === WYRE || returnedProvider === XANPOOL) {
+            } else if (transactionStatus === 'success') {
               handleSuccess(true)
-            } else if ((returnedProvider === MOONPAY || returnedProvider === RAMPNETWORK) && transactionStatus !== 'failed') {
-              handleSuccess(true)
-            } else if ((returnedProvider === MOONPAY || returnedProvider === RAMPNETWORK) && transactionStatus === 'failed') {
+            } else if (transactionStatus === 'failed') {
               throw new Error('Payment Failed')
             }
           } catch (error) {
