@@ -36,7 +36,7 @@
             </v-icon>
           </div>
           <div class="caption text_1--text font-weight-bold" :style="{ paddingLeft: '2px' }">
-            <span>{{ userEmail }}</span>
+            <span>{{ index === 0 ? userEmail : `${t('accountMenu.account')} #${index + 1}` }}</span>
           </div>
           <div class="caption ml-auto text_2--text text-right">
             <span>{{ acc.totalPortfolioValue }} {{ selectedCurrency }}</span>
