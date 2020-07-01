@@ -1,10 +1,10 @@
+import { setAPIKey } from '@toruslabs/http-helpers'
 import merge from 'deepmerge'
 
 import config from '../config'
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
 import { LOCALES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
-import { setAPIKey as setHelperApiKey } from '../utils/httpHelpers'
 import { storageAvailable } from '../utils/utils'
 
 export default {
@@ -133,7 +133,7 @@ export default {
     }
   },
   setAPIKey(state, payload) {
-    setHelperApiKey(payload || 'torus-default')
+    setAPIKey(payload || 'torus-default')
     state.embedState = {
       ...state.embedState,
       apiKey: payload || 'torus-default',
