@@ -146,44 +146,18 @@
               <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>
             </v-flex>
             <v-flex xs6 px-2>
-              <v-dialog v-model="confirmDialog" max-width="375" persistent>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    id="confirm-btn"
-                    :disabled="topUpErrorShow || canShowError"
-                    block
-                    depressed
-                    large
-                    color="torusBrand1"
-                    class="white--text"
-                    v-on="on"
-                  >
-                    {{ t('dappTransfer.confirm') }}
-                  </v-btn>
-                </template>
-                <TransferConfirm
-                  :dapp-name="origin.hostname"
-                  :from-address="sender"
-                  :from-verifier-id="userInfo.verifierId"
-                  :from-verifier="userInfo.typeOfLogin"
-                  :to-address="amountTo"
-                  :network-type="network"
-                  :converted-amount="displayAmountConverted"
-                  :display-amount="displayAmountValue"
-                  :speed-selected="speed"
-                  :asset-selected="assetDetails"
-                  :is-non-fungible-token="isNonFungibleToken"
-                  :transaction-fee="txFees"
-                  :transaction-fee-eth="`${gasCost} ETH`"
-                  :selected-currency="selectedCurrency"
-                  :total-cost="`${costOfTransaction} ${
-                    isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + 'ETH' : ''
-                  }`"
-                  :total-cost-converted="costOfTransactionConverted"
-                  @onClose="confirmDialog = false"
-                  @onConfirm="triggerSign"
-                ></TransferConfirm>
-              </v-dialog>
+              <v-btn
+                id="confirm-btn"
+                :disabled="topUpErrorShow || canShowError"
+                block
+                depressed
+                large
+                color="torusBrand1"
+                class="white--text"
+                @click="triggerSign"
+              >
+                {{ t('dappTransfer.confirm') }}
+              </v-btn>
             </v-flex>
           </v-layout>
         </v-flex>
@@ -294,7 +268,6 @@ import VueJsonPretty from 'vue-json-pretty'
 import { mapGetters } from 'vuex'
 import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
-import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
@@ -325,7 +298,6 @@ export default {
     VueJsonPretty,
     PopupScreenLoader,
     TransactionSpeedSelect,
-    TransferConfirm,
     // PermissionConfirm,
     NetworkDisplay,
     ShowToolTip,
