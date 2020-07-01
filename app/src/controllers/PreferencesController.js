@@ -152,7 +152,7 @@ class PreferencesController {
       ])
         .then((data) => {
           const [walletTx, paymentTx, etherscanTx] = data
-          log.info(walletTx, paymentTx)
+          log.info(walletTx, paymentTx, etherscanTx)
           if (paymentTx?.data) {
             this.calculatePaymentTx(paymentTx.data)
           }

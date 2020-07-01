@@ -75,6 +75,7 @@ describe('Preferences Controller', () => {
     beforeEach(() => {
       sandbox.stub(preferencesController, 'calculatePaymentTx')
       sandbox.stub(preferencesController, 'calculatePastTx')
+      sandbox.stub(preferencesController, 'calculateEtherscanTx')
     })
     afterEach(() => {
       sandbox.restore()
@@ -96,12 +97,19 @@ describe('Preferences Controller', () => {
 
     it('payment sync error', async () => {
       sandbox.stub(preferencesController, 'setVerifier')
+
       nock('https://api.tor.us')
-        .get(/.*/)
-        .reply(200, {
-          data: {},
-        })
+        .get(/transaction/)
+        .reply(400)
         .log(noop)
+
+      nock('https://api.tor.us')
+        .get(/etherscan/)
+        .reply(400)
+        .log(noop)
+
+      nock('https://api.tor.us').get(/user/).reply(200, { data: {} }).log(noop)
+
       nock('https://common-api.tor.us').get(/.*/).reply(400).log(noop)
       const successCallback = sinon.fake()
       const errorCallback = sinon.fake()
@@ -122,11 +130,26 @@ describe('Preferences Controller', () => {
         permissions: {},
       }
       nock('https://api.tor.us')
-        .get(/.*/)
+        .get(/user/)
         .reply(200, {
           data: userData,
         })
         .log(noop)
+
+      nock('https://api.tor.us')
+        .get(/transaction/)
+        .reply(200, {
+          data: [],
+        })
+        .log(noop)
+
+      nock('https://api.tor.us')
+        .get(/etherscan/)
+        .reply(200, {
+          data: [],
+        })
+        .log(noop)
+
       nock('https://common-api.tor.us')
         .get('/transaction')
         .reply(200, {
