@@ -14,8 +14,7 @@ export default class JwtHandler extends AbstractLoginHandler {
   PROMPT = 'login'
 
   constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false, typeOfLogin, jwtParameters }) {
-    super({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
-    this.typeOfLogin = typeOfLogin
+    super({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener })
     this.jwtParameters = jwtParameters
     this.setFinalUrl()
   }
@@ -62,6 +61,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         profileImage: picture,
         verifierId: getVerifierId(userInfo, this.typeOfLogin, verifierIdField),
         verifier: this.verifier,
+        typeOfLogin: this.typeOfLogin,
       }
     } catch (error) {
       log.error(error)
@@ -73,6 +73,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         email,
         verifierId: getVerifierId(decodedToken, this.typeOfLogin, verifierIdField),
         verifier: this.verifier,
+        typeOfLogin: this.typeOfLogin,
       }
     }
   }

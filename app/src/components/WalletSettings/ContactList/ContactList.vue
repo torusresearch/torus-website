@@ -116,7 +116,11 @@
                 :rules="[toAddressRule, rules.required, checkDuplicates]"
                 outlined
                 aria-label="Contact Value"
-              ></v-text-field>
+              >
+                <template v-slot:message="props">
+                  {{ t(props.message) }}
+                </template>
+              </v-text-field>
             </v-flex>
 
             <v-layout wrap>

@@ -41,7 +41,11 @@
               aria-label="Enter Email"
               prepend-inner-icon="$vuetify.icons.email"
               :rules="[emailRule]"
-            ></v-text-field>
+            >
+              <template v-slot:message="props">
+                {{ t(props.message) }}
+              </template>
+            </v-text-field>
             <v-btn :disabled="!formValid" x-large type="submit" depressed color="torusBrand1" class="magic-link-btn white--text" block>
               <v-icon small class="mr-1">$vuetify.icons.passwordless</v-icon>
               {{ t('login.sendLink') }}

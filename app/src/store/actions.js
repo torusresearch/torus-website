@@ -224,7 +224,7 @@ export default {
         await bc.postMessage({
           data: {
             origin: getIFrameOriginObject(),
-            payload: { ...payload, verifier: state.userInfo.verifier },
+            payload: { ...payload, typeOfLogin: state.userInfo.typeOfLogin },
             whiteLabel: state.whiteLabel,
           },
         })
@@ -326,7 +326,7 @@ export default {
       const loginParameters = await loginHandler.handleLoginWindow()
       const { accessToken, idToken } = loginParameters
       const userInfo = await loginHandler.getUserInfo(loginParameters)
-      const { profileImage, name, email, verifierId } = userInfo
+      const { profileImage, name, email, verifierId, typeOfLogin: returnTypeOfLogin } = userInfo
       commit('setUserInfo', {
         profileImage,
         name,
@@ -334,6 +334,7 @@ export default {
         verifierId,
         verifier,
         verifierParams: { verifier_id: verifierId },
+        typeOfLogin: returnTypeOfLogin,
       })
       await dispatch('handleLogin', { calledFromEmbed, oAuthToken: idToken || accessToken })
     } catch (error) {
@@ -402,14 +403,14 @@ export default {
   },
   cleanupOAuth({ state }, payload) {
     const {
-      userInfo: { verifier },
+      userInfo: { typeOfLogin },
     } = state
     const { oAuthToken } = payload
-    if (verifier === FACEBOOK) {
+    if (typeOfLogin === FACEBOOK) {
       remove(`https://graph.facebook.com/me/permissions?access_token=${oAuthToken}`)
         .then((resp) => log.info(resp))
         .catch((error) => log.error(error))
-    } else if (verifier === DISCORD) {
+    } else if (typeOfLogin === DISCORD) {
       prefsController.revokeDiscord(oAuthToken)
     }
   },

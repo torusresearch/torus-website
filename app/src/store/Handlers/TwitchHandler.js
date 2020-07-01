@@ -6,8 +6,8 @@ export default class TwitchHandler extends AbstractLoginHandler {
 
   SCOPE = 'user:read:email'
 
-  constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false }) {
-    super({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
+  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener = false }) {
+    super({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener })
     this.setFinalUrl()
   }
 
@@ -37,6 +37,7 @@ export default class TwitchHandler extends AbstractLoginHandler {
       email,
       verifierId,
       verifier: this.verifier,
+      typeOfLogin: this.typeOfLogin,
     }
   }
 }
