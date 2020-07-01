@@ -1,7 +1,12 @@
+import { BroadcastChannel } from 'broadcast-channel'
+import log from 'loglevel'
+
+import config from '../../config'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MOONPAY, RAMPNETWORK, WYRE, XANPOOL } from '../../utils/enums'
-import { fakeStream, paymentProviders } from '../../utils/utils'
+import { MOONPAY, RAMPNETWORK, SIMPLEX, WYRE, XANPOOL } from '../../utils/enums'
+import PopupHandler from '../../utils/PopupHandler'
+import { broadcastChannelOptions, fakeStream, paymentProviders } from '../../utils/utils'
 import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
 import simplex from './simplex'
@@ -120,7 +125,49 @@ export default {
         handleFailure(error)
       }
     } else {
-      handleFailure(new Error('Unsupported/Invalid provider selected'))
+      try {
+        const finalUrl = new URL(`${config.baseUrl}/wallet/topup`)
+        finalUrl.searchParams.append('instanceId', torus.instanceId)
+        if (params)
+          Object.keys(params).forEach((key) => {
+            if (params[key]) finalUrl.searchParams.append(key, params[key])
+          })
+        const handledWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+
+        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+        bc.addEventListener('message', (ev) => {
+          try {
+            const {
+              instanceParams: { provider: returnedProvider },
+              queryParams: { transactionStatus = '' } = {},
+            } = ev.data || {}
+
+            if (ev.error && ev.error !== '') {
+              log.error(ev.error)
+              throw new Error(ev.error)
+            } else if (returnedProvider === SIMPLEX || returnedProvider === WYRE || returnedProvider === XANPOOL) {
+              handleSuccess(true)
+            } else if ((returnedProvider === MOONPAY || returnedProvider === RAMPNETWORK) && transactionStatus !== 'failed') {
+              handleSuccess(true)
+            } else if ((returnedProvider === MOONPAY || returnedProvider === RAMPNETWORK) && transactionStatus === 'failed') {
+              throw new Error('Payment Failed')
+            }
+          } catch (error) {
+            handleFailure(error)
+          } finally {
+            bc.close()
+            handledWindow.close()
+          }
+        })
+        // Handle communication with moonpay window here
+        handledWindow.open()
+        handledWindow.once('close', () => {
+          bc.close()
+          handleFailure(new Error('user closed popup'))
+        })
+      } catch (error) {
+        handleFailure(error)
+      }
     }
   },
 }
