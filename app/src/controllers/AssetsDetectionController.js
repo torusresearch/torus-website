@@ -65,11 +65,15 @@ export default class AssetsDetectionController {
     const api = this.getOwnerCollectiblesApi(selectedAddress)
     let response
     try {
-      response = await get(`${config.api}/opensea?url=${api}`, {
-        headers: {
-          Authorization: `Bearer ${this.jwtToken}`,
+      response = await get(
+        `${config.api}/opensea?url=${api}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.jwtToken}`,
+          },
         },
-      })
+        true
+      )
       const collectibles = response.data.assets
       return collectibles
     } catch (error) {

@@ -612,12 +612,18 @@ export default {
           tokenImageUrl:
             this.contractType !== CONTRACT_TYPE_ERC721 ? `${this.logosUrl}/${this.selectedItemDisplay.logo}` : this.selectedItemDisplay.logo,
         }
-        post(`${config.api}/transaction/sendemail`, emailObject, {
-          headers: {
-            Authorization: `Bearer ${this.jwtToken}`,
-            'Content-Type': 'application/json; charset=utf-8',
+        post(
+          `${config.api}/transaction/sendemail`,
+          emailObject,
+          {
+            headers: {
+              Authorization: `Bearer ${this.jwtToken}`,
+              'Content-Type': 'application/json; charset=utf-8',
+            },
           },
-        })
+          {},
+          true
+        )
           .then((response) => log.info('email response', response))
           .catch((error) => log.error(error))
       }

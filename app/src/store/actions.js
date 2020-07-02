@@ -418,10 +418,15 @@ export default {
       const { message, selectedAddress, calledFromEmbed } = payload
       const hashedMessage = torus.hashMessage(message)
       const signedMessage = await torus.torusController.keyringController.signMessage(selectedAddress, hashedMessage)
-      const response = await post(`${config.api}/auth/verify`, {
-        public_address: selectedAddress,
-        signed_message: signedMessage,
-      })
+      const response = await post(
+        `${config.api}/auth/verify`,
+        {
+          public_address: selectedAddress,
+          signed_message: signedMessage,
+        },
+        {},
+        true
+      )
       commit('setJwtToken', response.token)
       // prefsController.jwtToken = response.token
       if (response.token) {

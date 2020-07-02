@@ -39,9 +39,14 @@ class TorusExtended extends Torus {
 
   getMessageForSigning(publicAddress) {
     return new Promise((resolve, reject) => {
-      post(`${config.api}/auth/message`, {
-        public_address: publicAddress,
-      })
+      post(
+        `${config.api}/auth/message`,
+        {
+          public_address: publicAddress,
+        },
+        {},
+        true
+      )
         .then((response) => {
           const { message } = response || {}
           resolve(message)
