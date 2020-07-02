@@ -27,6 +27,7 @@ import KeyIcon from './KeyIcon.vue'
 import ListIcon from './ListIcon.vue'
 import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
+import MenuIcon from './MenuIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
 import PersonIcon from './PersonIcon.vue'
 import QrIcon from './QrIcon.vue'
@@ -254,5 +255,8 @@ export default {
   },
   line: {
     component: VerifierLineIcon,
+  },
+  menu: {
+    component: MenuIcon,
   },
 }

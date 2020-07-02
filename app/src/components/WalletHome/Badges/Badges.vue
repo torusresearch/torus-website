@@ -4,15 +4,15 @@
       <div class="display-1" :class="$vuetify.theme.dark ? 'torusGray2--text' : 'text_2--text'">{{ t('walletHome.gettingStarted') }}</div>
     </v-flex>
     <v-flex xs12 mt-6>
-      <v-layout :wrap="$vuetify.breakpoint.xsOnly" mx-n4>
-        <v-flex v-for="badge in badges" :key="badge.title" xs12 sm3 mx-4 mb-4>
-          <v-card class="badge elevation-1 py-3">
+      <v-layout wrap mx-n4>
+        <v-flex v-for="badge in badges" :key="badge.title" class="xs12 sm6 md3 px-4 mb-4">
+          <v-card class="badge elevation-1 py-3" :class="{ viewMd: $vuetify.breakpoint.mdOnly }">
             <div class="d-flex px-4 align-top">
               <div :style="{ lineHeight: '0px' }">
                 <img :src="require(`../../../assets/images/${badge.image}${badge.completed ? '-active' : ''}.svg`)" />
               </div>
               <div class="pt-1 ml-2">
-                <div class="subtitle-2 badge__title" v-html="badge.title" />
+                <div class="subtitle-2 font-weight-medium badge__title" v-html="badge.title" />
                 <div v-if="badge.link" class="badge__link">
                   <a v-if="badge.external" :href="badge.link" target="_blank" rel="noreferrer noopener">{{ badge.linkText }}</a>
                   <router-link v-else :to="badge.link" tag="a">{{ badge.linkText }}</router-link>

@@ -99,13 +99,9 @@
                   </v-layout>
                 </v-expand-transition>
               </v-list-item-content>
-              <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
+              <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'my-3 mx-1' : ''">
                 <v-btn id="show-download-form-btn" aria-label="Show/Hide Download JSON form" icon small @click="isShowGetPassword = true">
-                  <img
-                    :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
-                    src="../../../assets/img/icons/download-primary.svg"
-                    alt="Show/Hide Download JSON form"
-                  />
+                  <v-icon size="18" class="torusBrand1--text">$vuetify.icons.download</v-icon>
                 </v-btn>
               </v-list-item-icon>
             </v-list-item>
@@ -114,7 +110,7 @@
 
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" src="../../../assets/img/icons/key.svg" alt="Key Icon" />
+                <img :width="$vuetify.breakpoint.xsOnly ? '18' : ''" src="../../../assets/img/icons/key.svg" alt="Key Icon" />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.showPrivateKey') }}</div>
@@ -127,31 +123,23 @@
                   <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : ''">
                     <ShowToolTip :address="selectedKey">
                       <v-btn id="click-to-copy-btn" text small class="torusBrand1--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
-                        <img
-                          src="../../../assets/img/icons/copy-primary.svg"
-                          class="mr-1"
-                          :width="$vuetify.breakpoint.xsOnly ? '12' : '20'"
-                          alt="Copy Icon"
-                        />
-                        {{ t('walletSettings.clickCopy') }}
+                        <v-icon small class="mr-1">$vuetify.icons.copy</v-icon>
+                        <span>{{ t('walletSettings.clickCopy') }}</span>
                       </v-btn>
                     </ShowToolTip>
                   </v-flex>
                 </v-layout>
               </v-list-item-content>
-              <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
+              <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'my-3 mx-1' : ''">
                 <v-btn
                   id="show-private-key-btn gmt-private-key-show"
+                  class="torusBrand1--text"
                   icon
                   small
                   aria-label="Show/Hide Private Key"
                   @click="isShowPrivateKey = !isShowPrivateKey"
                 >
-                  <img
-                    :width="$vuetify.breakpoint.xsOnly ? '20' : ''"
-                    :src="require(`../../../assets/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"
-                    alt="Toggle Password Icon"
-                  />
+                  <v-icon>{{ `$vuetify.icons.${isShowPrivateKey ? 'visibility_off' : 'visibility_on'}` }}</v-icon>
                 </v-btn>
               </v-list-item-icon>
             </v-list-item>
