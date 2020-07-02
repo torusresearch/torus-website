@@ -151,6 +151,7 @@ export const TWITTER_VERIFIER = process.env.VUE_APP_TWITTER_VERIFIER
 export const WEIBO_VERIFIER = process.env.VUE_APP_WEIBO_VERIFIER
 export const LINE_VERIFIER = process.env.VUE_APP_LINE_VERIFIER
 export const APPLE_VERIFIER = process.env.VUE_APP_APPLE_VERIFIER
+export const HOSTED_EMAIL_PASSWORDLESS_VERIFIER = process.env.VUE_APP_HOSTED_EMAIL_PASSWORDLESS_VERIFIER
 
 export const ENS = 'ENS'
 export const ETH_LABEL = 'walletSettings.ethAddress'

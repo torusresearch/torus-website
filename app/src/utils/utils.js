@@ -577,22 +577,26 @@ export const padUrlString = (url) => {
   return url.href.endsWith('/') ? url.href : `${url.href}/`
 }
 
-export const getVerifierId = (userInfo, typeOfLogin, verifierIdField) => {
+function caseSensitiveField(field, isCaseSensitive) {
+  return isCaseSensitive ? field : field.toLowerCase()
+}
+
+export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifierIdCaseSensitive = true) => {
   const { name, nickname, sub } = userInfo
-  if (verifierIdField) return userInfo[verifierIdField]
+  if (verifierIdField) return caseSensitiveField(userInfo[verifierIdField], isVerifierIdCaseSensitive)
   switch (typeOfLogin) {
     case GITHUB:
     case TWITTER:
-      return nickname.toLowerCase()
+      return caseSensitiveField(nickname, isVerifierIdCaseSensitive)
     case WEIBO:
     case PASSWORDLESS:
     case EMAIL_PASSWORD:
-      return name.toLowerCase()
+      return caseSensitiveField(name, isVerifierIdCaseSensitive)
     case APPLE:
     case LINKEDIN:
     case LINE:
     case JWT:
-      return sub
+      return caseSensitiveField(sub, isVerifierIdCaseSensitive)
     default:
       throw new Error('Invalid login type')
   }

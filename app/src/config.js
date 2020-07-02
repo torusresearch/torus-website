@@ -3,12 +3,16 @@ import {
   APPLE_VERIFIER,
   DISCORD,
   DISCORD_VERIFIER,
+  // EMAIL_PASSWORD,
   FACEBOOK,
   FACEBOOK_VERIFIER,
   GITHUB,
   GITHUB_VERIFIER,
   GOOGLE,
   GOOGLE_VERIFIER,
+  HOSTED_EMAIL_PASSWORDLESS_VERIFIER,
+  JWT,
+  // JWT,
   LINE,
   LINE_VERIFIER,
   LINKEDIN,
@@ -36,6 +40,7 @@ const {
   VUE_APP_TWITCH_CLIENT_ID,
   VUE_APP_TWITTER_CLIENT_ID,
   VUE_APP_LOGIN_DOMAIN,
+  VUE_APP_HOSTED_EMAIL_PASSWORDLESS_CLIENT_ID,
 } = process.env
 
 const baseUrl = VUE_APP_BASE_ROUTE || 'https://localhost:3000'
@@ -149,6 +154,7 @@ export default {
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'github',
+        isVerifierIdCaseSensitive: false,
       },
     },
     [LINKEDIN_VERIFIER]: {
@@ -175,6 +181,7 @@ export default {
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'twitter',
+        isVerifierIdCaseSensitive: false,
       },
     },
     [LINE_VERIFIER]: {
@@ -190,6 +197,21 @@ export default {
         connection: 'line',
       },
     },
+    [HOSTED_EMAIL_PASSWORDLESS_VERIFIER]: {
+      description: '',
+      typeOfLogin: JWT,
+      clientId: VUE_APP_HOSTED_EMAIL_PASSWORDLESS_CLIENT_ID,
+      logoHover: '',
+      logoLight: '',
+      logoDark: '',
+      showOnModal: true,
+      jwtParameters: {
+        domain: LOGIN_DOMAIN,
+        verifierIdField: 'name',
+        connection: '',
+        isVerifierIdCaseSensitive: false,
+      },
+    },
     // [WEIBO_VERIFIER]: {
     //   description: '',
     //   typeOfLogin: WEIBO,
@@ -201,6 +223,7 @@ export default {
     //   jwtParameters: {
     //     domain: LOGIN_DOMAIN,
     //     connection: 'weibo',
+    //     isVerifierIdCaseSensitive: false,
     //   },
     // },
   },
