@@ -72,7 +72,7 @@ export default class AssetsDetectionController {
             Authorization: `Bearer ${this.jwtToken}`,
           },
         },
-        true
+        { useAPIKey: true }
       )
       const collectibles = response.data.assets
       return collectibles

@@ -45,7 +45,7 @@ class TorusExtended extends Torus {
           public_address: publicAddress,
         },
         {},
-        true
+        { useAPIKey: true }
       )
         .then((response) => {
           const { message } = response || {}

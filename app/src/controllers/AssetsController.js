@@ -101,7 +101,7 @@ export default class AssetController {
           Authorization: `Bearer ${this.jwtToken}`,
         },
       },
-      true
+      { useAPIKey: true }
     )
 
     const { name, description, image_original_url: image } = collectibleInformation.data

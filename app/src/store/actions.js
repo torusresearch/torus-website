@@ -425,7 +425,7 @@ export default {
           signed_message: signedMessage,
         },
         {},
-        true
+        { useAPIKey: true }
       )
       commit('setJwtToken', response.token)
       // prefsController.jwtToken = response.token

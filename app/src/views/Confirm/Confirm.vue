@@ -607,7 +607,7 @@ export default {
                   Authorization: `Bearer ${jwtToken}`,
                 },
               },
-              true
+              { useAPIKey: true }
             )
             this.assetDetails = {
               name: assetDetails.data.name || '',

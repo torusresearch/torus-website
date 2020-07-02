@@ -140,7 +140,7 @@ class PreferencesController {
   async sync(callback, errorCallback) {
     try {
       const [user, paymentTx, etherscanTx] = await Promise.all([
-        get(`${config.api}/user`, this.headers, true).catch((_) => {
+        get(`${config.api}/user`, this.headers, { useAPIKey: true }).catch((_) => {
           if (errorCallback) errorCallback()
         }),
         getPastOrders({}, this.headers.headers).catch((error) => {
@@ -334,7 +334,7 @@ class PreferencesController {
 
   async postPastTx(tx) {
     try {
-      const response = await post(`${config.api}/transaction`, tx, this.headers, true)
+      const response = await post(`${config.api}/transaction`, tx, this.headers, { useAPIKey: true })
       log.info('successfully added', response)
     } catch (error) {
       log.error(error, 'unable to insert transaction')
@@ -358,7 +358,7 @@ class PreferencesController {
         verifierId,
       },
       this.headers,
-      true
+      { useAPIKey: true }
     )
   }
 
@@ -382,7 +382,7 @@ class PreferencesController {
             metadata: `referrer:${referrer}`,
           },
           this.headers,
-          true
+          { useAPIKey: true }
         )
         clearInterval(interval)
       }, 1000)
@@ -392,7 +392,7 @@ class PreferencesController {
   async setUserTheme(payload) {
     if (payload === this.state.theme) return
     try {
-      await patch(`${config.api}/user/theme`, { theme: payload }, this.headers, true)
+      await patch(`${config.api}/user/theme`, { theme: payload }, this.headers, { useAPIKey: true })
       this.handleSuccess('navBar.snackSuccessTheme')
       this.store.updateState({ theme: payload })
     } catch (error) {
@@ -403,7 +403,7 @@ class PreferencesController {
   /* istanbul ignore next */
   async setPermissions(payload) {
     try {
-      const response = await post(`${config.api}/permissions`, payload, this.headers, true)
+      const response = await post(`${config.api}/permissions`, payload, this.headers, { useAPIKey: true })
       log.info('successfully set permissions', response)
     } catch (error) {
       log.error('unable to set permissions', error)
@@ -413,7 +413,7 @@ class PreferencesController {
   async setUserLocale(payload) {
     if (payload === this.state.locale) return
     try {
-      await patch(`${config.api}/user/locale`, { locale: payload }, this.headers, true)
+      await patch(`${config.api}/user/locale`, { locale: payload }, this.headers, { useAPIKey: true })
       this.store.updateState({ locale: payload })
       // this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {
@@ -425,7 +425,7 @@ class PreferencesController {
   async setSelectedCurrency(payload) {
     if (payload.selectedCurrency === this.state.selectedCurrency) return
     try {
-      await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers, true)
+      await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers, { useAPIKey: true })
       this.store.updateState({ selectedCurrency: payload.selectedCurrency })
       this.handleSuccess('navBar.snackSuccessCurrency')
     } catch (error) {
@@ -436,7 +436,7 @@ class PreferencesController {
   /* istanbul ignore next */
   async setVerifier(verifier, verifierId) {
     try {
-      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers, true)
+      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers, { useAPIKey: true })
       log.info('successfully updated verifier info', response)
     } catch (error) {
       log.error('unable to update verifier info', error)
@@ -445,12 +445,12 @@ class PreferencesController {
 
   /* istanbul ignore next */
   getEtherScanTokenBalances() {
-    return get(`${config.api}/tokenbalances`, this.headers, true)
+    return get(`${config.api}/tokenbalances`, this.headers, { useAPIKey: true })
   }
 
   async getBillboardContents() {
     try {
-      const resp = await get(`${config.api}/billboard`, this.headers, true)
+      const resp = await get(`${config.api}/billboard`, this.headers, { useAPIKey: true })
       const events = resp.data.reduce((accumulator, event) => {
         if (!accumulator[event.callToActionLink]) accumulator[event.callToActionLink] = {}
         accumulator[event.callToActionLink][event.locale] = event
@@ -465,7 +465,7 @@ class PreferencesController {
 
   async addContact(payload) {
     try {
-      const response = await post(`${config.api}/contact`, payload, this.headers, true)
+      const response = await post(`${config.api}/contact`, payload, this.headers, { useAPIKey: true })
       this.store.updateState({ contacts: [...this.state.contacts, response.data] })
       this.handleSuccess('navBar.snackSuccessContactAdd')
     } catch (error) {
@@ -475,7 +475,7 @@ class PreferencesController {
 
   async deleteContact(payload) {
     try {
-      const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers, true)
+      const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers, { useAPIKey: true })
       const finalContacts = this.state.contacts.filter((contact) => contact.id !== response.data.id)
       this.store.updateState({ contacts: finalContacts })
       this.handleSuccess('navBar.snackSuccessContactDelete')
@@ -487,7 +487,7 @@ class PreferencesController {
   /* istanbul ignore next */
   async revokeDiscord(idToken) {
     try {
-      const resp = await post(`${config.api}/revoke/discord`, { token: idToken }, this.headers, true)
+      const resp = await post(`${config.api}/revoke/discord`, { token: idToken }, this.headers, { useAPIKey: true })
       log.info(resp)
     } catch (error) {
       log.error(error)
@@ -504,7 +504,7 @@ class PreferencesController {
           status,
         },
         this.headers,
-        true
+        { useAPIKey: true }
       )
       log.info('successfully patched', response)
     } catch (error) {
@@ -542,7 +542,7 @@ class PreferencesController {
     const newBadgeCompletion = { ...this.state.badgesCompletion, ...{ [payload]: true } }
     this.store.updateState({ badgesCompletion: newBadgeCompletion })
     try {
-      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers, true)
+      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers, { useAPIKey: true })
     } catch (error) {
       log.error('unable to set badge', error)
     }

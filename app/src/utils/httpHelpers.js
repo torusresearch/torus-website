@@ -48,7 +48,7 @@ export const getEtherscanTransactions = (parameters = {}, headers) => {
     }
     const url = new URL(`${config.api}/etherscan`)
     Object.keys(parameters).forEach((key) => url.searchParams.append(key, parameters[key]))
-    return get(url.href, options)
+    return get(url.href, options, { useAPIKey: true })
   } catch (error) {
     log.error(error)
     return undefined

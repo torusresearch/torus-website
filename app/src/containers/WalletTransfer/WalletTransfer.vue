@@ -622,7 +622,7 @@ export default {
             },
           },
           {},
-          true
+          { useAPIKey: true }
         )
           .then((response) => log.info('email response', response))
           .catch((error) => log.error(error))
