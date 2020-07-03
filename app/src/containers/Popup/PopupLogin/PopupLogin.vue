@@ -44,19 +44,19 @@
                   <v-btn
                     block
                     class="login-btn"
-                    :class="{ active: verifier.typeOfLogin === activeButton }"
+                    :class="{ active: verifier.name === activeButton }"
                     type="button"
                     :title="`${t('login.loginWith')} ${verifier.typeOfLogin}`"
                     @mouseover="loginBtnHover(verifier.name)"
                     @click="startLogin(verifier.verifier)"
                   >
                     <img
-                      v-if="verifier.typeOfLogin === activeButton || $vuetify.breakpoint.xsOnly"
+                      v-if="verifier.name === activeButton || $vuetify.breakpoint.xsOnly"
                       :src="verifier.logoHover || require(`../../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)"
-                      :alt="`${verifier.typeOfLogin} Icon`"
+                      :alt="`${verifier.name} Icon`"
                     />
-                    <img v-else-if="$vuetify.theme.isDark && verifier.logoLight" :src="verifier.logoLight" :alt="`${verifier.typeOfLogin} Icon`" />
-                    <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark" :src="verifier.logoDark" :alt="`${verifier.typeOfLogin} Icon`" />
+                    <img v-else-if="$vuetify.theme.isDark && verifier.logoLight" :src="verifier.logoLight" :alt="`${verifier.name} Icon`" />
+                    <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
                     <v-icon v-else size="30" :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
                       {{ `$vuetify.icons.${verifier.typeOfLogin}` }}
                     </v-icon>
@@ -86,14 +86,14 @@
                     class="mr-4"
                     height="20"
                     :src="verifier.logoLight"
-                    :alt="`${verifier.typeOfLogin} Icon`"
+                    :alt="`${verifier.name} Icon`"
                   />
                   <img
                     v-else-if="!$vuetify.theme.isDark && verifier.logoDark"
                     class="mr-4"
                     height="20"
                     :src="verifier.logoDark"
-                    :alt="`${verifier.typeOfLogin} Icon`"
+                    :alt="`${verifier.name} Icon`"
                   />
                   <v-icon v-else class="mr-4">{{ `$vuetify.icons.${verifier.typeOfLogin}` }}</v-icon>
                   {{ t(verifier.description) }}

@@ -210,7 +210,7 @@ export default {
     [HOSTED_EMAIL_PASSWORDLESS_VERIFIER]: {
       description: '',
       typeOfLogin: JWT,
-      name: 'Passwordless',
+      name: 'passwordless',
       clientId: VUE_APP_HOSTED_EMAIL_PASSWORDLESS_CLIENT_ID,
       logoHover: '',
       logoLight: '',
