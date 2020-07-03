@@ -324,7 +324,10 @@ export default {
         verifier,
         redirect_uri: config.redirect_uri,
         preopenInstanceId,
-        jwtParameters: deepmerge({ ui_locales: locale, title: vuetify.framework.lang.t('$vuetify.walletHome.auth0Title') }, jwtParameters),
+        jwtParameters: deepmerge(
+          { ui_locales: locale, title: vuetify.framework.lang.t('$vuetify.walletHome.auth0Title') || '' },
+          jwtParameters || {}
+        ),
       })
       const loginParameters = await loginHandler.handleLoginWindow()
       const { accessToken, idToken } = loginParameters
