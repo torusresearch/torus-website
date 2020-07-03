@@ -351,7 +351,7 @@ export function validateVerifierId(selectedTypeOfLogin, value) {
   }
 
   if (selectedTypeOfLogin === TWITTER) {
-    return /^@?(\w){1,15}$/.test(value) || 'walletSettings.invalidTwitter'
+    return /^@(\w){1,15}$/.test(value) || 'walletSettings.invalidTwitter'
   }
 
   if (selectedTypeOfLogin === GITHUB) {
