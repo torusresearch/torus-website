@@ -47,7 +47,7 @@
                     :class="{ active: verifier.typeOfLogin === activeButton }"
                     type="button"
                     :title="`${t('login.loginWith')} ${verifier.typeOfLogin}`"
-                    @mouseover="loginBtnHover(verifier.typeOfLogin)"
+                    @mouseover="loginBtnHover(verifier.name)"
                     @click="startLogin(verifier.verifier)"
                   >
                     <img
