@@ -156,6 +156,7 @@ export default {
       return this.userInfo.typeOfLogin === DISCORD ? `Discord ID: ${this.userInfo.verifierId.toString()}` : ''
     },
     userName() {
+      if (!this.userInfo.name) return ''
       let userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
       userName = userName.length > 20 ? userName.split(' ')[0] : userName
       return `${userName}'s`

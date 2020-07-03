@@ -155,7 +155,7 @@
                     type="button"
                     :title="`${t('login.loginWith')} ${verifier.typeOfLogin}`"
                     @click="startLogin(verifier.verifier)"
-                    @mouseover="activeButton = verifier.typeOfLogin"
+                    @mouseover="activeButton = verifier.name"
                   >
                     <img
                       v-if="verifier.typeOfLogin === activeButton"
@@ -415,7 +415,7 @@ export default {
       this.isLogout = false
     },
     loginBtnHover(verifier) {
-      if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
+      if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier.name
     },
     scroll() {
       window.addEventListener('scroll', () => {

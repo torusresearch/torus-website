@@ -86,6 +86,7 @@ export default {
   loginConfig: {
     [GOOGLE_VERIFIER]: {
       typeOfLogin: GOOGLE,
+      name: GOOGLE,
       description: '',
       clientId: VUE_APP_GOOGLE_CLIENT_ID,
       logoHover: '',
@@ -96,6 +97,7 @@ export default {
     [FACEBOOK_VERIFIER]: {
       description: '',
       typeOfLogin: FACEBOOK,
+      name: FACEBOOK,
       clientId: VUE_APP_FACEBOOK_CLIENT_ID,
       logoHover: '',
       logoLight: '',
@@ -105,6 +107,7 @@ export default {
     [REDDIT_VERIFIER]: {
       description: '',
       typeOfLogin: REDDIT,
+      name: REDDIT,
       clientId: VUE_APP_REDDIT_CLIENT_ID,
       logoHover: '',
       logoLight: '',
@@ -114,6 +117,7 @@ export default {
     [TWITCH_VERIFIER]: {
       description: '',
       typeOfLogin: TWITCH,
+      name: TWITCH,
       clientId: VUE_APP_TWITCH_CLIENT_ID,
       logoHover: '',
       logoLight: '',
@@ -123,6 +127,7 @@ export default {
     [DISCORD_VERIFIER]: {
       description: '',
       typeOfLogin: DISCORD,
+      name: DISCORD,
       clientId: VUE_APP_DISCORD_CLIENT_ID,
       logoHover: '',
       logoLight: '',
@@ -133,6 +138,7 @@ export default {
     [APPLE_VERIFIER]: {
       description: '',
       typeOfLogin: APPLE,
+      name: APPLE,
       clientId: VUE_APP_APPLE_CLIENT_ID,
       logoHover: '',
       logoLight: '',
@@ -146,6 +152,7 @@ export default {
     [GITHUB_VERIFIER]: {
       description: '',
       typeOfLogin: GITHUB,
+      name: GITHUB,
       clientId: VUE_APP_GITHUB_CLIENT_ID,
       logoHover: '',
       logoLight: '',
@@ -160,6 +167,7 @@ export default {
     [LINKEDIN_VERIFIER]: {
       description: '',
       typeOfLogin: LINKEDIN,
+      name: LINKEDIN,
       clientId: VUE_APP_LINKEDIN_CLIENT_ID,
       logoHover: '',
       logoLight: '',
@@ -173,6 +181,7 @@ export default {
     [TWITTER_VERIFIER]: {
       description: '',
       typeOfLogin: TWITTER,
+      name: TWITTER,
       clientId: VUE_APP_TWITTER_CLIENT_ID,
       logoHover: '',
       logoLight: '',
@@ -187,6 +196,7 @@ export default {
     [LINE_VERIFIER]: {
       description: '',
       typeOfLogin: LINE,
+      name: LINE,
       clientId: VUE_APP_LINE_CLIENT_ID,
       logoHover: '',
       logoLight: '',
@@ -200,6 +210,7 @@ export default {
     [HOSTED_EMAIL_PASSWORDLESS_VERIFIER]: {
       description: '',
       typeOfLogin: JWT,
+      name: 'Passwordless',
       clientId: VUE_APP_HOSTED_EMAIL_PASSWORDLESS_CLIENT_ID,
       logoHover: '',
       logoLight: '',

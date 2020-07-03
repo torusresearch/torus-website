@@ -1,10 +1,12 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import clone from 'clone'
+import deepmerge from 'deepmerge'
 import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
+import vuetify from '../plugins/vuetify'
 import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
 import {
@@ -313,6 +315,7 @@ export default {
     try {
       // This is to maintain backward compatibility
       const currentVeriferConfig = state.embedState.loginConfig[verifier]
+      const locale = vuetify.framework.lang.current
       if (!currentVeriferConfig) throw new Error('Invalid verifier')
       const { typeOfLogin, clientId, jwtParameters } = currentVeriferConfig
       const loginHandler = createHandler({
@@ -321,7 +324,7 @@ export default {
         verifier,
         redirect_uri: config.redirect_uri,
         preopenInstanceId,
-        jwtParameters,
+        jwtParameters: deepmerge({ ui_locales: locale, title: vuetify.framework.lang.t('$vuetify.walletHome.auth0Title') }, jwtParameters),
       })
       const loginParameters = await loginHandler.handleLoginWindow()
       const { accessToken, idToken } = loginParameters
