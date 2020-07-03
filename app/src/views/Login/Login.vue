@@ -91,7 +91,7 @@
                 </v-layout>
               </section>
               <section>
-                <v-carousel cycle height="650" interval="7000" :show-arrows="false" hide-delimiters>
+                <v-carousel height="650" interval="7000" :show-arrows="false" hide-delimiters>
                   <v-carousel-item v-for="slide in 3" :key="slide" reverse-transition="fade-transition" transition="fade-transition">
                     <v-layout align-center fill-height px-10>
                       <v-flex class="text-center">
