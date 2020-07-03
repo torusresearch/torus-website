@@ -53,6 +53,7 @@ import VerifierEnsIcon from './VerifierEnsIcon.vue'
 import VerifierFacebookIcon from './VerifierFacebookIcon.vue'
 import VerifierGithubIcon from './VerifierGithubIcon.vue'
 import VerifierGoogleIcon from './VerifierGoogleIcon.vue'
+import VerifierJwtIcon from './VerifierJwtIcon.vue'
 import VerifierLineIcon from './VerifierLineIcon.vue'
 import VerifierLinkedinIcon from './VerifierLinkedinIcon.vue'
 import VerifierPasswordlessIcon from './VerifierPasswordlessIcon.vue'
@@ -245,7 +246,7 @@ export default {
     component: VerifierEmailIcon,
   },
   jwt: {
-    component: VerifierEmailIcon,
+    component: VerifierJwtIcon,
   },
   passwordless: {
     component: VerifierPasswordlessIcon,

@@ -29,8 +29,8 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   async getUserInfo(parameters) {
     const { idToken, accessToken } = parameters
+    const { domain, verifierIdField, isVerifierIdCaseSensitive } = this.jwtParameters
     try {
-      const { domain } = this.jwtParameters
       const domainUrl = new URL(domain)
       const userInfo = await get(`${padUrlString(domainUrl)}userinfo`, {
         headers: {
@@ -42,7 +42,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         email,
         name,
         profileImage: picture,
-        verifierId: getVerifierId(userInfo, this.typeOfLogin),
+        verifierId: getVerifierId(userInfo, this.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
         verifier: this.verifier,
         typeOfLogin: this.typeOfLogin,
       }
@@ -54,7 +54,7 @@ export default class JwtHandler extends AbstractLoginHandler {
         profileImage: picture,
         name,
         email,
-        verifierId: getVerifierId(decodedToken, this.typeOfLogin),
+        verifierId: getVerifierId(decodedToken, this.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
         verifier: this.verifier,
         typeOfLogin: this.typeOfLogin,
       }

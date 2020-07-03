@@ -376,6 +376,7 @@ import {
   MESSAGE_MODAL_TYPE_FAIL,
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
+  TWITTER,
 } from '../../utils/enums'
 import { post } from '../../utils/httpHelpers'
 import { getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
@@ -664,6 +665,8 @@ export default {
           this.selectedVerifier = contactFound.verifier
         } else if (this.toAddress.startsWith('0x')) {
           this.selectedVerifier = ETH
+        } else if (this.toAddress.startsWith('@')) {
+          this.selectedVerifier = TWITTER
         } else if (/@/.test(this.toAddress)) {
           this.selectedVerifier = GOOGLE
         } else if (
@@ -793,7 +796,7 @@ export default {
             if (foundLoginConfig) {
               toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
                 verifier: foundLoginConfig,
-                verifierId: this.toAddress.toLowerCase(),
+                verifierId: this.toAddress.startsWith('@') ? this.toAddress.replace('@', '').toLowerCase() : this.toAddress.toLowerCase(),
               })
             }
           } catch (error) {

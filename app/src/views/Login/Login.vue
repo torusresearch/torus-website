@@ -50,7 +50,7 @@
                           class="login-btn login-btn--mobile gmt-login"
                           :class="[{ isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
                           type="button"
-                          :title="`${t('login.loginWith')} ${verifier.typeOfLogin}`"
+                          :title="`${t('login.loginWith')} ${verifier.name}`"
                           @click="startLogin(verifier.verifier)"
                         >
                           <img :src="require(`../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)" :alt="`${verifier.typeOfLogin} Icon`" />
@@ -151,16 +151,16 @@
                     v-for="verifier in loginButtons"
                     :key="verifier.typeOfLogin"
                     class="login-btn gmt-login"
-                    :class="[{ active: verifier.typeOfLogin === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
+                    :class="[{ active: verifier.name === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
                     type="button"
-                    :title="`${t('login.loginWith')} ${verifier.typeOfLogin}`"
+                    :title="`${t('login.loginWith')} ${verifier.name}`"
                     @click="startLogin(verifier.verifier)"
-                    @mouseover="activeButton = verifier.typeOfLogin"
+                    @mouseover="activeButton = verifier.name"
                   >
                     <img
-                      v-if="verifier.typeOfLogin === activeButton"
+                      v-if="verifier.name === activeButton"
                       :src="require(`../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)"
-                      :alt="`${verifier.typeOfLogin} Icon`"
+                      :alt="`${verifier.name} Icon`"
                     />
                     <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
                       {{ `$vuetify.icons.${verifier.typeOfLogin}` }}
@@ -413,9 +413,6 @@ export default {
     returnHome() {
       this.$router.push({ path: '/' }).catch((_) => {})
       this.isLogout = false
-    },
-    loginBtnHover(verifier) {
-      if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
     },
     scroll() {
       window.addEventListener('scroll', () => {
