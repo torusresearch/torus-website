@@ -100,13 +100,22 @@
                 </v-btn>
               </div>
             </v-flex>
-            <v-flex mt-2 mb-2>
-              <span class="caption torus_text--text">
+            <v-flex mt-2 mb-2 mt-10>
+              <div class="text_2--text mb-4 caption">
+                {{ t('dappLogin.termsHandle') }}
+              </div>
+              <div class="text_2--text mb-5 caption">
+                {{ t('dappLogin.termsAuth0') }}
+                <a class="privacy-learn-more text_2--text" href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                  {{ t('dappLogin.termsLearnMore') }}
+                </a>
+              </div>
+              <div class="caption torus_text--text">
                 {{ t('login.acceptTerms') }}
                 <a :href="tncLink" target="_blank" rel="noreferrer noopener" :style="{ textDecoration: 'none' }">
                   <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
                 </a>
-              </span>
+              </div>
             </v-flex>
           </v-layout>
         </v-card>
