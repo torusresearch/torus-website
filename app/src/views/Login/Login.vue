@@ -80,13 +80,22 @@
                       </v-btn>
                     </div>
                   </v-flex>
-                  <v-flex xs10 sm8 ml-auto mr-auto my-6>
-                    <span class="body-1 text_2--text">
+                  <v-flex xs10 sm8 ml-auto mr-auto mb-6 mt-10>
+                    <div class="text_2--text mb-4" :class="[$vuetify.breakpoint.xsOnly ? 'caption' : 'body-1']">
+                      {{ t('dappLogin.termsHandle') }}
+                    </div>
+                    <div class="text_2--text mb-5" :class="[$vuetify.breakpoint.xsOnly ? 'caption' : 'body-1']">
+                      {{ t('dappLogin.termsAuth0') }}
+                      <a class="privacy-learn-more text_2--text" href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                        {{ t('dappLogin.termsLearnMore') }}
+                      </a>
+                    </div>
+                    <div class="text_2--text" :class="[$vuetify.breakpoint.xsOnly ? 'caption' : 'body-1']">
                       {{ t('login.acceptTerms') }}
                       <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
                         <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
                       </a>
-                    </span>
+                    </div>
                   </v-flex>
                 </v-layout>
               </section>
@@ -189,13 +198,22 @@
                     </v-btn>
                   </div>
                 </v-flex>
-                <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-2>
-                  <span class="body-1 text_2--text">
+                <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-5>
+                  <div class="text_2--text mb-4" :class="[$vuetify.breakpoint.xsOnly ? 'caption' : 'body-1']">
+                    {{ t('dappLogin.termsHandle') }}
+                  </div>
+                  <div class="text_2--text mb-5" :class="[$vuetify.breakpoint.xsOnly ? 'caption' : 'body-1']">
+                    {{ t('dappLogin.termsAuth0') }}
+                    <a class="privacy-learn-more text_2--text" href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                      {{ t('dappLogin.termsLearnMore') }}
+                    </a>
+                  </div>
+                  <div class="body-1 text_2--text">
                     {{ t('login.acceptTerms') }}
                     <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
                       <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
                     </a>
-                  </span>
+                  </div>
                 </v-flex>
               </v-layout>
             </v-flex>
