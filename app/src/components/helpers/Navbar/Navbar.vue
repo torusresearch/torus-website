@@ -35,7 +35,7 @@
     <v-menu v-if="!$vuetify.breakpoint.smAndDown" offset-y bottom left z-index="20" :close-on-content-click="false">
       <template v-slot:activator="{ on }">
         <v-btn id="menu-dropdown-btn" small text aria-label="View Account Menu" v-on="on">
-          <span class="subtitle-2">{{ userInfo.name }}</span>
+          <span class="subtitle-2">{{ userInfo.name || `${t('login.your')} ${t('accountMenu.account')}` }}</span>
           <v-icon class="ml-2 mt-0" small>$vuetify.icons.select</v-icon>
         </v-btn>
       </template>
