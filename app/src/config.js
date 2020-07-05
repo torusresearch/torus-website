@@ -152,7 +152,7 @@ export default {
     [GITHUB_VERIFIER]: {
       description: '',
       typeOfLogin: GITHUB,
-      name: GITHUB,
+      name: 'GitHub',
       clientId: VUE_APP_GITHUB_CLIENT_ID,
       logoHover: '',
       logoLight: '',
@@ -167,7 +167,7 @@ export default {
     [LINKEDIN_VERIFIER]: {
       description: '',
       typeOfLogin: LINKEDIN,
-      name: LINKEDIN,
+      name: 'LinkedIn',
       clientId: VUE_APP_LINKEDIN_CLIENT_ID,
       logoHover: '',
       logoLight: '',
