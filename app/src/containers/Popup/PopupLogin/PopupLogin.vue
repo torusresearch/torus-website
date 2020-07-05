@@ -100,21 +100,35 @@
                 </v-btn>
               </div>
             </v-flex>
-            <v-flex mt-2 mb-2 mt-10>
-              <div class="text_2--text mb-4 caption">
-                {{ t('dappLogin.termsHandle') }}
-              </div>
-              <div class="text_2--text mb-5 caption">
-                {{ t('dappLogin.termsAuth0') }}
-                <a class="privacy-learn-more text_2--text" href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+            <v-flex xs12 mb-6 class="footer-notes">
+              <div class="text_3--text mb-4">
+                <span>{{ t('dappLogin.termsAuth01') }}</span>
+                <br />
+                <span>{{ t('dappLogin.termsAuth02') }}</span>
+                <a class="privacy-learn-more text_3--text" href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in" target="_blank">
                   {{ t('dappLogin.termsLearnMore') }}
                 </a>
               </div>
-              <div class="caption torus_text--text">
-                {{ t('login.acceptTerms') }}
-                <a :href="tncLink" target="_blank" rel="noreferrer noopener" :style="{ textDecoration: 'none' }">
-                  <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
-                </a>
+              <div class="text_3--text mb-6">
+                {{ t('dappLogin.termsHandle') }}
+              </div>
+              <v-divider class="mb-4"></v-divider>
+              <div class="d-flex footer-links">
+                <div class="mr-4">
+                  <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                    {{ t('dappLogin.termsConditions') }}
+                  </a>
+                </div>
+                <div class="mr-4">
+                  <a href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                    {{ t('dappLogin.privacyPolicy') }}
+                  </a>
+                </div>
+                <div class="mr-4">
+                  <a href="https://t.me/TorusLabs" target="_blank">
+                    {{ t('dappLogin.contactUs') }}
+                  </a>
+                </div>
               </div>
             </v-flex>
           </v-layout>
