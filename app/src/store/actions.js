@@ -324,7 +324,17 @@ export default {
         redirect_uri: config.redirect_uri,
         preopenInstanceId,
         jwtParameters: deepmerge(
-          { ui_locales: locale, title: vuetify.framework.lang.t('$vuetify.walletHome.auth0Title') || '' },
+          {
+            ui_locales: locale,
+            languageDictionary: JSON.stringify({
+              title: vuetify.framework.lang.t('$vuetify.walletHome.auth0Title') || '',
+              error: {
+                passwordless: {
+                  invalid_user_password: vuetify.framework.lang.t('$vuetify.login.invalid_user_password') || '',
+                },
+              },
+            }),
+          },
           jwtParameters || {}
         ),
       })
