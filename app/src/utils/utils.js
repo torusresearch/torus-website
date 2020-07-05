@@ -527,6 +527,7 @@ export const fakeStream = {
 }
 
 export function formatSmallNumbers(number, currency = 'usd', noTilde = false) {
+  if (!Number.isFinite(number)) return ''
   const finalNumber = currency.toLowerCase() === 'usd' ? Number(number).toFixed(2) : Number(number).toFixed(5)
 
   return `${currency.toLowerCase() === 'usd' || noTilde ? '' : '~ '}${Number(finalNumber)} ${currency.toUpperCase()}`
@@ -562,7 +563,10 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     status: x.status,
     etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network || MAINNET),
     networkType: x.network,
-    ethRate: `1 ${x.symbol} = ${significantDigits(Number.parseFloat(x.currency_amount) / Number.parseFloat(x.total_amount))}`,
+    ethRate:
+      Number.parseFloat(x?.total_amount) && Number.parseFloat(x?.currency_amount)
+        ? `1 ${x.symbol} = ${significantDigits(Number.parseFloat(x.currency_amount) / Number.parseFloat(x.total_amount))}`
+        : '',
     currencyUsed: x.selected_currency,
     type: x.type,
     type_name: x.type_name,

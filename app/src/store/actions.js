@@ -289,8 +289,7 @@ export default {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
     else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
-  updateSelectedAddress({ commit, state }, payload) {
-    commit('setSelectedAddress', payload.selectedAddress)
+  updateSelectedAddress({ state }, payload) {
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
     torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
   },
@@ -393,7 +392,6 @@ export default {
     dispatch('subscribeToControllers')
     await dispatch('initTorusKeyring', data)
     await dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed })
-    dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
     // continue enable function
     const { ethAddress } = data
     if (calledFromEmbed) {
@@ -437,7 +435,7 @@ export default {
           dispatch('logOut')
         }, decoded.exp * 1000 - Date.now())
       }
-      await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed, rehydrate: false })
+      await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed, rehydrate: false, selectedAddress })
       return Promise.resolve()
     } catch (error) {
       log.error('Failed Communication with backend', error)
@@ -469,6 +467,7 @@ export default {
             dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
             prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
             if (!storedVerifier || !storedVerifierId) prefsController.setVerifier(verifier, verifierId)
+            dispatch('updateSelectedAddress', { selectedAddress: payload.selectedAddress }) // synchronous
             resolve()
           }
         },
@@ -477,6 +476,7 @@ export default {
           commit('setNewUser', true)
           dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
           prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
+          dispatch('updateSelectedAddress', { selectedAddress: payload.selectedAddress }) // synchronous
           resolve()
         }
       )
@@ -508,8 +508,7 @@ export default {
       if (selectedAddress && wallet[selectedAddress]) {
         setTimeout(() => dispatch('subscribeToControllers'), 50)
         await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
-        await dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true })
-        dispatch('updateSelectedAddress', { selectedAddress })
+        await dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true, selectedAddress })
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
