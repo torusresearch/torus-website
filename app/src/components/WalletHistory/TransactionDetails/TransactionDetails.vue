@@ -129,7 +129,13 @@
               </div>
             </v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
-              <span>{{ transaction.isEtherscan ? t('walletActivity.unavailable') : `${transaction.ethRate} ${transaction.currencyUsed}` }}</span>
+              <span>
+                {{
+                  transaction.isEtherscan || !transaction.ethRate
+                    ? t('walletActivity.unavailable')
+                    : `${transaction.ethRate} ${transaction.currencyUsed}`
+                }}
+              </span>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721">
