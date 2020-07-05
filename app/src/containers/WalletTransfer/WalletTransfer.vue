@@ -213,6 +213,7 @@
                   :readonly="isSendAll"
                   :rules="[rules.required, lesserThan, moreThanZero]"
                   aria-label="Amount you send"
+                  :error-messages="sendAmountError"
                   @change="onChangeDisplayAmount"
                 >
                   <template v-slot:append>
@@ -240,6 +241,13 @@
                       {{ selectedCurrency }}
                     </v-btn>
                   </template>
+                  <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
+                    <div class="v-messages">
+                      <div class="v-messages__wrapper">
+                        <div class="v-messages__message d-flex error--text px-3">{{ qrErrorMsg }}</div>
+                      </div>
+                    </div>
+                  </div>
                 </v-text-field>
               </v-flex>
               <TransactionSpeedSelect
@@ -436,6 +444,7 @@ export default {
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721,
       logosUrl: config.logosUrl,
+      sendAmountError: '',
     }
   },
   computed: {
@@ -577,6 +586,7 @@ export default {
   },
   methods: {
     onChangeDisplayAmount(value) {
+      this.sendAmountError = ''
       if ((BigNumber.isBigNumber(value) && !this.displayAmount.eq(value)) || !BigNumber.isBigNumber(value)) {
         this.displayAmount = BigNumber.isBigNumber(value) ? value : new BigNumber(value || '0')
         if (this.toggle_exclusive === 0) {
@@ -839,6 +849,11 @@ export default {
       const currencyBalance = ethBalance.times(this.getCurrencyTokenRate)
       const ethGasPrice = this.getEthAmount(this.gas, this.activeGasPrice)
       const currencyGasPrice = ethGasPrice.times(this.getCurrencyTokenRate)
+
+      if (ethBalance.minus(ethGasPrice).lt(new BigNumber(0))) {
+        this.sendAmountError = this.t('walletTransfer.insufficient')
+        return
+      }
 
       this.isSendAll = true
 
