@@ -44,7 +44,7 @@
         </div>
         <div class="d-flex align-start mt-1">
           <div class="account-list__address-container pt-1" :style="{ maxWidth: $vuetify.breakpoint.xsOnly ? '140px' : 'inherit' }">
-            <div v-if="userInfo.typeOfLogin === DISCORD && index === 0" class="account-list__address">Discord ID: {{ userInfo.verifierId }}</div>
+            <div v-if="userId && index === 0" class="account-list__address">{{ userId }}</div>
             <div class="account-list__address mt-1">{{ acc.address }}</div>
           </div>
           <div class="ml-auto">
