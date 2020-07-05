@@ -83,21 +83,35 @@
                       </v-btn>
                     </div>
                   </v-flex>
-                  <v-flex xs10 sm8 ml-auto mr-auto mb-6 mt-10>
-                    <div class="text_2--text mb-4" :class="[$vuetify.breakpoint.xsOnly ? 'caption' : 'body-1']">
-                      {{ t('dappLogin.termsHandle') }}
-                    </div>
-                    <div class="text_2--text mb-5" :class="[$vuetify.breakpoint.xsOnly ? 'caption' : 'body-1']">
-                      {{ t('dappLogin.termsAuth0') }}
-                      <a class="privacy-learn-more text_2--text" href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                  <v-flex xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes">
+                    <div class="text_3--text mb-4">
+                      <span>{{ t('dappLogin.termsAuth01') }}</span>
+                      <br />
+                      <span>{{ t('dappLogin.termsAuth02') }}</span>
+                      <a class="privacy-learn-more text_3--text" href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in" target="_blank">
                         {{ t('dappLogin.termsLearnMore') }}
                       </a>
                     </div>
-                    <div class="text_2--text" :class="[$vuetify.breakpoint.xsOnly ? 'caption' : 'body-1']">
-                      {{ t('login.acceptTerms') }}
-                      <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
-                        <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
-                      </a>
+                    <div class="text_3--text mb-6">
+                      {{ t('dappLogin.termsHandle') }}
+                    </div>
+                    <v-divider class="mb-4"></v-divider>
+                    <div class="d-flex justify-center footer-links">
+                      <div class="mx-2">
+                        <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                          {{ t('dappLogin.termsConditions') }}
+                        </a>
+                      </div>
+                      <div class="mx-2">
+                        <a href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                          {{ t('dappLogin.privacyPolicy') }}
+                        </a>
+                      </div>
+                      <div class="mx-2">
+                        <a href="https://t.me/TorusLabs" target="_blank">
+                          {{ t('dappLogin.contactUs') }}
+                        </a>
+                      </div>
                     </div>
                   </v-flex>
                 </v-layout>
@@ -158,26 +172,28 @@
                 <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-11']">
                   <div class="headline font-weight-light" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
                 </v-flex>
-                <v-flex xs10 sm8 ml-auto mr-auto mt-4>
-                  <v-btn
-                    v-for="verifier in loginButtons"
-                    :key="verifier.typeOfLogin"
-                    class="login-btn gmt-login"
-                    :class="[{ active: verifier.name === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
-                    type="button"
-                    :title="`${t('login.loginWith')} ${verifier.name}`"
-                    @click="startLogin(verifier.verifier)"
-                    @mouseover="activeButton = verifier.name"
-                  >
-                    <img
-                      v-if="verifier.name === activeButton"
-                      :src="require(`../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)"
-                      :alt="`${verifier.name} Icon`"
-                    />
-                    <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
-                      {{ `$vuetify.icons.${verifier.typeOfLogin}` }}
-                    </v-icon>
-                  </v-btn>
+                <v-flex xs10 sm8 mx-auto mt-4>
+                  <div :style="{ maxWidth: '400px' }">
+                    <v-btn
+                      v-for="verifier in loginButtons"
+                      :key="verifier.typeOfLogin"
+                      class="login-btn gmt-login"
+                      :class="[{ active: verifier.name === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
+                      type="button"
+                      :title="`${t('login.loginWith')} ${verifier.name}`"
+                      @click="startLogin(verifier.verifier)"
+                      @mouseover="activeButton = verifier.name"
+                    >
+                      <img
+                        v-if="verifier.name === activeButton"
+                        :src="require(`../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)"
+                        :alt="`${verifier.name} Icon`"
+                      />
+                      <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
+                        {{ `$vuetify.icons.${verifier.typeOfLogin}` }}
+                      </v-icon>
+                    </v-btn>
+                  </div>
                 </v-flex>
                 <v-flex v-if="loginButtonsLong.length > 0" xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
                   <div class="d-flex align-center mb-4">
@@ -201,21 +217,35 @@
                     </v-btn>
                   </div>
                 </v-flex>
-                <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-5>
-                  <div class="text_2--text mb-4" :class="[$vuetify.breakpoint.xsOnly ? 'caption' : 'body-1']">
-                    {{ t('dappLogin.termsHandle') }}
-                  </div>
-                  <div class="text_2--text mb-5" :class="[$vuetify.breakpoint.xsOnly ? 'caption' : 'body-1']">
-                    {{ t('dappLogin.termsAuth0') }}
-                    <a class="privacy-learn-more text_2--text" href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                <v-flex xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes" :class="{ 'not-sm': !$vuetify.breakpoint.xsOnly }">
+                  <div class="text_3--text mb-4">
+                    <span>{{ t('dappLogin.termsAuth01') }}</span>
+                    <br />
+                    <span>{{ t('dappLogin.termsAuth02') }}</span>
+                    <a class="privacy-learn-more text_3--text" href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in" target="_blank">
                       {{ t('dappLogin.termsLearnMore') }}
                     </a>
                   </div>
-                  <div class="body-1 text_2--text">
-                    {{ t('login.acceptTerms') }}
-                    <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
-                      <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
-                    </a>
+                  <div class="text_3--text mb-6">
+                    {{ t('dappLogin.termsHandle') }}
+                  </div>
+                  <v-divider class="mb-4"></v-divider>
+                  <div class="d-flex footer-links">
+                    <div class="mr-4">
+                      <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                        {{ t('dappLogin.termsConditions') }}
+                      </a>
+                    </div>
+                    <div class="mr-4">
+                      <a href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                        {{ t('dappLogin.privacyPolicy') }}
+                      </a>
+                    </div>
+                    <div class="mr-4">
+                      <a href="https://t.me/TorusLabs" target="_blank">
+                        {{ t('dappLogin.contactUs') }}
+                      </a>
+                    </div>
                   </div>
                 </v-flex>
               </v-layout>
