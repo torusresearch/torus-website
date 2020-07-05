@@ -18,7 +18,10 @@
                     <div class="verifier-title font-weight-bold display-1">
                       <span class="text_2--text">
                         {{ t('login.your') }}
-                        <img :src="require(`../../assets/images/login-verifiers.gif`)" alt="Login Verifiers" />
+                        <img
+                          :src="require(`../../assets/images/login-verifiers-${$vuetify.theme.dark ? 'dark' : 'light'}.gif`)"
+                          alt="Login Verifiers"
+                        />
                       </span>
                     </div>
                     <div class="font-weight-bold headline text_2--text">
@@ -50,7 +53,7 @@
                           class="login-btn login-btn--mobile gmt-login"
                           :class="[{ isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
                           type="button"
-                          :title="`${t('login.loginWith')} ${verifier.typeOfLogin}`"
+                          :title="`${t('login.loginWith')} ${verifier.name}`"
                           @click="startLogin(verifier.verifier)"
                         >
                           <img :src="require(`../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)" :alt="`${verifier.typeOfLogin} Icon`" />
@@ -80,18 +83,41 @@
                       </v-btn>
                     </div>
                   </v-flex>
-                  <v-flex xs10 sm8 ml-auto mr-auto my-6>
-                    <span class="body-1 text_2--text">
-                      {{ t('login.acceptTerms') }}
-                      <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
-                        <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
+                  <v-flex xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes">
+                    <div class="text_3--text mb-4">
+                      <span>{{ t('dappLogin.termsAuth01') }}</span>
+                      <br />
+                      <span>{{ t('dappLogin.termsAuth02') }}</span>
+                      <a class="privacy-learn-more text_3--text" href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in" target="_blank">
+                        {{ t('dappLogin.termsLearnMore') }}
                       </a>
-                    </span>
+                    </div>
+                    <div class="text_3--text mb-6">
+                      {{ t('dappLogin.termsHandle') }}
+                    </div>
+                    <v-divider class="mb-4"></v-divider>
+                    <div class="d-flex justify-center footer-links">
+                      <div class="mx-2">
+                        <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                          {{ t('dappLogin.termsConditions') }}
+                        </a>
+                      </div>
+                      <div class="mx-2">
+                        <a href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                          {{ t('dappLogin.privacyPolicy') }}
+                        </a>
+                      </div>
+                      <div class="mx-2">
+                        <a href="https://t.me/TorusLabs" target="_blank">
+                          {{ t('dappLogin.contactUs') }}
+                        </a>
+                      </div>
+                    </div>
                   </v-flex>
                 </v-layout>
               </section>
               <section>
-                <v-carousel cycle height="650" interval="7000" :show-arrows="false" hide-delimiters>
+                <v-carousel height="650" interval="7000" :show-arrows="false" hide-delimiters>
                   <v-carousel-item v-for="slide in 3" :key="slide" reverse-transition="fade-transition" transition="fade-transition">
                     <v-layout align-center fill-height px-10>
                       <v-flex class="text-center">
@@ -146,26 +172,28 @@
                 <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-11']">
                   <div class="headline font-weight-light" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
                 </v-flex>
-                <v-flex xs10 sm8 ml-auto mr-auto mt-4>
-                  <v-btn
-                    v-for="verifier in loginButtons"
-                    :key="verifier.typeOfLogin"
-                    class="login-btn gmt-login"
-                    :class="[{ active: verifier.typeOfLogin === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
-                    type="button"
-                    :title="`${t('login.loginWith')} ${verifier.typeOfLogin}`"
-                    @click="startLogin(verifier.verifier)"
-                    @mouseover="activeButton = verifier.typeOfLogin"
-                  >
-                    <img
-                      v-if="verifier.typeOfLogin === activeButton"
-                      :src="require(`../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)"
-                      :alt="`${verifier.typeOfLogin} Icon`"
-                    />
-                    <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
-                      {{ `$vuetify.icons.${verifier.typeOfLogin}` }}
-                    </v-icon>
-                  </v-btn>
+                <v-flex xs10 sm8 mx-auto mt-4>
+                  <div :style="{ maxWidth: '400px' }">
+                    <v-btn
+                      v-for="verifier in loginButtons"
+                      :key="verifier.typeOfLogin"
+                      class="login-btn gmt-login"
+                      :class="[{ active: verifier.name === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
+                      type="button"
+                      :title="`${t('login.loginWith')} ${verifier.name}`"
+                      @click="startLogin(verifier.verifier)"
+                      @mouseover="activeButton = verifier.name"
+                    >
+                      <img
+                        v-if="verifier.name === activeButton"
+                        :src="require(`../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)"
+                        :alt="`${verifier.name} Icon`"
+                      />
+                      <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
+                        {{ `$vuetify.icons.${verifier.typeOfLogin}` }}
+                      </v-icon>
+                    </v-btn>
+                  </div>
                 </v-flex>
                 <v-flex v-if="loginButtonsLong.length > 0" xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
                   <div class="d-flex align-center mb-4">
@@ -189,13 +217,36 @@
                     </v-btn>
                   </div>
                 </v-flex>
-                <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-2>
-                  <span class="body-1 text_2--text">
-                    {{ t('login.acceptTerms') }}
-                    <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
-                      <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
+                <v-flex xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes" :class="{ 'not-sm': !$vuetify.breakpoint.xsOnly }">
+                  <div class="text_3--text mb-4">
+                    <span>{{ t('dappLogin.termsAuth01') }}</span>
+                    <br />
+                    <span>{{ t('dappLogin.termsAuth02') }}</span>
+                    <a class="privacy-learn-more text_3--text" href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in" target="_blank">
+                      {{ t('dappLogin.termsLearnMore') }}
                     </a>
-                  </span>
+                  </div>
+                  <div class="text_3--text mb-6">
+                    {{ t('dappLogin.termsHandle') }}
+                  </div>
+                  <v-divider class="mb-4"></v-divider>
+                  <div class="d-flex footer-links">
+                    <div class="mr-4">
+                      <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                        {{ t('dappLogin.termsConditions') }}
+                      </a>
+                    </div>
+                    <div class="mr-4">
+                      <a href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                        {{ t('dappLogin.privacyPolicy') }}
+                      </a>
+                    </div>
+                    <div class="mr-4">
+                      <a href="https://t.me/TorusLabs" target="_blank">
+                        {{ t('dappLogin.contactUs') }}
+                      </a>
+                    </div>
+                  </div>
                 </v-flex>
               </v-layout>
             </v-flex>
@@ -361,13 +412,13 @@ export default {
       return this.loginButtonsArray.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsMobile() {
-      return this.loginButtonsArray.filter((button) => button.verifier !== GOOGLE && !button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.typeOfLogin !== GOOGLE && !button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsLong() {
       return this.loginButtonsArray.filter((button) => button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsMobileLong() {
-      return this.loginButtonsArray.filter((button) => button.verifier !== GOOGLE && button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.typeOfLogin !== GOOGLE && button.description && button.typeOfLogin !== PASSWORDLESS)
     },
     showGoogleLogin() {
       return this.loginConfig[GOOGLE_VERIFIER].showOnModal
@@ -413,9 +464,6 @@ export default {
     returnHome() {
       this.$router.push({ path: '/' }).catch((_) => {})
       this.isLogout = false
-    },
-    loginBtnHover(verifier) {
-      if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
     },
     scroll() {
       window.addEventListener('scroll', () => {

@@ -80,14 +80,14 @@ export default {
       origin: { hostname: '', href: '' },
       type: 'none',
       message: '',
-      verifier: '',
+      typeOfLogin: '',
       channel: '',
     }
   },
   computed: {
     ...mapGetters(['getLogo']),
     accessText() {
-      return this.t(`dappInfo.toAccess${capitalizeFirstLetter(this.verifier)}`)
+      return this.t(`dappInfo.toAccess${capitalizeFirstLetter(this.typeOfLogin)}`)
     },
   },
   mounted() {
@@ -95,13 +95,13 @@ export default {
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
       const {
-        payload: { verifier = '', message = '' },
+        payload: { typeOfLogin = '', message = '' },
         origin = '',
         whiteLabel,
       } = ev.data
       this.origin = origin // origin of tx: website url
       this.type = 'userInfo'
-      this.verifier = verifier
+      this.typeOfLogin = typeOfLogin
       this.message = message
       this.$store.commit('setWhiteLabel', whiteLabel)
       bc.close()

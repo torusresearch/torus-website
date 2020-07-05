@@ -3,7 +3,7 @@
     <Navbar :header-items="headerItems">
       <template v-slot:drawer>
         <v-btn v-if="$vuetify.breakpoint.smAndDown" id="menu-dropdown-mobile-btn" icon aria-label="Open Account Menu" @click="drawer = !drawer">
-          <img src="../../assets/img/icons/menu-primary.svg" alt="Burger Icon" />
+          <v-icon class="torusBrand1--text">$vuetify.icons.menu</v-icon>
         </v-btn>
       </template>
     </Navbar>

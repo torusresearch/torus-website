@@ -12,6 +12,7 @@
 <script>
 import throttle from 'lodash.throttle'
 import log from 'loglevel'
+import { mapState } from 'vuex'
 
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 
@@ -26,6 +27,7 @@ export default {
       currentOrder: {},
     }
   },
+  computed: mapState(['selectedAddress']),
   methods: {
     fetchQuote(payload) {
       const self = this
@@ -68,10 +70,11 @@ export default {
       }, 0)()
     },
     sendOrder(callback) {
+      const { selectedAddress } = this.$route.query
       callback(
         this.$store.dispatch('fetchXanpoolOrder', {
           currentOrder: this.currentOrder,
-          selectedAddress: this.$store.state.selectedAddress,
+          selectedAddress: selectedAddress || this.selectedAddress,
         })
       )
     },

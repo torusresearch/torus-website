@@ -136,6 +136,9 @@
                           <v-icon small>$vuetify.icons.scan</v-icon>
                         </v-btn>
                       </template>
+                      <template v-slot:message="props">
+                        {{ t(props.message) }}
+                      </template>
                     </v-combobox>
                     <QrcodeCapture ref="captureQr" style="display: none;" @decode="onDecodeQr" />
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
@@ -210,6 +213,7 @@
                   :readonly="isSendAll"
                   :rules="[rules.required, lesserThan, moreThanZero]"
                   aria-label="Amount you send"
+                  :error-messages="sendAmountError"
                   @change="onChangeDisplayAmount"
                 >
                   <template v-slot:append>
@@ -237,6 +241,13 @@
                       {{ selectedCurrency }}
                     </v-btn>
                   </template>
+                  <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
+                    <div class="v-messages">
+                      <div class="v-messages__wrapper">
+                        <div class="v-messages__message d-flex error--text px-3">{{ qrErrorMsg }}</div>
+                      </div>
+                    </div>
+                  </div>
                 </v-text-field>
               </v-flex>
               <TransactionSpeedSelect
@@ -278,7 +289,7 @@
                     :to-verifier="selectedVerifier"
                     :from-address="selectedAddress"
                     :from-verifier-id="userInfo.verifierId"
-                    :from-verifier="userInfo.verifier"
+                    :from-verifier="userInfo.typeOfLogin"
                     :network-type="networkType"
                     :converted-amount="
                       convertedAmount
@@ -373,6 +384,7 @@ import {
   MESSAGE_MODAL_TYPE_FAIL,
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
+  TWITTER,
 } from '../../utils/enums'
 import { post } from '../../utils/httpHelpers'
 import { getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
@@ -432,6 +444,7 @@ export default {
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721,
       logosUrl: config.logosUrl,
+      sendAmountError: '',
     }
   },
   computed: {
@@ -573,6 +586,7 @@ export default {
   },
   methods: {
     onChangeDisplayAmount(value) {
+      this.sendAmountError = ''
       if ((BigNumber.isBigNumber(value) && !this.displayAmount.eq(value)) || !BigNumber.isBigNumber(value)) {
         this.displayAmount = BigNumber.isBigNumber(value) ? value : new BigNumber(value || '0')
         if (this.toggle_exclusive === 0) {
@@ -661,6 +675,8 @@ export default {
           this.selectedVerifier = contactFound.verifier
         } else if (this.toAddress.startsWith('0x')) {
           this.selectedVerifier = ETH
+        } else if (this.toAddress.startsWith('@')) {
+          this.selectedVerifier = TWITTER
         } else if (/@/.test(this.toAddress)) {
           this.selectedVerifier = GOOGLE
         } else if (
@@ -785,13 +801,32 @@ export default {
           }
         } else {
           try {
-            toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
-              verifier: this.selectedVerifier,
-              verifierId: this.toAddress,
-            })
+            const { loginConfig } = this.$store.state.embedState
+            const foundLoginConfig = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
+            if (foundLoginConfig) {
+              toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
+                verifier: foundLoginConfig,
+                verifierId: this.toAddress.startsWith('@') ? this.toAddress.replace('@', '').toLowerCase() : this.toAddress.toLowerCase(),
+              })
+            }
           } catch (error) {
+            // Show error body
+            this.messageModalShow = true
+            this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+            this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+            this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
             log.error(error)
+            return
           }
+        }
+        if (!isAddress(toAddress)) {
+          // Show error body
+          this.messageModalShow = true
+          this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+          this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+          this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+          log.error('Invalid to Address')
+          return
         }
         this.toEthAddress = toAddress
         this.gas = await this.calculateGas(toAddress)
@@ -814,6 +849,11 @@ export default {
       const currencyBalance = ethBalance.times(this.getCurrencyTokenRate)
       const ethGasPrice = this.getEthAmount(this.gas, this.activeGasPrice)
       const currencyGasPrice = ethGasPrice.times(this.getCurrencyTokenRate)
+
+      if (ethBalance.minus(ethGasPrice).lt(new BigNumber(0))) {
+        this.sendAmountError = this.t('walletTransfer.insufficient')
+        return
+      }
 
       this.isSendAll = true
 

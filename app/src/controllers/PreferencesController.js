@@ -22,7 +22,7 @@ import {
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
-import { get, getEtherscanTransactions, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
+import { get, getEtherscanTransactions, getPastOrders, getWalletOrders, patch, post, remove } from '../utils/httpHelpers'
 import { notifyUser } from '../utils/notifications'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
@@ -139,19 +139,9 @@ class PreferencesController {
 
   async sync(callback, errorCallback) {
     try {
-      const [user, paymentTx, etherscanTx] = await Promise.all([
-        get(`${config.api}/user`, this.headers).catch((_) => {
-          if (errorCallback) errorCallback()
-        }),
-        getPastOrders({}, this.headers.headers).catch((error) => {
-          log.error('unable to fetch past orders', error)
-        }),
-        getEtherscanTransactions({}, this.headers.headers).catch((error) => {
-          log.error('unable to fetch etherscan transactions', error)
-        }),
-      ])
-      if (user && user.data) {
-        const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
+      const user = await get(`${config.api}/user?fetchTx=false`, this.headers)
+      if (user?.data) {
+        const { badge: userBadges, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         let whiteLabelLocale
         let badgesCompletion = DEFAULT_BADGES_COMPLETION
 
@@ -184,21 +174,31 @@ class PreferencesController {
           permissions,
           badgesCompletion,
         })
-        if (paymentTx && paymentTx.data) {
-          this.calculatePaymentTx(paymentTx.data)
-        }
-        if (etherscanTx && etherscanTx.data) {
-          this.calculateEtherscanTx(etherscanTx.data)
-        }
-        this.fetchedPastTx = transactions
-        this.calculatePastTx(transactions)
         if (callback) return callback(user)
-        // this.permissionsController._initializePermissions(permissions)
       }
       return undefined
     } catch (error) {
       log.error(error)
+      if (errorCallback) errorCallback()
       return undefined
+    } finally {
+      Promise.all([
+        getWalletOrders({}, this.headers.headers).catch((error) => {
+          log.error('unable to fetch wallet orders', error)
+        }),
+        getPastOrders({}, this.headers.headers).catch((error) => {
+          log.error('unable to fetch past orders', error)
+        }),
+      ])
+        .then((data) => {
+          const [walletTx, paymentTx] = data
+          if (paymentTx?.data) {
+            this.calculatePaymentTx(paymentTx.data)
+          }
+          this.fetchedPastTx = walletTx.data
+          this.calculatePastTx(walletTx.data)
+        })
+        .catch((error) => log.error(error))
     }
   }
 
@@ -262,7 +262,20 @@ class PreferencesController {
     this.pastTransactionsStore.putState(pastTx)
   }
 
+  async fetchEtherscanTx() {
+    try {
+      const { selectedAddress } = this.state
+      const tx = await getEtherscanTransactions({ selectedAddress }, this.headers.headers)
+      if (tx?.data) {
+        this.calculateEtherscanTx(tx.data)
+      }
+    } catch (error) {
+      log.error('unable to fetch etherscan tx', error)
+    }
+  }
+
   async calculateEtherscanTx(txs) {
+    const lowerCaseSelectedAddress = this.state.selectedAddress.toLowerCase()
     const finalTxs = txs.reduce((accumulator, x) => {
       const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
       const etherscanTransaction = {
@@ -280,31 +293,33 @@ class PreferencesController {
         isEtherscan: true,
       }
 
-      if (x.contractAddress) {
-        const transactionType = x.tokenID ? CONTRACT_TYPE_ERC721 : CONTRACT_TYPE_ERC20
-        let contract
-        if (transactionType === CONTRACT_TYPE_ERC20) {
-          let checkSummedTo = x.contractAddress
-          if (isAddress(x.contractAddress)) checkSummedTo = toChecksumAddress(x.contractAddress)
-          contract = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
-        } else {
-          contract = Object.prototype.hasOwnProperty.call(erc721Contracts, x.contractAddress.toLowerCase())
-            ? erc721Contracts[x.contractAddress.toLowerCase()]
-            : {}
+      if (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase()) {
+        if (x.contractAddress) {
+          const transactionType = x.tokenID ? CONTRACT_TYPE_ERC721 : CONTRACT_TYPE_ERC20
+          let contract
+          if (transactionType === CONTRACT_TYPE_ERC20) {
+            let checkSummedTo = x.contractAddress
+            if (isAddress(x.contractAddress)) checkSummedTo = toChecksumAddress(x.contractAddress)
+            contract = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
+          } else {
+            contract = Object.prototype.hasOwnProperty.call(erc721Contracts, x.contractAddress.toLowerCase())
+              ? erc721Contracts[x.contractAddress.toLowerCase()]
+              : {}
+          }
+
+          if (Object.keys(contract).length > 0) {
+            etherscanTransaction.symbol = transactionType === CONTRACT_TYPE_ERC20 ? contract.symbol : x.tokenID
+            etherscanTransaction.type_image_link = contract.logo
+            etherscanTransaction.type_name = contract.name
+          } else {
+            etherscanTransaction.symbol = x.tokenID
+            etherscanTransaction.type_name = x.tokenName
+          }
+          etherscanTransaction.type = transactionType
         }
 
-        if (Object.keys(contract).length > 0) {
-          etherscanTransaction.symbol = transactionType === CONTRACT_TYPE_ERC20 ? contract.symbol : x.tokenID
-          etherscanTransaction.type_image_link = contract.logo
-          etherscanTransaction.type_name = contract.name
-        } else {
-          etherscanTransaction.symbol = x.tokenID
-          etherscanTransaction.type_name = x.tokenName
-        }
-        etherscanTransaction.type = transactionType
+        accumulator.push(formatPastTx(etherscanTransaction, lowerCaseSelectedAddress))
       }
-
-      accumulator.push(formatPastTx(etherscanTransaction))
       return accumulator
     }, [])
 
@@ -517,6 +532,7 @@ class PreferencesController {
     if (this.state.selectedAddress === address) return
     this.store.updateState({ selectedAddress: address })
     this.recalculatePastTx()
+    this.fetchEtherscanTx()
     // this.sync()
   }
 

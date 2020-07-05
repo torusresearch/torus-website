@@ -39,6 +39,8 @@ import {
   MATIC_CHAIN_ID,
   MATIC_CODE,
   MOONPAY,
+  MUMBAI_CHAIN_ID,
+  MUMBAI_CODE,
   PASSWORDLESS,
   PLATFORM_BRAVE,
   PLATFORM_CHROME,
@@ -330,22 +332,30 @@ export const broadcastChannelOptions = {
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
-export function validateVerifierId(selectedVerifier, value) {
-  if (selectedVerifier === ETH) {
-    return isAddress(value) || 'Invalid ETH Address'
+export function validateVerifierId(selectedTypeOfLogin, value) {
+  if (selectedTypeOfLogin === ETH) {
+    return isAddress(value) || 'walletSettings.invalidEth'
   }
-  if (selectedVerifier === GOOGLE) {
+  if (selectedTypeOfLogin === GOOGLE) {
     return (
       // eslint-disable-next-line max-len
       /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
-      'Invalid Email Address'
+      'walletSettings.invalidEmail'
     )
   }
-  if (selectedVerifier === REDDIT) {
-    return (/^[\w-]+$/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
+  if (selectedTypeOfLogin === REDDIT) {
+    return (/^[\w-]+$/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'walletSettings.invalidReddit'
   }
-  if (selectedVerifier === DISCORD) {
-    return (/^\d*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
+  if (selectedTypeOfLogin === DISCORD) {
+    return (/^\d*$/.test(value) && value.length === 18) || 'walletSettings.invalidDiscord'
+  }
+
+  if (selectedTypeOfLogin === TWITTER) {
+    return /^@(\w){1,15}$/.test(value) || 'walletSettings.invalidTwitter'
+  }
+
+  if (selectedTypeOfLogin === GITHUB) {
+    return /^(?!.*(-{2}))(?!^-.*$)(?!^.*-$)[\w-]{1,39}$/.test(value) || 'walletSettings.invalidGithub'
   }
 
   return true
@@ -487,6 +497,7 @@ export const standardNetworkId = {
   [KOVAN_CODE.toString()]: KOVAN_CHAIN_ID,
   [GOERLI_CODE.toString()]: GOERLI_CHAIN_ID,
   [MATIC_CODE.toString()]: MATIC_CHAIN_ID,
+  [MUMBAI_CODE.toString()]: MUMBAI_CHAIN_ID,
 }
 
 export function selectChainId(network, store) {
@@ -516,6 +527,7 @@ export const fakeStream = {
 }
 
 export function formatSmallNumbers(number, currency = 'usd', noTilde = false) {
+  if (!Number.isFinite(number)) return ''
   const finalNumber = currency.toLowerCase() === 'usd' ? Number(number).toFixed(2) : Number(number).toFixed(5)
 
   return `${currency.toLowerCase() === 'usd' || noTilde ? '' : '~ '}${Number(finalNumber)} ${currency.toUpperCase()}`
@@ -551,7 +563,10 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     status: x.status,
     etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network || MAINNET),
     networkType: x.network,
-    ethRate: `1 ${x.symbol} = ${significantDigits(Number.parseFloat(x.currency_amount) / Number.parseFloat(x.total_amount))}`,
+    ethRate:
+      Number.parseFloat(x?.total_amount) && Number.parseFloat(x?.currency_amount)
+        ? `1 ${x.symbol} = ${significantDigits(Number.parseFloat(x.currency_amount) / Number.parseFloat(x.total_amount))}`
+        : '',
     currencyUsed: x.selected_currency,
     type: x.type,
     type_name: x.type_name,
@@ -566,22 +581,26 @@ export const padUrlString = (url) => {
   return url.href.endsWith('/') ? url.href : `${url.href}/`
 }
 
-export const getVerifierId = (userInfo, typeOfLogin, verifierIdField) => {
+function caseSensitiveField(field, isCaseSensitive) {
+  return isCaseSensitive ? field : field.toLowerCase()
+}
+
+export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifierIdCaseSensitive = true) => {
   const { name, nickname, sub } = userInfo
-  if (verifierIdField) return userInfo[verifierIdField]
+  if (verifierIdField) return caseSensitiveField(userInfo[verifierIdField], isVerifierIdCaseSensitive)
   switch (typeOfLogin) {
     case GITHUB:
     case TWITTER:
-      return nickname
+      return caseSensitiveField(nickname, isVerifierIdCaseSensitive)
     case WEIBO:
     case PASSWORDLESS:
     case EMAIL_PASSWORD:
-      return name
+      return caseSensitiveField(name, isVerifierIdCaseSensitive)
     case APPLE:
     case LINKEDIN:
     case LINE:
     case JWT:
-      return sub
+      return caseSensitiveField(sub, isVerifierIdCaseSensitive)
     default:
       throw new Error('Invalid login type')
   }

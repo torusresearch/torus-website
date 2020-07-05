@@ -39,13 +39,30 @@
 <script>
 import log from 'loglevel'
 
-import { DISCORD, DISCORD_LABEL, ENS, ENS_LABEL, ETH, ETH_LABEL, GOOGLE, GOOGLE_LABEL, REDDIT, REDDIT_LABEL } from '../../../utils/enums'
+import {
+  DISCORD,
+  DISCORD_LABEL,
+  ENS,
+  ENS_LABEL,
+  ETH,
+  ETH_LABEL,
+  GITHUB,
+  GITHUB_LABEL,
+  GOOGLE,
+  GOOGLE_LABEL,
+  REDDIT,
+  REDDIT_LABEL,
+  TWITTER,
+  TWITTER_LABEL,
+} from '../../../utils/enums'
 
 const VERIFIER_LABELS = {
   [ETH]: ETH_LABEL,
   [GOOGLE]: GOOGLE_LABEL,
   [REDDIT]: REDDIT_LABEL,
   [DISCORD]: DISCORD_LABEL,
+  [TWITTER]: TWITTER_LABEL,
+  [GITHUB]: GITHUB_LABEL,
   [ENS]: ENS_LABEL,
 }
 export default {

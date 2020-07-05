@@ -55,11 +55,12 @@ export default {
       }, 0)()
     },
     sendOrder(callback) {
+      const { selectedAddress } = this.$route.query
       callback(
         this.$store.dispatch('fetchRampNetworkOrder', {
           currentOrder: this.currentOrder,
           colorCode: this.$vuetify.theme.themes.light.primary.base,
-          selectedAddress: this.selectedAddress,
+          selectedAddress: selectedAddress || this.selectedAddress,
         })
       )
     },

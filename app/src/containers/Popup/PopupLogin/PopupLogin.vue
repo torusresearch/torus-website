@@ -16,7 +16,10 @@
               <div class="verifier-title headline torus_text--text font-weight-bold">
                 <span v-if="$vuetify.breakpoint.xsOnly">
                   {{ t('login.your') }}
-                  <img :src="require(`../../../assets/images/login-verifiers.gif`)" alt="Login Verifier Icon" />
+                  <img
+                    :src="require(`../../../assets/images/login-verifiers-${$vuetify.theme.dark ? 'dark' : 'light'}.gif`)"
+                    alt="Login Verifier Icon"
+                  />
                 </span>
                 <span v-else>
                   {{ t('login.your') }}
@@ -44,19 +47,19 @@
                   <v-btn
                     block
                     class="login-btn"
-                    :class="{ active: verifier.typeOfLogin === activeButton }"
+                    :class="{ active: verifier.name === activeButton }"
                     type="button"
-                    :title="`${t('login.loginWith')} ${verifier.typeOfLogin}`"
-                    @mouseover="loginBtnHover(verifier.typeOfLogin)"
+                    :title="`${t('login.loginWith')} ${verifier.name}`"
+                    @mouseover="loginBtnHover(verifier.name)"
                     @click="startLogin(verifier.verifier)"
                   >
                     <img
-                      v-if="verifier.typeOfLogin === activeButton || $vuetify.breakpoint.xsOnly"
+                      v-if="verifier.name === activeButton || $vuetify.breakpoint.xsOnly"
                       :src="verifier.logoHover || require(`../../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)"
-                      :alt="`${verifier.typeOfLogin} Icon`"
+                      :alt="`${verifier.name} Icon`"
                     />
-                    <img v-else-if="$vuetify.theme.isDark && verifier.logoLight" :src="verifier.logoLight" :alt="`${verifier.typeOfLogin} Icon`" />
-                    <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark" :src="verifier.logoDark" :alt="`${verifier.typeOfLogin} Icon`" />
+                    <img v-else-if="$vuetify.theme.isDark && verifier.logoLight" :src="verifier.logoLight" :alt="`${verifier.name} Icon`" />
+                    <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
                     <v-icon v-else size="30" :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
                       {{ `$vuetify.icons.${verifier.typeOfLogin}` }}
                     </v-icon>
@@ -86,27 +89,50 @@
                     class="mr-4"
                     height="20"
                     :src="verifier.logoLight"
-                    :alt="`${verifier.typeOfLogin} Icon`"
+                    :alt="`${verifier.name} Icon`"
                   />
                   <img
                     v-else-if="!$vuetify.theme.isDark && verifier.logoDark"
                     class="mr-4"
                     height="20"
                     :src="verifier.logoDark"
-                    :alt="`${verifier.typeOfLogin} Icon`"
+                    :alt="`${verifier.name} Icon`"
                   />
                   <v-icon v-else class="mr-4">{{ `$vuetify.icons.${verifier.typeOfLogin}` }}</v-icon>
                   {{ t(verifier.description) }}
                 </v-btn>
               </div>
             </v-flex>
-            <v-flex mt-2 mb-2>
-              <span class="caption torus_text--text">
-                {{ t('login.acceptTerms') }}
-                <a :href="tncLink" target="_blank" rel="noreferrer noopener" :style="{ textDecoration: 'none' }">
-                  <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
+            <v-flex xs12 mb-6 class="footer-notes">
+              <div class="text_3--text mb-4">
+                <span>{{ t('dappLogin.termsAuth01') }}</span>
+                <br />
+                <span>{{ t('dappLogin.termsAuth02') }}</span>
+                <a class="privacy-learn-more text_3--text" href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in" target="_blank">
+                  {{ t('dappLogin.termsLearnMore') }}
                 </a>
-              </span>
+              </div>
+              <div class="text_3--text mb-6">
+                {{ t('dappLogin.termsHandle') }}
+              </div>
+              <v-divider class="mb-4"></v-divider>
+              <div class="d-flex footer-links">
+                <div class="mr-4">
+                  <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                    {{ t('dappLogin.termsConditions') }}
+                  </a>
+                </div>
+                <div class="mr-4">
+                  <a href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                    {{ t('dappLogin.privacyPolicy') }}
+                  </a>
+                </div>
+                <div class="mr-4">
+                  <a href="https://t.me/TorusLabs" target="_blank">
+                    {{ t('dappLogin.contactUs') }}
+                  </a>
+                </div>
+              </div>
             </v-flex>
           </v-layout>
         </v-card>

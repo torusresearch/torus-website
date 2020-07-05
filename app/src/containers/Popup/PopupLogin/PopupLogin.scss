@@ -4,25 +4,25 @@
   }
 
   .torus_text--text {
-    color: #5C6C7F;
+    color: #5c6c7f;
   }
-  
+
   .login-header {
-    background: #FFFFFF;
-    border: 1px solid #F5F5F5;
+    background: #ffffff;
+    border: 1px solid #f5f5f5;
     box-sizing: border-box;
     box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
     border-radius: 6px;
     line-height: 0;
-  
+
     .close-btn {
       position: absolute;
       top: 0;
       right: 0;
-      color: #DFDFDF;
+      color: #dfdfdf;
     }
   }
-  
+
   .verifier-title {
     img {
       height: 18px;
@@ -30,53 +30,59 @@
       margin-left: 2px;
     }
     &__google-blue {
-      color: #4285F4;
+      color: #4285f4;
     }
     &__google-red {
-      color: #EA4335;
+      color: #ea4335;
     }
     &__google-yellow {
-      color: #FBBC05;
+      color: #fbbc05;
     }
     &__google-green {
-      color: #34A853;
+      color: #34a853;
     }
     &__facebook {
-      color: #3478EA;
+      color: #3478ea;
     }
     &__reddit {
-      color: #FF4500;
+      color: #ff4500;
     }
     &__twitch {
       color: #695790;
     }
     &__discord {
-      color: #7289DA;
+      color: #7289da;
     }
     &__github {
       color: #000000;
     }
     &__linkedin {
-      color: #2867B2;
+      color: #2867b2;
     }
     &__twitter {
-      color: #55ACEE;
+      color: #55acee;
     }
     &__weibo {
-      color: #E71F19;
+      color: #e71f19;
     }
     &__passwordless {
       color: #000000;
     }
+    &__jwt {
+      color: #000000;
+    }
+    &__email_password {
+      color: #000000;
+    }
   }
-  
+
   .verifier-subtitle {
     font-size: 18px;
   }
-  
+
   .login-btn.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
-    background: #FFFFFF;
-    border: 1px solid #F1F2F6;
+    background: #ffffff;
+    border: 1px solid #f1f2f6;
     box-sizing: border-box;
     box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
     min-width: inherit;
@@ -87,11 +93,11 @@
       height: 32px;
     }
   }
-  
+
   .login-btn-long {
     &.v-btn {
-      background: #FFFFFF !important;
-      border: 1px solid #F1F2F6 !important;
+      background: #ffffff !important;
+      border: 1px solid #f1f2f6 !important;
       box-sizing: border-box;
       box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
       border-radius: 9px;
@@ -102,17 +108,29 @@
     }
 
     &.torus-dark {
-      background: #2F3136 !important;
+      background: #2f3136 !important;
       border: 1px solid #404145 !important;
       box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
       color: #ffffff !important;
     }
   }
 
+  .footer-notes {
+    font-size: 11px;
+    margin-top: 40px;
+    .privacy-learn-more {
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .footer-links a {
+      text-decoration: none;
+    }
+  }
+
   &.theme--dark {
     background: #242529;
     .torus_text--text {
-      color: #D3D3D4;
+      color: #d3d3d4;
     }
     .login-header {
       background: #242529;
@@ -121,7 +139,7 @@
     }
 
     .login-btn.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
-      background: #2F3136;
+      background: #2f3136;
       border: 1px solid #404145;
       box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
     }

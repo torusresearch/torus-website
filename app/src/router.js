@@ -179,7 +179,7 @@ router.beforeResolve((to, from, next) => {
     return next({ name: 'login', query: { redirect: to.fullPath } })
   }
   if (!hasQueryParameters(to) && hasQueryParameters(from)) {
-    if (to.name !== 'walletTransfer') {
+    if (!to.name.includes('Topup') && to.name !== 'walletTransfer') {
       Object.keys(from.query).forEach((key) => key === 'instanceId' || delete from.query[key])
     }
     return next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
