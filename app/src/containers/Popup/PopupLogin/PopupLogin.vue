@@ -16,7 +16,10 @@
               <div class="verifier-title headline torus_text--text font-weight-bold">
                 <span v-if="$vuetify.breakpoint.xsOnly">
                   {{ t('login.your') }}
-                  <img :src="require(`../../../assets/images/login-verifiers.gif`)" alt="Login Verifier Icon" />
+                  <img
+                    :src="require(`../../../assets/images/login-verifiers-${$vuetify.theme.dark ? 'dark' : 'light'}.gif`)"
+                    alt="Login Verifier Icon"
+                  />
                 </span>
                 <span v-else>
                   {{ t('login.your') }}

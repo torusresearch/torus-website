@@ -18,7 +18,10 @@
                     <div class="verifier-title font-weight-bold display-1">
                       <span class="text_2--text">
                         {{ t('login.your') }}
-                        <img :src="require(`../../assets/images/login-verifiers.gif`)" alt="Login Verifiers" />
+                        <img
+                          :src="require(`../../assets/images/login-verifiers-${$vuetify.theme.dark ? 'dark' : 'light'}.gif`)"
+                          alt="Login Verifiers"
+                        />
                       </span>
                     </div>
                     <div class="font-weight-bold headline text_2--text">
