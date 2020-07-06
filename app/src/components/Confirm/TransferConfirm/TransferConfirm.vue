@@ -24,9 +24,13 @@
           <div class="d-flex icon-container icon-container--right align-center">
             <div class="icon-box elevation-3" :class="{ isDark: $vuetify.theme.isDark }">
               <div v-if="dappName !== ''" class="v-icon dapp-icon torusGray1--text">DApp</div>
-              <v-icon v-else size="20" class="torusGray1--text">
-                {{ `$vuetify.icons.${toVerifier === ETH ? 'account' : toVerifier.toLowerCase()}` }}
-              </v-icon>
+              <v-badge v-else bordered :dark="$vuetify.theme.isDark" content="?" overlap :value="toVerifier === TWITTER">
+                <v-btn icon class="link-box torusGray1--text" :href="toVeriferUrl" target="_blank">
+                  <v-icon>
+                    {{ `$vuetify.icons.${toVerifier === ETH ? 'account' : toVerifier.toLowerCase()}` }}
+                  </v-icon>
+                </v-btn>
+              </v-badge>
             </div>
           </div>
         </div>
@@ -112,13 +116,17 @@
 import BigNumber from 'bignumber.js'
 import { mapGetters } from 'vuex'
 
-import { ETH, MAINNET } from '../../../utils/enums'
+import { ETH, GITHUB, MAINNET, REDDIT, TWITTER } from '../../../utils/enums'
 import { addressSlicer, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 
 export default {
   components: { NetworkDisplay },
   props: {
+    convertedVerifierId: {
+      type: String,
+      default: '',
+    },
     toAddress: {
       type: String,
       default: '0x',
@@ -200,10 +208,23 @@ export default {
   data() {
     return {
       ETH,
+      TWITTER,
     }
   },
   computed: {
     ...mapGetters(['getLogo']),
+    toVeriferUrl() {
+      if (this.toVerifier === TWITTER) {
+        return `https://twitter.com/i/user/${this.convertedVerifierId.split('|')[1]}`
+      }
+      if (this.toVerifier === GITHUB) {
+        return `https://github.com/${this.toVerifierId}`
+      }
+      if (this.toVerifier === REDDIT) {
+        return `https://reddit.com/user/${this.toVerifierId}`
+      }
+      return ''
+    },
   },
   methods: {
     onCancel() {

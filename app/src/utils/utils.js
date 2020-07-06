@@ -587,16 +587,15 @@ function caseSensitiveField(field, isCaseSensitive) {
 }
 
 export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifierIdCaseSensitive = true) => {
-  const { name, nickname, sub } = userInfo
+  const { name, sub } = userInfo
   if (verifierIdField) return caseSensitiveField(userInfo[verifierIdField], isVerifierIdCaseSensitive)
   switch (typeOfLogin) {
-    case GITHUB:
-    case TWITTER:
-      return caseSensitiveField(nickname, isVerifierIdCaseSensitive)
-    case WEIBO:
     case PASSWORDLESS:
     case EMAIL_PASSWORD:
       return caseSensitiveField(name, isVerifierIdCaseSensitive)
+    case GITHUB:
+    case TWITTER:
+    case WEIBO:
     case APPLE:
     case LINKEDIN:
     case LINE:
