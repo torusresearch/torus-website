@@ -116,7 +116,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
-import { DISCORD, TWITTER } from '../../../utils/enums'
+import { DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
 import { addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
 import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
@@ -157,7 +157,10 @@ export default {
         return `Discord ID: ${this.userInfo.verifierId.toString()}`
       }
       if (this.userInfo.typeOfLogin === TWITTER) {
-        return `Twitter Username: ${this.userInfo.verifierId.toString()}`
+        return `Twitter ID: ${this.userInfo.verifierId.toString()}`
+      }
+      if (this.userInfo.typeOfLogin === GITHUB) {
+        return `GitHub ID: ${this.userInfo.verifierId.toString()}`
       }
       return ''
     },
