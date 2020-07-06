@@ -380,7 +380,7 @@ import {
   TWITTER,
 } from '../../utils/enums'
 import { post } from '../../utils/httpHelpers'
-import { getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
+import { getEtherScanHashLink, getIdFromNick, significantDigits, validateVerifierId } from '../../utils/utils'
 
 export default {
   name: 'WalletTransfer',
@@ -796,10 +796,11 @@ export default {
           try {
             const { loginConfig } = this.$store.state.embedState
             const foundLoginConfig = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
+            const validVeriferId = await getIdFromNick(this.toAddress, this.selectedVerifier)
             if (foundLoginConfig) {
               toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
                 verifier: foundLoginConfig,
-                verifierId: this.toAddress.startsWith('@') ? this.toAddress.replace('@', '').toLowerCase() : this.toAddress.toLowerCase(),
+                verifierId: validVeriferId.startsWith('@') ? validVeriferId.replace('@', '').toLowerCase() : validVeriferId.toLowerCase(),
               })
             }
           } catch (error) {

@@ -117,9 +117,6 @@
                   {{ t('dappLogin.termsLearnMore') }}
                 </a>
               </div>
-              <div v-if="!canHideDisclaimer2" class="text_3--text mb-6">
-                {{ t('dappLogin.termsHandle') }}
-              </div>
               <v-divider class="mb-4"></v-divider>
               <div class="d-flex justify-center footer-links">
                 <div class="mr-4">
