@@ -29,15 +29,15 @@ const createHandler = ({ typeOfLogin, clientId, verifier, redirect_uri, preopenI
   const { domain, login_hint } = jwtParameters || {}
   switch (typeOfLogin) {
     case GOOGLE:
-      return new GoogleHandler({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
+      return new GoogleHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener })
     case FACEBOOK:
-      return new FacebookHandler({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
+      return new FacebookHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener })
     case TWITCH:
-      return new TwitchHandler({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
+      return new TwitchHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener })
     case REDDIT:
-      return new RedditHandler({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
+      return new RedditHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener })
     case DISCORD:
-      return new DiscordHandler({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
+      return new DiscordHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener })
     case PASSWORDLESS:
       if (!domain || !login_hint) throw new Error('Invalid params')
       return new PasswordlessHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener, jwtParameters })

@@ -22,7 +22,7 @@ describe('DetectTokensController', () => {
   beforeEach(async () => {
     nock.cleanAll()
     nock.enableNetConnect()
-    nock('https://min-api.cryptocompare.com').get(/.*/).query(true).reply(200).log(noop)
+    nock('https://min-api.cryptocompare.com').get(/.*/).query(true).reply(200)
 
     network = new NetworkController()
     network.initializeProvider(networkControllerProviderConfig)

@@ -27,6 +27,7 @@ import KeyIcon from './KeyIcon.vue'
 import ListIcon from './ListIcon.vue'
 import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
+import MenuIcon from './MenuIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
 import PersonIcon from './PersonIcon.vue'
 import QrIcon from './QrIcon.vue'
@@ -52,6 +53,7 @@ import VerifierEnsIcon from './VerifierEnsIcon.vue'
 import VerifierFacebookIcon from './VerifierFacebookIcon.vue'
 import VerifierGithubIcon from './VerifierGithubIcon.vue'
 import VerifierGoogleIcon from './VerifierGoogleIcon.vue'
+import VerifierJwtIcon from './VerifierJwtIcon.vue'
 import VerifierLineIcon from './VerifierLineIcon.vue'
 import VerifierLinkedinIcon from './VerifierLinkedinIcon.vue'
 import VerifierPasswordlessIcon from './VerifierPasswordlessIcon.vue'
@@ -244,7 +246,7 @@ export default {
     component: VerifierEmailIcon,
   },
   jwt: {
-    component: VerifierEmailIcon,
+    component: VerifierJwtIcon,
   },
   passwordless: {
     component: VerifierPasswordlessIcon,
@@ -254,5 +256,8 @@ export default {
   },
   line: {
     component: VerifierLineIcon,
+  },
+  menu: {
+    component: MenuIcon,
   },
 }

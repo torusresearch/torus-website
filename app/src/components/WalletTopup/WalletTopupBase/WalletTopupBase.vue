@@ -130,10 +130,11 @@
 </template>
 
 <script>
+import { BroadcastChannel } from 'broadcast-channel'
 import { mapState } from 'vuex'
 
 import { XANPOOL } from '../../../utils/enums'
-import { formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
+import { broadcastChannelOptions, formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
 export default {
@@ -212,13 +213,20 @@ export default {
     },
   },
   mounted() {
-    this.selectedCryptoCurrency = 'ETH'
-    if (this.selectedProviderObj && this.selectedProviderObj.validCurrencies.includes(this.storeSelectedCurrency)) {
-      this.selectedCurrency = this.storeSelectedCurrency
-    } else {
-      ;[this.selectedCurrency] = this.selectedProviderObj.validCurrencies
+    const { selectedCryptoCurrency, selectedCurrency, fiatValue } = this.$route.query
+    const currentCurrency = selectedCurrency || this.storeSelectedCurrency
+    if (this.selectedProviderObj) {
+      if (this.selectedProviderObj.validCurrencies.includes(currentCurrency)) this.selectedCurrency = currentCurrency
+      else {
+        ;[this.selectedCurrency] = this.selectedProviderObj.validCurrencies
+      }
+
+      if (this.selectedProviderObj.validCryptoCurrencies.includes(selectedCryptoCurrency)) this.selectedCryptoCurrency = selectedCryptoCurrency
+      else {
+        ;[this.selectedCryptoCurrency] = this.selectedProviderObj.validCryptoCurrencies
+      }
     }
-    this.setFiatValue(this.minOrderValue)
+    this.setFiatValue(fiatValue || this.minOrderValue)
   },
   methods: {
     significantDigits,
@@ -240,15 +248,25 @@ export default {
     },
     sendOrder() {
       if (this.$refs.paymentForm.validate()) {
+        const { instanceId } = this.$route.query
+        let bc
+        if (instanceId) bc = new BroadcastChannel(`redirect_channel_${instanceId}`, broadcastChannelOptions)
         const callback = (p) => {
-          p.then(({ success }) => {
-            if (success) this.$router.push({ name: 'walletHistory' })
-            else {
+          p.then(async ({ success }) => {
+            if (success) {
+              this.$router.push({ name: 'walletHistory' })
+            } else {
               this.snackbar = true
               this.snackbarColor = 'error'
               this.snackbarText = 'Something went wrong'
             }
-          }).catch((error) => {
+            if (bc) {
+              await bc.postMessage({
+                data: { instanceParams: { provider: this.selectedProvider }, queryParams: { transactionStatus: success ? 'success' : 'failed' } },
+              })
+              bc.close()
+            }
+          }).catch(async (error) => {
             this.snackbar = true
             this.snackbarColor = 'error'
             this.snackbarText = error
@@ -258,6 +276,12 @@ export default {
               fiatValue: this.fiatValue,
               selectedCryptoCurrency: this.selectedCryptoCurrency,
             })
+            if (bc) {
+              await bc.postMessage({
+                data: { instanceParams: { provider: this.selectedProvider }, queryParams: { transactionStatus: 'failed' } },
+              })
+              bc.close()
+            }
           })
         }
         this.$emit('sendOrder', callback)

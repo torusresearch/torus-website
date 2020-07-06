@@ -75,18 +75,18 @@ describe('Preferences Controller', () => {
     beforeEach(() => {
       sandbox.stub(preferencesController, 'calculatePaymentTx')
       sandbox.stub(preferencesController, 'calculatePastTx')
+      sandbox.stub(preferencesController, 'calculateEtherscanTx')
     })
     afterEach(() => {
       sandbox.restore()
     })
     it('user sync error', async () => {
-      nock('https://api.tor.us').get(/.*/).replyWithError(new TypeError('Invalid request')).log(noop)
-      nock('https://common-api.tor.us')
-        .get('/transaction')
-        .reply(200, {
-          data: {},
-        })
-        .log(noop)
+      nock('https://api.tor.us').get(/.*/).replyWithError(new TypeError('Invalid request'))
+
+      nock('https://common-api.tor.us').get('/transaction').reply(200, {
+        data: {},
+      })
+
       const successCallback = sinon.fake()
       const errorCallback = sinon.fake()
       await preferencesController.sync(successCallback, errorCallback)
@@ -96,13 +96,19 @@ describe('Preferences Controller', () => {
 
     it('payment sync error', async () => {
       sandbox.stub(preferencesController, 'setVerifier')
+
       nock('https://api.tor.us')
-        .get(/.*/)
-        .reply(200, {
-          data: {},
-        })
-        .log(noop)
-      nock('https://common-api.tor.us').get(/.*/).reply(400).log(noop)
+        .get(/transaction/)
+        .reply(400)
+
+      nock('https://api.tor.us')
+        .get(/etherscan/)
+        .reply(400)
+
+      nock('https://api.tor.us').get(/user/).reply(200, { data: {} })
+
+      nock('https://common-api.tor.us').get(/.*/).reply(400)
+
       const successCallback = sinon.fake()
       const errorCallback = sinon.fake()
       await preferencesController.sync(successCallback, errorCallback)
@@ -121,18 +127,26 @@ describe('Preferences Controller', () => {
         verifier_id: 'hc@njv.com',
         permissions: {},
       }
+      nock('https://api.tor.us').get(/user/).reply(200, {
+        data: userData,
+      })
+
       nock('https://api.tor.us')
-        .get(/.*/)
-        .reply(200, {
-          data: userData,
-        })
-        .log(noop)
-      nock('https://common-api.tor.us')
-        .get('/transaction')
+        .get(/transaction/)
         .reply(200, {
           data: [],
         })
-        .log(noop)
+
+      nock('https://api.tor.us')
+        .get(/etherscan/)
+        .reply(200, {
+          data: [],
+        })
+
+      nock('https://common-api.tor.us').get('/transaction').reply(200, {
+        data: [],
+      })
+
       await preferencesController.sync()
       assert.deepStrictEqual(preferencesController.pastTransactionsStore.getState(), userData.transactions)
       assert.deepStrictEqual(preferencesController.state.selectedCurrency, userData.default_currency)
@@ -151,15 +165,15 @@ describe('Preferences Controller', () => {
       nock('https://api.tor.us')
         .patch('/user/theme')
         .reply(201, { data: { theme: '' } })
-        .log(noop)
+
       nock('https://api.tor.us')
         .patch('/user/locale')
         .reply(201, { data: { locale: '' } })
-        .log(noop)
+
       nock('https://api.tor.us')
         .patch('/user')
         .reply(201, { data: { default_currency: '' } })
-        .log(noop)
+
       nock('https://api.tor.us')
         .get('/billboard')
         .reply(200, {
@@ -175,7 +189,7 @@ describe('Preferences Controller', () => {
           ],
           success: true,
         })
-        .log(noop)
+
       nock('https://api.tor.us')
         .post('/contact')
         .reply(201, {
@@ -187,7 +201,7 @@ describe('Preferences Controller', () => {
           },
           success: true,
         })
-        .log(noop)
+
       nock('https://api.tor.us')
         .delete('/contact/1')
         .reply(200, {
@@ -196,7 +210,7 @@ describe('Preferences Controller', () => {
           },
           success: true,
         })
-        .log(noop)
+
       handleSuccessStub = sandbox.stub(preferencesController, 'handleSuccess')
     })
     afterEach(() => {

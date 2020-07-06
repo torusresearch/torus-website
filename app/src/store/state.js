@@ -19,6 +19,7 @@ const initialState = {
     verifier: '', // enum like GOOGLE
     verifierId: '', // usually email or facebook id
     verifierParams: {}, // general params
+    typeOfLogin: '',
   },
   // loaders
   weiBalanceLoaded: false, // Use on showing spinners

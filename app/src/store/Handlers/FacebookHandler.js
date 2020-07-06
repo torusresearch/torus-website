@@ -6,8 +6,8 @@ export default class FacebookHandler extends AbstractLoginHandler {
 
   SCOPE = 'public_profile email'
 
-  constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false }) {
-    super({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
+  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener = false }) {
+    super({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener })
     this.setFinalUrl()
   }
 
@@ -35,6 +35,7 @@ export default class FacebookHandler extends AbstractLoginHandler {
       profileImage: picture.data.url || '',
       verifier: this.verifier,
       verifierId: id,
+      typeOfLogin: this.typeOfLogin,
     }
   }
 }

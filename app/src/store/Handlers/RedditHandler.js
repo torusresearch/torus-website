@@ -6,8 +6,8 @@ export default class RedditHandler extends AbstractLoginHandler {
 
   SCOPE = 'identity'
 
-  constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false }) {
-    super({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
+  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener = false }) {
+    super({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener })
     this.setFinalUrl()
   }
 
@@ -35,6 +35,7 @@ export default class RedditHandler extends AbstractLoginHandler {
       profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
       verifier: this.verifier,
       verifierId: name.toLowerCase(),
+      typeOfLogin: this.typeOfLogin,
     }
   }
 }

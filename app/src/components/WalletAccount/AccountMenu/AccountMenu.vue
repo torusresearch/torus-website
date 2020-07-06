@@ -32,11 +32,11 @@
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
             <v-icon :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
-              {{ `$vuetify.icons.${index === 0 ? userInfo.verifier.toLowerCase() : 'account'}` }}
+              {{ `$vuetify.icons.${index === 0 ? userInfo.typeOfLogin.toLowerCase() : 'account'}` }}
             </v-icon>
           </div>
-          <div class="caption text_1--text font-weight-bold" :style="{ paddingLeft: '2px' }">
-            <span>{{ index === 0 ? userInfo.email : `${t('accountMenu.account')} #${index + 1}` }}</span>
+          <div class="caption text_1--text font-weight-bold account-list__user-email" :style="{ paddingLeft: '2px' }">
+            <span>{{ index === 0 ? userEmail : `${t('accountMenu.account')} #${index + 1}` }}</span>
           </div>
           <div class="caption ml-auto text_2--text text-right">
             <span>{{ acc.totalPortfolioValue }} {{ selectedCurrency }}</span>
@@ -44,7 +44,7 @@
         </div>
         <div class="d-flex align-start mt-1">
           <div class="account-list__address-container pt-1" :style="{ maxWidth: $vuetify.breakpoint.xsOnly ? '140px' : 'inherit' }">
-            <div v-if="userInfo.verifier === DISCORD && index === 0" class="account-list__address">Discord ID: {{ userInfo.verifierId }}</div>
+            <div v-if="userId && index === 0" class="account-list__address">{{ userId }}</div>
             <div class="account-list__address mt-1">{{ acc.address }}</div>
           </div>
           <div class="ml-auto">
@@ -116,7 +116,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
-import { DISCORD } from '../../../utils/enums'
+import { DISCORD, TWITTER } from '../../../utils/enums'
 import { addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
 import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
@@ -148,13 +148,21 @@ export default {
       wallets: 'walletBalances',
     }),
     userEmail() {
-      const verifierLabel = `${this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1)}: `
-      return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
+      const verifierIdArray = this.userInfo.verifierId.split('|')
+      const verifierId = verifierIdArray[1] ? verifierIdArray[1] : verifierIdArray[0]
+      return this.userInfo.email ? this.userInfo.email : verifierId
     },
     userId() {
-      return this.userInfo.verifier === DISCORD ? `Discord ID: ${this.userInfo.verifierId.toString()}` : ''
+      if (this.userInfo.typeOfLogin === DISCORD) {
+        return `Discord ID: ${this.userInfo.verifierId.toString()}`
+      }
+      if (this.userInfo.typeOfLogin === TWITTER) {
+        return `Twitter Username: ${this.userInfo.verifierId.toString()}`
+      }
+      return ''
     },
     userName() {
+      if (!this.userInfo.name) return this.t('login.your')
       let userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
       userName = userName.length > 20 ? userName.split(' ')[0] : userName
       return `${userName}'s`

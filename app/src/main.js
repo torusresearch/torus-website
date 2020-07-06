@@ -40,6 +40,7 @@ log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 Vue.use(VueGtm, {
   id: 'GTM-PDF8MFV', // Your GTM single container ID or array of container ids ['GTM-xxxxxxx', 'GTM-yyyyyyy']
   enabled: buildEnvironment === 'production' || buildEnvironment === 'testing', // defaults to true. change on production
+  defer: true, // Defers script execution to end of page load
   debug: false, // Whether or not display console logs debugs (optional)
   loadScript: true,
   vueRouter: router, // Pass the router instance to automatically sync with router (optional)

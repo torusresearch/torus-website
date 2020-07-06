@@ -43,7 +43,8 @@ export default {
       }, 0)()
     },
     sendOrder(callback) {
-      callback(this.$store.dispatch('fetchWyreOrder', { currentOrder: this.currentOrder, selectedAddress: this.selectedAddress }))
+      const { selectedAddress } = this.$route.query
+      callback(this.$store.dispatch('fetchWyreOrder', { currentOrder: this.currentOrder, selectedAddress: selectedAddress || this.selectedAddress }))
     },
     clearQuote(payload) {
       this.cryptoCurrencyValue = 0

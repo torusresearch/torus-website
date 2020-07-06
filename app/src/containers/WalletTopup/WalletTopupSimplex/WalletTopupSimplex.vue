@@ -12,6 +12,7 @@
 <script>
 import throttle from 'lodash.throttle'
 import log from 'loglevel'
+import { mapState } from 'vuex'
 
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 
@@ -26,6 +27,7 @@ export default {
       currentOrder: {},
     }
   },
+  computed: mapState(['selectedAddress']),
   methods: {
     fetchQuote(payload) {
       const self = this
@@ -41,7 +43,10 @@ export default {
       }, 0)()
     },
     sendOrder(callback) {
-      callback(this.$store.dispatch('fetchSimplexOrder', { currentOrder: this.currentOrder }))
+      const { selectedAddress } = this.$route.query
+      callback(
+        this.$store.dispatch('fetchSimplexOrder', { currentOrder: this.currentOrder, selectedAddress: selectedAddress || this.selectedAddress })
+      )
     },
     clearQuote(payload) {
       this.cryptoCurrencyValue = 0

@@ -118,7 +118,11 @@
     &__text {
       font-size: 14px;
       line-height: 16px;
-      color: #5c6c7f;
+      color: var(--v-text_2-base);
+      width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 

@@ -1,10 +1,12 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import clone from 'clone'
+import deepmerge from 'deepmerge'
 import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
+import vuetify from '../plugins/vuetify'
 import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
 import {
@@ -137,7 +139,7 @@ export default {
           symbol: object.ticker,
         })
       })
-    } catch (error) {
+    } catch {
       log.error('etherscan balance fetch failed')
     }
   },
@@ -178,7 +180,7 @@ export default {
           } else {
             handleProviderChangeDeny('user denied provider change request')
           }
-        } catch (error) {
+        } catch {
           handleProviderChangeDeny('Internal error occured')
         } finally {
           bc.close()
@@ -224,7 +226,7 @@ export default {
         await bc.postMessage({
           data: {
             origin: getIFrameOriginObject(),
-            payload: { ...payload, verifier: state.userInfo.verifier },
+            payload: { ...payload, typeOfLogin: state.userInfo.typeOfLogin },
             whiteLabel: state.whiteLabel,
           },
         })
@@ -287,8 +289,7 @@ export default {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
     else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
-  updateSelectedAddress({ commit, state }, payload) {
-    commit('setSelectedAddress', payload.selectedAddress)
+  updateSelectedAddress({ state }, payload) {
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
     torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
   },
@@ -313,6 +314,7 @@ export default {
     try {
       // This is to maintain backward compatibility
       const currentVeriferConfig = state.embedState.loginConfig[verifier]
+      const locale = vuetify.framework.lang.current
       if (!currentVeriferConfig) throw new Error('Invalid verifier')
       const { typeOfLogin, clientId, jwtParameters } = currentVeriferConfig
       const loginHandler = createHandler({
@@ -321,12 +323,25 @@ export default {
         verifier,
         redirect_uri: config.redirect_uri,
         preopenInstanceId,
-        jwtParameters,
+        jwtParameters: deepmerge(
+          {
+            ui_locales: locale,
+            languageDictionary: JSON.stringify({
+              title: vuetify.framework.lang.t('$vuetify.walletHome.auth0Title') || '',
+              error: {
+                passwordless: {
+                  invalid_user_password: vuetify.framework.lang.t('$vuetify.login.invalid_user_password') || '',
+                },
+              },
+            }),
+          },
+          jwtParameters || {}
+        ),
       })
       const loginParameters = await loginHandler.handleLoginWindow()
       const { accessToken, idToken } = loginParameters
       const userInfo = await loginHandler.getUserInfo(loginParameters)
-      const { profileImage, name, email, verifierId } = userInfo
+      const { profileImage, name, email, verifierId, typeOfLogin: returnTypeOfLogin } = userInfo
       commit('setUserInfo', {
         profileImage,
         name,
@@ -334,6 +349,7 @@ export default {
         verifierId,
         verifier,
         verifierParams: { verifier_id: verifierId },
+        typeOfLogin: returnTypeOfLogin,
       })
       await dispatch('handleLogin', { calledFromEmbed, oAuthToken: idToken || accessToken })
     } catch (error) {
@@ -386,7 +402,6 @@ export default {
     dispatch('subscribeToControllers')
     await dispatch('initTorusKeyring', data)
     await dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed })
-    dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
     // continue enable function
     const { ethAddress } = data
     if (calledFromEmbed) {
@@ -402,14 +417,14 @@ export default {
   },
   cleanupOAuth({ state }, payload) {
     const {
-      userInfo: { verifier },
+      userInfo: { typeOfLogin },
     } = state
     const { oAuthToken } = payload
-    if (verifier === FACEBOOK) {
+    if (typeOfLogin === FACEBOOK) {
       remove(`https://graph.facebook.com/me/permissions?access_token=${oAuthToken}`)
         .then((resp) => log.info(resp))
         .catch((error) => log.error(error))
-    } else if (verifier === DISCORD) {
+    } else if (typeOfLogin === DISCORD) {
       prefsController.revokeDiscord(oAuthToken)
     }
   },
@@ -435,7 +450,7 @@ export default {
           dispatch('logOut')
         }, decoded.exp * 1000 - Date.now())
       }
-      await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed, rehydrate: false })
+      await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed, rehydrate: false, selectedAddress })
       return Promise.resolve()
     } catch (error) {
       log.error('Failed Communication with backend', error)
@@ -467,6 +482,7 @@ export default {
             dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
             prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
             if (!storedVerifier || !storedVerifierId) prefsController.setVerifier(verifier, verifierId)
+            dispatch('updateSelectedAddress', { selectedAddress: payload.selectedAddress }) // synchronous
             resolve()
           }
         },
@@ -475,6 +491,7 @@ export default {
           commit('setNewUser', true)
           dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
           prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
+          dispatch('updateSelectedAddress', { selectedAddress: payload.selectedAddress }) // synchronous
           resolve()
         }
       )
@@ -506,8 +523,7 @@ export default {
       if (selectedAddress && wallet[selectedAddress]) {
         setTimeout(() => dispatch('subscribeToControllers'), 50)
         await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
-        await dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true })
-        dispatch('updateSelectedAddress', { selectedAddress })
+        await dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true, selectedAddress })
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })

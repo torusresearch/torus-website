@@ -8,12 +8,13 @@ import { broadcastChannelOptions } from '../../utils/utils'
 class AbstractLoginHandler {
   nonce = randomId()
 
-  constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false }) {
+  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener = false }) {
     this.clientId = clientId
     this.verifier = verifier
     this.preopenInstanceId = preopenInstanceId
     this.redirect_uri = redirect_uri
     this.redirectToOpener = redirectToOpener
+    this.typeOfLogin = typeOfLogin
   }
 
   get state() {

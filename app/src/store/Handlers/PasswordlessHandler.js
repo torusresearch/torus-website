@@ -15,8 +15,7 @@ export default class JwtHandler extends AbstractLoginHandler {
   PROMPT = 'login'
 
   constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false, typeOfLogin, jwtParameters }) {
-    super({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
-    this.typeOfLogin = typeOfLogin
+    super({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener })
     this.jwtParameters = jwtParameters
     this.setFinalUrl()
   }
@@ -30,8 +29,8 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   async getUserInfo(parameters) {
     const { idToken, accessToken } = parameters
+    const { domain, verifierIdField, isVerifierIdCaseSensitive } = this.jwtParameters
     try {
-      const { domain } = this.jwtParameters
       const domainUrl = new URL(domain)
       const userInfo = await get(`${padUrlString(domainUrl)}userinfo`, {
         headers: {
@@ -43,8 +42,9 @@ export default class JwtHandler extends AbstractLoginHandler {
         email,
         name,
         profileImage: picture,
-        verifierId: getVerifierId(userInfo, this.typeOfLogin),
+        verifierId: getVerifierId(userInfo, this.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
         verifier: this.verifier,
+        typeOfLogin: this.typeOfLogin,
       }
     } catch (error) {
       log.error(error)
@@ -54,8 +54,9 @@ export default class JwtHandler extends AbstractLoginHandler {
         profileImage: picture,
         name,
         email,
-        verifierId: getVerifierId(decodedToken, this.typeOfLogin),
+        verifierId: getVerifierId(decodedToken, this.typeOfLogin, verifierIdField, isVerifierIdCaseSensitive),
         verifier: this.verifier,
+        typeOfLogin: this.typeOfLogin,
       }
     }
   }
