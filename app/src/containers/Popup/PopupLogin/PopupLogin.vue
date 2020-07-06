@@ -104,7 +104,7 @@
               </div>
             </v-flex>
             <v-flex xs12 mb-6 class="footer-notes">
-              <div v-if="!canHideDisclaimer" class="text_3--text mb-4">
+              <div v-if="!canHideDisclaimer1" class="text_3--text mb-4">
                 <span>{{ t('dappLogin.termsAuth01') }}</span>
                 <br />
                 <span>{{ t('dappLogin.termsAuth02') }}</span>
@@ -117,7 +117,7 @@
                   {{ t('dappLogin.termsLearnMore') }}
                 </a>
               </div>
-              <div v-if="!canHideDisclaimer" class="text_3--text mb-6">
+              <div v-if="!canHideDisclaimer2" class="text_3--text mb-6">
                 {{ t('dappLogin.termsHandle') }}
               </div>
               <v-divider class="mb-4"></v-divider>
@@ -160,7 +160,7 @@ import log from 'loglevel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import PasswordlessLogin from '../../../components/helpers/PasswordLessLogin'
-import { GOOGLE, PASSWORDLESS } from '../../../utils/enums'
+import { GITHUB, GOOGLE, PASSWORDLESS, TWITTER } from '../../../utils/enums'
 
 export default {
   name: 'PopupLogin',
@@ -217,9 +217,14 @@ export default {
       }
       return finalLink
     },
-    canHideDisclaimer() {
+    canHideDisclaimer1() {
       const { isActive, disclaimerHide } = this.whiteLabel
       const isUsingSpecialLogin = this.loginButtonsArray.some((x) => x.jwtParameters && x.showOnModal)
+      return disclaimerHide && !isUsingSpecialLogin && isActive
+    },
+    canHideDisclaimer2() {
+      const { isActive, disclaimerHide } = this.whiteLabel
+      const isUsingSpecialLogin = this.loginButtonsArray.some((x) => (x.typeOfLogin === GITHUB || x.typeOfLogin === TWITTER) && x.showOnModal)
       return disclaimerHide && !isUsingSpecialLogin && isActive
     },
   },
