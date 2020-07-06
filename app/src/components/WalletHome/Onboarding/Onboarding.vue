@@ -55,7 +55,7 @@
           <v-flex class="flex-grow-0" mt-auto>
             <v-layout wrap mx-n1>
               <v-flex xs6 px-1>
-                <img class="onboarding-image" src="../../../assets/images/onboarding-2-yes.svg" alt="Onboarding Features" />
+                <img class="onboarding-image" src="../../../assets/images/onboarding-2.svg" alt="Onboarding Features" />
               </v-flex>
               <v-flex xs6 px-1 class="align-self-end">
                 <v-layout mx-n1>
@@ -88,7 +88,7 @@
           <v-flex class="flex-grow-0" mt-auto>
             <v-layout mx-n1>
               <v-flex xs6 px-1>
-                <img class="onboarding-image" src="../../../assets/images/onboarding-2-no.svg" alt="Onboarding Getting Started" />
+                <img class="onboarding-image" src="../../../assets/images/onboarding-2.svg" alt="Onboarding Getting Started" />
               </v-flex>
               <v-flex xs6 px-1 class="align-self-end">
                 <v-layout wrap mx-n1>

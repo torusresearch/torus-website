@@ -35,7 +35,7 @@
               {{ `$vuetify.icons.${index === 0 ? userInfo.typeOfLogin.toLowerCase() : 'account'}` }}
             </v-icon>
           </div>
-          <div class="caption text_1--text font-weight-bold" :style="{ paddingLeft: '2px' }">
+          <div class="caption text_1--text font-weight-bold account-list__user-email" :style="{ paddingLeft: '2px' }">
             <span>{{ index === 0 ? userEmail : `${t('accountMenu.account')} #${index + 1}` }}</span>
           </div>
           <div class="caption ml-auto text_2--text text-right">

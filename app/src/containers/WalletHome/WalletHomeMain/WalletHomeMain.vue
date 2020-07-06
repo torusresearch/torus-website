@@ -60,8 +60,8 @@
               <span class="description text_3--text" :style="{ lineHeight: '0' }">{{ finalBalancesArray[0].currencyRateText }}</span>
             </div>
           </div>
-          <v-layout wrap class="mx-n2 mt-2">
-            <v-flex xs6 px-2>
+          <v-layout wrap class="mx-n3 mt-2">
+            <v-flex xs6 px-3>
               <v-btn
                 v-show="canShowLrc && !whiteLabel.topupHide"
                 block
@@ -75,7 +75,7 @@
                 {{ t('walletHome.topUp') }}
               </v-btn>
             </v-flex>
-            <v-flex xs6 px-2>
+            <v-flex xs6 px-3>
               <v-btn
                 block
                 large

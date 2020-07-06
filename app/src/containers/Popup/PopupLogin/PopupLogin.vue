@@ -116,7 +116,7 @@
                 {{ t('dappLogin.termsHandle') }}
               </div>
               <v-divider class="mb-4"></v-divider>
-              <div class="d-flex footer-links">
+              <div class="d-flex justify-center footer-links">
                 <div class="mr-4">
                   <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
                     {{ t('dappLogin.termsConditions') }}

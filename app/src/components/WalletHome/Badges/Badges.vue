@@ -6,7 +6,7 @@
     <v-flex xs12 mt-6>
       <v-layout wrap mx-n4>
         <v-flex v-for="badge in badges" :key="badge.title" class="xs12 sm6 md3 px-4 mb-4">
-          <v-card class="badge elevation-1 py-3" :class="{ viewMd: $vuetify.breakpoint.mdOnly }">
+          <v-card class="badge elevation-1 py-3" :class="{ viewMd: $vuetify.breakpoint.mdOnly && !allCompleted }">
             <div class="d-flex px-4 align-top">
               <div :style="{ lineHeight: '0px' }">
                 <img :src="require(`../../../assets/images/${badge.image}${badge.completed ? '-active' : ''}.svg`)" />
@@ -71,6 +71,9 @@ export default {
           external: true,
         },
       ]
+    },
+    allCompleted() {
+      return this.badges.filter((badge) => !badge.completed).length === 0
     },
   },
 }
