@@ -97,9 +97,6 @@
                         {{ t('dappLogin.termsLearnMore') }}
                       </a>
                     </div>
-                    <div class="text_3--text mb-6">
-                      {{ t('dappLogin.termsHandle') }}
-                    </div>
                     <v-divider class="mb-4"></v-divider>
                     <div class="d-flex justify-center footer-links">
                       <div class="mx-2">
@@ -235,9 +232,6 @@
                     >
                       {{ t('dappLogin.termsLearnMore') }}
                     </a>
-                  </div>
-                  <div class="text_3--text mb-6">
-                    {{ t('dappLogin.termsHandle') }}
                   </div>
                   <v-divider class="mb-4"></v-divider>
                   <div class="d-flex footer-links">
