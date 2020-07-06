@@ -121,7 +121,7 @@
                 {{ t('dappLogin.termsHandle') }}
               </div>
               <v-divider class="mb-4"></v-divider>
-              <div class="d-flex footer-links">
+              <div class="d-flex justify-center footer-links">
                 <div class="mr-4">
                   <a :href="tncLink" target="_blank" rel="noreferrer noopener">
                     {{ t('dappLogin.termsConditions') }}
