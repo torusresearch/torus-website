@@ -472,7 +472,7 @@ export default {
           verifier.name = this.t(verifier.name)
           return verifier
         })
-      } catch (error) {
+      } catch {
         return []
       }
     },
@@ -1041,7 +1041,7 @@ export default {
           this.toAddress = ''
           this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
         }
-      } catch (error) {
+      } catch {
         if (isAddress(result)) {
           this.selectedVerifier = ETH
           this.toAddress = result

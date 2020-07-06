@@ -235,6 +235,7 @@ export function hexToText(hex) {
     const buff = Buffer.from(stripped, 'hex')
     return buff.toString('utf8')
   } catch (error) {
+    log.error(error)
     return hex
   }
 }
@@ -516,7 +517,7 @@ export const getIFrameOriginObject = () => {
   try {
     const url = new URL(getIFrameOrigin())
     return { href: url.href, hostname: url.hostname }
-  } catch (error) {
+  } catch {
     log.error('invalid url')
     return { href: window.location.href, hostname: window.location.hostname }
   }
