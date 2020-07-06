@@ -36,7 +36,7 @@ const accountImporter = {
       try {
         wallet = fromEtherWallet(input, password)
       } catch (error) {
-        log.info('Attempt to import as EtherWallet format failed, trying V3...')
+        log.info('Attempt to import as EtherWallet format failed, trying V3...', error)
       }
 
       if (!wallet) {
