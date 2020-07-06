@@ -30,8 +30,8 @@ describe('Preferences Controller', () => {
     assert.deepStrictEqual(preferencesController.headers, {
       headers: {
         Authorization: 'Bearer hello',
-        'Content-Type': 'application/json; charset=utf-8'
-      }
+        'Content-Type': 'application/json; charset=utf-8',
+      },
     })
   })
 
@@ -81,16 +81,12 @@ describe('Preferences Controller', () => {
       sandbox.restore()
     })
     it('user sync error', async () => {
-      nock('https://api.tor.us')
-        .get(/.*/)
-        .replyWithError(new TypeError('Invalid request'))
-        .log(noop)
-      nock('https://common-api.tor.us')
-        .get('/transaction')
-        .reply(200, {
-          data: {}
-        })
-        .log(noop)
+      nock('https://api.tor.us').get(/.*/).replyWithError(new TypeError('Invalid request'))
+
+      nock('https://common-api.tor.us').get('/transaction').reply(200, {
+        data: {},
+      })
+
       const successCallback = sinon.fake()
       const errorCallback = sinon.fake()
       await preferencesController.sync(successCallback, errorCallback)
@@ -104,22 +100,15 @@ describe('Preferences Controller', () => {
       nock('https://api.tor.us')
         .get(/transaction/)
         .reply(400)
-        .log(noop)
 
       nock('https://api.tor.us')
         .get(/etherscan/)
         .reply(400)
-        .log(noop)
 
-      nock('https://api.tor.us')
-        .get(/user/)
-        .reply(200, { data: {} })
-        .log(noop)
+      nock('https://api.tor.us').get(/user/).reply(200, { data: {} })
 
-      nock('https://common-api.tor.us')
-        .get(/.*/)
-        .reply(400)
-        .log(noop)
+      nock('https://common-api.tor.us').get(/.*/).reply(400)
+
       const successCallback = sinon.fake()
       const errorCallback = sinon.fake()
       await preferencesController.sync(successCallback, errorCallback)
@@ -136,35 +125,28 @@ describe('Preferences Controller', () => {
         locale: 'en',
         verifier: 'google',
         verifier_id: 'hc@njv.com',
-        permissions: {}
+        permissions: {},
       }
-      nock('https://api.tor.us')
-        .get(/user/)
-        .reply(200, {
-          data: userData
-        })
-        .log(noop)
+      nock('https://api.tor.us').get(/user/).reply(200, {
+        data: userData,
+      })
 
       nock('https://api.tor.us')
         .get(/transaction/)
         .reply(200, {
-          data: []
+          data: [],
         })
-        .log(noop)
 
       nock('https://api.tor.us')
         .get(/etherscan/)
         .reply(200, {
-          data: []
+          data: [],
         })
-        .log(noop)
 
-      nock('https://common-api.tor.us')
-        .get('/transaction')
-        .reply(200, {
-          data: []
-        })
-        .log(noop)
+      nock('https://common-api.tor.us').get('/transaction').reply(200, {
+        data: [],
+      })
+
       await preferencesController.sync()
       assert.deepStrictEqual(preferencesController.pastTransactionsStore.getState(), userData.transactions)
       assert.deepStrictEqual(preferencesController.state.selectedCurrency, userData.default_currency)
@@ -183,15 +165,15 @@ describe('Preferences Controller', () => {
       nock('https://api.tor.us')
         .patch('/user/theme')
         .reply(201, { data: { theme: '' } })
-        .log(noop)
+
       nock('https://api.tor.us')
         .patch('/user/locale')
         .reply(201, { data: { locale: '' } })
-        .log(noop)
+
       nock('https://api.tor.us')
         .patch('/user')
         .reply(201, { data: { default_currency: '' } })
-        .log(noop)
+
       nock('https://api.tor.us')
         .get('/billboard')
         .reply(200, {
@@ -202,12 +184,12 @@ describe('Preferences Controller', () => {
               description: '특집 앱 확인-DeFiZap',
               callToActionLink: 'https://google.com',
               callToActionText: 'DeFiZap 방문',
-              locale: 'ko'
-            }
+              locale: 'ko',
+            },
           ],
-          success: true
+          success: true,
         })
-        .log(noop)
+
       nock('https://api.tor.us')
         .post('/contact')
         .reply(201, {
@@ -215,20 +197,20 @@ describe('Preferences Controller', () => {
             id: 1,
             verifier: 'google',
             contact: 'hello@tor.us',
-            name: 'torus'
+            name: 'torus',
           },
-          success: true
+          success: true,
         })
-        .log(noop)
+
       nock('https://api.tor.us')
         .delete('/contact/1')
         .reply(200, {
           data: {
-            id: 1
+            id: 1,
           },
-          success: true
+          success: true,
         })
-        .log(noop)
+
       handleSuccessStub = sandbox.stub(preferencesController, 'handleSuccess')
     })
     afterEach(() => {
@@ -307,7 +289,7 @@ describe('Preferences Controller', () => {
   })
 
   it('should not poll user without jwt', () =>
-    new Promise(resolve => {
+    new Promise((resolve) => {
       const clock = sandbox.useFakeTimers()
       const prefsController = new PreferencesController()
       const mockSync = sandbox.stub(prefsController, 'sync')
@@ -320,7 +302,7 @@ describe('Preferences Controller', () => {
     }))
 
   it('should poll user with jwt', () =>
-    new Promise(resolve => {
+    new Promise((resolve) => {
       const clock = sandbox.useFakeTimers()
       const prefsController = new PreferencesController({ interval: 100 })
       const mockSync = sandbox.stub(prefsController, 'sync')

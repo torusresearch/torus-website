@@ -139,7 +139,7 @@ export default {
           symbol: object.ticker,
         })
       })
-    } catch (error) {
+    } catch {
       log.error('etherscan balance fetch failed')
     }
   },
@@ -180,7 +180,7 @@ export default {
           } else {
             handleProviderChangeDeny('user denied provider change request')
           }
-        } catch (error) {
+        } catch {
           handleProviderChangeDeny('Internal error occured')
         } finally {
           bc.close()

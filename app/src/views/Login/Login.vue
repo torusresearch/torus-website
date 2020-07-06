@@ -88,7 +88,12 @@
                       <span>{{ t('dappLogin.termsAuth01') }}</span>
                       <br />
                       <span>{{ t('dappLogin.termsAuth02') }}</span>
-                      <a class="privacy-learn-more text_3--text" href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in" target="_blank">
+                      <a
+                        class="privacy-learn-more text_3--text"
+                        href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
                         {{ t('dappLogin.termsLearnMore') }}
                       </a>
                     </div>
@@ -98,17 +103,17 @@
                     <v-divider class="mb-4"></v-divider>
                     <div class="d-flex justify-center footer-links">
                       <div class="mx-2">
-                        <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                        <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
                           {{ t('dappLogin.termsConditions') }}
                         </a>
                       </div>
                       <div class="mx-2">
-                        <a href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                        <a href="https://docs.tor.us/legal/privacy-policy" target="_blank" rel="noreferrer noopener">
                           {{ t('dappLogin.privacyPolicy') }}
                         </a>
                       </div>
                       <div class="mx-2">
-                        <a href="https://t.me/TorusLabs" target="_blank">
+                        <a href="https://t.me/TorusLabs" target="_blank" rel="noreferrer noopener">
                           {{ t('dappLogin.contactUs') }}
                         </a>
                       </div>
@@ -222,7 +227,12 @@
                     <span>{{ t('dappLogin.termsAuth01') }}</span>
                     <br />
                     <span>{{ t('dappLogin.termsAuth02') }}</span>
-                    <a class="privacy-learn-more text_3--text" href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in" target="_blank">
+                    <a
+                      class="privacy-learn-more text_3--text"
+                      href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
                       {{ t('dappLogin.termsLearnMore') }}
                     </a>
                   </div>
@@ -232,17 +242,17 @@
                   <v-divider class="mb-4"></v-divider>
                   <div class="d-flex footer-links">
                     <div class="mr-4">
-                      <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                      <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
                         {{ t('dappLogin.termsConditions') }}
                       </a>
                     </div>
                     <div class="mr-4">
-                      <a href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                      <a href="https://docs.tor.us/legal/privacy-policy" target="_blank" rel="noreferrer noopener">
                         {{ t('dappLogin.privacyPolicy') }}
                       </a>
                     </div>
                     <div class="mr-4">
-                      <a href="https://t.me/TorusLabs" target="_blank">
+                      <a href="https://t.me/TorusLabs" target="_blank" rel="noreferrer noopener">
                         {{ t('dappLogin.contactUs') }}
                       </a>
                     </div>
