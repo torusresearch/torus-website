@@ -66,6 +66,7 @@ import {
   WYRE,
   XANPOOL,
 } from './enums'
+import { get } from './httpHelpers'
 
 const networkToNameMap = {
   [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
@@ -587,16 +588,15 @@ function caseSensitiveField(field, isCaseSensitive) {
 }
 
 export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifierIdCaseSensitive = true) => {
-  const { name, nickname, sub } = userInfo
+  const { name, sub } = userInfo
   if (verifierIdField) return caseSensitiveField(userInfo[verifierIdField], isVerifierIdCaseSensitive)
   switch (typeOfLogin) {
-    case GITHUB:
-    case TWITTER:
-      return caseSensitiveField(nickname, isVerifierIdCaseSensitive)
-    case WEIBO:
     case PASSWORDLESS:
     case EMAIL_PASSWORD:
       return caseSensitiveField(name, isVerifierIdCaseSensitive)
+    case GITHUB:
+    case TWITTER:
+    case WEIBO:
     case APPLE:
     case LINKEDIN:
     case LINE:
@@ -605,4 +605,12 @@ export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifier
     default:
       throw new Error('Invalid login type')
   }
+}
+
+export const getIdFromNick = async (nick, typeOfLogin) => {
+  if (typeOfLogin === GITHUB) {
+    const userData = await get(`https://api.github.com/users/${nick}`)
+    return `${typeOfLogin.toLowerCase()}|${userData.id.toString()}`
+  }
+  return nick
 }
