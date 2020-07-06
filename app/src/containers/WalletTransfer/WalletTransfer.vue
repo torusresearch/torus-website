@@ -241,13 +241,6 @@
                       {{ selectedCurrency }}
                     </v-btn>
                   </template>
-                  <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
-                    <div class="v-messages">
-                      <div class="v-messages__wrapper">
-                        <div class="v-messages__message d-flex error--text px-3">{{ qrErrorMsg }}</div>
-                      </div>
-                    </div>
-                  </div>
                 </v-text-field>
               </v-flex>
               <TransactionSpeedSelect
