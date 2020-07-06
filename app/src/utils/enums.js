@@ -199,10 +199,10 @@ export const ALLOWED_VERIFIERS = [
     name: ENS_LABEL,
     value: ENS,
   },
-  // {
-  //   name: TWITTER_LABEL,
-  //   value: TWITTER,
-  // },
+  {
+    name: TWITTER_LABEL,
+    value: TWITTER,
+  },
   {
     name: GITHUB_LABEL,
     value: GITHUB,

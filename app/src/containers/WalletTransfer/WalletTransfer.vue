@@ -116,7 +116,7 @@
                       :items="contactList"
                       :placeholder="verifierPlaceholder"
                       required
-                      :rules="[contactRule, rules.required]"
+                      :rules="[contactRule, rules.contactRequired]"
                       outlined
                       item-text="name"
                       item-value="value"
@@ -158,7 +158,7 @@
                       :items="verifierOptions"
                       item-text="name"
                       item-value="value"
-                      :rules="[rules.required]"
+                      :rules="[rules.contactRequired]"
                       aria-label="Recipient Selector"
                       @blur="verifierChangedManual"
                     ></v-select>
@@ -277,6 +277,7 @@
                 </v-btn>
                 <v-dialog v-model="confirmDialog" max-width="375" persistent>
                   <TransferConfirm
+                    :converted-verifier-id="convertedVerifierId"
                     :to-address="toEthAddress"
                     :to-verifier-id="toAddress"
                     :to-verifier="selectedVerifier"
@@ -373,14 +374,15 @@ import {
   CONTRACT_TYPE_ETH,
   ENS,
   ETH,
+  GITHUB,
   GOOGLE,
   MESSAGE_MODAL_TYPE_FAIL,
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
   TWITTER,
 } from '../../utils/enums'
-import { post } from '../../utils/httpHelpers'
-import { getEtherScanHashLink, getIdFromNick, significantDigits, validateVerifierId } from '../../utils/utils'
+import { get, post } from '../../utils/httpHelpers'
+import { getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
 
 export default {
   name: 'WalletTransfer',
@@ -425,6 +427,7 @@ export default {
       selectedVerifier: '',
       rules: {
         required: (value) => !!value || this.t('walletTransfer.required'),
+        contactRequired: (value) => !!value || 'walletTransfer.required',
       },
       nodeDetails: {},
       messageModalShow: false,
@@ -438,6 +441,7 @@ export default {
       CONTRACT_TYPE_ERC721,
       logosUrl: config.logosUrl,
       sendAmountError: '',
+      convertedVerifierId: '',
     }
   },
   computed: {
@@ -578,6 +582,17 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
+    async getIdFromNick(nick, typeOfLogin) {
+      if (typeOfLogin === GITHUB) {
+        const userData = await get(`https://api.github.com/users/${nick}`)
+        return `${typeOfLogin.toLowerCase()}|${userData.id.toString()}`
+      }
+      if (typeOfLogin === TWITTER) {
+        const userId = await get(`${config.api}/twitter?screen_name=${nick}`, { headers: { Authorization: `Bearer ${this.jwtToken}` } })
+        return `${typeOfLogin.toLowerCase()}|${userId.data.toString()}`
+      }
+      return nick
+    },
     onChangeDisplayAmount(value) {
       this.sendAmountError = ''
       if ((BigNumber.isBigNumber(value) && !this.displayAmount.eq(value)) || !BigNumber.isBigNumber(value)) {
@@ -796,7 +811,8 @@ export default {
           try {
             const { loginConfig } = this.$store.state.embedState
             const foundLoginConfig = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
-            const validVeriferId = await getIdFromNick(this.toAddress, this.selectedVerifier)
+            const validVeriferId = await this.getIdFromNick(this.toAddress, this.selectedVerifier)
+            this.convertedVerifierId = validVeriferId
             if (foundLoginConfig) {
               toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
                 verifier: foundLoginConfig,

@@ -18,6 +18,17 @@
           background-color: var(--v-torusBlack2-base);
         }
       }
+      .link-box {
+        position: relative;
+        width: 48px;
+        height: 48px;
+        line-height: 0;
+        border-radius: 50%;
+        box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+        &.isDark {
+          background-color: var(--v-torusBlack2-base);
+        }
+      }
       img, .v-icon, .dapp-icon {
         position: absolute;
         top: 50%;
