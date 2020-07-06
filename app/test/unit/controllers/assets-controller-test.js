@@ -47,7 +47,6 @@ describe('AssetsController', () => {
           total_supply: 0,
         },
       })
-      .log(noop)
 
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/fou')

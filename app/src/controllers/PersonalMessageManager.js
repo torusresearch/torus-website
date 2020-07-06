@@ -289,7 +289,7 @@ export default class PersonalMessageManager extends EventEmitter {
         return addHexPrefix(stripped)
       }
     } catch (error) {
-      log.debug('Message was not hex encoded, interpreting as utf8.')
+      log.debug('Message was not hex encoded, interpreting as utf8.', error)
     }
 
     return bufferToHex(Buffer.from(data, 'utf8'))

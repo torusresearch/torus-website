@@ -104,31 +104,36 @@
               </div>
             </v-flex>
             <v-flex xs12 mb-6 class="footer-notes">
-              <div class="text_3--text mb-4">
+              <div v-if="!canHideDisclaimer1" class="text_3--text mb-4">
                 <span>{{ t('dappLogin.termsAuth01') }}</span>
                 <br />
                 <span>{{ t('dappLogin.termsAuth02') }}</span>
-                <a class="privacy-learn-more text_3--text" href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in" target="_blank">
+                <a
+                  class="privacy-learn-more text_3--text"
+                  href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
                   {{ t('dappLogin.termsLearnMore') }}
                 </a>
               </div>
-              <div class="text_3--text mb-6">
+              <div v-if="!canHideDisclaimer2" class="text_3--text mb-6">
                 {{ t('dappLogin.termsHandle') }}
               </div>
               <v-divider class="mb-4"></v-divider>
               <div class="d-flex justify-center footer-links">
                 <div class="mr-4">
-                  <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                  <a :href="tncLink" target="_blank" rel="noreferrer noopener">
                     {{ t('dappLogin.termsConditions') }}
                   </a>
                 </div>
                 <div class="mr-4">
-                  <a href="https://docs.tor.us/legal/privacy-policy" target="_blank">
+                  <a :href="privacyPolicy" target="_blank" rel="noreferrer noopener">
                     {{ t('dappLogin.privacyPolicy') }}
                   </a>
                 </div>
                 <div class="mr-4">
-                  <a href="https://t.me/TorusLabs" target="_blank">
+                  <a :href="contactLink" target="_blank" rel="noreferrer noopener">
                     {{ t('dappLogin.contactUs') }}
                   </a>
                 </div>
@@ -152,10 +157,10 @@
 
 <script>
 import log from 'loglevel'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import PasswordlessLogin from '../../../components/helpers/PasswordLessLogin'
-import { GOOGLE, PASSWORDLESS } from '../../../utils/enums'
+import { GITHUB, GOOGLE, PASSWORDLESS, TWITTER } from '../../../utils/enums'
 
 export default {
   name: 'PopupLogin',
@@ -178,6 +183,7 @@ export default {
   },
   computed: {
     ...mapGetters(['loginButtonsArray', 'getLogo']),
+    ...mapState(['whiteLabel']),
     loginButtons() {
       return this.loginButtonsArray.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
     },
@@ -189,11 +195,37 @@ export default {
     },
     tncLink() {
       let finalLink = 'https://docs.tor.us/legal/terms-and-conditions'
-      const { isActive, tncLink } = this.$store.state.whiteLabel
+      const { isActive, tncLink } = this.whiteLabel
       if (isActive && tncLink) {
         finalLink = tncLink[this.localeSelected] || tncLink[Object.keys(tncLink)[0]]
       }
       return finalLink
+    },
+    privacyPolicy() {
+      let finalLink = 'https://docs.tor.us/legal/privacy-policy'
+      const { isActive, privacyPolicy } = this.whiteLabel
+      if (isActive && privacyPolicy) {
+        finalLink = privacyPolicy[this.localeSelected] || privacyPolicy[Object.keys(privacyPolicy)[0]]
+      }
+      return finalLink
+    },
+    contactLink() {
+      let finalLink = 'https://t.me/TorusLabs'
+      const { isActive, contactLink } = this.whiteLabel
+      if (isActive && contactLink) {
+        finalLink = contactLink[this.localeSelected] || contactLink[Object.keys(contactLink)[0]]
+      }
+      return finalLink
+    },
+    canHideDisclaimer1() {
+      const { isActive, disclaimerHide } = this.whiteLabel
+      const isUsingSpecialLogin = this.loginButtonsArray.some((x) => x.jwtParameters && x.showOnModal)
+      return disclaimerHide && !isUsingSpecialLogin && isActive
+    },
+    canHideDisclaimer2() {
+      const { isActive, disclaimerHide } = this.whiteLabel
+      const isUsingSpecialLogin = this.loginButtonsArray.some((x) => (x.typeOfLogin === GITHUB || x.typeOfLogin === TWITTER) && x.showOnModal)
+      return disclaimerHide && !isUsingSpecialLogin && isActive
     },
   },
   mounted() {

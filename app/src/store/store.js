@@ -181,7 +181,7 @@ function getLatestMessageParameters() {
     let finalMessage
     try {
       finalMessage = hexToUtf8(message.msgParams.data)
-    } catch (error) {
+    } catch {
       finalMessage = message.msgParams.data
     }
     message.msgParams.message = finalMessage

@@ -160,7 +160,7 @@ class CurrencyController {
       try {
         rawResponse = await response.text()
         parsedResponse = JSON.parse(rawResponse)
-      } catch (error) {
+      } catch {
         log.error(new Error(`CurrencyController - Failed to parse response "${rawResponse}"`))
         return
       }

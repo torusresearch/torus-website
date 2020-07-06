@@ -409,6 +409,7 @@ class PreferencesController {
       this.handleSuccess('navBar.snackSuccessTheme')
       this.store.updateState({ theme: payload })
     } catch (error) {
+      log.error(error)
       this.handleError('navBar.snackFailTheme')
     }
   }
@@ -442,6 +443,7 @@ class PreferencesController {
       this.store.updateState({ selectedCurrency: payload.selectedCurrency })
       this.handleSuccess('navBar.snackSuccessCurrency')
     } catch (error) {
+      log.error(error)
       this.handleError('navBar.snackFailCurrency')
     }
   }
@@ -481,7 +483,7 @@ class PreferencesController {
       const response = await post(`${config.api}/contact`, payload, this.headers)
       this.store.updateState({ contacts: [...this.state.contacts, response.data] })
       this.handleSuccess('navBar.snackSuccessContactAdd')
-    } catch (error) {
+    } catch {
       this.handleError('navBar.snackFailContactAdd')
     }
   }
@@ -492,7 +494,7 @@ class PreferencesController {
       const finalContacts = this.state.contacts.filter((contact) => contact.id !== response.data.id)
       this.store.updateState({ contacts: finalContacts })
       this.handleSuccess('navBar.snackSuccessContactDelete')
-    } catch (error) {
+    } catch {
       this.handleError('navBar.snackFailContactDelete')
     }
   }
