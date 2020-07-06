@@ -66,7 +66,6 @@ import {
   WYRE,
   XANPOOL,
 } from './enums'
-import { get } from './httpHelpers'
 
 const networkToNameMap = {
   [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
@@ -605,12 +604,4 @@ export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifier
     default:
       throw new Error('Invalid login type')
   }
-}
-
-export const getIdFromNick = async (nick, typeOfLogin) => {
-  if (typeOfLogin === GITHUB) {
-    const userData = await get(`https://api.github.com/users/${nick}`)
-    return `${typeOfLogin.toLowerCase()}|${userData.id.toString()}`
-  }
-  return nick
 }
