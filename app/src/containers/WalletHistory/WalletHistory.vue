@@ -191,7 +191,7 @@ export default {
     getActionText(activity) {
       // Handling tx from common-api schema and /tx schema separately.
       if (activity.transaction_category === TOKEN_METHOD_APPROVE) {
-        return `Approved ${activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()}`
+        return `${this.t('walletActivity.approved')} ${activity.type_name !== 'n/a' ? activity.type_name.toUpperCase() : activity.type.toUpperCase()}`
       }
       if (activity.type_name === 'n/a' || activity.type === 'n/a') {
         return `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
