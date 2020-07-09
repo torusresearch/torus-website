@@ -4,7 +4,7 @@
       <v-icon>$vuetify.icons.close</v-icon>
     </v-btn>
     <v-layout wrap>
-      <v-flex class="card-shadow text-center" py-8 mb-4 xs12>
+      <v-flex class="elevation-1 text-center" py-8 mb-4 xs12>
         <img :src="require(`../../../assets/images/status-${modalType}.svg`)" width="64" :alt="modalType" />
       </v-flex>
 
@@ -14,11 +14,10 @@
         <slot name="link"></slot>
         <v-btn
           v-if="!noClose"
-          :color="modalType === MESSAGE_MODAL_TYPE_SUCCESS ? 'success' : modalType === MESSAGE_MODAL_TYPE_FAIL ? 'error' : ''"
-          :outlined="modalType !== MESSAGE_MODAL_TYPE_PENDING"
-          :depressed="modalType === MESSAGE_MODAL_TYPE_PENDING"
-          class="mb-10 px-12"
-          :class="modalType === MESSAGE_MODAL_TYPE_PENDING ? 'primary--text' : ''"
+          outlined
+          block
+          class="torus-btn1 mb-10 text_2--text"
+          :style="{ height: '50px' }"
           @click="goTo ? redirectTo() : onCancel()"
         >
           {{ goTo ? 'Continue' : 'Return' }}

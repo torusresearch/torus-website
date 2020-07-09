@@ -349,7 +349,7 @@
             <div class="mb-4 text_2--text body-2">{{ t('walletTransfer.transferShare') }}</div>
             <v-btn text class="share-btn" :href="tweetData" target="_blank">
               <v-icon size="20" class="mr-1">$vuetify.icons.twitter</v-icon>
-              <span class="body-2 text_2--text font-weight-bold">Tweet</span>
+              <span class="body-2 font-weight-bold">Tweet</span>
             </v-btn>
           </div>
         </template>

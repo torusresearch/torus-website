@@ -27,7 +27,7 @@
 
               <v-tooltip v-else bottom>
                 <template v-slot:activator="{ on }">
-                  <v-badge color="#D8D8D8" offset-x="10" offset-y="20" overlap :value="toVerifier === TWITTER && !checkedTwitter">
+                  <v-badge color="torusBrand1" offset-x="10" offset-y="20" overlap :value="toVerifier === TWITTER && !checkedTwitter">
                     <template v-slot:badge>
                       <span class="font-weight-bold twitter-badge" v-on="on">?</span>
                     </template>

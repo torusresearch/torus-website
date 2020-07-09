@@ -64,12 +64,23 @@
   }
 }
 
-.share-btn {
+.v-btn.share-btn {
   background: #F5F6FF;
   border: 1px solid #F1F2F6;
   box-sizing: border-box;
   border-radius: 6px;
+  height: 40px;
   .v-icon {
     color: #55ACEE;
+  }
+  span {
+    color: var(--v-text_2-base);
+  }
+  &.theme--dark {
+    background: #242529;
+    border: 1px solid #343539;
+    span {
+      color: #55ACEE;
+    }
   }
 }
