@@ -89,6 +89,7 @@ import {
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   MAINNET,
+  TOKEN_METHOD_APPROVE,
 } from '../../utils/enums'
 import { formatDate } from '../../utils/utils'
 
@@ -189,6 +190,9 @@ export default {
     },
     getActionText(activity) {
       // Handling tx from common-api schema and /tx schema separately.
+      if (activity.transaction_category === TOKEN_METHOD_APPROVE) {
+        return `Approved ${activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()}`
+      }
       if (activity.type_name === 'n/a' || activity.type === 'n/a') {
         return `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
           activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
@@ -202,6 +206,9 @@ export default {
       return `${`${this.t(activity.action)} ${activity.from}`} `
     },
     getIcon(activity) {
+      if (activity.transaction_category === TOKEN_METHOD_APPROVE) {
+        return '$vuetify.icons.coins_approve'
+      }
       if (activity.action === ACTIVITY_ACTION_TOPUP) {
         return `provider-${activity.from.toLowerCase()}.svg`
       }

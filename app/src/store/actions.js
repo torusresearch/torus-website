@@ -632,6 +632,7 @@ export default {
           status,
           network: state.networkType.host,
           transaction_hash: hash,
+          transaction_category: transactionCategory,
         }
         prefsController.patchNewTx(txObject)
       }
