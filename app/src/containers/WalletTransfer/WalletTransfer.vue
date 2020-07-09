@@ -346,7 +346,7 @@
       >
         <template v-if="selectedVerifier === TWITTER && messageModalType === MESSAGE_MODAL_TYPE_SUCCESS" v-slot:link>
           <div class="mb-4">
-            <div class="mb-4 text_2--text body-2">Share this on your favourite social network</div>
+            <div class="mb-4 text_2--text body-2">{{ t('walletTransfer.transferShare') }}</div>
             <v-btn text class="share-btn" :href="tweetData" target="_blank">
               <v-icon size="20" class="mr-1">$vuetify.icons.twitter</v-icon>
               <span class="body-2 text_2--text font-weight-bold">Tweet</span>
@@ -558,7 +558,10 @@ export default {
       const amount = `${this.displayAmount} ${
         !this.toggle_exclusive ? (this.contractType === CONTRACT_TYPE_ERC721 ? '' : this.selectedItem.symbol) : this.selectedCurrency
       }`
-      share.searchParams.append('text', `Hey ${this.toAddress}! I sent you ${amount} via @Toruslabs. Access it at https://app.tor.us.`)
+      const message = this.t('walletTransfer.transferTweet')
+        .replace(/{address}/gi, this.toAddress)
+        .replace(/{amount}/gi, amount)
+      share.searchParams.append('text', message)
       return share.href
     },
   },

@@ -39,7 +39,7 @@
                   </v-badge>
                 </template>
                 <span>
-                  <div class="text_2--text twitter-note">Please verify this is the right account</div>
+                  <div class="text_2--text twitter-note">{{ t('walletTransfer.twitterVerifyNote') }}</div>
                 </span>
               </v-tooltip>
             </div>
