@@ -14,6 +14,7 @@ import ChevronLeftIcon from './ChevronLeftIcon.vue'
 import ChevronRightIcon from './ChevronRightIcon.vue'
 import CloseCircleIcon from './CloseCircleIcon.vue'
 import CloseIcon from './CloseIcon.vue'
+import CoinsApproveIcon from './CoinsApproveIcon.vue'
 import CoinsReceiveIcon from './CoinsReceiveIcon.vue'
 import CoinsSendIcon from './CoinsSendIcon.vue'
 import CoinsTopupIcon from './CoinsTopupIcon.vue'
@@ -259,5 +260,8 @@ export default {
   },
   menu: {
     component: MenuIcon,
+  },
+  coins_approve: {
+    component: CoinsApproveIcon,
   },
 }
