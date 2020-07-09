@@ -574,6 +574,7 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     type_image_link: x.type_image_link,
     transaction_hash: x.transaction_hash,
     isEtherscan: x.isEtherscan,
+    transaction_category: x.transaction_category,
   }
   return finalObject
 }
