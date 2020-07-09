@@ -343,7 +343,17 @@
         :modal-type="messageModalType"
         :title="messageModalTitle"
         @onClose="messageModalShow = false"
-      />
+      >
+        <template v-if="selectedVerifier === TWITTER && messageModalType === MESSAGE_MODAL_TYPE_SUCCESS" v-slot:link>
+          <div class="mb-4">
+            <div class="mb-4 text_2--text body-2">Share this on your favourite social network</div>
+            <v-btn text class="share-btn" :href="tweetData" target="_blank">
+              <v-icon size="20" class="mr-1">$vuetify.icons.twitter</v-icon>
+              <span class="body-2 text_2--text font-weight-bold">Tweet</span>
+            </v-btn>
+          </div>
+        </template>
+      </MessageModal>
     </v-dialog>
   </v-container>
 </template>
@@ -442,6 +452,10 @@ export default {
       logosUrl: config.logosUrl,
       sendAmountError: '',
       convertedVerifierId: '',
+      existingTwitterAccount: false,
+      TWITTER,
+      etherscanLink: '',
+      MESSAGE_MODAL_TYPE_SUCCESS,
     }
   },
   computed: {
@@ -538,6 +552,14 @@ export default {
       const targetContact = this.contactSelected
       const addressFound = this.contactList.find((contact) => contact.value.toLowerCase() === targetContact.toLowerCase())
       return addressFound === undefined
+    },
+    tweetData() {
+      const share = new URL('https://twitter.com/intent/tweet')
+      const amount = `${this.displayAmount} ${
+        !this.toggle_exclusive ? (this.contractType === CONTRACT_TYPE_ERC721 ? '' : this.selectedItem.symbol) : this.selectedCurrency
+      }`
+      share.searchParams.append('text', `Hey ${this.toAddress}! I sent you ${amount} via @Toruslabs. Access it at https://app.tor.us.`)
+      return share.href
     },
   },
   watch: {
@@ -909,6 +931,7 @@ export default {
             } else {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
+              this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
 
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
@@ -941,6 +964,7 @@ export default {
             } else {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
+              this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
 
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
@@ -969,6 +993,7 @@ export default {
             } else {
               // Send email to the user
               this.sendEmail(this.assetSelected.name, transactionHash)
+              this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
               this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')

@@ -10,14 +10,10 @@
 
       <v-flex xs12 mx-10 class="text-center">
         <div class="mb-4 font-weight-bold text_2--text headline">{{ title }}</div>
-        <div v-if="detailText" class="mb-6 text_2--text caption">{{ detailText }}</div>
+        <div v-if="detailText" class="mb-6 text_2--text body-2">{{ detailText }}</div>
         <slot name="link"></slot>
-        <template v-if="isLoading">
-          <div class="body-2 mb-6 font-weight-medium primary--text">Loading...</div>
-          <v-btn text class="body-2 skip-btn mb-10" @click="onCancel">Skip</v-btn>
-        </template>
         <v-btn
-          v-else-if="!noClose"
+          v-if="!noClose"
           :color="modalType === MESSAGE_MODAL_TYPE_SUCCESS ? 'success' : modalType === MESSAGE_MODAL_TYPE_FAIL ? 'error' : ''"
           :outlined="modalType !== MESSAGE_MODAL_TYPE_PENDING"
           :depressed="modalType === MESSAGE_MODAL_TYPE_PENDING"
@@ -49,10 +45,6 @@ export default {
     detailText: {
       type: String,
       default: '',
-    },
-    isLoading: {
-      type: Boolean,
-      default: false,
     },
     noClose: {
       type: Boolean,
