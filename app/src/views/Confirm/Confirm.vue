@@ -77,7 +77,7 @@
         <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
             <template v-slot:activator="{ on }">
-              <div id="more-details-link" class="subtitle-2 float-right dialog-launcher primary--text" v-on="on">
+              <div id="more-details-link" class="text-subtitle-2 float-right dialog-launcher primary--text" v-on="on">
                 {{ t('dappTransfer.moreDetails') }}
               </div>
             </template>

@@ -126,7 +126,7 @@
     </v-layout>
     <v-layout v-if="isAdvanceOption" align-center>
       <v-flex xs8 mb-1>
-        <div class="subtitle-2 font-weight-bold">
+        <div class="text-subtitle-2 font-weight-bold">
           {{ getEthAmountDisplay(gas, activeGasPrice) }}
           <span class="caption text_2--text">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
         </div>

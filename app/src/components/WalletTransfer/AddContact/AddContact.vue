@@ -14,7 +14,7 @@
               <v-chip small class="caption" light color="#CAF1FE">{{ verifierLabels[verifier] }}</v-chip>
             </v-flex>
             <v-flex xs12 mt-6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
-              <span class="subtitle-2">{{ t('walletTransfer.contactName') }}</span>
+              <span class="text-subtitle-2">{{ t('walletTransfer.contactName') }}</span>
               <v-text-field v-model="newContactName" :placeholder="t('walletTransfer.enterName')" :rules="[rules.required]" outlined></v-text-field>
             </v-flex>
           </v-layout>
