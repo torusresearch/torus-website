@@ -254,12 +254,12 @@
                 @onSelectSpeed="onSelectSpeed"
               />
               <v-flex v-if="contractType === CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
-                <div class="subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
+                <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ getEthAmount(gas, activeGasPrice) }} ETH</div>
                 <div class="caption text_2--text">{{ gasPriceInCurrency }} {{ selectedCurrency }}</div>
               </v-flex>
               <v-flex v-else xs12 mb-6 class="text-right">
-                <div class="subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
+                <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
                 <div class="caption text_2--text">{{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}</div>
               </v-flex>

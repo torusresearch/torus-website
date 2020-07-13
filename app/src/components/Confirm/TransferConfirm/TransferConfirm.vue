@@ -96,10 +96,10 @@
       <v-flex xs12>
         <div class="d-flex align-start">
           <div :style="{ lineHeight: '0px' }">
-            <span class="subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
+            <span class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="subtitle-2 text-right">{{ isNonFungibleToken ? transactionFeeEth : totalCost }}</div>
+            <div class="text-subtitle-2 text-right">{{ isNonFungibleToken ? transactionFeeEth : totalCost }}</div>
             <div class="caption-2 text-right">{{ isNonFungibleToken ? `${transactionFee} ${selectedCurrency}` : totalCostConverted }}</div>
           </div>
         </div>
