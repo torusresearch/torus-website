@@ -434,7 +434,7 @@ export const paymentProviders = {
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
     includeFees: true,
     api: true,
-    receiveHint: 'You don’t need an ID to complete this transaction!',
+    receiveHint: 'walletTopUp.receiveHintRamp',
     enforceMax: true,
   },
   [XANPOOL]: {
