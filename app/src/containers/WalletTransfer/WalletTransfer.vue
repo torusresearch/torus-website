@@ -572,8 +572,8 @@ export default {
   },
   mounted() {
     if (Object.prototype.hasOwnProperty.call(this.$route.query, 'to')) {
-      this.selectedVerifier = ETH
       this.toAddress = this.$route.query.to
+      this.setSelectedVerifierFromToAddress(this.toAddress)
     } else {
       this.toAddress = ''
     }
@@ -607,6 +607,17 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
+    setSelectedVerifierFromToAddress(toAddress) {
+      if (toAddress.startsWith('0x')) {
+        this.selectedVerifier = ETH
+      } else if (toAddress.startsWith('@')) {
+        this.selectedVerifier = TWITTER
+      } else if (/@/.test(toAddress)) {
+        this.selectedVerifier = GOOGLE
+      } else if (/.eth$/.test(toAddress) || /.xyz$/.test(toAddress) || /.crypto$/.test(toAddress) || /.kred$/i.test(toAddress)) {
+        this.selectedVerifier = ENS
+      }
+    },
     async getIdFromNick(nick, typeOfLogin) {
       if (typeOfLogin === GITHUB) {
         const userData = await get(`https://api.github.com/users/${nick}`)
@@ -706,19 +717,8 @@ export default {
         const contactFound = this.contactList.find((item) => item.value === contact)
         if (contactFound) {
           this.selectedVerifier = contactFound.verifier
-        } else if (this.toAddress.startsWith('0x')) {
-          this.selectedVerifier = ETH
-        } else if (this.toAddress.startsWith('@')) {
-          this.selectedVerifier = TWITTER
-        } else if (/@/.test(this.toAddress)) {
-          this.selectedVerifier = GOOGLE
-        } else if (
-          /.eth$/.test(this.toAddress) ||
-          /.xyz$/.test(this.toAddress) ||
-          /.crypto$/.test(this.toAddress) ||
-          /.kred$/i.test(this.toAddress)
-        ) {
-          this.selectedVerifier = ENS
+        } else {
+          this.setSelectedVerifierFromToAddress(this.toAddress)
         }
       }
       this.ensError = ''
