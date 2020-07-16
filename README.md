@@ -11,14 +11,19 @@ Ask one of the developers for these keys.
 To install dependencies and build the website,
 see [README here](app/README.md)
 
-[CHANGE LOG](https://docs.tor.us/torus-wallet/changelog)
+For updates, see [Change Log](https://docs.tor.us/torus-wallet/changelog)
 
 
 To see the current production app, navigate to https://app.tor.us
 
 ## Torus Demo
-- Go to chrome://extensions
-- Ensure developer mode
-- Drag embed.user.js
+**Using chrome extension**
+- Go to *chrome://extensions*
+- Ensure *developer mode*
+- Drag *embed.user.js*
 - Navigate to etheremon.com and sign-in
+
+**Using online vue-embed**
+- Go to https://vue-embed.tor.us
+- Set *Build Environment* to *Development*
 
