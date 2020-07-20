@@ -585,7 +585,7 @@ export default {
             type = 'erc721'
             typeName = name
             typeImageLink = logo
-            totalAmount = fromWei(toBN(txParams.value))
+            totalAmount = fromWei(toBN(txParams.value || 0))
             finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
           }
         } else if (contractParams.erc20) {
@@ -603,7 +603,7 @@ export default {
           type = 'erc20'
           typeName = name
           typeImageLink = logo
-          totalAmount = fromWei(toBN(amountValue && amountValue.value ? amountValue.value : txParams.value))
+          totalAmount = fromWei(toBN(amountValue && amountValue.value ? amountValue.value : txParams.value || 0))
           finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
         } else {
           tokenRate = 1
@@ -611,7 +611,7 @@ export default {
           type = 'eth'
           typeName = 'eth'
           typeImageLink = 'n/a'
-          totalAmount = fromWei(toBN(txParams.value))
+          totalAmount = fromWei(toBN(txParams.value || 0))
           finalTo = toChecksumAddress(txParams.to)
         }
         // Goes to db
