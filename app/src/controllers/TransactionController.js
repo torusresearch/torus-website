@@ -9,7 +9,7 @@ import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import EventEmitter from 'safe-event-emitter'
-import { isAddress, sha3, toChecksumAddress } from 'web3-utils'
+import { fromWei, isAddress, sha3, toBN, toChecksumAddress } from 'web3-utils'
 
 import erc721Contracts from '../assets/assets-map.json'
 import AbiDecoder from '../utils/abiDecoder'
@@ -17,9 +17,13 @@ import cleanErrorStack from '../utils/cleanErrorStack'
 import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   CONTRACT_INTERACTION_KEY,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
   GOERLI_CODE,
   KOVAN_CODE,
+  MAINNET,
   MAINNET_CODE,
   OLD_ERC721_LIST,
   RINKEBY_CODE,
@@ -35,7 +39,7 @@ import {
 } from '../utils/enums'
 import TxGasUtil from '../utils/TxGasUtil'
 import * as txUtils from '../utils/txUtils'
-import { BnMultiplyByFraction, bnToHex, hexToBn } from '../utils/utils'
+import { BnMultiplyByFraction, bnToHex, formatPastTx, hexToBn } from '../utils/utils'
 import NonceTracker from './NonceTracker'
 import PendingTransactionTracker from './PendingTransactionTracker'
 import TransactionStateManager from './TransactionStateManager'
@@ -94,6 +98,7 @@ class TransactionController extends EventEmitter {
     this._onBootCleanUp()
 
     this.store = this.txStateManager.store
+    this.etherscanTxStore = new ObservableStore([])
     this.nonceTracker = new NonceTracker({
       provider: this.provider,
       blockTracker: this.blockTracker,
@@ -564,6 +569,66 @@ class TransactionController extends EventEmitter {
     this.txStateManager.updateTx(txMeta, 'transactions#setTxHash')
   }
 
+  async addEtherscanTransactions(txs) {
+    const lowerCaseSelectedAddress = this.getSelectedAddress()
+    const finalTxs = await txs.reduce(async (accumulator, x) => {
+      const txAccumulator = await accumulator
+      const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
+      const etherscanTransaction = {
+        type: CONTRACT_TYPE_ETH,
+        symbol: 'ETH',
+        type_image_link: 'n/a',
+        type_name: 'n/a',
+        total_amount: totalAmount,
+        created_at: x.timeStamp * 1000,
+        from: x.from,
+        to: x.to,
+        transaction_hash: x.hash,
+        network: MAINNET,
+        status: x.txreceipt_status && x.txreceipt_status === '0' ? 'failed' : 'success',
+        isEtherscan: true,
+      }
+
+      if (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase()) {
+        if (x.contractAddress) {
+          const transactionType = x.tokenID ? CONTRACT_TYPE_ERC721 : CONTRACT_TYPE_ERC20
+          let contract
+          if (transactionType === CONTRACT_TYPE_ERC20) {
+            let checkSummedTo = x.contractAddress
+            if (isAddress(x.contractAddress)) checkSummedTo = toChecksumAddress(x.contractAddress)
+            contract = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
+          } else {
+            contract = Object.prototype.hasOwnProperty.call(erc721Contracts, x.contractAddress.toLowerCase())
+              ? erc721Contracts[x.contractAddress.toLowerCase()]
+              : {}
+          }
+
+          if (Object.keys(contract).length > 0) {
+            etherscanTransaction.symbol = transactionType === CONTRACT_TYPE_ERC20 ? contract.symbol : x.tokenID
+            etherscanTransaction.type_image_link = contract.logo
+            etherscanTransaction.type_name = contract.name
+          } else {
+            etherscanTransaction.symbol = x.tokenID
+            etherscanTransaction.type_name = x.tokenName
+          }
+          etherscanTransaction.type = transactionType
+        }
+
+        const { transactionCategory } = await this._determineTransactionCategory({
+          data: x.input,
+          to: x.to,
+        })
+        etherscanTransaction.transaction_category = transactionCategory
+
+        txAccumulator.push(formatPastTx(etherscanTransaction, lowerCaseSelectedAddress))
+      }
+
+      return txAccumulator
+    }, [])
+
+    this.etherscanTxStore.putState(finalTxs)
+  }
+
   //
   //           PRIVATE METHODS
   //
@@ -671,7 +736,6 @@ class TransactionController extends EventEmitter {
     if (isAddress(to)) checkSummedTo = toChecksumAddress(to)
     const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
     const decodedERC20 = data && tokenABIDecoder.decodeMethod(data)
-    log.debug('_determineTransactionCategory', decodedERC20, decodedERC721)
 
     let result
     let code
