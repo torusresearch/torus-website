@@ -26,7 +26,7 @@ export const ROPSTEN_CODE = 3
 export const RINKEBY_CODE = 4
 export const KOVAN_CODE = 42
 export const GOERLI_CODE = 5
-export const MATIC_CODE = 4626
+export const MATIC_CODE = 137
 export const MUMBAI_CODE = 80001
 export const LOCALHOST_CODE = 5777
 
@@ -35,7 +35,7 @@ export const ROPSTEN_CHAIN_ID = '0x3'
 export const RINKEBY_CHAIN_ID = '0x4'
 export const KOVAN_CHAIN_ID = '0x2a'
 export const GOERLI_CHAIN_ID = '0x5'
-export const MATIC_CHAIN_ID = '0x1212'
+export const MATIC_CHAIN_ID = '0x89'
 export const MUMBAI_CHAIN_ID = '0x13881'
 
 export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
@@ -45,10 +45,10 @@ export const MAINNET_DISPLAY_NAME = 'Main Ethereum Network'
 export const GOERLI_DISPLAY_NAME = 'Goerli Test Network'
 export const RPC_DISPLAY_NAME = 'RPC'
 export const LOCALHOST_DISPLAY_NAME = 'https://localhost:8545'
-export const MATIC_DISPLAY_NAME = 'Matic Alpha-Mainnet'
+export const MATIC_DISPLAY_NAME = 'Matic Network'
 export const MUMBAI_DISPLAY_NAME = 'Mumbai Matic-Testnet'
 
-export const MATIC_URL = 'https://alpha.ethereum.matic.network'
+export const MATIC_URL = 'https://rpc-mainnet.matic.network'
 export const MUMBAI_URL = 'https://rpc-mumbai.matic.today'
 
 export const TX_MESSAGE = 'message'
