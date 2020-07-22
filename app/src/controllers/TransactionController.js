@@ -132,7 +132,7 @@ class TransactionController extends EventEmitter {
   /** @returns {number} the chainId */
   getChainId() {
     const networkState = this.networkStore.getState()
-    const getChainId = Number.parseInt(networkState, 10)
+    const getChainId = networkState.toString().startsWith('0x') ? Number.parseInt(networkState, 16) : Number.parseInt(networkState, 10)
     if (Number.isNaN(getChainId)) {
       return 0
     }
@@ -465,6 +465,7 @@ class TransactionController extends EventEmitter {
         ),
       }
     }
+    log.info('params', chainParameters, chainId)
     const ethTx = new Transaction(txParameters, chainParameters)
     await this.signEthTx(ethTx, fromAddress)
 

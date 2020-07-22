@@ -503,7 +503,7 @@ export const standardNetworkId = {
 
 export function selectChainId(network, store) {
   const networkId = store.getState()
-  return standardNetworkId[network] || `0x${Number.parseInt(networkId, 10).toString(16)}`
+  return standardNetworkId[network] || networkId.toString().startsWith('0x') ? networkId : `0x${Number.parseInt(networkId, 10).toString(16)}`
 }
 
 export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
