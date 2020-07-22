@@ -595,6 +595,7 @@ class TransactionController extends EventEmitter {
       const { transactionCategory, contractParams } = await this._determineTransactionCategory({
         data: etherscanTransaction.input,
         to: etherscanTransaction.contract_address || etherscanTransaction.to,
+        isEtherscan: true,
       })
       etherscanTransaction.transaction_category = transactionCategory
 
@@ -718,7 +719,7 @@ class TransactionController extends EventEmitter {
     contractDeployment, contractMethodCall
   */
   async _determineTransactionCategory(txParameters) {
-    const { data, to } = txParameters
+    const { data, to, isEtherscan } = txParameters
     let checkSummedTo = to
     if (isAddress(to)) checkSummedTo = toChecksumAddress(to)
     const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
@@ -741,7 +742,7 @@ class TransactionController extends EventEmitter {
     } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, checkSummedTo.toLowerCase())) {
       // For Cryptokitties
       tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
-      contractParameters = Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, checkSummedTo.toLowerCase())
+      contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
         ? erc721Contracts[checkSummedTo.toLowerCase()]
         : {}
       delete contractParameters.erc20
@@ -768,18 +769,20 @@ class TransactionController extends EventEmitter {
 
       contractParameters.erc721 = true
       contractParameters.decimals = 0
-    } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())) {
-      tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
-      contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
-        ? erc721Contracts[checkSummedTo.toLowerCase()]
-        : {}
-      delete contractParameters.erc20
-      contractParameters.erc721 = true
-      contractParameters.isSpecial = true
-    } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo)) {
-      tokenMethodName = TOKEN_METHOD_TRANSFER_FROM
-      contractParameters = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
-      contractParameters.erc20 = true
+    } else if (isEtherscan) {
+      if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())) {
+        tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+        contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
+          ? erc721Contracts[checkSummedTo.toLowerCase()]
+          : {}
+        delete contractParameters.erc20
+        contractParameters.erc721 = true
+        contractParameters.isSpecial = true
+      } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo)) {
+        tokenMethodName = TOKEN_METHOD_TRANSFER_FROM
+        contractParameters = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
+        contractParameters.erc20 = true
+      }
     }
 
     // log.info(data, decodedERC20, decodedERC721, tokenMethodName, contractParams, methodParams)
