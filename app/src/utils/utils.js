@@ -397,12 +397,12 @@ export const paymentProviders = {
     logoExtension: SVG,
     supportPage: 'https://help.moonpay.io/en/',
     minOrderValue: 24.99,
-    maxOrderValue: 2200,
+    maxOrderValue: 50000,
     validCurrencies: ['USD', 'EUR', 'GBP'],
     validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT'],
     includeFees: true,
     api: true,
-    enforceMax: true,
+    enforceMax: false,
   },
   [WYRE]: {
     line1: 'Apple Pay/ Debit Card',
@@ -418,7 +418,7 @@ export const paymentProviders = {
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
     includeFees: false,
     api: true,
-    enforceMax: true,
+    enforceMax: false,
   },
   [RAMPNETWORK]: {
     line1: 'Bank transfer',
@@ -435,7 +435,7 @@ export const paymentProviders = {
     includeFees: true,
     api: true,
     receiveHint: 'walletTopUp.receiveHintRamp',
-    enforceMax: true,
+    enforceMax: false,
   },
   [XANPOOL]: {
     line1: 'PayNow/ InstaPay/ FPS/ GoJekPay/ UPI/ PromptPay/ ViettelPay/ DuitNow',
