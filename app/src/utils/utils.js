@@ -606,3 +606,24 @@ export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifier
       throw new Error('Invalid login type')
   }
 }
+
+export const handleRedirectParameters = (hash, queryParameters) => {
+  const hashParameters = hash.split('&').reduce((result, item) => {
+    const [part0, part1] = item.split('=')
+    result[part0] = part1
+    return result
+  }, {})
+  log.info(hashParameters, queryParameters)
+  let instanceParameters = {}
+  let error = ''
+  if (!queryParameters.preopenInstanceId) {
+    if (Object.keys(hashParameters).length > 0 && hashParameters.state) {
+      instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {}
+      if (hashParameters.error) error = hashParameters.error
+    } else if (Object.keys(queryParameters).length > 0 && queryParameters.state) {
+      instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {}
+      if (queryParameters.error) error = queryParameters.error
+    }
+  }
+  return { error, instanceParameters, hashParameters }
+}

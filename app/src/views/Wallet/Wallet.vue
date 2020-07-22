@@ -10,10 +10,10 @@
     <v-navigation-drawer v-model="drawer" disable-resize-watcher app right :width="$vuetify.breakpoint.xsOnly ? '80%' : ''">
       <AccountMenu :header-items="headerItems"></AccountMenu>
     </v-navigation-drawer>
-    <v-content>
+    <v-main>
       <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
       <router-view></router-view>
-    </v-content>
+    </v-main>
     <v-dialog v-if="badgesTopupDialog" v-model="badgesTopupDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_TOPUP]" @closeBadge="closeBadge" />
     </v-dialog>

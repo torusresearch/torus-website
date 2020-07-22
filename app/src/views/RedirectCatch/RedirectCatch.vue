@@ -20,7 +20,7 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import BeatLoader from 'vue-spinner/src/BeatLoader'
 
-import { broadcastChannelOptions } from '../../utils/utils'
+import { broadcastChannelOptions, handleRedirectParameters } from '../../utils/utils'
 
 export default {
   name: 'Redirect',
@@ -33,13 +33,6 @@ export default {
   async mounted() {
     let bc
     try {
-      const hash = this.$router.currentRoute.hash.slice(1)
-      const hashParameters = hash.split('&').reduce((result, item) => {
-        const [part0, part1] = item.split('=')
-        result[part0] = part1
-        return result
-      }, {})
-      const queryParameters = this.$router.currentRoute.query
       // reddit error - hash params
       // error: "access_denied"
       // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJyZWRkaXQifQ%3D%3D"
@@ -47,19 +40,22 @@ export default {
       // error: "access_denied"
       // error_description: "The user denied you access"
       // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJ0d2l0Y2gifQ=="
+      const hash = this.$router.currentRoute.hash.slice(1)
+      const queryParameters = this.$router.currentRoute.query
+      const { error, instanceParameters, hashParameters } = handleRedirectParameters(hash, queryParameters)
       log.info(hashParameters, queryParameters)
       if (!queryParameters.preopenInstanceId) {
         this.textVisible = true
-        let instanceParameters = {}
-        let error = ''
-        if (Object.keys(hashParameters).length > 0 && hashParameters.state) {
-          instanceParameters = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {}
-          if (hashParameters.error) error = hashParameters.error
-        } else if (Object.keys(queryParameters).length > 0 && queryParameters.state) {
-          instanceParameters = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {}
-          if (queryParameters.error) error = queryParameters.error
-        }
         bc = new BroadcastChannel(`redirect_channel_${instanceParameters.instanceId}`, broadcastChannelOptions)
+        bc.addEventListener('message', (ev) => {
+          if (ev.success) {
+            bc.close()
+            log.info('posted', { queryParameters, hashParameters, instanceParameters })
+          } else {
+            window.close()
+            this.showCloseText = true
+          }
+        })
         await bc.postMessage({
           data: {
             instanceParams: instanceParameters,
@@ -68,11 +64,9 @@ export default {
           },
           error,
         })
-        bc.close()
-        log.info('posted', { queryParameters, hashParameters, instanceParameters })
+
         setTimeout(() => {
-          window.close()
-          this.showCloseText = true
+          window.location.href = window.location.origin + window.location.search + window.location.hash
         }, 5000)
       } else {
         bc = new BroadcastChannel(`preopen_channel_${queryParameters.preopenInstanceId}`, broadcastChannelOptions)

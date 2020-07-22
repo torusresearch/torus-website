@@ -343,7 +343,7 @@
 
 <script>
 import log from 'loglevel'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import PasswordlessLogin from '../../components/helpers/PasswordLessLogin'
 import {
@@ -362,7 +362,9 @@ import {
   WalletTransferLoader,
   WalletTransferLoaderMobile,
 } from '../../content-loader'
+import createHandler from '../../store/Handlers/HandlerFactory'
 import { GOOGLE, GOOGLE_VERIFIER, PASSWORDLESS } from '../../utils/enums'
+import { handleRedirectParameters } from '../../utils/utils'
 
 export default {
   name: 'Login',
@@ -437,17 +439,59 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
 
     this.isLogout = this.$route.name !== 'login'
 
     this.scroll()
+
+    try {
+      const hash = this.$router.currentRoute.hash.slice(1)
+      const queryParameters = this.$router.currentRoute.query
+      const { error, instanceParameters, hashParameters } = handleRedirectParameters(hash, queryParameters)
+      if (error) throw new Error(error)
+      const { verifier: returnedVerifier } = instanceParameters
+      if (returnedVerifier) this.loginInProgress = true
+      else return
+      const { access_token: accessToken, id_token: idToken } = hashParameters
+      const currentVeriferConfig = this.loginConfig[returnedVerifier]
+      const { typeOfLogin, clientId, jwtParameters } = currentVeriferConfig
+      const loginHandler = createHandler({
+        typeOfLogin,
+        clientId,
+        verifier: returnedVerifier,
+        redirect_uri: '',
+        preopenInstanceId: '',
+        jwtParameters: jwtParameters || {},
+      })
+      const userInfo = await loginHandler.getUserInfo({ accessToken, idToken })
+      const { profileImage, name, email, verifierId, typeOfLogin: returnTypeOfLogin } = userInfo
+      this.setUserInfo({
+        profileImage,
+        name,
+        email,
+        verifierId,
+        verifier: returnedVerifier,
+        verifierParams: { verifier_id: verifierId },
+        typeOfLogin: returnTypeOfLogin,
+      })
+      await this.handleLogin({ calledFromEmbed: false, oAuthToken: idToken || accessToken })
+    } catch (error) {
+      log.error(error)
+      this.snackbar = true
+      this.snackbarColor = 'error'
+      this.snackbarText = error.message.includes('email_verified') ? 'Please verify your email first' : this.t('login.loginError')
+    } finally {
+      this.loginInProgress = false
+    }
   },
   methods: {
     ...mapActions({
       triggerLogin: 'triggerLogin',
+      handleLogin: 'handleLogin',
     }),
+    ...mapMutations(['setUserInfo']),
     async startLogin(verifier) {
       if (verifier === PASSWORDLESS) {
         this.passwordlessLoginDialog = true
