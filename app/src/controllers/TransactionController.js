@@ -748,6 +748,10 @@ class TransactionController extends EventEmitter {
       delete contractParameters.erc20
       contractParameters.erc721 = true
       contractParameters.isSpecial = true
+      if (!isEtherscan) {
+        const ck20 = data && tokenABIDecoder.decodeMethod(data)
+        methodParameters = ck20.params
+      }
     } else if (checkSummedTo && decodedERC20) {
       // fallback to erc20
       const { name = '', params } = decodedERC20
@@ -769,6 +773,7 @@ class TransactionController extends EventEmitter {
 
       contractParameters.erc721 = true
       contractParameters.decimals = 0
+      contractParameters.isSpecial = false
     } else if (isEtherscan) {
       if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())) {
         tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
@@ -777,7 +782,6 @@ class TransactionController extends EventEmitter {
           : {}
         delete contractParameters.erc20
         contractParameters.erc721 = true
-        contractParameters.isSpecial = true
       } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo)) {
         tokenMethodName = TOKEN_METHOD_TRANSFER_FROM
         contractParameters = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
