@@ -1,11 +1,9 @@
 import clone from 'clone'
-import erc20Contracts from 'eth-contract-metadata'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
+import EventEmitter from 'safe-event-emitter'
 import Web3 from 'web3'
-import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
-import erc721Contracts from '../assets/assets-map.json'
 import config from '../config'
 import {
   ACTIVITY_ACTION_RECEIVE,
@@ -14,11 +12,7 @@ import {
   BADGES_COLLECTIBLE,
   BADGES_TOPUP,
   BADGES_TRANSACTION,
-  CONTRACT_TYPE_ERC20,
-  CONTRACT_TYPE_ERC721,
-  CONTRACT_TYPE_ETH,
   ERROR_TIME,
-  MAINNET,
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
@@ -35,7 +29,7 @@ const DEFAULT_BADGES_COMPLETION = {
   [BADGES_TRANSACTION]: false,
 }
 
-class PreferencesController {
+class PreferencesController extends EventEmitter {
   /**
    *
    * @typedef {Object} PreferencesController
@@ -51,6 +45,7 @@ class PreferencesController {
    * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
   constructor(options = {}) {
+    super()
     let theme = THEME_LIGHT_BLUE_NAME
     if (storageAvailable('localStorage')) {
       const torusTheme = localStorage.getItem('torus-theme')
@@ -88,7 +83,6 @@ class PreferencesController {
     this.successStore = new ObservableStore('')
     this.pastTransactionsStore = new ObservableStore([])
     this.paymentTxStore = new ObservableStore([])
-    this.etherscanTxStore = new ObservableStore([])
   }
 
   set jwtToken(token) {
@@ -267,63 +261,11 @@ class PreferencesController {
       const { selectedAddress } = this.state
       const tx = await getEtherscanTransactions({ selectedAddress }, this.headers.headers)
       if (tx?.data) {
-        this.calculateEtherscanTx(tx.data)
+        this.emit('addEtherscanTransactions', tx.data)
       }
     } catch (error) {
       log.error('unable to fetch etherscan tx', error)
     }
-  }
-
-  async calculateEtherscanTx(txs) {
-    const lowerCaseSelectedAddress = this.state.selectedAddress.toLowerCase()
-    const finalTxs = txs.reduce((accumulator, x) => {
-      const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
-      const etherscanTransaction = {
-        type: CONTRACT_TYPE_ETH,
-        symbol: 'ETH',
-        type_image_link: 'n/a',
-        type_name: 'n/a',
-        total_amount: totalAmount,
-        created_at: x.timeStamp * 1000,
-        from: x.from,
-        to: x.to,
-        transaction_hash: x.hash,
-        network: MAINNET,
-        status: x.txreceipt_status && x.txreceipt_status === '0' ? 'failed' : 'success',
-        isEtherscan: true,
-      }
-
-      if (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase()) {
-        if (x.contractAddress) {
-          const transactionType = x.tokenID ? CONTRACT_TYPE_ERC721 : CONTRACT_TYPE_ERC20
-          let contract
-          if (transactionType === CONTRACT_TYPE_ERC20) {
-            let checkSummedTo = x.contractAddress
-            if (isAddress(x.contractAddress)) checkSummedTo = toChecksumAddress(x.contractAddress)
-            contract = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
-          } else {
-            contract = Object.prototype.hasOwnProperty.call(erc721Contracts, x.contractAddress.toLowerCase())
-              ? erc721Contracts[x.contractAddress.toLowerCase()]
-              : {}
-          }
-
-          if (Object.keys(contract).length > 0) {
-            etherscanTransaction.symbol = transactionType === CONTRACT_TYPE_ERC20 ? contract.symbol : x.tokenID
-            etherscanTransaction.type_image_link = contract.logo
-            etherscanTransaction.type_name = contract.name
-          } else {
-            etherscanTransaction.symbol = x.tokenID
-            etherscanTransaction.type_name = x.tokenName
-          }
-          etherscanTransaction.type = transactionType
-        }
-
-        accumulator.push(formatPastTx(etherscanTransaction, lowerCaseSelectedAddress))
-      }
-      return accumulator
-    }, [])
-
-    this.etherscanTxStore.putState(finalTxs)
   }
 
   async patchNewTx(tx) {

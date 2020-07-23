@@ -194,6 +194,10 @@ export default class TorusController extends EventEmitter {
         options.rehydrate()
       }, 50)
     }
+
+    this.prefsController.on('addEtherscanTransactions', (txs) => {
+      this.txController.addEtherscanTransactions(txs)
+    })
   }
 
   /**

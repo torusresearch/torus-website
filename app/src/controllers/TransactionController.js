@@ -9,7 +9,7 @@ import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import EventEmitter from 'safe-event-emitter'
-import { isAddress, sha3, toChecksumAddress } from 'web3-utils'
+import { fromWei, isAddress, sha3, toBN, toChecksumAddress } from 'web3-utils'
 
 import erc721Contracts from '../assets/assets-map.json'
 import AbiDecoder from '../utils/abiDecoder'
@@ -17,9 +17,13 @@ import cleanErrorStack from '../utils/cleanErrorStack'
 import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   CONTRACT_INTERACTION_KEY,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
   GOERLI_CODE,
   KOVAN_CODE,
+  MAINNET,
   MAINNET_CODE,
   OLD_ERC721_LIST,
   RINKEBY_CODE,
@@ -35,7 +39,7 @@ import {
 } from '../utils/enums'
 import TxGasUtil from '../utils/TxGasUtil'
 import * as txUtils from '../utils/txUtils'
-import { BnMultiplyByFraction, bnToHex, hexToBn } from '../utils/utils'
+import { BnMultiplyByFraction, bnToHex, formatPastTx, hexToBn } from '../utils/utils'
 import NonceTracker from './NonceTracker'
 import PendingTransactionTracker from './PendingTransactionTracker'
 import TransactionStateManager from './TransactionStateManager'
@@ -94,6 +98,7 @@ class TransactionController extends EventEmitter {
     this._onBootCleanUp()
 
     this.store = this.txStateManager.store
+    this.etherscanTxStore = new ObservableStore([])
     this.nonceTracker = new NonceTracker({
       provider: this.provider,
       blockTracker: this.blockTracker,
@@ -565,6 +570,60 @@ class TransactionController extends EventEmitter {
     this.txStateManager.updateTx(txMeta, 'transactions#setTxHash')
   }
 
+  async addEtherscanTransactions(txs) {
+    const lowerCaseSelectedAddress = this.getSelectedAddress()
+
+    const transactionPromises = await Promise.all(
+      txs.map(async (tx) => {
+        const { transactionCategory, contractParams } = await this._determineTransactionCategory({
+          data: tx.input,
+          to: tx.contractAddress || tx.to,
+          isEtherscan: true,
+        })
+        tx.transaction_category = transactionCategory
+
+        tx.type_image_link = contractParams.logo || tx.type_image_link
+        tx.type_name = tx.name || tx.tokenName
+        if (contractParams.erc721) {
+          tx.type = CONTRACT_TYPE_ERC721
+          tx.symbol = tx.tokenName || tx.tokenID || tx.symbol
+        }
+        if (contractParams.erc20) {
+          tx.type = CONTRACT_TYPE_ERC20
+        }
+
+        return tx
+      })
+    )
+
+    const finalTxs = transactionPromises.reduce((accumulator, x) => {
+      const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
+      const etherscanTransaction = {
+        type: x.type || CONTRACT_TYPE_ETH,
+        type_image_link: x.type_image_link || 'n/a',
+        type_name: x.type_name || 'n/a',
+        symbol: x.tokenSymbol || 'ETH',
+        token_id: x.tokenID || '',
+        total_amount: totalAmount,
+        created_at: x.timeStamp * 1000,
+        from: x.from,
+        to: x.to,
+        transaction_hash: x.hash,
+        network: MAINNET,
+        status: x.txreceipt_status && x.txreceipt_status === '0' ? 'failed' : 'success',
+        isEtherscan: true,
+        input: x.input,
+        contract_address: x.contractAddress,
+        transaction_category: x.transaction_category,
+      }
+      accumulator.push(formatPastTx(etherscanTransaction, lowerCaseSelectedAddress))
+
+      return accumulator
+    }, [])
+
+    this.etherscanTxStore.putState(finalTxs)
+  }
+
   //
   //           PRIVATE METHODS
   //
@@ -667,12 +726,11 @@ class TransactionController extends EventEmitter {
     contractDeployment, contractMethodCall
   */
   async _determineTransactionCategory(txParameters) {
-    const { data, to } = txParameters
+    const { data, to, isEtherscan } = txParameters
     let checkSummedTo = to
     if (isAddress(to)) checkSummedTo = toChecksumAddress(to)
     const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
     const decodedERC20 = data && tokenABIDecoder.decodeMethod(data)
-    log.debug('_determineTransactionCategory', decodedERC20, decodedERC721)
 
     let result
     let code
@@ -694,11 +752,13 @@ class TransactionController extends EventEmitter {
       contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
         ? erc721Contracts[checkSummedTo.toLowerCase()]
         : {}
-      const ck20 = data && tokenABIDecoder.decodeMethod(data)
       delete contractParameters.erc20
       contractParameters.erc721 = true
       contractParameters.isSpecial = true
-      methodParameters = ck20.params
+      if (!isEtherscan) {
+        const ck20 = data && tokenABIDecoder.decodeMethod(data)
+        methodParameters = ck20.params
+      }
     } else if (checkSummedTo && decodedERC20) {
       // fallback to erc20
       const { name = '', params } = decodedERC20
@@ -720,6 +780,20 @@ class TransactionController extends EventEmitter {
 
       contractParameters.erc721 = true
       contractParameters.decimals = 0
+      contractParameters.isSpecial = false
+    } else if (isEtherscan) {
+      if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())) {
+        tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+        contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
+          ? erc721Contracts[checkSummedTo.toLowerCase()]
+          : {}
+        delete contractParameters.erc20
+        contractParameters.erc721 = true
+      } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo)) {
+        tokenMethodName = TOKEN_METHOD_TRANSFER_FROM
+        contractParameters = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
+        contractParameters.erc20 = true
+      }
     }
 
     // log.info(data, decodedERC20, decodedERC721, tokenMethodName, contractParams, methodParams)
