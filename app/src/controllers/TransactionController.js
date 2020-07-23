@@ -571,14 +571,37 @@ class TransactionController extends EventEmitter {
 
   async addEtherscanTransactions(txs) {
     const lowerCaseSelectedAddress = this.getSelectedAddress()
-    const finalTxs = await txs.reduce(async (accumulator, x) => {
-      const txAccumulator = await accumulator
+
+    const transactionPromises = await Promise.all(
+      txs.map(async (tx) => {
+        const { transactionCategory, contractParams } = await this._determineTransactionCategory({
+          data: tx.input,
+          to: tx.contractAddress || tx.to,
+          isEtherscan: true,
+        })
+        tx.transaction_category = transactionCategory
+
+        tx.type_image_link = contractParams.logo || tx.type_image_link
+        tx.type_name = tx.name || tx.tokenName
+        if (contractParams.erc721) {
+          tx.type = CONTRACT_TYPE_ERC721
+          tx.symbol = tx.tokenName || tx.tokenID || tx.symbol
+        }
+        if (contractParams.erc20) {
+          tx.type = CONTRACT_TYPE_ERC20
+        }
+
+        return tx
+      })
+    )
+
+    const finalTxs = transactionPromises.reduce((accumulator, x) => {
       const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
       const etherscanTransaction = {
-        type: CONTRACT_TYPE_ETH,
+        type: x.type || CONTRACT_TYPE_ETH,
+        type_image_link: x.type_image_link || 'n/a',
+        type_name: x.type_name || 'n/a',
         symbol: x.tokenSymbol || 'ETH',
-        type_image_link: 'n/a',
-        type_name: x.tokenName || 'n/a',
         token_id: x.tokenID || '',
         total_amount: totalAmount,
         created_at: x.timeStamp * 1000,
@@ -590,28 +613,11 @@ class TransactionController extends EventEmitter {
         isEtherscan: true,
         input: x.input,
         contract_address: x.contractAddress,
+        transaction_category: x.transaction_category,
       }
+      accumulator.push(formatPastTx(etherscanTransaction, lowerCaseSelectedAddress))
 
-      const { transactionCategory, contractParams } = await this._determineTransactionCategory({
-        data: etherscanTransaction.input,
-        to: etherscanTransaction.contract_address || etherscanTransaction.to,
-        isEtherscan: true,
-      })
-      etherscanTransaction.transaction_category = transactionCategory
-
-      etherscanTransaction.type_image_link = contractParams.logo || etherscanTransaction.type_image_link
-      etherscanTransaction.type_name = etherscanTransaction.name || etherscanTransaction.type_name
-      if (contractParams.erc721) {
-        etherscanTransaction.type = CONTRACT_TYPE_ERC721
-        etherscanTransaction.symbol = etherscanTransaction.token_name || etherscanTransaction.token_id || etherscanTransaction.symbol
-      }
-      if (contractParams.erc20) {
-        etherscanTransaction.type = CONTRACT_TYPE_ERC20
-      }
-
-      txAccumulator.push(formatPastTx(etherscanTransaction, lowerCaseSelectedAddress))
-
-      return txAccumulator
+      return accumulator
     }, [])
 
     this.etherscanTxStore.putState(finalTxs)
