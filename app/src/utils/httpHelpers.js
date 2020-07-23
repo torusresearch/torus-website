@@ -1,109 +1,9 @@
+import { get, patch, post, remove } from '@toruslabs/http-helpers'
 import log from 'loglevel'
 
 import config from '../config'
 
-export const promiseTimeout = (ms, promise) => {
-  const timeout = new Promise((resolve, reject) => {
-    const id = setTimeout(() => {
-      clearTimeout(id)
-      reject(new Error(`Timed out in ${ms}ms`))
-    }, ms)
-  })
-  return Promise.race([promise, timeout])
-}
-
-export const post = (url = '', data = {}, options_ = {}) => {
-  const defaultOptions = {
-    mode: 'cors',
-    cache: 'no-cache',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    body: options_.isUrlEncodedData ? data : JSON.stringify(data),
-  }
-  const options = {
-    ...defaultOptions,
-    ...options_,
-    ...{ method: 'POST' },
-  }
-  return promiseTimeout(
-    30000,
-    fetch(url, options).then((response) => {
-      if (response.ok) {
-        return response.json()
-      }
-      throw response
-    })
-  )
-}
-
-export const remove = (url = '', _data = {}, options_ = {}) => {
-  const defaultOptions = {
-    mode: 'cors',
-    cache: 'no-cache',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-  }
-  const options = {
-    ...defaultOptions,
-    ...options_,
-    ...{ method: 'DELETE' },
-  }
-  return fetch(url, options).then((response) => {
-    if (response.ok) {
-      return response.json()
-    }
-    throw response
-  })
-}
-
-export const get = (url = '', options_ = {}) => {
-  const defaultOptions = {
-    mode: 'cors',
-    cache: 'no-cache',
-  }
-  const options = {
-    ...defaultOptions,
-    ...options_,
-    ...{ method: 'GET' },
-  }
-  return fetch(url, options).then((response) => {
-    if (response.ok) {
-      return response.json()
-    }
-    throw response
-  })
-}
-
-export const patch = (url = '', data = {}, options_ = {}) => {
-  const defaultOptions = {
-    mode: 'cors',
-    cache: 'no-cache',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    body: JSON.stringify(data),
-  }
-  const options = {
-    ...defaultOptions,
-    ...options_,
-    ...{ method: 'PATCH' },
-  }
-  return fetch(url, options).then((response) => {
-    if (response.ok) {
-      return response.json()
-    }
-    throw response
-  })
-}
-
-export const generateJsonRPCObject = (method, parameters) => ({
-  jsonrpc: '2.0',
-  method,
-  id: 10,
-  params: parameters,
-})
+export { get, patch, post, remove }
 
 export const getWalletOrders = (parameters = {}, headers) => {
   try {
@@ -167,7 +67,7 @@ export const getEtherscanTransactions = (parameters = {}, headers) => {
     }
     const url = new URL(`${config.api}/etherscan`)
     Object.keys(parameters).forEach((key) => url.searchParams.append(key, parameters[key]))
-    return get(url.href, options)
+    return get(url.href, options, { useAPIKey: true })
   } catch (error) {
     log.error(error)
     return undefined

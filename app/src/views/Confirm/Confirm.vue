@@ -572,11 +572,15 @@ export default {
           let assetDetails = {}
           try {
             const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
-            assetDetails = await get(`${config.api}/opensea?url=${url}`, {
-              headers: {
-                Authorization: `Bearer ${jwtToken}`,
+            assetDetails = await get(
+              `${config.api}/opensea?url=${url}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${jwtToken}`,
+                },
               },
-            })
+              { useAPIKey: true }
+            )
             this.assetDetails = {
               name: assetDetails.data.name || '',
               logo: assetDetails.data.image_thumbnail_url || '',

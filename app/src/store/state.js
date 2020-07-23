@@ -61,6 +61,7 @@ const initialState = {
     isOAuthModalVisible: false,
     buttonPosition: 'bottom-left',
     torusWidgetVisibility: true,
+    apiKey: 'torus-default',
   },
   whiteLabel: {
     isActive: false,

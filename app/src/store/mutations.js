@@ -1,3 +1,4 @@
+import { setAPIKey } from '@toruslabs/http-helpers'
 import merge from 'deepmerge'
 
 import config from '../config'
@@ -129,6 +130,13 @@ export default {
     state.embedState = {
       ...state.embedState,
       loginConfig: finalLoginConfig,
+    }
+  },
+  setAPIKey(state, payload) {
+    setAPIKey(payload || 'torus-default')
+    state.embedState = {
+      ...state.embedState,
+      apiKey: payload || 'torus-default',
     }
   },
   setButtonPosition(state, payload) {

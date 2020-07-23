@@ -94,11 +94,15 @@ export default class AssetController {
    */
   async getCollectibleInformationFromApi(contractAddress, tokenId) {
     const tokenURI = this.getCollectibleApi(contractAddress, tokenId)
-    const collectibleInformation = await get(`${config.api}/opensea?url=${tokenURI}`, {
-      headers: {
-        Authorization: `Bearer ${this.jwtToken}`,
+    const collectibleInformation = await get(
+      `${config.api}/opensea?url=${tokenURI}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.jwtToken}`,
+        },
       },
-    })
+      { useAPIKey: true }
+    )
 
     const { name, description, image_original_url: image } = collectibleInformation.data
     return { image, name, description }

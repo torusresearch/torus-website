@@ -133,7 +133,7 @@ class PreferencesController extends EventEmitter {
 
   async sync(callback, errorCallback) {
     try {
-      const user = await get(`${config.api}/user?fetchTx=false`, this.headers)
+      const user = await get(`${config.api}/user?fetchTx=false`, this.headers, { useAPIKey: true })
       if (user?.data) {
         const { badge: userBadges, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         let whiteLabelLocale
@@ -291,7 +291,7 @@ class PreferencesController extends EventEmitter {
 
   async postPastTx(tx) {
     try {
-      const response = await post(`${config.api}/transaction`, tx, this.headers)
+      const response = await post(`${config.api}/transaction`, tx, this.headers, { useAPIKey: true })
       log.info('successfully added', response)
     } catch (error) {
       log.error(error, 'unable to insert transaction')
@@ -314,7 +314,8 @@ class PreferencesController extends EventEmitter {
         verifier,
         verifierId,
       },
-      this.headers
+      this.headers,
+      { useAPIKey: true }
     )
   }
 
@@ -337,7 +338,8 @@ class PreferencesController extends EventEmitter {
             verifierId,
             metadata: `referrer:${referrer}`,
           },
-          this.headers
+          this.headers,
+          { useAPIKey: true }
         )
         clearInterval(interval)
       }, 1000)
@@ -347,7 +349,7 @@ class PreferencesController extends EventEmitter {
   async setUserTheme(payload) {
     if (payload === this.state.theme) return
     try {
-      await patch(`${config.api}/user/theme`, { theme: payload }, this.headers)
+      await patch(`${config.api}/user/theme`, { theme: payload }, this.headers, { useAPIKey: true })
       this.handleSuccess('navBar.snackSuccessTheme')
       this.store.updateState({ theme: payload })
     } catch (error) {
@@ -359,7 +361,7 @@ class PreferencesController extends EventEmitter {
   /* istanbul ignore next */
   async setPermissions(payload) {
     try {
-      const response = await post(`${config.api}/permissions`, payload, this.headers)
+      const response = await post(`${config.api}/permissions`, payload, this.headers, { useAPIKey: true })
       log.info('successfully set permissions', response)
     } catch (error) {
       log.error('unable to set permissions', error)
@@ -369,7 +371,7 @@ class PreferencesController extends EventEmitter {
   async setUserLocale(payload) {
     if (payload === this.state.locale) return
     try {
-      await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
+      await patch(`${config.api}/user/locale`, { locale: payload }, this.headers, { useAPIKey: true })
       this.store.updateState({ locale: payload })
       // this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {
@@ -381,7 +383,7 @@ class PreferencesController extends EventEmitter {
   async setSelectedCurrency(payload) {
     if (payload.selectedCurrency === this.state.selectedCurrency) return
     try {
-      await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers)
+      await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers, { useAPIKey: true })
       this.store.updateState({ selectedCurrency: payload.selectedCurrency })
       this.handleSuccess('navBar.snackSuccessCurrency')
     } catch (error) {
@@ -393,7 +395,7 @@ class PreferencesController extends EventEmitter {
   /* istanbul ignore next */
   async setVerifier(verifier, verifierId) {
     try {
-      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers)
+      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers, { useAPIKey: true })
       log.info('successfully updated verifier info', response)
     } catch (error) {
       log.error('unable to update verifier info', error)
@@ -402,12 +404,12 @@ class PreferencesController extends EventEmitter {
 
   /* istanbul ignore next */
   getEtherScanTokenBalances() {
-    return get(`${config.api}/tokenbalances`, this.headers)
+    return get(`${config.api}/tokenbalances`, this.headers, { useAPIKey: true })
   }
 
   async getBillboardContents() {
     try {
-      const resp = await get(`${config.api}/billboard`, this.headers)
+      const resp = await get(`${config.api}/billboard`, this.headers, { useAPIKey: true })
       const events = resp.data.reduce((accumulator, event) => {
         if (!accumulator[event.callToActionLink]) accumulator[event.callToActionLink] = {}
         accumulator[event.callToActionLink][event.locale] = event
@@ -422,7 +424,7 @@ class PreferencesController extends EventEmitter {
 
   async addContact(payload) {
     try {
-      const response = await post(`${config.api}/contact`, payload, this.headers)
+      const response = await post(`${config.api}/contact`, payload, this.headers, { useAPIKey: true })
       this.store.updateState({ contacts: [...this.state.contacts, response.data] })
       this.handleSuccess('navBar.snackSuccessContactAdd')
     } catch {
@@ -432,7 +434,7 @@ class PreferencesController extends EventEmitter {
 
   async deleteContact(payload) {
     try {
-      const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers)
+      const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers, { useAPIKey: true })
       const finalContacts = this.state.contacts.filter((contact) => contact.id !== response.data.id)
       this.store.updateState({ contacts: finalContacts })
       this.handleSuccess('navBar.snackSuccessContactDelete')
@@ -444,7 +446,7 @@ class PreferencesController extends EventEmitter {
   /* istanbul ignore next */
   async revokeDiscord(idToken) {
     try {
-      const resp = await post(`${config.api}/revoke/discord`, { token: idToken }, this.headers)
+      const resp = await post(`${config.api}/revoke/discord`, { token: idToken }, this.headers, { useAPIKey: true })
       log.info(resp)
     } catch (error) {
       log.error(error)
@@ -460,7 +462,8 @@ class PreferencesController extends EventEmitter {
           id: txId,
           status,
         },
-        this.headers
+        this.headers,
+        { useAPIKey: true }
       )
       log.info('successfully patched', response)
     } catch (error) {
@@ -499,7 +502,7 @@ class PreferencesController extends EventEmitter {
     const newBadgeCompletion = { ...this.state.badgesCompletion, ...{ [payload]: true } }
     this.store.updateState({ badgesCompletion: newBadgeCompletion })
     try {
-      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers)
+      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers, { useAPIKey: true })
     } catch (error) {
       log.error('unable to set badge', error)
     }
