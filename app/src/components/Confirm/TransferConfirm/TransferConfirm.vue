@@ -24,13 +24,24 @@
           <div class="d-flex icon-container icon-container--right align-center">
             <div class="icon-box elevation-3" :class="{ isDark: $vuetify.theme.isDark }">
               <div v-if="dappName !== ''" class="v-icon dapp-icon torusGray1--text">DApp</div>
-              <v-badge v-else bordered :dark="$vuetify.theme.isDark" content="?" overlap :value="toVerifier === TWITTER">
-                <v-btn icon class="link-box torusGray1--text" :href="toVeriferUrl" target="_blank">
-                  <v-icon>
-                    {{ `$vuetify.icons.${toVerifier === ETH ? 'account' : toVerifier.toLowerCase()}` }}
-                  </v-icon>
-                </v-btn>
-              </v-badge>
+
+              <v-tooltip v-else bottom>
+                <template v-slot:activator="{ on }">
+                  <v-badge color="torusBrand1" offset-x="10" offset-y="20" overlap :value="toVerifier === TWITTER && !checkedTwitter">
+                    <template v-slot:badge>
+                      <span class="font-weight-bold twitter-badge" v-on="on">?</span>
+                    </template>
+                    <v-btn icon class="link-box torusGray1--text" :href="toVeriferUrl" target="_blank" @click="checkedTwitter = true">
+                      <v-icon>
+                        {{ `$vuetify.icons.${toVerifier === ETH ? 'account' : toVerifier.toLowerCase()}` }}
+                      </v-icon>
+                    </v-btn>
+                  </v-badge>
+                </template>
+                <span>
+                  <div class="text_2--text twitter-note">{{ t('walletTransfer.twitterVerifyNote') }}</div>
+                </span>
+              </v-tooltip>
             </div>
           </div>
         </div>
@@ -85,10 +96,10 @@
       <v-flex xs12>
         <div class="d-flex align-start">
           <div :style="{ lineHeight: '0px' }">
-            <span class="subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
+            <span class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="subtitle-2 text-right">{{ isNonFungibleToken ? transactionFeeEth : totalCost }}</div>
+            <div class="text-subtitle-2 text-right">{{ isNonFungibleToken ? transactionFeeEth : totalCost }}</div>
             <div class="caption-2 text-right">{{ isNonFungibleToken ? `${transactionFee} ${selectedCurrency}` : totalCostConverted }}</div>
           </div>
         </div>
@@ -209,6 +220,7 @@ export default {
     return {
       ETH,
       TWITTER,
+      checkedTwitter: false,
     }
   },
   computed: {
@@ -228,6 +240,7 @@ export default {
   },
   methods: {
     onCancel() {
+      this.checkedTwitter = false
       this.$emit('onClose')
     },
     onConfirm() {

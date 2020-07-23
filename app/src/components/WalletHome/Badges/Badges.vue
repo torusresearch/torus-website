@@ -12,7 +12,7 @@
                 <img :src="require(`../../../assets/images/${badge.image}${badge.completed ? '-active' : ''}.svg`)" />
               </div>
               <div class="pt-1 ml-2">
-                <div class="subtitle-2 font-weight-medium badge__title" v-html="badge.title" />
+                <div class="text-subtitle-2 font-weight-medium badge__title" v-html="badge.title" />
                 <div v-if="!badge.completed && badge.link" class="badge__link">
                   <a v-if="badge.external" :href="badge.link" target="_blank" rel="noreferrer noopener">{{ badge.linkText }}</a>
                   <router-link v-else :to="badge.link" tag="a">{{ badge.linkText }}</router-link>

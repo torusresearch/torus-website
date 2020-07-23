@@ -397,12 +397,12 @@ export const paymentProviders = {
     logoExtension: SVG,
     supportPage: 'https://help.moonpay.io/en/',
     minOrderValue: 24.99,
-    maxOrderValue: 2200,
+    maxOrderValue: 50000,
     validCurrencies: ['USD', 'EUR', 'GBP'],
     validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT'],
     includeFees: true,
     api: true,
-    enforceMax: true,
+    enforceMax: false,
   },
   [WYRE]: {
     line1: 'Apple Pay/ Debit Card',
@@ -418,7 +418,7 @@ export const paymentProviders = {
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
     includeFees: false,
     api: true,
-    enforceMax: true,
+    enforceMax: false,
   },
   [RAMPNETWORK]: {
     line1: 'Bank transfer',
@@ -434,8 +434,8 @@ export const paymentProviders = {
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
     includeFees: true,
     api: true,
-    receiveHint: 'You don’t need an ID to complete this transaction!',
-    enforceMax: true,
+    receiveHint: 'walletTopUp.receiveHintRamp',
+    enforceMax: false,
   },
   [XANPOOL]: {
     line1: 'PayNow/ InstaPay/ FPS/ GoJekPay/ UPI/ PromptPay/ ViettelPay/ DuitNow',
@@ -503,7 +503,7 @@ export const standardNetworkId = {
 
 export function selectChainId(network, store) {
   const networkId = store.getState()
-  return standardNetworkId[network] || `0x${Number.parseInt(networkId, 10).toString(16)}`
+  return standardNetworkId[network] || networkId.toString().startsWith('0x') ? networkId : `0x${Number.parseInt(networkId, 10).toString(16)}`
 }
 
 export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
@@ -574,6 +574,10 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     type_image_link: x.type_image_link,
     transaction_hash: x.transaction_hash,
     isEtherscan: x.isEtherscan,
+    transaction_category: x.transaction_category,
+    input: x.input || '',
+    contract_address: x.contract_address || '',
+    token_id: x.token_id || '',
   }
   return finalObject
 }
@@ -604,4 +608,25 @@ export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifier
     default:
       throw new Error('Invalid login type')
   }
+}
+
+export const handleRedirectParameters = (hash, queryParameters) => {
+  const hashParameters = hash.split('&').reduce((result, item) => {
+    const [part0, part1] = item.split('=')
+    result[part0] = part1
+    return result
+  }, {})
+  log.info(hashParameters, queryParameters)
+  let instanceParameters = {}
+  let error = ''
+  if (!queryParameters.preopenInstanceId) {
+    if (Object.keys(hashParameters).length > 0 && hashParameters.state) {
+      instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {}
+      if (hashParameters.error) error = hashParameters.error
+    } else if (Object.keys(queryParameters).length > 0 && queryParameters.state) {
+      instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {}
+      if (queryParameters.error) error = queryParameters.error
+    }
+  }
+  return { error, instanceParameters, hashParameters }
 }

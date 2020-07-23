@@ -96,7 +96,7 @@
           <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
             <v-layout>
               <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
-                <div class="body-1 font-weight-bold">{{ t('walletHome.welcome') }} Torus.</div>
+                <div class="text-body-1 font-weight-bold">{{ t('walletHome.welcome') }} Torus.</div>
                 <v-dialog v-model="dialogOnboarding" persistent max-width="600">
                   <template v-slot:activator="{ on }">
                     <div class="body-2'">

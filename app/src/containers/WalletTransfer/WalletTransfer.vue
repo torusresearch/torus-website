@@ -254,12 +254,12 @@
                 @onSelectSpeed="onSelectSpeed"
               />
               <v-flex v-if="contractType === CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
-                <div class="subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
+                <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ getEthAmount(gas, activeGasPrice) }} ETH</div>
                 <div class="caption text_2--text">{{ gasPriceInCurrency }} {{ selectedCurrency }}</div>
               </v-flex>
               <v-flex v-else xs12 mb-6 class="text-right">
-                <div class="subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
+                <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
                 <div class="caption text_2--text">{{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}</div>
               </v-flex>
@@ -343,7 +343,17 @@
         :modal-type="messageModalType"
         :title="messageModalTitle"
         @onClose="messageModalShow = false"
-      />
+      >
+        <template v-if="selectedVerifier === TWITTER && messageModalType === MESSAGE_MODAL_TYPE_SUCCESS" v-slot:link>
+          <div class="mb-4">
+            <div class="mb-4 text_2--text body-2">{{ t('walletTransfer.transferShare') }}</div>
+            <v-btn text class="share-btn" :href="tweetData" target="_blank">
+              <v-icon size="20" class="mr-1">$vuetify.icons.twitter</v-icon>
+              <span class="body-2 font-weight-bold">Tweet</span>
+            </v-btn>
+          </div>
+        </template>
+      </MessageModal>
     </v-dialog>
   </v-container>
 </template>
@@ -442,6 +452,10 @@ export default {
       logosUrl: config.logosUrl,
       sendAmountError: '',
       convertedVerifierId: '',
+      existingTwitterAccount: false,
+      TWITTER,
+      etherscanLink: '',
+      MESSAGE_MODAL_TYPE_SUCCESS,
     }
   },
   computed: {
@@ -539,6 +553,17 @@ export default {
       const addressFound = this.contactList.find((contact) => contact.value.toLowerCase() === targetContact.toLowerCase())
       return addressFound === undefined
     },
+    tweetData() {
+      const share = new URL('https://twitter.com/intent/tweet')
+      const amount = `${this.displayAmount} ${
+        !this.toggle_exclusive ? (this.contractType === CONTRACT_TYPE_ERC721 ? '' : this.selectedItem.symbol) : this.selectedCurrency
+      }`
+      const message = this.t('walletTransfer.transferTweet')
+        .replace(/{address}/gi, this.toAddress)
+        .replace(/{amount}/gi, amount)
+      share.searchParams.append('text', message)
+      return share.href
+    },
   },
   watch: {
     selectedAddress(newValue, oldValue) {
@@ -547,8 +572,8 @@ export default {
   },
   mounted() {
     if (Object.prototype.hasOwnProperty.call(this.$route.query, 'to')) {
-      this.selectedVerifier = ETH
       this.toAddress = this.$route.query.to
+      this.setSelectedVerifierFromToAddress(this.toAddress)
     } else {
       this.toAddress = ''
     }
@@ -582,6 +607,17 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
+    setSelectedVerifierFromToAddress(toAddress) {
+      if (toAddress.startsWith('0x')) {
+        this.selectedVerifier = ETH
+      } else if (toAddress.startsWith('@')) {
+        this.selectedVerifier = TWITTER
+      } else if (/@/.test(toAddress)) {
+        this.selectedVerifier = GOOGLE
+      } else if (/.eth$/.test(toAddress) || /.xyz$/.test(toAddress) || /.crypto$/.test(toAddress) || /.kred$/i.test(toAddress)) {
+        this.selectedVerifier = ENS
+      }
+    },
     async getIdFromNick(nick, typeOfLogin) {
       if (typeOfLogin === GITHUB) {
         const userData = await get(`https://api.github.com/users/${nick}`)
@@ -687,19 +723,8 @@ export default {
         const contactFound = this.contactList.find((item) => item.value === contact)
         if (contactFound) {
           this.selectedVerifier = contactFound.verifier
-        } else if (this.toAddress.startsWith('0x')) {
-          this.selectedVerifier = ETH
-        } else if (this.toAddress.startsWith('@')) {
-          this.selectedVerifier = TWITTER
-        } else if (/@/.test(this.toAddress)) {
-          this.selectedVerifier = GOOGLE
-        } else if (
-          /.eth$/.test(this.toAddress) ||
-          /.xyz$/.test(this.toAddress) ||
-          /.crypto$/.test(this.toAddress) ||
-          /.kred$/i.test(this.toAddress)
-        ) {
-          this.selectedVerifier = ENS
+        } else {
+          this.setSelectedVerifierFromToAddress(this.toAddress)
         }
       }
       this.ensError = ''
@@ -915,6 +940,7 @@ export default {
             } else {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
+              this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
 
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
@@ -947,6 +973,7 @@ export default {
             } else {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
+              this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
 
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
@@ -975,6 +1002,7 @@ export default {
             } else {
               // Send email to the user
               this.sendEmail(this.assetSelected.name, transactionHash)
+              this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
               this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')

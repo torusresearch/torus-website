@@ -14,15 +14,25 @@
         <div
           class="icon-holder float-left"
           :class="{
-            circle: !(
-              (transaction.type === CONTRACT_TYPE_ERC20 && transaction.actionIcon !== 'n/a') ||
-              transaction.action === ACTIVITY_ACTION_TOPUP ||
-              (transaction.type === CONTRACT_TYPE_ERC721 && transaction.actionIcon !== 'n/a')
-            ),
+            circle:
+              [TOKEN_METHOD_APPROVE, DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].includes(transaction.transaction_category) ||
+              !(
+                (transaction.type === CONTRACT_TYPE_ERC20 && transaction.actionIcon !== 'n/a') ||
+                transaction.action === ACTIVITY_ACTION_TOPUP ||
+                (transaction.type === CONTRACT_TYPE_ERC721 && transaction.actionIcon !== 'n/a')
+              ),
           }"
         >
+          <v-icon
+            v-if="[TOKEN_METHOD_APPROVE, DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].includes(transaction.transaction_category)"
+            class="float-left"
+            size="24"
+            color="torusBrand1"
+          >
+            {{ transaction.actionIcon }}
+          </v-icon>
           <img
-            v-if="transaction.type === CONTRACT_TYPE_ERC20 && transaction.actionIcon !== 'n/a'"
+            v-else-if="transaction.type === CONTRACT_TYPE_ERC20 && transaction.actionIcon !== 'n/a'"
             :src="`${logosUrl}/${transaction.actionIcon}`"
             :alt="`${transaction.type_name} Icon`"
             class="mr-2 ml-2"
@@ -184,8 +194,11 @@ import {
   ACTIVITY_STATUS_PENDING,
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
+  CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
+  DEPLOY_CONTRACT_ACTION_KEY,
+  TOKEN_METHOD_APPROVE,
 } from '../../../utils/enums'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 
@@ -212,6 +225,9 @@ export default {
       ACTIVITY_ACTION_TOPUP,
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721,
+      TOKEN_METHOD_APPROVE,
+      DEPLOY_CONTRACT_ACTION_KEY,
+      CONTRACT_INTERACTION_KEY,
       logosUrl: config.logosUrl,
     }
   },

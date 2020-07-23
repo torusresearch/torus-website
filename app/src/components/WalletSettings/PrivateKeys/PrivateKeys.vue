@@ -12,7 +12,7 @@
                 <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" src="../../../assets/img/icons/file-text-grey.svg" alt="Download JSON Icon" />
               </v-list-item-icon>
               <v-list-item-content>
-                <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.downloadSoftCopy') }} (JSON)</div>
+                <div class="text-subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.downloadSoftCopy') }} (JSON)</div>
                 <v-expand-transition>
                   <v-layout v-if="isShowGetPassword" wrap align-center justify-space-between class="mt-2 download-form-container">
                     <v-flex>
@@ -113,7 +113,7 @@
                 <img :width="$vuetify.breakpoint.xsOnly ? '18' : ''" src="../../../assets/img/icons/key.svg" alt="Key Icon" />
               </v-list-item-icon>
               <v-list-item-content>
-                <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.showPrivateKey') }}</div>
+                <div class="text-subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.showPrivateKey') }}</div>
                 <v-layout v-if="isShowPrivateKey" wrap align-center justify-space-between class="mt-2">
                   <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12' : ''">
                     <div class="text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" style="word-break: break-all;">

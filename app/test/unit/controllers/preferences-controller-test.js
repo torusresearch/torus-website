@@ -75,7 +75,6 @@ describe('Preferences Controller', () => {
     beforeEach(() => {
       sandbox.stub(preferencesController, 'calculatePaymentTx')
       sandbox.stub(preferencesController, 'calculatePastTx')
-      sandbox.stub(preferencesController, 'calculateEtherscanTx')
     })
     afterEach(() => {
       sandbox.restore()

@@ -1,6 +1,6 @@
 import NodeDetailManager from '@toruslabs/fetch-node-details'
-import LocalMessageDuplexStream from '@toruslabs/post-message-stream'
 import log from 'loglevel'
+import LocalMessageDuplexStream from 'post-message-stream'
 import Web3 from 'web3'
 
 import TorusController from './controllers/TorusController'
