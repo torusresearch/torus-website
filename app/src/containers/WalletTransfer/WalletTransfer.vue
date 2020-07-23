@@ -254,12 +254,12 @@
                 @onSelectSpeed="onSelectSpeed"
               />
               <v-flex v-if="contractType === CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
-                <div class="subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
+                <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ getEthAmount(gas, activeGasPrice) }} ETH</div>
                 <div class="caption text_2--text">{{ gasPriceInCurrency }} {{ selectedCurrency }}</div>
               </v-flex>
               <v-flex v-else xs12 mb-6 class="text-right">
-                <div class="subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
+                <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
                 <div class="caption text_2--text">{{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}</div>
               </v-flex>
@@ -572,8 +572,8 @@ export default {
   },
   mounted() {
     if (Object.prototype.hasOwnProperty.call(this.$route.query, 'to')) {
-      this.selectedVerifier = ETH
       this.toAddress = this.$route.query.to
+      this.setSelectedVerifierFromToAddress(this.toAddress)
     } else {
       this.toAddress = ''
     }
@@ -607,6 +607,17 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
+    setSelectedVerifierFromToAddress(toAddress) {
+      if (toAddress.startsWith('0x')) {
+        this.selectedVerifier = ETH
+      } else if (toAddress.startsWith('@')) {
+        this.selectedVerifier = TWITTER
+      } else if (/@/.test(toAddress)) {
+        this.selectedVerifier = GOOGLE
+      } else if (/.eth$/.test(toAddress) || /.xyz$/.test(toAddress) || /.crypto$/.test(toAddress) || /.kred$/i.test(toAddress)) {
+        this.selectedVerifier = ENS
+      }
+    },
     async getIdFromNick(nick, typeOfLogin) {
       if (typeOfLogin === GITHUB) {
         const userData = await get(`https://api.github.com/users/${nick}`)
@@ -659,12 +670,18 @@ export default {
           tokenImageUrl:
             this.contractType !== CONTRACT_TYPE_ERC721 ? `${this.logosUrl}/${this.selectedItemDisplay.logo}` : this.selectedItemDisplay.logo,
         }
-        post(`${config.api}/transaction/sendemail`, emailObject, {
-          headers: {
-            Authorization: `Bearer ${this.jwtToken}`,
-            'Content-Type': 'application/json; charset=utf-8',
+        post(
+          `${config.api}/transaction/sendemail`,
+          emailObject,
+          {
+            headers: {
+              Authorization: `Bearer ${this.jwtToken}`,
+              'Content-Type': 'application/json; charset=utf-8',
+            },
           },
-        })
+          {},
+          { useAPIKey: true }
+        )
           .then((response) => log.info('email response', response))
           .catch((error) => log.error(error))
       }
@@ -706,19 +723,8 @@ export default {
         const contactFound = this.contactList.find((item) => item.value === contact)
         if (contactFound) {
           this.selectedVerifier = contactFound.verifier
-        } else if (this.toAddress.startsWith('0x')) {
-          this.selectedVerifier = ETH
-        } else if (this.toAddress.startsWith('@')) {
-          this.selectedVerifier = TWITTER
-        } else if (/@/.test(this.toAddress)) {
-          this.selectedVerifier = GOOGLE
-        } else if (
-          /.eth$/.test(this.toAddress) ||
-          /.xyz$/.test(this.toAddress) ||
-          /.crypto$/.test(this.toAddress) ||
-          /.kred$/i.test(this.toAddress)
-        ) {
-          this.selectedVerifier = ENS
+        } else {
+          this.setSelectedVerifierFromToAddress(this.toAddress)
         }
       }
       this.ensError = ''

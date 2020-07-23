@@ -1,11 +1,9 @@
 import clone from 'clone'
-import erc20Contracts from 'eth-contract-metadata'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
+import EventEmitter from 'safe-event-emitter'
 import Web3 from 'web3'
-import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
-import erc721Contracts from '../assets/assets-map.json'
 import config from '../config'
 import {
   ACTIVITY_ACTION_RECEIVE,
@@ -14,11 +12,7 @@ import {
   BADGES_COLLECTIBLE,
   BADGES_TOPUP,
   BADGES_TRANSACTION,
-  CONTRACT_TYPE_ERC20,
-  CONTRACT_TYPE_ERC721,
-  CONTRACT_TYPE_ETH,
   ERROR_TIME,
-  MAINNET,
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
@@ -35,7 +29,7 @@ const DEFAULT_BADGES_COMPLETION = {
   [BADGES_TRANSACTION]: false,
 }
 
-class PreferencesController {
+class PreferencesController extends EventEmitter {
   /**
    *
    * @typedef {Object} PreferencesController
@@ -51,6 +45,7 @@ class PreferencesController {
    * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
   constructor(options = {}) {
+    super()
     let theme = THEME_LIGHT_BLUE_NAME
     if (storageAvailable('localStorage')) {
       const torusTheme = localStorage.getItem('torus-theme')
@@ -88,7 +83,6 @@ class PreferencesController {
     this.successStore = new ObservableStore('')
     this.pastTransactionsStore = new ObservableStore([])
     this.paymentTxStore = new ObservableStore([])
-    this.etherscanTxStore = new ObservableStore([])
   }
 
   set jwtToken(token) {
@@ -139,7 +133,7 @@ class PreferencesController {
 
   async sync(callback, errorCallback) {
     try {
-      const user = await get(`${config.api}/user?fetchTx=false`, this.headers)
+      const user = await get(`${config.api}/user?fetchTx=false`, this.headers, { useAPIKey: true })
       if (user?.data) {
         const { badge: userBadges, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         let whiteLabelLocale
@@ -267,63 +261,11 @@ class PreferencesController {
       const { selectedAddress } = this.state
       const tx = await getEtherscanTransactions({ selectedAddress }, this.headers.headers)
       if (tx?.data) {
-        this.calculateEtherscanTx(tx.data)
+        this.emit('addEtherscanTransactions', tx.data)
       }
     } catch (error) {
       log.error('unable to fetch etherscan tx', error)
     }
-  }
-
-  async calculateEtherscanTx(txs) {
-    const lowerCaseSelectedAddress = this.state.selectedAddress.toLowerCase()
-    const finalTxs = txs.reduce((accumulator, x) => {
-      const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
-      const etherscanTransaction = {
-        type: CONTRACT_TYPE_ETH,
-        symbol: 'ETH',
-        type_image_link: 'n/a',
-        type_name: 'n/a',
-        total_amount: totalAmount,
-        created_at: x.timeStamp * 1000,
-        from: x.from,
-        to: x.to,
-        transaction_hash: x.hash,
-        network: MAINNET,
-        status: x.txreceipt_status && x.txreceipt_status === '0' ? 'failed' : 'success',
-        isEtherscan: true,
-      }
-
-      if (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase()) {
-        if (x.contractAddress) {
-          const transactionType = x.tokenID ? CONTRACT_TYPE_ERC721 : CONTRACT_TYPE_ERC20
-          let contract
-          if (transactionType === CONTRACT_TYPE_ERC20) {
-            let checkSummedTo = x.contractAddress
-            if (isAddress(x.contractAddress)) checkSummedTo = toChecksumAddress(x.contractAddress)
-            contract = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
-          } else {
-            contract = Object.prototype.hasOwnProperty.call(erc721Contracts, x.contractAddress.toLowerCase())
-              ? erc721Contracts[x.contractAddress.toLowerCase()]
-              : {}
-          }
-
-          if (Object.keys(contract).length > 0) {
-            etherscanTransaction.symbol = transactionType === CONTRACT_TYPE_ERC20 ? contract.symbol : x.tokenID
-            etherscanTransaction.type_image_link = contract.logo
-            etherscanTransaction.type_name = contract.name
-          } else {
-            etherscanTransaction.symbol = x.tokenID
-            etherscanTransaction.type_name = x.tokenName
-          }
-          etherscanTransaction.type = transactionType
-        }
-
-        accumulator.push(formatPastTx(etherscanTransaction, lowerCaseSelectedAddress))
-      }
-      return accumulator
-    }, [])
-
-    this.etherscanTxStore.putState(finalTxs)
   }
 
   async patchNewTx(tx) {
@@ -349,7 +291,7 @@ class PreferencesController {
 
   async postPastTx(tx) {
     try {
-      const response = await post(`${config.api}/transaction`, tx, this.headers)
+      const response = await post(`${config.api}/transaction`, tx, this.headers, { useAPIKey: true })
       log.info('successfully added', response)
     } catch (error) {
       log.error(error, 'unable to insert transaction')
@@ -372,7 +314,8 @@ class PreferencesController {
         verifier,
         verifierId,
       },
-      this.headers
+      this.headers,
+      { useAPIKey: true }
     )
   }
 
@@ -395,7 +338,8 @@ class PreferencesController {
             verifierId,
             metadata: `referrer:${referrer}`,
           },
-          this.headers
+          this.headers,
+          { useAPIKey: true }
         )
         clearInterval(interval)
       }, 1000)
@@ -405,7 +349,7 @@ class PreferencesController {
   async setUserTheme(payload) {
     if (payload === this.state.theme) return
     try {
-      await patch(`${config.api}/user/theme`, { theme: payload }, this.headers)
+      await patch(`${config.api}/user/theme`, { theme: payload }, this.headers, { useAPIKey: true })
       this.handleSuccess('navBar.snackSuccessTheme')
       this.store.updateState({ theme: payload })
     } catch (error) {
@@ -417,7 +361,7 @@ class PreferencesController {
   /* istanbul ignore next */
   async setPermissions(payload) {
     try {
-      const response = await post(`${config.api}/permissions`, payload, this.headers)
+      const response = await post(`${config.api}/permissions`, payload, this.headers, { useAPIKey: true })
       log.info('successfully set permissions', response)
     } catch (error) {
       log.error('unable to set permissions', error)
@@ -427,7 +371,7 @@ class PreferencesController {
   async setUserLocale(payload) {
     if (payload === this.state.locale) return
     try {
-      await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
+      await patch(`${config.api}/user/locale`, { locale: payload }, this.headers, { useAPIKey: true })
       this.store.updateState({ locale: payload })
       // this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {
@@ -439,7 +383,7 @@ class PreferencesController {
   async setSelectedCurrency(payload) {
     if (payload.selectedCurrency === this.state.selectedCurrency) return
     try {
-      await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers)
+      await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers, { useAPIKey: true })
       this.store.updateState({ selectedCurrency: payload.selectedCurrency })
       this.handleSuccess('navBar.snackSuccessCurrency')
     } catch (error) {
@@ -451,7 +395,7 @@ class PreferencesController {
   /* istanbul ignore next */
   async setVerifier(verifier, verifierId) {
     try {
-      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers)
+      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers, { useAPIKey: true })
       log.info('successfully updated verifier info', response)
     } catch (error) {
       log.error('unable to update verifier info', error)
@@ -460,12 +404,12 @@ class PreferencesController {
 
   /* istanbul ignore next */
   getEtherScanTokenBalances() {
-    return get(`${config.api}/tokenbalances`, this.headers)
+    return get(`${config.api}/tokenbalances`, this.headers, { useAPIKey: true })
   }
 
   async getBillboardContents() {
     try {
-      const resp = await get(`${config.api}/billboard`, this.headers)
+      const resp = await get(`${config.api}/billboard`, this.headers, { useAPIKey: true })
       const events = resp.data.reduce((accumulator, event) => {
         if (!accumulator[event.callToActionLink]) accumulator[event.callToActionLink] = {}
         accumulator[event.callToActionLink][event.locale] = event
@@ -480,7 +424,7 @@ class PreferencesController {
 
   async addContact(payload) {
     try {
-      const response = await post(`${config.api}/contact`, payload, this.headers)
+      const response = await post(`${config.api}/contact`, payload, this.headers, { useAPIKey: true })
       this.store.updateState({ contacts: [...this.state.contacts, response.data] })
       this.handleSuccess('navBar.snackSuccessContactAdd')
     } catch {
@@ -490,7 +434,7 @@ class PreferencesController {
 
   async deleteContact(payload) {
     try {
-      const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers)
+      const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers, { useAPIKey: true })
       const finalContacts = this.state.contacts.filter((contact) => contact.id !== response.data.id)
       this.store.updateState({ contacts: finalContacts })
       this.handleSuccess('navBar.snackSuccessContactDelete')
@@ -502,7 +446,7 @@ class PreferencesController {
   /* istanbul ignore next */
   async revokeDiscord(idToken) {
     try {
-      const resp = await post(`${config.api}/revoke/discord`, { token: idToken }, this.headers)
+      const resp = await post(`${config.api}/revoke/discord`, { token: idToken }, this.headers, { useAPIKey: true })
       log.info(resp)
     } catch (error) {
       log.error(error)
@@ -518,7 +462,8 @@ class PreferencesController {
           id: txId,
           status,
         },
-        this.headers
+        this.headers,
+        { useAPIKey: true }
       )
       log.info('successfully patched', response)
     } catch (error) {
@@ -557,7 +502,7 @@ class PreferencesController {
     const newBadgeCompletion = { ...this.state.badgesCompletion, ...{ [payload]: true } }
     this.store.updateState({ badgesCompletion: newBadgeCompletion })
     try {
-      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers)
+      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers, { useAPIKey: true })
     } catch (error) {
       log.error('unable to set badge', error)
     }

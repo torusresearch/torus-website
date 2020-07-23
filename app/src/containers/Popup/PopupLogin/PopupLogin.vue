@@ -39,7 +39,7 @@
               </div>
             </v-flex>
             <v-flex xs12 mt-7>
-              <div class="body-1 torus_text--text">{{ t('login.signUpIn') }}</div>
+              <div class="text-body-1 torus_text--text">{{ t('login.signUpIn') }}</div>
             </v-flex>
             <v-flex xs12>
               <v-layout wrap mx-n1>
@@ -81,7 +81,7 @@
                   :color="$vuetify.theme.dark ? '' : 'white'"
                   block
                   :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-${verifier.typeOfLogin}`]"
-                  class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
+                  class="text-body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
                   @click="startLogin(verifier.verifier)"
                 >
                   <img

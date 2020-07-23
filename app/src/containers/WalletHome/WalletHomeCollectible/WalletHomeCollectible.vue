@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-breadcrumbs class="px-4 subtitle-1 font-weight-bold" :items="breadcrumb">
+    <v-breadcrumbs class="px-4 text-subtitle-1 font-weight-bold" :items="breadcrumb">
       <template v-slot:divider>
         <v-icon small>$vuetify.icons.page_next_double</v-icon>
       </template>
@@ -64,7 +64,7 @@
             <v-list-item>
               <v-list-item-content class="asset-text">
                 <div
-                  class="subtitle-1 text_2--text text-clamp-two font-weight-bold"
+                  class="text-subtitle-1 text_2--text text-clamp-two font-weight-bold"
                   :title="asset.name || `${selectedContract.name} #${asset.tokenId}`"
                 >
                   {{ asset.name || `${selectedContract.name} #${asset.tokenId}` }}

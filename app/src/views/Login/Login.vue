@@ -34,7 +34,7 @@
                       :color="$vuetify.theme.dark ? '' : 'white'"
                       block
                       :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                      class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google gmt-login gmt-login-google"
+                      class="text-body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google gmt-login gmt-login-google"
                       @click="startLogin(GOOGLE_VERIFIER)"
                     >
                       <img
@@ -75,7 +75,7 @@
                         :color="$vuetify.theme.dark ? '' : 'white'"
                         block
                         :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-${verifier.typeOfLogin}`]"
-                        class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
+                        class="text-body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
                         @click="startLogin(verifier.verifier)"
                       >
                         <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.typeOfLogin}` }}</v-icon>
@@ -211,7 +211,7 @@
                       :color="$vuetify.theme.dark ? '' : 'white'"
                       block
                       :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                      class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
+                      class="text-body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
                       @click="startLogin(verifier.verifier)"
                     >
                       <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.typeOfLogin}` }}</v-icon>
@@ -268,7 +268,7 @@
               />
             </v-flex>
             <v-flex xs12>
-              <div class="text-center subtitle-1 font-weight-bold">{{ t('login.beenLoggedOut') }}</div>
+              <div class="text-center text-subtitle-1 font-weight-bold">{{ t('login.beenLoggedOut') }}</div>
             </v-flex>
             <v-flex xs12 mt-4>
               <div class="text-center">
@@ -276,7 +276,7 @@
                   :color="$vuetify.theme.dark ? '' : 'white'"
                   :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
                   :depressed="$vuetify.theme.dark"
-                  class="px-12 pa-3 font-weight-bold body-1 text-uppercase torusBrand1--text logout-btn"
+                  class="px-12 pa-3 font-weight-bold text-body-1 text-uppercase torusBrand1--text logout-btn"
                   type="button"
                   @click="returnHome"
                 >
@@ -300,8 +300,8 @@
                       />
                     </div>
                     <div class="display-1 mb-3 font-weight-medium text_2--text">{{ t(`login.slide${slide}Title`) }}</div>
-                    <div class="body-1 text_2--text">{{ t(`login.slide${slide}Subtitle1`) }}</div>
-                    <div class="body-1 text_2--text">{{ t(`login.slide${slide}Subtitle2`) }}</div>
+                    <div class="text-body-1 text_2--text">{{ t(`login.slide${slide}Subtitle1`) }}</div>
+                    <div class="text-body-1 text_2--text">{{ t(`login.slide${slide}Subtitle2`) }}</div>
                     <div class="mb-5">
                       <v-btn
                         class="learn-more-btn gmt-learn-more text_2--text"
@@ -343,7 +343,7 @@
 
 <script>
 import log from 'loglevel'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import PasswordlessLogin from '../../components/helpers/PasswordLessLogin'
 import {
@@ -362,7 +362,9 @@ import {
   WalletTransferLoader,
   WalletTransferLoaderMobile,
 } from '../../content-loader'
+import createHandler from '../../store/Handlers/HandlerFactory'
 import { GOOGLE, GOOGLE_VERIFIER, PASSWORDLESS } from '../../utils/enums'
+import { handleRedirectParameters } from '../../utils/utils'
 
 export default {
   name: 'Login',
@@ -437,17 +439,59 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
 
     this.isLogout = this.$route.name !== 'login'
 
     this.scroll()
+
+    try {
+      const hash = this.$router.currentRoute.hash.slice(1)
+      const queryParameters = this.$router.currentRoute.query
+      const { error, instanceParameters, hashParameters } = handleRedirectParameters(hash, queryParameters)
+      if (error) throw new Error(error)
+      const { verifier: returnedVerifier } = instanceParameters
+      if (returnedVerifier) this.loginInProgress = true
+      else return
+      const { access_token: accessToken, id_token: idToken } = hashParameters
+      const currentVeriferConfig = this.loginConfig[returnedVerifier]
+      const { typeOfLogin, clientId, jwtParameters } = currentVeriferConfig
+      const loginHandler = createHandler({
+        typeOfLogin,
+        clientId,
+        verifier: returnedVerifier,
+        redirect_uri: '',
+        preopenInstanceId: '',
+        jwtParameters: jwtParameters || {},
+      })
+      const userInfo = await loginHandler.getUserInfo({ accessToken, idToken })
+      const { profileImage, name, email, verifierId, typeOfLogin: returnTypeOfLogin } = userInfo
+      this.setUserInfo({
+        profileImage,
+        name,
+        email,
+        verifierId,
+        verifier: returnedVerifier,
+        verifierParams: { verifier_id: verifierId },
+        typeOfLogin: returnTypeOfLogin,
+      })
+      await this.handleLogin({ calledFromEmbed: false, oAuthToken: idToken || accessToken })
+    } catch (error) {
+      log.error(error)
+      this.snackbar = true
+      this.snackbarColor = 'error'
+      this.snackbarText = error.message.includes('email_verified') ? 'Please verify your email first' : this.t('login.loginError')
+    } finally {
+      this.loginInProgress = false
+    }
   },
   methods: {
     ...mapActions({
       triggerLogin: 'triggerLogin',
+      handleLogin: 'handleLogin',
     }),
+    ...mapMutations(['setUserInfo']),
     async startLogin(verifier) {
       if (verifier === PASSWORDLESS) {
         this.passwordlessLoginDialog = true

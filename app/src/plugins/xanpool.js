@@ -11,13 +11,12 @@ const postQuote = (requestObject, headers) => {
     })
     const options = {
       mode: 'cors',
-      isUrlEncodedData: true,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         ...headers,
       },
     }
-    return post(`${config.xanpoolApiQuoteHost}`, urlencoded, options)
+    return post(`${config.xanpoolApiQuoteHost}`, urlencoded, options, { isUrlEncodedData: true })
   } catch (error) {
     log.error(error)
   }

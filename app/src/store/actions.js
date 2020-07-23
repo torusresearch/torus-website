@@ -114,7 +114,7 @@ export default {
     resetStore(prefsController.errorStore, errorMessageHandler)
     resetStore(prefsController.paymentTxStore, paymentTxHandler, [])
     resetStore(prefsController.pastTransactionsStore, pastTransactionsHandler, [])
-    resetStore(prefsController.etherscanTxStore, etherscanTxHandler, [])
+    resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
     torus.updateStaticData({ isUnlocked: false })
   },
   setSelectedCurrency({ commit }, payload) {
@@ -373,7 +373,7 @@ export default {
     prefsController.errorStore.subscribe(errorMessageHandler)
     prefsController.paymentTxStore.subscribe(paymentTxHandler)
     prefsController.pastTransactionsStore.subscribe(pastTransactionsHandler)
-    prefsController.etherscanTxStore.subscribe(etherscanTxHandler)
+    txController.etherscanTxStore.subscribe(etherscanTxHandler)
   },
   initTorusKeyring(_, payload) {
     return torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
@@ -433,10 +433,15 @@ export default {
       const { message, selectedAddress, calledFromEmbed } = payload
       const hashedMessage = torus.hashMessage(message)
       const signedMessage = await torus.torusController.keyringController.signMessage(selectedAddress, hashedMessage)
-      const response = await post(`${config.api}/auth/verify`, {
-        public_address: selectedAddress,
-        signed_message: signedMessage,
-      })
+      const response = await post(
+        `${config.api}/auth/verify`,
+        {
+          public_address: selectedAddress,
+          signed_message: signedMessage,
+        },
+        {},
+        { useAPIKey: true }
+      )
       commit('setJwtToken', response.token)
       // prefsController.jwtToken = response.token
       if (response.token) {
@@ -585,7 +590,7 @@ export default {
             type = 'erc721'
             typeName = name
             typeImageLink = logo
-            totalAmount = fromWei(toBN(txParams.value))
+            totalAmount = fromWei(toBN(txParams.value || 0))
             finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
           }
         } else if (contractParams.erc20) {
@@ -603,7 +608,7 @@ export default {
           type = 'erc20'
           typeName = name
           typeImageLink = logo
-          totalAmount = fromWei(toBN(amountValue && amountValue.value ? amountValue.value : txParams.value))
+          totalAmount = fromWei(toBN(amountValue && amountValue.value ? amountValue.value : txParams.value || 0))
           finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
         } else {
           tokenRate = 1
@@ -611,7 +616,7 @@ export default {
           type = 'eth'
           typeName = 'eth'
           typeImageLink = 'n/a'
-          totalAmount = fromWei(toBN(txParams.value))
+          totalAmount = fromWei(toBN(txParams.value || 0))
           finalTo = toChecksumAddress(txParams.to)
         }
         // Goes to db

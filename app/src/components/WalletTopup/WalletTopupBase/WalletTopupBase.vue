@@ -91,7 +91,7 @@
 
             <div class="description mt-6">{{ t('walletTopUp.theProcess') }} 10 - 15 {{ t('walletTopUp.minSmall') }}.</div>
             <div class="description mt-1">
-              {{ selectedProviderObj.receiveHint || t('walletTopUp.receiveHint') }}
+              {{ selectedProviderObj.receiveHint ? t(selectedProviderObj.receiveHint) : t('walletTopUp.receiveHint') }}
             </div>
           </v-flex>
         </v-layout>

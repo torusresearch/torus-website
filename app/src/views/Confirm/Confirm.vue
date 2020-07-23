@@ -77,7 +77,7 @@
         <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
             <template v-slot:activator="{ on }">
-              <div id="more-details-link" class="subtitle-2 float-right dialog-launcher primary--text" v-on="on">
+              <div id="more-details-link" class="text-subtitle-2 float-right dialog-launcher primary--text" v-on="on">
                 {{ t('dappTransfer.moreDetails') }}
               </div>
             </template>
@@ -572,11 +572,15 @@ export default {
           let assetDetails = {}
           try {
             const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
-            assetDetails = await get(`${config.api}/opensea?url=${url}`, {
-              headers: {
-                Authorization: `Bearer ${jwtToken}`,
+            assetDetails = await get(
+              `${config.api}/opensea?url=${url}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${jwtToken}`,
+                },
               },
-            })
+              { useAPIKey: true }
+            )
             this.assetDetails = {
               name: assetDetails.data.name || '',
               logo: assetDetails.data.image_thumbnail_url || '',

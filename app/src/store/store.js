@@ -1,3 +1,4 @@
+import { setAPIKey } from '@toruslabs/http-helpers'
 import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -238,5 +239,9 @@ if (storageAvailable('localStorage')) {
     VuexStore.commit('setTheme', torusTheme)
   }
 }
+
+// Another location
+
+setAPIKey(VuexStore.state.embedState.apiKey)
 
 export default VuexStore

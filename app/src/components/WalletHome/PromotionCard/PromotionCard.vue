@@ -3,7 +3,7 @@
     <v-layout class="d-flex flex-column fill-height py-4 px-6">
       <v-flex class="flex-grow-1 d-flex">
         <div class="promotion-text pr-3">
-          <div class="body-1 font-weight-bold text_1--text" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
+          <div class="text-body-1 font-weight-bold text_1--text" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
           <div class="caption text_1--text" :title="subtitle">
             {{ subtitle }}
           </div>

@@ -6,6 +6,7 @@
 
 <script>
 /* eslint-disable vue-scoped-css/require-scoped */
+
 export default {
   mounted() {
     const pageHtml = document.querySelector('html')
