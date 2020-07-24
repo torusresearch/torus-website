@@ -81,7 +81,7 @@
     "vue-qrcode-reader": "^2.3.10",
     "vue-router": "^3.3.4",
     "vue-spinner": "^1.0.4",
-    "vuetify": "^2.3.5",
+    "vuetify": "^2.3.6",
     "vuex": "^3.5.1",
     "vuex-persist": "^2.2.0",
     "web3": "^1.2.11",
