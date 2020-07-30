@@ -20,6 +20,7 @@ import createLoggerMiddleware from '../utils/createLoggerMiddleware'
 // import setupMultiplex from '../utils/setupMultiplex'
 import createOriginMiddleware from '../utils/createOriginMiddleware'
 import nodeify from '../utils/nodeify'
+import createRandomId from '../utils/random-id'
 import AccountTracker from './AccountTracker'
 import AssetContractController from './AssetsContractController'
 import AssetController from './AssetsController'
@@ -144,7 +145,7 @@ export default class TorusController extends EventEmitter {
       getGasPrice: this.getGasPrice.bind(this),
       storeProps: this.opts.storeProps,
     })
-    this.txController.on('newUnapprovedTx', () => options.showUnapprovedTx())
+    this.txController.on('newUnapprovedTx', (txMeta) => options.showUnapprovedTx(txMeta))
 
     this.txController.on('tx:status-update', (txId, status) => {
       if (status === 'confirmed' || status === 'failed') {
@@ -422,9 +423,10 @@ export default class TorusController extends EventEmitter {
    * @param {Function} cb = The callback function called with the signature.
    */
   newUnsignedMessage(messageParameters, request) {
-    const promise = this.messageManager.addUnapprovedMessageAsync(messageParameters, request)
+    const messageId = createRandomId()
+    const promise = this.messageManager.addUnapprovedMessageAsync(messageParameters, request, messageId)
     this.sendUpdate()
-    this.opts.showUnconfirmedMessage()
+    this.opts.showUnconfirmedMessage(messageId)
     return promise
   }
 
@@ -480,9 +482,10 @@ export default class TorusController extends EventEmitter {
    * Passed back to the requesting Dapp.
    */
   async newUnsignedPersonalMessage(messageParameters, request) {
-    const promise = this.personalMessageManager.addUnapprovedMessageAsync(messageParameters, request)
+    const messageId = createRandomId()
+    const promise = this.personalMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageId)
     this.sendUpdate()
-    this.opts.showUnconfirmedMessage()
+    this.opts.showUnconfirmedMessage(messageId)
     return promise
   }
 
@@ -533,9 +536,10 @@ export default class TorusController extends EventEmitter {
    * @param {Function} cb - The callback function, called with the signature.
    */
   newUnsignedTypedMessage(messageParameters, request, messageVersion) {
-    const promise = this.typedMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageVersion)
+    const messageId = createRandomId()
+    const promise = this.typedMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageVersion, messageId)
     this.sendUpdate()
-    this.opts.showUnconfirmedMessage()
+    this.opts.showUnconfirmedMessage(messageId)
     return promise
   }
 

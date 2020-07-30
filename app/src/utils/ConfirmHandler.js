@@ -8,16 +8,15 @@ import { broadcastChannelOptions, getIFrameOriginObject } from './utils'
 const { baseRoute } = config
 
 class ConfirmHandler {
-  constructor(torusInstanceId) {
-    this.id = undefined
+  constructor(id) {
+    this.id = id
     this.txType = undefined
     this.confirmWindow = {}
-    this.torusInstanceId = torusInstanceId
-    this.bc = new BroadcastChannel(`torus_channel_${torusInstanceId}`, broadcastChannelOptions)
+    this.bc = new BroadcastChannel(`torus_channel_${id}`, broadcastChannelOptions)
   }
 
   open(handleConfirm, handleDeny) {
-    const finalUrl = `${baseRoute}confirm?instanceId=${this.torusInstanceId}&integrity=true&id=${this.id}`
+    const finalUrl = `${baseRoute}confirm?instanceId=${this.id}&integrity=true&id=${this.id}`
     this.confirmWindow = new PopupHandler({
       url: finalUrl,
       target: '_blank',
