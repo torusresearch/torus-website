@@ -21,7 +21,7 @@ To see the current production app, navigate to https://app.tor.us
 - Go to *chrome://extensions*
 - Ensure *developer mode*
 - Drag *embed.user.js*
-- Navigate to etheremon.com and sign-in
+- Navigate to any dapp which supports Metamask and sign-in
 
 **Using online vue-embed**
 - Go to https://vue-embed.tor.us

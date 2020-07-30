@@ -11,15 +11,15 @@
         <v-flex xs12>
           <NetworkDisplay :minimal="true" class="mb-4" :store-network-type="network"></NetworkDisplay>
         </v-flex>
-        <v-flex v-if="transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM" xs12>
+        <v-flex v-if="transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM || transactionCategory === TOKEN_METHOD_APPROVE" xs12>
+          <v-flex v-if="transactionCategory === TOKEN_METHOD_APPROVE" xs12 mb-2>
+            <span class="headline text_2--text">
+              {{ `${t('dappPermission.allow')} ${origin.hostname} ${t('dappTransfer.toSpend')} ${selectedToken} ${t('dappTransfer.onYourBehalf')}?` }}
+            </span>
+          </v-flex>
           <ShowToolTip :address="amountTo">
             <div class="caption">{{ t('dappTransfer.to') }}: {{ amountTo }}</div>
           </ShowToolTip>
-        </v-flex>
-        <v-flex v-else-if="transactionCategory === TOKEN_METHOD_APPROVE" xs12 class="text-center">
-          <span class="headline text_2--text">
-            {{ `${t('dappPermission.allow')} ${origin.hostname} ${t('dappTransfer.toSpend')} ${selectedToken} ${t('dappTransfer.onYourBehalf')}?` }}
-          </span>
         </v-flex>
         <v-flex v-else xs12>
           <ShowToolTip

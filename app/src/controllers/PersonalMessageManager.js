@@ -4,8 +4,6 @@ import EventEmitter from 'events'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
-import createId from '../utils/random-id'
-
 const hexRe = /^[\dA-Fa-f]+$/g
 
 /**
@@ -84,12 +82,12 @@ export default class PersonalMessageManager extends EventEmitter {
    * @returns {promise} When the message has been signed or rejected
    *
    */
-  addUnapprovedMessageAsync(messageParameters, request) {
+  addUnapprovedMessageAsync(messageParameters, request, messageId) {
     return new Promise((resolve, reject) => {
       if (!messageParameters.from) {
         reject(new Error('MetaMask Message Signature: from field is required.'))
       }
-      const messageId = this.addUnapprovedMessage(messageParameters, request)
+      this.addUnapprovedMessage(messageParameters, request, messageId)
       this.once(`${messageId}:finished`, (data) => {
         switch (data.status) {
           case 'signed':
@@ -113,14 +111,13 @@ export default class PersonalMessageManager extends EventEmitter {
    * @returns {number} The id of the newly created PersonalMessage.
    *
    */
-  addUnapprovedMessage(messageParameters, request) {
+  addUnapprovedMessage(messageParameters, request, messageId) {
     log.debug(`PersonalMessageManager addUnapprovedMessage: ${JSON.stringify(messageParameters)}`)
     // add origin from request
     if (request) messageParameters.origin = request.origin
     messageParameters.data = this.normalizeMsgData(messageParameters.data)
     // create txData obj with parameters and meta data
     const time = new Date().getTime()
-    const messageId = createId()
     const messageData = {
       id: messageId,
       msgParams: messageParameters,

@@ -21,6 +21,7 @@ module.exports = {
         { from: /./, to: '/index.html' },
       ],
     },
+    // quiet: true,
   },
   css: {
     extract: false,
@@ -40,6 +41,9 @@ module.exports = {
       // replace the current one with it
       config.optimization.minimizer[0] = new TerserPlugin(options)
     }
+    // else {
+    //   config.devtool = 'source-map'
+    // }
   },
   chainWebpack: (config) => {
     config.resolve.alias.set('bn.js', path.resolve(__dirname, 'node_modules/bn.js'))
@@ -52,6 +56,9 @@ module.exports = {
         .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
         .after('workbox')
     }
+    // else {
+    //   config.module.rule('sourcemap').test(/\.js$/).enforce('pre').use('source-map-loader').loader('source-map-loader').end()
+    // }
   },
 
   publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',

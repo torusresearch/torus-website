@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "private": true,
   "scripts": {
     "serve": "npm run locale && vue-cli-service serve",
@@ -46,7 +46,7 @@
     "eth-json-rpc-middleware": "^4.4.1",
     "eth-query": "^2.1.2",
     "eth-sig-util": "^2.5.3",
-    "ethereumjs-common": "^1.5.1",
+    "ethereumjs-common": "^1.5.2",
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^7.0.0",
     "ethereumjs-wallet": "^0.6.3",
@@ -78,7 +78,7 @@
     "vue-gtm": "^2.3.1",
     "vue-json-pretty": "^1.6.5",
     "vue-qr": "^2.2.1",
-    "vue-qrcode-reader": "^2.3.10",
+    "vue-qrcode-reader": "^2.3.11",
     "vue-router": "^3.3.4",
     "vue-spinner": "^1.0.4",
     "vuetify": "^2.3.6",

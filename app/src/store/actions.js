@@ -558,7 +558,7 @@ export default {
   updateCalculatedTx({ state, getters }, payload) {
     for (const id in payload) {
       const txOld = payload[id]
-      if (txOld.metamaskNetworkId.toString() === state.networkId.toString()) {
+      if (txOld.metamaskNetworkId.toString() === state.networkId.toString() && txOld.status === 'submitted' && id >= 0) {
         const { methodParams, contractParams, txParams, transactionCategory, time, hash, status } = txOld
         let amountTo
         let amountValue
@@ -581,17 +581,28 @@ export default {
           }
           const { name = '', logo } = contractParams
           // Get asset name of the 721
-          const contract = state.assets[state.selectedAddress].find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
-          log.info(contract, amountValue)
-          if (contract) {
-            const { name: foundAssetName } = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
-            assetName = foundAssetName || ''
-            symbol = assetName
-            type = 'erc721'
-            typeName = name
-            typeImageLink = logo
+          const selectedAddressAssets = state.assets[state.selectedAddress]
+          if (selectedAddressAssets) {
+            const contract = selectedAddressAssets.find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
+            log.info(contract, amountValue)
+            if (contract) {
+              const { name: foundAssetName } = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
+              assetName = foundAssetName || ''
+              symbol = assetName
+              type = 'erc721'
+              typeName = name
+              typeImageLink = logo
+              totalAmount = fromWei(toBN(txParams.value || 0))
+              finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+            }
+          } else {
+            tokenRate = 1
+            symbol = 'ETH'
+            type = 'eth'
+            typeName = 'eth'
+            typeImageLink = 'n/a'
             totalAmount = fromWei(toBN(txParams.value || 0))
-            finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+            finalTo = toChecksumAddress(txParams.to)
           }
         } else if (contractParams.erc20) {
           // ERC20 transfer
