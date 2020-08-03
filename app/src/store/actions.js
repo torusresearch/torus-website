@@ -580,19 +580,27 @@ export default {
             ;[, amountTo, amountValue] = methodParams || []
           }
           const { name = '', logo } = contractParams
+
           // Get asset name of the 721
-          const contract = state.assets[state.selectedAddress].find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
+          let contract
+          if (state.assets[state.selectedAddress]) {
+            contract = state.assets[state.selectedAddress].find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
+          }
           log.info(contract, amountValue)
+
           if (contract) {
             const { name: foundAssetName } = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
             assetName = foundAssetName || ''
             symbol = assetName
-            type = 'erc721'
-            typeName = name
-            typeImageLink = logo
-            totalAmount = fromWei(toBN(txParams.value || 0))
-            finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+          } else {
+            symbol = amountValue.value.toString()
           }
+
+          type = 'erc721'
+          typeName = name
+          typeImageLink = logo
+          totalAmount = fromWei(toBN(txParams.value || 0))
+          finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
         } else if (contractParams.erc20) {
           // ERC20 transfer
           tokenRate = state.tokenRates[txParams.to]
