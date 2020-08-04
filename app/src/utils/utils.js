@@ -622,7 +622,7 @@ export const handleRedirectParameters = (hash, queryParameters) => {
   if (!queryParameters.preopenInstanceId) {
     if (Object.keys(hashParameters).length > 0 && hashParameters.state) {
       instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {}
-      if (hashParameters.error) error = hashParameters.error
+      error = hashParameters.error_description || hashParameters.error || error
     } else if (Object.keys(queryParameters).length > 0 && queryParameters.state) {
       instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {}
       if (queryParameters.error) error = queryParameters.error
