@@ -64,6 +64,7 @@ const statusStream = communicationMux.getStream('status')
 const oauthStream = communicationMux.getStream('oauth')
 const userInfoStream = communicationMux.getStream('user_info')
 const providerChangeStream = communicationMux.getStream('provider_change')
+const solanaStream = communicationMux.getStream('solana')
 const widgetStream = communicationMux.getStream('widget')
 
 const handleProviderChangeSuccess = () => {
@@ -75,6 +76,29 @@ const handleProviderChangeSuccess = () => {
       },
     })
   }, 100)
+}
+
+const handleSolanaSuccess = (preopenInstanceId) => {
+  setTimeout(() => {
+    solanaStream.write({
+      name: 'solana_status',
+      data: {
+        id: preopenInstanceId,
+        success: true,
+      },
+    })
+  }, 100)
+}
+
+const handleSolanaFailure = (error, preopenInstanceId) => {
+  providerChangeStream.write({
+    name: 'solana_status',
+    data: {
+      id: preopenInstanceId,
+      success: false,
+      err: error.message || 'Solana request status error',
+    },
+  })
 }
 
 const handleProviderChangeDeny = (error) => {
@@ -193,6 +217,49 @@ export default {
     providerChangeWindow.once('close', () => {
       bc.close()
       handleProviderChangeDeny('user denied provider change request')
+    })
+  },
+  showSolanaPopup(_, payload) {
+    const { preopenInstanceId } = payload
+    const bc = new BroadcastChannel(`torus_solana_channel_${preopenInstanceId}`, broadcastChannelOptions)
+    const finalUrl = `${baseRoute}solanaapprove?integrity=true&instanceId=${preopenInstanceId}`
+    const solanaWindow = new PopupHandler({
+      url: finalUrl,
+      preopenInstanceId,
+      target: '_blank',
+      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375',
+    })
+    bc.addEventListener('message', async (ev) => {
+      const { type = '', approve = false } = ev.data
+      if (type === 'popup-loaded') {
+        await bc.postMessage({
+          data: {
+            origin: getIFrameOriginObject(),
+            payload,
+          },
+        })
+      } else if (type === 'solana-result') {
+        try {
+          log.info('solana result', approve)
+          if (approve) {
+            // await dispatch('setProviderType', payload)
+            handleSolanaSuccess(preopenInstanceId)
+          } else {
+            handleSolanaFailure('user denied provider change request', preopenInstanceId)
+          }
+        } catch {
+          handleSolanaFailure('Internal error occured', preopenInstanceId)
+        } finally {
+          bc.close()
+          solanaWindow.close()
+        }
+      }
+    })
+
+    solanaWindow.open()
+    solanaWindow.once('close', () => {
+      bc.close()
+      handleSolanaFailure('user denied provider change request', preopenInstanceId)
     })
   },
   showUserInfoRequestPopup({ dispatch, state }, payload) {

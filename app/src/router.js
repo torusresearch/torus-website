@@ -19,6 +19,7 @@ import Login from './views/Login'
 import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import RedirectCatch from './views/RedirectCatch'
+import SolanaApprove from './views/SolanaApprove'
 import UserInfoRequest from './views/UserInfoRequest'
 import Wallet from './views/Wallet'
 
@@ -62,6 +63,12 @@ const router = new Router({
       path: '/providerchange',
       name: 'providerchange',
       component: ProviderChange,
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/solanaapprove',
+      name: 'solanaapprove',
+      component: SolanaApprove,
       meta: { requiresAuth: false },
     },
     {
