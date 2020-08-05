@@ -437,7 +437,7 @@ export default {
       selectedVerifier: '',
       rules: {
         required: (value) => !!value || this.t('walletTransfer.required'),
-        contactRequired: (value) => !!value || 'walletTransfer.required',
+        contactRequired: (value) => !!value || this.t('walletTransfer.required'),
       },
       nodeDetails: {},
       messageModalShow: false,
