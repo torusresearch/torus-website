@@ -3,6 +3,7 @@ import clone from 'clone'
 import deepmerge from 'deepmerge'
 import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
+import nacl from 'tweetnacl'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
@@ -78,12 +79,13 @@ const handleProviderChangeSuccess = () => {
   }, 100)
 }
 
-const handleSolanaSuccess = (preopenInstanceId) => {
+const handleSolanaSuccess = (preopenInstanceId, payload) => {
   setTimeout(() => {
     solanaStream.write({
       name: 'solana_status',
       data: {
         id: preopenInstanceId,
+        payload,
         success: true,
       },
     })
@@ -219,7 +221,7 @@ export default {
       handleProviderChangeDeny('user denied provider change request')
     })
   },
-  showSolanaPopup(_, payload) {
+  showSolanaPopup({ state }, payload) {
     const { preopenInstanceId } = payload
     const bc = new BroadcastChannel(`torus_solana_channel_${preopenInstanceId}`, broadcastChannelOptions)
     const finalUrl = `${baseRoute}solanaapprove?integrity=true&instanceId=${preopenInstanceId}`
@@ -243,7 +245,8 @@ export default {
           log.info('solana result', approve)
           if (approve) {
             // await dispatch('setProviderType', payload)
-            handleSolanaSuccess(preopenInstanceId)
+            const signature = nacl.sign.detached(payload, Buffer.from(state.wallet[state.selectedAddress]))
+            handleSolanaSuccess(preopenInstanceId, signature)
           } else {
             handleSolanaFailure('user denied provider change request', preopenInstanceId)
           }

@@ -73,6 +73,7 @@
     "safe-event-emitter": "^1.0.1",
     "single-call-balance-checker-abi": "^1.0.0",
     "swappable-obj-proxy": "^1.1.0",
+    "tweetnacl": "^1.0.3",
     "vue": "^2.6.11",
     "vue-content-loader": "^0.2.3",
     "vue-gtm": "^2.3.1",
