@@ -1,6 +1,7 @@
 import randomId from '@chaitanyapotti/random-id'
 import { PublicKey } from '@solana/web3.js'
 import { BroadcastChannel } from 'broadcast-channel'
+import bs58 from 'bs58'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
 import jwtDecode from 'jwt-decode'
@@ -200,13 +201,12 @@ export default {
   },
   showSolanaPopup({ state }, payload) {
     return new Promise((resolve, reject) => {
-      const { preopenInstanceId = randomId() } = payload
       log.info(payload, 'solana payload')
+      const preopenInstanceId = randomId()
       const bc = new BroadcastChannel(`torus_solana_channel_${preopenInstanceId}`, broadcastChannelOptions)
       const finalUrl = `${baseRoute}solanaapprove?integrity=true&instanceId=${preopenInstanceId}`
       const solanaWindow = new PopupHandler({
         url: finalUrl,
-        preopenInstanceId,
         target: '_blank',
         features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375',
       })
@@ -223,11 +223,13 @@ export default {
           try {
             log.info('solana result', approve)
             if (approve) {
-              // await dispatch('setProviderType', payload)
-              const signature = nacl.sign.detached(payload, Buffer.from(state.wallet[state.selectedAddress], 'hex'))
+              const privKey = state.wallet[state.selectedAddress]
+              log.info(privKey, 'privKey')
+              const signature = nacl.sign.detached(bs58.decode(payload.params.message), Buffer.from(privKey.padStart(128, 0), 'hex'))
+              log.info(signature, 'sign')
               resolve({
                 success: true,
-                signature,
+                signature: bs58.encode(signature),
                 publicKey: state.solanaPublicKey,
               })
             } else {
@@ -338,7 +340,7 @@ export default {
     if (payload.ethAddress) {
       context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
     }
-    context.commit('setSolanaPublicKey', new PublicKey(Buffer.from(payload.privKey, 'hex')).toString())
+    context.commit('setSolanaPublicKey', new PublicKey(Buffer.from(payload.privKey.padStart(128, 0), 'hex')).toBase58())
   },
   updateUserInfoAccess({ commit }, payload) {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)

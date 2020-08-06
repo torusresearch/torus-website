@@ -46,6 +46,7 @@ if (storageAvailable('sessionStorage')) {
       pastTransactions: state.pastTransactions,
       paymentTx: state.paymentTx,
       etherscanTx: state.etherscanTx,
+      solanaPublicKey: state.solanaPublicKey,
     }),
   })
 }
