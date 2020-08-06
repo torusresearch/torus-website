@@ -48,6 +48,7 @@
           </v-card>
         </v-flex>
         <v-flex xs12 mb-2>
+          <div class="caption mb-2 text_2--text">Message:</div>
           <v-card v-if="message" flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
               <span class="text_2--text">{{ message }}</span>
