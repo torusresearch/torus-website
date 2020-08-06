@@ -225,12 +225,12 @@ export default {
             if (approve) {
               const privKey = state.solanaKey.secretKey
               log.info(privKey, 'privKey')
-              const signature = nacl.sign.detached(bs58.decode(payload.params.message), privKey)
+              const signature = nacl.sign.detached(bs58.decode(payload.params.message), bs58.decode(privKey))
               log.info(signature, 'sign')
               resolve({
                 success: true,
                 signature: bs58.encode(signature),
-                publicKey: state.solanaKey.publicKey.toBase58(),
+                publicKey: state.solanaKey.publicKey,
               })
             } else {
               reject(new Error('user denied solana request'))
@@ -340,7 +340,8 @@ export default {
     if (payload.ethAddress) {
       context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
     }
-    context.commit('setSolanaKey', new Account(nacl.sign.keyPair.fromSeed(Buffer.from(payload.privKey, 'hex')).secretKey))
+    const account = new Account(nacl.sign.keyPair.fromSeed(Buffer.from(payload.privKey, 'hex')).secretKey)
+    context.commit('setSolanaKey', { publicKey: account.publicKey.toBase58(), secretKey: bs58.encode(account.secretKey) })
   },
   updateUserInfoAccess({ commit }, payload) {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
@@ -348,7 +349,7 @@ export default {
   },
   updateSelectedAddress({ state }, payload) {
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
-    torus.updateStaticData({ solanaPublicAddress: state.solanaKey.publicKey.toBase58() })
+    torus.updateStaticData({ solanaPublicAddress: state.solanaKey.publicKey })
     torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
   },
   updateNetworkId(context, payload) {

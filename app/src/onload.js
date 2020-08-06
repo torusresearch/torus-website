@@ -125,7 +125,7 @@ function setupSolana(torus, { hostname }) {
   const solanaMiddleware = createSolanaMiddleware({
     getAccounts: () => {
       log.info(getStore().state.solanaKey, 'accounts')
-      return [getStore().state.solanaKey.publicKey.toBase58()]
+      return [getStore().state.solanaKey.publicKey]
     },
     processTransaction: async (params, req) => {
       log.info(params, req)

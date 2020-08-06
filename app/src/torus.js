@@ -36,7 +36,6 @@ class TorusExtended extends Torus {
       publicConfigOutStream.write(JSON.stringify({ isUnlocked: payload.isUnlocked }))
     }
     // region solana
-    log.info('STATIC DATA:', payload)
     const publicConfigSolanaStream = (this.solanaMux && this.solanaMux.getStream('publicConfig')) || fakeStream
     // JSON.stringify is used here even though the stream is in object mode
     // because it is parsed in the dapp context, this behavior emulates nonobject mode
