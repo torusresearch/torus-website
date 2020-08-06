@@ -1,5 +1,5 @@
 import randomId from '@chaitanyapotti/random-id'
-import { PublicKey } from '@solana/web3.js'
+import { Account } from '@solana/web3.js'
 import { BroadcastChannel } from 'broadcast-channel'
 import bs58 from 'bs58'
 import clone from 'clone'
@@ -223,14 +223,14 @@ export default {
           try {
             log.info('solana result', approve)
             if (approve) {
-              const privKey = state.wallet[state.selectedAddress]
+              const privKey = state.solanaKey.secretKey
               log.info(privKey, 'privKey')
-              const signature = nacl.sign.detached(bs58.decode(payload.params.message), Buffer.from(privKey.padStart(128, 0), 'hex'))
+              const signature = nacl.sign.detached(bs58.decode(payload.params.message), privKey)
               log.info(signature, 'sign')
               resolve({
                 success: true,
                 signature: bs58.encode(signature),
-                publicKey: state.solanaPublicKey,
+                publicKey: state.solanaKey.publicKey.toBase58(),
               })
             } else {
               reject(new Error('user denied solana request'))
@@ -340,7 +340,7 @@ export default {
     if (payload.ethAddress) {
       context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
     }
-    context.commit('setSolanaPublicKey', new PublicKey(Buffer.from(payload.privKey.padStart(128, 0), 'hex')).toBase58())
+    context.commit('setSolanaKey', new Account(payload.privKey))
   },
   updateUserInfoAccess({ commit }, payload) {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
@@ -348,7 +348,7 @@ export default {
   },
   updateSelectedAddress({ state }, payload) {
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
-    torus.updateStaticData({ solanaPublicAddress: state.solanaPublicKey })
+    torus.updateStaticData({ solanaPublicAddress: state.solanaKey.publicKey.toBase58() })
     torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
   },
   updateNetworkId(context, payload) {
