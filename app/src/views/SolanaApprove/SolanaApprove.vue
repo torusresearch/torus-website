@@ -47,6 +47,13 @@
             </v-card-text>
           </v-card>
         </v-flex>
+        <v-flex xs12 mb-2>
+          <v-card v-if="message" flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
+            <v-card-text>
+              <span class="text_2--text">{{ message }}</span>
+            </v-card-text>
+          </v-card>
+        </v-flex>
         <v-flex xs12 mt-8>
           <v-layout mx-n2>
             <v-flex xs6 px-2>
@@ -79,7 +86,7 @@ export default {
   data() {
     return {
       origin: { href: '', hostname: '' },
-      payload: '',
+      message: '',
       channel: '',
     }
   },
@@ -95,7 +102,7 @@ export default {
     bc.addEventListener('message', async (ev) => {
       const { payload, origin } = ev.data || {}
       this.origin = origin // origin of tx: website url
-      this.payload = payload
+      this.message = payload.params.message
 
       bc.close()
     })

@@ -130,6 +130,7 @@ function setupSolana(torus, { hostname }) {
     processTransaction: async (params, req) => {
       log.info(params, req)
       const result = await getStore().dispatch('showSolanaPopup', params)
+      log.info(result, 'final result')
       return result
     },
   })
