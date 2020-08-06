@@ -1,3 +1,5 @@
+import randomId from '@chaitanyapotti/random-id'
+import { PublicKey } from '@solana/web3.js'
 import { BroadcastChannel } from 'broadcast-channel'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
@@ -65,7 +67,6 @@ const statusStream = communicationMux.getStream('status')
 const oauthStream = communicationMux.getStream('oauth')
 const userInfoStream = communicationMux.getStream('user_info')
 const providerChangeStream = communicationMux.getStream('provider_change')
-const solanaStream = communicationMux.getStream('solana')
 const widgetStream = communicationMux.getStream('widget')
 
 const handleProviderChangeSuccess = () => {
@@ -77,30 +78,6 @@ const handleProviderChangeSuccess = () => {
       },
     })
   }, 100)
-}
-
-const handleSolanaSuccess = (preopenInstanceId, payload) => {
-  setTimeout(() => {
-    solanaStream.write({
-      name: 'solana_status',
-      data: {
-        id: preopenInstanceId,
-        payload,
-        success: true,
-      },
-    })
-  }, 100)
-}
-
-const handleSolanaFailure = (error, preopenInstanceId) => {
-  providerChangeStream.write({
-    name: 'solana_status',
-    data: {
-      id: preopenInstanceId,
-      success: false,
-      err: error.message || 'Solana request status error',
-    },
-  })
 }
 
 const handleProviderChangeDeny = (error) => {
@@ -222,47 +199,54 @@ export default {
     })
   },
   showSolanaPopup({ state }, payload) {
-    const { preopenInstanceId } = payload
-    const bc = new BroadcastChannel(`torus_solana_channel_${preopenInstanceId}`, broadcastChannelOptions)
-    const finalUrl = `${baseRoute}solanaapprove?integrity=true&instanceId=${preopenInstanceId}`
-    const solanaWindow = new PopupHandler({
-      url: finalUrl,
-      preopenInstanceId,
-      target: '_blank',
-      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375',
-    })
-    bc.addEventListener('message', async (ev) => {
-      const { type = '', approve = false } = ev.data
-      if (type === 'popup-loaded') {
-        await bc.postMessage({
-          data: {
-            origin: getIFrameOriginObject(),
-            payload,
-          },
-        })
-      } else if (type === 'solana-result') {
-        try {
-          log.info('solana result', approve)
-          if (approve) {
-            // await dispatch('setProviderType', payload)
-            const signature = nacl.sign.detached(payload, Buffer.from(state.wallet[state.selectedAddress]))
-            handleSolanaSuccess(preopenInstanceId, signature)
-          } else {
-            handleSolanaFailure('user denied provider change request', preopenInstanceId)
+    return new Promise((resolve, reject) => {
+      const { preopenInstanceId = randomId() } = payload
+      log.info(payload, 'solana payload')
+      const bc = new BroadcastChannel(`torus_solana_channel_${preopenInstanceId}`, broadcastChannelOptions)
+      const finalUrl = `${baseRoute}solanaapprove?integrity=true&instanceId=${preopenInstanceId}`
+      const solanaWindow = new PopupHandler({
+        url: finalUrl,
+        preopenInstanceId,
+        target: '_blank',
+        features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375',
+      })
+      bc.addEventListener('message', async (ev) => {
+        const { type = '', approve = false } = ev.data
+        if (type === 'popup-loaded') {
+          await bc.postMessage({
+            data: {
+              origin: getIFrameOriginObject(),
+              payload,
+            },
+          })
+        } else if (type === 'solana-result') {
+          try {
+            log.info('solana result', approve)
+            if (approve) {
+              // await dispatch('setProviderType', payload)
+              const signature = nacl.sign.detached(payload, Buffer.from(state.wallet[state.selectedAddress], 'hex'))
+              resolve({
+                success: true,
+                signature,
+                publicKey: state.solanaPublicKey,
+              })
+            } else {
+              reject(new Error('user denied solana request'))
+            }
+          } catch (error) {
+            reject(error)
+          } finally {
+            bc.close()
+            solanaWindow.close()
           }
-        } catch {
-          handleSolanaFailure('Internal error occured', preopenInstanceId)
-        } finally {
-          bc.close()
-          solanaWindow.close()
         }
-      }
-    })
+      })
 
-    solanaWindow.open()
-    solanaWindow.once('close', () => {
-      bc.close()
-      handleSolanaFailure('user denied provider change request', preopenInstanceId)
+      solanaWindow.open()
+      solanaWindow.once('close', () => {
+        bc.close()
+        reject(new Error('user denied solana request'))
+      })
     })
   },
   showUserInfoRequestPopup({ dispatch, state }, payload) {
@@ -354,6 +338,7 @@ export default {
     if (payload.ethAddress) {
       context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
     }
+    context.commit('setSolanaPublicKey', new PublicKey(Buffer.from(payload.privKey, 'hex')).toString())
   },
   updateUserInfoAccess({ commit }, payload) {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
@@ -361,6 +346,7 @@ export default {
   },
   updateSelectedAddress({ state }, payload) {
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
+    torus.updateStaticData({ solanaPublicAddress: state.solanaPublicKey })
     torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
   },
   updateNetworkId(context, payload) {

@@ -8,6 +8,9 @@ import { LOCALES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/
 import { storageAvailable } from '../utils/utils'
 
 export default {
+  setSolanaPublicKey(state, payload) {
+    state.solanaPublicKey = payload
+  },
   setUserInfo(state, userInfo) {
     state.userInfo = userInfo
   },

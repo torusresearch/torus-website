@@ -95,14 +95,6 @@ if (!isMain) {
     }
   })
 
-  // Provider change section
-  const solanaStream = torus.communicationMux.getStream('solana')
-  solanaStream.on('data', (chunk) => {
-    if (chunk.name === 'sign_message') {
-      VuexStore.dispatch('showSolanaPopup', chunk.data)
-    }
-  })
-
   // Logout section
   torus.communicationMux.getStream('logout').on('data', (chunk) => {
     if (chunk.name === 'logOut') VuexStore.dispatch('logOut')

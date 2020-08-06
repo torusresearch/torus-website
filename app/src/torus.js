@@ -35,6 +35,17 @@ class TorusExtended extends Torus {
     } else if (payload.isUnlocked) {
       publicConfigOutStream.write(JSON.stringify({ isUnlocked: payload.isUnlocked }))
     }
+    // region solana
+    log.info('STATIC DATA:', payload)
+    const publicConfigSolanaStream = (this.solanaMux && this.solanaMux.getStream('publicConfig')) || fakeStream
+    // JSON.stringify is used here even though the stream is in object mode
+    // because it is parsed in the dapp context, this behavior emulates nonobject mode
+    // for compatibility reasons when using pump
+    if (payload.solanaPublicKey) {
+      publicConfigSolanaStream.write(JSON.stringify({ selectedAddress: payload.solanaPublicKey }))
+    } else if (payload.isUnlocked) {
+      publicConfigSolanaStream.write(JSON.stringify({ isUnlocked: payload.isUnlocked }))
+    }
   }
 
   getMessageForSigning(publicAddress) {

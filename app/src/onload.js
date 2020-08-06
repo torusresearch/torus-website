@@ -1,9 +1,16 @@
 import NodeDetailManager from '@toruslabs/fetch-node-details'
+import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
+import providerFromEngine from 'eth-json-rpc-middleware/providerFromEngine'
+import JsonRpcEngine from 'json-rpc-engine'
+import createEngineStream from 'json-rpc-middleware-stream/engineStream'
 import log from 'loglevel'
 import LocalMessageDuplexStream from 'post-message-stream'
 import Web3 from 'web3'
 
 import TorusController from './controllers/TorusController'
+import createLoggerMiddleware from './utils/createLoggerMiddleware'
+import createOriginMiddleware from './utils/createOriginMiddleware'
+import createSolanaMiddleware from './utils/createSolanaMiddleware'
 import { MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME } from './utils/enums'
 import setupMultiplex from './utils/setupMultiplex'
 import { getIFrameOrigin, isMain, storageAvailable } from './utils/utils'
@@ -91,9 +98,19 @@ function onloadTorus(torus) {
     targetWindow: window.parent,
   })
 
+  const solanaStream = new LocalMessageDuplexStream({
+    name: 'iframe_solana',
+    target: 'embed_solana',
+    targetWindow: window.parent,
+  })
+
   torus.metamaskMux = setupMultiplex(metamaskStream)
   torus.communicationMux = setupMultiplex(communicationStream)
+  torus.solanaMux = setupMultiplex(solanaStream)
   torus.communicationMux.setMaxListeners(50)
+  torus.solanaMux.setMaxListeners(100)
+
+  setupSolana(torus, getIFrameOrigin())
 
   const providerOutStream = torus.metamaskMux.getStream('provider')
 
@@ -103,3 +120,33 @@ function onloadTorus(torus) {
 }
 
 export default onloadTorus
+
+function setupSolana(torus, { hostname }) {
+  const solanaMiddleware = createSolanaMiddleware({
+    getAccounts: () => {
+      log.info(getStore().state.solanaPublicKey, 'accounts')
+      return [getStore().state.solanaPublicKey]
+    },
+    processTransaction: async (params, req) => {
+      log.info(params, req)
+      const result = await getStore().dispatch('showSolanaPopup', params)
+      return result
+    },
+  })
+  const engine = new JsonRpcEngine()
+  engine.push(createOriginMiddleware({ origin: hostname }))
+  engine.push(createLoggerMiddleware({ origin: hostname }))
+  engine.push(solanaMiddleware)
+  const provider = providerFromEngine(engine)
+  engine.push(providerAsMiddleware(provider))
+
+  const providerStream = createEngineStream({ engine })
+  const outStream = torus.solanaMux.getStream('provider-solana')
+
+  outStream
+    .pipe(providerStream)
+    .pipe(outStream)
+    .on('error', (error) => {
+      if (error) log.error(error)
+    })
+}

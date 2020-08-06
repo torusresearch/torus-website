@@ -41,6 +41,7 @@ const initialState = {
   unapprovedMsgs: {},
   // preferences
   selectedAddress: '',
+  solanaPublicKey: undefined,
   jwtToken: '',
   supportedNetworks: { ...SUPPORTED_NETWORK_TYPES },
 
