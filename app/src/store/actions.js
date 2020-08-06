@@ -340,7 +340,7 @@ export default {
     if (payload.ethAddress) {
       context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
     }
-    context.commit('setSolanaKey', new Account(payload.privKey))
+    context.commit('setSolanaKey', new Account(nacl.sign.keyPair.fromSeed(Buffer.from(payload.privKey, 'hex')).secretKey))
   },
   updateUserInfoAccess({ commit }, payload) {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
