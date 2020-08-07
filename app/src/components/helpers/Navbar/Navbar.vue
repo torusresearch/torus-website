@@ -113,6 +113,14 @@ export default {
       type: Array,
       default: () => [],
     },
+    showNav: {
+      type: Boolean,
+      default: true,
+    },
+    showLanguageSelector: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {

@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+import TkeyOnboarding from './containers/TkeyCreate'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
-import WalletTkeyOnboarding from './containers/WalletTkeyOnboarding'
 import {
   WalletTopupHome,
   WalletTopupMoonpay,
@@ -20,6 +20,7 @@ import Login from './views/Login'
 import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import RedirectCatch from './views/RedirectCatch'
+import Tkey from './views/Tkey'
 import UserInfoRequest from './views/UserInfoRequest'
 import Wallet from './views/Wallet'
 
@@ -152,10 +153,16 @@ const router = new Router({
             return next()
           },
         },
+      ],
+    },
+    {
+      path: '/tkey',
+      component: Tkey,
+      children: [
         {
-          path: 'tkey-onboarding',
-          name: 'tkey-onboarding',
-          component: WalletTkeyOnboarding,
+          path: '/',
+          name: 'create',
+          component: TkeyOnboarding,
         },
       ],
     },

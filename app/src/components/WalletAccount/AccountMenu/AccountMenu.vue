@@ -135,6 +135,14 @@ export default {
       type: [Array, undefined],
       default: undefined,
     },
+    showNav: {
+      type: Boolean,
+      default: true,
+    },
+    showLanguageSelector: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {

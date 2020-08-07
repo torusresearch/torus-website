@@ -41,12 +41,12 @@
 <script>
 import { mapState } from 'vuex'
 
-import AddWallet from '../../components/TkeyOnboarding/AddWallet'
-import CreatedWallet from '../../components/TkeyOnboarding/CreatedWallet'
-import SetupWallet from '../../components/TkeyOnboarding/SetupWallet'
+import AddWallet from '../../components/Tkey/AddWallet'
+import CreatedWallet from '../../components/Tkey/CreatedWallet'
+import SetupWallet from '../../components/Tkey/SetupWallet'
 
 export default {
-  name: 'WalletTkeyOnboarding',
+  name: 'TkeyCreate',
   components: { AddWallet, SetupWallet, CreatedWallet },
   data: () => ({
     tab: 0,
@@ -64,5 +64,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'WalletTkeyOnboarding.scss';
+@import 'TkeyCreate.scss';
 </style>
