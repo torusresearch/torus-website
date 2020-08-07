@@ -47,6 +47,16 @@ Vue.use(VueGtm, {
 })
 
 Vue.mixin({
+  computed: {
+    showNav() {
+      // eslint-disable-next-line no-console
+      console.log('this.$route.name', this.$route.name)
+      return this.$route.name !== 'tkey-onboarding'
+    },
+    showLanguageSelector() {
+      return this.$route.name !== 'tkey-onboarding'
+    },
+  },
   methods: {
     t(data) {
       if (data === '') return data

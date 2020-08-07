@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
+import WalletTkeyOnboarding from './containers/WalletTkeyOnboarding'
 import {
   WalletTopupHome,
   WalletTopupMoonpay,
@@ -150,6 +151,11 @@ const router = new Router({
             }
             return next()
           },
+        },
+        {
+          path: 'tkey-onboarding',
+          name: 'tkey-onboarding',
+          component: WalletTkeyOnboarding,
         },
       ],
     },

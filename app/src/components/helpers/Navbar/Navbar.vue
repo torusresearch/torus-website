@@ -15,7 +15,7 @@
       </router-link>
     </div>
     <v-spacer></v-spacer>
-    <v-tabs v-if="!$vuetify.breakpoint.smAndDown" centered>
+    <v-tabs v-if="!$vuetify.breakpoint.smAndDown && showNav" centered>
       <v-tab
         v-for="headerItem in headerItems"
         :id="`${headerItem.name}-link`"
@@ -31,7 +31,7 @@
 
     <slot name="drawer"></slot>
 
-    <LanguageSelector v-if="!$vuetify.breakpoint.smAndDown"></LanguageSelector>
+    <LanguageSelector v-if="!$vuetify.breakpoint.smAndDown && showLanguageSelector"></LanguageSelector>
     <v-menu v-if="!$vuetify.breakpoint.smAndDown" offset-y bottom left z-index="20" :close-on-content-click="false">
       <template v-slot:activator="{ on }">
         <v-btn id="menu-dropdown-btn" small text aria-label="View Account Menu" v-on="on">

@@ -1,0 +1,24 @@
+.v-expansion-panel {
+  border: 1px solid #e7e9f4;
+  border-radius: 6px;
+  margin-top: 0;
+  &::before {
+    box-shadow: none;
+  }
+  ::v-deep .v-expansion-panel-content__wrap {
+    padding: 0;
+  }
+}
+.v-expansion-panel:not(:first-child) {
+  &::after {
+    border: 0;
+  }
+}
+.v-expansion-panel-header {
+  min-height: unset;
+  &.v-expansion-panel-header--active {
+    border-bottom: 1px solid #e7e9f4;
+    border-radius: 6px;
+    min-height: unset;
+  }
+}

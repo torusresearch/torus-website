@@ -8,6 +8,7 @@ import ArrowRightCircleIcon from './ArrowRightCircleIcon.vue'
 import ArrowUpCircleIcon from './ArrowUpCircleIcon.vue'
 import BalanceIcon from './BalanceIcon.vue'
 import CalendarIcon from './CalendarIcon.vue'
+import CheckCircleFilledIcon from './CheckCircleFilledIcon.vue'
 import CheckCircleIcon from './CheckCircleIcon.vue'
 import ChevronDoubleRightIcon from './ChevronDoubleRightIcon.vue'
 import ChevronLeftIcon from './ChevronLeftIcon.vue'
@@ -263,5 +264,8 @@ export default {
   },
   coins_approve: {
     component: CoinsApproveIcon,
+  },
+  check_circle_filled: {
+    component: CheckCircleFilledIcon,
   },
 }

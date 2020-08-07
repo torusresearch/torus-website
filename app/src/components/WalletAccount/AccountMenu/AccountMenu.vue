@@ -77,7 +77,7 @@
 
     <v-divider></v-divider>
 
-    <v-list v-if="$vuetify.breakpoint.smAndDown" class="py-1" :style="{ marginLeft: '6px' }">
+    <v-list v-if="$vuetify.breakpoint.smAndDown && showNav" class="py-1" :style="{ marginLeft: '6px' }">
       <v-list-item
         v-for="headerItem in filteredMenu"
         :id="`${headerItem.name}-link-mobile`"
@@ -102,7 +102,7 @@
         </v-list-item-action>
         <v-list-item-content class="caption font-weight-bold">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
       </v-list-item>
-      <LanguageSelector v-if="$vuetify.breakpoint.smAndDown"></LanguageSelector>
+      <LanguageSelector v-if="$vuetify.breakpoint.smAndDown && showLanguageSelector"></LanguageSelector>
     </v-list>
 
     <v-divider></v-divider>
