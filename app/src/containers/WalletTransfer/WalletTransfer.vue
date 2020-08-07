@@ -161,7 +161,11 @@
                       :rules="[rules.contactRequired]"
                       aria-label="Recipient Selector"
                       @blur="verifierChangedManual"
-                    ></v-select>
+                    >
+                      <template v-slot:message="props">
+                        {{ t(props.message) }}
+                      </template>
+                    </v-select>
                   </v-flex>
                   <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
                     <AddContact :contact="contactSelected" :verifier="selectedVerifier"></AddContact>
@@ -240,6 +244,9 @@
                     >
                       {{ selectedCurrency }}
                     </v-btn>
+                  </template>
+                  <template v-slot:message="props">
+                    {{ t(props.message) }}
                   </template>
                 </v-text-field>
               </v-flex>
@@ -436,7 +443,7 @@ export default {
       autoSelectVerifier: true,
       selectedVerifier: '',
       rules: {
-        required: (value) => !!value || this.t('walletTransfer.required'),
+        required: (value) => !!value || 'walletTransfer.required',
         contactRequired: (value) => !!value || 'walletTransfer.required',
       },
       nodeDetails: {},
@@ -688,7 +695,7 @@ export default {
     },
     moreThanZero(value) {
       if (this.selectedItem) {
-        return new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
+        return new BigNumber(value || '0').gt(new BigNumber('0')) || 'walletTransfer.invalidAmount'
       }
       return ''
     },
@@ -698,7 +705,7 @@ export default {
         if (this.toggle_exclusive === 1) {
           amount = amount.div(this.getCurrencyTokenRate)
         }
-        return amount.lte(this.selectedItem.computedBalance) || this.t('walletTransfer.insufficient')
+        return amount.lte(this.selectedItem.computedBalance) || 'walletTransfer.insufficient'
       }
       return ''
     },
