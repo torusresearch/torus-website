@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import TkeyOnboarding from './containers/TkeyCreate'
+import TkeyCreate from './containers/TkeyCreate'
+import TkeyNewDevice from './containers/TkeyNewDevice'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
@@ -162,7 +163,12 @@ const router = new Router({
         {
           path: '/',
           name: 'create',
-          component: TkeyOnboarding,
+          component: TkeyCreate,
+        },
+        {
+          path: 'new-device',
+          name: 'new-device',
+          component: TkeyNewDevice,
         },
       ],
     },

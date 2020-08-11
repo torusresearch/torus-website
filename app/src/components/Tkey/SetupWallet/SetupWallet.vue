@@ -61,7 +61,7 @@
         <v-btn block x-large outlined color="torusBrand1">Cancel</v-btn>
       </v-flex>
       <v-flex class="xs6 px-2">
-        <v-btn block x-large color="torusBrand1" class="white--text" @click="next">Create 2FA Wallet</v-btn>
+        <v-btn block x-large color="torusBrand1" class="white--text">Create 2FA Wallet</v-btn>
       </v-flex>
     </v-layout>
   </div>

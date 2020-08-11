@@ -5,7 +5,7 @@
     </div>
 
     <div class="text-center mb-6">
-      <div class="headlint text_1--text mb-1">Add a 2FA wallet to your account</div>
+      <div class="headline text_1--text mb-1">Add a 2FA wallet to your account</div>
       <div class="caption text_3--text">The default account would be displayed when you sign in on a DApp.</div>
     </div>
 
