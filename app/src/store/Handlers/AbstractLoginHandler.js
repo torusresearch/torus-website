@@ -35,6 +35,7 @@ class AbstractLoginHandler {
       const handleData = async (ev) => {
         try {
           const { error, data } = ev
+          log.info(ev, 'event')
           const {
             instanceParams: { verifier: returnedVerifier },
             hashParams: { access_token: accessToken, id_token: idToken },
@@ -45,7 +46,6 @@ class AbstractLoginHandler {
             return
           }
           if (ev.data && returnedVerifier === this.verifier) {
-            log.info(ev.data)
             await bc.postMessage({ success: true })
             resolve({ accessToken, idToken: idToken || '' })
           }

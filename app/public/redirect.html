@@ -218,7 +218,7 @@
           try {
             if (Object.keys(hashParams).length > 0 && hashParams.state) {
               instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {}
-              error = hashParameters.error_description || hashParameters.error || error
+              error = hashParams.error_description || hashParams.error || error
             } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
               instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
               if (queryParams.error) error = queryParams.error
