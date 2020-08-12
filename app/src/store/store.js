@@ -63,7 +63,7 @@ const getBalance = async (state, key) => {
         clearInterval(interval)
         resolve(state.weiBalance[key])
       }
-    }, 200)
+    }, 500)
   })
 }
 
@@ -100,7 +100,7 @@ const VuexStore = new Vuex.Store({
       try {
         weiBalance = await getBalance(state, state.selectedAddress)
       } catch (error) {
-        log.error(error, 'Unable to fetch balance within 2 mins')
+        log.error(error, 'Unable to fetch balance within 5 secs')
         handleDeny(confirmHandler.id, confirmHandler.txType)
         return
       }
