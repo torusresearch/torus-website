@@ -21,6 +21,7 @@ import CoinsSendIcon from './CoinsSendIcon.vue'
 import CoinsTopupIcon from './CoinsTopupIcon.vue'
 import CollectibleIcon from './CollectibleIcon.vue'
 import CopyIcon from './CopyIcon.vue'
+import DeviceIcon from './DeviceIcon.vue'
 import DownloadIcon from './DownloadIcon.vue'
 import EthIcon from './EthIcon.vue'
 import GlobeIcon from './GlobeIcon.vue'
@@ -31,6 +32,7 @@ import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
 import MenuIcon from './MenuIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
+import PersonCircleIcon from './PersonCircleIcon.vue'
 import PersonIcon from './PersonIcon.vue'
 import QrIcon from './QrIcon.vue'
 import QuestionIcon from './QuestionIcon.vue'
@@ -48,6 +50,7 @@ import TokenIcon from './TokenIcon.vue'
 import TopupIcon from './TopupIcon.vue'
 import TransactionIcon from './TransactionIcon.vue'
 import TrashIcon from './TrashIcon.vue'
+import TwoFactorIcon from './TwoFactorIcon.vue'
 import VerifierAppleIcon from './VerifierAppleIcon.vue'
 import VerifierDiscordIcon from './VerifierDiscordIcon.vue'
 import VerifierEmailIcon from './VerifierEmailIcon.vue'
@@ -65,6 +68,7 @@ import VerifierTwitterIcon from './VerifierTwitterIcon.vue'
 import VerifierWeiboIcon from './VerifierWeiboIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
+import WalletIcon from './WalletIcon.vue'
 
 export default {
   select: {
@@ -267,5 +271,17 @@ export default {
   },
   check_circle_filled: {
     component: CheckCircleFilledIcon,
+  },
+  person_circle: {
+    component: PersonCircleIcon,
+  },
+  device: {
+    component: DeviceIcon,
+  },
+  two_factor: {
+    component: TwoFactorIcon,
+  },
+  wallet: {
+    component: WalletIcon,
   },
 }

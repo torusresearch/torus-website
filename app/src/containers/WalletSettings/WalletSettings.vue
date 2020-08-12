@@ -33,6 +33,17 @@
               <ContactList />
             </v-expansion-panel-content>
           </v-expansion-panel>
+          <v-expansion-panel class="my-2">
+            <v-expansion-panel-header id="contact-list-panel-header">
+              <v-icon size="12" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.two_factor'" />
+              <div class="grow font-weight-bold title text_1--text">
+                2FA Settings
+              </div>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <TwoFactorAuth />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
         </v-expansion-panels>
       </v-flex>
       <v-flex px-4 xs12 sm6>
@@ -59,6 +70,17 @@
               <Display />
             </v-expansion-panel-content>
           </v-expansion-panel>
+          <v-expansion-panel readonly class="my-2">
+            <v-expansion-panel-header id="display-panel-header">
+              <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.person_circle'" />
+              <div class="grow font-weight-bold title text_1--text">
+                Default Account
+              </div>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <DefaultAccount />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
         </v-expansion-panels>
       </v-flex>
     </v-layout>
@@ -67,9 +89,11 @@
 <script>
 import QuickAddress from '../../components/helpers/QuickAddress'
 import ContactList from '../../components/WalletSettings/ContactList'
+import DefaultAccount from '../../components/WalletSettings/DefaultAccount'
 import Display from '../../components/WalletSettings/Display'
 import Network from '../../components/WalletSettings/Network'
 import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
+import TwoFactorAuth from '../../components/WalletSettings/TwoFactorAuth'
 
 export default {
   name: 'WalletSettings',
@@ -79,11 +103,13 @@ export default {
     ContactList,
     QuickAddress,
     Display,
+    TwoFactorAuth,
+    DefaultAccount,
   },
   data() {
     return {
-      leftPanel: [0, 1],
-      rightPanel: [0, 1],
+      leftPanel: [0, 1, 2],
+      rightPanel: [0, 1, 2],
     }
   },
   mounted() {
