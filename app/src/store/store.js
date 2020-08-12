@@ -50,7 +50,7 @@ if (storageAvailable('sessionStorage')) {
   })
 }
 
-const getValue = async (value) => {
+const getBalance = async (state, key) => {
   return new Promise((resolve, reject) => {
     let counter = 0
     const interval = setInterval(() => {
@@ -59,11 +59,11 @@ const getValue = async (value) => {
         clearInterval(interval)
         reject(new Error('Waited too long'))
       }
-      if (value !== undefined) {
+      if (state.weiBalance[key] !== undefined) {
         clearInterval(interval)
-        resolve(value)
+        resolve(state.weiBalance[key])
       }
-    }, 100)
+    }, 200)
   })
 }
 
@@ -98,9 +98,9 @@ const VuexStore = new Vuex.Store({
       }
       let weiBalance = 0
       try {
-        weiBalance = await getValue(state.weiBalance[state.selectedAddress])
+        weiBalance = await getBalance(state, state.selectedAddress)
       } catch (error) {
-        log.error(error, 'Unable to fetch balance within a min')
+        log.error(error, 'Unable to fetch balance within 2 mins')
         handleDeny(confirmHandler.id, confirmHandler.txType)
         return
       }
