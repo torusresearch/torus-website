@@ -247,18 +247,19 @@
                     </v-btn>
                   </template>
                   <template v-slot:message="props">
-                    {{ $refs.youSend.errorBucket.length === 0 ? props.message : t(props.message) }}
+                    {{ $refs.youSend && $refs.youSend.errorBucket.length === 0 ? props.message : t(props.message) }}
                   </template>
                 </v-text-field>
               </v-flex>
               <TransactionSpeedSelect
                 :reset-speed="resetSpeed"
                 :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : 'ETH'"
+                :contract-type="contractType"
                 :gas="gas"
                 :display-amount="displayAmount"
                 :selected-currency="selectedCurrency"
-                :currency-data="currencyData"
-                :currency-multiplier="currencyMultiplier"
+                :currency-multiplier="getCurrencyTokenRate"
+                :currency-multiplier-eth="currencyMultiplier"
                 @onSelectSpeed="onSelectSpeed"
               />
               <v-flex v-if="contractType === CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
@@ -1045,7 +1046,7 @@ export default {
 
         if (this.activeGasPrice !== '') {
           const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
-          this.gasPriceInCurrency = gasPriceInEth.times(this.getCurrencyTokenRate)
+          this.gasPriceInCurrency = gasPriceInEth.times(this.currencyMultiplier)
         }
         return
       }
@@ -1059,7 +1060,7 @@ export default {
       }
 
       const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
-      const gasPriceInCurrency = gasPriceInEth.times(this.getCurrencyTokenRate)
+      const gasPriceInCurrency = gasPriceInEth.times(this.currencyMultiplier)
       const toSend = this.amount
       const toSendConverted = toSend.times(this.getCurrencyTokenRate)
 
