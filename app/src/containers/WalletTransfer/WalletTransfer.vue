@@ -208,6 +208,7 @@
                 <v-text-field
                   v-if="contractType !== CONTRACT_TYPE_ERC721"
                   id="you-send"
+                  ref="youSend"
                   :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
                   persistent-hint
                   type="number"
@@ -246,7 +247,7 @@
                     </v-btn>
                   </template>
                   <template v-slot:message="props">
-                    {{ t(props.message) }}
+                    {{ $refs.youSend.errorBucket.length === 0 ? props.message : t(props.message) }}
                   </template>
                 </v-text-field>
               </v-flex>
@@ -306,11 +307,15 @@
                     :is-non-fungible-token="contractType === CONTRACT_TYPE_ERC721"
                     :speed-selected="timeTaken"
                     :transaction-fee="gasPriceInCurrency"
-                    :transaction-fee-eth="`${getEthAmount(gas, activeGasPrice)} ETH`"
+                    :transaction-fee-eth="getEthAmount(gas, activeGasPrice)"
                     :selected-currency="selectedCurrency"
                     :send-eth-to-contract-error="sendEthToContractError"
                     :total-cost="`${totalCost || 0} ${totalCostSuffix}`"
                     :total-cost-converted="convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}`"
+                    :total-cost-bn="totalCostBn"
+                    :item-balance="selectedItemBalance"
+                    :contract-type="contractType"
+                    :eth-balance="ethBalance"
                     @onClose="confirmDialog = false"
                     @onConfirm="sendCoin"
                   ></TransferConfirm>
@@ -436,6 +441,7 @@ export default {
       isFastChecked: false,
       speedSelected: '',
       totalCost: '',
+      totalCostBn: new BigNumber('0'),
       timeTaken: '',
       convertedTotalCost: '',
       resetSpeed: false,
@@ -570,6 +576,13 @@ export default {
         .replace(/{amount}/gi, amount)
       share.searchParams.append('text', message)
       return share.href
+    },
+    ethBalance() {
+      const ethBalance = this.tokenBalances.finalBalancesArray.find((token) => token.tokenAddress === '0x')
+      return (ethBalance && ethBalance.computedBalance) || new BigNumber(0)
+    },
+    selectedItemBalance() {
+      return (this.selectedItem && this.selectedItem.computedBalance) || new BigNumber(0)
     },
   },
   watch: {
@@ -1054,6 +1067,7 @@ export default {
 
       if (this.contractType === CONTRACT_TYPE_ETH) {
         this.totalCost = this.toggle_exclusive === 0 ? toSend.plus(gasPriceInEth) : toSendConverted.plus(gasPriceInCurrency)
+        this.totalCostBn = toSend.plus(gasPriceInEth)
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
         const displayedCurrency = this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency
         this.totalCost = `${this.displayAmount.toString()} ${displayedCurrency} + ${significantDigits(
