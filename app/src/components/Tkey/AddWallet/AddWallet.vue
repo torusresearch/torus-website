@@ -16,7 +16,10 @@
           <div class="font-weight-bold body-2 text_1--text">Secure your assets</div>
         </div>
         <div class="d-flex align-center">
-          <div class="body-2 text_2--text">Learn more -></div>
+          <div class="body-2 text_2--text">
+            Learn more
+            <v-icon small>$vuetify.icons.arrow_right</v-icon>
+          </div>
         </div>
       </div>
       <div class="ml-auto" :style="{ width: '235px', height: '200px' }">

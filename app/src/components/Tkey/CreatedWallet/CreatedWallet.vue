@@ -9,7 +9,34 @@
       <div class="caption text_3--text">The default account would be displayed when you sign in on a DApp.</div>
     </div>
 
-    <div class="text-center">
+    <!-- Default Wallet -->
+    <div class="wallet-item-container active d-flex align-center mb-4">
+      <div class="mr-4">
+        <v-icon color="torusBrand1">$vuetify.icons.radioOn</v-icon>
+      </div>
+      <div class="wallet-item py-3 px-4 d-flex grow align-center">
+        <v-icon small class="text_1--text mr-4">$vuetify.icons.wallet_fill</v-icon>
+        <div>
+          <div class="text_1--text caption">Your 2FA wallet</div>
+          <div class="text_3--text caption">Wallet address: 0x11f...5Gdfv</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wallet-item-container d-flex align-center mb-4">
+      <div class="mr-4">
+        <v-icon>$vuetify.icons.radioOn</v-icon>
+      </div>
+      <div class="wallet-item py-3 px-4 d-flex grow align-center">
+        <v-icon small class="text_3--text mr-4">$vuetify.icons.google</v-icon>
+        <div>
+          <div class="text_2--text caption">youremailhere@gmail.com</div>
+          <div class="text_3--text caption">Wallet address: 0x11f...5Gdfv</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-9">
       <v-btn x-large color="torusBrand1" class="white--text" @click="next">Let's explore</v-btn>
     </div>
   </div>

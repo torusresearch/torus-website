@@ -38,7 +38,9 @@
               .
             </div>
             <div class="text-right">
-              <v-btn outlined color="torusBrand1">Backup on device storage</v-btn>
+              <v-badge bordered color="warning" content="1" overlap>
+                <v-btn outlined color="torusBrand1">Backup on device storage</v-btn>
+              </v-badge>
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -48,10 +50,20 @@
             <div class="grow font-weight-bold body-2 text_2--text">Recovery Password</div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
-            <v-text-field type="password" outlined placeholder="Min 10 alphanumeric characters" />
-            <div class="text-right">
-              <v-btn disabled color="torusBrand1" class="white--text">Backup on device storage</v-btn>
-            </div>
+            <v-form v-model="validPasswordForm">
+              <v-text-field
+                v-model="recoveryPassword"
+                :append-icon="showRecoveryPassword ? '$vuetify.icons.visibility_on' : '$vuetify.icons.visibility_off'"
+                :type="showRecoveryPassword ? 'text' : 'password'"
+                :rules="[rules.required]"
+                outlined
+                placeholder="Min 10 alphanumeric characters"
+                @click:append="showRecoveryPassword = !showRecoveryPassword"
+              />
+              <div class="text-right">
+                <v-btn :disabled="!validPasswordForm" color="torusBrand1" class="white--text">Confirm</v-btn>
+              </div>
+            </v-form>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -61,7 +73,7 @@
         <v-btn block x-large outlined color="torusBrand1">Cancel</v-btn>
       </v-flex>
       <v-flex class="xs6 px-2">
-        <v-btn block x-large color="torusBrand1" class="white--text">Create 2FA Wallet</v-btn>
+        <v-btn block x-large color="torusBrand1" class="white--text" @click="next">Create 2FA Wallet</v-btn>
       </v-flex>
     </v-layout>
   </div>
@@ -69,6 +81,16 @@
 
 <script>
 export default {
+  data() {
+    return {
+      validPasswordForm: true,
+      recoveryPassword: '',
+      showRecoveryPassword: false,
+      rules: {
+        required: (value) => !!value || 'Required.',
+      },
+    }
+  },
   methods: {
     next() {
       this.$emit('next')

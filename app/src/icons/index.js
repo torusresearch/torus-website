@@ -5,6 +5,7 @@ import AddressIcon from './AddressIcon.vue'
 import ArrowDownCircleIcon from './ArrowDownCircleIcon.vue'
 import ArrowLeftCircleIcon from './ArrowLeftCircleIcon.vue'
 import ArrowRightCircleIcon from './ArrowRightCircleIcon.vue'
+import ArrowRightIcon from './ArrowRightIcon.vue'
 import ArrowUpCircleIcon from './ArrowUpCircleIcon.vue'
 import BalanceIcon from './BalanceIcon.vue'
 import CalendarIcon from './CalendarIcon.vue'
@@ -21,6 +22,7 @@ import CoinsSendIcon from './CoinsSendIcon.vue'
 import CoinsTopupIcon from './CoinsTopupIcon.vue'
 import CollectibleIcon from './CollectibleIcon.vue'
 import CopyIcon from './CopyIcon.vue'
+import DeviceDetailedIcon from './DeviceDetailedIcon.vue'
 import DeviceIcon from './DeviceIcon.vue'
 import DownloadIcon from './DownloadIcon.vue'
 import EthIcon from './EthIcon.vue'
@@ -32,6 +34,7 @@ import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
 import MenuIcon from './MenuIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
+import PasswordIcon from './PasswordIcon.vue'
 import PersonCircleIcon from './PersonCircleIcon.vue'
 import PersonIcon from './PersonIcon.vue'
 import QrIcon from './QrIcon.vue'
@@ -68,6 +71,7 @@ import VerifierTwitterIcon from './VerifierTwitterIcon.vue'
 import VerifierWeiboIcon from './VerifierWeiboIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
+import WalletFillIcon from './WalletFillIcon.vue'
 import WalletIcon from './WalletIcon.vue'
 
 export default {
@@ -283,5 +287,17 @@ export default {
   },
   wallet: {
     component: WalletIcon,
+  },
+  arrow_right: {
+    component: ArrowRightIcon,
+  },
+  wallet_fill: {
+    component: WalletFillIcon,
+  },
+  device_detailed: {
+    component: DeviceDetailedIcon,
+  },
+  password: {
+    component: PasswordIcon,
   },
 }
