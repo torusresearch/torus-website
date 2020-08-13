@@ -11,7 +11,6 @@
       <AccountMenu :show-nav="false" :show-language-selector="false"></AccountMenu>
     </v-navigation-drawer>
     <v-main>
-      <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
       <router-view></router-view>
     </v-main>
   </div>
@@ -34,6 +33,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<!-- eslint-disable-next-line vue-scoped-css/require-scoped -->
+<style lang="scss">
 @import 'Tkey.scss';
 </style>

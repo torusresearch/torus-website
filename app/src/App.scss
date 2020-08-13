@@ -164,7 +164,7 @@
     }
     &.v-text-field--outlined:not(.error--text) {
       fieldset {
-        border: 0;
+        border: 1px solid #D3D5E2;
       }
     }
     &.v-text-field--outlined.error--text {

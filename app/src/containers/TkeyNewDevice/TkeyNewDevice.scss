@@ -1,12 +1,19 @@
 .new-device-container {
   min-height: 750px;
   position: relative;
+  padding: 50px 50px 120px;
 }
 
 .tkey-footer {
   position: absolute;
   bottom: 0;
+  left: 0;
   width: 100%;
+  padding: 50px;
+}
+
+.headline.title-description {
+  line-height: 1.3em;
 }
 
 .info-box {

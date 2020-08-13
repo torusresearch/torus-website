@@ -30,6 +30,7 @@ import GlobeIcon from './GlobeIcon.vue'
 import InfoIcon from './InfoIcon.vue'
 import KeyIcon from './KeyIcon.vue'
 import ListIcon from './ListIcon.vue'
+import LockFilledIcon from './LockFilledIcon.vue'
 import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
 import MenuIcon from './MenuIcon.vue'
@@ -299,5 +300,8 @@ export default {
   },
   password: {
     component: PasswordIcon,
+  },
+  lock_filled: {
+    component: LockFilledIcon,
   },
 }

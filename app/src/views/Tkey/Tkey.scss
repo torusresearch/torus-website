@@ -1,0 +1,26 @@
+.torus-app.v-application {
+  .v-input.v-text-field--outlined > .v-input__control > .v-input__slot {
+    min-height: 40px;
+    height: 40px;
+    font-size: 12px;
+    line-height: 18px;
+    color: #8F9FB4;;
+    padding-left: 24px;
+    padding-right: 24px;
+    .v-input__append-inner {
+        margin-top: 10px;
+    }
+    .v-select__selection--comma {
+        color:  var(--v-text_2-base);
+        font-size: 14px;
+    }
+  }
+
+  .v-divider {
+    border: 0.5px solid #d3d5e2;
+  }
+
+  .v-sheet.v-app-bar.v-toolbar:not(.v-sheet--outlined).header-container {
+    box-shadow: 0px 6px 16px rgba(186, 186, 186, 0.06) !important;
+  }
+}

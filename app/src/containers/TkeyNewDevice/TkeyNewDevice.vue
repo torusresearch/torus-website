@@ -3,69 +3,75 @@
     <v-container class="pa-4">
       <v-layout class="justify-center">
         <v-flex class="xs7">
-          <div class="new-device-container elevation-1 pa-10">
-            <div v-if="scenario === SCENARIO_FORGET_PASSWORD" class="text-center mb-2">
-              <img src="../../assets/images/ob-verification-forget.svg" alt="Verification Required" class="mr-2" />
+          <div class="new-device-container elevation-1">
+            <!-- IMAGE -->
+            <div v-if="scenario === SCENARIO_DEVICE_DETECTED || (scenario === SCENARIO_LOGIN_DETECTED && verifiedLogin)" class="text-center mb-2">
+              <img src="../../assets/images/ob-verification-done.svg" alt="Verified" class="mr-2" />
             </div>
-            <div v-else-if="scenario === SCENARIO_DEVICE_DETECTED" class="text-center mb-2">
-              <img src="../../assets/images/ob-verification-done.svg" alt="Verification Required" class="mr-2" />
-            </div>
-            <div v-else-if="verifiedPassword || verifiedLogin" class="text-center mb-10">
-              <img src="../../assets/images/ob-verification-done.svg" alt="Verification Required" class="mr-2" />
-            </div>
-            <div v-else class="text-center mb-10">
+            <div v-if="scenario === SCENARIO_WITH_PASSWORD" class="text-center mb-10">
               <img src="../../assets/images/ob-verification.svg" alt="Verification Required" class="mr-2" />
             </div>
+            <div v-if="scenario === SCENARIO_WITH_DEVICE" class="text-center" :class="[hasPasswordSetUp ? 'mb-2' : 'mb-10']">
+              <img v-if="hasPasswordSetUp" src="../../assets/images/ob-verification-methods.svg" alt="Verification Methods" class="mr-2" />
+              <img v-else src="../../assets/images/ob-verification.svg" alt="Verification Required" class="mr-2" />
+            </div>
 
-            <div v-if="scenario === SCENARIO_FORGET_PASSWORD || scenario === SCENARIO_WITHOUT_PASSWORD" class="text-center mb-6">
-              <div class="display-1 text_1--text mb-4">Verification methods</div>
-              <div class="headline font-weight-regular text_2--text">You require 1 verification to access your 2FA Wallet.</div>
-              <div class="headline font-weight-regular text_2--text">
+            <!-- TITLE -->
+            <div v-if="scenario === SCENARIO_WITH_PASSWORD" class="text-center mb-6">
+              <div class="display-1 text_1--text mb-4">Verification required</div>
+              <div class="headline title-description font-weight-regular text_2--text">You are accessing your 2FA Wallet from a new platform.</div>
+              <div class="headline title-description font-weight-regular text_2--text">
                 <span class="font-weight-bold">Verify your identity</span>
-                with any of the following:
+                with your password:
               </div>
             </div>
-            <div v-else-if="scenario === SCENARIO_LOGIN_DETECTED" class="text-center mb-6">
+
+            <div v-if="scenario === SCENARIO_WITH_DEVICE" class="text-center mb-6">
+              <template v-if="hasPasswordSetUp">
+                <div class="display-1 text_1--text mb-4">Verification methods</div>
+                <div class="headline title-description font-weight-regular text_2--text">You require 1 verification to access your 2FA Wallet.</div>
+                <div class="headline title-description font-weight-regular text_2--text">
+                  <span class="font-weight-bold">Verify your identity</span>
+                  with any of the following:
+                </div>
+              </template>
+              <template v-else>
+                <div class="display-1 text_1--text mb-4">Verification required</div>
+                <div class="headline title-description font-weight-regular text_2--text">You are accessing your 2FA Wallet from a new platform.</div>
+                <div class="headline title-description font-weight-regular text_2--text">
+                  <span class="font-weight-bold">Verify your identity</span>
+                  with the following:
+                </div>
+              </template>
+            </div>
+
+            <div v-if="scenario === SCENARIO_LOGIN_DETECTED" class="text-center mb-6">
               <template v-if="verifiedLogin">
                 <div class="display-1 text_1--text mb-4">Identity verified</div>
                 <div class="headline font-weight-regular text_2--text mb-15">Return to your new platform to continue with the login</div>
               </template>
               <template v-else>
                 <div class="display-1 text_1--text mb-4">New login detected</div>
-                <div class="headline font-weight-regular text_2--text">A new login is trying to access your 2FA Wallet.</div>
-                <div class="headline font-weight-regular text_2--text">
+                <div class="headline title-description font-weight-regular text_2--text">A new login is trying to access your 2FA Wallet.</div>
+                <div class="headline title-description font-weight-regular text_2--text">
                   <span class="font-weight-bold">Match the Reference ID</span>
                   and confirm this is you:
                 </div>
               </template>
             </div>
-            <div v-else-if="scenario === SCENARIO_DEVICE_DETECTED">
+
+            <div v-if="scenario === SCENARIO_DEVICE_DETECTED">
               <div v-if="verifiedDevice" class="text-center mb-6">
                 <div class="display-1 text_1--text mb-4">New device and browser added</div>
-                <div class="headline font-weight-regular text_2--text">The following has been added as an authenticator.</div>
-                <div class="headline font-weight-regular text_2--text">You can edit it from the ‘Settings’ page.</div>
+                <div class="headline title-description font-weight-regular text_2--text">The following has been added as an authenticator.</div>
+                <div class="headline title-description font-weight-regular text_2--text">You can edit it from the ‘Settings’ page.</div>
               </div>
               <div v-else class="text-center mb-6">
                 <div class="display-1 text_1--text mb-4">Verified</div>
-                <div class="headline font-weight-regular text_2--text">Confirm your browser and device details.</div>
-                <div class="headline font-weight-regular text_2--text">Store it for future access into your 2FA Wallet.</div>
+                <div class="headline title-description font-weight-regular text_2--text">Confirm your browser and device details.</div>
+                <div class="headline title-description font-weight-regular text_2--text">Store it for future access into your 2FA Wallet.</div>
               </div>
             </div>
-            <template v-else>
-              <div v-if="verifiedPassword" class="text-center mb-6">
-                <div class="display-1 text_1--text mb-4">Verified</div>
-                <div class="headline font-weight-regular text_2--text">Confirm your browser and device details.</div>
-                <div class="headline font-weight-regular text_2--text">Store it for future access into your 2FA Wallet.</div>
-              </div>
-              <div v-else class="text-center mb-6">
-                <div class="display-1 text_1--text mb-4">Verification required</div>
-                <div class="headline font-weight-regular text_2--text">You are accessing your 2FA Wallet from a new platform.</div>
-                <div class="headline font-weight-regular text_2--text">
-                  <span class="font-weight-bold">Verify your identity</span>
-                  with your password:
-                </div>
-              </div>
-            </template>
 
             <!-- Scenarios -->
             <!-- Returning user
@@ -74,17 +80,10 @@
             rmb password
             2/3, 2/4 -->
             <div v-if="scenario === SCENARIO_WITH_PASSWORD">
-              <div v-if="verifiedPassword">
-                <div class="d-flex info-box py-3 px-6 mb-2">
-                  <div class="grow font-weight-bold body-2 text_2--text">Browser</div>
-                  <div class="ml-auto text-right caption text_2--text">Chrome V82.04103.61</div>
-                </div>
-                <v-select outlined placeholder="Please specify device"></v-select>
-              </div>
-              <v-form v-else v-model="validVerifyPasswordForm">
+              <v-form v-model="validVerifyPasswordForm">
                 <v-text-field
                   v-model="verifyPassword"
-                  :append-icon="showVerifyPassword ? '$vuetify.icons.visibility_on' : '$vuetify.icons.visibility_off'"
+                  :append-icon="showVerifyPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                   :type="showVerifyPassword ? 'text' : 'password'"
                   :rules="[rules.required]"
                   outlined
@@ -93,11 +92,11 @@
                 />
                 <v-layout class="mx-n2 mb-12 align-center">
                   <v-flex class="xs4 px-2"></v-flex>
-                  <v-flex class="xs4 px-2">
-                    <a class="caption" href="#" :style="{ textDecoration: 'none' }">Verify via another method</a>
+                  <v-flex class="xs4 px-2 text-center">
+                    <a class="caption text-decoration-none" @click="onAnotherMethod">Verify via another method</a>
                   </v-flex>
                   <v-flex class="xs4 px-2">
-                    <v-btn :disabled="!validVerifyPasswordForm" block large color="torusBrand1" class="white--text" @click="verifiedPassword = true">
+                    <v-btn :disabled="!validVerifyPasswordForm" block large color="torusBrand1" class="white--text" @click="onVerifyPassword">
                       Confirm
                     </v-btn>
                   </v-flex>
@@ -109,80 +108,80 @@
               New device
               no password set up
               2/2 -->
-            <div v-if="scenario === SCENARIO_WITHOUT_PASSWORD">
-              <v-expansion-panels multiple>
-                <v-expansion-panel class="mb-2">
+            <!-- Refirects after verification with old browser -->
+            <div v-if="scenario === SCENARIO_WITH_DEVICE">
+              <v-expansion-panels>
+                <v-expansion-panel v-for="device in devices" :key="device.id" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2 text_2--text">
                       <v-icon class="mr-1">$vuetify.icons.device_detailed</v-icon>
-                      Device - Mac OS
+                      {{ device.name }}
                     </div>
-                    <v-icon small class="d-inline-flex ml-auto success--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
+                    <v-icon
+                      v-if="verifiedWithDevice(device.id)"
+                      small
+                      class="d-inline-flex ml-auto success--text shrink"
+                      v-text="'$vuetify.icons.check_circle_filled'"
+                    />
+                    <v-icon v-else small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
                   </v-expansion-panel-header>
                   <v-expansion-panel-content class="pa-5">
                     <div class="body-2 text_2--text mb-4">
                       Login to app.tor.us from the stored browser below to verify your identity.
                     </div>
 
-                    <div class="d-flex info-box py-3 px-6 mb-2 align-center">
+                    <div v-for="browser in device.browsers" :key="browser.id" class="d-flex info-box py-3 px-6 mb-2 align-center">
                       <div class="grow font-weight-bold body-2 text_2--text">
                         <v-icon class="mr-1">$vuetify.icons.device</v-icon>
-                        Chrome V82.04103.61
+                        {{ browser.name }}
                       </div>
-                      <div class="ml-auto text-right caption text_2--text">Reference ID: 1323</div>
+                      <div class="ml-auto text-right caption text_2--text">Reference ID: {{ browser.id }}</div>
                     </div>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
-              </v-expansion-panels>
-              <div class="caption text-right text_2--text">Skip, go to my Google Wallet first</div>
-            </div>
-
-            <div v-if="scenario === SCENARIO_FORGET_PASSWORD">
-              <v-expansion-panels multiple>
-                <v-expansion-panel class="mb-2">
-                  <v-expansion-panel-header class="py-2">
-                    <div class="grow font-weight-bold body-2 text_2--text">
-                      <v-icon class="mr-1">$vuetify.icons.device_detailed</v-icon>
-                      Device - Mac OS
-                    </div>
-                    <v-icon small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
-                    <v-icon small class="d-inline-flex ml-auto success--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
-                  </v-expansion-panel-header>
-                  <v-expansion-panel-content class="pa-5">
-                    <div class="body-2 text_2--text mb-4">
-                      Login to app.tor.us from the stored browser below to verify your identity.
-                    </div>
-
-                    <div class="d-flex info-box py-3 px-6 mb-2 align-center">
-                      <div class="grow font-weight-bold body-2 text_2--text">
-                        <v-icon class="mr-1">$vuetify.icons.device</v-icon>
-                        Chrome V82.04103.61
-                      </div>
-                      <div class="ml-auto text-right caption text_2--text">Reference ID: 1323</div>
-                    </div>
-                  </v-expansion-panel-content>
-                </v-expansion-panel>
-                <v-expansion-panel class="mb-2">
+                <!-- If user has password setup -->
+                <v-expansion-panel v-if="hasPasswordSetUp" :disabled="recoveredPassword" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2 text_2--text">
                       <v-icon class="mr-1">$vuetify.icons.password</v-icon>
                       Recovery Password
                     </div>
-                    <v-icon small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
-                    <v-icon small class="d-inline-flex ml-auto success--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
+                    <v-icon
+                      v-if="recoveredPassword"
+                      small
+                      class="d-inline-flex ml-auto success--text shrink"
+                      v-text="'$vuetify.icons.check_circle_filled'"
+                    />
+                    <v-icon v-else small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
                   </v-expansion-panel-header>
                   <v-expansion-panel-content class="pa-5">
-                    <div class="body-2 text_2--text mb-4">
-                      Login to app.tor.us from the stored browser below to verify your identity.
-                    </div>
-
-                    <div class="d-flex info-box py-3 px-6 mb-2 align-center">
-                      <div class="grow font-weight-bold body-2 text_2--text">
-                        <v-icon class="mr-1">$vuetify.icons.device</v-icon>
-                        Chrome V82.04103.61
-                      </div>
-                      <div class="ml-auto text-right caption text_2--text">Reference ID: 1323</div>
-                    </div>
+                    <v-form v-model="validRecoveryPasswordForm">
+                      <v-text-field
+                        v-model="recoveryPassword"
+                        :append-icon="showRecoveryPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
+                        :type="showRecoveryPassword ? 'text' : 'password'"
+                        :rules="[rules.required]"
+                        outlined
+                        placeholder="Enter Password here"
+                        @click:append="showRecoveryPassword = !showRecoveryPassword"
+                      />
+                      <v-layout class="mx-n2 align-center">
+                        <v-flex class="xs4 px-2"></v-flex>
+                        <v-flex class="xs4 px-2 text-center"></v-flex>
+                        <v-flex class="xs4 px-2">
+                          <v-btn
+                            :disabled="!validRecoveryPasswordForm"
+                            block
+                            large
+                            color="torusBrand1"
+                            class="white--text"
+                            @click="onRecoverPassword"
+                          >
+                            Confirm
+                          </v-btn>
+                        </v-flex>
+                      </v-layout>
+                    </v-form>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -190,13 +189,15 @@
             </div>
 
             <div v-if="scenario === SCENARIO_LOGIN_DETECTED && !verifiedLogin">
-              <div class="d-flex info-box py-3 px-6">
+              <div class="d-flex info-box py-3 px-6 mb-6">
                 <div class="grow font-weight-bold body-2 text_2--text">Chrome V82.04103.61</div>
                 <div class="ml-auto text-right caption text_2--text">Reference ID: 1323</div>
               </div>
               <v-layout class="mx-n2 mb-12 align-center">
                 <v-flex class="xs4 px-2"></v-flex>
-                <v-flex class="xs4 px-2"></v-flex>
+                <v-flex class="xs4 px-2 text-center">
+                  <a class="caption" href="#" :style="{ textDecoration: 'none' }">Report, this is not me</a>
+                </v-flex>
                 <v-flex class="xs4 px-2">
                   <v-btn block large color="torusBrand1" class="white--text" @click="verifiedLogin = true">
                     Confirm
@@ -205,49 +206,57 @@
               </v-layout>
             </div>
 
-            <div v-if="scenario === SCENARIO_DEVICE_DETECTED">
-              <div class="d-flex info-box py-3 px-6 mb-2">
+            <v-form v-if="scenario === SCENARIO_DEVICE_DETECTED" v-model="verifyDeviceForm">
+              <div class="d-flex info-box py-3 px-6 mb-2 align-center">
                 <div class="grow font-weight-bold body-2 text_2--text">Browser</div>
-                <div class="ml-auto text-right caption text_2--text">Chrome V82.04103.61</div>
+                <div class="ml-auto text-right caption text_2--text">
+                  <v-icon small class="mr-1">$vuetify.icons.device_detailed</v-icon>
+                  Chrome V82.04103.61
+                </div>
               </div>
-              <v-expansion-panels multiple>
-                <v-expansion-panel class="mb-2" :disabled="verifiedDevice">
-                  <v-expansion-panel-header class="py-2">
-                    <div class="grow font-weight-bold body-2 text_2--text">
-                      Your Macbook
-                    </div>
-                    <v-icon v-if="!verifiedDevice" small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
-                  </v-expansion-panel-header>
-                  <v-expansion-panel-content class="pa-5">
-                    <div class="d-flex info-box py-3 px-6 mb-2 align-center">
-                      <div class="grow font-weight-bold body-2 text_2--text">
-                        <v-icon class="mr-1">$vuetify.icons.device</v-icon>
-                        Chrome V82.04103.61
-                      </div>
-                      <div class="ml-auto text-right caption text_2--text">Reference ID: 1323</div>
-                    </div>
-                  </v-expansion-panel-content>
-                </v-expansion-panel>
-              </v-expansion-panels>
-              <v-layout class="mx-n2 mb-12 align-center">
+              <v-select
+                v-if="!verifiedDevice"
+                v-model="verifiedDeviceSelected"
+                class="font-weight-bold"
+                outlined
+                :items="devices"
+                item-text="name"
+                item-value="name"
+                placeholder="Please specify device"
+                append-icon="$vuetify.icons.select"
+                :rules="[rules.required]"
+              ></v-select>
+              <div v-else class="d-flex info-box py-3 px-6 mb-2 align-center">
+                <div class="grow font-weight-bold body-2 text_2--text">{{ verifiedDeviceSelected }}</div>
+              </div>
+              <v-layout v-if="!verifiedDevice" class="mx-n2 mb-12 align-center">
                 <v-flex class="xs4 px-2"></v-flex>
                 <v-flex class="xs4 px-2 text-center">
-                  <a v-if="!verifiedDevice" class="caption" href="#" :style="{ textDecoration: 'none' }">Do not add browser</a>
+                  <a class="caption" href="#" :style="{ textDecoration: 'none' }">Do not add browser</a>
                 </v-flex>
                 <v-flex class="xs4 px-2">
-                  <v-btn block large color="torusBrand1" class="white--text" @click="verifiedDevice = true">
+                  <v-btn :disabled="!verifyDeviceForm" block large color="torusBrand1" class="white--text" @click="verifiedDevice = true">
                     Confirm and Add
                   </v-btn>
                 </v-flex>
               </v-layout>
-            </div>
+              <v-layout v-else class="mx-n2 mb-12 align-center">
+                <v-flex class="xs4 px-2"></v-flex>
+                <v-flex class="xs4 px-2 text-center"></v-flex>
+                <v-flex class="xs4 px-2">
+                  <v-btn block large color="torusBrand1" class="white--text">
+                    Return Home
+                  </v-btn>
+                </v-flex>
+              </v-layout>
+            </v-form>
 
             <div class="tkey-footer">
               <hr class="mb-2" />
               <v-layout class="px-5">
                 <v-flex class="x6">
                   <div class="d-flex align-center">
-                    <v-icon x-small class="mr-1">$vuetify.icons.lock</v-icon>
+                    <v-icon x-small class="mr-1">$vuetify.icons.lock_filled</v-icon>
                     <div class="caption">Secure Torus sign in</div>
                   </div>
                 </v-flex>
@@ -265,30 +274,99 @@
 
 <script>
 const SCENARIO_WITH_PASSWORD = 'with_password'
-const SCENARIO_WITHOUT_PASSWORD = 'without_password'
-const SCENARIO_FORGET_PASSWORD = 'forget_password'
+const SCENARIO_WITH_DEVICE = 'with_device'
 const SCENARIO_LOGIN_DETECTED = 'login_detected'
 const SCENARIO_DEVICE_DETECTED = 'new_device_detected'
 
 export default {
   data() {
     return {
-      scenario: SCENARIO_FORGET_PASSWORD,
-      verifiedPassword: false,
+      scenario: SCENARIO_WITH_PASSWORD,
+      // verify password
       validVerifyPasswordForm: true,
       verifyPassword: '',
       showVerifyPassword: false,
-      verifiedLogin: false,
+      // verify device
+      verifyDeviceForm: true,
+      confirmedDevice: false,
       verifiedDevice: false,
+      verifiedDeviceSelected: '',
+      // recover password
+      validRecoveryPasswordForm: true,
+      recoveryPassword: '',
+      showRecoveryPassword: false,
+      recoveredPassword: false,
+      // verified
+      verifiedLogin: false,
       rules: {
         required: (value) => !!value || 'Required.',
       },
       SCENARIO_WITH_PASSWORD,
-      SCENARIO_WITHOUT_PASSWORD,
-      SCENARIO_FORGET_PASSWORD,
+      SCENARIO_WITH_DEVICE,
       SCENARIO_LOGIN_DETECTED,
       SCENARIO_DEVICE_DETECTED,
     }
+  },
+  computed: {
+    devices() {
+      return [
+        {
+          id: 1,
+          name: 'My Macbook',
+          browsers: [
+            {
+              id: 1320,
+              name: 'Chrome V82.04103.61',
+            },
+          ],
+        },
+        {
+          id: 2,
+          name: 'My Android',
+          browsers: [
+            {
+              id: 1330,
+              name: 'Chrome V82.04103.61',
+            },
+          ],
+        },
+        {
+          id: 3,
+          name: 'My Iphone',
+          browsers: [
+            {
+              id: 1340,
+              name: 'Chrome V82.04103.61',
+            },
+          ],
+        },
+      ]
+    },
+    hasPasswordSetUp() {
+      return true
+    },
+  },
+  methods: {
+    onVerifyPassword() {
+      if (this.devices.length > 1) {
+        this.scenario = SCENARIO_WITH_DEVICE
+        this.recoveredPassword = true
+      } else {
+        this.scenario = SCENARIO_DEVICE_DETECTED
+      }
+    },
+    onAnotherMethod() {
+      this.scenario = SCENARIO_WITH_DEVICE
+    },
+    onRecoverPassword() {
+      this.recoveredPassword = true
+    },
+    verifiedWithDevice(deviceId) {
+      // from backend
+      // eslint-disable-next-line no-console
+      console.log('device', deviceId)
+      return false
+    },
   },
 }
 </script>

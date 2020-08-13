@@ -1,6 +1,9 @@
-.wallet-item-container.active {
-  .wallet-item {
-    border: 1px solid #0364FF;
+.wallet-item-container {
+  cursor: pointer;
+  &.active {
+    .wallet-item {
+      border: 1px solid #0364FF;
+    }
   }
 }
 
