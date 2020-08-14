@@ -2,7 +2,7 @@
   <div>
     <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pa-0' : 'pa-4']">
       <v-layout class="justify-center">
-        <v-flex :class="[$vuetify.breakpoint.xsOnly ? 'xs12' : 'x7']">
+        <v-flex :class="[$vuetify.breakpoint.xsOnly ? 'xs12' : 'xs7']">
           <div class="new-device-container elevation-1" :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '']">
             <!-- IMAGE -->
             <div v-if="scenario === SCENARIO_DEVICE_DETECTED || (scenario === SCENARIO_LOGIN_DETECTED && verifiedLogin)" class="text-center mb-2">
