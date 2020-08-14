@@ -17,7 +17,8 @@
   }
 
   .v-divider {
-    border: 0.5px solid #d3d5e2;
+    border: 0;
+    border-top: 0.5px solid #d3d5e2;
   }
 
   .v-sheet.v-app-bar.v-toolbar:not(.v-sheet--outlined).header-container {

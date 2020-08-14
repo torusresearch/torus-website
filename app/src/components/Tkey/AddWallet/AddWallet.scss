@@ -1,0 +1,31 @@
+.add-wallet-info {
+    .add-wallet-info__list {
+        width: 200px;
+    }
+    .add-wallet-info__image {
+        width: 235px;
+        height: 200px;
+        img {
+            margin-left: -30px;
+            margin-top: -20px;
+        }
+    }
+    &.is-mobile {
+        .add-wallet-info__list {
+            width: unset;
+            img {
+                height: 32px;
+            }
+        }
+        .add-wallet-info__image {
+            width: unset;
+            height: 125px;
+            text-align: center;
+            img {
+                width: 190px;
+                margin-left: -9px;
+                margin-top: -30px;
+            }
+        }
+    }
+}

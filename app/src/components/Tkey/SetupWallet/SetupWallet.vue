@@ -1,5 +1,5 @@
 <template>
-  <div class="elevation-1 pa-10">
+  <div class="elevation-1" :class="$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10'">
     <div class="text-center mb-6">
       <div class="headline text_1--text mb-2">Wallet authentication factors</div>
       <div class="body-2 text_2--text">
@@ -17,17 +17,17 @@
       <div class="text_2--text caption">You need to backup on device storage or set up a recovery password to create your 2FA Wallet</div>
     </div>
     <div>
-      <v-expansion-panels multiple>
+      <v-expansion-panels multiple :class="$vuetify.breakpoint.xsOnly ? 'is-mobile' : ''">
         <v-expansion-panel class="mb-2" disabled>
           <v-expansion-panel-header class="py-2">
-            <v-icon small class="d-inline-flex mr-4 success--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
+            <v-icon small class="d-inline-flex mr-2 success--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
             <div class="grow font-weight-bold body-2 text_2--text">Google Login</div>
             <div class="ml-auto text-right caption text_2--text">youremailhere@gmail.com</div>
           </v-expansion-panel-header>
         </v-expansion-panel>
         <v-expansion-panel class="mb-2">
           <v-expansion-panel-header class="py-2">
-            <v-icon small class="d-inline-flex mr-4 success--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
+            <v-icon small class="d-inline-flex mr-2 success--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
             <div class="grow font-weight-bold body-2 text_2--text">Browser</div>
             <div class="ml-auto text-right caption text_2--text">Chrome V82.04103.61</div>
           </v-expansion-panel-header>
@@ -46,14 +46,14 @@
         </v-expansion-panel>
         <v-expansion-panel class="mb-2">
           <v-expansion-panel-header class="py-2">
-            <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
+            <v-icon small class="d-inline-flex mr-2 text_2--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
             <div class="grow font-weight-bold body-2 text_2--text">Recovery Password</div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
             <v-form v-model="validPasswordForm">
               <v-text-field
                 v-model="recoveryPassword"
-                :append-icon="showRecoveryPassword ? '$vuetify.icons.visibility_on' : '$vuetify.icons.visibility_off'"
+                :append-icon="showRecoveryPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                 :type="showRecoveryPassword ? 'text' : 'password'"
                 :rules="[rules.required]"
                 outlined
@@ -70,10 +70,21 @@
     </div>
     <v-layout class="mx-n2 mt-9 mb-12">
       <v-flex class="xs6 px-2">
-        <v-btn block x-large outlined color="torusBrand1">Cancel</v-btn>
+        <v-btn block :x-large="!$vuetify.breakpoint.xsOnly" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" outlined color="torusBrand1">
+          Cancel
+        </v-btn>
       </v-flex>
       <v-flex class="xs6 px-2">
-        <v-btn block x-large color="torusBrand1" class="white--text" @click="next">Create 2FA Wallet</v-btn>
+        <v-btn
+          block
+          :x-large="!$vuetify.breakpoint.xsOnly"
+          :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
+          color="torusBrand1"
+          class="white--text"
+          @click="next"
+        >
+          Create 2FA Wallet
+        </v-btn>
       </v-flex>
     </v-layout>
   </div>

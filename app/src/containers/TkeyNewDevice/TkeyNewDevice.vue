@@ -1,9 +1,9 @@
 <template>
   <div>
-    <v-container class="pa-4">
+    <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pa-0' : 'pa-4']">
       <v-layout class="justify-center">
-        <v-flex class="xs7">
-          <div class="new-device-container elevation-1">
+        <v-flex :class="[$vuetify.breakpoint.xsOnly ? 'xs12' : 'x7']">
+          <div class="new-device-container elevation-1" :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '']">
             <!-- IMAGE -->
             <div v-if="scenario === SCENARIO_DEVICE_DETECTED || (scenario === SCENARIO_LOGIN_DETECTED && verifiedLogin)" class="text-center mb-2">
               <img src="../../assets/images/ob-verification-done.svg" alt="Verified" class="mr-2" />
@@ -17,43 +17,49 @@
             </div>
 
             <!-- TITLE -->
-            <div v-if="scenario === SCENARIO_WITH_PASSWORD" class="text-center mb-6">
-              <div class="display-1 text_1--text mb-4">Verification required</div>
-              <div class="headline title-description font-weight-regular text_2--text">You are accessing your 2FA Wallet from a new platform.</div>
-              <div class="headline title-description font-weight-regular text_2--text">
+            <div v-if="scenario === SCENARIO_WITH_PASSWORD" class="text-center new-device-header">
+              <div class="new-device-header__title text_1--text">Verification required</div>
+              <div class="new-device-header__description font-weight-regular text_2--text">
+                You are accessing your 2FA Wallet from a new platform.
+              </div>
+              <div class="new-device-header__description font-weight-regular text_2--text">
                 <span class="font-weight-bold">Verify your identity</span>
                 with your password:
               </div>
             </div>
 
-            <div v-if="scenario === SCENARIO_WITH_DEVICE" class="text-center mb-6">
+            <div v-if="scenario === SCENARIO_WITH_DEVICE" class="text-center new-device-header">
               <template v-if="hasPasswordSetUp">
-                <div class="display-1 text_1--text mb-4">Verification methods</div>
-                <div class="headline title-description font-weight-regular text_2--text">You require 1 verification to access your 2FA Wallet.</div>
-                <div class="headline title-description font-weight-regular text_2--text">
+                <div class="new-device-header__title text_1--text">Verification methods</div>
+                <div class="new-device-header__description font-weight-regular text_2--text">
+                  You require 1 verification to access your 2FA Wallet.
+                </div>
+                <div class="new-device-header__description font-weight-regular text_2--text">
                   <span class="font-weight-bold">Verify your identity</span>
                   with any of the following:
                 </div>
               </template>
               <template v-else>
-                <div class="display-1 text_1--text mb-4">Verification required</div>
-                <div class="headline title-description font-weight-regular text_2--text">You are accessing your 2FA Wallet from a new platform.</div>
-                <div class="headline title-description font-weight-regular text_2--text">
+                <div class="new-device-header__title text_1--text">Verification required</div>
+                <div class="new-device-header__description font-weight-regular text_2--text">
+                  You are accessing your 2FA Wallet from a new platform.
+                </div>
+                <div class="new-device-header__description font-weight-regular text_2--text">
                   <span class="font-weight-bold">Verify your identity</span>
                   with the following:
                 </div>
               </template>
             </div>
 
-            <div v-if="scenario === SCENARIO_LOGIN_DETECTED" class="text-center mb-6">
+            <div v-if="scenario === SCENARIO_LOGIN_DETECTED" class="text-center new-device-header">
               <template v-if="verifiedLogin">
-                <div class="display-1 text_1--text mb-4">Identity verified</div>
+                <div class="new-device-header__title text_1--text">Identity verified</div>
                 <div class="headline font-weight-regular text_2--text mb-15">Return to your new platform to continue with the login</div>
               </template>
               <template v-else>
-                <div class="display-1 text_1--text mb-4">New login detected</div>
-                <div class="headline title-description font-weight-regular text_2--text">A new login is trying to access your 2FA Wallet.</div>
-                <div class="headline title-description font-weight-regular text_2--text">
+                <div class="new-device-header__title text_1--text">New login detected</div>
+                <div class="new-device-header__description font-weight-regular text_2--text">A new login is trying to access your 2FA Wallet.</div>
+                <div class="new-device-header__description font-weight-regular text_2--text">
                   <span class="font-weight-bold">Match the Reference ID</span>
                   and confirm this is you:
                 </div>
@@ -61,15 +67,15 @@
             </div>
 
             <div v-if="scenario === SCENARIO_DEVICE_DETECTED">
-              <div v-if="verifiedDevice" class="text-center mb-6">
-                <div class="display-1 text_1--text mb-4">New device and browser added</div>
-                <div class="headline title-description font-weight-regular text_2--text">The following has been added as an authenticator.</div>
-                <div class="headline title-description font-weight-regular text_2--text">You can edit it from the ‘Settings’ page.</div>
+              <div v-if="verifiedDevice" class="text-center new-device-header">
+                <div class="new-device-header__title text_1--text">New device and browser added</div>
+                <div class="new-device-header__description font-weight-regular text_2--text">The following has been added as an authenticator.</div>
+                <div class="new-device-header__description font-weight-regular text_2--text">You can edit it from the ‘Settings’ page.</div>
               </div>
-              <div v-else class="text-center mb-6">
-                <div class="display-1 text_1--text mb-4">Verified</div>
-                <div class="headline title-description font-weight-regular text_2--text">Confirm your browser and device details.</div>
-                <div class="headline title-description font-weight-regular text_2--text">Store it for future access into your 2FA Wallet.</div>
+              <div v-else class="text-center new-device-header">
+                <div class="new-device-header__title text_1--text">Verified</div>
+                <div class="new-device-header__description font-weight-regular text_2--text">Confirm your browser and device details.</div>
+                <div class="new-device-header__description font-weight-regular text_2--text">Store it for future access into your 2FA Wallet.</div>
               </div>
             </div>
 
@@ -91,11 +97,11 @@
                   @click:append="showVerifyPassword = !showVerifyPassword"
                 />
                 <v-layout class="mx-n2 mb-12 align-center">
-                  <v-flex class="xs4 px-2"></v-flex>
-                  <v-flex class="xs4 px-2 text-center">
+                  <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
+                  <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                     <a class="caption text-decoration-none" @click="onAnotherMethod">Verify via another method</a>
                   </v-flex>
-                  <v-flex class="xs4 px-2">
+                  <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                     <v-btn :disabled="!validVerifyPasswordForm" block large color="torusBrand1" class="white--text" @click="onVerifyPassword">
                       Confirm
                     </v-btn>
@@ -166,9 +172,9 @@
                         @click:append="showRecoveryPassword = !showRecoveryPassword"
                       />
                       <v-layout class="mx-n2 align-center">
-                        <v-flex class="xs4 px-2"></v-flex>
-                        <v-flex class="xs4 px-2 text-center"></v-flex>
-                        <v-flex class="xs4 px-2">
+                        <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
+                        <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'"></v-flex>
+                        <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                           <v-btn
                             :disabled="!validRecoveryPasswordForm"
                             block
@@ -194,11 +200,11 @@
                 <div class="ml-auto text-right caption text_2--text">Reference ID: 1323</div>
               </div>
               <v-layout class="mx-n2 mb-12 align-center">
-                <v-flex class="xs4 px-2"></v-flex>
-                <v-flex class="xs4 px-2 text-center">
+                <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
+                <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                   <a class="caption" href="#" :style="{ textDecoration: 'none' }">Report, this is not me</a>
                 </v-flex>
-                <v-flex class="xs4 px-2">
+                <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                   <v-btn block large color="torusBrand1" class="white--text" @click="verifiedLogin = true">
                     Confirm
                   </v-btn>
@@ -229,21 +235,22 @@
               <div v-else class="d-flex info-box py-3 px-6 mb-2 align-center">
                 <div class="grow font-weight-bold body-2 text_2--text">{{ verifiedDeviceSelected }}</div>
               </div>
+
               <v-layout v-if="!verifiedDevice" class="mx-n2 mb-12 align-center">
-                <v-flex class="xs4 px-2"></v-flex>
-                <v-flex class="xs4 px-2 text-center">
+                <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
+                <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                   <a class="caption" href="#" :style="{ textDecoration: 'none' }">Do not add browser</a>
                 </v-flex>
-                <v-flex class="xs4 px-2">
+                <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                   <v-btn :disabled="!verifyDeviceForm" block large color="torusBrand1" class="white--text" @click="verifiedDevice = true">
                     Confirm and Add
                   </v-btn>
                 </v-flex>
               </v-layout>
               <v-layout v-else class="mx-n2 mb-12 align-center">
-                <v-flex class="xs4 px-2"></v-flex>
-                <v-flex class="xs4 px-2 text-center"></v-flex>
-                <v-flex class="xs4 px-2">
+                <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
+                <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'"></v-flex>
+                <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                   <v-btn block large color="torusBrand1" class="white--text">
                     Return Home
                   </v-btn>

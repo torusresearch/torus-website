@@ -22,3 +22,12 @@
     min-height: unset;
   }
 }
+.v-expansion-panels.is-mobile {
+  .v-expansion-panel-header {
+    padding-left: 12px;
+    padding-right: 12px;
+    .caption {
+      font-size: 10px !important;
+    }
+  }
+}

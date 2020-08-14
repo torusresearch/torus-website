@@ -12,8 +12,19 @@
   padding: 50px;
 }
 
-.headline.title-description {
-  line-height: 1.3em;
+.new-device-header {
+  margin-bottom: 24px;
+  &__title {
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 28px;
+    margin-bottom: 16px;
+  }
+  &__description {
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 24px;
+  }
 }
 
 .info-box {
@@ -45,5 +56,28 @@
     border-bottom: 1px solid #e7e9f4;
     border-radius: 6px;
     min-height: unset;
+  }
+}
+
+.new-device-container.is-mobile {
+  padding: 80px 24px 120px;
+  .new-device-header {
+    margin-bottom: 16px;
+    &__title {
+      font-size: 20px;
+      line-height: 23px;
+      margin-bottom: 8px;
+    }
+    &__description {
+      font-size: 12px;
+      line-height: 18px;
+    }
+  }
+  .tkey-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px ;
   }
 }
