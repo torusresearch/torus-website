@@ -49,7 +49,7 @@
           </v-list-item>
         </v-list>
         <v-layout wrap>
-          <v-flex class="ml-auto xs6 sm4">
+          <v-flex class="ml-auto xs8 sm4">
             <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
               Add new login
             </v-btn>
@@ -111,7 +111,7 @@
           " icon to allow file storage on current browser as a back-up.
         </div>
         <v-layout wrap>
-          <v-flex class="ml-auto xs6">
+          <v-flex class="ml-auto xs8 sm4">
             <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
               Add new browser
             </v-btn>
@@ -123,7 +123,7 @@
         <div class="text_1--text body-2 mb-4">Account Password</div>
         <v-text-field outlined type="password" placeholder="*************"></v-text-field>
         <v-layout wrap>
-          <v-flex class="ml-auto xs6">
+          <v-flex class="ml-auto xs8 sm4">
             <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
               Change Password
             </v-btn>
@@ -136,7 +136,7 @@
         <v-select outlined hide-details placeholder="What is the name of your High School?"></v-select>
         <v-text-field outlined type="password" placeholder="*************"></v-text-field>
         <v-layout wrap>
-          <v-flex class="ml-auto xs6">
+          <v-flex class="ml-auto xs12 sm4">
             <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
               Change security question
             </v-btn>
@@ -148,7 +148,7 @@
         <div class="text_1--text body-2 mb-4">Select Factor</div>
         <v-select outlined hide-details placeholder="Select from the list of Factors to add"></v-select>
         <v-layout wrap>
-          <v-flex class="ml-auto xs6">
+          <v-flex class="ml-auto xs8 sm4">
             <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
               Add factor
             </v-btn>
