@@ -50,14 +50,18 @@
         <div class="d-flex transfer-to-from__details">
           <div class="name">
             <div class="text-clamp-one">{{ fromVerifierId }}</div>
-            <div class="name--address">{{ addressSlicer(fromAddress) }}</div>
+            <ShowToolTip :address="fromAddress">
+              <div class="name--address">{{ addressSlicer(fromAddress) }}</div>
+            </ShowToolTip>
           </div>
           <div class="network-container flex-grow-1" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
             <NetworkDisplay :is-plain="true" :store-network-type="networkType"></NetworkDisplay>
           </div>
           <div class="name name--right">
             <div class="text-clamp-one">{{ dappName === '' ? (toVerifier === ETH ? 'ETH Address' : toVerifierId) : dappName }}</div>
-            <div class="name--address">{{ addressSlicer(toAddress) }}</div>
+            <ShowToolTip :address="toAddress">
+              <div class="name--address">{{ addressSlicer(toAddress) }}</div>
+            </ShowToolTip>
           </div>
         </div>
       </v-flex>
@@ -140,9 +144,10 @@ import { mapGetters } from 'vuex'
 import { CONTRACT_TYPE_ETH, ETH, GITHUB, MAINNET, REDDIT, TWITTER } from '../../../utils/enums'
 import { addressSlicer, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
+import ShowToolTip from '../../helpers/ShowToolTip'
 
 export default {
-  components: { NetworkDisplay },
+  components: { NetworkDisplay, ShowToolTip },
   props: {
     convertedVerifierId: {
       type: String,

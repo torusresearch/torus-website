@@ -195,7 +195,7 @@ export default {
     },
     gasAmountConverted() {
       const converted = significantDigits(this.convertedDisplay(this.gasAmount, this.currencyMultiplierEth))
-      return `~ ${converted} ETH`
+      return `~ ${converted} ${this.selectedCurrency}`
     },
     displayAmountConverted() {
       const converted = significantDigits(this.convertedDisplay(this.displayAmount, this.currencyMultiplier))
