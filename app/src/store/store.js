@@ -50,6 +50,23 @@ if (storageAvailable('sessionStorage')) {
   })
 }
 
+const getBalance = async (state, key) => {
+  return new Promise((resolve, reject) => {
+    let counter = 0
+    const interval = setInterval(() => {
+      counter += 1
+      if (counter > 10) {
+        clearInterval(interval)
+        reject(new Error('Waited too long'))
+      }
+      if (state.weiBalance[key] !== undefined) {
+        clearInterval(interval)
+        resolve(state.weiBalance[key])
+      }
+    }, 500)
+  })
+}
+
 const VuexStore = new Vuex.Store({
   plugins: vuexPersist ? [vuexPersist.plugin] : [],
   state: defaultState,
@@ -58,30 +75,36 @@ const VuexStore = new Vuex.Store({
   actions: {
     ...actions,
     ...paymentActions,
-    showPopup({ state, getters }) {
-      const confirmHandler = new ConfirmHandler(torus.instanceId)
-      const isTx = isTorusTransaction()
+    async showPopup({ state }, payload) {
+      const isTx = payload && typeof payload === 'object'
+      const confirmHandler = new ConfirmHandler(isTx ? payload.id : payload)
       confirmHandler.isTx = isTx
       confirmHandler.selectedCurrency = state.selectedCurrency
-      confirmHandler.balance = fromWei(state.weiBalance[state.selectedAddress].toString())
       confirmHandler.tokenRates = state.tokenRates
       confirmHandler.jwtToken = state.jwtToken
       confirmHandler.currencyData = state.currencyData
       confirmHandler.networkType = state.networkType
       confirmHandler.whiteLabel = state.whiteLabel
       if (isTx) {
-        const txParameters = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
+        const txParameters = payload
         txParameters.userInfo = state.userInfo
         log.info(txParameters, 'txParams')
         confirmHandler.txParams = txParameters
-        confirmHandler.id = txParameters.id
         confirmHandler.txType = TX_TRANSACTION
       } else {
-        const { msgParams, id, type } = getLatestMessageParameters()
+        const { msgParams, type } = getLatestMessageParameters(payload)
         confirmHandler.msgParams = msgParams
-        confirmHandler.id = id
         confirmHandler.txType = type
       }
+      let weiBalance = 0
+      try {
+        weiBalance = await getBalance(state, state.selectedAddress)
+      } catch (error) {
+        log.error(error, 'Unable to fetch balance within 5 secs')
+        handleDeny(confirmHandler.id, confirmHandler.txType)
+        return
+      }
+      confirmHandler.balance = fromWei(weiBalance.toString())
       if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
       } else if (confirmHandler.txType === TX_MESSAGE && isTorusSignedMessage(confirmHandler.msgParams)) {
@@ -152,29 +175,15 @@ function handleDeny(id, txType) {
   }
 }
 
-function getLatestMessageParameters() {
-  let time = 0
+function getLatestMessageParameters(id) {
   let message = null
   let type = ''
-  let finalId = 0
-  for (const id in VuexStore.state.unapprovedMsgs) {
-    const messageTime = VuexStore.state.unapprovedMsgs[id].time
-    if (messageTime > time) {
-      message = VuexStore.state.unapprovedMsgs[id]
-      time = messageTime
-      finalId = id
-      type = TX_MESSAGE
-    }
-  }
-
-  for (const id in VuexStore.state.unapprovedPersonalMsgs) {
-    const messageTime = VuexStore.state.unapprovedPersonalMsgs[id].time
-    if (messageTime > time) {
-      message = VuexStore.state.unapprovedPersonalMsgs[id]
-      time = messageTime
-      finalId = id
-      type = TX_PERSONAL_MESSAGE
-    }
+  if (VuexStore.state.unapprovedMsgs[id]) {
+    message = VuexStore.state.unapprovedMsgs[id]
+    type = TX_MESSAGE
+  } else if (VuexStore.state.unapprovedPersonalMsgs[id]) {
+    message = VuexStore.state.unapprovedPersonalMsgs[id]
+    type = TX_PERSONAL_MESSAGE
   }
 
   // handle hex-based messages and convert to text
@@ -188,49 +197,13 @@ function getLatestMessageParameters() {
     message.msgParams.message = finalMessage
   }
 
-  // handle typed messages
-  for (const id in VuexStore.state.unapprovedTypedMessages) {
-    const messageTime = VuexStore.state.unapprovedTypedMessages[id].time
-    if (messageTime > time) {
-      time = messageTime
-      message = VuexStore.state.unapprovedTypedMessages[id]
-      message.msgParams.typedMessages = message.msgParams.data // TODO: use for differentiating msgs later on
-      finalId = id
-      type = TX_TYPED_MESSAGE
-    }
+  if (VuexStore.state.unapprovedTypedMessages[id]) {
+    message = VuexStore.state.unapprovedTypedMessages[id]
+    message.msgParams.typedMessages = message.msgParams.data // TODO: use for differentiating msgs later on
+    type = TX_TYPED_MESSAGE
   }
-  return message ? { msgParams: message.msgParams, id: finalId, type } : {}
-}
 
-function isTorusTransaction() {
-  let isLatestTx = false
-  let latestTime = 0
-  for (const id in VuexStore.getters.unApprovedTransactions) {
-    const txTime = VuexStore.getters.unApprovedTransactions[id].time
-    if (txTime > latestTime) {
-      latestTime = txTime
-      isLatestTx = true
-    }
-  }
-  for (const id in VuexStore.state.unapprovedTypedMessages) {
-    const messageTime = VuexStore.state.unapprovedTypedMessages[id].time
-    if (messageTime > latestTime) {
-      return false
-    }
-  }
-  for (const id in VuexStore.state.unapprovedPersonalMsgs) {
-    const messageTime = VuexStore.state.unapprovedPersonalMsgs[id].time
-    if (messageTime > latestTime) {
-      return false
-    }
-  }
-  for (const id in VuexStore.state.unapprovedMsgs) {
-    const messageTime = VuexStore.state.unapprovedMsgs[id].time
-    if (messageTime > latestTime) {
-      return false
-    }
-  }
-  return isLatestTx
+  return message ? { msgParams: message.msgParams, id, type } : {}
 }
 
 if (storageAvailable('localStorage')) {

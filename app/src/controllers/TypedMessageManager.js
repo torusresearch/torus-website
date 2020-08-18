@@ -7,8 +7,6 @@ import jsonschema from 'jsonschema'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
-import createId from '../utils/random-id'
-
 /**
  * Represents, and contains data about, an 'eth_signTypedData' type signature request. These are created when a
  * signature for an eth_signTypedData call is requested.
@@ -77,9 +75,9 @@ export default class TypedMessageManager extends EventEmitter {
    * @returns {promise} When the message has been signed or rejected
    *
    */
-  addUnapprovedMessageAsync(messageParameters, request, version) {
+  addUnapprovedMessageAsync(messageParameters, request, version, messageId) {
     return new Promise((resolve, reject) => {
-      const messageId = this.addUnapprovedMessage(messageParameters, request, version)
+      this.addUnapprovedMessage(messageParameters, request, version, messageId)
       this.once(`${messageId}:finished`, (data) => {
         switch (data.status) {
           case 'signed':
@@ -105,7 +103,7 @@ export default class TypedMessageManager extends EventEmitter {
    * @returns {number} The id of the newly created TypedMessage.
    *
    */
-  addUnapprovedMessage(messageParameters, request, version) {
+  addUnapprovedMessage(messageParameters, request, version, messageId) {
     messageParameters.version = version
     this.validateParams(messageParameters)
     // add origin from request
@@ -114,7 +112,6 @@ export default class TypedMessageManager extends EventEmitter {
     log.debug(`TypedMessageManager addUnapprovedMessage: ${JSON.stringify(messageParameters)}`)
     // create txData obj with parameters and meta data
     const time = new Date().getTime()
-    const messageId = createId()
     const messageData = {
       id: messageId,
       msgParams: messageParameters,

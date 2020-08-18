@@ -25,8 +25,12 @@
         <div class="d-flex mb-2 align-center">
           <div class="mr-2">
             <img
-              :width="$vuetify.breakpoint.xsOnly ? 51 : 51"
-              :src="require(`../../../assets/images/opensea-logo${$vuetify.theme.isDark ? '-dark' : ''}.svg`)"
+              :width="localeSelected === LOCALE_JA ? 70 : 51"
+              :src="
+                require(`../../../assets/images/${localeSelected === LOCALE_JA ? 'miime' : 'opensea'}-logo${
+                  $vuetify.theme.isDark ? '-dark' : ''
+                }.svg`)
+              "
               alt="Explore Opensea"
             />
           </div>
@@ -41,7 +45,7 @@
             class="torus-btn1 px-10"
             :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
             :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
-            href="https://opensea.io/"
+            :href="localeSelected === LOCALE_JA ? 'https://miime.io/' : 'https://opensea.io/'"
             target="_blank"
             rel="noreferrer noopener"
           >
@@ -56,8 +60,18 @@
 <script>
 import { mapGetters } from 'vuex'
 
+import { LOCALE_JA } from '../../../utils/enums'
+
 export default {
-  computed: mapGetters(['collectibleBalances']),
+  data: () => ({
+    LOCALE_JA,
+  }),
+  computed: {
+    ...mapGetters(['collectibleBalances']),
+    localeSelected() {
+      return this.$vuetify.lang.current
+    },
+  },
 }
 </script>
 

@@ -3,8 +3,6 @@ import { bufferToHex, keccak256 } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import ObservableStore from 'obs-store'
 
-import createId from '../utils/random-id'
-
 /**
  * Represents, and contains data about, an 'eth_sign' type signature request. These are created when a signature for
  * an eth_sign call is requested.
@@ -78,9 +76,9 @@ export default class MessageManager extends EventEmitter {
    * @returns {promise} after signature has been
    *
    */
-  addUnapprovedMessageAsync(messageParameters, request) {
+  addUnapprovedMessageAsync(messageParameters, request, messageId) {
     return new Promise((resolve, reject) => {
-      const messageId = this.addUnapprovedMessage(messageParameters, request)
+      this.addUnapprovedMessage(messageParameters, request, messageId)
       // await finished
       this.once(`${messageId}:finished`, (data) => {
         switch (data.status) {
@@ -104,14 +102,13 @@ export default class MessageManager extends EventEmitter {
    * @returns {number} The id of the newly created message.
    *
    */
-  addUnapprovedMessage(messageParameters, request) {
+  addUnapprovedMessage(messageParameters, request, messageId) {
     // add origin from request
     if (request) messageParameters.origin = request.origin
     messageParameters.data = normalizeMessageData(messageParameters.data)
 
     // create txData obj with parameters and meta data
     const time = new Date().getTime()
-    const messageId = createId()
     const messageData = {
       id: messageId,
       msgParams: messageParameters,
