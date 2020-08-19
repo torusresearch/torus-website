@@ -429,7 +429,7 @@ export const paymentProviders = {
     logoExtension: SVG,
     supportPage: 'https://instant.ramp.network/',
     minOrderValue: 1,
-    maxOrderValue: 10000,
+    maxOrderValue: 20000,
     validCurrencies: ['EUR', 'GBP'],
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
     includeFees: true,
