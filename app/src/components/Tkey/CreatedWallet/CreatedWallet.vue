@@ -1,11 +1,11 @@
 <template>
-  <div class="elevation-1" :class="$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10'">
+  <div class="created-wallet-container" :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark }]">
     <div class="text-center mb-6">
-      <img src="../../../assets/images/ob-add-2fa-created.svg" alt="2-FA Created" />
+      <img :src="require(`../../../assets/images/ob-add-2fa-created${$vuetify.theme.dark ? '-dark' : ''}.svg`)" alt="2-FA Created" />
     </div>
 
     <div class="text-center mb-6">
-      <div class="headline text_1--text mb-1">Select your default wallet</div>
+      <div class="headline mb-1" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">Select your default wallet</div>
       <div class="caption text_3--text">The default account would be displayed when you sign in on a DApp.</div>
     </div>
 
@@ -16,17 +16,17 @@
       @click="selectedWallet = WALLET_2FA"
     >
       <div class="mr-4">
-        <v-icon :color="selectedWallet === WALLET_2FA ? 'torusBrand1' : ''">
+        <v-icon :color="selectedWallet === WALLET_2FA ? 'torusBrand1' : 'torusGray3'">
           {{ `$vuetify.icons.${selectedWallet === WALLET_2FA ? 'radioOn' : 'radioOff'}` }}
         </v-icon>
       </div>
       <div class="wallet-item py-3 px-4 d-flex grow align-center">
-        <v-icon small class="mr-4" :class="selectedWallet === WALLET_2FA ? 'text_1--text' : 'text_3--text'">
+        <v-icon small class="mr-3">
           $vuetify.icons.wallet_fill
         </v-icon>
         <div>
-          <div class="caption" :class="selectedWallet === WALLET_2FA ? 'text_2--text' : 'text_3--text'">Your 2FA wallet</div>
-          <div class="text_3--text caption">Wallet address: 0x11f...5Gdfv</div>
+          <div class="caption wallet-item__id">Your 2FA wallet</div>
+          <div class="wallet-item__address caption">Wallet address: 0x11f...5Gdfv</div>
         </div>
       </div>
     </div>
@@ -37,15 +37,17 @@
       @click="selectedWallet = WALLET_GOOGLE"
     >
       <div class="mr-4">
-        <v-icon :color="selectedWallet === WALLET_GOOGLE ? 'torusBrand1' : ''">
+        <v-icon :color="selectedWallet === WALLET_GOOGLE ? 'torusBrand1' : 'torusGray3'">
           {{ `$vuetify.icons.${selectedWallet === WALLET_GOOGLE ? 'radioOn' : 'radioOff'}` }}
         </v-icon>
       </div>
       <div class="wallet-item py-3 px-4 d-flex grow align-center">
-        <v-icon small class="mr-4" :class="selectedWallet === WALLET_GOOGLE ? 'text_1--text' : 'text_3--text'">$vuetify.icons.google</v-icon>
+        <v-icon small class="mr-3">$vuetify.icons.google</v-icon>
         <div>
-          <div class="caption" :class="selectedWallet === WALLET_GOOGLE ? 'text_2--text' : 'text_3--text'">youremailhere@gmail.com</div>
-          <div class="text_3--text caption">Wallet address: 0x11f...5Gdfv</div>
+          <div class="caption wallet-item__id">
+            youremailhere@gmail.com
+          </div>
+          <div class="wallet-item__address caption">Wallet address: 0x11f...5Gdfv</div>
         </div>
       </div>
     </div>
@@ -55,7 +57,7 @@
         :x-large="!$vuetify.breakpoint.xsOnly"
         :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
         color="torusBrand1"
-        class="white--text"
+        class="torusFont1--text"
         @click="next"
       >
         Let's explore

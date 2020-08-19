@@ -29,7 +29,7 @@ export default {
   infoBannerText: '#FC902D',
   // Rarely changed
   success: {
-    base: '#00D065',
+    base: '#2DCC70',
     lighten5: '#C6E7D6',
     darken1: '#4CAD74',
   },

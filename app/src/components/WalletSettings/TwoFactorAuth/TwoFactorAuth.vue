@@ -1,10 +1,20 @@
 <template>
-  <div class="two-factor-auth-container" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
+  <div class="two-factor-auth-container" :class="[$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4', { 'is-dark': $vuetify.theme.dark }]">
     <div class="mb-12">
-      <div class="text_1--text font-weight-bold body-1 mb-2">Authentication Threshold</div>
-      <div class="settings-container pa-4">
+      <div class="text_1--text font-weight-bold body-1">Authentication Threshold</div>
+      <div class="settings-container pa-4 mb-4">
         <div class="text_1--text body-2 mb-4">Select threshold for authentication</div>
-        <v-select outlined hide-details placeholder="2 out of 5 authentication factors"></v-select>
+        <v-select v-model="authTreshholdSelected" class="mb-6" outlined hide-details :items="authTreshholds" append-icon="$vuetify.icons.select">
+          <template v-slot:item="{ item }">{{ item }} out of 5 authentication factors</template>
+          <template v-slot:selection="{ item }">{{ item }} out of 5 authentication factors</template>
+        </v-select>
+        <v-layout wrap>
+          <v-flex class="ml-auto xs4">
+            <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
+              Save
+            </v-btn>
+          </v-flex>
+        </v-layout>
       </div>
     </div>
 
@@ -50,7 +60,7 @@
         </v-list>
         <v-layout wrap>
           <v-flex class="ml-auto xs6 sm4">
-            <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
+            <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit" @click="loginDialog = true">
               Add new login
             </v-btn>
           </v-flex>
@@ -146,7 +156,16 @@
 
       <div class="settings-container pa-4 mb-10">
         <div class="text_1--text body-2 mb-4">Select Factor</div>
-        <v-select outlined hide-details placeholder="Select from the list of Factors to add"></v-select>
+        <v-select
+          v-model="authFactorSelected"
+          outlined
+          hide-details
+          class="mb-6"
+          :items="authFactors"
+          item-value="type"
+          item-text="label"
+          placeholder="Select from the list of Factors to add"
+        ></v-select>
         <v-layout wrap>
           <v-flex class="ml-auto xs6">
             <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
@@ -156,12 +175,51 @@
         </v-layout>
       </div>
     </div>
+    <PopupLogin :login-dialog="loginDialog" :is-link-account="true" @closeDialog="loginDialog = false" @accountLinked="accountLinked" />
+    <LinkingCompleted :linking-dialog="linkingDialog" :is-successfull="isLinkingSuccessfull" @closeDialog="linkingDialog = false" />
   </div>
 </template>
 
 <script>
+import PopupLogin from '../../../containers/Popup/PopupLogin'
+import LinkingCompleted from '../LinkingCompleted'
+
+const AUTH_FACTORS = [
+  {
+    type: 'torus_network',
+    label: 'Torus Network',
+  },
+  {
+    type: 'device',
+    label: 'Device',
+  },
+  {
+    type: 'account_password',
+    label: 'Account Password',
+  },
+]
 export default {
   name: 'TwoFactorAuthSettings',
+  components: { PopupLogin, LinkingCompleted },
+  data() {
+    return {
+      authTreshholdSelected: 2,
+      authTreshholds: [1, 2, 3, 4, 5],
+      authFactorSelected: '',
+      authFactors: AUTH_FACTORS,
+      userAuthFactors: [],
+      loginDialog: false,
+      linkingDialog: false,
+      isLinkingSuccessfull: true,
+    }
+  },
+  methods: {
+    accountLinked() {
+      // TODO check linking successfull
+      this.linkingDialog = true
+      this.loginDialog = false
+    },
+  },
 }
 </script>
 

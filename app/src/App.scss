@@ -239,12 +239,17 @@
     .v-input {
       &.v-text-field--outlined > .v-input__control {
         & > .v-input__slot {
-          background: var(--v-torusBlack-base);;
+          background: var(--v-torusBlack-base);
           box-shadow: inherit;
         }
         fieldset {
-          border-style: solid;
-          border-width: 0;
+          border: 1px solid var(--v-torusGray3-base);
+        }
+        .v-icon {
+          color: var(--v-text_3-base);
+        }
+        input {
+          color: var(--v-text_3-base);
         }
       }
     }

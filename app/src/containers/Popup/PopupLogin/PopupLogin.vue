@@ -4,15 +4,26 @@
       <v-dialog :value="loginDialog && showModal" max-width="375" persistent>
         <v-card class="login-dialog-container">
           <v-layout wrap>
-            <v-flex text-center class="login-header" xs12 pt-8 pb-6 px-6>
-              <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? '50' : '30'" :src="getLogo.logo" />
+            <v-flex text-center class="login-header" xs12 px-6 :class="isLinkAccount ? 'py-6' : 'pt-8 pb-6'">
+              <img
+                v-if="isLinkAccount"
+                class="home-link mr-1"
+                alt="Link Account"
+                height="50"
+                :src="require('../../../assets/images/link-account.svg')"
+              />
+              <img v-else class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? '50' : '30'" :src="getLogo.logo" />
               <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="closeDialog">
                 <v-icon>$vuetify.icons.close</v-icon>
               </v-btn>
             </v-flex>
           </v-layout>
           <v-layout wrap pa-6>
-            <v-flex xs12>
+            <v-flex v-if="isLinkAccount" xs12 class="mb-8">
+              <div class="display-1 text_2--text text-center mb-4">Sign in with any of the following to link account</div>
+              <div class="body-2 text_2--text text-center">By linking account, both account will share the same 2FA Wallet and its settings.</div>
+            </v-flex>
+            <v-flex v-else xs12>
               <div class="verifier-title headline torus_text--text font-weight-bold">
                 <span v-if="$vuetify.breakpoint.xsOnly">
                   {{ t('login.your') }}
@@ -38,7 +49,7 @@
                 {{ t('login.digitalWallet') }}
               </div>
             </v-flex>
-            <v-flex xs12 mt-7>
+            <v-flex v-if="!isLinkAccount" xs12 mt-7>
               <div class="text-body-1 torus_text--text">{{ t('login.signUpIn') }}</div>
             </v-flex>
             <v-flex xs12>
@@ -104,7 +115,7 @@
               </div>
             </v-flex>
             <v-flex xs12 mb-6 class="footer-notes">
-              <div v-if="!canHideDisclaimer1" class="text_3--text mb-4">
+              <div v-if="!canHideDisclaimer1 && !isLinkAccount" class="text_3--text mb-4">
                 <span>{{ t('dappLogin.termsAuth01') }}</span>
                 <br />
                 <span>{{ t('dappLogin.termsAuth02') }}</span>
@@ -164,6 +175,10 @@ export default {
   components: { PasswordlessLogin },
   props: {
     loginDialog: {
+      type: Boolean,
+      dafault: false,
+    },
+    isLinkAccount: {
       type: Boolean,
       dafault: false,
     },
@@ -233,6 +248,10 @@ export default {
       if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
     },
     async startLogin(verifier) {
+      if (this.isLinkAccount) {
+        this.$emit('accountLinked')
+        return
+      }
       if (verifier === PASSWORDLESS) {
         this.passwordlessLoginDialog = true
         return
