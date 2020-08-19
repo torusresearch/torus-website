@@ -558,7 +558,7 @@ export default {
   updateCalculatedTx({ state, getters }, payload) {
     for (const id in payload) {
       const txOld = payload[id]
-      if (txOld.metamaskNetworkId.toString() === state.networkId.toString() && txOld.status === 'submitted' && id >= 0) {
+      if (txOld.metamaskNetworkId.toString() === state.networkId.toString() && id >= 0) {
         const { methodParams, contractParams, txParams, transactionCategory, time, hash, status } = txOld
         let amountTo
         let amountValue

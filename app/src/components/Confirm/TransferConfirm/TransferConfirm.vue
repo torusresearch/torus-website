@@ -50,14 +50,18 @@
         <div class="d-flex transfer-to-from__details">
           <div class="name">
             <div class="text-clamp-one">{{ fromVerifierId }}</div>
-            <div class="name--address">{{ addressSlicer(fromAddress) }}</div>
+            <ShowToolTip :address="fromAddress">
+              <div class="name--address">{{ addressSlicer(fromAddress) }}</div>
+            </ShowToolTip>
           </div>
           <div class="network-container flex-grow-1" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
             <NetworkDisplay :is-plain="true" :store-network-type="networkType"></NetworkDisplay>
           </div>
           <div class="name name--right">
             <div class="text-clamp-one">{{ dappName === '' ? (toVerifier === ETH ? 'ETH Address' : toVerifierId) : dappName }}</div>
-            <div class="name--address">{{ addressSlicer(toAddress) }}</div>
+            <ShowToolTip :address="toAddress">
+              <div class="name--address">{{ addressSlicer(toAddress) }}</div>
+            </ShowToolTip>
           </div>
         </div>
       </v-flex>
@@ -99,8 +103,9 @@
             <span class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="text-subtitle-2 text-right">{{ isNonFungibleToken ? transactionFeeEth : totalCost }}</div>
+            <div class="text-subtitle-2 text-right">{{ isNonFungibleToken ? `${transactionFeeEth} ETH` : totalCost }}</div>
             <div class="caption-2 text-right">{{ isNonFungibleToken ? `${transactionFee} ${selectedCurrency}` : totalCostConverted }}</div>
+            <div v-if="insufficientFunds" class="caption error--text">{{ t('walletTransfer.insufficient') }}</div>
           </div>
         </div>
       </v-flex>
@@ -113,7 +118,16 @@
             <v-btn block large text @click="onCancel">{{ t('walletTransfer.cancel') }}</v-btn>
           </v-flex>
           <v-flex xs6 px-2>
-            <v-btn id="confirm-transfer-btn" block large color="torusBrand1" class="white--text" type="button" @click="onConfirm">
+            <v-btn
+              id="confirm-transfer-btn"
+              block
+              large
+              color="torusBrand1"
+              class="white--text"
+              type="button"
+              :disabled="insufficientFunds"
+              @click="onConfirm"
+            >
               {{ t('walletTransfer.confirm') }}
             </v-btn>
           </v-flex>
@@ -127,12 +141,13 @@
 import BigNumber from 'bignumber.js'
 import { mapGetters } from 'vuex'
 
-import { ETH, GITHUB, MAINNET, REDDIT, TWITTER } from '../../../utils/enums'
+import { CONTRACT_TYPE_ETH, ETH, GITHUB, MAINNET, REDDIT, TWITTER } from '../../../utils/enums'
 import { addressSlicer, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
+import ShowToolTip from '../../helpers/ShowToolTip'
 
 export default {
-  components: { NetworkDisplay },
+  components: { NetworkDisplay, ShowToolTip },
   props: {
     convertedVerifierId: {
       type: String,
@@ -183,8 +198,8 @@ export default {
       default: new BigNumber('0'),
     },
     transactionFeeEth: {
-      type: String,
-      default: '',
+      type: BigNumber,
+      default: new BigNumber('0'),
     },
     assetSelected: {
       type: Object,
@@ -215,6 +230,22 @@ export default {
       type: String,
       default: '',
     },
+    itemBalance: {
+      type: BigNumber,
+      default: new BigNumber('0'),
+    },
+    ethBalance: {
+      type: BigNumber,
+      default: new BigNumber('0'),
+    },
+    totalCostBn: {
+      type: BigNumber,
+      default: new BigNumber('0'),
+    },
+    contractType: {
+      type: String,
+      default: CONTRACT_TYPE_ETH,
+    },
   },
   data() {
     return {
@@ -236,6 +267,9 @@ export default {
         return `https://reddit.com/user/${this.toVerifierId}`
       }
       return ''
+    },
+    insufficientFunds() {
+      return this.contractType === CONTRACT_TYPE_ETH ? this.totalCostBn.gt(this.itemBalance) : this.transactionFeeEth.gt(this.ethBalance)
     },
   },
   methods: {

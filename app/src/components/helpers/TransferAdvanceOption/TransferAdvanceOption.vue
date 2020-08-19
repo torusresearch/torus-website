@@ -73,14 +73,14 @@
                   <template v-if="$vuetify.breakpoint.xsOnly">
                     <span class="float-right">
                       <span id="transaction-fee-mobile">{{ gasAmountDisplay }}</span>
-                      {{ symbol }}
+                      ETH
                     </span>
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>
                   <v-text-field
                     v-else
                     id="transaction-fee"
-                    :suffix="symbol"
+                    suffix="ETH"
                     outlined
                     readonly
                     :value="gasAmountDisplay"
@@ -91,12 +91,14 @@
                 <v-flex xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mt-5' : ''">
                   <span class="text-subtitle-2">{{ t('walletTransfer.newTotal') }}</span>
                   <template v-if="$vuetify.breakpoint.xsOnly">
-                    <span class="float-right text-subtitle-1 font-weight-bold torusBrand1--text">{{ totalCost }} {{ symbol }}</span>
+                    <span class="float-right text-subtitle-1 font-weight-bold torusBrand1--text">
+                      {{ totalCost }}{{ contractType !== CONTRACT_TYPE_ERC20 ? ` ${symbol}` : '' }}
+                    </span>
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>
                   <v-text-field
                     v-else
-                    :suffix="symbol"
+                    :suffix="contractType !== CONTRACT_TYPE_ERC20 ? symbol : ''"
                     outlined
                     readonly
                     :value="totalCost"
@@ -129,8 +131,8 @@
 
 <script>
 import BigNumber from 'bignumber.js'
-import { mapGetters } from 'vuex'
 
+import { CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ETH } from '../../../utils/enums'
 import { significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
 
@@ -151,11 +153,17 @@ export default {
       type: String,
       default: 'USD',
     },
-    currencyData: {
-      type: Object,
-      default() {
-        return {}
-      },
+    currencyMultiplier: {
+      type: BigNumber,
+      default: new BigNumber('0'),
+    },
+    currencyMultiplierEth: {
+      type: BigNumber,
+      default: new BigNumber('0'),
+    },
+    contractType: {
+      type: String,
+      default: CONTRACT_TYPE_ETH,
     },
   },
   data() {
@@ -164,13 +172,20 @@ export default {
       advanceOptionFormValid: true,
       advancedActiveGasPrice: new BigNumber('0'),
       advancedGas: new BigNumber('0'),
+      CONTRACT_TYPE_ERC20,
     }
   },
   computed: {
-    ...mapGetters(['currencyMultiplier']),
     totalCost() {
-      const maxLength = Math.max(this.gasAmountDisplay.toString().length, this.displayAmount.toString().length)
-      return significantDigits(new BigNumber(this.displayAmount).plus(this.gasAmount).toString(), false, maxLength - 2)
+      let totalCost = ''
+      if (this.contractType === CONTRACT_TYPE_ETH) {
+        totalCost = new BigNumber(this.displayAmount).plus(this.gasAmount).toString()
+      } else if (this.contractType === CONTRACT_TYPE_ERC20) {
+        totalCost = `${this.displayAmount} ${this.symbol} + ${this.gasAmount.toString()} ETH`
+      } else {
+        totalCost = this.gasAmount.toString()
+      }
+      return totalCost
     },
     gasAmount() {
       return this.advancedGas.times(this.advancedActiveGasPrice).times(new BigNumber(10).pow(new BigNumber(-9)))
@@ -179,13 +194,17 @@ export default {
       return significantDigits(this.gasAmount)
     },
     gasAmountConverted() {
-      return this.convertedDisplay(this.gasAmount)
+      const converted = significantDigits(this.convertedDisplay(this.gasAmount, this.currencyMultiplierEth))
+      return `~ ${converted} ${this.selectedCurrency}`
     },
     displayAmountConverted() {
-      return this.convertedDisplay(this.displayAmount)
+      const converted = significantDigits(this.convertedDisplay(this.displayAmount, this.currencyMultiplier))
+      return `~ ${converted} ${this.selectedCurrency}`
     },
     totalCostConverted() {
-      return this.convertedDisplay(this.totalCost)
+      const gasConverted = this.convertedDisplay(this.gasAmount, this.currencyMultiplierEth)
+      const amountConverted = this.convertedDisplay(this.displayAmount, this.currencyMultiplier)
+      return `~ ${significantDigits(gasConverted.plus(amountConverted))} ${this.selectedCurrency}`
     },
   },
   watch: {
@@ -221,11 +240,8 @@ export default {
       this.advancedActiveGasPrice = this.activeGasPrice
       this.advancedGas = this.gas
     },
-    convertedDisplay(amount) {
-      const bigNumber = !BigNumber.isBigNumber(amount) ? new BigNumber(amount).times(this.currencyMultiplier) : amount.times(this.currencyMultiplier)
-      const converted = significantDigits(bigNumber)
-
-      return `~ ${converted} ${this.selectedCurrency}`
+    convertedDisplay(amount, multiplier) {
+      return !BigNumber.isBigNumber(amount) ? new BigNumber(amount).times(multiplier) : amount.times(multiplier)
     },
   },
 }

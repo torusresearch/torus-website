@@ -62,6 +62,9 @@
           :gas="gas"
           :active-gas-price="activeGasPrice"
           :is-confirm="isConfirm"
+          :currency-multiplier="currencyMultiplier"
+          :currency-multiplier-eth="currencyMultiplierEth"
+          :contract-type="contractType"
           @onSave="onSaveAdvanceOptions"
         />
       </v-flex>
@@ -79,7 +82,9 @@
           :gas="gas"
           :active-gas-price="activeGasPrice"
           :selected-currency="selectedCurrency"
-          :currency-data="currencyData"
+          :currency-multiplier="currencyMultiplier"
+          :currency-multiplier-eth="currencyMultiplierEth"
+          :contract-type="contractType"
           @onSave="onSaveAdvanceOptions"
         />
       </v-flex>
@@ -142,6 +147,7 @@
 import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 
+import { CONTRACT_TYPE_ETH } from '../../../utils/enums'
 import { significantDigits } from '../../../utils/utils'
 import TransferAdvanceOption from '../TransferAdvanceOption'
 
@@ -171,15 +177,17 @@ export default {
       type: BigNumber,
       default: new BigNumber('0'),
     },
+    currencyMultiplierEth: {
+      type: BigNumber,
+      default: new BigNumber('0'),
+    },
     isConfirm: {
       type: Boolean,
       default: false,
     },
-    currencyData: {
-      type: Object,
-      default() {
-        return {}
-      },
+    contractType: {
+      type: String,
+      default: CONTRACT_TYPE_ETH,
     },
   },
   data() {
@@ -273,7 +281,7 @@ export default {
     },
     getGasAmount(gasPrice) {
       const ethFee = this.getEthAmount(this.gas, gasPrice)
-      return ethFee.times(this.currencyMultiplier)
+      return ethFee.times(this.currencyMultiplierEth)
     },
     getEthAmount(gas, gasPrice) {
       return gas.times(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
