@@ -48,12 +48,13 @@
       <v-layout mx-6 my-4 wrap>
         <TransactionSpeedSelect
           :gas="gasEstimate"
-          :display-amount="value"
+          :display-amount="contractType === CONTRACT_TYPE_ERC20 ? amountValue : value"
           :active-gas-price-confirm="gasPrice"
           :selected-currency="selectedCurrency"
-          :currency-data="currencyData"
           :currency-multiplier="currencyMultiplier"
-          :symbol="'ETH'"
+          :currency-multiplier-eth="currencyMultiplier"
+          :contract-type="contractType"
+          :symbol="SEND_ETHER_ACTION_KEY === transactionCategory ? 'ETH' : selectedToken"
           :is-confirm="true"
           @onSelectSpeed="onSelectSpeed"
         />
@@ -276,6 +277,9 @@ import { PopupScreenLoader } from '../../content-loader'
 import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   CONTRACT_INTERACTION_KEY,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
   SEND_ETHER_ACTION_KEY,
   TOKEN_METHOD_APPROVE,
@@ -357,6 +361,8 @@ export default {
       TX_PERSONAL_MESSAGE,
       TX_MESSAGE,
       userInfo: {},
+      contractType: CONTRACT_TYPE_ETH,
+      CONTRACT_TYPE_ERC20,
     }
   },
   computed: {
@@ -524,8 +530,10 @@ export default {
         let txDataParameters = ''
         if (contractParams.erc721) {
           txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          this.contractType = CONTRACT_TYPE_ERC721
         } else if (contractParams.erc20) {
           txDataParameters = tokenABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          this.contractType = CONTRACT_TYPE_ERC20
         }
         // Get Params from method type ABI
         let amountTo

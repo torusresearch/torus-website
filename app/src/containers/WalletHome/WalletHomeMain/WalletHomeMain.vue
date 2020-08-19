@@ -182,20 +182,19 @@
 
     <v-layout class="mt-12">
       <v-flex xs12 class="refresh text-right">
-        <v-btn
-          class="gmt-refresh-tokens"
-          :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
-          height="24"
-          width="24"
-          fab
-          aria-label="Refresh Balances"
-          @click="refreshBalances"
-        >
-          <v-icon color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
-        </v-btn>
-        <v-chip :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'" class="text_2--text ml-2" small>
-          {{ t('walletHome.lastUpdate') }} {{ lastUpdated }}
-        </v-chip>
+        <div class="mb-1">
+          <v-btn
+            class="gmt-refresh-tokens refresh-btn"
+            :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
+            height="24"
+            aria-label="Refresh Balances"
+            @click="refreshBalances"
+          >
+            <v-icon left color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
+            <span class="caption text_2--text">Show all Tokens</span>
+          </v-btn>
+        </div>
+        <div class="text_3--text refresh-text" small>{{ t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
       </v-flex>
     </v-layout>
   </v-container>

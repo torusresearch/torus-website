@@ -20,7 +20,7 @@
             <img :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
           </v-list-item-avatar>
           <v-list-item-content class="align-self-center text-right text_1--text caption">
-            <div>{{ t('walletTopUp.paywith') }} {{ targetProvider.line1 }}</div>
+            <div v-html="`${t('walletTopUp.paywith')} ${targetProvider.line1}`" />
             <div>
               <span class="font-weight-medium">{{ t('walletTopUp.fees') }}</span>
               : {{ targetProvider.line2 }}

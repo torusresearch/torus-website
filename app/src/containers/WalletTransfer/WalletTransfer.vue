@@ -161,7 +161,11 @@
                       :rules="[rules.contactRequired]"
                       aria-label="Recipient Selector"
                       @blur="verifierChangedManual"
-                    ></v-select>
+                    >
+                      <template v-slot:message="props">
+                        {{ t(props.message) }}
+                      </template>
+                    </v-select>
                   </v-flex>
                   <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
                     <AddContact :contact="contactSelected" :verifier="selectedVerifier"></AddContact>
@@ -204,6 +208,7 @@
                 <v-text-field
                   v-if="contractType !== CONTRACT_TYPE_ERC721"
                   id="you-send"
+                  ref="youSend"
                   :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
                   persistent-hint
                   type="number"
@@ -241,16 +246,20 @@
                       {{ selectedCurrency }}
                     </v-btn>
                   </template>
+                  <template v-slot:message="props">
+                    {{ $refs.youSend && $refs.youSend.errorBucket.length === 0 ? props.message : t(props.message) }}
+                  </template>
                 </v-text-field>
               </v-flex>
               <TransactionSpeedSelect
                 :reset-speed="resetSpeed"
                 :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : 'ETH'"
+                :contract-type="contractType"
                 :gas="gas"
                 :display-amount="displayAmount"
                 :selected-currency="selectedCurrency"
-                :currency-data="currencyData"
-                :currency-multiplier="currencyMultiplier"
+                :currency-multiplier="getCurrencyTokenRate"
+                :currency-multiplier-eth="currencyMultiplier"
                 @onSelectSpeed="onSelectSpeed"
               />
               <v-flex v-if="contractType === CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
@@ -299,11 +308,15 @@
                     :is-non-fungible-token="contractType === CONTRACT_TYPE_ERC721"
                     :speed-selected="timeTaken"
                     :transaction-fee="gasPriceInCurrency"
-                    :transaction-fee-eth="`${getEthAmount(gas, activeGasPrice)} ETH`"
+                    :transaction-fee-eth="getEthAmount(gas, activeGasPrice)"
                     :selected-currency="selectedCurrency"
                     :send-eth-to-contract-error="sendEthToContractError"
                     :total-cost="`${totalCost || 0} ${totalCostSuffix}`"
                     :total-cost-converted="convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}`"
+                    :total-cost-bn="totalCostBn"
+                    :item-balance="selectedItemBalance"
+                    :contract-type="contractType"
+                    :eth-balance="ethBalance"
                     @onClose="confirmDialog = false"
                     @onConfirm="sendCoin"
                   ></TransferConfirm>
@@ -429,6 +442,7 @@ export default {
       isFastChecked: false,
       speedSelected: '',
       totalCost: '',
+      totalCostBn: new BigNumber('0'),
       timeTaken: '',
       convertedTotalCost: '',
       resetSpeed: false,
@@ -436,7 +450,7 @@ export default {
       autoSelectVerifier: true,
       selectedVerifier: '',
       rules: {
-        required: (value) => !!value || this.t('walletTransfer.required'),
+        required: (value) => !!value || 'walletTransfer.required',
         contactRequired: (value) => !!value || 'walletTransfer.required',
       },
       nodeDetails: {},
@@ -564,6 +578,13 @@ export default {
       share.searchParams.append('text', message)
       return share.href
     },
+    ethBalance() {
+      const ethBalance = this.tokenBalances.finalBalancesArray.find((token) => token.tokenAddress === '0x')
+      return (ethBalance && ethBalance.computedBalance) || new BigNumber(0)
+    },
+    selectedItemBalance() {
+      return (this.selectedItem && this.selectedItem.computedBalance) || new BigNumber(0)
+    },
   },
   watch: {
     selectedAddress(newValue, oldValue) {
@@ -688,7 +709,7 @@ export default {
     },
     moreThanZero(value) {
       if (this.selectedItem) {
-        return new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
+        return new BigNumber(value || '0').gt(new BigNumber('0')) || 'walletTransfer.invalidAmount'
       }
       return ''
     },
@@ -698,7 +719,7 @@ export default {
         if (this.toggle_exclusive === 1) {
           amount = amount.div(this.getCurrencyTokenRate)
         }
-        return amount.lte(this.selectedItem.computedBalance) || this.t('walletTransfer.insufficient')
+        return amount.lte(this.selectedItem.computedBalance) || 'walletTransfer.insufficient'
       }
       return ''
     },
@@ -1025,7 +1046,7 @@ export default {
 
         if (this.activeGasPrice !== '') {
           const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
-          this.gasPriceInCurrency = gasPriceInEth.times(this.getCurrencyTokenRate)
+          this.gasPriceInCurrency = gasPriceInEth.times(this.currencyMultiplier)
         }
         return
       }
@@ -1039,7 +1060,7 @@ export default {
       }
 
       const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
-      const gasPriceInCurrency = gasPriceInEth.times(this.getCurrencyTokenRate)
+      const gasPriceInCurrency = gasPriceInEth.times(this.currencyMultiplier)
       const toSend = this.amount
       const toSendConverted = toSend.times(this.getCurrencyTokenRate)
 
@@ -1047,6 +1068,7 @@ export default {
 
       if (this.contractType === CONTRACT_TYPE_ETH) {
         this.totalCost = this.toggle_exclusive === 0 ? toSend.plus(gasPriceInEth) : toSendConverted.plus(gasPriceInCurrency)
+        this.totalCostBn = toSend.plus(gasPriceInEth)
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
         const displayedCurrency = this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency
         this.totalCost = `${this.displayAmount.toString()} ${displayedCurrency} + ${significantDigits(
