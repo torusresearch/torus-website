@@ -55,6 +55,7 @@ import TopupIcon from './TopupIcon.vue'
 import TransactionIcon from './TransactionIcon.vue'
 import TrashIcon from './TrashIcon.vue'
 import TwoFactorIcon from './TwoFactorIcon.vue'
+import UploadIcon from './UploadIcon.vue'
 import VerifierAppleIcon from './VerifierAppleIcon.vue'
 import VerifierDiscordIcon from './VerifierDiscordIcon.vue'
 import VerifierEmailIcon from './VerifierEmailIcon.vue'
@@ -303,5 +304,8 @@ export default {
   },
   lock_filled: {
     component: LockFilledIcon,
+  },
+  upload: {
+    component: UploadIcon,
   },
 }

@@ -11,7 +11,11 @@
             <div v-if="scenario === SCENARIO_WITH_PASSWORD" class="text-center mb-10">
               <img src="../../assets/images/ob-verification.svg" alt="Verification Required" class="mr-2" />
             </div>
-            <div v-if="scenario === SCENARIO_WITH_DEVICE" class="text-center" :class="[hasPasswordSetUp ? 'mb-2' : 'mb-10']">
+            <div
+              v-if="scenario === SCENARIO_WITH_DEVICE || scenario === SCENARIO_ACCOUNT_RECOVERY"
+              class="text-center"
+              :class="[hasPasswordSetUp ? 'mb-2' : 'mb-10']"
+            >
               <img v-if="hasPasswordSetUp" src="../../assets/images/ob-verification-methods.svg" alt="Verification Methods" class="mr-2" />
               <img v-else src="../../assets/images/ob-verification.svg" alt="Verification Required" class="mr-2" />
             </div>
@@ -22,29 +26,40 @@
               <div class="new-device-header__description">
                 You are accessing your 2FA Wallet from a new platform.
               </div>
-              <div class="new-device-header__description font-weight-regular text_2--text">
+              <div class="new-device-header__description">
                 <span class="font-weight-bold">Verify your identity</span>
                 with your password:
               </div>
             </div>
 
+            <div v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" class="text-center new-device-header">
+              <div class="new-device-header__title">Account Recovery</div>
+              <div class="new-device-header__description">
+                You require min 2 verifications to access your 2FA Wallet.
+              </div>
+              <div class="new-device-header__description">
+                <span class="font-weight-bold">Verify your identity</span>
+                with any of the following:
+              </div>
+            </div>
+
             <div v-if="scenario === SCENARIO_WITH_DEVICE" class="text-center new-device-header">
               <template v-if="hasPasswordSetUp">
-                <div class="new-device-header__title text_1--text">Verification methods</div>
-                <div class="new-device-header__description font-weight-regular text_2--text">
+                <div class="new-device-header__title">Verification methods</div>
+                <div class="new-device-header__description">
                   You require 1 verification to access your 2FA Wallet.
                 </div>
-                <div class="new-device-header__description font-weight-regular text_2--text">
+                <div class="new-device-header__description">
                   <span class="font-weight-bold">Verify your identity</span>
                   with any of the following:
                 </div>
               </template>
               <template v-else>
-                <div class="new-device-header__title text_1--text">Verification required</div>
-                <div class="new-device-header__description font-weight-regular text_2--text">
+                <div class="new-device-header__title">Verification required</div>
+                <div class="new-device-header__description">
                   You are accessing your 2FA Wallet from a new platform.
                 </div>
-                <div class="new-device-header__description font-weight-regular text_2--text">
+                <div class="new-device-header__description">
                   <span class="font-weight-bold">Verify your identity</span>
                   with the following:
                 </div>
@@ -53,13 +68,13 @@
 
             <div v-if="scenario === SCENARIO_LOGIN_DETECTED" class="text-center new-device-header">
               <template v-if="verifiedLogin">
-                <div class="new-device-header__title text_1--text">Identity verified</div>
-                <div class="headline font-weight-regular text_2--text mb-15">Return to your new platform to continue with the login</div>
+                <div class="new-device-header__title">Identity verified</div>
+                <div class="header__description mb-15">Return to your new platform to continue with the login</div>
               </template>
               <template v-else>
-                <div class="new-device-header__title text_1--text">New login detected</div>
-                <div class="new-device-header__description font-weight-regular text_2--text">A new login is trying to access your 2FA Wallet.</div>
-                <div class="new-device-header__description font-weight-regular text_2--text">
+                <div class="new-device-header__title">New login detected</div>
+                <div class="new-device-header__description">A new login is trying to access your 2FA Wallet.</div>
+                <div class="new-device-header__description">
                   <span class="font-weight-bold">Match the Reference ID</span>
                   and confirm this is you:
                 </div>
@@ -68,14 +83,14 @@
 
             <div v-if="scenario === SCENARIO_DEVICE_DETECTED">
               <div v-if="verifiedDevice" class="text-center new-device-header">
-                <div class="new-device-header__title text_1--text">New device and browser added</div>
-                <div class="new-device-header__description font-weight-regular text_2--text">The following has been added as an authenticator.</div>
-                <div class="new-device-header__description font-weight-regular text_2--text">You can edit it from the ‘Settings’ page.</div>
+                <div class="new-device-header__title">New device and browser added</div>
+                <div class="new-device-header__description">The following has been added as an authenticator.</div>
+                <div class="new-device-header__description">You can edit it from the ‘Settings’ page.</div>
               </div>
               <div v-else class="text-center new-device-header">
-                <div class="new-device-header__title text_1--text">Verified</div>
-                <div class="new-device-header__description font-weight-regular text_2--text">Confirm your browser and device details.</div>
-                <div class="new-device-header__description font-weight-regular text_2--text">Store it for future access into your 2FA Wallet.</div>
+                <div class="new-device-header__title">Verified</div>
+                <div class="new-device-header__description">Confirm your browser and device details.</div>
+                <div class="new-device-header__description">Store it for future access into your 2FA Wallet.</div>
               </div>
             </div>
 
@@ -121,7 +136,7 @@
               no password set up
               2/2 -->
             <!-- Refirects after verification with old browser -->
-            <div v-if="scenario === SCENARIO_WITH_DEVICE">
+            <div v-if="scenario === SCENARIO_WITH_DEVICE || scenario === SCENARIO_ACCOUNT_RECOVERY">
               <v-expansion-panels>
                 <v-expansion-panel v-for="device in devices" :key="device.id" class="mb-2">
                   <v-expansion-panel-header class="py-2">
@@ -147,19 +162,41 @@
                         <v-icon class="mr-1">$vuetify.icons.device</v-icon>
                         {{ browser.name }}
                       </div>
-                      <div class="ml-auto text-right caption">Reference ID: {{ browser.id }}</div>
+                      <v-icon v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" small v-text="'$vuetify.icons.download'" />
+                      <div v-else class="ml-auto text-right caption">Reference ID: {{ browser.id }}</div>
                     </div>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
+                <v-expansion-panel v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" class="mb-2" disabled>
+                  <v-expansion-panel-header class="py-2">
+                    <div class="grow font-weight-bold body-2 text_2--text">
+                      <v-icon class="mr-2" size="18">$vuetify.icons.upload</v-icon>
+                      Upload File
+                    </div>
+                    <div v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" class="ml-auto text-right">
+                      <a class="text-decoration-none caption" href="#">Upload a file</a>
+                    </div>
+                    <v-icon
+                      v-else-if="recoveredPassword"
+                      small
+                      class="d-inline-flex ml-auto success--text shrink"
+                      v-text="'$vuetify.icons.check_circle_filled'"
+                    />
+                    <v-icon v-else small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
+                  </v-expansion-panel-header>
+                </v-expansion-panel>
                 <!-- If user has password setup -->
-                <v-expansion-panel v-if="hasPasswordSetUp" :disabled="recoveredPassword" class="mb-2">
+                <v-expansion-panel v-if="hasPasswordSetUp || scenario === SCENARIO_ACCOUNT_RECOVERY" :disabled="recoveredPassword" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2 text_2--text">
                       <v-icon class="mr-1">$vuetify.icons.password</v-icon>
                       Recovery Password
                     </div>
+                    <div v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" class="ml-auto text-right">
+                      <a class="text-decoration-none caption" href="#">Type in password</a>
+                    </div>
                     <v-icon
-                      v-if="recoveredPassword"
+                      v-else-if="recoveredPassword"
                       small
                       class="d-inline-flex ml-auto success--text shrink"
                       v-text="'$vuetify.icons.check_circle_filled'"
@@ -290,11 +327,12 @@ const SCENARIO_WITH_PASSWORD = 'with_password'
 const SCENARIO_WITH_DEVICE = 'with_device'
 const SCENARIO_LOGIN_DETECTED = 'login_detected'
 const SCENARIO_DEVICE_DETECTED = 'new_device_detected'
+const SCENARIO_ACCOUNT_RECOVERY = 'account_recovery'
 
 export default {
   data() {
     return {
-      scenario: SCENARIO_DEVICE_DETECTED,
+      scenario: SCENARIO_ACCOUNT_RECOVERY,
       // verify password
       validVerifyPasswordForm: true,
       verifyPassword: '',
@@ -318,6 +356,7 @@ export default {
       SCENARIO_WITH_DEVICE,
       SCENARIO_LOGIN_DETECTED,
       SCENARIO_DEVICE_DETECTED,
+      SCENARIO_ACCOUNT_RECOVERY,
     }
   },
   computed: {
