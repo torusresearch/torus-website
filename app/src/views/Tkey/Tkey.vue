@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tkey-container">
     <Navbar :show-nav="false" :show-language-selector="false">
       <template v-slot:drawer>
         <v-btn v-if="$vuetify.breakpoint.smAndDown" id="menu-dropdown-mobile-btn" icon aria-label="Open Account Menu" @click="drawer = !drawer">
@@ -13,10 +13,14 @@
     <v-main>
       <router-view></router-view>
     </v-main>
+
+    <v-btn @click="saveTheme">Toggle theme</v-btn>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
 
@@ -29,6 +33,12 @@ export default {
     return {
       drawer: false,
     }
+  },
+  methods: {
+    ...mapActions(['setUserTheme']),
+    saveTheme() {
+      this.setUserTheme(this.$vuetify.theme.dark ? 'light-blue' : 'dark-black')
+    },
   },
 }
 </script>

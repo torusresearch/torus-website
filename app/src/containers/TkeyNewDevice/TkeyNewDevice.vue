@@ -3,7 +3,7 @@
     <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pa-0' : 'pa-4']">
       <v-layout class="justify-center">
         <v-flex :class="[$vuetify.breakpoint.xsOnly ? 'xs12' : 'xs7']">
-          <div class="new-device-container elevation-1" :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '']">
+          <div class="new-device-container" :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '', { 'is-dark': $vuetify.theme.dark }]">
             <!-- IMAGE -->
             <div v-if="scenario === SCENARIO_DEVICE_DETECTED || (scenario === SCENARIO_LOGIN_DETECTED && verifiedLogin)" class="text-center mb-2">
               <img src="../../assets/images/ob-verification-done.svg" alt="Verified" class="mr-2" />
@@ -18,8 +18,8 @@
 
             <!-- TITLE -->
             <div v-if="scenario === SCENARIO_WITH_PASSWORD" class="text-center new-device-header">
-              <div class="new-device-header__title text_1--text">Verification required</div>
-              <div class="new-device-header__description font-weight-regular text_2--text">
+              <div class="new-device-header__title">Verification required</div>
+              <div class="new-device-header__description">
                 You are accessing your 2FA Wallet from a new platform.
               </div>
               <div class="new-device-header__description font-weight-regular text_2--text">
@@ -99,7 +99,13 @@
                 <v-layout class="mx-n2 mb-12 align-center">
                   <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                   <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                    <a class="caption text-decoration-none" @click="onAnotherMethod">Verify via another method</a>
+                    <a
+                      class="caption text-decoration-none"
+                      :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1'"
+                      @click="onAnotherMethod"
+                    >
+                      Verify via another method
+                    </a>
                   </v-flex>
                   <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                     <v-btn :disabled="!validVerifyPasswordForm" block large color="torusBrand1" class="white--text" @click="onVerifyPassword">
@@ -137,11 +143,11 @@
                     </div>
 
                     <div v-for="browser in device.browsers" :key="browser.id" class="d-flex info-box py-3 px-6 mb-2 align-center">
-                      <div class="grow font-weight-bold body-2 text_2--text">
+                      <div class="grow font-weight-bold body-2">
                         <v-icon class="mr-1">$vuetify.icons.device</v-icon>
                         {{ browser.name }}
                       </div>
-                      <div class="ml-auto text-right caption text_2--text">Reference ID: {{ browser.id }}</div>
+                      <div class="ml-auto text-right caption">Reference ID: {{ browser.id }}</div>
                     </div>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
@@ -196,8 +202,8 @@
 
             <div v-if="scenario === SCENARIO_LOGIN_DETECTED && !verifiedLogin">
               <div class="d-flex info-box py-3 px-6 mb-6">
-                <div class="grow font-weight-bold body-2 text_2--text">Chrome V82.04103.61</div>
-                <div class="ml-auto text-right caption text_2--text">Reference ID: 1323</div>
+                <div class="grow font-weight-bold body-2">Chrome V82.04103.61</div>
+                <div class="ml-auto text-right caption">Reference ID: 1323</div>
               </div>
               <v-layout class="mx-n2 mb-12 align-center">
                 <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
@@ -214,8 +220,8 @@
 
             <v-form v-if="scenario === SCENARIO_DEVICE_DETECTED" v-model="verifyDeviceForm">
               <div class="d-flex info-box py-3 px-6 mb-2 align-center">
-                <div class="grow font-weight-bold body-2 text_2--text">Browser</div>
-                <div class="ml-auto text-right caption text_2--text">
+                <div class="grow font-weight-bold body-2">Browser</div>
+                <div class="ml-auto text-right caption">
                   <v-icon small class="mr-1">$vuetify.icons.device_detailed</v-icon>
                   Chrome V82.04103.61
                 </div>
@@ -233,13 +239,13 @@
                 :rules="[rules.required]"
               ></v-select>
               <div v-else class="d-flex info-box py-3 px-6 mb-2 align-center">
-                <div class="grow font-weight-bold body-2 text_2--text">{{ verifiedDeviceSelected }}</div>
+                <div class="grow font-weight-bold body-2">{{ verifiedDeviceSelected }}</div>
               </div>
 
               <v-layout v-if="!verifiedDevice" class="mx-n2 mb-12 align-center">
                 <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                 <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                  <a class="caption" href="#" :style="{ textDecoration: 'none' }">Do not add browser</a>
+                  <a class="caption text-decoration-none" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1'">Do not add browser</a>
                 </v-flex>
                 <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                   <v-btn :disabled="!verifyDeviceForm" block large color="torusBrand1" class="white--text" @click="verifiedDevice = true">
@@ -260,7 +266,7 @@
 
             <div class="tkey-footer">
               <hr class="mb-2" />
-              <v-layout class="px-5">
+              <v-layout>
                 <v-flex class="x6">
                   <div class="d-flex align-center">
                     <v-icon x-small class="mr-1">$vuetify.icons.lock_filled</v-icon>
@@ -288,7 +294,7 @@ const SCENARIO_DEVICE_DETECTED = 'new_device_detected'
 export default {
   data() {
     return {
-      scenario: SCENARIO_WITH_PASSWORD,
+      scenario: SCENARIO_DEVICE_DETECTED,
       // verify password
       validVerifyPasswordForm: true,
       verifyPassword: '',

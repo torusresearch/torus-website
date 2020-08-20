@@ -1,7 +1,71 @@
 .new-device-container {
+  background: #ffffff;
+  border: 1px solid #f1f2f6;
+  box-shadow: 0px 14px 28px rgba(211, 221, 255, 0.06);
+
+  border-radius: 6px;
+  box-sizing: border-box;
   min-height: 750px;
   position: relative;
   padding: 50px 50px 120px;
+
+  .new-device-header {
+    margin-bottom: 24px;
+    &__title {
+      color: var(--v-text_1-base);
+      font-weight: bold;
+      font-size: 24px;
+      line-height: 28px;
+      margin-bottom: 16px;
+    }
+    &__description {
+      color: var(--v-text_2-base);
+      font-weight: normal;
+      font-size: 18px;
+      line-height: 24px;
+    }
+  }
+
+  .info-box {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #d3d5e2;
+    box-sizing: border-box;
+    border-radius: 6px;
+    height: 40px;
+  }
+
+  &.is-dark {
+    background: var(--v-torusBlack2-base);
+    border: 1px solid #343539;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+
+    .new-device-header {
+      &__title {
+        color: var(--v-torusFont1-base);
+      }
+      &__description {
+        color: var(--v-torusFont1-base);
+      }
+    }
+
+    .info-box {
+      background: #3c3e45;
+      border: 0.5px solid #a2a5b5;
+      color: var(--v-text_3-base);
+    }
+    
+    ::v-deep .v-input.v-text-field--outlined > .v-input__control > .v-input__slot {
+      background: #3c3e45;
+      border-radius: 3px;
+      .v-select__selection--comma {
+        color: var(--v-text_3-base) !important;
+      }
+      input {
+        font-size: 14px;
+        line-height: 18px;
+      }
+    }
+  }
 }
 
 .tkey-footer {
@@ -10,28 +74,6 @@
   left: 0;
   width: 100%;
   padding: 50px;
-}
-
-.new-device-header {
-  margin-bottom: 24px;
-  &__title {
-    font-weight: bold;
-    font-size: 24px;
-    line-height: 28px;
-    margin-bottom: 16px;
-  }
-  &__description {
-    font-weight: normal;
-    font-size: 18px;
-    line-height: 24px;
-  }
-}
-
-.info-box {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid #D3D5E2;
-  box-sizing: border-box;
-  border-radius: 6px;
 }
 
 .v-expansion-panel {
@@ -78,6 +120,6 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 20px ;
+    padding: 20px;
   }
 }

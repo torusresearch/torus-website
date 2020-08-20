@@ -1,8 +1,22 @@
-.account-details {
-  background: #ffffff;
-  border: 1px solid #e7e9f4;
-  box-sizing: border-box;
-  border-radius: 6px;
-  width: 286px;
-  margin: auto;
+.header-container {
+  .account-details {
+    background: #ffffff;
+    border: 1px solid #e7e9f4;
+    box-sizing: border-box;
+    border-radius: 6px;
+    width: 286px;
+    margin: auto;
+  }
+
+  &.is-dark {
+    background: var(--v-torusBlack2-base);
+    border: 1px solid #343539;
+    box-sizing: border-box;
+
+    .account-details {
+      background: #2F3136;
+      box-shadow: 5px 5px 10px #242529, -5px -5px 10px #37383C;
+      border: 0;
+    }
+  }
 }
