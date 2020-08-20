@@ -82,3 +82,12 @@
 .token-tab-content.theme--dark {
   background-color: transparent; 
 }
+
+.refresh-text {
+  font-size: 10px;
+  line-height: 12px;
+}
+
+.v-btn:not(.v-btn--text):not(.v-btn--icon):not(.v-btn--round).refresh-btn {
+  border-radius: 12px;
+}

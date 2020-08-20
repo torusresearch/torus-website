@@ -50,6 +50,23 @@ if (storageAvailable('sessionStorage')) {
   })
 }
 
+const getBalance = async (state, key) => {
+  return new Promise((resolve, reject) => {
+    let counter = 0
+    const interval = setInterval(() => {
+      counter += 1
+      if (counter > 10) {
+        clearInterval(interval)
+        reject(new Error('Waited too long'))
+      }
+      if (state.weiBalance[key] !== undefined) {
+        clearInterval(interval)
+        resolve(state.weiBalance[key])
+      }
+    }, 500)
+  })
+}
+
 const VuexStore = new Vuex.Store({
   plugins: vuexPersist ? [vuexPersist.plugin] : [],
   state: defaultState,
@@ -58,12 +75,11 @@ const VuexStore = new Vuex.Store({
   actions: {
     ...actions,
     ...paymentActions,
-    showPopup({ state }, payload) {
+    async showPopup({ state }, payload) {
       const isTx = payload && typeof payload === 'object'
       const confirmHandler = new ConfirmHandler(isTx ? payload.id : payload)
       confirmHandler.isTx = isTx
       confirmHandler.selectedCurrency = state.selectedCurrency
-      confirmHandler.balance = fromWei(state.weiBalance[state.selectedAddress].toString())
       confirmHandler.tokenRates = state.tokenRates
       confirmHandler.jwtToken = state.jwtToken
       confirmHandler.currencyData = state.currencyData
@@ -80,6 +96,15 @@ const VuexStore = new Vuex.Store({
         confirmHandler.msgParams = msgParams
         confirmHandler.txType = type
       }
+      let weiBalance = 0
+      try {
+        weiBalance = await getBalance(state, state.selectedAddress)
+      } catch (error) {
+        log.error(error, 'Unable to fetch balance within 5 secs')
+        handleDeny(confirmHandler.id, confirmHandler.txType)
+        return
+      }
+      confirmHandler.balance = fromWei(weiBalance.toString())
       if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
       } else if (confirmHandler.txType === TX_MESSAGE && isTorusSignedMessage(confirmHandler.msgParams)) {
