@@ -1,7 +1,7 @@
 <template>
   <div class="setup-wallet-container" :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark }]">
     <div class="text-center mb-6">
-      <div class="headline mb-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">Wallet authentication factors</div>
+      <div class="headline mb-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">{{ t('tkeyCreateSetup.walletAuth') }}</div>
       <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
         You would require any
         <span class="font-weight-bold">TWO</span>
@@ -10,12 +10,12 @@
     </div>
     <div class="mb-8">
       <div class="d-flex align-center mb-2">
-        <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">Authentication factors (2/3)</div>
+        <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">{{ t('tkeyCreateSetup.authFactors') }} (2/3)</div>
         <div class="ml-auto caption" :style="{ color: '#FBBC05' }">Average</div>
       </div>
       <v-progress-linear class="mb-2" color="warning" rounded value="15" background-color="torusGray3"></v-progress-linear>
       <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-        You need to backup on device storage or set up a recovery password to create your 2FA Wallet
+        {{ t('tkeyCreateSetup.youNeedToBackup') }}
       </div>
     </div>
     <div>
@@ -47,7 +47,7 @@
             </div>
             <div class="text-right">
               <v-badge :bordered="!$vuetify.theme.dark" color="warning" content="1" overlap>
-                <v-btn large outlined :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'">Backup on device storage</v-btn>
+                <v-btn large outlined :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'">{{ t('tkeyCreateSetup.backupOnDevice') }}</v-btn>
               </v-badge>
             </div>
           </v-expansion-panel-content>
@@ -60,7 +60,9 @@
               :class="$vuetify.theme.dark ? 'torusGray3--text' : 'text_2--text'"
               v-text="'$vuetify.icons.check_circle_filled'"
             />
-            <div class="grow font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">Recovery Password</div>
+            <div class="grow font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+              {{ t('tkeyCreateSetup.recoveryPass') }}
+            </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
             <v-form v-model="validPasswordForm">
@@ -74,7 +76,7 @@
                 @click:append="showRecoveryPassword = !showRecoveryPassword"
               />
               <div class="text-right">
-                <v-btn :disabled="!validPasswordForm" color="torusBrand1" class="torusFont1--text">Confirm</v-btn>
+                <v-btn :disabled="!validPasswordForm" color="torusBrand1" class="torusFont1--text">{{ t('tkeyNew.confirm') }}</v-btn>
               </div>
             </v-form>
           </v-expansion-panel-content>
@@ -90,7 +92,7 @@
           outlined
           :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'"
         >
-          Cancel
+          {{ t('tkeyCreateSetup.cancel') }}
         </v-btn>
       </v-flex>
       <v-flex class="xs6 px-2">
@@ -99,10 +101,10 @@
           :x-large="!$vuetify.breakpoint.xsOnly"
           :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
           color="torusBrand1"
-          class="torusFont1--text"
+          class="white--text"
           @click="next"
         >
-          Create 2FA Wallet
+          {{ t('tkeyCreateSetup.createWallet') }}
         </v-btn>
       </v-flex>
     </v-layout>

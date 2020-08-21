@@ -2,7 +2,7 @@
   <div>
     <div class="header-container" :class="{ 'is-dark': $vuetify.theme.dark }">
       <v-container v-if="tab === 0" class="pt-6 pb-5">
-        <div class="text-center headline mb-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_1--text'">You're signed in</div>
+        <div class="text-center headline mb-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_1--text'">{{ t('tkeyCreate.yourSignedIn') }}</div>
         <div class="account-details d-flex pt-2 pb-4 px-4">
           <v-avatar size="34" class="mr-2">
             <img
@@ -14,13 +14,15 @@
           </v-avatar>
           <div>
             <div class="body-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_1--text'">{{ userInfo.verifierId }}</div>
-            <div class="body-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_2--text'">Wallet Address: {{ slicedAddress }}</div>
+            <div class="body-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_2--text'">
+              {{ t('tkeyCreate.walletAddress') }}: {{ slicedAddress }}
+            </div>
           </div>
         </div>
       </v-container>
       <v-container v-else class="pt-6 pb-5">
         <div class="text-center display-1 mb-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_1--text'">
-          {{ tab === 1 ? 'Set up your 2FA wallet' : 'Great! Your 2FA wallet has been created.' }}
+          {{ tab === 1 ? t('tkeyCreate.setUpWallet') : t('tkeyCreate.greatCreated') }}
         </div>
       </v-container>
     </div>

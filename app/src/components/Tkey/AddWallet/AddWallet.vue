@@ -1,19 +1,27 @@
 <template>
   <div class="add-wallet-container" :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark }]">
-    <div class="text_1--text text-center mb-9" :class="$vuetify.breakpoint.xsOnly ? 'headline' : 'display-1'">Add a 2FA wallet to your account</div>
+    <div class="text_1--text text-center mb-9" :class="$vuetify.breakpoint.xsOnly ? 'headline' : 'display-1'">
+      {{ t('tkeyCreateAdd.addAccount') }}
+    </div>
     <div class="d-flex add-wallet-info" :class="$vuetify.breakpoint.xsOnly ? 'is-mobile flex-column' : ''">
       <div class="add-wallet-info__list" :class="$vuetify.breakpoint.xsOnly ? 'order-1' : ''">
         <div class="d-flex align-center mb-6">
           <img src="../../../assets/images/ob-self-custodial.svg" alt="Self Custodial" class="mr-2" />
-          <div class="font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">Self-custodial</div>
+          <div class="font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">
+            {{ t('tkeyCreateAdd.selfCustodial') }}
+          </div>
         </div>
         <div class="d-flex align-center mb-6">
           <img src="../../../assets/images/ob-access.svg" alt="Self Custodial" class="mr-2" />
-          <div class="font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">Access with or without Google</div>
+          <div class="font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">
+            {{ t('tkeyCreateAdd.access') }}
+          </div>
         </div>
         <div class="d-flex align-center mb-7">
           <img src="../../../assets/images/ob-secure.svg" alt="Self Custodial" class="mr-2" />
-          <div class="font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">Secure your assets</div>
+          <div class="font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">
+            {{ t('tkeyCreateAdd.secureAssets') }}
+          </div>
         </div>
         <div class="d-flex align-center" :class="$vuetify.breakpoint.xsOnly ? 'justify-center' : ''">
           <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
@@ -35,7 +43,7 @@
           outlined
           :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'"
         >
-          Not now
+          {{ t('tkeyCreateAdd.notNow') }}
         </v-btn>
       </v-flex>
       <v-flex class="xs6 px-2">
@@ -44,10 +52,10 @@
           :x-large="!$vuetify.breakpoint.xsOnly"
           :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
           color="torusBrand1"
-          class="torusFont1--text"
+          class="white--text"
           @click="next"
         >
-          Sure let's add one
+          {{ t('tkeyCreateAdd.sureLetsAdd') }}
         </v-btn>
       </v-flex>
     </v-layout>

@@ -22,9 +22,9 @@
 
             <!-- TITLE -->
             <div v-if="scenario === SCENARIO_WITH_PASSWORD" class="text-center new-device-header">
-              <div class="new-device-header__title">Verification required</div>
+              <div class="new-device-header__title">{{ t('tkeyNew.verificationReq') }}</div>
               <div class="new-device-header__description">
-                You are accessing your 2FA Wallet from a new platform.
+                {{ t('tkeyNew.youAreAccessing') }}
               </div>
               <div class="new-device-header__description">
                 <span class="font-weight-bold">Verify your identity</span>
@@ -33,9 +33,9 @@
             </div>
 
             <div v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" class="text-center new-device-header">
-              <div class="new-device-header__title">Account Recovery</div>
+              <div class="new-device-header__title">{{ t('tkeyNew.accountRecovery') }}</div>
               <div class="new-device-header__description">
-                You require min 2 verifications to access your 2FA Wallet.
+                {{ t('tkeyNew.youRequireMin') }}
               </div>
               <div class="new-device-header__description">
                 <span class="font-weight-bold">Verify your identity</span>
@@ -45,9 +45,9 @@
 
             <div v-if="scenario === SCENARIO_WITH_DEVICE" class="text-center new-device-header">
               <template v-if="hasPasswordSetUp">
-                <div class="new-device-header__title">Verification methods</div>
+                <div class="new-device-header__title">{{ t('tkeyNew.verificationMethods') }}</div>
                 <div class="new-device-header__description">
-                  You require 1 verification to access your 2FA Wallet.
+                  {{ t('tkeyNew.youRequireNum') }}
                 </div>
                 <div class="new-device-header__description">
                   <span class="font-weight-bold">Verify your identity</span>
@@ -55,9 +55,9 @@
                 </div>
               </template>
               <template v-else>
-                <div class="new-device-header__title">Verification required</div>
+                <div class="new-device-header__title">{{ t('tkeyNew.verificationReq') }}</div>
                 <div class="new-device-header__description">
-                  You are accessing your 2FA Wallet from a new platform.
+                  {{ t('tkeyNew.youAreAccessing') }}
                 </div>
                 <div class="new-device-header__description">
                   <span class="font-weight-bold">Verify your identity</span>
@@ -68,12 +68,12 @@
 
             <div v-if="scenario === SCENARIO_LOGIN_DETECTED" class="text-center new-device-header">
               <template v-if="verifiedLogin">
-                <div class="new-device-header__title">Identity verified</div>
-                <div class="header__description mb-15">Return to your new platform to continue with the login</div>
+                <div class="new-device-header__title">{{ t('tkeyNew.identifyVerified') }}</div>
+                <div class="header__description mb-15">{{ t('tkeyNew.returnToNewPlatform') }}</div>
               </template>
               <template v-else>
-                <div class="new-device-header__title">New login detected</div>
-                <div class="new-device-header__description">A new login is trying to access your 2FA Wallet.</div>
+                <div class="new-device-header__title">{{ t('tkeyNew.newLoginDetected') }}</div>
+                <div class="new-device-header__description">{{ t('tkeyNew.newLoginTrying') }}</div>
                 <div class="new-device-header__description">
                   <span class="font-weight-bold">Match the Reference ID</span>
                   and confirm this is you:
@@ -83,14 +83,14 @@
 
             <div v-if="scenario === SCENARIO_DEVICE_DETECTED">
               <div v-if="verifiedDevice" class="text-center new-device-header">
-                <div class="new-device-header__title">New device and browser added</div>
-                <div class="new-device-header__description">The following has been added as an authenticator.</div>
-                <div class="new-device-header__description">You can edit it from the ‘Settings’ page.</div>
+                <div class="new-device-header__title">{{ t('tkeyNew.newDeviceAdded') }}</div>
+                <div class="new-device-header__description">{{ t('tkeyNew.theFollowing') }}</div>
+                <div class="new-device-header__description">{{ t('tkeyNew.youCanEdit') }}</div>
               </div>
               <div v-else class="text-center new-device-header">
-                <div class="new-device-header__title">Verified</div>
-                <div class="new-device-header__description">Confirm your browser and device details.</div>
-                <div class="new-device-header__description">Store it for future access into your 2FA Wallet.</div>
+                <div class="new-device-header__title">{{ t('tkeyNew.verified') }}</div>
+                <div class="new-device-header__description">{{ t('tkeyNew.confirmYourBrowser') }}</div>
+                <div class="new-device-header__description">{{ t('tkeyNew.storeItForFuture') }}</div>
               </div>
             </div>
 
@@ -116,15 +116,15 @@
                   <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                     <a
                       class="caption text-decoration-none"
-                      :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1'"
+                      :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'"
                       @click="onAnotherMethod"
                     >
-                      Verify via another method
+                      {{ t('tkeyNew.verifyViaAnother') }}
                     </a>
                   </v-flex>
                   <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                     <v-btn :disabled="!validVerifyPasswordForm" block large color="torusBrand1" class="white--text" @click="onVerifyPassword">
-                      Confirm
+                      {{ t('tkeyNew.confirm') }}
                     </v-btn>
                   </v-flex>
                 </v-layout>
@@ -154,7 +154,7 @@
                   </v-expansion-panel-header>
                   <v-expansion-panel-content class="pa-5">
                     <div class="body-2 text_2--text mb-4">
-                      Login to app.tor.us from the stored browser below to verify your identity.
+                      {{ t('tkeyNew.loginToTorus') }}
                     </div>
 
                     <div v-for="browser in device.browsers" :key="browser.id" class="d-flex info-box py-3 px-6 mb-2 align-center">
@@ -163,7 +163,7 @@
                         {{ browser.name }}
                       </div>
                       <v-icon v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" small v-text="'$vuetify.icons.download'" />
-                      <div v-else class="ml-auto text-right caption">Reference ID: {{ browser.id }}</div>
+                      <div v-else class="ml-auto text-right caption">{{ t('tkeyNew.refId') }}: {{ browser.id }}</div>
                     </div>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
@@ -171,10 +171,10 @@
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2 text_2--text">
                       <v-icon class="mr-2" size="18">$vuetify.icons.upload</v-icon>
-                      Upload File
+                      {{ t('tkeyNew.uploadFile') }}
                     </div>
                     <div v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" class="ml-auto text-right">
-                      <a class="text-decoration-none caption" href="#">Upload a file</a>
+                      <a class="text-decoration-none caption" href="#">{{ t('tkeyNew.uploadAFile') }}</a>
                     </div>
                     <v-icon
                       v-else-if="recoveredPassword"
@@ -190,10 +190,10 @@
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2 text_2--text">
                       <v-icon class="mr-1">$vuetify.icons.password</v-icon>
-                      Recovery Password
+                      {{ t('tkeyNew.recoveryPass') }}
                     </div>
                     <div v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" class="ml-auto text-right">
-                      <a class="text-decoration-none caption" href="#">Type in password</a>
+                      <a class="text-decoration-none caption" href="#">{{ t('tkeyNew.typeInPass') }}</a>
                     </div>
                     <v-icon
                       v-else-if="recoveredPassword"
@@ -226,7 +226,7 @@
                             class="white--text"
                             @click="onRecoverPassword"
                           >
-                            Confirm
+                            {{ t('tkeyNew.confirm') }}
                           </v-btn>
                         </v-flex>
                       </v-layout>
@@ -234,22 +234,24 @@
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
-              <div class="caption text-right text_2--text">Skip, go to my Google Wallet first</div>
+              <div class="caption text-right text_2--text">{{ t('tkeyNew.skip') }}</div>
             </div>
 
             <div v-if="scenario === SCENARIO_LOGIN_DETECTED && !verifiedLogin">
               <div class="d-flex info-box py-3 px-6 mb-6">
                 <div class="grow font-weight-bold body-2">Chrome V82.04103.61</div>
-                <div class="ml-auto text-right caption">Reference ID: 1323</div>
+                <div class="ml-auto text-right caption">{{ t('tkeyNew.refId') }}: 1323</div>
               </div>
               <v-layout class="mx-n2 mb-12 align-center">
                 <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                 <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                  <a class="caption" href="#" :style="{ textDecoration: 'none' }">Report, this is not me</a>
+                  <a class="caption text-decoration-none" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'">
+                    {{ t('tkeyNew.reportNotMe') }}
+                  </a>
                 </v-flex>
                 <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                   <v-btn block large color="torusBrand1" class="white--text" @click="verifiedLogin = true">
-                    Confirm
+                    {{ t('tkeyNew.confirm') }}
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -257,7 +259,7 @@
 
             <v-form v-if="scenario === SCENARIO_DEVICE_DETECTED" v-model="verifyDeviceForm">
               <div class="d-flex info-box py-3 px-6 mb-2 align-center">
-                <div class="grow font-weight-bold body-2">Browser</div>
+                <div class="grow font-weight-bold body-2">{{ t('tkeyNew.browser') }}</div>
                 <div class="ml-auto text-right caption">
                   <v-icon small class="mr-1">$vuetify.icons.device_detailed</v-icon>
                   Chrome V82.04103.61
@@ -282,11 +284,13 @@
               <v-layout v-if="!verifiedDevice" class="mx-n2 mb-12 align-center">
                 <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                 <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                  <a class="caption text-decoration-none" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1'">Do not add browser</a>
+                  <a class="caption text-decoration-none" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'">
+                    Do not add browser
+                  </a>
                 </v-flex>
                 <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                   <v-btn :disabled="!verifyDeviceForm" block large color="torusBrand1" class="white--text" @click="verifiedDevice = true">
-                    Confirm and Add
+                    {{ t('tkeyNew.confirmAndAdd') }}
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -295,7 +299,7 @@
                 <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'"></v-flex>
                 <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                   <v-btn block large color="torusBrand1" class="white--text">
-                    Return Home
+                    {{ t('tkeyNew.returnHome') }}
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -307,11 +311,11 @@
                 <v-flex class="x6">
                   <div class="d-flex align-center">
                     <v-icon x-small class="mr-1">$vuetify.icons.lock_filled</v-icon>
-                    <div class="caption">Secure Torus sign in</div>
+                    <div class="caption">{{ t('tkeyNew.secureTorus') }}</div>
                   </div>
                 </v-flex>
                 <v-flex class="x6 caption text-right">
-                  Contact support
+                  {{ t('tkeyNew.contactSupport') }}
                 </v-flex>
               </v-layout>
             </div>
@@ -332,7 +336,7 @@ const SCENARIO_ACCOUNT_RECOVERY = 'account_recovery'
 export default {
   data() {
     return {
-      scenario: SCENARIO_ACCOUNT_RECOVERY,
+      scenario: SCENARIO_WITH_PASSWORD,
       // verify password
       validVerifyPasswordForm: true,
       verifyPassword: '',

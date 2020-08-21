@@ -5,8 +5,8 @@
     </div>
 
     <div class="text-center mb-6">
-      <div class="headline mb-1" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">Select your default wallet</div>
-      <div class="caption text_3--text">The default account would be displayed when you sign in on a DApp.</div>
+      <div class="headline mb-1" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">{{ t('tkeyCreateDone.selectDefault') }}</div>
+      <div class="caption text_3--text">{{ t('tkeyCreateDone.theDefaultAccount') }}</div>
     </div>
 
     <!-- Default Wallet -->
@@ -25,7 +25,7 @@
           $vuetify.icons.wallet_fill
         </v-icon>
         <div>
-          <div class="caption wallet-item__id">Your 2FA wallet</div>
+          <div class="caption wallet-item__id">{{ t('tkeyCreateDone.yourWallet') }}</div>
           <div class="wallet-item__address caption">Wallet address: 0x11f...5Gdfv</div>
         </div>
       </div>
@@ -47,7 +47,7 @@
           <div class="caption wallet-item__id">
             youremailhere@gmail.com
           </div>
-          <div class="wallet-item__address caption">Wallet address: 0x11f...5Gdfv</div>
+          <div class="wallet-item__address caption">{{ t('tkeyCreateDone.walletAddress') }}: 0x11f...5Gdfv</div>
         </div>
       </div>
     </div>
@@ -57,10 +57,10 @@
         :x-large="!$vuetify.breakpoint.xsOnly"
         :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
         color="torusBrand1"
-        class="torusFont1--text"
+        class="white--text"
         @click="next"
       >
-        Let's explore
+        {{ t('tkeyCreateDone.letsExplore') }}
       </v-btn>
     </div>
   </div>
