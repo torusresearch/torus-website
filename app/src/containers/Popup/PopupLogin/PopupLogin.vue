@@ -20,8 +20,8 @@
           </v-layout>
           <v-layout wrap pa-6>
             <v-flex v-if="isLinkAccount" xs12 class="mb-8">
-              <div class="display-1 text_2--text text-center mb-4">Sign in with any of the following to link account</div>
-              <div class="body-2 text_2--text text-center">By linking account, both account will share the same 2FA Wallet and its settings.</div>
+              <div class="display-1 text_2--text text-center mb-4">{{ t('tkeyLogin.signIn') }}</div>
+              <div class="body-2 text_2--text text-center">{{ t('tkeyLogin.byLinking') }}</div>
             </v-flex>
             <v-flex v-else xs12>
               <div class="verifier-title headline torus_text--text font-weight-bold">

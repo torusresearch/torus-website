@@ -26,7 +26,7 @@
         </v-icon>
         <div>
           <div class="caption wallet-item__id">{{ t('tkeyCreateDone.yourWallet') }}</div>
-          <div class="wallet-item__address caption">Wallet address: 0x11f...5Gdfv</div>
+          <div class="wallet-item__address caption">{{ t('tkeyCreateDone.walletAddress') }}: 0x11f...5Gdfv</div>
         </div>
       </div>
     </div>

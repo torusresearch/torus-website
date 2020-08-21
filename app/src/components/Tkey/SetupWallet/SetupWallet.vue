@@ -119,7 +119,7 @@ export default {
       recoveryPassword: '',
       showRecoveryPassword: false,
       rules: {
-        required: (value) => !!value || 'Required.',
+        required: (value) => !!value || this.t('tkeyNew.required'),
       },
     }
   },

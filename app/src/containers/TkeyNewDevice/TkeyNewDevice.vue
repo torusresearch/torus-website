@@ -27,8 +27,8 @@
                 {{ t('tkeyNew.youAreAccessing') }}
               </div>
               <div class="new-device-header__description">
-                <span class="font-weight-bold">Verify your identity</span>
-                with your password:
+                <span class="font-weight-bold">{{ t('tkeyNew.verifyYourIdentity') }}</span>
+                {{ t('tkeyNew.verifyWithPass') }}:
               </div>
             </div>
 
@@ -38,8 +38,8 @@
                 {{ t('tkeyNew.youRequireMin') }}
               </div>
               <div class="new-device-header__description">
-                <span class="font-weight-bold">Verify your identity</span>
-                with any of the following:
+                <span class="font-weight-bold">{{ t('tkeyNew.verifyYourIdentity') }}</span>
+                {{ t('tkeyNew.verifyWithAny') }}:
               </div>
             </div>
 
@@ -50,8 +50,8 @@
                   {{ t('tkeyNew.youRequireNum') }}
                 </div>
                 <div class="new-device-header__description">
-                  <span class="font-weight-bold">Verify your identity</span>
-                  with any of the following:
+                  <span class="font-weight-bold">{{ t('tkeyNew.verifyYourIdentity') }}</span>
+                  {{ t('tkeyNew.verifyWithAny') }}:
                 </div>
               </template>
               <template v-else>
@@ -60,8 +60,8 @@
                   {{ t('tkeyNew.youAreAccessing') }}
                 </div>
                 <div class="new-device-header__description">
-                  <span class="font-weight-bold">Verify your identity</span>
-                  with the following:
+                  <span class="font-weight-bold">{{ t('tkeyNew.verifyYourIdentity') }}</span>
+                  {{ t('tkeyNew.verifyWithTheFf') }}:
                 </div>
               </template>
             </div>
@@ -108,7 +108,7 @@
                   :type="showVerifyPassword ? 'text' : 'password'"
                   :rules="[rules.required]"
                   outlined
-                  placeholder="Enter Password here"
+                  :placeholder="t('tkeyNew.enterPassword')"
                   @click:append="showVerifyPassword = !showVerifyPassword"
                 />
                 <v-layout class="mx-n2 mb-12 align-center">
@@ -211,7 +211,7 @@
                         :type="showRecoveryPassword ? 'text' : 'password'"
                         :rules="[rules.required]"
                         outlined
-                        placeholder="Enter Password here"
+                        :placeholder="t('tkeyNew.enterPassword')"
                         @click:append="showRecoveryPassword = !showRecoveryPassword"
                       />
                       <v-layout class="mx-n2 align-center">
@@ -285,7 +285,7 @@
                 <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                 <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                   <a class="caption text-decoration-none" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'">
-                    Do not add browser
+                    {{ t('tkeyNew.doNotAdd') }}
                   </a>
                 </v-flex>
                 <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
@@ -354,7 +354,7 @@ export default {
       // verified
       verifiedLogin: false,
       rules: {
-        required: (value) => !!value || 'Required.',
+        required: (value) => !!value || this.t('tkeyNew.required'),
       },
       SCENARIO_WITH_PASSWORD,
       SCENARIO_WITH_DEVICE,

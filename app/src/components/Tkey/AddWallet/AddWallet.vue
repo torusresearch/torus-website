@@ -25,7 +25,7 @@
         </div>
         <div class="d-flex align-center" :class="$vuetify.breakpoint.xsOnly ? 'justify-center' : ''">
           <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-            Learn more
+            {{ t('tkeyCreateAdd.learnMore') }}
             <v-icon v-if="!$vuetify.breakpoint.xsOnly" small>$vuetify.icons.arrow_right</v-icon>
           </div>
         </div>
