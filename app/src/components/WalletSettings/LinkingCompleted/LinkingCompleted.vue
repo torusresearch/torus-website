@@ -18,13 +18,13 @@
           </v-layout>
           <v-layout wrap pa-6>
             <v-flex v-if="isSuccessfull" xs12 class="mb-8">
-              <div class="display-1 text_2--text text-center mb-4">Account successfully linked</div>
-              <div class="body-2 text_2--text text-center">Your Google and Reddit login share the same 2FA Wallet and settings now.</div>
+              <div class="display-1 text_2--text text-center mb-4">{{ t('tkeySettings.accountSuccessfully') }}</div>
+              <div class="body-2 text_2--text text-center">{{ t('tkeySettings.yourGoogleAnd').replace(/{provider}/gi, provider) }}</div>
             </v-flex>
             <v-flex v-else xs12 class="mb-8">
-              <div class="display-1 text_2--text text-center mb-4">2FA Wallet detected</div>
+              <div class="display-1 text_2--text text-center mb-4">{{ t('tkeySettings.walletDetected') }}</div>
               <div class="body-2 text_2--text text-center">
-                You have an existing 2FA Wallet in your Reddit Wallet. Please link an account without a 2FA Wallet.
+                {{ t('tkeySettings.youHaveExisting').replace(/{provider}/gi, provider) }}
               </div>
             </v-flex>
             <v-flex xs12>
@@ -33,7 +33,7 @@
                   <v-icon size="16" class="torusGray1--text mr-2">
                     {{ `$vuetify.icons.reddit` }}
                   </v-icon>
-                  Reddit account
+                  {{ provider }} {{ t('tkeySettings.account') }}
                 </div>
                 <div class="ml-auto text-right">
                   <v-icon small class="d-inline-flex ml-auto success--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
@@ -63,6 +63,10 @@ export default {
     linkingDialog: {
       type: Boolean,
       dafault: false,
+    },
+    provider: {
+      type: String,
+      default: '',
     },
   },
   data() {
