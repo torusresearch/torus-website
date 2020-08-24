@@ -24,4 +24,11 @@
   .v-sheet.v-app-bar.v-toolbar:not(.v-sheet--outlined).header-container {
     box-shadow: 0px 6px 16px rgba(186, 186, 186, 0.06) !important;
   }
+
+  .v-btn__content {
+    text-overflow: ellipsis;
+    max-width: 200px;
+    overflow: hidden;
+    display: inline-block;
+  }
 }

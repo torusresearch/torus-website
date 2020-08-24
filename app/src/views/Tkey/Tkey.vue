@@ -13,14 +13,10 @@
     <v-main>
       <router-view></router-view>
     </v-main>
-
-    <v-btn @click="saveTheme">Toggle theme</v-btn>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
 
@@ -33,12 +29,6 @@ export default {
     return {
       drawer: false,
     }
-  },
-  methods: {
-    ...mapActions(['setUserTheme']),
-    saveTheme() {
-      this.setUserTheme(this.$vuetify.theme.dark ? 'light-blue' : 'dark-black')
-    },
   },
 }
 </script>

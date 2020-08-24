@@ -11,8 +11,8 @@
           <template v-slot:selection="{ item }">{{ actualFactor(item) }}</template>
         </v-select>
         <v-layout wrap>
-          <v-flex class="ml-auto xs4">
-            <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
+          <v-flex class="ml-auto xs12 text-right">
+            <v-btn large class="torus-btn1 py-1 torusBrand1--text" type="submit">
               {{ t('tkeySettings.save') }}
             </v-btn>
           </v-flex>
@@ -61,8 +61,8 @@
           </v-list-item>
         </v-list>
         <v-layout wrap>
-          <v-flex class="ml-auto xs6 sm4">
-            <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit" @click="loginDialog = true">
+          <v-flex class="ml-auto xs12 text-right">
+            <v-btn large class="torus-btn1 py-1 torusBrand1--text" type="submit" @click="loginDialog = true">
               {{ t('tkeySettings.addNewLogin') }}
             </v-btn>
           </v-flex>
@@ -123,8 +123,8 @@
           " {{ t('tkeySettings.iconToAllow') }}.
         </div>
         <v-layout wrap>
-          <v-flex class="ml-auto xs8 sm4">
-            <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
+          <v-flex class="ml-auto xs12 text-right">
+            <v-btn large class="torus-btn1 py-1 torusBrand1--text" type="submit">
               {{ t('tkeySettings.addBrowser') }}
             </v-btn>
           </v-flex>
@@ -135,8 +135,8 @@
         <div class="text_1--text body-2 mb-4">{{ t('tkeySettings.accountPass') }}</div>
         <v-text-field outlined type="password" placeholder="*************"></v-text-field>
         <v-layout wrap>
-          <v-flex class="ml-auto xs8 sm4">
-            <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
+          <v-flex class="ml-auto xs12 text-right">
+            <v-btn large class="torus-btn1 py-1 torusBrand1--text" type="submit">
               {{ t('tkeySettings.changePass') }}
             </v-btn>
           </v-flex>
@@ -148,8 +148,8 @@
         <v-select outlined hide-details placeholder="What is the name of your High School?"></v-select>
         <v-text-field outlined type="password" placeholder="*************"></v-text-field>
         <v-layout wrap>
-          <v-flex class="ml-auto xs12 sm4">
-            <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
+          <v-flex class="ml-auto xs12 text-right">
+            <v-btn large class="torus-btn1 py-1 torusBrand1--text" type="submit">
               {{ t('tkeySettings.changeQuestion') }}
             </v-btn>
           </v-flex>
@@ -169,8 +169,8 @@
           :placeholder="t('tkeySettings.selectFromList')"
         ></v-select>
         <v-layout wrap>
-          <v-flex class="ml-auto xs8 sm4">
-            <v-btn large class="torus-btn1 py-1 torusBrand1--text" block type="submit">
+          <v-flex class="ml-auto xs12 text-right">
+            <v-btn large class="torus-btn1 py-1 torusBrand1--text" type="submit">
               {{ t('tkeySettings.addFactor') }}
             </v-btn>
           </v-flex>

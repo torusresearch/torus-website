@@ -111,7 +111,7 @@
                   :placeholder="t('tkeyNew.enterPassword')"
                   @click:append="showVerifyPassword = !showVerifyPassword"
                 />
-                <v-layout class="mx-n2 mb-12 align-center">
+                <v-layout class="mx-n2 mb-12 align-center btn-container">
                   <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                   <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                     <a
@@ -242,7 +242,7 @@
                 <div class="grow font-weight-bold body-2">Chrome V82.04103.61</div>
                 <div class="ml-auto text-right caption">{{ t('tkeyNew.refId') }}: 1323</div>
               </div>
-              <v-layout class="mx-n2 mb-12 align-center">
+              <v-layout class="mx-n2 mb-12 align-center btn-container">
                 <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                 <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                   <a class="caption text-decoration-none" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'">
@@ -281,7 +281,7 @@
                 <div class="grow font-weight-bold body-2">{{ verifiedDeviceSelected }}</div>
               </div>
 
-              <v-layout v-if="!verifiedDevice" class="mx-n2 mb-12 align-center">
+              <v-layout v-if="!verifiedDevice" class="mx-n2 mb-12 align-center btn-container">
                 <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                 <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                   <a class="caption text-decoration-none" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'">
@@ -294,7 +294,7 @@
                   </v-btn>
                 </v-flex>
               </v-layout>
-              <v-layout v-else class="mx-n2 mb-12 align-center">
+              <v-layout v-else class="mx-n2 mb-12 align-center btn-container">
                 <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                 <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'"></v-flex>
                 <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">

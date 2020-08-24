@@ -53,6 +53,7 @@
           :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
           color="torusBrand1"
           class="white--text"
+          :title="t('tkeyCreateAdd.sureLetsAdd')"
           @click="next"
         >
           {{ t('tkeyCreateAdd.sureLetsAdd') }}

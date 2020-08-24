@@ -3,19 +3,22 @@
     <div class="header-container" :class="{ 'is-dark': $vuetify.theme.dark }">
       <v-container v-if="tab === 0" class="pt-6 pb-5">
         <div class="text-center headline mb-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_1--text'">{{ t('tkeyCreate.yourSignedIn') }}</div>
-        <div class="account-details d-flex pt-2 pb-4 px-4">
-          <v-avatar size="34" class="mr-2">
-            <img
-              :src="userInfo.profileImage"
-              class="align-start"
-              :alt="userInfo.userName"
-              onerror="if (!this.src.includes('/images/person.jpeg')) this.src = '/images/person.jpeg';"
-            />
-          </v-avatar>
-          <div>
-            <div class="body-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_1--text'">{{ userInfo.verifierId }}</div>
-            <div class="body-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_2--text'">
-              {{ t('tkeyCreate.walletAddress') }}: {{ slicedAddress }}
+        <div class="d-flex">
+          <div class="account-details d-flex pt-2 pb-4 px-4">
+            <v-avatar size="34" class="mr-2">
+              <img
+                :src="userInfo.profileImage"
+                class="align-start"
+                :alt="userInfo.userName"
+                onerror="if (!this.src.includes('/images/person.jpeg')) this.src = '/images/person.jpeg';"
+              />
+            </v-avatar>
+            <div>
+              <div class="body-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_1--text'">{{ userInfo.verifierId }}</div>
+              <div class="body-2" :class="$vuetify.theme.dark ? 'text_2--text' : 'text_2--text'">
+                <span>{{ t('tkeyCreate.walletAddress') }}: {{ slicedAddress }}</span>
+                <v-icon size="14" class="ml-1">$vuetify.icons.question_filled</v-icon>
+              </div>
             </div>
           </div>
         </div>

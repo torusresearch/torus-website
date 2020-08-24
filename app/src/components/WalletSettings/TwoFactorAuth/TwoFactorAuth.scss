@@ -21,6 +21,12 @@
     }
   }
 
+  ::v-deep .v-btn__content {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+  }
+
   &.is-dark {
     .settings-container {
       background: #2F3136;

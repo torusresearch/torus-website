@@ -3,9 +3,9 @@
     <div class="text-center mb-6">
       <div class="headline mb-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">{{ t('tkeyCreateSetup.walletAuth') }}</div>
       <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-        You would require any
-        <span class="font-weight-bold">TWO</span>
-        of the following to authenticate and access your wallet.
+        {{ t('tkeyCreateSetup.youWouldRequire1') }}
+        <span class="font-weight-bold">{{ t('tkeyCreateSetup.youWouldRequire2') }}</span>
+        {{ t('tkeyCreateSetup.youWouldRequire3') }}
       </div>
     </div>
     <div class="mb-8">
@@ -41,12 +41,12 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
             <div class="body-2 mb-4" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-              Authentication via browser is limited to the cookies stored. Click to
-              <span class="font-weight-bold">allow device storage as backup</span>
+              {{ t('tkeyCreateSetup.authViaBrowser1') }} {{ t('tkeyCreateSetup.authViaBrowser2') }}
+              <span class="font-weight-bold">{{ t('tkeyCreateSetup.authViaBrowser3') }}</span>
               .
             </div>
             <div class="text-right">
-              <v-badge :bordered="!$vuetify.theme.dark" color="warning" content="1" overlap>
+              <v-badge :bordered="!$vuetify.theme.dark" color="warning" content="!" overlap>
                 <v-btn large outlined :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'">{{ t('tkeyCreateSetup.backupOnDevice') }}</v-btn>
               </v-badge>
             </div>
@@ -72,7 +72,7 @@
                 :type="showRecoveryPassword ? 'text' : 'password'"
                 :rules="[rules.required]"
                 outlined
-                placeholder="Min 10 alphanumeric characters"
+                :placeholder="t('tkeyCreateSetup.minAlphaNumeric')"
                 @click:append="showRecoveryPassword = !showRecoveryPassword"
               />
               <div class="text-right">

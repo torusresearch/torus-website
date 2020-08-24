@@ -39,6 +39,7 @@ import PasswordIcon from './PasswordIcon.vue'
 import PersonCircleIcon from './PersonCircleIcon.vue'
 import PersonIcon from './PersonIcon.vue'
 import QrIcon from './QrIcon.vue'
+import QuestionFilledIcon from './QuestionFilledIcon.vue'
 import QuestionIcon from './QuestionIcon.vue'
 import RadioCheckedIcon from './RadioCheckedIcon.vue'
 import RadioUncheckedIcon from './RadioUncheckedIcon.vue'
@@ -307,5 +308,8 @@ export default {
   },
   upload: {
     component: UploadIcon,
+  },
+  question_filled: {
+    component: QuestionFilledIcon,
   },
 }
