@@ -62,7 +62,7 @@ export default {
     state.unapprovedMsgs = unapprovedMsgs
   },
   setJwtToken(state, payload) {
-    state.jwtToken = payload
+    state.jwtToken = { ...state.jwtToken, ...payload }
   },
   setUserInfoAccess(state, payload) {
     state.userInfoAccess = payload

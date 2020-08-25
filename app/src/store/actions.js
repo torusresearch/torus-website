@@ -1,7 +1,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
-import jwtDecode from 'jwt-decode'
+// import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
@@ -453,22 +453,35 @@ export default {
     } = state
     try {
       // if jwtToken expires, logout
-      if (jwtToken) {
-        const decoded = jwtDecode(jwtToken)
-        if (Date.now() / 1000 > decoded.exp) {
-          dispatch('logOut')
-          return
-        }
-        setTimeout(() => {
-          dispatch('logOut')
-        }, decoded.exp * 1000 - Date.now())
-      }
+      // if (jwtToken) {
+      //   const decoded = jwtDecode(jwtToken)
+      //   if (Date.now() / 1000 > decoded.exp) {
+      //     dispatch('logOut')
+      //     return
+      //   }
+      //   setTimeout(() => {
+      //     dispatch('logOut')
+      //   }, decoded.exp * 1000 - Date.now())
+      // }
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
         setTimeout(() => dispatch('subscribeToControllers'), 50)
         await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
-        await dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true, selectedAddress })
+        await Promise.all(
+          Object.keys(wallet).map((x) =>
+            prefsController.init({
+              address: x,
+              jwtToken: jwtToken[x],
+              calledFromEmbed: false,
+              userInfo: state.userInfo,
+              rehydrate: false,
+              dispatch,
+              commit,
+            })
+          )
+        )
+        dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })

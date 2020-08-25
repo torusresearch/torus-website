@@ -8,7 +8,6 @@ import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
-import config from '../config'
 import { get } from '../utils/httpHelpers'
 
 const initStateObject = { allCollectibleContracts: {}, allCollectibles: {}, allTokens: {}, collectibleContracts: [], collectibles: [], tokens: [] }
@@ -90,15 +89,7 @@ export default class AssetController {
    */
   async getCollectibleInformationFromApi(contractAddress, tokenId) {
     const tokenURI = this.getCollectibleApi(contractAddress, tokenId)
-    const collectibleInformation = await get(
-      `${config.api}/opensea?url=${tokenURI}`,
-      {
-        headers: {
-          Authorization: `Bearer ${this.jwtToken}`,
-        },
-      },
-      { useAPIKey: true }
-    )
+    const collectibleInformation = await this.getOpenSeaCollectibles(tokenURI, this.selectedAddress)
 
     const { name, description, image_original_url: image } = collectibleInformation.data
     return { image, name, description }

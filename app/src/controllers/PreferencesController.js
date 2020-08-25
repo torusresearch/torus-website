@@ -104,20 +104,23 @@ class PreferencesController extends EventEmitter {
    *
    * @return  {[void]}           void
    */
-  async init({ address, calledFromEmbed = false, userInfo = {}, rehydrate = false, dispatch, commit }) {
-    const messageToSign = await this.getMessageForSigning(address)
-    const bufferedMessage = Buffer.from(messageToSign, 'utf-8')
-    const hashedMessage = hashPersonalMessage(bufferedMessage).toString('hex')
-    const signedMessage = await this.signMessage(address, hashedMessage)
-    const response = await post(
-      `${config.api}/auth/verify`,
-      {
-        public_address: address,
-        signed_message: signedMessage,
-      },
-      {},
-      { useAPIKey: true }
-    )
+  async init({ address, jwtToken, calledFromEmbed = false, userInfo = {}, rehydrate = false, dispatch, commit }) {
+    let response = { token: jwtToken }
+    if (!jwtToken) {
+      const messageToSign = await this.getMessageForSigning(address)
+      const bufferedMessage = Buffer.from(messageToSign, 'utf-8')
+      const hashedMessage = hashPersonalMessage(bufferedMessage).toString('hex')
+      const signedMessage = await this.signMessage(address, hashedMessage)
+      response = await post(
+        `${config.api}/auth/verify`,
+        {
+          public_address: address,
+          signed_message: signedMessage,
+        },
+        {},
+        { useAPIKey: true }
+      )
+    }
     const accountState = this.updateStore(address, { jwtToken: response.token })
     const { verifier, verifierId } = userInfo
     const user = await this.sync(address)
