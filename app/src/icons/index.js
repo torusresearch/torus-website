@@ -2,12 +2,14 @@ import AccountIcon from './AccountIcon.vue'
 import ActivitiesIcon from './ActivitiesIcon.vue'
 import AddIcon from './AddIcon.vue'
 import AddressIcon from './AddressIcon.vue'
+import AlertCircleFilledIcon from './AlertCircleFilledIcon.vue'
 import ArrowDownCircleIcon from './ArrowDownCircleIcon.vue'
 import ArrowLeftCircleIcon from './ArrowLeftCircleIcon.vue'
 import ArrowRightCircleIcon from './ArrowRightCircleIcon.vue'
 import ArrowRightIcon from './ArrowRightIcon.vue'
 import ArrowUpCircleIcon from './ArrowUpCircleIcon.vue'
 import BalanceIcon from './BalanceIcon.vue'
+import BrowserIcon from './BrowserIcon.vue'
 import CalendarIcon from './CalendarIcon.vue'
 import CheckCircleFilledIcon from './CheckCircleFilledIcon.vue'
 import CheckCircleIcon from './CheckCircleIcon.vue'
@@ -22,8 +24,11 @@ import CoinsSendIcon from './CoinsSendIcon.vue'
 import CoinsTopupIcon from './CoinsTopupIcon.vue'
 import CollectibleIcon from './CollectibleIcon.vue'
 import CopyIcon from './CopyIcon.vue'
+import DeviceDesktopIcon from './DeviceDesktopIcon.vue'
 import DeviceDetailedIcon from './DeviceDetailedIcon.vue'
 import DeviceIcon from './DeviceIcon.vue'
+import DeviceMobileIcon from './DeviceMobileIcon.vue'
+import DeviceTabletIcon from './DeviceTabletIcon.vue'
 import DownloadIcon from './DownloadIcon.vue'
 import EthIcon from './EthIcon.vue'
 import GlobeIcon from './GlobeIcon.vue'
@@ -50,6 +55,7 @@ import SelectIcon from './SelectIcon.vue'
 import SendIcon from './SendIcon.vue'
 import ServerIcon from './ServerIcon.vue'
 import SettingsIcon from './SettingsIcon.vue'
+import ShieldLockIcon from './ShieldLockIcon.vue'
 import TimeIcon from './TimeIcon.vue'
 import TokenIcon from './TokenIcon.vue'
 import TopupIcon from './TopupIcon.vue'
@@ -311,5 +317,23 @@ export default {
   },
   question_filled: {
     component: QuestionFilledIcon,
+  },
+  browser: {
+    component: BrowserIcon,
+  },
+  shield_lock: {
+    component: ShieldLockIcon,
+  },
+  alert_circle_filled: {
+    component: AlertCircleFilledIcon,
+  },
+  device_desktop: {
+    component: DeviceDesktopIcon,
+  },
+  device_mobile: {
+    component: DeviceMobileIcon,
+  },
+  device_tablet: {
+    component: DeviceTabletIcon,
   },
 }

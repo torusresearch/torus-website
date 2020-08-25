@@ -19,24 +19,24 @@
       </div>
     </div>
     <div>
-      <v-expansion-panels multiple :class="$vuetify.breakpoint.xsOnly ? 'is-mobile' : ''">
-        <v-expansion-panel class="mb-2" disabled>
+      <v-expansion-panels v-model="panels" multiple :class="$vuetify.breakpoint.xsOnly ? 'is-mobile' : ''">
+        <v-expansion-panel class="mb-4" disabled>
           <v-expansion-panel-header class="py-2">
-            <v-icon small class="d-inline-flex mr-2 success--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
+            <v-icon small class="mr-2 d-inline-flex mr-2 shrink">$vuetify.icons.google</v-icon>
             <div class="grow font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">Google Login</div>
             <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-              <v-icon small class="mr-2">$vuetify.icons.google</v-icon>
               youremailhere@gmail.com
+              <v-icon small class="ml-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
             </div>
           </v-expansion-panel-header>
         </v-expansion-panel>
-        <v-expansion-panel class="mb-2">
+        <v-expansion-panel class="mb-4">
           <v-expansion-panel-header class="py-2">
-            <v-icon small class="d-inline-flex mr-2 success--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
+            <v-icon small class="d-inline-flex mr-2 shrink">$vuetify.icons.browser</v-icon>
             <div class="grow font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">Browser</div>
             <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-              <v-icon small class="mr-2">$vuetify.icons.device_detailed</v-icon>
               Chrome V82.04103.61
+              <v-icon small class="ml-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
@@ -46,22 +46,23 @@
               .
             </div>
             <div class="text-right">
-              <v-badge :bordered="!$vuetify.theme.dark" color="warning" content="!" overlap>
-                <v-btn large outlined :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'">{{ t('tkeyCreateSetup.backupOnDevice') }}</v-btn>
+              <v-badge overlap avatar>
+                <template v-slot:badge>
+                  <v-icon class="warning--text">$vuetify.icon.alert_circle_filled</v-icon>
+                </template>
+                <v-btn outlined :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'">{{ t('tkeyCreateSetup.backupOnDevice') }}</v-btn>
               </v-badge>
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <v-expansion-panel class="mb-2">
+        <v-expansion-panel class="mb-4">
           <v-expansion-panel-header class="py-2">
-            <v-icon
-              small
-              class="d-inline-flex mr-2 shrink"
-              :class="$vuetify.theme.dark ? 'torusGray3--text' : 'text_2--text'"
-              v-text="'$vuetify.icons.check_circle_filled'"
-            />
+            <v-icon small class="mr-2 d-inline-flex mr-2 shrink">$vuetify.icons.shield_lock</v-icon>
             <div class="grow font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
               {{ t('tkeyCreateSetup.recoveryPass') }}
+            </div>
+            <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+              <v-icon small class="ml-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
@@ -76,7 +77,9 @@
                 @click:append="showRecoveryPassword = !showRecoveryPassword"
               />
               <div class="text-right">
-                <v-btn :disabled="!validPasswordForm" color="torusBrand1" class="torusFont1--text">{{ t('tkeyNew.confirm') }}</v-btn>
+                <v-btn :disabled="!validPasswordForm" class="caption white--text font-weight-bold" color="torusBrand1">
+                  {{ t('tkeyNew.confirm') }}
+                </v-btn>
               </div>
             </v-form>
           </v-expansion-panel-content>
@@ -121,6 +124,7 @@ export default {
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
       },
+      panels: [1, 2],
     }
   },
   methods: {

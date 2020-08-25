@@ -21,6 +21,18 @@
   ::v-deep .v-expansion-panel-content__wrap {
     padding: 0;
   }
+  // &:not(:last-child) {
+  //   .v-expansion-panel-content::after {
+  //     content: " ";
+  //     display: block;
+  //     position: absolute;
+  //     height: 16px;
+  //     background: #dadada;
+  //     width: 1px;
+  //     left: 36px;
+  //     bottom: -17px;
+  //   }
+  // }
 }
 .v-expansion-panel:not(:first-child) {
   &::after {

@@ -7,26 +7,28 @@
       <div class="add-wallet-info__list" :class="$vuetify.breakpoint.xsOnly ? 'order-1' : ''">
         <div class="d-flex align-center mb-6">
           <img src="../../../assets/images/ob-self-custodial.svg" alt="Self Custodial" class="mr-2" />
-          <div class="font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">
+          <div class="font-weight-bold body-2 text_2--text">
             {{ t('tkeyCreateAdd.selfCustodial') }}
           </div>
         </div>
         <div class="d-flex align-center mb-6">
           <img src="../../../assets/images/ob-access.svg" alt="Self Custodial" class="mr-2" />
-          <div class="font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">
+          <div class="font-weight-bold body-2 text_2--text">
             {{ t('tkeyCreateAdd.access') }}
           </div>
         </div>
         <div class="d-flex align-center mb-7">
           <img src="../../../assets/images/ob-secure.svg" alt="Self Custodial" class="mr-2" />
-          <div class="font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">
+          <div class="font-weight-bold body-2 text_2--text">
             {{ t('tkeyCreateAdd.secureAssets') }}
           </div>
         </div>
         <div class="d-flex align-center" :class="$vuetify.breakpoint.xsOnly ? 'justify-center' : ''">
-          <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+          <div class="body-2" :class="$vuetify.theme.dark ? 'text_2--text' : 'torusFont2--text'">
             {{ t('tkeyCreateAdd.learnMore') }}
-            <v-icon v-if="!$vuetify.breakpoint.xsOnly" small>$vuetify.icons.arrow_right</v-icon>
+            <v-icon v-if="!$vuetify.breakpoint.xsOnly" :class="$vuetify.theme.dark ? 'text_2--text' : 'torusFont2--text'" small>
+              $vuetify.icons.arrow_right
+            </v-icon>
           </div>
         </div>
       </div>
@@ -42,6 +44,7 @@
           :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
           outlined
           :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'"
+          class="body-2 font-weight-bold"
         >
           {{ t('tkeyCreateAdd.notNow') }}
         </v-btn>
@@ -52,7 +55,7 @@
           :x-large="!$vuetify.breakpoint.xsOnly"
           :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
           color="torusBrand1"
-          class="white--text"
+          class="white--text body-2 font-weight-bold"
           :title="t('tkeyCreateAdd.sureLetsAdd')"
           @click="next"
         >

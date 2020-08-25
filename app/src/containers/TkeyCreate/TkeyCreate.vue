@@ -2,9 +2,11 @@
   <div>
     <div class="header-container" :class="{ 'is-dark': $vuetify.theme.dark }">
       <v-container v-if="tab === 0" class="pt-6 pb-5">
-        <div class="text-center headline mb-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_1--text'">{{ t('tkeyCreate.yourSignedIn') }}</div>
+        <div class="text-center headline mb-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">
+          {{ t('tkeyCreate.yourSignedIn') }}
+        </div>
         <div class="d-flex">
-          <div class="account-details d-flex pt-2 pb-4 px-4">
+          <div class="account-details d-flex pa-3 px-4">
             <v-avatar size="34" class="mr-2">
               <img
                 :src="userInfo.profileImage"
@@ -14,17 +16,17 @@
               />
             </v-avatar>
             <div>
-              <div class="body-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_1--text'">{{ userInfo.verifierId }}</div>
-              <div class="body-2" :class="$vuetify.theme.dark ? 'text_2--text' : 'text_2--text'">
+              <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">{{ userInfo.verifierId }}</div>
+              <div class="body-2 text_3--text">
                 <span>{{ t('tkeyCreate.walletAddress') }}: {{ slicedAddress }}</span>
-                <v-icon size="14" class="ml-1">$vuetify.icons.question_filled</v-icon>
+                <v-icon size="14" class="ml-1 text_3--text" :style="{ marginTop: '-2px' }">$vuetify.icons.question_filled</v-icon>
               </div>
             </div>
           </div>
         </div>
       </v-container>
       <v-container v-else class="pt-6 pb-5">
-        <div class="text-center display-1 mb-2" :class="$vuetify.theme.dark ? 'white--text' : 'text_1--text'">
+        <div class="text-center display-1 mb-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">
           {{ tab === 1 ? t('tkeyCreate.setUpWallet') : t('tkeyCreate.greatCreated') }}
         </div>
       </v-container>

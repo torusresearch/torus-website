@@ -26,10 +26,7 @@
               <div class="new-device-header__description">
                 {{ t('tkeyNew.youAreAccessing') }}
               </div>
-              <div class="new-device-header__description">
-                <span class="font-weight-bold">{{ t('tkeyNew.verifyYourIdentity') }}</span>
-                {{ t('tkeyNew.verifyWithPass') }}:
-              </div>
+              <div class="new-device-header__description">{{ t('tkeyNew.verifyWithPass') }}:</div>
             </div>
 
             <div v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" class="text-center new-device-header">
@@ -141,7 +138,7 @@
                 <v-expansion-panel v-for="device in devices" :key="device.id" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2 text_2--text">
-                      <v-icon class="mr-1">$vuetify.icons.device_detailed</v-icon>
+                      <v-icon class="mr-1">$vuetify.icons.device_{{ device.type }}</v-icon>
                       {{ device.name }}
                     </div>
                     <v-icon
@@ -159,7 +156,7 @@
 
                     <div v-for="browser in device.browsers" :key="browser.id" class="d-flex info-box py-3 px-6 mb-2 align-center">
                       <div class="grow font-weight-bold body-2">
-                        <v-icon class="mr-1">$vuetify.icons.device</v-icon>
+                        <v-icon class="mr-1">$vuetify.icons.browser</v-icon>
                         {{ browser.name }}
                       </div>
                       <v-icon v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" small v-text="'$vuetify.icons.download'" />
@@ -259,16 +256,15 @@
 
             <v-form v-if="scenario === SCENARIO_DEVICE_DETECTED" v-model="verifyDeviceForm">
               <div class="d-flex info-box py-3 px-6 mb-2 align-center">
+                <v-icon small class="mr-1">$vuetify.icons.browser</v-icon>
                 <div class="grow font-weight-bold body-2">{{ t('tkeyNew.browser') }}</div>
                 <div class="ml-auto text-right caption">
-                  <v-icon small class="mr-1">$vuetify.icons.device_detailed</v-icon>
                   Chrome V82.04103.61
                 </div>
               </div>
               <v-select
                 v-if="!verifiedDevice"
                 v-model="verifiedDeviceSelected"
-                class="font-weight-bold"
                 outlined
                 :items="devices"
                 item-text="name"
@@ -336,7 +332,7 @@ const SCENARIO_ACCOUNT_RECOVERY = 'account_recovery'
 export default {
   data() {
     return {
-      scenario: SCENARIO_WITH_PASSWORD,
+      scenario: SCENARIO_ACCOUNT_RECOVERY,
       // verify password
       validVerifyPasswordForm: true,
       verifyPassword: '',
@@ -369,6 +365,7 @@ export default {
         {
           id: 1,
           name: 'My Macbook',
+          type: 'desktop',
           browsers: [
             {
               id: 1320,
@@ -379,6 +376,7 @@ export default {
         {
           id: 2,
           name: 'My Android',
+          type: 'tablet',
           browsers: [
             {
               id: 1330,
@@ -389,6 +387,7 @@ export default {
         {
           id: 3,
           name: 'My Iphone',
+          type: 'mobile',
           browsers: [
             {
               id: 1340,
