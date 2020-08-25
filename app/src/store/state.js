@@ -27,6 +27,7 @@ const initialState = {
   isNewUser: false,
   isRehydrationComplete: false,
   // account handled
+  jwtToken: {},
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
   networkId: 0,
@@ -41,9 +42,7 @@ const initialState = {
   unapprovedMsgs: {},
   // preferences
   selectedAddress: '',
-  jwtToken: '',
   supportedNetworks: { ...SUPPORTED_NETWORK_TYPES },
-
   selectedCurrency: 'USD',
   pastTransactions: [],
   paymentTx: [],

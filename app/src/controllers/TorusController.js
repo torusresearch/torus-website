@@ -33,6 +33,7 @@ import PermissionsController from './PermissionsController'
 import PersonalMessageManager from './PersonalMessageManager'
 import PreferencesController from './PreferencesController'
 import RecentBlocksController from './RecentBlocksController'
+import ThresholdKeyController from './ThresholdKeyController'
 import TokenRatesController from './TokenRatesController'
 import KeyringController from './TorusKeyring'
 import TransactionController from './TransactionController'
@@ -101,9 +102,13 @@ export default class TorusController extends EventEmitter {
       tokensStore: this.detectTokensController.detectedTokensStore,
     })
 
+    // key mgmt
+    this.keyringController = new KeyringController()
+
     this.prefsController = new PreferencesController({
       network: this.networkController,
       provider: this.provider,
+      signMessage: this.keyringController.signMessage.bind(this.keyringController),
     })
 
     // start and stop polling for balances based on activeControllerConnections
@@ -123,8 +128,6 @@ export default class TorusController extends EventEmitter {
       this.prefsController.recalculatePastTx()
     })
 
-    // key mgmt
-    this.keyringController = new KeyringController()
     this.publicConfigStore = this.initPublicConfigStore()
 
     this.permissionsController = new PermissionsController({
@@ -160,6 +163,7 @@ export default class TorusController extends EventEmitter {
     this.assetController = new AssetController({
       network: this.networkController,
       provider: this.provider,
+      getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
     })
 
     this.assetContractController = new AssetContractController({
@@ -171,7 +175,10 @@ export default class TorusController extends EventEmitter {
       provider: this.provider,
       assetController: this.assetController,
       assetContractController: this.assetContractController,
+      getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
     })
+
+    this.thresholdKeyController = new ThresholdKeyController()
 
     this.networkController.lookupNetwork()
     this.messageManager = new MessageManager()
@@ -331,13 +338,7 @@ export default class TorusController extends EventEmitter {
     this.accountTracker.addAccounts([address])
   }
 
-  setSelectedAccount(address, options) {
-    const { jwtToken = '' } = options || {}
-    if (jwtToken) {
-      this.assetDetectionController.jwtToken = options.jwtToken
-      this.assetController.jwtToken = options.jwtToken
-      // this.prefsController.jwtToken = options.jwtToken
-    }
+  setSelectedAccount(address) {
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
     this.prefsController.setSelectedAddress(address)

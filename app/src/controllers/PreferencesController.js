@@ -1,4 +1,6 @@
 import clone from 'clone'
+import deepmerge from 'deepmerge'
+import { hashPersonalMessage } from 'ethereumjs-util'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import EventEmitter from 'safe-event-emitter'
@@ -29,6 +31,27 @@ const DEFAULT_BADGES_COMPLETION = {
   [BADGES_TRANSACTION]: false,
 }
 
+let themeGlobal = THEME_LIGHT_BLUE_NAME
+if (storageAvailable('localStorage')) {
+  const torusTheme = localStorage.getItem('torus-theme')
+  if (torusTheme) {
+    themeGlobal = torusTheme
+  }
+}
+
+const DEFAULT_ACCOUNT_STATE = {
+  selectedCurrency: 'USD',
+  theme: themeGlobal,
+  locale: getUserLanguage(),
+  contacts: [],
+  permissions: [],
+  badgesCompletion: {},
+  jwtToken: '',
+  fetchedPastTx: [],
+  pastTransactions: [],
+  paymentTx: [],
+}
+
 class PreferencesController extends EventEmitter {
   /**
    *
@@ -46,61 +69,68 @@ class PreferencesController extends EventEmitter {
    */
   constructor(options = {}) {
     super()
-    let theme = THEME_LIGHT_BLUE_NAME
-    if (storageAvailable('localStorage')) {
-      const torusTheme = localStorage.getItem('torus-theme')
-      if (torusTheme) {
-        theme = torusTheme
-      }
-    }
-    const { initialState = {}, network, provider } = options
 
-    const initState = {
-      selectedAddress: '',
-      selectedCurrency: 'USD',
-      theme,
-      locale: getUserLanguage(),
-      billboard: {},
-      contacts: [],
-      permissions: [],
-      badgesCompletion: {},
-      ...initialState,
-    }
-
-    this.initState = clone(initState)
+    const { network, provider, signMessage } = options
 
     this.network = network
     this.web3 = new Web3(provider)
-
-    this.fetchedPastTx = []
+    this.signMessage = signMessage
 
     this.interval = options.interval || DEFAULT_INTERVAL
-    this.jwtToken = ''
-    this._jwtToken = ''
-    this.store = new ObservableStore(initState)
+    this.store = new ObservableStore({ selectedAddress: '' }) // Account specific object
     this.metadataStore = new ObservableStore({})
     this.errorStore = new ObservableStore('')
     this.successStore = new ObservableStore('')
-    this.pastTransactionsStore = new ObservableStore([])
-    this.paymentTxStore = new ObservableStore([])
+    this.billboardStore = new ObservableStore([])
   }
 
-  set jwtToken(token) {
-    this._jwtToken = token
-    if (token) this.getBillboardContents()
-  }
-
-  get headers() {
+  headers(address) {
     return {
       headers: {
-        Authorization: `Bearer ${this._jwtToken}`,
+        Authorization: `Bearer ${this.state(address).jwtToken}`,
         'Content-Type': 'application/json; charset=utf-8',
       },
     }
   }
 
-  get state() {
-    return this.store.getState()
+  state(address) {
+    return this.store.getState()[address]
+  }
+
+  /**
+   * Initializes address in preferences controller
+   *
+   * @param   {[String]}  address  Ethereum address
+   *
+   * @return  {[void]}           void
+   */
+  async init({ address, calledFromEmbed = false, userInfo = {}, rehydrate = false, dispatch, commit }) {
+    const messageToSign = await this.getMessageForSigning(address)
+    const bufferedMessage = Buffer.from(messageToSign, 'utf-8')
+    const hashedMessage = hashPersonalMessage(bufferedMessage).toString('hex')
+    const signedMessage = await this.signMessage(address, hashedMessage)
+    const response = await post(
+      `${config.api}/auth/verify`,
+      {
+        public_address: address,
+        signed_message: signedMessage,
+      },
+      {},
+      { useAPIKey: true }
+    )
+    const accountState = this.updateStore(address, { jwtToken: response.token })
+    const { verifier, verifierId } = userInfo
+    const user = await this.sync(address)
+    if (user?.data) {
+      const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId } = user.data || {}
+      dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
+      if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
+    } else {
+      await this.createUser(accountState.selectedCurrency, accountState.theme, verifier, verifierId, address)
+      commit('setNewUser', true)
+      dispatch('setSelectedCurrency', { selectedCurrency: accountState.selectedCurrency, origin: 'store' })
+    }
+    this.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate }, address)
   }
 
   handleError(error) {
@@ -131,11 +161,11 @@ class PreferencesController extends EventEmitter {
     setTimeout(() => this.successStore.putState(''), SUCCESS_TIME)
   }
 
-  async sync(callback, errorCallback) {
+  async sync(address) {
     try {
-      const user = await get(`${config.api}/user?fetchTx=false`, this.headers, { useAPIKey: true })
+      const user = await get(`${config.api}/user?fetchTx=false`, this.headers(address), { useAPIKey: true })
       if (user?.data) {
-        const { badge: userBadges, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
+        const { badge: userBadges, default_currency: defaultCurrency, contacts, theme, locale, permissions, public_address } = user.data || {}
         let whiteLabelLocale
         let badgesCompletion = DEFAULT_BADGES_COMPLETION
 
@@ -160,7 +190,7 @@ class PreferencesController extends EventEmitter {
           }
         }
 
-        this.store.updateState({
+        this.updateStore(public_address, {
           contacts,
           theme,
           selectedCurrency: defaultCurrency,
@@ -168,35 +198,34 @@ class PreferencesController extends EventEmitter {
           permissions,
           badgesCompletion,
         })
-        if (callback) return callback(user)
+        return user
       }
       return undefined
     } catch (error) {
       log.error(error)
-      if (errorCallback) errorCallback()
       return undefined
     } finally {
       Promise.all([
-        getWalletOrders({}, this.headers.headers).catch((error) => {
+        getWalletOrders({}, this.headers(address).headers).catch((error) => {
           log.error('unable to fetch wallet orders', error)
         }),
-        getPastOrders({}, this.headers.headers).catch((error) => {
+        getPastOrders({}, this.headers(address).headers).catch((error) => {
           log.error('unable to fetch past orders', error)
         }),
       ])
         .then((data) => {
           const [walletTx, paymentTx] = data
           if (paymentTx?.data) {
-            this.calculatePaymentTx(paymentTx.data)
+            this.calculatePaymentTx(paymentTx.data, address)
           }
-          this.fetchedPastTx = walletTx.data
-          this.calculatePastTx(walletTx.data)
+          this.updateStore(address, { fetchedPastTx: walletTx.data })
+          this.calculatePastTx(walletTx.data, address)
         })
         .catch((error) => log.error(error))
     }
   }
 
-  calculatePaymentTx(txs) {
+  calculatePaymentTx(txs, address) {
     const accumulator = []
     for (const x of txs) {
       let action = ''
@@ -224,13 +253,22 @@ class PreferencesController extends EventEmitter {
         currencyUsed: x.currencyUsed,
       })
     }
-    this.paymentTxStore.putState(accumulator)
+    this.updateStore(address, { paymentTx: accumulator })
   }
 
-  async calculatePastTx(txs) {
+  updateStore(address, newPartialState) {
+    const currentState = this.state(address) || clone(DEFAULT_ACCOUNT_STATE)
+    const mergedState = deepmerge(currentState, newPartialState)
+    this.store.updateState({
+      [address]: mergedState,
+    })
+    return mergedState
+  }
+
+  async calculatePastTx(txs, address) {
     const pastTx = []
     const pendingTx = []
-    const lowerCaseSelectedAddress = this.state.selectedAddress.toLowerCase()
+    const lowerCaseSelectedAddress = address.toLowerCase()
     for (const x of txs) {
       if (
         x.network === this.network.getNetworkNameFromNetworkCode() &&
@@ -253,13 +291,12 @@ class PreferencesController extends EventEmitter {
       if (lowerCaseSelectedAddress === element.from.toLowerCase() && finalObject.status && finalObject.status !== element.status)
         this.patchPastTx(element.id, finalObject.status)
     }
-    this.pastTransactionsStore.putState(pastTx)
+    this.updateStore(address, { pastTransactions: pastTx })
   }
 
-  async fetchEtherscanTx() {
+  async fetchEtherscanTx(address) {
     try {
-      const { selectedAddress } = this.state
-      const tx = await getEtherscanTransactions({ selectedAddress }, this.headers.headers)
+      const tx = await getEtherscanTransactions({ selectedAddress: address }, this.headers(address).headers)
       if (tx?.data) {
         this.emit('addEtherscanTransactions', tx.data)
       }
@@ -268,15 +305,15 @@ class PreferencesController extends EventEmitter {
     }
   }
 
-  async patchNewTx(tx) {
+  async patchNewTx(tx, address) {
     const formattedTx = formatPastTx(tx)
-    const storePastTx = this.pastTransactionsStore.getState()
+    const storePastTx = this.state(address).pastTransactions
     const duplicateIndex = storePastTx.findIndex((x) => x.transaction_hash === tx.transaction_hash && x.networkType === tx.network)
     if (tx.status === 'submitted' || tx.status === 'confirmed') {
       if (duplicateIndex === -1 && tx.status === 'submitted') {
         // No duplicate found
-        this.pastTransactionsStore.putState(storePastTx.concat([formattedTx]))
-        this.postPastTx(tx)
+        this.updateStore(address, { pastTransactions: storePastTx.concat([formattedTx]) })
+        this.postPastTx(tx, address)
         try {
           notifyUser(formattedTx.etherscanLink)
         } catch (error) {
@@ -284,14 +321,14 @@ class PreferencesController extends EventEmitter {
         }
       } else {
         storePastTx[duplicateIndex] = formattedTx
-        this.pastTransactionsStore.putState([...storePastTx])
+        this.updateStore(address, { pastTransactions: [...storePastTx] })
       }
     }
   }
 
-  async postPastTx(tx) {
+  async postPastTx(tx, address) {
     try {
-      const response = await post(`${config.api}/transaction`, tx, this.headers, { useAPIKey: true })
+      const response = await post(`${config.api}/transaction`, tx, this.headers(address), { useAPIKey: true })
       log.info('successfully added', response)
     } catch (error) {
       log.error(error, 'unable to insert transaction')
@@ -299,13 +336,15 @@ class PreferencesController extends EventEmitter {
   }
 
   /* istanbul ignore next */
-  recalculatePastTx() {
+  recalculatePastTx(address) {
     // This triggers store update which calculates past Tx status for that network
-    this.calculatePastTx(this.fetchedPastTx)
+    const state = this.state(address)
+    if (!state?.fetchedPastTx) return
+    this.calculatePastTx(state.fetchedPastTx, address)
   }
 
   /* istanbul ignore next */
-  createUser(selectedCurrency, theme, verifier, verifierId) {
+  createUser(selectedCurrency, theme, verifier, verifierId, address) {
     return post(
       `${config.api}/user`,
       {
@@ -314,13 +353,13 @@ class PreferencesController extends EventEmitter {
         verifier,
         verifierId,
       },
-      this.headers,
+      this.headers(address),
       { useAPIKey: true }
     )
   }
 
   /* istanbul ignore next */
-  storeUserLogin(verifier, verifierId, payload) {
+  storeUserLogin(verifier, verifierId, payload, address) {
     let userOrigin = ''
     if (payload && payload.calledFromEmbed) {
       userOrigin = getIFrameOrigin()
@@ -338,7 +377,7 @@ class PreferencesController extends EventEmitter {
             verifierId,
             metadata: `referrer:${referrer}`,
           },
-          this.headers,
+          this.headers(address),
           { useAPIKey: true }
         )
         clearInterval(interval)
@@ -393,9 +432,9 @@ class PreferencesController extends EventEmitter {
   }
 
   /* istanbul ignore next */
-  async setVerifier(verifier, verifierId) {
+  async setVerifier(verifier, verifierId, address) {
     try {
-      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers, { useAPIKey: true })
+      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers(address), { useAPIKey: true })
       log.info('successfully updated verifier info', response)
     } catch (error) {
       log.error('unable to update verifier info', error)
@@ -409,14 +448,16 @@ class PreferencesController extends EventEmitter {
 
   async getBillboardContents() {
     try {
-      const resp = await get(`${config.api}/billboard`, this.headers, { useAPIKey: true })
+      const { selectedAddress } = this.store.getState()
+      if (!selectedAddress) return
+      const resp = await get(`${config.api}/billboard`, this.headers(), { useAPIKey: true })
       const events = resp.data.reduce((accumulator, event) => {
         if (!accumulator[event.callToActionLink]) accumulator[event.callToActionLink] = {}
         accumulator[event.callToActionLink][event.locale] = event
         return accumulator
       }, {})
 
-      if (events) this.store.updateState({ billboard: events })
+      if (events) this.billboardStore.putState(events)
     } catch (error) {
       log.error(error)
     }
@@ -476,10 +517,10 @@ class PreferencesController extends EventEmitter {
   }
 
   setSelectedAddress(address) {
-    if (this.state.selectedAddress === address) return
+    if (this.store.getState().selectedAddress === address) return
     this.store.updateState({ selectedAddress: address })
-    this.recalculatePastTx()
-    this.fetchEtherscanTx()
+    this.recalculatePastTx(address)
+    this.fetchEtherscanTx(address)
     // this.sync()
   }
 
@@ -493,8 +534,10 @@ class PreferencesController extends EventEmitter {
     }
     this._handle = setInterval(() => {
       // call here
-      if (!this._jwtToken) return
-      this.sync()
+      const storeSelectedAddress = this.store.getState().selectedAddress
+      if (!storeSelectedAddress) return
+      if (!this.state(storeSelectedAddress).jwtToken) return
+      this.sync(storeSelectedAddress)
     }, interval)
   }
 
@@ -506,6 +549,27 @@ class PreferencesController extends EventEmitter {
     } catch (error) {
       log.error('unable to set badge', error)
     }
+  }
+
+  async getMessageForSigning(publicAddress) {
+    try {
+      const response = await post(
+        `${config.api}/auth/message`,
+        {
+          public_address: publicAddress,
+        },
+        {},
+        { useAPIKey: true }
+      )
+      return response.message
+    } catch (error) {
+      log.error(error)
+      return undefined
+    }
+  }
+
+  async getOpenSeaCollectibles(api, address) {
+    return get(`${config.api}/opensea?url=${api}`, this.headers(address), { useAPIKey: true })
   }
 }
 

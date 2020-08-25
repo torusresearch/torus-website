@@ -20,7 +20,7 @@ export default class AssetController {
     this.network = options.network
     this.assetContractController = options.assetContractController
     this.selectedAddress = options.selectedAddress
-    this.jwtToken = ''
+    this.getOpenSeaCollectibles = options.getOpenSeaCollectibles
     this.initializeNetworkSubscription()
   }
 
@@ -50,10 +50,6 @@ export default class AssetController {
       collectibles: (allCollectibles[address] && allCollectibles[address][networkType]) || [],
       tokens: (allTokens[address] && allTokens[address][networkType]) || [],
     })
-  }
-
-  setJwtToken(jwtToken) {
-    this.jwtToken = jwtToken
   }
 
   getCollectibleApi(contractAddress, tokenId) {
@@ -162,11 +158,7 @@ export default class AssetController {
     const api = this.getCollectibleContractInformationApi(contractAddress)
     /* istanbul ignore if */
 
-    const collectibleContractObject = await get(`${config.api}/opensea?url=${api}`, {
-      headers: {
-        Authorization: `Bearer ${this.jwtToken}`,
-      },
-    })
+    const collectibleContractObject = await this.getOpenSeaCollectibles(api, this.selectedAddress)
 
     const { name, symbol, image_url: imageURL, description, total_supply: totalSupply } = collectibleContractObject.data
     return { name, symbol, image_url: imageURL, description, total_supply: totalSupply }

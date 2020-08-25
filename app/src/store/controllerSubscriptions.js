@@ -97,8 +97,12 @@ export function tokenRatesControllerHandler({ contractExchangeRates }) {
 }
 
 export function prefsControllerHandler(state) {
-  Object.keys(state).forEach((x) => {
-    getStore().commit(`set${capitalizeFirstLetter(x)}`, state[x])
+  const { selectedAddress } = state
+  if (selectedAddress === '') return
+  const addressState = state[selectedAddress]
+  getStore().commit('setSelectedAddress', selectedAddress)
+  Object.keys(addressState).forEach((x) => {
+    if (x !== 'fetchedPastTx') getStore().commit(`set${capitalizeFirstLetter(x)}`, addressState[x])
   })
 }
 
@@ -114,14 +118,10 @@ export function metadataHandler(state) {
   getStore().commit('setMetaData', state)
 }
 
-export function pastTransactionsHandler(state) {
-  getStore().commit('setPastTransactions', state)
-}
-
-export function paymentTxHandler(state) {
-  getStore().commit('setPaymentTx', state)
-}
-
 export function etherscanTxHandler(state) {
   getStore().commit('setEtherscanTx', state)
+}
+
+export function billboardHandler(state) {
+  getStore().commit('setBillboard', state)
 }

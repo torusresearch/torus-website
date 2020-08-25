@@ -56,6 +56,7 @@ export default {
   baseUrl,
   baseRoute,
   commonApiHost: 'https://common-api.tor.us',
+  metadataHost: 'https://metadata.tor.us',
 
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',

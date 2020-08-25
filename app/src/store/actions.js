@@ -19,19 +19,18 @@ import {
   USER_INFO_REQUEST_APPROVED,
   USER_INFO_REQUEST_REJECTED,
 } from '../utils/enums'
-import { post, remove } from '../utils/httpHelpers'
+import { remove } from '../utils/httpHelpers'
 import PopupHandler from '../utils/PopupHandler'
 import { broadcastChannelOptions, fakeStream, getIFrameOriginObject } from '../utils/utils'
 import {
   accountTrackerHandler,
   assetControllerHandler,
+  billboardHandler,
   detectTokensControllerHandler,
   errorMsgHandler as errorMessageHandler,
   etherscanTxHandler,
   messageManagerHandler,
   metadataHandler,
-  pastTransactionsHandler,
-  paymentTxHandler,
   personalMessageManagerHandler,
   prefsControllerHandler,
   successMsgHandler as successMessageHandler,
@@ -56,6 +55,7 @@ const {
   prefsController,
   networkController,
   assetDetectionController,
+  thresholdKeyController,
 } = torusController || {}
 
 // stream to send logged in status
@@ -109,11 +109,10 @@ export default {
     resetStore(messageManager.store, messageManagerHandler)
     resetStore(detectTokensController.detectedTokensStore, detectTokensControllerHandler, detectTokensController.initState)
     resetStore(tokenRatesController.store, tokenRatesControllerHandler)
-    resetStore(prefsController.store, prefsControllerHandler, prefsController.initState)
+    resetStore(prefsController.billboardStore, billboardHandler)
+    resetStore(prefsController.store, prefsControllerHandler)
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
-    resetStore(prefsController.paymentTxStore, paymentTxHandler, [])
-    resetStore(prefsController.pastTransactionsStore, pastTransactionsHandler, [])
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
     torus.updateStaticData({ isUnlocked: false })
   },
@@ -267,11 +266,11 @@ export default {
         })
     })
   },
-  finishImportAccount({ dispatch, state }, payload) {
+  finishImportAccount({ dispatch }, payload) {
     return new Promise((resolve, reject) => {
       const { privKey } = payload
       const address = torus.generateAddressFromPrivKey(privKey)
-      torusController.setSelectedAccount(address, { jwtToken: state.jwtToken })
+      torusController.setSelectedAccount(address)
       dispatch('addWallet', { ethAddress: address, privKey })
       dispatch('updateSelectedAddress', { selectedAddress: address })
       torusController
@@ -289,9 +288,9 @@ export default {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
     else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
-  updateSelectedAddress({ state }, payload) {
+  updateSelectedAddress(_, payload) {
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
-    torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
+    torusController.setSelectedAccount(payload.selectedAddress)
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)
@@ -368,15 +367,18 @@ export default {
     messageManager.store.subscribe(messageManagerHandler)
     detectTokensController.detectedTokensStore.subscribe(detectTokensControllerHandler)
     tokenRatesController.store.subscribe(tokenRatesControllerHandler)
-    prefsController.store.subscribe(prefsControllerHandler)
+
     prefsController.successStore.subscribe(successMessageHandler)
     prefsController.errorStore.subscribe(errorMessageHandler)
-    prefsController.paymentTxStore.subscribe(paymentTxHandler)
-    prefsController.pastTransactionsStore.subscribe(pastTransactionsHandler)
+    prefsController.billboardStore.subscribe(billboardHandler)
+    prefsController.store.subscribe(prefsControllerHandler)
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
   },
   initTorusKeyring(_, payload) {
-    return torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
+    return torusController.initTorusKeyring(
+      payload.map((x) => x.privKey),
+      payload.map((x) => x.ethAddress)
+    )
   },
   addContact(_, payload) {
     return prefsController.addContact(payload)
@@ -392,25 +394,31 @@ export default {
     const { torusNodeEndpoints, torusNodePub, torusIndexes } = await torus.nodeDetailManager.getNodeDetails()
     const publicAddress = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
     log.info('New private key assigned to user at address ', publicAddress)
-    const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
-    const p2 = torus.getMessageForSigning(publicAddress)
-    const response = await Promise.all([p1, p2])
-    const data = response[0]
-    const message = response[1]
-    if (publicAddress.toLowerCase() !== data.ethAddress.toLowerCase()) throw new Error('Invalid Key')
-    dispatch('addWallet', data) // synchronous
+    const postboxKey = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
+    if (publicAddress.toLowerCase() !== postboxKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
+    log.info('key 1', postboxKey)
+    dispatch('addWallet', postboxKey) // synchronous
+    // Threshold Bak region
+    const thresholdKey = await thresholdKeyController.init(postboxKey.privKey)
+    log.info('tkey 2', thresholdKey)
+    dispatch('addWallet', thresholdKey) // synchronous
     dispatch('subscribeToControllers')
-    await dispatch('initTorusKeyring', data)
-    await dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed })
+    await dispatch('initTorusKeyring', [thresholdKey, postboxKey])
+    await Promise.all([
+      prefsController.init({ address: thresholdKey.ethAddress, calledFromEmbed, userInfo: state.userInfo, rehydrate: false, dispatch, commit }),
+      prefsController.init({ address: postboxKey.ethAddress, calledFromEmbed, userInfo: state.userInfo, rehydrate: false, dispatch, commit }),
+    ])
+    prefsController.getBillboardContents()
+    dispatch('updateSelectedAddress', { selectedAddress: postboxKey.ethAddress }) // synchronous
     // continue enable function
-    const { ethAddress } = data
+    const { ethAddress } = postboxKey
     if (calledFromEmbed) {
       setTimeout(() => {
         oauthStream.write({ selectedAddress: ethAddress })
         commit('setOAuthModalStatus', false)
       }, 50)
     }
-    // TODO: deprercate rehydrate false for the next major version bump
+    // TODO: deprecate rehydrate false for the next major version bump
     statusStream.write({ loggedIn: true, rehydrate: false, verifier })
     torus.updateStaticData({ isUnlocked: true })
     dispatch('cleanupOAuth', { oAuthToken })
@@ -428,74 +436,11 @@ export default {
       prefsController.revokeDiscord(oAuthToken)
     }
   },
-  async processAuthMessage({ commit, dispatch }, payload) {
-    try {
-      const { message, selectedAddress, calledFromEmbed } = payload
-      const hashedMessage = torus.hashMessage(message)
-      const signedMessage = await torus.torusController.keyringController.signMessage(selectedAddress, hashedMessage)
-      const response = await post(
-        `${config.api}/auth/verify`,
-        {
-          public_address: selectedAddress,
-          signed_message: signedMessage,
-        },
-        {},
-        { useAPIKey: true }
-      )
-      commit('setJwtToken', response.token)
-      // prefsController.jwtToken = response.token
-      if (response.token) {
-        const decoded = jwtDecode(response.token)
-        setTimeout(() => {
-          dispatch('logOut')
-        }, decoded.exp * 1000 - Date.now())
-      }
-      await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed, rehydrate: false, selectedAddress })
-      return Promise.resolve()
-    } catch (error) {
-      log.error('Failed Communication with backend', error)
-      return Promise.reject(error)
-    }
-  },
   setUserTheme(context, payload) {
     return prefsController.setUserTheme(payload)
   },
   setUserLocale(context, payload) {
     prefsController.setUserLocale(payload)
-  },
-  setUserInfoAction({ commit, dispatch, state }, payload) {
-    // eslint-disable-next-line no-unused-vars
-    return new Promise((resolve, reject) => {
-      // Fixes loading theme for too long
-      commit('setTheme', state.theme)
-
-      const { calledFromEmbed, rehydrate, token } = payload
-      const { userInfo, selectedCurrency, theme } = state
-      log.info(selectedCurrency)
-      const { verifier, verifierId } = userInfo
-
-      prefsController.jwtToken = token
-      prefsController.sync(
-        (user) => {
-          if (user.data) {
-            const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId } = user.data || {}
-            dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
-            prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
-            if (!storedVerifier || !storedVerifierId) prefsController.setVerifier(verifier, verifierId)
-            dispatch('updateSelectedAddress', { selectedAddress: payload.selectedAddress }) // synchronous
-            resolve()
-          }
-        },
-        async () => {
-          await prefsController.createUser(selectedCurrency, theme, verifier, verifierId)
-          commit('setNewUser', true)
-          dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
-          prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
-          dispatch('updateSelectedAddress', { selectedAddress: payload.selectedAddress }) // synchronous
-          resolve()
-        }
-      )
-    })
   },
   async rehydrate({ state, dispatch, commit }) {
     const {
@@ -650,7 +595,7 @@ export default {
           transaction_hash: hash,
           transaction_category: transactionCategory,
         }
-        prefsController.patchNewTx(txObject)
+        prefsController.patchNewTx(txObject, state.selectedAddress)
       }
     }
   },
