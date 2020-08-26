@@ -404,7 +404,7 @@ import {
   OLD_ERC721_LIST,
   TWITTER,
 } from '../../utils/enums'
-import { get, post } from '../../utils/httpHelpers'
+import { get } from '../../utils/httpHelpers'
 import { getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
 
 export default {
@@ -487,7 +487,6 @@ export default {
       'contacts',
       'selectedAddress',
       'userInfo',
-      'jwtToken',
       'networkType',
     ]),
     verifierOptions() {
@@ -645,8 +644,7 @@ export default {
         return `${typeOfLogin.toLowerCase()}|${userData.id.toString()}`
       }
       if (typeOfLogin === TWITTER) {
-        const userId = await get(`${config.api}/twitter?screen_name=${nick}`, { headers: { Authorization: `Bearer ${this.jwtToken}` } })
-        return `${typeOfLogin.toLowerCase()}|${userId.data.toString()}`
+        return this.$store.dispatch('getTwitterId', { nick, typeOfLogin })
       }
       return nick
     },
@@ -691,18 +689,8 @@ export default {
           tokenImageUrl:
             this.contractType !== CONTRACT_TYPE_ERC721 ? `${this.logosUrl}/${this.selectedItemDisplay.logo}` : this.selectedItemDisplay.logo,
         }
-        post(
-          `${config.api}/transaction/sendemail`,
-          emailObject,
-          {
-            headers: {
-              Authorization: `Bearer ${this.jwtToken}`,
-              'Content-Type': 'application/json; charset=utf-8',
-            },
-          },
-          {},
-          { useAPIKey: true }
-        )
+        this.$store
+          .dispatch('sendEmail', { emailObject })
           .then((response) => log.info('email response', response))
           .catch((error) => log.error(error))
       }
