@@ -451,7 +451,7 @@ class PreferencesController extends EventEmitter {
 
   /* istanbul ignore next */
   getEtherScanTokenBalances() {
-    return get(`${config.api}/tokenbalances`, this.headers, { useAPIKey: true })
+    return get(`${config.api}/tokenbalances`, this.headers(), { useAPIKey: true })
   }
 
   async getBillboardContents() {
@@ -573,7 +573,7 @@ class PreferencesController extends EventEmitter {
   }
 
   async getTwitterId(payload) {
-    const userId = await get(`${config.api}/twitter?screen_name=${payload.nick}`, this.headers())
+    const userId = await get(`${config.api}/twitter?screen_name=${payload.nick}`, this.headers(), { useAPIKey: true })
     return `${payload.typeOfLogin.toLowerCase()}|${userId.data.toString()}`
   }
 

@@ -579,7 +579,7 @@ export default {
           let assetDetails = {}
           try {
             const tokenURI = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
-            assetDetails = await this.dispatch('getOpenseaColletibles', { tokenURI })
+            assetDetails = await this.dispatch('getOpenseaCollectibles', { tokenURI })
             this.assetDetails = {
               name: assetDetails.data.name || '',
               logo: assetDetails.data.image_thumbnail_url || '',

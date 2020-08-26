@@ -122,11 +122,11 @@ export default {
       else commit('setCurrencyData', data)
     })
   },
-  async forceFetchTokens({ state }) {
+  async forceFetchTokens() {
     detectTokensController.refreshTokenBalances()
     assetDetectionController.restartAssetDetection()
     try {
-      const response = await prefsController.getEtherScanTokenBalances(state)
+      const response = await prefsController.getEtherScanTokenBalances()
       const { data } = response
       data.forEach((object) => {
         detectTokensController.detectEtherscanTokenBalance(toChecksumAddress(object.contractAddress), {
@@ -618,10 +618,10 @@ export default {
   getTwitterId(_, payload) {
     return prefsController.getTwitterId(payload)
   },
-  async sendEmail(_, payload) {
+  sendEmail(_, payload) {
     return prefsController.sendEmail(payload)
   },
-  async getOpenseaColletibles(_, payload) {
-    await this.getOpenSeaCollectibles(payload.tokenURI)
+  getOpenseaCollectibles(_, payload) {
+    return prefsController.getOpenSeaCollectibles(payload.tokenURI)
   },
 }
