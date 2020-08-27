@@ -174,6 +174,12 @@ export const ACCOUNT_TYPE = {
   IMPORTED: 'imported',
 }
 
+export const WEB_STORAGE_MODULE_KEY = 'webStorage'
+export const SECURITY_QUESTIONS_MODULE_KEY = 'securityQuestions'
+export const CHROME_EXTENSION_STORAGE_MODULE_KEY = 'chromeExtensionStorage'
+
+export const THRESHOLD_KEY_PRIORITY_ORDER = [WEB_STORAGE_MODULE_KEY, SECURITY_QUESTIONS_MODULE_KEY, CHROME_EXTENSION_STORAGE_MODULE_KEY]
+
 export const OLD_ERC721_LIST = {
   '0x06012c8cf97bead5deae237070f9587f8e7a266d': {
     name: 'Cryptokitties',

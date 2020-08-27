@@ -396,24 +396,36 @@ export default {
     if (publicAddress.toLowerCase() !== postboxKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
     log.info('key 1', postboxKey)
     dispatch('addWallet', { ...postboxKey, accountType: ACCOUNT_TYPE.NORMAL }) // synchronous
+    const keyringsToInitialize = [postboxKey]
+    const prefsControllerToInitialize = []
     // Threshold Bak region
-    const thresholdKey = await thresholdKeyController.init(postboxKey.privKey)
-    log.info('tkey 2', thresholdKey)
-    dispatch('addWallet', { ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }) // synchronous
+    // Check if tkey exists
+    const keyExists = await thresholdKeyController.checkIfTKeyExists(postboxKey.privKey)
+    if (keyExists) {
+      const thresholdKey = await thresholdKeyController.init(postboxKey.privKey)
+      log.info('tkey 2', thresholdKey)
+      dispatch('addWallet', { ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }) // synchronous
+      keyringsToInitialize.push(thresholdKey)
+      prefsControllerToInitialize.push(
+        prefsController.init({
+          address: thresholdKey.ethAddress,
+          calledFromEmbed,
+          userInfo: state.userInfo,
+          rehydrate: false,
+          dispatch,
+          commit,
+          type: ACCOUNT_TYPE.THRESHOLD,
+        })
+      )
+    }
+
     dispatch('subscribeToControllers')
-    await dispatch('initTorusKeyring', [thresholdKey, postboxKey])
-    await Promise.all([
-      prefsController.init({
-        address: thresholdKey.ethAddress,
-        calledFromEmbed,
-        userInfo: state.userInfo,
-        rehydrate: false,
-        dispatch,
-        commit,
-        type: ACCOUNT_TYPE.THRESHOLD,
-      }),
-      prefsController.init({ address: postboxKey.ethAddress, calledFromEmbed, userInfo: state.userInfo, rehydrate: false, dispatch, commit }),
-    ])
+    await dispatch('initTorusKeyring', keyringsToInitialize)
+    prefsControllerToInitialize.push(
+      prefsController.init({ address: postboxKey.ethAddress, calledFromEmbed, userInfo: state.userInfo, rehydrate: false, dispatch, commit })
+    )
+    await Promise.all(prefsControllerToInitialize)
+    // TODO: check default address and set this accordingly
     dispatch('updateSelectedAddress', { selectedAddress: postboxKey.ethAddress }) // synchronous
     prefsController.getBillboardContents()
     // continue enable function

@@ -1,6 +1,6 @@
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
-import { addHexPrefix, BN, stripHexPrefix } from 'ethereumjs-util'
+import { addHexPrefix, BN, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import { isAddress } from 'web3-utils'
 
@@ -629,4 +629,8 @@ export const handleRedirectParameters = (hash, queryParameters) => {
     }
   }
   return { error, instanceParameters, hashParameters }
+}
+
+export function generateAddressFromPubKey(point) {
+  return pubToAddress(point.encode('arr'))
 }

@@ -1,30 +1,33 @@
+/* eslint-disable no-await-in-loop */
 // import ObservableStore from 'obs-store'
-import Torus from '@toruslabs/torus.js'
 import log from 'loglevel'
 import ThresholdKey, { SecurityQuestionsModule, ServiceProviderBase, TorusStorageLayer, WebStorageModule } from 'tkey'
-import { keccak256, toChecksumAddress } from 'web3-utils'
+import { toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
-
-// const PRIORITY_ORDER = ['webStorage', 'securityQuestions', 'chromeExtensionStorage']
-
-function generateAddressFromPubKey(point) {
-  const torus = new Torus()
-  const key = torus.ec.keyFromPublic({ x: point.x.toString('hex', 64), y: point.y.toString('hex', 64) })
-  const publicKey = key.getPublic().encode('hex').slice(2)
-  const ethAddressLower = `0x${keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38)}`
-  return toChecksumAddress(ethAddressLower)
-}
+import {
+  CHROME_EXTENSION_STORAGE_MODULE_KEY,
+  SECURITY_QUESTIONS_MODULE_KEY,
+  THRESHOLD_KEY_PRIORITY_ORDER,
+  WEB_STORAGE_MODULE_KEY,
+} from '../utils/enums'
+import { generateAddressFromPubKey } from '../utils/utils'
 
 class ThresholdKeyController {
   constructor() {
     this.modules = {
-      securityQuestions: new SecurityQuestionsModule(),
-      webStorage: new WebStorageModule(),
+      [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
+      [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),
     }
     this.serviceProvider = null
     this.storageLayer = null
     this.tKey = null
+  }
+
+  async checkIfTKeyExists(postboxKey) {
+    const storageLayer = new TorusStorageLayer({ hostUrl: config.metadataHost })
+    const metadata = await storageLayer.getMetadata(postboxKey)
+    return Object.keys(metadata).length > 0
   }
 
   async init(postboxKey, tKeyJson) {
@@ -44,16 +47,49 @@ class ThresholdKeyController {
       })
     // await this.tKey.initializeNewKey({ initializeModules: true })
     // const keyDetails = this.tKey.getKeyDetails()
-    let keyDetails = await this.tKey.initialize()
+
+    const keyDetails = await this.tKey.initialize()
     log.info(keyDetails)
-    if (keyDetails.requiredShares === 1) {
-      await this.tKey.modules.webStorage.inputShareFromWebStorage()
-      keyDetails = this.tKey.getKeyDetails()
+    const { requiredShares: shareCount, shareDescriptions } = keyDetails
+    const parsedShareDescriptions = Object.values(shareDescriptions)
+      .flatMap((x) => JSON.parse(x))
+      .sort((a, b) => {
+        return THRESHOLD_KEY_PRIORITY_ORDER.indexOf(a.module) - THRESHOLD_KEY_PRIORITY_ORDER.indexOf(b.module)
+      })
+    let requiredShares = shareCount
+    const descriptionBuffer = []
+    while (requiredShares > 0 && parsedShareDescriptions.length > 0) {
+      const currentShare = parsedShareDescriptions.shift()
+      if (currentShare.module === WEB_STORAGE_MODULE_KEY) {
+        try {
+          await this.tKey.modules[WEB_STORAGE_MODULE_KEY].inputShareFromWebStorage()
+          requiredShares -= 1
+        } catch (error) {
+          log.error(error, 'unable to read share from device. Must be on other device')
+          descriptionBuffer.push(currentShare)
+        }
+      } else if (currentShare.module === SECURITY_QUESTIONS_MODULE_KEY) {
+        // default to password for now
+        await this.getSecurityQuestionShareFromUserInput()
+        requiredShares -= 1
+      } else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
+        // default to password for now
+        await this.getShareFromChromeExtension()
+        requiredShares -= 1
+      }
+      if (parsedShareDescriptions.length === 0 && requiredShares > 0 && descriptionBuffer.length > 0) {
+        await this.getShareFromAnotherDevice()
+        requiredShares -= 1
+      }
+      if (parsedShareDescriptions.length === 0 && requiredShares > 0 && descriptionBuffer.length === 0) {
+        throw new Error('User lost his key')
+      }
     }
-    if (keyDetails.requiredShares <= 0) {
+
+    if (requiredShares <= 0) {
       const privKey = await this.tKey.reconstructKey()
       return {
-        ethAddress: generateAddressFromPubKey(keyDetails.pubKey),
+        ethAddress: toChecksumAddress(generateAddressFromPubKey(keyDetails.pubKey).toString('hex')),
         privKey: privKey.toString('hex'),
       }
     }
