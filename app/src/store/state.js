@@ -2,6 +2,7 @@ import clone from 'clone'
 
 import config from '../config'
 import {
+  ACCOUNT_TYPE,
   LOCALE_EN,
   MAINNET,
   MAINNET_CODE,
@@ -41,6 +42,9 @@ const initialState = {
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},
   // preferences
+  accountType: ACCOUNT_TYPE.NORMAL,
+  tKeyOnboardingComplete: true,
+  defaultPublicAddress: '',
   selectedAddress: '',
   supportedNetworks: { ...SUPPORTED_NETWORK_TYPES },
   selectedCurrency: 'USD',

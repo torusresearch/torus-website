@@ -8,6 +8,7 @@ import Web3 from 'web3'
 
 import config from '../config'
 import {
+  ACCOUNT_TYPE,
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_TOPUP,
@@ -52,6 +53,9 @@ const DEFAULT_ACCOUNT_STATE = {
   fetchedPastTx: [],
   pastTransactions: [],
   paymentTx: [],
+  tKeyOnboardingComplete: true,
+  defaultPublicAddress: '',
+  accountType: ACCOUNT_TYPE.NORMAL,
 }
 
 class PreferencesController extends EventEmitter {
@@ -108,7 +112,7 @@ class PreferencesController extends EventEmitter {
    *
    * @return  {[void]}           void
    */
-  async init({ address, jwtToken, calledFromEmbed = false, userInfo = {}, rehydrate = false, dispatch, commit }) {
+  async init({ address, jwtToken, calledFromEmbed = false, userInfo = {}, rehydrate = false, accountType = ACCOUNT_TYPE.NORMAL, dispatch, commit }) {
     let response = { token: jwtToken }
     if (!jwtToken) {
       const messageToSign = await this.getMessageForSigning(address)
@@ -129,11 +133,12 @@ class PreferencesController extends EventEmitter {
     const { verifier, verifierId } = userInfo
     const user = await this.sync(address)
     if (user?.data) {
-      const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId } = user.data || {}
+      const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId, default_public_address } = user.data || {}
       dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
+      if (!default_public_address) this.setDefaultPublicAddress(address)
     } else {
-      await this.createUser(accountState.selectedCurrency, accountState.theme, verifier, verifierId, address)
+      await this.createUser(accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
       commit('setNewUser', true)
       dispatch('setSelectedCurrency', { selectedCurrency: accountState.selectedCurrency, origin: 'store' })
     }
@@ -172,7 +177,18 @@ class PreferencesController extends EventEmitter {
     try {
       const user = await get(`${config.api}/user?fetchTx=false`, this.headers(address), { useAPIKey: true })
       if (user?.data) {
-        const { badge: userBadges, default_currency: defaultCurrency, contacts, theme, locale, permissions, public_address } = user.data || {}
+        const {
+          badge: userBadges,
+          default_currency: defaultCurrency,
+          contacts,
+          theme,
+          locale,
+          permissions,
+          public_address,
+          tkey_onboarding_complete,
+          account_type,
+          default_public_address,
+        } = user.data || {}
         let whiteLabelLocale
         let badgesCompletion = DEFAULT_BADGES_COMPLETION
 
@@ -205,6 +221,9 @@ class PreferencesController extends EventEmitter {
             locale: whiteLabelLocale || locale || getUserLanguage(),
             permissions,
             badgesCompletion,
+            tKeyOnboardingComplete: !!tkey_onboarding_complete,
+            accountType: account_type || ACCOUNT_TYPE.NORMAL,
+            defaultPublicAddress: default_public_address || public_address,
           },
           public_address
         )
@@ -355,7 +374,7 @@ class PreferencesController extends EventEmitter {
   }
 
   /* istanbul ignore next */
-  createUser(selectedCurrency, theme, verifier, verifierId, address) {
+  createUser(selectedCurrency, theme, verifier, verifierId, accountType, address) {
     return post(
       `${config.api}/user`,
       {
@@ -363,6 +382,7 @@ class PreferencesController extends EventEmitter {
         theme,
         verifier,
         verifierId,
+        account_type: accountType,
       },
       this.headers(address),
       { useAPIKey: true }
@@ -442,6 +462,17 @@ class PreferencesController extends EventEmitter {
     }
   }
 
+  async setTKeyOnboardingStatus(payload, address) {
+    // This is called before set selected address is assigned
+    try {
+      await patch(`${config.api}/user`, { tkey_onboarding_complete: payload }, this.headers(address), { useAPIKey: true })
+      this.updateStore({ tKeyOnboardingComplete: payload }, address)
+      log.info('successfully updated onboarding status')
+    } catch (error) {
+      log.error(error, 'unable to set onboarding status')
+    }
+  }
+
   /* istanbul ignore next */
   async setVerifier(verifier, verifierId, address) {
     try {
@@ -449,6 +480,15 @@ class PreferencesController extends EventEmitter {
       log.info('successfully updated verifier info', response)
     } catch (error) {
       log.error('unable to update verifier info', error)
+    }
+  }
+
+  async setDefaultPublicAddress(address) {
+    try {
+      const response = await patch(`${config.api}`, { default_public_address: address }, this.headers(address), { useAPIKey: true })
+      log.info('successfully updated default public address', response)
+    } catch (error) {
+      log.error('unable to update default public address', error)
     }
   }
 

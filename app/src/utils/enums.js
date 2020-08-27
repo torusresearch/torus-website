@@ -168,6 +168,11 @@ export const GITHUB_LABEL = 'walletSettings.githubId'
 export const THEME_DARK_BLACK_NAME = 'dark-black'
 export const THEME_LIGHT_BLUE_NAME = 'light-blue'
 
+export const ACCOUNT_TYPE = {
+  NORMAL: 'normal',
+  THRESHOLD: 'threshold',
+}
+
 export const OLD_ERC721_LIST = {
   '0x06012c8cf97bead5deae237070f9587f8e7a266d': {
     name: 'Cryptokitties',

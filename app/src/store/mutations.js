@@ -185,6 +185,15 @@ export default {
   setRehydrationStatus(state, payload) {
     state.isRehydrationComplete = payload
   },
+  setTKeyOnboardingComplete(state, payload) {
+    state.tKeyOnboardingComplete = payload
+  },
+  setAccountType(state, payload) {
+    state.accountType = payload
+  },
+  setDefaultPublicAddress(state, payload) {
+    state.defaultPublicAddress = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
