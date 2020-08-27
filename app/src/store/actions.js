@@ -403,7 +403,15 @@ export default {
     dispatch('subscribeToControllers')
     await dispatch('initTorusKeyring', [thresholdKey, postboxKey])
     await Promise.all([
-      prefsController.init({ address: thresholdKey.ethAddress, calledFromEmbed, userInfo: state.userInfo, rehydrate: false, dispatch, commit }),
+      prefsController.init({
+        address: thresholdKey.ethAddress,
+        calledFromEmbed,
+        userInfo: state.userInfo,
+        rehydrate: false,
+        dispatch,
+        commit,
+        type: ACCOUNT_TYPE.THRESHOLD,
+      }),
       prefsController.init({ address: postboxKey.ethAddress, calledFromEmbed, userInfo: state.userInfo, rehydrate: false, dispatch, commit }),
     ])
     dispatch('updateSelectedAddress', { selectedAddress: postboxKey.ethAddress }) // synchronous
