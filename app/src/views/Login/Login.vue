@@ -388,6 +388,7 @@ export default {
   computed: {
     ...mapState({
       selectedAddress: 'selectedAddress',
+      tKeyOnboardingComplete: 'tKeyOnboardingComplete',
       loginConfig: (state) => state.embedState.loginConfig,
     }),
     ...mapGetters(['loginButtonsArray']),
@@ -434,7 +435,10 @@ export default {
     selectedAddress(newAddress, oldAddress) {
       if (newAddress !== oldAddress && newAddress !== '') {
         let redirectPath = this.$route.query.redirect
-        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
+
+        if (!this.tKeyOnboardingComplete) redirectPath = `/wallet/tkey?redirect=${redirectPath || '/wallet'}`
+        else if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
+
         this.$router.push(redirectPath).catch((_) => {})
       }
     },

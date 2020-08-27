@@ -1,7 +1,7 @@
 <template>
   <div class="two-factor-auth-container" :class="[$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4', { 'is-dark': $vuetify.theme.dark }]">
     <div class="mb-12">
-      <div class="text_1--text font-weight-bold body-1">{{ t('Agregar factor') }}</div>
+      <div class="text_1--text font-weight-bold body-1">{{ t('tkeySettings.authThreshold') }}</div>
       <div class="settings-container pa-4 mb-4">
         <div class="text_1--text body-2 mb-4">{{ t('tkeySettings.selectThreshold') }}</div>
         <v-select v-model="authTreshholdSelected" class="mb-6" outlined hide-details :items="authTreshholds" append-icon="$vuetify.icons.select">

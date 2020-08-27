@@ -154,21 +154,21 @@ const router = new Router({
             return next()
           },
         },
-      ],
-    },
-    {
-      path: '/tkey',
-      component: Tkey,
-      children: [
         {
-          path: '/',
-          name: 'create',
-          component: TkeyCreate,
-        },
-        {
-          path: 'new-device',
-          name: 'new-device',
-          component: TkeyNewDevice,
+          path: 'tkey',
+          component: Tkey,
+          children: [
+            {
+              path: '/',
+              name: 'tkeyCreate',
+              component: TkeyCreate,
+            },
+            {
+              path: 'new-device',
+              name: 'new-device',
+              component: TkeyNewDevice,
+            },
+          ],
         },
       ],
     },
