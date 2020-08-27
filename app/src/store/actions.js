@@ -272,7 +272,7 @@ export default {
       const { privKey } = payload
       const address = torus.generateAddressFromPrivKey(privKey)
       torusController.setSelectedAccount(address)
-      dispatch('addWallet', { ethAddress: address, privKey })
+      dispatch('addWallet', { ethAddress: address, privKey, accountType: ACCOUNT_TYPE.IMPORTED })
       dispatch('updateSelectedAddress', { selectedAddress: address })
       torusController
         .addAccount(privKey, address)
@@ -395,11 +395,11 @@ export default {
     const postboxKey = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
     if (publicAddress.toLowerCase() !== postboxKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
     log.info('key 1', postboxKey)
-    dispatch('addWallet', postboxKey) // synchronous
+    dispatch('addWallet', { ...postboxKey, accountType: ACCOUNT_TYPE.NORMAL }) // synchronous
     // Threshold Bak region
     const thresholdKey = await thresholdKeyController.init(postboxKey.privKey)
     log.info('tkey 2', thresholdKey)
-    dispatch('addWallet', thresholdKey) // synchronous
+    dispatch('addWallet', { ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }) // synchronous
     dispatch('subscribeToControllers')
     await dispatch('initTorusKeyring', [thresholdKey, postboxKey])
     await Promise.all([

@@ -171,6 +171,7 @@ export const THEME_LIGHT_BLUE_NAME = 'light-blue'
 export const ACCOUNT_TYPE = {
   NORMAL: 'normal',
   THRESHOLD: 'threshold',
+  IMPORTED: 'imported',
 }
 
 export const OLD_ERC721_LIST = {
