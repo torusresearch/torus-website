@@ -138,7 +138,11 @@ if (!isMain) {
   accountImportChannel.addEventListener('message', (ev) => {
     if (ev.data && ev.data.name === 'imported_account' && ev.data.payload) {
       log.info('importing user account')
-      if (!Object.values(VuexStore.state.wallet).includes(ev.data.payload.privKey)) {
+      if (
+        !Object.values(VuexStore.state.wallet)
+          .map((x) => x.privateKey)
+          .includes(ev.data.payload.privKey)
+      ) {
         VuexStore.dispatch('finishImportAccount', ev.data.payload)
       }
     }

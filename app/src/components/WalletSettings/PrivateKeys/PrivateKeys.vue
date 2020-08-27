@@ -183,7 +183,7 @@ export default {
   computed: {
     ...mapState(['selectedAddress', 'wallet']),
     selectedKey() {
-      return this.wallet[this.selectedAddress]
+      return this.wallet[this.selectedAddress]?.privateKey
     },
   },
   methods: {

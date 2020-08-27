@@ -10,6 +10,7 @@ import vuetify from '../plugins/vuetify'
 import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
 import {
+  ACCOUNT_TYPE,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   DISCORD,
   FACEBOOK,
@@ -281,7 +282,10 @@ export default {
   },
   addWallet(context, payload) {
     if (payload.ethAddress) {
-      context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
+      context.commit('setWallet', {
+        ...context.state.wallet,
+        [payload.ethAddress]: { privateKey: payload.privKey, accountType: payload.accountType || ACCOUNT_TYPE.NORMAL },
+      })
     }
   },
   updateUserInfoAccess({ commit }, payload) {
@@ -455,7 +459,10 @@ export default {
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
         setTimeout(() => dispatch('subscribeToControllers'), 50)
-        await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
+        await torus.torusController.initTorusKeyring(
+          Object.values(wallet).map((x) => x.privateKey),
+          Object.keys(wallet)
+        )
         await Promise.all(
           Object.keys(wallet).map((x) =>
             prefsController.init({

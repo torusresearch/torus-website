@@ -188,9 +188,6 @@ export default {
   setTKeyOnboardingComplete(state, payload) {
     state.tKeyOnboardingComplete = payload
   },
-  setAccountType(state, payload) {
-    state.accountType = payload
-  },
   setDefaultPublicAddress(state, payload) {
     state.defaultPublicAddress = payload
   },
