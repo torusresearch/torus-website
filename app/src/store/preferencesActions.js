@@ -39,6 +39,6 @@ export default {
   },
   setDefaultPublicAddress({ state }, payload) {
     const { wallets } = state
-    return Promise.all(Object.keys(wallets).map((x) => prefsController.setDefaultPublicAddress(payload, x)))
+    return Promise.all(Object.keys(wallets).map((x) => prefsController.setDefaultPublicAddress(x, payload)))
   },
 }

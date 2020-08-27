@@ -136,7 +136,6 @@ class PreferencesController extends EventEmitter {
       const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId, default_public_address } = user.data || {}
       dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
-      if (!default_public_address) this.setDefaultPublicAddress(address)
     } else {
       await this.createUser(accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
       commit('setNewUser', true)
@@ -483,7 +482,7 @@ class PreferencesController extends EventEmitter {
     }
   }
 
-  async setDefaultPublicAddress(address, ofAddress) {
+  async setDefaultPublicAddress(ofAddress, address) {
     try {
       const response = await patch(`${config.api}`, { default_public_address: address }, this.headers(ofAddress), { useAPIKey: true })
       log.info('successfully updated default public address', response)
