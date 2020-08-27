@@ -484,7 +484,7 @@ class PreferencesController extends EventEmitter {
 
   async setDefaultPublicAddress(ofAddress, address) {
     try {
-      const response = await patch(`${config.api}`, { default_public_address: address }, this.headers(ofAddress), { useAPIKey: true })
+      const response = await patch(`${config.api}/user`, { default_public_address: address }, this.headers(ofAddress), { useAPIKey: true })
       log.info('successfully updated default public address', response)
     } catch (error) {
       log.error('unable to update default public address', error)

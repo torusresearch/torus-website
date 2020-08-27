@@ -121,8 +121,7 @@ export default {
       return this.wallet[this.selectedAddress]?.accountType === ACCOUNT_TYPE.THRESHOLD
     },
     hasThreshold() {
-      return true
-      // return Object.values(this.wallet).some((x) => x.accountType === ACCOUNT_TYPE.THRESHOLD)
+      return Object.values(this.wallet).some((x) => x.accountType === ACCOUNT_TYPE.THRESHOLD)
     },
   },
   mounted() {

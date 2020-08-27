@@ -19,19 +19,6 @@
           </a>
         </v-list-item-action>
       </v-list-item>
-      <!-- <v-list-item class="pl-0 pr-1">
-        <v-list-item-avatar class="ma-0">
-          <v-icon size="16" class="torusGray1--text">{{ `$vuetify.icons.wallet` }}</v-icon>
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title class="font-weight-regular caption">
-            <span class="text_1--text">{{ t('tkeySettings.twoFaWallet') }}</span>
-          </v-list-item-title>
-        </v-list-item-content>
-        <v-list-item-action class="ma-0">
-          <a href="#" class="caption text-decoration-none">{{ t('tkeySettings.switchDefault') }}</a>
-        </v-list-item-action>
-      </v-list-item> -->
     </v-list>
 
     <div class="caption text_3--text mb-4 px-5">{{ t('tkeySettings.note') }}: {{ t('tkeySettings.theSelectedAccount') }}</div>
