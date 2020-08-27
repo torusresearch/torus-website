@@ -81,10 +81,11 @@ const VuexStore = new Vuex.Store({
       confirmHandler.isTx = isTx
       confirmHandler.selectedCurrency = state.selectedCurrency
       confirmHandler.tokenRates = state.tokenRates
-      confirmHandler.jwtToken = state.jwtToken
+      confirmHandler.jwtToken = state.jwtToken[state.selectedAddress]
       confirmHandler.currencyData = state.currencyData
       confirmHandler.networkType = state.networkType
       confirmHandler.whiteLabel = state.whiteLabel
+      confirmHandler.selectedAddress = state.selectedAddress
       if (isTx) {
         const txParameters = payload
         txParameters.userInfo = state.userInfo

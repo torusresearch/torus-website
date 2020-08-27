@@ -59,7 +59,7 @@ export default class AssetsDetectionController {
     const api = this.getOwnerCollectiblesApi(selectedAddress)
     let response
     try {
-      response = await this.getOpenSeaCollectibles(api, selectedAddress)
+      response = await this.getOpenSeaCollectibles(api)
       const collectibles = response.data.assets
       return collectibles
     } catch (error) {

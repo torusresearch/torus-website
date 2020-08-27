@@ -21,7 +21,7 @@ export default {
         requested_amount: +Number.parseFloat(payload.fiatValue),
       },
       {
-        Authorization: `Bearer ${state.jwtToken}`,
+        Authorization: `Bearer ${state.jwtToken[state.selectedAddress]}`,
       }
     )
   },
@@ -71,7 +71,7 @@ export default {
           },
         },
         {
-          Authorization: `Bearer ${state.jwtToken}`,
+          Authorization: `Bearer ${state.jwtToken[state.selectedAddress]}`,
         }
       )
         .then((result) => {

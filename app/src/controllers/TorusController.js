@@ -339,9 +339,9 @@ export default class TorusController extends EventEmitter {
   }
 
   setSelectedAccount(address) {
+    this.prefsController.setSelectedAddress(address)
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
-    this.prefsController.setSelectedAddress(address)
   }
 
   /**

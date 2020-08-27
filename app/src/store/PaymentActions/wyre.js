@@ -31,7 +31,7 @@ const Wyre = {
         source_amount: +Number.parseFloat(payload.fiatValue),
         source_currency: payload.selectedCurrency,
       },
-      { Authorization: `Bearer ${state.jwtToken}` }
+      { Authorization: `Bearer ${state.jwtToken[state.selectedAddress]}` }
     )
   },
   postWyreOrder(context, { path, params, preopenInstanceId }) {

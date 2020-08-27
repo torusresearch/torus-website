@@ -408,8 +408,8 @@ export default {
       prefsController.init({ address: thresholdKey.ethAddress, calledFromEmbed, userInfo: state.userInfo, rehydrate: false, dispatch, commit }),
       prefsController.init({ address: postboxKey.ethAddress, calledFromEmbed, userInfo: state.userInfo, rehydrate: false, dispatch, commit }),
     ])
-    prefsController.getBillboardContents()
     dispatch('updateSelectedAddress', { selectedAddress: postboxKey.ethAddress }) // synchronous
+    prefsController.getBillboardContents()
     // continue enable function
     const { ethAddress } = postboxKey
     if (calledFromEmbed) {
@@ -612,7 +612,16 @@ export default {
       }
     }
   },
-  setUserBadge(context, payload) {
+  setUserBadge(_, payload) {
     prefsController.setUserBadge(payload)
+  },
+  getTwitterId(_, payload) {
+    return prefsController.getTwitterId(payload)
+  },
+  sendEmail(_, payload) {
+    return prefsController.sendEmail(payload)
+  },
+  getOpenseaCollectibles(_, payload) {
+    return prefsController.getOpenSeaCollectibles(payload.tokenURI)
   },
 }

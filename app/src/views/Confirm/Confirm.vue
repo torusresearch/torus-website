@@ -272,7 +272,6 @@ import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
-import config from '../../config'
 import { PopupScreenLoader } from '../../content-loader'
 import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
@@ -496,7 +495,7 @@ export default {
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
       if (ev.name !== 'send-params') return
-      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, whiteLabel, currencyData, network } = ev.data || {}
+      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, whiteLabel, currencyData, network } = ev.data || {}
 
       this.$store.commit('setWhiteLabel', whiteLabel)
 
@@ -579,16 +578,8 @@ export default {
           this.isNonFungibleToken = true
           let assetDetails = {}
           try {
-            const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
-            assetDetails = await get(
-              `${config.api}/opensea?url=${url}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${jwtToken}`,
-                },
-              },
-              { useAPIKey: true }
-            )
+            const tokenURI = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
+            assetDetails = await this.dispatch('getOpenseaCollectibles', { tokenURI })
             this.assetDetails = {
               name: assetDetails.data.name || '',
               logo: assetDetails.data.image_thumbnail_url || '',

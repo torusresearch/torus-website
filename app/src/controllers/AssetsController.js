@@ -89,7 +89,7 @@ export default class AssetController {
    */
   async getCollectibleInformationFromApi(contractAddress, tokenId) {
     const tokenURI = this.getCollectibleApi(contractAddress, tokenId)
-    const collectibleInformation = await this.getOpenSeaCollectibles(tokenURI, this.selectedAddress)
+    const collectibleInformation = await this.getOpenSeaCollectibles(tokenURI)
 
     const { name, description, image_original_url: image } = collectibleInformation.data
     return { image, name, description }
@@ -149,7 +149,7 @@ export default class AssetController {
     const api = this.getCollectibleContractInformationApi(contractAddress)
     /* istanbul ignore if */
 
-    const collectibleContractObject = await this.getOpenSeaCollectibles(api, this.selectedAddress)
+    const collectibleContractObject = await this.getOpenSeaCollectibles(api)
 
     const { name, symbol, image_url: imageURL, description, total_supply: totalSupply } = collectibleContractObject.data
     return { name, symbol, image_url: imageURL, description, total_supply: totalSupply }
