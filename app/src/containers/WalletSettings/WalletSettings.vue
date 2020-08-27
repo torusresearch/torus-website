@@ -78,7 +78,7 @@
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <DefaultAccount />
+              <DefaultAccount :has-threshold="hasThreshold" />
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
