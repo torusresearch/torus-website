@@ -37,4 +37,8 @@ export default {
   deleteContact(_, payload) {
     return prefsController.deleteContact(payload)
   },
+  setDefaultPublicAddress({ state }, payload) {
+    const { wallets } = state
+    return Promise.all(Object.keys(wallets).map((x) => prefsController.setDefaultPublicAddress(payload, x)))
+  },
 }
