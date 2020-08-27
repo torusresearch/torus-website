@@ -133,7 +133,7 @@ class PreferencesController extends EventEmitter {
     const { verifier, verifierId } = userInfo
     const user = await this.sync(address)
     if (user?.data) {
-      const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId, default_public_address } = user.data || {}
+      const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId } = user.data || {}
       dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
     } else {

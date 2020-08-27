@@ -33,7 +33,7 @@
               <ContactList />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel class="my-2">
+          <v-expansion-panel v-if="isThreshold" class="my-2">
             <v-expansion-panel-header id="contact-list-panel-header">
               <v-icon size="12" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.two_factor'" />
               <div class="grow font-weight-bold title text_1--text">
@@ -70,7 +70,7 @@
               <Display />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel readonly class="my-2">
+          <v-expansion-panel v-if="hasThreshold" readonly class="my-2">
             <v-expansion-panel-header id="display-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.person_circle'" />
               <div class="grow font-weight-bold title text_1--text">
@@ -87,6 +87,8 @@
   </v-container>
 </template>
 <script>
+import { mapState } from 'vuex'
+
 import QuickAddress from '../../components/helpers/QuickAddress'
 import ContactList from '../../components/WalletSettings/ContactList'
 import DefaultAccount from '../../components/WalletSettings/DefaultAccount'
@@ -94,6 +96,7 @@ import Display from '../../components/WalletSettings/Display'
 import Network from '../../components/WalletSettings/Network'
 import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
 import TwoFactorAuth from '../../components/WalletSettings/TwoFactorAuth'
+import { ACCOUNT_TYPE } from '../../utils/enums'
 
 export default {
   name: 'WalletSettings',
@@ -111,6 +114,16 @@ export default {
       leftPanel: [0, 1, 2],
       rightPanel: [0, 1, 2],
     }
+  },
+  computed: {
+    ...mapState(['wallet', 'selectedAddress']),
+    isThreshold() {
+      return this.wallet[this.selectedAddress]?.accountType === ACCOUNT_TYPE.THRESHOLD
+    },
+    hasThreshold() {
+      return true
+      // return Object.values(this.wallet).some((x) => x.accountType === ACCOUNT_TYPE.THRESHOLD)
+    },
   },
   mounted() {
     this.$vuetify.goTo(0)

@@ -47,6 +47,8 @@ if (storageAvailable('sessionStorage')) {
       pastTransactions: state.pastTransactions,
       paymentTx: state.paymentTx,
       etherscanTx: state.etherscanTx,
+      tKeyOnboardingComplete: state.tKeyOnboardingComplete,
+      defaultPublicAddress: state.defaultPublicAddress,
     }),
   })
 }

@@ -37,8 +37,9 @@ export default {
   deleteContact(_, payload) {
     return prefsController.deleteContact(payload)
   },
-  setDefaultPublicAddress({ state }, payload) {
+  async setDefaultPublicAddress({ state, dispatch }, payload) {
     const { wallets } = state
-    return Promise.all(Object.keys(wallets).map((x) => prefsController.setDefaultPublicAddress(x, payload)))
+    await Promise.all(Object.keys(wallets).map((x) => prefsController.setDefaultPublicAddress(x, payload)))
+    dispatch('updateSelectedAddress', { selectedAddress: payload })
   },
 }
