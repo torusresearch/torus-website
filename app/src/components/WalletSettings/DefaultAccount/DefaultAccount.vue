@@ -1,9 +1,9 @@
 <template>
   <div class="default-account-container" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
-    <div class="body-2 torusFont1--text mb-2 px-1">{{ t('tkeySettings.accounts') }}</div>
+    <div class="body-2 torusFont1--text text-capitalize mb-2 px-1">{{ hasThreshold ? t('tkeySettings.accounts') : t('tkeySettings.account') }}</div>
 
-    <v-list dense class="pa-0 factor-list mb-4">
-      <v-list-item v-for="wallet in computedWallets" :key="wallet.key" class="pl-0 pr-1">
+    <v-list dense outlined class="pa-0 account-list mb-2">
+      <v-list-item v-for="wallet in computedWallets" :key="wallet.key" class="pl-0">
         <v-list-item-avatar class="ma-0">
           <v-icon size="16" class="torusGray1--text">{{ `$vuetify.icons.${wallet.icon}` }}</v-icon>
         </v-list-item-avatar>
@@ -19,6 +19,40 @@
           </a>
         </v-list-item-action>
       </v-list-item>
+      <v-list-item v-if="!hasThreshold" class="pl-0 pr-1">
+        <v-list-item-avatar class="ma-0">
+          <v-icon size="16" class="torusGray1--text">{{ `$vuetify.icons.wallet` }}</v-icon>
+        </v-list-item-avatar>
+        <v-list-item-content>
+          <v-list-item-title class="caption mb-3 mt-1">
+            <span class="text_1--text font-weight-bold mr-1">{{ t('tkeySettings.twoFaWallet') }}</span>
+            <span class="torusBrand1--text font-italic">{{ t('tkeySettings.new') }}</span>
+          </v-list-item-title>
+          <v-list-item-subtitle class="font-weight-regular pb-3">
+            <div>
+              <div>{{ t('tkeySettings.newDesc') }}:</div>
+              <ul class="tkey-features mb-4">
+                <li>{{ t('tkeySettings.newList1') }}</li>
+                <li>{{ t('tkeySettings.newList2') }}</li>
+                <li>{{ t('tkeySettings.newList3') }}</li>
+              </ul>
+              <div class="text-right">
+                <v-btn
+                  large
+                  class="torus-btn1"
+                  :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+                  :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
+                  type="submit"
+                  @click="goToTkeyOnboarding"
+                >
+                  {{ t('tkeySettings.newCreate') }}
+                </v-btn>
+              </div>
+            </div>
+          </v-list-item-subtitle>
+        </v-list-item-content>
+        <v-list-item-action class="ma-0"></v-list-item-action>
+      </v-list-item>
     </v-list>
 
     <div class="caption text_3--text mb-4 px-5">{{ t('tkeySettings.note') }}: {{ t('tkeySettings.theSelectedAccount') }}</div>
@@ -32,6 +66,12 @@ import { ACCOUNT_TYPE } from '../../../utils/enums'
 
 export default {
   name: 'DefaultAccount',
+  props: {
+    hasThreshold: {
+      type: Boolean,
+      default: false,
+    },
+  },
   computed: {
     ...mapState({
       wallets: 'wallet',
@@ -47,7 +87,7 @@ export default {
             accountType,
             isDefault: this.defaultPublicAddress ? key === this.defaultPublicAddress : accountType === ACCOUNT_TYPE.NORMAL,
             icon: accountType === ACCOUNT_TYPE.THRESHOLD ? 'wallet' : this.userInfo.typeOfLogin.toLowerCase(),
-            title: accountType === ACCOUNT_TYPE.THRESHOLD ? '2FA' : 'Wallet',
+            title: accountType === ACCOUNT_TYPE.THRESHOLD ? '2FA' : this.t('tkeySettings.newWallet'),
           })
         return acc
       }, [])
@@ -55,6 +95,9 @@ export default {
   },
   methods: {
     ...mapActions(['setDefaultPublicAddress']),
+    goToTkeyOnboarding() {
+      this.$router.push({ name: 'tkeyCreate' }).catch((_) => {})
+    },
   },
 }
 </script>
