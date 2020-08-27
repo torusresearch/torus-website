@@ -45,6 +45,7 @@
           outlined
           :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'"
           class="body-2 font-weight-bold"
+          @click="tKeyOnboardingCancel"
         >
           {{ t('tkeyCreateAdd.notNow') }}
         </v-btn>
@@ -67,8 +68,23 @@
 </template>
 
 <script>
+import log from 'loglevel'
+import { mapActions } from 'vuex'
+
 export default {
   methods: {
+    ...mapActions(['setTKeyOnboardingStatus']),
+    async tKeyOnboardingCancel() {
+      try {
+        await this.setTKeyOnboardingStatus(true)
+        let redirectPath = this.$route.query.redirect
+        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
+        this.$router.push(redirectPath).catch((_) => {})
+      } catch (error) {
+        log.error(error)
+        this.$router.push('/wallet').catch((_) => {})
+      }
+    },
     next() {
       this.$emit('next')
     },

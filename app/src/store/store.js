@@ -14,6 +14,7 @@ import actions from './actions'
 import defaultGetters from './getters'
 import mutations from './mutations'
 import paymentActions from './PaymentActions'
+import preferencesActions from './preferencesActions'
 import defaultState from './state'
 
 Vue.use(Vuex)
@@ -75,6 +76,7 @@ const VuexStore = new Vuex.Store({
   actions: {
     ...actions,
     ...paymentActions,
+    ...preferencesActions,
     async showPopup({ state }, payload) {
       const isTx = payload && typeof payload === 'object'
       const confirmHandler = new ConfirmHandler(isTx ? payload.id : payload)

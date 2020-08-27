@@ -57,6 +57,8 @@ export default {
   baseRoute,
   commonApiHost: 'https://common-api.tor.us',
   metadataHost: 'https://metadata.tor.us',
+  api: 'http://localhost:2020',
+  // api: 'https://api.tor.us',
 
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
@@ -241,8 +243,6 @@ export default {
   },
 
   redirect_uri: redirectURI,
-  // api: 'http://localhost:2020',
-  api: 'https://api.tor.us',
   supportedCurrencies: ['USD', 'AUD', 'BTC', 'CAD', 'DAI', 'ETC', 'EUR', 'GBP', 'HKD', 'IDR', 'INR', 'JPY', 'PHP', 'RUB', 'SGD', 'UAH'],
   additionalCurrencies: ['ANT', 'BAT', 'DASH', 'DGD', 'GNO', 'LTC', 'QTUM', 'REP', 'SAI', 'XEM', 'XLM', 'XMR', 'XRP', 'ZEC'],
   logosUrl: 'https://images.toruswallet.io',

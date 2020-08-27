@@ -380,12 +380,6 @@ export default {
       payload.map((x) => x.ethAddress)
     )
   },
-  addContact(_, payload) {
-    return prefsController.addContact(payload)
-  },
-  deleteContact(_, payload) {
-    return prefsController.deleteContact(payload)
-  },
   async handleLogin({ state, dispatch, commit }, { calledFromEmbed, oAuthToken }) {
     // The error in this is caught above
     const {
@@ -435,12 +429,6 @@ export default {
     } else if (typeOfLogin === DISCORD) {
       prefsController.revokeDiscord(oAuthToken)
     }
-  },
-  setUserTheme(context, payload) {
-    return prefsController.setUserTheme(payload)
-  },
-  setUserLocale(context, payload) {
-    prefsController.setUserLocale(payload)
   },
   async rehydrate({ state, dispatch, commit }) {
     const {
@@ -492,12 +480,6 @@ export default {
     } catch (error) {
       log.error('Failed to rehydrate', error)
     }
-  },
-  setSuccessMessage(context, payload) {
-    prefsController.handleSuccess(payload)
-  },
-  setErrorMessage(context, payload) {
-    prefsController.handleError(payload)
   },
   cancelLogin({ commit, dispatch }) {
     oauthStream.write({ err: { message: 'User cancelled login' } })
@@ -611,17 +593,5 @@ export default {
         prefsController.patchNewTx(txObject, state.selectedAddress)
       }
     }
-  },
-  setUserBadge(_, payload) {
-    prefsController.setUserBadge(payload)
-  },
-  getTwitterId(_, payload) {
-    return prefsController.getTwitterId(payload)
-  },
-  sendEmail(_, payload) {
-    return prefsController.sendEmail(payload)
-  },
-  getOpenseaCollectibles(_, payload) {
-    return prefsController.getOpenSeaCollectibles(payload.tokenURI)
   },
 }
