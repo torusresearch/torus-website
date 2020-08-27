@@ -39,6 +39,8 @@ if (storageAvailable('localStorage')) {
   }
 }
 
+const overwriteMerge = (destinationArray, sourceArray, _) => sourceArray
+
 const DEFAULT_ACCOUNT_STATE = {
   selectedCurrency: 'USD',
   theme: themeGlobal,
@@ -95,7 +97,8 @@ class PreferencesController extends EventEmitter {
   }
 
   state(address) {
-    return this.store.getState()[address]
+    const selectedAddress = address || this.store.getState().selectedAddress
+    return this.store.getState()[selectedAddress]
   }
 
   /**
@@ -266,9 +269,9 @@ class PreferencesController extends EventEmitter {
   updateStore(newPartialState, address) {
     const selectedAddress = address || this.store.getState().selectedAddress
     const currentState = this.state(selectedAddress) || clone(DEFAULT_ACCOUNT_STATE)
-    const mergedState = deepmerge(currentState, newPartialState)
+    const mergedState = deepmerge(currentState, newPartialState, { arrayMerge: overwriteMerge })
     this.store.updateState({
-      [address]: mergedState,
+      [selectedAddress]: mergedState,
     })
     return mergedState
   }
@@ -394,7 +397,7 @@ class PreferencesController extends EventEmitter {
   }
 
   async setUserTheme(payload) {
-    if (payload === this.state.theme) return
+    if (payload === this.state().theme) return
     try {
       await patch(`${config.api}/user/theme`, { theme: payload }, this.headers(), { useAPIKey: true })
       this.handleSuccess('navBar.snackSuccessTheme')
@@ -416,7 +419,7 @@ class PreferencesController extends EventEmitter {
   }
 
   async setUserLocale(payload) {
-    if (payload === this.state.locale) return
+    if (payload === this.state().locale) return
     try {
       await patch(`${config.api}/user/locale`, { locale: payload }, this.headers(), { useAPIKey: true })
       this.updateStore({ locale: payload })
@@ -428,7 +431,7 @@ class PreferencesController extends EventEmitter {
   }
 
   async setSelectedCurrency(payload) {
-    if (payload.selectedCurrency === this.state.selectedCurrency) return
+    if (payload.selectedCurrency === this.state().selectedCurrency) return
     try {
       await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers(), { useAPIKey: true })
       this.updateStore({ selectedCurrency: payload.selectedCurrency })
@@ -474,7 +477,7 @@ class PreferencesController extends EventEmitter {
   async addContact(payload) {
     try {
       const response = await post(`${config.api}/contact`, payload, this.headers(), { useAPIKey: true })
-      this.updateStore({ contacts: [...this.state.contacts, response.data] })
+      this.updateStore({ contacts: [...this.state().contacts, response.data] })
       this.handleSuccess('navBar.snackSuccessContactAdd')
     } catch {
       this.handleError('navBar.snackFailContactAdd')
@@ -484,7 +487,7 @@ class PreferencesController extends EventEmitter {
   async deleteContact(payload) {
     try {
       const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers(), { useAPIKey: true })
-      const finalContacts = this.state.contacts.filter((contact) => contact.id !== response.data.id)
+      const finalContacts = this.state().contacts.filter((contact) => contact.id !== response.data.id)
       this.updateStore({ contacts: finalContacts })
       this.handleSuccess('navBar.snackSuccessContactDelete')
     } catch {
@@ -542,7 +545,7 @@ class PreferencesController extends EventEmitter {
   }
 
   async setUserBadge(payload) {
-    const newBadgeCompletion = { ...this.state.badgesCompletion, ...{ [payload]: true } }
+    const newBadgeCompletion = { ...this.state().badgesCompletion, ...{ [payload]: true } }
     this.updateStore({ badgesCompletion: newBadgeCompletion })
     try {
       await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers(), { useAPIKey: true })

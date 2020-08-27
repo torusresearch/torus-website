@@ -212,8 +212,8 @@ export default {
   },
   methods: {
     checkDuplicates(value) {
-      if (!this.contacts) return ''
-      return this.contacts.findIndex((x) => x.contact.toLowerCase() === value.toLowerCase()) < 0 || this.t('walletSettings.duplicateContact')
+      if (!this.contacts || !value) return ''
+      return this.contacts.findIndex((x) => x.contact.toLowerCase() === value.toLowerCase()) < 0 || 'walletSettings.duplicateContact'
     },
     async addContact() {
       if (!this.$refs.addContactForm.validate()) return
