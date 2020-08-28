@@ -13,7 +13,7 @@
         <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
           {{ t('tkeyCreateSetup.authFactors') }} ({{ ~~((progressValue * 3) / 100) }}/3)
         </div>
-        <div class="ml-auto caption" :class="`${progressColor}--text`">{{ progressText }}</div>
+        <div class="ml-auto caption" :class="`${progressColor}--text`">{{ t(progressText) }}</div>
       </div>
       <v-progress-linear v-model="progressValue" class="mb-2" :color="progressColor" rounded background-color="torusGray3"></v-progress-linear>
       <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
@@ -37,10 +37,17 @@
         <v-expansion-panel class="mb-4">
           <v-expansion-panel-header class="py-2">
             <v-icon small class="d-inline-flex mr-2 shrink">$vuetify.icons.browser</v-icon>
-            <div class="grow font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">Browser</div>
+            <div class="grow font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+              {{ t('tkeyCreateSetup.browser') }}
+            </div>
             <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-              Chrome V82.04103.61
-              <v-icon small class="ml-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
+              {{ browser }}
+              <v-icon
+                small
+                class="ml-1"
+                :class="backupDeviceShare ? 'success--text' : 'text_3--text'"
+                v-text="'$vuetify.icons.check_circle_filled'"
+              />
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
@@ -49,13 +56,16 @@
               <span class="font-weight-bold">{{ t('tkeyCreateSetup.authViaBrowser3') }}</span>
               .
             </div>
-            <div class="text-right">
-              <v-badge overlap avatar>
-                <template v-slot:badge>
-                  <v-icon class="warning--text">$vuetify.icon.alert_circle_filled</v-icon>
-                </template>
-                <v-btn outlined :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'">{{ t('tkeyCreateSetup.backupOnDevice') }}</v-btn>
-              </v-badge>
+            <div class="d-flex align-center allow-device-trigger">
+              <v-icon
+                class="backup-device-checkbox mr-2"
+                :class="backupDeviceShare ? 'torusBrand1--text' : 'text_3--text'"
+                @click="backupDeviceShare = !backupDeviceShare"
+              >
+                $vuetify.icon.checkbox_{{ backupDeviceShare ? 'checked' : 'unchecked' }}
+              </v-icon>
+              <v-icon size="16" class="warning--text mr-1">$vuetify.icon.alert_circle_filled</v-icon>
+              <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">{{ t('tkeyCreateSetup.backupOnDevice') }}</div>
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -65,8 +75,13 @@
             <div class="grow font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
               {{ t('tkeyCreateSetup.recoveryPass') }}
             </div>
-            <div v-if="finalRecoveryPassword" class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-              <v-icon small class="ml-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
+            <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+              <v-icon
+                small
+                class="ml-1"
+                :class="finalRecoveryPassword ? 'success--text' : 'text_3--text'"
+                v-text="'$vuetify.icons.check_circle_filled'"
+              />
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
@@ -90,7 +105,7 @@
                   color="torusBrand1"
                   @click="setFinalPassword"
                 >
-                  {{ t('tkeyNew.confirm') }}
+                  {{ t('tkeyNew.setPassword') }}
                 </v-btn>
               </div>
             </v-form>
@@ -129,6 +144,7 @@
 </template>
 
 <script>
+import bowser from 'bowser'
 import log from 'loglevel'
 
 export default {
@@ -151,9 +167,7 @@ export default {
       showRecoveryPassword: false,
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
-        minLength: (v) =>
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!$%&*?@])[\d!$%&*?@A-Za-z]{10,}$/.test(v) ||
-          'Must contain at least 10 characters. At least one uppercase letter, one lowercase letter, one number and one special character',
+        minLength: (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!$%&*?@])[\d!$%&*?@A-Za-z]{10,}$/.test(v) || this.t('tkeyCreateSetup.passwordRules'),
       },
       panels: [1, 2],
       progressValue: 200 / 3,
@@ -165,7 +179,13 @@ export default {
       return this.progressValue > 200 / 3 ? 'success' : 'warning'
     },
     progressText() {
-      return this.progressValue > 200 / 3 ? 'Excellent' : 'Average'
+      return this.progressValue > 200 / 3 ? 'tkeyCreateSetup.excellent' : 'tkeyCreateSetup.average'
+    },
+    browser() {
+      const browser = bowser.getParser(window.navigator.userAgent)
+      const browserInfo = browser.getBrowser()
+
+      return `${browserInfo.name} V${browserInfo.version}`
     },
   },
   methods: {

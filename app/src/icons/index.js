@@ -11,6 +11,8 @@ import ArrowUpCircleIcon from './ArrowUpCircleIcon.vue'
 import BalanceIcon from './BalanceIcon.vue'
 import BrowserIcon from './BrowserIcon.vue'
 import CalendarIcon from './CalendarIcon.vue'
+import CheckboxCheckedIcon from './CheckboxCheckedIcon.vue'
+import CheckboxUncheckedIcon from './CheckboxUncheckedIcon.vue'
 import CheckCircleFilledIcon from './CheckCircleFilledIcon.vue'
 import CheckCircleIcon from './CheckCircleIcon.vue'
 import ChevronDoubleRightIcon from './ChevronDoubleRightIcon.vue'
@@ -335,5 +337,11 @@ export default {
   },
   device_tablet: {
     component: DeviceTabletIcon,
+  },
+  checkbox_checked: {
+    component: CheckboxCheckedIcon,
+  },
+  checkbox_unchecked: {
+    component: CheckboxUncheckedIcon,
   },
 }
