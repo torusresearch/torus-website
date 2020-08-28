@@ -2,16 +2,16 @@
 // import ObservableStore from 'obs-store'
 import log from 'loglevel'
 import ThresholdKey, { SecurityQuestionsModule, ServiceProviderBase, TorusStorageLayer, WebStorageModule } from 'tkey'
-import { toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import {
   CHROME_EXTENSION_STORAGE_MODULE_KEY,
+  PASSWORD_QUESTION,
   SECURITY_QUESTIONS_MODULE_KEY,
   THRESHOLD_KEY_PRIORITY_ORDER,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
-import { generateAddressFromPubKey } from '../utils/utils'
+import { generateAddressFromPrivateKey } from '../utils/utils'
 
 class ThresholdKeyController {
   constructor() {
@@ -89,7 +89,7 @@ class ThresholdKeyController {
     if (requiredShares <= 0) {
       const privKey = await this.tKey.reconstructKey()
       return {
-        ethAddress: toChecksumAddress(generateAddressFromPubKey(keyDetails.pubKey).toString('hex')),
+        ethAddress: generateAddressFromPrivateKey(privKey.toString('hex')),
         privKey: privKey.toString('hex'),
       }
     }
@@ -114,6 +114,33 @@ class ThresholdKeyController {
 
   async getShareFromAnotherDevice() {
     throw new TypeError('Not yet implemented')
+  }
+
+  async createNewTKey({ postboxKey, password, backup }) {
+    if (this.tKey) throw new Error('TKey already initialized')
+    this.serviceProvider = new ServiceProviderBase({ postboxKey })
+    this.storageLayer = new TorusStorageLayer({ serviceProvider: this.serviceProvider, hostUrl: config.metadataHost })
+
+    this.tKey = new ThresholdKey({
+      serviceProvider: this.serviceProvider,
+      storageLayer: this.storageLayer,
+      modules: this.modules,
+    })
+
+    // await this.tKey.initializeNewKey({ initializeModules: true })
+    // const keyDetails = this.tKey.getKeyDetails()
+
+    const keyDetails = await this.tKey.initialize()
+    log.info(keyDetails)
+    await this.tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
+    const privKey = await this.tKey.reconstructKey()
+    if (backup) {
+      await this.tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage()
+    }
+    return {
+      ethAddress: generateAddressFromPrivateKey(privKey.toString('hex')),
+      privKey: privKey.toString('hex'),
+    }
   }
 }
 
