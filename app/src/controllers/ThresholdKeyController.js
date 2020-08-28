@@ -34,7 +34,8 @@ class ThresholdKeyController {
     log.info(keyDetails)
     const { requiredShares: shareCount, shareDescriptions } = keyDetails
     const parsedShareDescriptions = Object.values(shareDescriptions)
-      .flatMap((x) => JSON.parse(x))
+      .flatMap((x) => x)
+      .map((x) => JSON.parse(x))
       .sort((a, b) => {
         return THRESHOLD_KEY_PRIORITY_ORDER.indexOf(a.module) - THRESHOLD_KEY_PRIORITY_ORDER.indexOf(b.module)
       })
@@ -137,7 +138,7 @@ class ThresholdKeyController {
     // await tKey.initializeNewKey({ initializeModules: true })
     // const keyDetails = tKey.getKeyDetails()
     const keyDetails = await tKey.initialize()
-    this.store.updateState({ keyDetails, tKey: this.tKey })
+    this.store.updateState({ keyDetails, tKey })
   }
 }
 
