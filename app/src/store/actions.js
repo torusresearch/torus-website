@@ -22,7 +22,7 @@ import {
 } from '../utils/enums'
 import { remove } from '../utils/httpHelpers'
 import PopupHandler from '../utils/PopupHandler'
-import { broadcastChannelOptions, fakeStream, getIFrameOriginObject } from '../utils/utils'
+import { broadcastChannelOptions, fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
 import {
   accountTrackerHandler,
   assetControllerHandler,
@@ -396,43 +396,44 @@ export default {
     if (publicAddress.toLowerCase() !== postboxKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
     log.info('key 1', postboxKey)
     dispatch('addWallet', { ...postboxKey, accountType: ACCOUNT_TYPE.NORMAL }) // synchronous
-    const keyringsToInitialize = [postboxKey]
-    const prefsControllerToInitialize = []
+    dispatch('subscribeToControllers')
+    await dispatch('initTorusKeyring', postboxKey)
+    const defaultAddresses = []
+    const defaultAddress = await prefsController.init({
+      address: postboxKey.ethAddress,
+      calledFromEmbed,
+      userInfo: state.userInfo,
+      rehydrate: false,
+      dispatch,
+      commit,
+    })
+    defaultAddresses.push(defaultAddress)
     // Threshold Bak region
     // Check if tkey exists
     const keyExists = await thresholdKeyController.checkIfTKeyExists(postboxKey.privKey)
+    // if in iframe && keyExists, initialize tkey only if it's set as default address
+    // if not in iframe && keyExists, initialize tkey always
+    // inside an iframe
     if (keyExists) {
-      const thresholdKey = await thresholdKeyController.init(postboxKey.privKey)
-      log.info('tkey 2', thresholdKey)
-      dispatch('addWallet', { ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }) // synchronous
-      keyringsToInitialize.push(thresholdKey)
-      prefsControllerToInitialize.push(
-        prefsController.init({
-          address: thresholdKey.ethAddress,
-          calledFromEmbed,
-          userInfo: state.userInfo,
-          rehydrate: false,
-          dispatch,
-          commit,
-          type: ACCOUNT_TYPE.THRESHOLD,
-        })
-      )
+      if (!isMain) {
+        if (defaultAddress && defaultAddress !== postboxKey.ethAddress) {
+          // Do tkey
+          defaultAddresses.push(await dispatch('addTKey', { postboxKey, calledFromEmbed }))
+        }
+      } else {
+        // In app.tor.us
+        defaultAddresses.push(await dispatch('addTKey', { postboxKey, calledFromEmbed }))
+      }
     }
 
-    dispatch('subscribeToControllers')
-    await dispatch('initTorusKeyring', keyringsToInitialize)
-    prefsControllerToInitialize.push(
-      prefsController.init({ address: postboxKey.ethAddress, calledFromEmbed, userInfo: state.userInfo, rehydrate: false, dispatch, commit })
-    )
-    await Promise.all(prefsControllerToInitialize)
     // TODO: check default address and set this accordingly
-    dispatch('updateSelectedAddress', { selectedAddress: postboxKey.ethAddress }) // synchronous
+    const selectedAddress = defaultAddresses[0] || defaultAddresses[1] || postboxKey.ethAddress
+    dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
     prefsController.getBillboardContents()
     // continue enable function
-    const { ethAddress } = postboxKey
     if (calledFromEmbed) {
       setTimeout(() => {
-        oauthStream.write({ selectedAddress: ethAddress })
+        oauthStream.write({ selectedAddress })
         commit('setOAuthModalStatus', false)
       }, 50)
     }
@@ -440,6 +441,21 @@ export default {
     statusStream.write({ loggedIn: true, rehydrate: false, verifier })
     torus.updateStaticData({ isUnlocked: true })
     dispatch('cleanupOAuth', { oAuthToken })
+  },
+  async addTKey({ dispatch, state, commit }, { postboxKey, calledFromEmbed }) {
+    const thresholdKey = await thresholdKeyController.init(postboxKey.privKey)
+    log.info('tkey 2', thresholdKey)
+    dispatch('addWallet', { ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }) // synchronous
+    await dispatch('initTorusKeyring', thresholdKey)
+    return prefsController.init({
+      address: thresholdKey.ethAddress,
+      calledFromEmbed,
+      userInfo: state.userInfo,
+      rehydrate: false,
+      dispatch,
+      commit,
+      type: ACCOUNT_TYPE.THRESHOLD,
+    })
   },
   cleanupOAuth({ state }, payload) {
     const {

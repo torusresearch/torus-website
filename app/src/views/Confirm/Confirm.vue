@@ -115,7 +115,7 @@
                   </v-flex>
                   <v-flex v-if="txData" xs12 mt-4>
                     <div class="mb-1">Hex {{ t('dappTransfer.data') }}:</div>
-                    <v-card flat color="background_3" style="word-break: break-all;">
+                    <v-card flat color="background_3" style="word-break: break-all">
                       <v-card-text>{{ txData }}</v-card-text>
                     </v-card>
                   </v-flex>
@@ -130,7 +130,7 @@
             </v-card>
           </v-dialog>
         </v-flex>
-        <v-flex v-if="(topUpErrorShow || canShowError)" xs12 mb-4 class="text-right">
+        <v-flex v-if="topUpErrorShow || canShowError" xs12 mb-4 class="text-right">
           <div class="caption error--text">{{ errorMsg === 'dappTransfer.insufficientFunds' ? t('dappTransfer.insufficientFunds') : errorMsg }}</div>
           <div v-if="topUpErrorShow" class="caption mt-1">
             {{ t('dappTransfer.pleaseTopup1') }}
@@ -214,7 +214,7 @@
               <v-list-item-content flat class="pa-1" :class="[$vuetify.theme.dark ? 'lighten-4' : 'background lighten-3']">
                 <v-card flat class="caption text-left pa-2 word-break typedMessageBox">
                   <v-expansion-panels v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE">
-                    <p :class="$vuetify.theme.dark ? '' : 'text_2--text'" style="text-align: left;">{{ message }}</p>
+                    <p :class="$vuetify.theme.dark ? '' : 'text_2--text'" style="text-align: left">{{ message }}</p>
                   </v-expansion-panels>
 
                   <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && !Array.isArray(typedMessages)">

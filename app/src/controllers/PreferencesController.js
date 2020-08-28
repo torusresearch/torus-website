@@ -132,16 +132,19 @@ class PreferencesController extends EventEmitter {
     const accountState = this.updateStore({ jwtToken: response.token }, address)
     const { verifier, verifierId } = userInfo
     const user = await this.sync(address)
+    let defaultPublicAddress = address
     if (user?.data) {
-      const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId } = user.data || {}
+      const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId, default_public_address } = user.data || {}
       dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
+      defaultPublicAddress = default_public_address
     } else {
       await this.createUser(accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
       commit('setNewUser', true)
       dispatch('setSelectedCurrency', { selectedCurrency: accountState.selectedCurrency, origin: 'store' })
     }
-    this.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate }, address)
+    if (!rehydrate) this.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate }, address)
+    return defaultPublicAddress
   }
 
   handleError(error) {

@@ -140,7 +140,7 @@
                         {{ t(props.message) }}
                       </template>
                     </v-combobox>
-                    <QrcodeCapture ref="captureQr" style="display: none;" @decode="onDecodeQr" />
+                    <QrcodeCapture ref="captureQr" style="display: none" @decode="onDecodeQr" />
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                       <div class="v-messages">
                         <div class="v-messages__wrapper">

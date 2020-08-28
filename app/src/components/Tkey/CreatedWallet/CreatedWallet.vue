@@ -21,9 +21,7 @@
         </v-icon>
       </div>
       <div class="wallet-item py-3 px-4 d-flex grow align-center">
-        <v-icon small class="mr-3">
-          $vuetify.icons.wallet_fill
-        </v-icon>
+        <v-icon small class="mr-3">$vuetify.icons.wallet_fill</v-icon>
         <div>
           <div class="caption wallet-item__id">{{ t('tkeyCreateDone.yourWallet') }}</div>
           <div class="wallet-item__address caption">{{ t('tkeyCreateDone.walletAddress') }}: 0x11f...5Gdfv</div>
@@ -44,9 +42,7 @@
       <div class="wallet-item py-3 px-4 d-flex grow align-center">
         <v-icon small class="mr-3">$vuetify.icons.google</v-icon>
         <div>
-          <div class="caption wallet-item__id">
-            youremailhere@gmail.com
-          </div>
+          <div class="caption wallet-item__id">youremailhere@gmail.com</div>
           <div class="wallet-item__address caption">{{ t('tkeyCreateDone.walletAddress') }}: 0x11f...5Gdfv</div>
         </div>
       </div>

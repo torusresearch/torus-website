@@ -39,9 +39,7 @@
             width="36"
             onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
           />
-          <v-icon v-else-if="transaction.type === CONTRACT_TYPE_ERC20" class="float-left" size="24" color="torusBrand1">
-            $vuetify.icons.token
-          </v-icon>
+          <v-icon v-else-if="transaction.type === CONTRACT_TYPE_ERC20" class="float-left" size="24" color="torusBrand1">$vuetify.icons.token</v-icon>
           <img
             v-else-if="transaction.action === ACTIVITY_ACTION_TOPUP"
             :src="require(`../../../assets/images/${transaction.actionIcon}`)"

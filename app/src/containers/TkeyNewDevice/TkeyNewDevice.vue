@@ -258,9 +258,7 @@
               <div class="d-flex info-box py-3 px-6 mb-2 align-center">
                 <v-icon small class="mr-1">$vuetify.icons.browser</v-icon>
                 <div class="grow font-weight-bold body-2">{{ t('tkeyNew.browser') }}</div>
-                <div class="ml-auto text-right caption">
-                  Chrome V82.04103.61
-                </div>
+                <div class="ml-auto text-right caption">Chrome V82.04103.61</div>
               </div>
               <v-select
                 v-if="!verifiedDevice"

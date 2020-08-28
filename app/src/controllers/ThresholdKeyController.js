@@ -103,6 +103,18 @@ class ThresholdKeyController {
     // this.store.updateState({ keyDetails: this.tb.getKeyDetails() })
     // await this.setSettingsPageData()
   }
+
+  async getSecurityQuestionShareFromUserInput() {
+    throw new TypeError('Not yet implemented')
+  }
+
+  async getShareFromChromeExtension() {
+    throw new TypeError('Not yet implemented')
+  }
+
+  async getShareFromAnotherDevice() {
+    throw new TypeError('Not yet implemented')
+  }
 }
 
 export default ThresholdKeyController

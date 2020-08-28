@@ -36,9 +36,7 @@
           <v-expansion-panel v-if="isThreshold" class="my-2">
             <v-expansion-panel-header id="contact-list-panel-header">
               <v-icon size="12" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.two_factor'" />
-              <div class="grow font-weight-bold title text_1--text">
-                2FA Settings
-              </div>
+              <div class="grow font-weight-bold title text_1--text">2FA Settings</div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <TwoFactorAuth />
@@ -73,9 +71,7 @@
           <v-expansion-panel v-if="hasThreshold" readonly class="my-2">
             <v-expansion-panel-header id="display-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.person_circle'" />
-              <div class="grow font-weight-bold title text_1--text">
-                Default Account
-              </div>
+              <div class="grow font-weight-bold title text_1--text">Default Account</div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <DefaultAccount :has-threshold="hasThreshold" />

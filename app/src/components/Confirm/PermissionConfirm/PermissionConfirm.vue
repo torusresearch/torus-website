@@ -9,7 +9,7 @@
       </v-flex>
       <v-flex mx-6 mb-4 xs12>
         <v-layout align="top" no-gutters>
-          <v-flex xs3 style="position: relative;">
+          <v-flex xs3 style="position: relative">
             <div class="logo-container d-flex align-center justify-center float-right">
               <!-- Update with proper logo -->
               <img class="logo-from" :src="`${logosUrl}/augur_logo.png`" :alt="`${origin} Logo`" />

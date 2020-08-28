@@ -116,7 +116,7 @@
                 <div class="text-subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.showPrivateKey') }}</div>
                 <v-layout v-if="isShowPrivateKey" wrap align-center justify-space-between class="mt-2">
                   <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12' : ''">
-                    <div class="text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" style="word-break: break-all;">
+                    <div class="text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" style="word-break: break-all">
                       {{ selectedKey }}
                     </div>
                   </v-flex>
