@@ -37,7 +37,7 @@
         :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
         color="torusBrand1"
         class="white--text"
-        @click="next"
+        @click="goToWallet"
       >
         {{ t('tkeyCreateDone.letsExplore') }}
       </v-btn>
@@ -74,6 +74,9 @@ export default {
     },
     setDefaultPublicAddress(address) {
       this.$emit('setDefaultPublicAddress', address)
+    },
+    goToWallet() {
+      this.$router.push('/wallet').catch((_) => {})
     },
   },
 }

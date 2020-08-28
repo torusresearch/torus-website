@@ -24,12 +24,17 @@
           </div>
         </div>
         <div class="d-flex align-center" :class="$vuetify.breakpoint.xsOnly ? 'justify-center' : ''">
-          <div class="body-2" :class="$vuetify.theme.dark ? 'text_2--text' : 'torusFont2--text'">
+          <a
+            class="body-2 text-decoration-none"
+            :class="$vuetify.theme.dark ? 'text_2--text' : 'torusFont2--text'"
+            href="https://hackmd.io/@torus/HJLenkU6I"
+            target="_blank"
+          >
             {{ t('tkeyCreateAdd.learnMore') }}
             <v-icon v-if="!$vuetify.breakpoint.xsOnly" :class="$vuetify.theme.dark ? 'text_2--text' : 'torusFont2--text'" small>
               $vuetify.icons.arrow_right
             </v-icon>
-          </div>
+          </a>
         </div>
       </div>
       <div :class="$vuetify.breakpoint.xsOnly ? 'order-0' : 'ml-auto'" class="add-wallet-info__image">
