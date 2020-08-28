@@ -42,12 +42,7 @@
             </div>
             <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
               {{ browser }}
-              <v-icon
-                small
-                class="ml-1"
-                :class="backupDeviceShare ? 'success--text' : 'text_3--text'"
-                v-text="'$vuetify.icons.check_circle_filled'"
-              />
+              <v-icon small class="m1-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
@@ -64,7 +59,7 @@
               >
                 $vuetify.icon.checkbox_{{ backupDeviceShare ? 'checked' : 'unchecked' }}
               </v-icon>
-              <v-icon size="16" class="warning--text mr-1">$vuetify.icon.alert_circle_filled</v-icon>
+              <v-icon size="16" class="mr-1" :class="backupDeviceShare ? 'success--text' : 'warning--text'">$vuetify.icon.alert_circle_filled</v-icon>
               <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">{{ t('tkeyCreateSetup.backupOnDevice') }}</div>
             </div>
           </v-expansion-panel-content>
@@ -145,7 +140,6 @@
 
 <script>
 import bowser from 'bowser'
-import log from 'loglevel'
 
 export default {
   props: {
@@ -193,12 +187,7 @@ export default {
       this.$emit('tKeyOnboardingCancel')
     },
     async createWallet() {
-      try {
-        await this.$emit('createNewTKey', { password: this.finalRecoveryPassword, backup: this.backupDeviceShare })
-        this.$emit('next')
-      } catch (error) {
-        log.error(error)
-      }
+      this.$emit('createNewTKey', { password: this.finalRecoveryPassword, backup: this.backupDeviceShare })
     },
     setFinalPassword() {
       this.finalRecoveryPassword = this.recoveryPassword

@@ -10,13 +10,7 @@
     </div>
 
     <!-- Default Wallet -->
-    <div
-      v-for="wallet in wallets"
-      :key="wallet.key"
-      class="wallet-item-container d-flex align-center mb-4"
-      :class="[{ active: wallet.isDefault }]"
-      @click="setDefaultPublicAddress(wallet.key)"
-    >
+    <div v-for="wallet in wallets" :key="wallet.key" class="wallet-item-container d-flex align-center mb-4" :class="[{ active: wallet.isDefault }]">
       <div class="mr-4">
         <v-icon :color="wallet.isDefault ? 'torusBrand1' : 'torusGray3'">
           {{ `$vuetify.icons.${wallet.isDefault ? 'radioOn' : 'radioOff'}` }}
@@ -66,6 +60,7 @@ export default {
       selectedWallet: WALLET_GOOGLE,
       WALLET_2FA,
       WALLET_GOOGLE,
+      tempSelectedAddress: '',
     }
   },
   methods: {
@@ -76,6 +71,7 @@ export default {
       this.$emit('setDefaultPublicAddress', address)
     },
     goToWallet() {
+      this.setDefaultPublicAddress()
       this.$router.push('/wallet').catch((_) => {})
     },
   },

@@ -87,7 +87,6 @@ export default {
             key,
             keySliced: addressSlicer(key),
             accountType,
-            isDefault: this.defaultPublicAddress ? key === this.defaultPublicAddress : accountType === ACCOUNT_TYPE.NORMAL,
             icon: accountType === ACCOUNT_TYPE.THRESHOLD ? 'wallet_fill' : this.userInfo.typeOfLogin.toLowerCase(),
             title: accountType === ACCOUNT_TYPE.THRESHOLD ? this.t('tkeyCreateDone.yourWallet') : this.userInfo.verifierId,
           })
@@ -110,6 +109,14 @@ export default {
     },
     setDefaultAddress(address) {
       this.setDefaultPublicAddress(address)
+    },
+    async createTKey(payload) {
+      try {
+        await this.createNewTKey(payload)
+        this.tab = 2
+      } catch (error) {
+        log.error(error)
+      }
     },
   },
 }

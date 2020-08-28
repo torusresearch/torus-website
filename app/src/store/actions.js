@@ -445,13 +445,14 @@ export default {
     return dispatch('initTorusKeyring', { keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }], calledFromEmbed, rehydrate: false })
   },
   async createNewTKey({ state, dispatch }, payload) {
-    const thresholdKey = await thresholdKeyController.createNewTKey({ postboxKey: state.wallet[state.selectedAddress], ...payload })
+    const thresholdKey = await thresholdKeyController.createNewTKey({ postboxKey: state.wallet[state.selectedAddress].privateKey, ...payload })
     log.info('tkey 2', thresholdKey)
-    return dispatch('initTorusKeyring', {
+    await dispatch('initTorusKeyring', {
       keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
       calledFromEmbed: false,
       rehydrate: false,
     })
+    dispatch('updateSelectedAddress', { selectedAddress: thresholdKey.ethAddress }) // synchronous
   },
   cleanupOAuth({ state }, payload) {
     const {
