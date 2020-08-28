@@ -177,7 +177,7 @@ export const ACCOUNT_TYPE = {
 export const WEB_STORAGE_MODULE_KEY = 'webStorage'
 export const SECURITY_QUESTIONS_MODULE_KEY = 'securityQuestions'
 export const CHROME_EXTENSION_STORAGE_MODULE_KEY = 'chromeExtensionStorage'
-
+export const PASSWORD_QUESTION = 'what is your password?'
 export const THRESHOLD_KEY_PRIORITY_ORDER = [WEB_STORAGE_MODULE_KEY, SECURITY_QUESTIONS_MODULE_KEY, CHROME_EXTENSION_STORAGE_MODULE_KEY]
 
 export const OLD_ERC721_LIST = {

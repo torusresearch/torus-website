@@ -3,23 +3,13 @@ import clone from 'clone'
 import deepmerge from 'deepmerge'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
-import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
+import { toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import vuetify from '../plugins/vuetify'
 import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
-import {
-  ACCOUNT_TYPE,
-  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
-  DISCORD,
-  FACEBOOK,
-  RPC,
-  SUPPORTED_NETWORK_TYPES,
-  TOKEN_METHOD_TRANSFER_FROM,
-  USER_INFO_REQUEST_APPROVED,
-  USER_INFO_REQUEST_REJECTED,
-} from '../utils/enums'
+import { ACCOUNT_TYPE, DISCORD, FACEBOOK, RPC, SUPPORTED_NETWORK_TYPES, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
 import { remove } from '../utils/httpHelpers'
 import PopupHandler from '../utils/PopupHandler'
 import { broadcastChannelOptions, fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
@@ -267,18 +257,16 @@ export default {
         })
     })
   },
-  finishImportAccount({ dispatch }, payload) {
-    return new Promise((resolve, reject) => {
-      const { privKey } = payload
-      const address = torus.generateAddressFromPrivKey(privKey)
-      torusController.setSelectedAccount(address)
-      dispatch('addWallet', { ethAddress: address, privKey, accountType: ACCOUNT_TYPE.IMPORTED })
-      dispatch('updateSelectedAddress', { selectedAddress: address })
-      torusController
-        .addAccount(privKey, address)
-        .then(() => resolve(privKey))
-        .catch((error) => reject(error))
+  async finishImportAccount({ dispatch }, payload) {
+    const { privKey } = payload
+    const address = torus.generateAddressFromPrivKey(privKey)
+    await dispatch('initTorusKeyring', {
+      keys: [{ ethAddress: address, privKey, accountType: ACCOUNT_TYPE.IMPORTED }],
+      calledFromEmbed: false,
+      rehydrate: false,
     })
+    dispatch('updateSelectedAddress', { selectedAddress: address })
+    return privKey
   },
   addWallet(context, payload) {
     if (payload.ethAddress) {
@@ -378,10 +366,26 @@ export default {
     prefsController.store.subscribe(prefsControllerHandler)
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
   },
-  initTorusKeyring(_, payload) {
-    return torusController.initTorusKeyring(
-      payload.map((x) => x.privKey),
-      payload.map((x) => x.ethAddress)
+  async initTorusKeyring({ dispatch, commit, state }, payload) {
+    const { keys, calledFromEmbed, rehydrate } = payload
+    await torusController.initTorusKeyring(
+      keys.map((x) => x.privKey),
+      keys.map((x) => x.ethAddress)
+    )
+
+    return Promise.all(
+      keys.map((x) => {
+        dispatch('addWallet', x) // synchronous
+        return prefsController.init({
+          address: x.ethAddress,
+          calledFromEmbed,
+          userInfo: state.userInfo,
+          rehydrate,
+          dispatch,
+          commit,
+          jwtToken: x.jwtToken,
+        })
+      })
     )
   },
   async handleLogin({ state, dispatch, commit }, { calledFromEmbed, oAuthToken }) {
@@ -395,19 +399,12 @@ export default {
     const postboxKey = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
     if (publicAddress.toLowerCase() !== postboxKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
     log.info('key 1', postboxKey)
-    dispatch('addWallet', { ...postboxKey, accountType: ACCOUNT_TYPE.NORMAL }) // synchronous
     dispatch('subscribeToControllers')
-    await dispatch('initTorusKeyring', [postboxKey])
-    const defaultAddresses = []
-    const defaultAddress = await prefsController.init({
-      address: postboxKey.ethAddress,
+    const defaultAddresses = await dispatch('initTorusKeyring', {
+      keys: [{ ...postboxKey, accountType: ACCOUNT_TYPE.NORMAL }],
       calledFromEmbed,
-      userInfo: state.userInfo,
       rehydrate: false,
-      dispatch,
-      commit,
     })
-    defaultAddresses.push(defaultAddress)
     // Threshold Bak region
     // Check if tkey exists
     const keyExists = await thresholdKeyController.checkIfTKeyExists(postboxKey.privKey)
@@ -416,13 +413,13 @@ export default {
     // inside an iframe
     if (keyExists) {
       if (!isMain) {
-        if (defaultAddress && defaultAddress !== postboxKey.ethAddress) {
+        if (defaultAddresses[0] && defaultAddresses[0] !== postboxKey.ethAddress) {
           // Do tkey
-          defaultAddresses.push(await dispatch('addTKey', { postboxKey, calledFromEmbed }))
+          defaultAddresses.push(...(await dispatch('addTKey', { postboxKey, calledFromEmbed })))
         }
       } else {
         // In app.tor.us
-        defaultAddresses.push(await dispatch('addTKey', { postboxKey, calledFromEmbed }))
+        defaultAddresses.push(...(await dispatch('addTKey', { postboxKey, calledFromEmbed })))
       }
     }
 
@@ -442,19 +439,18 @@ export default {
     torus.updateStaticData({ isUnlocked: true })
     dispatch('cleanupOAuth', { oAuthToken })
   },
-  async addTKey({ dispatch, state, commit }, { postboxKey, calledFromEmbed }) {
+  async addTKey({ dispatch }, { postboxKey, calledFromEmbed }) {
     const thresholdKey = await thresholdKeyController.init(postboxKey.privKey)
     log.info('tkey 2', thresholdKey)
-    dispatch('addWallet', { ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }) // synchronous
-    await dispatch('initTorusKeyring', [thresholdKey])
-    return prefsController.init({
-      address: thresholdKey.ethAddress,
-      calledFromEmbed,
-      userInfo: state.userInfo,
+    return dispatch('initTorusKeyring', { keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }], calledFromEmbed, rehydrate: false })
+  },
+  async createNewTKey({ state, dispatch }, payload) {
+    const thresholdKey = await thresholdKeyController.createNewTKey({ postboxKey: state.wallet[state.selectedAddress], ...payload })
+    log.info('tkey 2', thresholdKey)
+    return dispatch('initTorusKeyring', {
+      keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
+      calledFromEmbed: false,
       rehydrate: false,
-      dispatch,
-      commit,
-      type: ACCOUNT_TYPE.THRESHOLD,
     })
   },
   cleanupOAuth({ state }, payload) {
@@ -494,24 +490,21 @@ export default {
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
-        setTimeout(() => dispatch('subscribeToControllers'), 50)
-        await torus.torusController.initTorusKeyring(
-          Object.values(wallet).map((x) => x.privateKey),
-          Object.keys(wallet)
-        )
-        await Promise.all(
-          Object.keys(wallet).map((x) =>
-            prefsController.init({
-              address: x,
+        dispatch('subscribeToControllers')
+        await dispatch('initTorusKeyring', {
+          keys: Object.keys(wallet).map((x) => {
+            const { privateKey, accountType } = wallet[x]
+            return {
+              ethAddress: x,
+              privKey: privateKey,
+              accountType,
               jwtToken: jwtToken[x],
-              calledFromEmbed: false,
-              userInfo: state.userInfo,
-              rehydrate: false,
-              dispatch,
-              commit,
-            })
-          )
-        )
+            }
+          }),
+          calledFromEmbed: false,
+          rehydrate: true,
+        })
+        // TODO: INITIALIZE TKEY IF PRESENT
         dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
@@ -537,104 +530,5 @@ export default {
     widgetStream.write({
       data: payload,
     })
-  },
-  updateCalculatedTx({ state, getters }, payload) {
-    for (const id in payload) {
-      const txOld = payload[id]
-      if (txOld.metamaskNetworkId.toString() === state.networkId.toString() && id >= 0) {
-        const { methodParams, contractParams, txParams, transactionCategory, time, hash, status } = txOld
-        let amountTo
-        let amountValue
-        let assetName
-        let totalAmount
-        let finalTo
-        let tokenRate = 1
-        let type
-        let typeName
-        let typeImageLink
-        let symbol
-
-        if (contractParams.erc721) {
-          // Handling cryptokitties
-          if (contractParams.isSpecial) {
-            ;[amountTo, amountValue] = methodParams || []
-          } else {
-            // Rest of the 721s
-            ;[, amountTo, amountValue] = methodParams || []
-          }
-          const { name = '', logo } = contractParams
-          // Get asset name of the 721
-          const selectedAddressAssets = state.assets[state.selectedAddress]
-          if (selectedAddressAssets) {
-            const contract = selectedAddressAssets.find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
-            log.info(contract, amountValue)
-            if (contract) {
-              const { name: foundAssetName } = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
-              assetName = foundAssetName || ''
-              symbol = assetName
-              type = 'erc721'
-              typeName = name
-              typeImageLink = logo
-              totalAmount = fromWei(toBN(txParams.value || 0))
-              finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
-            }
-          } else {
-            tokenRate = 1
-            symbol = 'ETH'
-            type = 'eth'
-            typeName = 'eth'
-            typeImageLink = 'n/a'
-            totalAmount = fromWei(toBN(txParams.value || 0))
-            finalTo = toChecksumAddress(txParams.to)
-          }
-        } else if (contractParams.erc20) {
-          // ERC20 transfer
-          tokenRate = state.tokenRates[txParams.to]
-          if (methodParams && Array.isArray(methodParams)) {
-            if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
-              ;[, amountTo, amountValue] = methodParams || []
-            } else {
-              ;[amountTo, amountValue] = methodParams || []
-            }
-          }
-          const { symbol: contractSymbol, name, logo } = contractParams
-          symbol = contractSymbol
-          type = 'erc20'
-          typeName = name
-          typeImageLink = logo
-          totalAmount = fromWei(toBN(amountValue && amountValue.value ? amountValue.value : txParams.value || 0))
-          finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
-        } else {
-          tokenRate = 1
-          symbol = 'ETH'
-          type = 'eth'
-          typeName = 'eth'
-          typeImageLink = 'n/a'
-          totalAmount = fromWei(toBN(txParams.value || 0))
-          finalTo = toChecksumAddress(txParams.to)
-        }
-        // Goes to db
-        const txObject = {
-          created_at: new Date(time),
-          from: toChecksumAddress(txParams.from),
-          to: finalTo,
-          total_amount: totalAmount,
-          gas: txParams.gas,
-          gasPrice: txParams.gasPrice,
-          symbol,
-          nonce: txParams.nonce,
-          type,
-          type_name: typeName,
-          type_image_link: typeImageLink,
-          currency_amount: (getters.currencyMultiplier * Number.parseFloat(totalAmount) * tokenRate).toString(),
-          selected_currency: state.selectedCurrency,
-          status,
-          network: state.networkType.host,
-          transaction_hash: hash,
-          transaction_category: transactionCategory,
-        }
-        prefsController.patchNewTx(txObject, state.selectedAddress)
-      }
-    }
   },
 }

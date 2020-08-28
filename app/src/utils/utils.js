@@ -1,8 +1,8 @@
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
-import { addHexPrefix, BN, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
+import { addHexPrefix, BN, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
-import { isAddress } from 'web3-utils'
+import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import languages from '../plugins/locales'
@@ -633,4 +633,8 @@ export const handleRedirectParameters = (hash, queryParameters) => {
 
 export function generateAddressFromPubKey(point) {
   return pubToAddress(point.encode('arr'))
+}
+
+export function generateAddressFromPrivateKey(privKey) {
+  return toChecksumAddress(privateToAddress(Buffer.from(privKey, 'hex')).toString('hex'))
 }
