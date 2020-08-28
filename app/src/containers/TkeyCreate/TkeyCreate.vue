@@ -42,7 +42,7 @@
               <SetupWallet :user-info="userInfo" @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 2" />
             </v-tab-item>
             <v-tab-item>
-              <CreatedWallet :wallets="computedWallets" @setDefaultPublicAddress="setDefaultPublicAddress" />
+              <CreatedWallet :wallets="computedWallets" @setDefaultPublicAddress="setDefaultAddress" />
             </v-tab-item>
           </v-tabs-items>
         </v-flex>
@@ -107,6 +107,9 @@ export default {
         log.error(error)
         this.$router.push('/wallet').catch((_) => {})
       }
+    },
+    setDefaultAddress(address) {
+      this.setDefaultPublicAddress(address)
     },
   },
 }
