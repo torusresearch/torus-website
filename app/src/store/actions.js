@@ -397,7 +397,7 @@ export default {
     log.info('key 1', postboxKey)
     dispatch('addWallet', { ...postboxKey, accountType: ACCOUNT_TYPE.NORMAL }) // synchronous
     dispatch('subscribeToControllers')
-    await dispatch('initTorusKeyring', postboxKey)
+    await dispatch('initTorusKeyring', [postboxKey])
     const defaultAddresses = []
     const defaultAddress = await prefsController.init({
       address: postboxKey.ethAddress,
@@ -446,7 +446,7 @@ export default {
     const thresholdKey = await thresholdKeyController.init(postboxKey.privKey)
     log.info('tkey 2', thresholdKey)
     dispatch('addWallet', { ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }) // synchronous
-    await dispatch('initTorusKeyring', thresholdKey)
+    await dispatch('initTorusKeyring', [thresholdKey])
     return prefsController.init({
       address: thresholdKey.ethAddress,
       calledFromEmbed,
