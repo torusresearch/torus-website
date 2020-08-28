@@ -68,7 +68,7 @@
               <Display />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel v-if="hasThreshold" readonly class="my-2">
+          <v-expansion-panel readonly class="my-2">
             <v-expansion-panel-header id="display-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.person_circle'" />
               <div class="grow font-weight-bold title text_1--text">Default Account</div>

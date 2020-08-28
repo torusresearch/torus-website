@@ -1,6 +1,8 @@
 <template>
   <div class="default-account-container" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
-    <div class="body-2 torusFont1--text text-capitalize mb-2 px-1">{{ hasThreshold ? t('tkeySettings.accounts') : t('tkeySettings.account') }}</div>
+    <div class="body-2 torusFont1--text text-capitalize mb-2 px-1">
+      {{ computedWallets.length > 1 ? t('tkeySettings.accounts') : t('tkeySettings.account') }}
+    </div>
 
     <v-list dense outlined class="pa-0 account-list mb-2">
       <v-list-item v-for="wallet in computedWallets" :key="wallet.key" class="pl-0">

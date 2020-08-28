@@ -165,7 +165,7 @@ const router = new Router({
             },
             {
               path: 'new-device',
-              name: 'new-device',
+              name: 'tkeyNewDevice',
               component: TkeyNewDevice,
             },
           ],
