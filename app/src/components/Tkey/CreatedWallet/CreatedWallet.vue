@@ -11,39 +11,22 @@
 
     <!-- Default Wallet -->
     <div
+      v-for="wallet in wallets"
+      :key="wallet.key"
       class="wallet-item-container d-flex align-center mb-4"
-      :class="[{ active: selectedWallet === WALLET_2FA }]"
-      @click="selectedWallet = WALLET_2FA"
+      :class="[{ active: wallet.isDefault }]"
+      @click="setDefaultPublicAddress"
     >
       <div class="mr-4">
-        <v-icon :color="selectedWallet === WALLET_2FA ? 'torusBrand1' : 'torusGray3'">
-          {{ `$vuetify.icons.${selectedWallet === WALLET_2FA ? 'radioOn' : 'radioOff'}` }}
+        <v-icon :color="wallet.isDefault ? 'torusBrand1' : 'torusGray3'">
+          {{ `$vuetify.icons.${wallet.isDefault ? 'radioOn' : 'radioOff'}` }}
         </v-icon>
       </div>
       <div class="wallet-item py-3 px-4 d-flex grow align-center">
-        <v-icon small class="mr-3">$vuetify.icons.wallet_fill</v-icon>
+        <v-icon small class="mr-3">$vuetify.icons.{{ wallet.icon }}</v-icon>
         <div>
-          <div class="caption wallet-item__id">{{ t('tkeyCreateDone.yourWallet') }}</div>
-          <div class="wallet-item__address caption">{{ t('tkeyCreateDone.walletAddress') }}: 0x11f...5Gdfv</div>
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="wallet-item-container d-flex align-center mb-4"
-      :class="[{ active: selectedWallet === WALLET_GOOGLE }]"
-      @click="selectedWallet = WALLET_GOOGLE"
-    >
-      <div class="mr-4">
-        <v-icon :color="selectedWallet === WALLET_GOOGLE ? 'torusBrand1' : 'torusGray3'">
-          {{ `$vuetify.icons.${selectedWallet === WALLET_GOOGLE ? 'radioOn' : 'radioOff'}` }}
-        </v-icon>
-      </div>
-      <div class="wallet-item py-3 px-4 d-flex grow align-center">
-        <v-icon small class="mr-3">$vuetify.icons.google</v-icon>
-        <div>
-          <div class="caption wallet-item__id">youremailhere@gmail.com</div>
-          <div class="wallet-item__address caption">{{ t('tkeyCreateDone.walletAddress') }}: 0x11f...5Gdfv</div>
+          <div class="caption wallet-item__id">{{ wallet.title }}</div>
+          <div class="wallet-item__address caption">{{ t('tkeyCreateDone.walletAddress') }}: {{ wallet.keySliced }}</div>
         </div>
       </div>
     </div>
@@ -66,6 +49,18 @@
 const WALLET_2FA = 'wallet_2fa'
 const WALLET_GOOGLE = 'wallet_google'
 export default {
+  props: {
+    wallets: {
+      type: Array,
+      default() {
+        return []
+      },
+    },
+    defaultPublicAddress: {
+      type: String,
+      default: '',
+    },
+  },
   data() {
     return {
       selectedWallet: WALLET_GOOGLE,
@@ -77,8 +72,8 @@ export default {
     next() {
       this.$emit('next')
     },
-    onSelectWallet(walletSelected) {
-      this.selectedWallet = walletSelected
+    setDefaultPublicAddress(address) {
+      this.$emit('setDefaultPublicAddress', address)
     },
   },
 }

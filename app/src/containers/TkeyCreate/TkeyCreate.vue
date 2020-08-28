@@ -36,13 +36,13 @@
         <v-flex :class="[$vuetify.breakpoint.xsOnly ? 'xs12' : tab === 1 ? 'xs7' : 'xs6']">
           <v-tabs-items v-model="tab">
             <v-tab-item>
-              <AddWallet @next="tab = 1" />
+              <AddWallet @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
             </v-tab-item>
             <v-tab-item>
-              <SetupWallet @next="tab = 2" />
+              <SetupWallet :user-info="userInfo" @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 2" />
             </v-tab-item>
             <v-tab-item>
-              <CreatedWallet />
+              <CreatedWallet :wallets="computedWallets" @setDefaultPublicAddress="setDefaultPublicAddress" />
             </v-tab-item>
           </v-tabs-items>
         </v-flex>
@@ -52,11 +52,14 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import log from 'loglevel'
+import { mapActions, mapState } from 'vuex'
 
 import AddWallet from '../../components/Tkey/AddWallet'
 import CreatedWallet from '../../components/Tkey/CreatedWallet'
 import SetupWallet from '../../components/Tkey/SetupWallet'
+import { ACCOUNT_TYPE } from '../../utils/enums'
+import { addressSlicer } from '../../utils/utils'
 
 export default {
   name: 'TkeyCreate',
@@ -65,12 +68,45 @@ export default {
     tab: 0,
   }),
   computed: {
-    ...mapState(['userInfo', 'selectedAddress']),
-    ...mapState(['selectedAddress']),
+    ...mapState({
+      wallets: 'wallet',
+      userInfo: 'userInfo',
+      selectedAddress: 'selectedAddress',
+      defaultPublicAddress: 'defaultPublicAddress',
+    }),
+    ...mapActions(['setTKeyOnboardingStatus', 'setDefaultPublicAddress']),
     slicedAddress() {
       return this.$vuetify.breakpoint.xsOnly
         ? `${this.selectedAddress.slice(0, 4)}...${this.selectedAddress.slice(-3)}`
         : `${this.selectedAddress.slice(0, 5)}...${this.selectedAddress.slice(-5)}`
+    },
+    computedWallets() {
+      return Object.keys(this.wallets).reduce((acc, key) => {
+        const { accountType } = this.wallets[key]
+        if (accountType !== ACCOUNT_TYPE.IMPORTED)
+          acc.push({
+            key,
+            keySliced: addressSlicer(key),
+            accountType,
+            isDefault: this.defaultPublicAddress ? key === this.defaultPublicAddress : accountType === ACCOUNT_TYPE.NORMAL,
+            icon: accountType === ACCOUNT_TYPE.THRESHOLD ? 'wallet_fill' : this.userInfo.typeOfLogin.toLowerCase(),
+            title: accountType === ACCOUNT_TYPE.THRESHOLD ? this.t('tkeyCreateDone.yourWallet') : this.userInfo.verifierId,
+          })
+        return acc
+      }, [])
+    },
+  },
+  methods: {
+    async tKeyOnboardingCancel() {
+      try {
+        await this.setTKeyOnboardingStatus(true)
+        let redirectPath = this.$route.query.redirect
+        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
+        this.$router.push(redirectPath).catch((_) => {})
+      } catch (error) {
+        log.error(error)
+        this.$router.push('/wallet').catch((_) => {})
+      }
     },
   },
 }

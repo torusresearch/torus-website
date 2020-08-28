@@ -68,22 +68,10 @@
 </template>
 
 <script>
-import log from 'loglevel'
-import { mapActions } from 'vuex'
-
 export default {
   methods: {
-    ...mapActions(['setTKeyOnboardingStatus']),
-    async tKeyOnboardingCancel() {
-      try {
-        await this.setTKeyOnboardingStatus(true)
-        let redirectPath = this.$route.query.redirect
-        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
-        this.$router.push(redirectPath).catch((_) => {})
-      } catch (error) {
-        log.error(error)
-        this.$router.push('/wallet').catch((_) => {})
-      }
+    tKeyOnboardingCancel() {
+      this.$emit('tKeyOnboardingCancel')
     },
     next() {
       this.$emit('next')

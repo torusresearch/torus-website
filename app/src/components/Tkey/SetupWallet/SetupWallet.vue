@@ -22,10 +22,12 @@
       <v-expansion-panels v-model="panels" multiple :class="$vuetify.breakpoint.xsOnly ? 'is-mobile' : ''">
         <v-expansion-panel class="mb-4" disabled>
           <v-expansion-panel-header class="py-2">
-            <v-icon small class="mr-2 d-inline-flex mr-2 shrink">$vuetify.icons.google</v-icon>
-            <div class="grow font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">Google Login</div>
+            <v-icon small class="mr-2 d-inline-flex mr-2 shrink">$vuetify.icons.{{ userInfo.typeOfLogin.toLowerCase() }}</v-icon>
+            <div class="grow text-capitalize font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+              {{ userInfo.typeOfLogin }} Login
+            </div>
             <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-              youremailhere@gmail.com
+              {{ userInfo.verifierId }}
               <v-icon small class="ml-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
             </div>
           </v-expansion-panel-header>
@@ -94,6 +96,7 @@
           :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
           outlined
           :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'"
+          @click="tKeyOnboardingCancel"
         >
           {{ t('tkeyCreateSetup.cancel') }}
         </v-btn>
@@ -116,6 +119,17 @@
 
 <script>
 export default {
+  props: {
+    userInfo: {
+      type: Object,
+      default() {
+        return {
+          typeOfLogin: '',
+          verifierId: '',
+        }
+      },
+    },
+  },
   data() {
     return {
       validPasswordForm: true,
@@ -128,6 +142,9 @@ export default {
     }
   },
   methods: {
+    tKeyOnboardingCancel() {
+      this.$emit('tKeyOnboardingCancel')
+    },
     next() {
       this.$emit('next')
     },
