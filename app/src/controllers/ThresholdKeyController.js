@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
-// import ObservableStore from 'obs-store'
 import log from 'loglevel'
+import ObservableStore from 'obs-store'
 import ThresholdKey, { SecurityQuestionsModule, ServiceProviderBase, TorusStorageLayer, WebStorageModule } from 'tkey'
 
 import config from '../config'
@@ -15,13 +15,7 @@ import { generateAddressFromPrivateKey } from '../utils/utils'
 
 class ThresholdKeyController {
   constructor() {
-    this.modules = {
-      [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
-      [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),
-    }
-    this.serviceProvider = null
-    this.storageLayer = null
-    this.tKey = null
+    this.store = new ObservableStore({})
   }
 
   async checkIfTKeyExists(postboxKey) {
@@ -30,25 +24,13 @@ class ThresholdKeyController {
     return Object.keys(metadata).length > 0
   }
 
-  async init(postboxKey, tKeyJson) {
-    this.serviceProvider = new ServiceProviderBase({ postboxKey })
-    this.storageLayer = new TorusStorageLayer({ serviceProvider: this.serviceProvider, hostUrl: config.metadataHost })
-    if (!tKeyJson)
-      this.tKey = new ThresholdKey({
-        serviceProvider: this.serviceProvider,
-        storageLayer: this.storageLayer,
-        modules: this.modules,
-      })
-    else
-      this.tKey = await ThresholdKey.fromJSON(tKeyJson, {
-        modules: this.modules,
-        serviceProvider: this.serviceProvider,
-        storageLayer: this.storageLayer,
-      })
-    // await this.tKey.initializeNewKey({ initializeModules: true })
-    // const keyDetails = this.tKey.getKeyDetails()
+  get state() {
+    return this.store.getState()
+  }
 
-    const keyDetails = await this.tKey.initialize()
+  async init(postboxKey, tKeyJson) {
+    await this._init(postboxKey, tKeyJson)
+    const { keyDetails, tKey } = this.state
     log.info(keyDetails)
     const { requiredShares: shareCount, shareDescriptions } = keyDetails
     const parsedShareDescriptions = Object.values(shareDescriptions)
@@ -62,7 +44,7 @@ class ThresholdKeyController {
       const currentShare = parsedShareDescriptions.shift()
       if (currentShare.module === WEB_STORAGE_MODULE_KEY) {
         try {
-          await this.tKey.modules[WEB_STORAGE_MODULE_KEY].inputShareFromWebStorage()
+          await tKey.modules[WEB_STORAGE_MODULE_KEY].inputShareFromWebStorage()
           requiredShares -= 1
         } catch (error) {
           log.error(error, 'unable to read share from device. Must be on other device')
@@ -87,7 +69,7 @@ class ThresholdKeyController {
     }
 
     if (requiredShares <= 0) {
-      const privKey = await this.tKey.reconstructKey()
+      const privKey = await tKey.reconstructKey()
       return {
         ethAddress: generateAddressFromPrivateKey(privKey.toString('hex')),
         privKey: privKey.toString('hex'),
@@ -98,8 +80,9 @@ class ThresholdKeyController {
   }
 
   async generateAndStoreNewDeviceShare() {
-    const newShare = await this.tKey.generateNewShare()
-    this.tKey.modules.webStorage.storeDeviceShare(newShare.newShareStores[newShare.newShareIndex.toString('hex')])
+    const { tKey } = this.state
+    const newShare = await tKey.generateNewShare()
+    await tKey.modules.webStorage.storeDeviceShare(newShare.newShareStores[newShare.newShareIndex.toString('hex')])
     // this.store.updateState({ keyDetails: this.tb.getKeyDetails() })
     // await this.setSettingsPageData()
   }
@@ -117,30 +100,44 @@ class ThresholdKeyController {
   }
 
   async createNewTKey({ postboxKey, password, backup }) {
-    if (this.tKey) throw new Error('TKey already initialized')
-    this.serviceProvider = new ServiceProviderBase({ postboxKey })
-    this.storageLayer = new TorusStorageLayer({ serviceProvider: this.serviceProvider, hostUrl: config.metadataHost })
-
-    this.tKey = new ThresholdKey({
-      serviceProvider: this.serviceProvider,
-      storageLayer: this.storageLayer,
-      modules: this.modules,
-    })
-
-    // await this.tKey.initializeNewKey({ initializeModules: true })
-    // const keyDetails = this.tKey.getKeyDetails()
-
-    const keyDetails = await this.tKey.initialize()
-    log.info(keyDetails)
-    await this.tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
-    const privKey = await this.tKey.reconstructKey()
+    const { tKey } = this.state
+    if (tKey) throw new Error('TKey already initialized')
+    await this._init(postboxKey)
+    await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
+    const privKey = await tKey.reconstructKey()
     if (backup) {
-      await this.tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage()
+      await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage()
     }
     return {
       ethAddress: generateAddressFromPrivateKey(privKey.toString('hex')),
       privKey: privKey.toString('hex'),
     }
+  }
+
+  async _init(postboxKey, tKeyJson) {
+    const modules = {
+      [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
+      [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),
+    }
+    const serviceProvider = new ServiceProviderBase({ postboxKey })
+    const storageLayer = new TorusStorageLayer({ serviceProvider, hostUrl: config.metadataHost })
+    let tKey
+    if (!tKeyJson)
+      tKey = new ThresholdKey({
+        serviceProvider,
+        storageLayer,
+        modules,
+      })
+    else
+      tKey = await ThresholdKey.fromJSON(tKeyJson, {
+        modules,
+        serviceProvider,
+        storageLayer,
+      })
+    // await tKey.initializeNewKey({ initializeModules: true })
+    // const keyDetails = tKey.getKeyDetails()
+    const keyDetails = await tKey.initialize()
+    this.store.updateState({ keyDetails, tKey: this.tKey })
   }
 }
 
