@@ -10,10 +10,12 @@
     </div>
     <div class="mb-8">
       <div class="d-flex align-center mb-2">
-        <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">{{ t('tkeyCreateSetup.authFactors') }} (2/3)</div>
-        <div class="ml-auto caption" :style="{ color: '#FBBC05' }">Average</div>
+        <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+          {{ t('tkeyCreateSetup.authFactors') }} ({{ ~~((progressValue * 3) / 100) }}/3)
+        </div>
+        <div class="ml-auto caption" :class="`${progressColor}--text`">{{ progressText }}</div>
       </div>
-      <v-progress-linear class="mb-2" color="warning" rounded value="15" background-color="torusGray3"></v-progress-linear>
+      <v-progress-linear v-model="progressValue" class="mb-2" :color="progressColor" rounded background-color="torusGray3"></v-progress-linear>
       <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
         {{ t('tkeyCreateSetup.youNeedToBackup') }}
       </div>
@@ -63,7 +65,7 @@
             <div class="grow font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
               {{ t('tkeyCreateSetup.recoveryPass') }}
             </div>
-            <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+            <div v-if="finalRecoveryPassword" class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
               <v-icon small class="ml-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
             </div>
           </v-expansion-panel-header>
@@ -71,15 +73,23 @@
             <v-form v-model="validPasswordForm">
               <v-text-field
                 v-model="recoveryPassword"
+                :readonly="!!finalRecoveryPassword"
                 :append-icon="showRecoveryPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                 :type="showRecoveryPassword ? 'text' : 'password'"
-                :rules="[rules.required]"
+                :rules="[rules.required, rules.minLength]"
                 outlined
                 :placeholder="t('tkeyCreateSetup.minAlphaNumeric')"
+                autocomplete="new-password"
                 @click:append="showRecoveryPassword = !showRecoveryPassword"
               />
               <div class="text-right">
-                <v-btn :disabled="!validPasswordForm" class="caption white--text font-weight-bold" color="torusBrand1">
+                <v-btn
+                  v-if="!finalRecoveryPassword"
+                  :disabled="!validPasswordForm"
+                  class="caption white--text font-weight-bold"
+                  color="torusBrand1"
+                  @click="setFinalPassword"
+                >
                   {{ t('tkeyNew.confirm') }}
                 </v-btn>
               </div>
@@ -96,7 +106,7 @@
           :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
           outlined
           :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'"
-          @click="tKeyOnboardingCancel"
+          @click="cancelOnboarding"
         >
           {{ t('tkeyCreateSetup.cancel') }}
         </v-btn>
@@ -104,11 +114,12 @@
       <v-flex class="xs6 px-2">
         <v-btn
           block
+          :disabled="!finalRecoveryPassword && !backupDeviceShare"
           :x-large="!$vuetify.breakpoint.xsOnly"
           :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
           color="torusBrand1"
           class="white--text"
-          @click="next"
+          @click="createWallet"
         >
           {{ t('tkeyCreateSetup.createWallet') }}
         </v-btn>
@@ -118,6 +129,8 @@
 </template>
 
 <script>
+import log from 'loglevel'
+
 export default {
   props: {
     userInfo: {
@@ -134,19 +147,42 @@ export default {
     return {
       validPasswordForm: true,
       recoveryPassword: '',
+      finalRecoveryPassword: '',
       showRecoveryPassword: false,
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
+        minLength: (v) =>
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!$%&*?@])[\d!$%&*?@A-Za-z]{10,}$/.test(v) ||
+          'Must contain at least 10 characters. At least one uppercase letter, one lowercase letter, one number and one special character',
       },
       panels: [1, 2],
+      progressValue: 200 / 3,
+      backupDeviceShare: false,
     }
   },
+  computed: {
+    progressColor() {
+      return this.progressValue > 200 / 3 ? 'success' : 'warning'
+    },
+    progressText() {
+      return this.progressValue > 200 / 3 ? 'Excellent' : 'Average'
+    },
+  },
   methods: {
-    tKeyOnboardingCancel() {
+    cancelOnboarding() {
       this.$emit('tKeyOnboardingCancel')
     },
-    next() {
-      this.$emit('next')
+    async createWallet() {
+      try {
+        await this.$emit('createNewTKey', { password: this.finalRecoveryPassword, backup: this.backupDeviceShare })
+        this.$emit('next')
+      } catch (error) {
+        log.error(error)
+      }
+    },
+    setFinalPassword() {
+      this.finalRecoveryPassword = this.recoveryPassword
+      this.progressValue += 100 / 3
     },
   },
 }

@@ -39,7 +39,7 @@
               <AddWallet @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
             </v-tab-item>
             <v-tab-item>
-              <SetupWallet :user-info="userInfo" @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 2" />
+              <SetupWallet :user-info="userInfo" @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 2" @createNewTKey="createNewTKey" />
             </v-tab-item>
             <v-tab-item>
               <CreatedWallet :wallets="computedWallets" @setDefaultPublicAddress="setDefaultAddress" />
@@ -74,7 +74,6 @@ export default {
       selectedAddress: 'selectedAddress',
       defaultPublicAddress: 'defaultPublicAddress',
     }),
-    ...mapActions(['setTKeyOnboardingStatus', 'setDefaultPublicAddress']),
     slicedAddress() {
       return this.$vuetify.breakpoint.xsOnly
         ? `${this.selectedAddress.slice(0, 4)}...${this.selectedAddress.slice(-3)}`
@@ -97,6 +96,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setTKeyOnboardingStatus', 'setDefaultPublicAddress', 'createNewTKey']),
     async tKeyOnboardingCancel() {
       try {
         await this.setTKeyOnboardingStatus(true)

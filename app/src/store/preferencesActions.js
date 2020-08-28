@@ -1,3 +1,5 @@
+import log from 'loglevel'
+
 import torus from '../torus'
 
 const { torusController } = torus || {}
@@ -41,5 +43,8 @@ export default {
     const { wallet } = state
     await Promise.all(Object.keys(wallet).map((x) => prefsController.setDefaultPublicAddress(x, payload)))
     dispatch('updateSelectedAddress', { selectedAddress: payload })
+  },
+  async createNewTKey(_, payload) {
+    log.info(payload, 'creating new tkey')
   },
 }
