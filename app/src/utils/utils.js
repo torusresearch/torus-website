@@ -638,3 +638,17 @@ export function generateAddressFromPubKey(point) {
 export function generateAddressFromPrivateKey(privKey) {
   return toChecksumAddress(privateToAddress(Buffer.from(privKey, 'hex')).toString('hex'))
 }
+
+export function downloadItem(filename, text) {
+  const element = document.createElement('a')
+  element.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(text)}`)
+  element.setAttribute('download', filename)
+  element.style.display = 'none'
+  document.body.append(element)
+  element.click()
+  element.remove()
+}
+
+export function derivePubKeyXFromPolyID(polyID) {
+  return polyID.split('|')[0]
+}

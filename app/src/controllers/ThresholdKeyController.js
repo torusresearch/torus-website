@@ -11,7 +11,7 @@ import {
   THRESHOLD_KEY_PRIORITY_ORDER,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
-import { generateAddressFromPrivateKey } from '../utils/utils'
+import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey } from '../utils/utils'
 
 class ThresholdKeyController {
   constructor() {
@@ -65,6 +65,7 @@ class ThresholdKeyController {
 
     if (requiredShares <= 0) {
       const privKey = await tKey.reconstructKey()
+      await this.setSettingsPageData()
       return {
         ethAddress: generateAddressFromPrivateKey(privKey.toString('hex')),
         privKey: privKey.toString('hex'),
@@ -119,6 +120,14 @@ class ThresholdKeyController {
     return this._init(postboxKey, tKeyJson)
   }
 
+  downloadShare(shareIndex) {
+    const { tKey } = this.state
+    const shareStore = tKey.outputShare(shareIndex)
+    const fileName = `${derivePubKeyXFromPolyID(shareStore.polynomialID)}.json`
+    const text = JSON.stringify(shareStore, null, 2)
+    downloadItem(fileName, text)
+  }
+
   async setSettingsPageData() {
     const { tKey } = this.state
     const onDeviceShare = {}
@@ -126,9 +135,13 @@ class ThresholdKeyController {
 
     const keyDetails = tKey.getKeyDetails()
     const { shareDescriptions, totalShares, threshold: thresholdShares } = keyDetails
-    const parsedShareDescriptions = Object.values(shareDescriptions)
+    const parsedShareDescriptions = Object.keys(shareDescriptions)
+      .map((x) => {
+        return shareDescriptions[x].map((y) => {
+          return { ...JSON.parse(y), shareIndex: x }
+        })
+      })
       .flatMap((x) => x)
-      .map((x) => JSON.parse(x))
       .sort((a, b) => {
         return THRESHOLD_KEY_PRIORITY_ORDER.indexOf(a.module) - THRESHOLD_KEY_PRIORITY_ORDER.indexOf(b.module)
       })

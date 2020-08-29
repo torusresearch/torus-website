@@ -28,4 +28,7 @@ export default {
   changePassword(_, payload) {
     return thresholdKeyController.changePassword(payload)
   },
+  downloadShare(_, payload) {
+    return thresholdKeyController.downloadShare(payload)
+  },
 }
