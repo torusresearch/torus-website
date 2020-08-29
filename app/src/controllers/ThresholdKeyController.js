@@ -211,13 +211,14 @@ class ThresholdKeyController {
     const serviceProvider = new ServiceProviderBase({ postboxKey })
     const storageLayer = new TorusStorageLayer({ serviceProvider, hostUrl: config.metadataHost })
     let tKey
-    if (!tKeyJson)
+    if (!tKeyJson) {
       tKey = new ThresholdKey({
         serviceProvider,
         storageLayer,
         modules,
       })
-    else
+      await tKey.initialize()
+    } else
       tKey = await ThresholdKey.fromJSON(tKeyJson, {
         modules,
         serviceProvider,
@@ -225,7 +226,7 @@ class ThresholdKeyController {
       })
     // await tKey.initializeNewKey({ initializeModules: true })
     // const keyDetails = tKey.getKeyDetails()
-    await tKey.initialize()
+
     this.store.updateState({ tKey })
     await this.setSettingsPageData()
   }

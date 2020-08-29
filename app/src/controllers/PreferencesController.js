@@ -223,7 +223,7 @@ class PreferencesController extends EventEmitter {
             locale: whiteLabelLocale || locale || getUserLanguage(),
             permissions,
             badgesCompletion,
-            tKeyOnboardingComplete: !!tkey_onboarding_complete,
+            tKeyOnboardingComplete: account_type !== ACCOUNT_TYPE.NORMAL ? true : !!tkey_onboarding_complete,
             accountType: account_type || ACCOUNT_TYPE.NORMAL,
             defaultPublicAddress: default_public_address || public_address,
           },
