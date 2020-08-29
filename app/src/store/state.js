@@ -74,6 +74,7 @@ const initialState = {
   },
   etherscanTx: [],
   badgesCompletion: {},
+  tKeyStore: {},
 }
 
 export default initialState

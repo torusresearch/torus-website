@@ -25,6 +25,7 @@ import {
   personalMessageManagerHandler,
   prefsControllerHandler,
   successMsgHandler as successMessageHandler,
+  tKeyHandler,
   tokenRatesControllerHandler,
   transactionControllerHandler,
   typedMessageManagerHandler,
@@ -105,6 +106,7 @@ export default {
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
+    resetStore(thresholdKeyController.store, tKeyHandler, {})
     torus.updateStaticData({ isUnlocked: false })
   },
   setSelectedCurrency({ commit }, payload) {
@@ -365,6 +367,7 @@ export default {
     prefsController.billboardStore.subscribe(billboardHandler)
     prefsController.store.subscribe(prefsControllerHandler)
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
+    thresholdKeyController.store.subscribe(tKeyHandler)
   },
   async initTorusKeyring({ dispatch, commit, state }, payload) {
     const { keys, calledFromEmbed, rehydrate } = payload
@@ -475,6 +478,7 @@ export default {
       networkId,
       jwtToken,
       userInfo: { verifier },
+      tKeyStore,
     } = state
     try {
       // if jwtToken expires, logout
@@ -491,9 +495,10 @@ export default {
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
+        const walletKeys = Object.keys(wallet)
         dispatch('subscribeToControllers')
         await dispatch('initTorusKeyring', {
-          keys: Object.keys(wallet).map((x) => {
+          keys: walletKeys.map((x) => {
             const { privateKey, accountType } = wallet[x]
             return {
               ethAddress: x,
@@ -505,7 +510,10 @@ export default {
           calledFromEmbed: false,
           rehydrate: true,
         })
-        // TODO: INITIALIZE TKEY IF PRESENT
+        if (Object.keys(tKeyStore).length > 0) {
+          const postboxWallet = walletKeys.find((x) => walletKeys[x].accountType === ACCOUNT_TYPE.NORMAL)
+          await thresholdKeyController.rehydrate(postboxWallet?.privateKey, tKeyStore.tKey)
+        }
         dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump

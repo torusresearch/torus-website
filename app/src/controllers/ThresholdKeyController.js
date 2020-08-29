@@ -116,6 +116,11 @@ class ThresholdKeyController {
     }
   }
 
+  async rehydrate(postboxKey, tKeyJson) {
+    await this._init(postboxKey, tKeyJson)
+    // TODO: calculate settings page data etc.
+  }
+
   async _init(postboxKey, tKeyJson) {
     const { tKey: stateTKey } = this.state
     if (stateTKey) throw new Error('TKey already initialized')

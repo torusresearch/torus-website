@@ -126,3 +126,7 @@ export function etherscanTxHandler(state) {
 export function billboardHandler(state) {
   getStore().commit('setBillboard', state)
 }
+
+export function tKeyHandler(state) {
+  getStore().commit('setTKey', state)
+}

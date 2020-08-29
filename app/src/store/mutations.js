@@ -191,6 +191,9 @@ export default {
   setDefaultPublicAddress(state, payload) {
     state.defaultPublicAddress = payload
   },
+  setTKey(state, payload) {
+    state.tKeyStore = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
