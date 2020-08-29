@@ -30,15 +30,9 @@ class ThresholdKeyController {
 
   async login(postboxKey, tKeyJson) {
     await this._init(postboxKey, tKeyJson)
-    const { keyDetails, tKey } = this.state
+    const { keyDetails, tKey, parsedShareDescriptions } = this.state
     log.info(keyDetails)
-    const { requiredShares: shareCount, shareDescriptions } = keyDetails
-    const parsedShareDescriptions = Object.values(shareDescriptions)
-      .flatMap((x) => x)
-      .map((x) => JSON.parse(x))
-      .sort((a, b) => {
-        return THRESHOLD_KEY_PRIORITY_ORDER.indexOf(a.module) - THRESHOLD_KEY_PRIORITY_ORDER.indexOf(b.module)
-      })
+    const { requiredShares: shareCount } = keyDetails
     let requiredShares = shareCount
     const descriptionBuffer = []
     while (requiredShares > 0 && parsedShareDescriptions.length > 0) {
@@ -103,13 +97,14 @@ class ThresholdKeyController {
   async createNewTKey({ postboxKey, password, backup }) {
     await this._init(postboxKey)
     const { tKey } = this.state
-    await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
+    if (password) await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
     const privKey = await tKey.reconstructKey()
     if (backup) {
       await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage()
     }
 
     log.info('privKey', privKey.toString('hex'))
+    await this.setSettingsPageData()
     return {
       ethAddress: generateAddressFromPrivateKey(privKey.toString('hex')),
       privKey: privKey.toString('hex'),
@@ -117,8 +112,56 @@ class ThresholdKeyController {
   }
 
   async rehydrate(postboxKey, tKeyJson) {
-    await this._init(postboxKey, tKeyJson)
-    // TODO: calculate settings page data etc.
+    return this._init(postboxKey, tKeyJson)
+  }
+
+  async setSettingsPageData() {
+    const { tKey } = this.state
+    const onDeviceShare = {}
+    const passwordShare = {}
+
+    const keyDetails = tKey.getKeyDetails()
+    const { shareDescriptions, totalShares, threshold: thresholdShares } = keyDetails
+    const parsedShareDescriptions = Object.values(shareDescriptions)
+      .flatMap((x) => x)
+      .map((x) => JSON.parse(x))
+      .sort((a, b) => {
+        return THRESHOLD_KEY_PRIORITY_ORDER.indexOf(a.module) - THRESHOLD_KEY_PRIORITY_ORDER.indexOf(b.module)
+      })
+
+    // Total device shares
+    const allDeviceShares = parsedShareDescriptions.filter(
+      (x) => x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY || x.module === WEB_STORAGE_MODULE_KEY
+    )
+
+    // For ondevice share
+    try {
+      const onDeviceLocalShare = await tKey.modules[WEB_STORAGE_MODULE_KEY].getDeviceShare()
+      if (onDeviceLocalShare) {
+        onDeviceShare.available = true
+        onDeviceShare.share = onDeviceLocalShare
+      }
+    } catch {
+      onDeviceShare.available = false
+    }
+
+    // password share
+    const passwordModules = parsedShareDescriptions.filter((x) => x.module === SECURITY_QUESTIONS_MODULE_KEY)
+    passwordShare.available = passwordModules.length > 0
+
+    // Current threshold
+    const threshold = `${thresholdShares}/${totalShares}`
+
+    this.store.updateState({
+      settingsPageData: {
+        deviceShare: onDeviceShare,
+        allDeviceShares,
+        passwordShare,
+        threshold,
+      },
+      parsedShareDescriptions,
+      keyDetails,
+    })
   }
 
   async _init(postboxKey, tKeyJson) {
@@ -145,8 +188,9 @@ class ThresholdKeyController {
       })
     // await tKey.initializeNewKey({ initializeModules: true })
     // const keyDetails = tKey.getKeyDetails()
-    const keyDetails = await tKey.initialize()
-    this.store.updateState({ keyDetails, tKey })
+    await tKey.initialize()
+    this.store.updateState({ tKey })
+    await this.setSettingsPageData()
   }
 }
 
