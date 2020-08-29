@@ -423,8 +423,8 @@ export default {
       }
     }
 
-    // TODO: check default address and set this accordingly
-    const selectedAddress = defaultAddresses[0] || defaultAddresses[1] || postboxKey.ethAddress
+    const selectedDefaultAddress = defaultAddresses[0] || defaultAddresses[1]
+    const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : postboxKey.ethAddress
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
     prefsController.getBillboardContents()
     // continue enable function

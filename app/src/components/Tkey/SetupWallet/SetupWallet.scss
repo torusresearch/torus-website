@@ -58,4 +58,8 @@
 }
 .backup-device-checkbox {
   cursor: pointer;
+  color: #ffffff;
+  &.isDark {
+    color: #28292E;
+  }
 }

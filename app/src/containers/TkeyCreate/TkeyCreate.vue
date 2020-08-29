@@ -39,10 +39,20 @@
               <AddWallet @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
             </v-tab-item>
             <v-tab-item>
-              <SetupWallet :user-info="userInfo" @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 2" @createNewTKey="createNewTKey" />
+              <SetupWallet
+                :creating-tkey="creatingTkey"
+                :user-info="userInfo"
+                @tKeyOnboardingCancel="tKeyOnboardingCancel"
+                @next="tab = 2"
+                @createNewTKey="createTKey"
+              />
             </v-tab-item>
             <v-tab-item>
-              <CreatedWallet :wallets="computedWallets" @setDefaultPublicAddress="setDefaultAddress" />
+              <CreatedWallet
+                :wallets="computedWallets"
+                :default-public-address="selectedPublicAddress"
+                @setDefaultPublicAddress="setDefaultAddress"
+              />
             </v-tab-item>
           </v-tabs-items>
         </v-flex>
@@ -64,9 +74,12 @@ import { addressSlicer } from '../../utils/utils'
 export default {
   name: 'TkeyCreate',
   components: { AddWallet, SetupWallet, CreatedWallet },
-  data: () => ({
-    tab: 0,
-  }),
+  data() {
+    return {
+      tab: 0,
+      creatingTkey: false,
+    }
+  },
   computed: {
     ...mapState({
       wallets: 'wallet',
@@ -93,6 +106,9 @@ export default {
         return acc
       }, [])
     },
+    selectedPublicAddress() {
+      return this.defaultPublicAddress || Object.keys(this.wallets).find((x) => this.wallets[x].accountType === ACCOUNT_TYPE.THRESHOLD)
+    },
   },
   methods: {
     ...mapActions(['setTKeyOnboardingStatus', 'setDefaultPublicAddress', 'createNewTKey']),
@@ -107,15 +123,19 @@ export default {
         this.$router.push('/wallet').catch((_) => {})
       }
     },
-    setDefaultAddress(address) {
-      this.setDefaultPublicAddress(address)
+    async setDefaultAddress(address) {
+      await this.setDefaultPublicAddress(address)
+      this.$router.push('/wallet').catch((_) => {})
     },
     async createTKey(payload) {
       try {
+        this.creatingTkey = true
         await this.createNewTKey(payload)
         this.tab = 2
       } catch (error) {
         log.error(error)
+      } finally {
+        this.creatingTkey = false
       }
     },
   },

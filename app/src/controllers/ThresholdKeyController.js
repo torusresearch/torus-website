@@ -108,6 +108,8 @@ class ThresholdKeyController {
     if (backup) {
       await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage()
     }
+
+    log.info('privKey', privKey.toString('hex'))
     return {
       ethAddress: generateAddressFromPrivateKey(privKey.toString('hex')),
       privKey: privKey.toString('hex'),

@@ -52,12 +52,8 @@
               .
             </div>
             <div class="d-flex align-center allow-device-trigger">
-              <v-icon
-                class="backup-device-checkbox mr-2"
-                :class="backupDeviceShare ? 'torusBrand1--text' : 'text_3--text'"
-                @click="backupDeviceShare = !backupDeviceShare"
-              >
-                $vuetify.icon.checkbox_{{ backupDeviceShare ? 'checked' : 'unchecked' }}
+              <v-icon class="backup-device-checkbox mr-2" :class="{ isDark: $vuetify.theme.dark }" @click="backupDeviceShare = !backupDeviceShare">
+                $vuetify.icon.checkbox{{ $vuetify.theme.dark ? '_dark' : '' }}_{{ backupDeviceShare ? 'checked' : 'unchecked' }}
               </v-icon>
               <v-icon size="16" class="mr-1" :class="backupDeviceShare ? 'success--text' : 'warning--text'">$vuetify.icon.alert_circle_filled</v-icon>
               <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">{{ t('tkeyCreateSetup.backupOnDevice') }}</div>
@@ -129,6 +125,7 @@
           :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
           color="torusBrand1"
           class="white--text"
+          :loading="creatingTkey"
           @click="createWallet"
         >
           {{ t('tkeyCreateSetup.createWallet') }}
@@ -151,6 +148,9 @@ export default {
           verifierId: '',
         }
       },
+    },
+    creatingTkey: {
+      type: Boolean,
     },
   },
   data() {

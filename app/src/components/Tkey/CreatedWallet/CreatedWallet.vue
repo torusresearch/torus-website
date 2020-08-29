@@ -10,10 +10,16 @@
     </div>
 
     <!-- Default Wallet -->
-    <div v-for="wallet in wallets" :key="wallet.key" class="wallet-item-container d-flex align-center mb-4" :class="[{ active: wallet.isDefault }]">
+    <div
+      v-for="wallet in wallets"
+      :key="wallet.key"
+      class="wallet-item-container d-flex align-center mb-4"
+      :class="[{ active: wallet.key === selectedWallet }]"
+      @click="selectedWallet === wallet.key"
+    >
       <div class="mr-4">
-        <v-icon :color="wallet.isDefault ? 'torusBrand1' : 'torusGray3'">
-          {{ `$vuetify.icons.${wallet.isDefault ? 'radioOn' : 'radioOff'}` }}
+        <v-icon :color="wallet.key === selectedWallet ? 'torusBrand1' : 'torusGray3'">
+          {{ `$vuetify.icons.${wallet.key === selectedWallet ? 'radioOn' : 'radioOff'}` }}
         </v-icon>
       </div>
       <div class="wallet-item py-3 px-4 d-flex grow align-center">
@@ -40,8 +46,6 @@
 </template>
 
 <script>
-const WALLET_2FA = 'wallet_2fa'
-const WALLET_GOOGLE = 'wallet_google'
 export default {
   props: {
     wallets: {
@@ -57,22 +61,21 @@ export default {
   },
   data() {
     return {
-      selectedWallet: WALLET_GOOGLE,
-      WALLET_2FA,
-      WALLET_GOOGLE,
-      tempSelectedAddress: '',
+      selectedWallet: '',
     }
+  },
+  created() {
+    this.selectedWallet = this.defaultPublicAddress
   },
   methods: {
     next() {
       this.$emit('next')
     },
     setDefaultPublicAddress(address) {
-      this.$emit('setDefaultPublicAddress', address)
+      this.selectedWallet = address
     },
     goToWallet() {
-      this.setDefaultPublicAddress()
-      this.$router.push('/wallet').catch((_) => {})
+      this.$emit('setDefaultPublicAddress', this.selectedWallet)
     },
   },
 }
