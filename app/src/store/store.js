@@ -16,6 +16,7 @@ import mutations from './mutations'
 import paymentActions from './PaymentActions'
 import preferencesActions from './preferencesActions'
 import defaultState from './state'
+import tKeyActions from './tKeyActions'
 
 Vue.use(Vuex)
 
@@ -79,6 +80,7 @@ const VuexStore = new Vuex.Store({
     ...actions,
     ...paymentActions,
     ...preferencesActions,
+    ...tKeyActions,
     async showPopup({ state }, payload) {
       const isTx = payload && typeof payload === 'object'
       const confirmHandler = new ConfirmHandler(isTx ? payload.id : payload)

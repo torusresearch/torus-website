@@ -442,21 +442,6 @@ export default {
     torus.updateStaticData({ isUnlocked: true })
     dispatch('cleanupOAuth', { oAuthToken })
   },
-  async addTKey({ dispatch }, { postboxKey, calledFromEmbed }) {
-    const thresholdKey = await thresholdKeyController.login(postboxKey.privKey)
-    log.info('tkey 2', thresholdKey)
-    return dispatch('initTorusKeyring', { keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }], calledFromEmbed, rehydrate: false })
-  },
-  async createNewTKey({ state, dispatch }, payload) {
-    const thresholdKey = await thresholdKeyController.createNewTKey({ postboxKey: state.wallet[state.selectedAddress].privateKey, ...payload })
-    log.info('tkey 2', thresholdKey)
-    await dispatch('initTorusKeyring', {
-      keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
-      calledFromEmbed: false,
-      rehydrate: false,
-    })
-    dispatch('updateSelectedAddress', { selectedAddress: thresholdKey.ethAddress }) // synchronous
-  },
   cleanupOAuth({ state }, payload) {
     const {
       userInfo: { typeOfLogin },

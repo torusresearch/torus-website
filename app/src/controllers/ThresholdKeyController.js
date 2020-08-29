@@ -74,12 +74,16 @@ class ThresholdKeyController {
     throw new Error('Requires more shares')
   }
 
-  async generateAndStoreNewDeviceShare() {
+  async changePassword(password) {
     const { tKey } = this.state
-    const newShare = await tKey.generateNewShare()
-    await tKey.modules.webStorage.storeDeviceShare(newShare.newShareStores[newShare.newShareIndex.toString('hex')])
-    // this.store.updateState({ keyDetails: this.tb.getKeyDetails() })
-    // await this.setSettingsPageData()
+    await tKey.modules.securityQuestions.changeSecurityQuestionAndAnswer(password, PASSWORD_QUESTION)
+    await this.setSettingsPageData()
+  }
+
+  async addPassword(password) {
+    const { tKey } = this.state
+    await tKey.modules.securityQuestions.generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
+    await this.setSettingsPageData()
   }
 
   async getSecurityQuestionShareFromUserInput() {
