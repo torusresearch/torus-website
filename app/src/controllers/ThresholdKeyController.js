@@ -28,7 +28,7 @@ class ThresholdKeyController {
     return this.store.getState()
   }
 
-  async init(postboxKey, tKeyJson) {
+  async login(postboxKey, tKeyJson) {
     await this._init(postboxKey, tKeyJson)
     const { keyDetails, tKey } = this.state
     log.info(keyDetails)
@@ -101,9 +101,8 @@ class ThresholdKeyController {
   }
 
   async createNewTKey({ postboxKey, password, backup }) {
-    const { tKey } = this.state
-    if (tKey) throw new Error('TKey already initialized')
     await this._init(postboxKey)
+    const { tKey } = this.state
     await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
     const privKey = await tKey.reconstructKey()
     if (backup) {
@@ -116,6 +115,8 @@ class ThresholdKeyController {
   }
 
   async _init(postboxKey, tKeyJson) {
+    const { tKey: stateTKey } = this.state
+    if (stateTKey) throw new Error('TKey already initialized')
     const modules = {
       [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
       [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),

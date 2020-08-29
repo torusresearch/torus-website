@@ -440,7 +440,7 @@ export default {
     dispatch('cleanupOAuth', { oAuthToken })
   },
   async addTKey({ dispatch }, { postboxKey, calledFromEmbed }) {
-    const thresholdKey = await thresholdKeyController.init(postboxKey.privKey)
+    const thresholdKey = await thresholdKeyController.login(postboxKey.privKey)
     log.info('tkey 2', thresholdKey)
     return dispatch('initTorusKeyring', { keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }], calledFromEmbed, rehydrate: false })
   },
