@@ -7,6 +7,17 @@
   }
 
   .factor-list {
+    border-radius: 6px;
+    .v-avatar {
+      border-radius: 0;
+      align-self: start;
+    }
+    .v-list-item:not(:last-child) {
+      border-bottom: thin solid #D3D5E2;
+      &.theme--dark {
+        border-bottom: thin solid rgba(255, 255, 255, 0.12);
+      }
+    }
     &.theme--dark {
       border: 1px solid #202125;
     }

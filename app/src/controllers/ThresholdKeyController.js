@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+import bowser from 'bowser'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import ThresholdKey, { SecurityQuestionsModule, ServiceProviderBase, TorusStorageLayer, WebStorageModule } from 'tkey'
@@ -8,6 +9,7 @@ import {
   CHROME_EXTENSION_STORAGE_MODULE_KEY,
   PASSWORD_QUESTION,
   SECURITY_QUESTIONS_MODULE_KEY,
+  STORAGE_MAP,
   THRESHOLD_KEY_PRIORITY_ORDER,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
@@ -117,7 +119,8 @@ class ThresholdKeyController {
   }
 
   async rehydrate(postboxKey, tKeyJson) {
-    return this._init(postboxKey, tKeyJson)
+    await this._init(postboxKey, tKeyJson)
+    await this.setSettingsPageData()
   }
 
   downloadShare(shareIndex) {
@@ -147,9 +150,26 @@ class ThresholdKeyController {
       })
 
     // Total device shares
-    const allDeviceShares = parsedShareDescriptions.filter(
-      (x) => x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY || x.module === WEB_STORAGE_MODULE_KEY
-    )
+    const allDeviceShares = parsedShareDescriptions.reduce((acc, x) => {
+      if (x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY || x.module === WEB_STORAGE_MODULE_KEY) {
+        const browserInfo = bowser.parse(x.userAgent)
+
+        x.title = `${browserInfo.browser.name} ${x.dateAdded}`
+
+        if (acc[x.shareIndex]) {
+          acc[x.shareIndex].browsers = [...acc[x.shareIndex].browsers, x]
+        } else {
+          const deviceInfo = `${STORAGE_MAP[x.module]} - ${browserInfo.os.name} ${browserInfo.browser.name}`
+          acc[x.shareIndex] = {
+            index: x.shareIndex,
+            icon: browserInfo.platform.type,
+            groupTitle: deviceInfo,
+            browsers: [x],
+          }
+        }
+      }
+      return acc
+    }, {})
 
     // For ondevice share
     try {

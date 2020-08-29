@@ -27,7 +27,7 @@
           <a
             class="body-2 text-decoration-none"
             :class="$vuetify.theme.dark ? 'text_2--text' : 'torusFont2--text'"
-            href="https://hackmd.io/@torus/HJLenkU6I"
+            href="https://hackmd.io/Tej2tf83SZOxZmz70ObEpg"
             target="_blank"
           >
             {{ t('tkeyCreateAdd.learnMore') }}

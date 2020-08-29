@@ -50,6 +50,7 @@ if (storageAvailable('sessionStorage')) {
       etherscanTx: state.etherscanTx,
       tKeyOnboardingComplete: state.tKeyOnboardingComplete,
       defaultPublicAddress: state.defaultPublicAddress,
+      tKeyStore: state.tKeyStore,
     }),
   })
 }

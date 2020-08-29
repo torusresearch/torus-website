@@ -435,7 +435,6 @@ export default {
     selectedAddress(newAddress, oldAddress) {
       if (newAddress !== oldAddress && newAddress !== '') {
         let redirectPath = this.$route.query.redirect
-
         if (!this.tKeyOnboardingComplete) redirectPath = `/wallet/tkey?redirect=${redirectPath || '/wallet'}`
         else if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
 
