@@ -1,7 +1,9 @@
 /* eslint-disable no-await-in-loop */
 import bowser from 'bowser'
+import { ethErrors } from 'eth-json-rpc-errors'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
+import EventEmitter from 'safe-event-emitter'
 import ThresholdKey, { SecurityQuestionsModule, ServiceProviderBase, TorusStorageLayer, WebStorageModule } from 'tkey'
 
 import config from '../config'
@@ -13,11 +15,14 @@ import {
   THRESHOLD_KEY_PRIORITY_ORDER,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
+import createRandomId from '../utils/random-id'
 import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey } from '../utils/utils'
 
-class ThresholdKeyController {
-  constructor() {
+class ThresholdKeyController extends EventEmitter {
+  constructor(opts = {}) {
+    super()
     this.store = new ObservableStore({})
+    this.requestSecurityQuestionInput = opts.requestSecurityQuestionInput
   }
 
   async checkIfTKeyExists(postboxKey) {
@@ -49,8 +54,13 @@ class ThresholdKeyController {
         }
       } else if (currentShare.module === SECURITY_QUESTIONS_MODULE_KEY) {
         // default to password for now
-        await this.getSecurityQuestionShareFromUserInput()
-        requiredShares -= 1
+        try {
+          const password = await this.getSecurityQuestionShareFromUserInput(currentShare)
+          await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].inputShareFromSecurityQuestions(password)
+          requiredShares -= 1
+        } catch (error) {
+          log.error(error, 'Unable to get user share from input')
+        }
       } else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
         // default to password for now
         await this.getShareFromChromeExtension()
@@ -89,8 +99,27 @@ class ThresholdKeyController {
     await this.setSettingsPageData()
   }
 
-  async getSecurityQuestionShareFromUserInput() {
-    throw new TypeError('Not yet implemented')
+  async getSecurityQuestionShareFromUserInput(share) {
+    return new Promise((resolve, reject) => {
+      const id = createRandomId()
+      this.requestSecurityQuestionInput({ id, share })
+      this.once(`${id}:finished`, (data) => {
+        switch (data.status) {
+          case 'signed':
+            return resolve(data.password)
+          case 'rejected':
+            return reject(ethErrors.provider.userRejectedRequest('Torus User Input Security Question: User denied input.'))
+          default:
+            return reject(new Error(`Torus User Input Security Question: Unknown problem: ${JSON.stringify(share)}`))
+        }
+      })
+    })
+  }
+
+  async setSecurityQuestionShareFromUserInput(id, payload) {
+    const { password, rejected } = payload
+    if (rejected) this.emit(`${id}:finished`, { status: 'rejected' })
+    if (password) this.emit(`${id}:finished`, { status: 'signed', password })
   }
 
   async getShareFromChromeExtension() {

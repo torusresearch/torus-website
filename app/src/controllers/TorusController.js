@@ -178,7 +178,9 @@ export default class TorusController extends EventEmitter {
       getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
     })
 
-    this.thresholdKeyController = new ThresholdKeyController()
+    this.thresholdKeyController = new ThresholdKeyController({
+      requestSecurityQuestionInput: this.opts.requestSecurityQuestionInput.bind(this.thresholdKeyController),
+    })
 
     this.networkController.lookupNetwork()
     this.messageManager = new MessageManager()

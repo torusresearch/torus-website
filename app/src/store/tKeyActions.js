@@ -1,7 +1,7 @@
 import log from 'loglevel'
 
 import torus from '../torus'
-import { ACCOUNT_TYPE } from '../utils/enums'
+import { ACCOUNT_TYPE, THRESHOLD_KEY_QUESTION_INPUT } from '../utils/enums'
 
 const { torusController } = torus || {}
 const { thresholdKeyController } = torusController || {}
@@ -30,5 +30,11 @@ export default {
   },
   downloadShare(_, payload) {
     return thresholdKeyController.downloadShare(payload)
+  },
+  showThresholdKeyUi(_, payload) {
+    const { type, data: { id, share } = {} } = payload
+    // TODO: Navigate to route etc and get input
+    log.info(id, share)
+    if (type === THRESHOLD_KEY_QUESTION_INPUT) thresholdKeyController.setSecurityQuestionShareFromUserInput(id, {})
   },
 }
