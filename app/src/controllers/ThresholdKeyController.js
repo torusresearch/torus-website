@@ -79,12 +79,16 @@ class ThresholdKeyController extends EventEmitter {
 
     if (requiredShares <= 0) {
       if (descriptionBuffer.length > 0) {
-        const response = await this.storeDeviceFlow()
-        const { isOld, oldIndex } = response
-        if (!isOld) {
-          await this.generateAndStoreNewDeviceShare()
-        } else {
-          await this.copyShareUsingIndexAndStoreLocally(oldIndex)
+        try {
+          const response = await this.storeDeviceFlow()
+          const { isOld, oldIndex } = response
+          if (!isOld) {
+            await this.generateAndStoreNewDeviceShare()
+          } else {
+            await this.copyShareUsingIndexAndStoreLocally(oldIndex)
+          }
+        } catch (error) {
+          log.error(error)
         }
       }
       const privKey = await tKey.reconstructKey()
@@ -125,8 +129,7 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async storeDeviceFlow() {
-    const { keyDetails, parsedShareDescriptions } = this.state
-    log.info(keyDetails)
+    const { parsedShareDescriptions } = this.state
     return new Promise((resolve, reject) => {
       const id = createRandomId()
       this.store.updateState({ storeDeviceFlow: { [id]: { status: 'unapproved', parsedShareDescriptions } } })

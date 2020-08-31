@@ -12,10 +12,8 @@
             <!-- TITLE -->
             <div>
               <div class="text-center new-device-header">
-                <div class="new-device-header__title">Save Extension</div>
-                <div class="new-device-header__description">
-                  Save new extension as a separate authentication factor or add it to an existing device
-                </div>
+                <div class="new-device-header__title">Save Device</div>
+                <div class="new-device-header__description">Save new device as a separate authentication factor or add it to an existing device</div>
               </div>
             </div>
             <div class="mb-10">
@@ -112,9 +110,11 @@ export default {
       this.selectedDevice = index
     },
     confirm() {
-      this.setStoreDeviceFlow(this.$route.query.id, { isOld: !!this.activeTab, oldIndex: this.selectedDevice })
+      this.setStoreDeviceFlow({ id: this.$route.query.id, response: { isOld: !!this.activeTab, oldIndex: this.selectedDevice } })
     },
-    doNotSaveDevice() {},
+    doNotSaveDevice() {
+      this.setStoreDeviceFlow({ id: this.$route.query.id, rejected: true })
+    },
   },
 }
 </script>

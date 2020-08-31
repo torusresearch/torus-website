@@ -36,9 +36,9 @@ export default {
     const { type, data: { id } = {} } = payload
     log.info(id, type, router)
     if (type === THRESHOLD_KEY_QUESTION_INPUT) {
-      router.push({ name: 'tkeyInputPassword', query: { type, id, ...router.currentRoute.query } })
+      router.push({ name: 'tkeyInputPassword', query: { ...router.currentRoute.query, type, id } })
     } else if (type === THRESHOLD_KEY_STORE_DEVICE_FLOW) {
-      router.push({ name: 'tkeyDeviceDetected', query: { type, id, ...router.currentRoute.query } })
+      router.push({ name: 'tkeyDeviceDetected', query: { ...router.currentRoute.query, type, id } })
     }
   },
   setSecurityQuestionShareFromUserInput(_, payload) {
@@ -46,9 +46,9 @@ export default {
     thresholdKeyController.setSecurityQuestionShareFromUserInput(id, { password })
   },
   setStoreDeviceFlow(_, payload) {
-    const { id, response } = payload
+    const { id, response, rejected } = payload
     log.info('payload', payload)
     // response is { isOld: Boolean, oldIndex: '' }
-    thresholdKeyController.setStoreDeviceFlow(id, { response })
+    thresholdKeyController.setStoreDeviceFlow(id, { response, rejected })
   },
 }
