@@ -32,11 +32,27 @@
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
             <v-icon :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
-              {{ `$vuetify.icons.${index === 0 ? userInfo.typeOfLogin.toLowerCase() : 'account'}` }}
+              {{
+                `$vuetify.icons.${
+                  acc.accountType === ACCOUNT_TYPE.NORMAL
+                    ? userInfo.typeOfLogin.toLowerCase()
+                    : acc.accountType === ACCOUNT_TYPE.THRESHOLD
+                    ? 'wallet'
+                    : 'account'
+                }`
+              }}
             </v-icon>
           </div>
           <div class="caption text_1--text font-weight-bold account-list__user-email" :style="{ paddingLeft: '2px' }">
-            <span>{{ index === 0 ? userEmail : `${t('accountMenu.account')} #${index + 1}` }}</span>
+            <span>
+              {{
+                acc.accountType === ACCOUNT_TYPE.NORMAL
+                  ? userEmail
+                  : acc.accountType === ACCOUNT_TYPE.THRESHOLD
+                  ? '2FA Key'
+                  : `${t('accountMenu.account')} #${index + 1}`
+              }}
+            </span>
           </div>
           <div class="caption ml-auto text_2--text text-right">
             <span>{{ acc.totalPortfolioValue }} {{ selectedCurrency }}</span>
@@ -116,7 +132,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
-import { DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
+import { ACCOUNT_TYPE, DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
 import { addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
 import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
@@ -148,6 +164,7 @@ export default {
     return {
       accountImportDialog: false,
       DISCORD,
+      ACCOUNT_TYPE,
     }
   },
   computed: {

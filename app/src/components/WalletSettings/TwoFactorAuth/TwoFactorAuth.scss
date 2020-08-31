@@ -11,6 +11,9 @@
     .v-avatar {
       border-radius: 0;
       align-self: start;
+      svg {
+        margin: auto;
+      }
     }
     .v-list-item:not(:last-child) {
       border-bottom: thin solid #D3D5E2;

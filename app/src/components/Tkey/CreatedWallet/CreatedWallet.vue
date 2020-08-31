@@ -15,7 +15,7 @@
       :key="wallet.key"
       class="wallet-item-container d-flex align-center mb-4"
       :class="[{ active: wallet.key === selectedWallet }]"
-      @click="selectedWallet === wallet.key"
+      @click="setDefaultPublicAddress(wallet.key)"
     >
       <div class="mr-4">
         <v-icon :color="wallet.key === selectedWallet ? 'torusBrand1' : 'torusGray3'">
