@@ -32,13 +32,13 @@
                 <v-layout class="mx-n2 mb-12 align-center btn-container">
                   <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                   <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                    <a
+                    <!-- <a
                       class="caption text-decoration-none"
                       :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'"
                       @click="onAnotherMethod"
                     >
                       {{ t('tkeyNew.verifyViaAnother') }}
-                    </a>
+                    </a> -->
                   </v-flex>
                   <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
                     <v-btn :disabled="!validVerifyPasswordForm" block large color="torusBrand1" class="white--text" @click="onVerifyPassword">

@@ -104,7 +104,7 @@ export default {
       return this.pastTransactions && this.pastTransactions.length > 0 && this.badgesCompletion[BADGES_TRANSACTION] === false
     },
     isTkeyScreen() {
-      return ['tkeyCreate', 'tkeyNewDevice', 'tkeyInputPassword', 'tkeyInputDevice'].includes(this.$route.name)
+      return ['tkeyCreate', 'tkeyNewDevice', 'tkeyInputPassword', 'tkeyInputDevice', 'tkeyDeviceDetected'].includes(this.$route.name)
     },
   },
   mounted() {

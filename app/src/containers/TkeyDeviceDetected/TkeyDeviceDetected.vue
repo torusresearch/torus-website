@@ -1,0 +1,124 @@
+<template>
+  <div>
+    <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pa-0' : 'pa-4']">
+      <v-layout class="justify-center">
+        <v-flex :class="[$vuetify.breakpoint.xsOnly ? 'xs12' : 'xs7']">
+          <div class="new-device-container" :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '', { 'is-dark': $vuetify.theme.dark }]">
+            <!-- IMAGE -->
+            <div class="text-center mb-2">
+              <img src="../../assets/images/ob-verification-done.svg" alt="Verified" class="mr-2" />
+            </div>
+
+            <!-- TITLE -->
+            <div>
+              <div class="text-center new-device-header">
+                <div class="new-device-header__title">Save Extension</div>
+                <div class="new-device-header__description">
+                  Save new extension as a separate authentication factor or add it to an existing device
+                </div>
+              </div>
+            </div>
+            <div class="mb-10">
+              <v-tabs v-model="activeTab" class="device-list-tab">
+                <v-tab>New Device</v-tab>
+                <v-tab>Old Device</v-tab>
+              </v-tabs>
+              <v-tabs-items v-model="activeTab">
+                <v-tab-item class="py-3">
+                  <div class="d-flex align-center info-box py-3 px-6 mb-6">
+                    <div class="mr-2">
+                      <v-icon>$vuetify.icons.device_detailed</v-icon>
+                    </div>
+                    <div>
+                      <div class="grow body-2">
+                        <span class="font-weight-bold">{{ browser.os.name }}</span>
+                        (Current Device)
+                      </div>
+                      <div class="grow font-weight-bold body-2">{{ browser.browser.name }}</div>
+                    </div>
+                  </div>
+                </v-tab-item>
+                <v-tab-item class="py-3">
+                  <div
+                    v-for="device in devices"
+                    :key="device.index"
+                    class="d-flex align-center info-box select py-3 px-6 mb-6"
+                    :class="{ active: device.index === selectedDevice }"
+                    @click="selectBrowser(device.index)"
+                  >
+                    <div class="mr-2">
+                      <v-icon>$vuetify.icons.browser</v-icon>
+                    </div>
+                    <div>
+                      <div class="grow font-weight-bold body-2">{{ device.osName }}</div>
+                      <div class="grow body-2">{{ device.browserList }}</div>
+                      <div class="grow caption">{{ device.dateAdded }}</div>
+                    </div>
+                  </div>
+                </v-tab-item>
+              </v-tabs-items>
+            </div>
+            <v-layout class="mx-n2 mb-12 align-center btn-container">
+              <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
+              <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
+                <a
+                  class="caption text-decoration-none"
+                  :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'"
+                  @click="doNotSaveDevice"
+                >
+                  Do not save device
+                </a>
+              </v-flex>
+              <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
+                <v-btn block large color="torusBrand1" class="white--text" @click="confirm">Confirm and save</v-btn>
+              </v-flex>
+            </v-layout>
+          </div>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </div>
+</template>
+
+<script>
+import bowser from 'bowser'
+import { mapActions, mapState } from 'vuex'
+
+export default {
+  data() {
+    return {
+      activeTab: 0,
+      selectedDevice: '',
+    }
+  },
+  computed: {
+    ...mapState(['tKeyStore']),
+    devices() {
+      if (!this.tKeyStore.settingsPageData) return []
+      const { allDeviceShares } = this.tKeyStore.settingsPageData
+      return Object.keys(allDeviceShares).map((x) => {
+        const share = allDeviceShares[x]
+        share.browserList = share.browsers.map((browser) => browser.browserName).join(', ')
+        return share
+      })
+    },
+    browser() {
+      return bowser.parse(window.navigator.userAgent)
+    },
+  },
+  methods: {
+    ...mapActions(['setStoreDeviceFlow']),
+    selectBrowser(index) {
+      this.selectedDevice = index
+    },
+    confirm() {
+      this.setStoreDeviceFlow(this.$route.query.id, { isOld: !!this.activeTab, oldIndex: this.selectedDevice })
+    },
+    doNotSaveDevice() {},
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+@import 'TkeyDeviceDetected.scss';
+</style>

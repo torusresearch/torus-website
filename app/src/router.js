@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import TkeyCreate from './containers/TkeyCreate'
+import TkeyDeviceDetected from './containers/TkeyDeviceDetected'
 import TkeyInputDevice from './containers/TkeyInputDevice'
 import TkeyInputPassword from './containers/TkeyInputPassword'
 import TkeyNewDevice from './containers/TkeyNewDevice'
@@ -157,6 +158,14 @@ const router = new Router({
               path: '/',
               name: 'tkeyCreate',
               component: TkeyCreate,
+              meta: {
+                requiresAuth: false,
+              },
+            },
+            {
+              path: 'device-detected',
+              name: 'tkeyDeviceDetected',
+              component: TkeyDeviceDetected,
               meta: {
                 requiresAuth: false,
               },

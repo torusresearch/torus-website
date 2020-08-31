@@ -240,8 +240,11 @@ class ThresholdKeyController extends EventEmitter {
     const allDeviceShares = parsedShareDescriptions.reduce((acc, x) => {
       if (x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY || x.module === WEB_STORAGE_MODULE_KEY) {
         const browserInfo = bowser.parse(x.userAgent)
+        const dateFormated = new Date(x.dateAdded).toLocaleString()
 
         x.title = `${browserInfo.browser.name} ${x.dateAdded}`
+        x.browserName = x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? 'Chrome Extension' : `${browserInfo.browser.name}`
+        x.dateFormated = dateFormated
 
         if (acc[x.shareIndex]) {
           acc[x.shareIndex].browsers = [...acc[x.shareIndex].browsers, x]
@@ -249,8 +252,10 @@ class ThresholdKeyController extends EventEmitter {
           const deviceInfo = `${STORAGE_MAP[x.module]} - ${browserInfo.os.name} ${browserInfo.browser.name}`
           acc[x.shareIndex] = {
             index: x.shareIndex,
+            osName: browserInfo.os.name,
             icon: browserInfo.platform.type,
             groupTitle: deviceInfo,
+            dateAdded: dateFormated,
             browsers: [x],
           }
         }
