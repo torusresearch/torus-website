@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import bowser from 'bowser'
+import deepmerge from 'deepmerge'
 import { ethErrors } from 'eth-json-rpc-errors'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
@@ -128,10 +129,13 @@ class ThresholdKeyController extends EventEmitter {
     log.info(keyDetails)
     return new Promise((resolve, reject) => {
       const id = createRandomId()
+      this.store.updateState({ storeDeviceFlow: { id, status: 'unapproved', parsedShareDescriptions } })
       this.showStoreDeviceFlow({ id, parsedShareDescriptions })
       this.once(`${id}:storedevice:finished`, (data) => {
+        const { storeDeviceFlow } = this.state
+        this.store.updateState({ storeDeviceFlow: deepmerge(storeDeviceFlow, { id, parsedShareDescriptions, status: data.status }) })
         switch (data.status) {
-          case 'signed':
+          case 'approved':
             return resolve(data.response)
           case 'rejected':
             return reject(ethErrors.provider.userRejectedRequest('Torus User Input Store device: User denied input.'))
@@ -145,10 +149,13 @@ class ThresholdKeyController extends EventEmitter {
   async getSecurityQuestionShareFromUserInput(share) {
     return new Promise((resolve, reject) => {
       const id = createRandomId()
+      this.store.updateState({ securityQuestionShareUserInput: { id, share, status: 'unapproved' } })
       this.requestSecurityQuestionInput({ id, share })
       this.once(`${id}:securityquestion:finished`, (data) => {
+        const { securityQuestionShareUserInput } = this.state
+        this.store.updateState({ securityQuestionShareUserInput: deepmerge(securityQuestionShareUserInput, { id, share, status: data.status }) })
         switch (data.status) {
-          case 'signed':
+          case 'approved':
             return resolve(data.password)
           case 'rejected':
             return reject(ethErrors.provider.userRejectedRequest('Torus User Input Security Question: User denied input.'))
