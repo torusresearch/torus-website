@@ -67,6 +67,10 @@ export default {
     },
   },
   mounted() {
+    if (this.whiteLabel.topupHide) {
+      this.$router.push({ name: 'walletHome' }).catch((_) => {})
+      return
+    }
     const routerPath = this.$router.currentRoute.path
     const foundPath = this.providers.find((x) => x.link === routerPath)
     this.selectedProvider = foundPath ? foundPath.name : ''

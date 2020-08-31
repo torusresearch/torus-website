@@ -15,7 +15,6 @@ import {
   WalletTopupXanpool,
 } from './containers/WalletTopup'
 import WalletTransfer from './containers/WalletTransfer'
-import store from './store'
 import Confirm from './views/Confirm'
 import Login from './views/Login'
 import Popup from './views/Popup'
@@ -147,12 +146,6 @@ const router = new Router({
               component: WalletTopupXanpool,
             },
           ],
-          beforeEnter(to, from, next) {
-            if (store.state.whiteLabel.topupHide) {
-              return next({ name: 'walletHome' })
-            }
-            return next()
-          },
         },
         {
           path: 'tkey',
@@ -193,9 +186,6 @@ router.beforeResolve((to, from, next) => {
       return next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
     }
     return next()
-  }
-  if (store.state.selectedAddress === '') {
-    return next({ name: 'login', query: { redirect: to.fullPath } })
   }
   if (!hasQueryParameters(to) && hasQueryParameters(from)) {
     if (!to.name.includes('Topup') && to.name !== 'walletTransfer') {

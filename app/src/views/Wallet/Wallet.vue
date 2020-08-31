@@ -54,6 +54,7 @@ export default {
       badgesCompletion: 'badgesCompletion',
       pastTransactions: 'pastTransactions',
       paymentTxStore: 'paymentTx',
+      selectedAddress: 'selectedAddress',
     }),
     ...mapGetters(['collectibleBalances']),
     headerItems() {
@@ -105,6 +106,11 @@ export default {
     isTkeyScreen() {
       return ['tkeyCreate', 'tkeyNewDevice'].includes(this.$route.name)
     },
+  },
+  mounted() {
+    if (this.selectedAddress === '') {
+      this.$router.push({ name: 'login' })
+    }
   },
   methods: {
     ...mapActions(['setUserBadge']),
