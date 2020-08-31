@@ -8,11 +8,11 @@
             <div v-if="scenario === SCENARIO_DEVICE_DETECTED || (scenario === SCENARIO_LOGIN_DETECTED && verifiedLogin)" class="text-center mb-2">
               <img src="../../assets/images/ob-verification-done.svg" alt="Verified" class="mr-2" />
             </div>
-            <div v-if="scenario === SCENARIO_WITH_PASSWORD" class="text-center mb-10">
+            <div v-if="scenario === THRESHOLD_KEY_QUESTION_INPUT" class="text-center mb-10">
               <img src="../../assets/images/ob-verification.svg" alt="Verification Required" class="mr-2" />
             </div>
             <div
-              v-if="scenario === SCENARIO_WITH_DEVICE || scenario === SCENARIO_ACCOUNT_RECOVERY"
+              v-if="scenario === THRESHOLD_KEY_STORE_DEVICE_FLOW || scenario === SCENARIO_ACCOUNT_RECOVERY"
               class="text-center"
               :class="[hasPasswordSetUp ? 'mb-2' : 'mb-10']"
             >
@@ -21,12 +21,12 @@
             </div>
 
             <!-- TITLE -->
-            <div v-if="scenario === SCENARIO_WITH_PASSWORD" class="text-center new-device-header">
+            <div v-if="scenario === THRESHOLD_KEY_QUESTION_INPUT" class="text-center new-device-header">
               <div class="new-device-header__title">{{ t('tkeyNew.verificationReq') }}</div>
               <div class="new-device-header__description">
                 {{ t('tkeyNew.youAreAccessing') }}
               </div>
-              <div class="new-device-header__description">{{ t('tkeyNew.verifyWithPass') }}:</div>
+              <div class="new-device-header__description">{{ t('tkeyNew.verifyWithPass') }}</div>
             </div>
 
             <div v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" class="text-center new-device-header">
@@ -40,7 +40,7 @@
               </div>
             </div>
 
-            <div v-if="scenario === SCENARIO_WITH_DEVICE" class="text-center new-device-header">
+            <div v-if="scenario === THRESHOLD_KEY_STORE_DEVICE_FLOW" class="text-center new-device-header">
               <template v-if="hasPasswordSetUp">
                 <div class="new-device-header__title">{{ t('tkeyNew.verificationMethods') }}</div>
                 <div class="new-device-header__description">
@@ -97,7 +97,7 @@
             with password set up
             rmb password
             2/3, 2/4 -->
-            <div v-if="scenario === SCENARIO_WITH_PASSWORD">
+            <div v-if="scenario === THRESHOLD_KEY_QUESTION_INPUT">
               <v-form v-model="validVerifyPasswordForm">
                 <v-text-field
                   v-model="verifyPassword"
@@ -133,16 +133,16 @@
               no password set up
               2/2 -->
             <!-- Refirects after verification with old browser -->
-            <div v-if="scenario === SCENARIO_WITH_DEVICE || scenario === SCENARIO_ACCOUNT_RECOVERY">
+            <div v-if="scenario === THRESHOLD_KEY_STORE_DEVICE_FLOW || scenario === SCENARIO_ACCOUNT_RECOVERY">
               <v-expansion-panels>
-                <v-expansion-panel v-for="device in devices" :key="device.id" class="mb-2">
+                <v-expansion-panel v-for="device in deviceShares" :key="device.index" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2 text_2--text">
-                      <v-icon class="mr-1">$vuetify.icons.device_{{ device.type }}</v-icon>
-                      {{ device.name }}
+                      <v-icon class="mr-1">$vuetify.icons.device_detailed</v-icon>
+                      {{ device.groupTitle }}
                     </div>
                     <v-icon
-                      v-if="verifiedWithDevice(device.id)"
+                      v-if="verifiedWithDevice(device.index)"
                       small
                       class="d-inline-flex ml-auto success--text shrink"
                       v-text="'$vuetify.icons.check_circle_filled'"
@@ -154,13 +154,13 @@
                       {{ t('tkeyNew.loginToTorus') }}
                     </div>
 
-                    <div v-for="browser in device.browsers" :key="browser.id" class="d-flex info-box py-3 px-6 mb-2 align-center">
+                    <div v-for="browser in device.browsers" :key="browser.dateAdded" class="d-flex info-box py-3 px-6 mb-2 align-center">
                       <div class="grow font-weight-bold body-2">
                         <v-icon class="mr-1">$vuetify.icons.browser</v-icon>
-                        {{ browser.name }}
+                        {{ browser.title }}
                       </div>
                       <v-icon v-if="scenario === SCENARIO_ACCOUNT_RECOVERY" small v-text="'$vuetify.icons.download'" />
-                      <div v-else class="ml-auto text-right caption">{{ t('tkeyNew.refId') }}: {{ browser.id }}</div>
+                      <div v-else class="ml-auto text-right caption">{{ t('tkeyNew.refId') }}: {{ browser.dateAdded }}</div>
                     </div>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
@@ -321,8 +321,10 @@
 </template>
 
 <script>
-const SCENARIO_WITH_PASSWORD = 'with_password'
-const SCENARIO_WITH_DEVICE = 'with_device'
+import { mapActions, mapState } from 'vuex'
+
+import { THRESHOLD_KEY_QUESTION_INPUT, THRESHOLD_KEY_STORE_DEVICE_FLOW } from '../../utils/enums'
+
 const SCENARIO_LOGIN_DETECTED = 'login_detected'
 const SCENARIO_DEVICE_DETECTED = 'new_device_detected'
 const SCENARIO_ACCOUNT_RECOVERY = 'account_recovery'
@@ -330,7 +332,7 @@ const SCENARIO_ACCOUNT_RECOVERY = 'account_recovery'
 export default {
   data() {
     return {
-      scenario: SCENARIO_ACCOUNT_RECOVERY,
+      scenario: THRESHOLD_KEY_QUESTION_INPUT,
       // verify password
       validVerifyPasswordForm: true,
       verifyPassword: '',
@@ -350,66 +352,43 @@ export default {
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
       },
-      SCENARIO_WITH_PASSWORD,
-      SCENARIO_WITH_DEVICE,
+      THRESHOLD_KEY_QUESTION_INPUT,
+      THRESHOLD_KEY_STORE_DEVICE_FLOW,
       SCENARIO_LOGIN_DETECTED,
       SCENARIO_DEVICE_DETECTED,
       SCENARIO_ACCOUNT_RECOVERY,
     }
   },
   computed: {
-    devices() {
-      return [
-        {
-          id: 1,
-          name: 'My Macbook',
-          type: 'desktop',
-          browsers: [
-            {
-              id: 1320,
-              name: 'Chrome V82.04103.61',
-            },
-          ],
-        },
-        {
-          id: 2,
-          name: 'My Android',
-          type: 'tablet',
-          browsers: [
-            {
-              id: 1330,
-              name: 'Chrome V82.04103.61',
-            },
-          ],
-        },
-        {
-          id: 3,
-          name: 'My Iphone',
-          type: 'mobile',
-          browsers: [
-            {
-              id: 1340,
-              name: 'Chrome V82.04103.61',
-            },
-          ],
-        },
-      ]
+    ...mapState(['tKeyStore']),
+    deviceShares() {
+      if (!this.tKeyStore.settingsPageData) return []
+      return this.tKeyStore.settingsPageData.allDeviceShares
     },
     hasPasswordSetUp() {
       return true
     },
   },
+  mounted() {
+    const { type } = this.$route.query
+    this.scenario = type
+  },
   methods: {
+    ...mapActions(['setSecurityQuestionShareFromUserInput']),
     onVerifyPassword() {
-      if (this.devices.length > 1) {
-        this.scenario = SCENARIO_WITH_DEVICE
-        this.recoveredPassword = true
-      } else {
-        this.scenario = SCENARIO_DEVICE_DETECTED
-      }
+      this.setSecurityQuestionShareFromUserInput({
+        id: this.$route.query.id,
+        password: this.verifyPassword,
+      })
+      // if (this.devices.length > 1) {
+      //   this.scenario = THRESHOLD_KEY_STORE_DEVICE_FLOW
+      //   this.recoveredPassword = true
+      // } else {
+      //   this.scenario = SCENARIO_DEVICE_DETECTED
+      // }
     },
     onAnotherMethod() {
-      this.scenario = SCENARIO_WITH_DEVICE
+      this.scenario = THRESHOLD_KEY_STORE_DEVICE_FLOW
     },
     onRecoverPassword() {
       this.recoveredPassword = true

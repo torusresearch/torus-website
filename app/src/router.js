@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import TkeyCreate from './containers/TkeyCreate'
+import TkeyInputDevice from './containers/TkeyInputDevice'
+import TkeyInputPassword from './containers/TkeyInputPassword'
 import TkeyNewDevice from './containers/TkeyNewDevice'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
@@ -155,11 +157,33 @@ const router = new Router({
               path: '/',
               name: 'tkeyCreate',
               component: TkeyCreate,
+              meta: {
+                requiresAuth: false,
+              },
+            },
+            {
+              path: 'input-password',
+              name: 'tkeyInputPassword',
+              component: TkeyInputPassword,
+              meta: {
+                requiresAuth: false,
+              },
+            },
+            {
+              path: 'input-device',
+              name: 'tkeyInputDevice',
+              component: TkeyInputDevice,
+              meta: {
+                requiresAuth: false,
+              },
             },
             {
               path: 'new-device',
               name: 'tkeyNewDevice',
               component: TkeyNewDevice,
+              meta: {
+                requiresAuth: false,
+              },
             },
           ],
         },
@@ -174,6 +198,8 @@ function hasQueryParameters(route) {
 }
 
 router.beforeResolve((to, from, next) => {
+  // eslint-disable-next-line no-console
+  console.log(to, from, 'beforeResolve')
   if (
     Object.prototype.hasOwnProperty.call(to, 'meta') &&
     Object.prototype.hasOwnProperty.call(to.meta, 'requiresAuth') &&

@@ -1,7 +1,8 @@
 import log from 'loglevel'
 
+import router from '../router'
 import torus from '../torus'
-import { ACCOUNT_TYPE, THRESHOLD_KEY_QUESTION_INPUT } from '../utils/enums'
+import { ACCOUNT_TYPE, THRESHOLD_KEY_QUESTION_INPUT, THRESHOLD_KEY_STORE_DEVICE_FLOW } from '../utils/enums'
 
 const { torusController } = torus || {}
 const { thresholdKeyController } = torusController || {}
@@ -32,10 +33,13 @@ export default {
     return thresholdKeyController.downloadShare(payload)
   },
   showThresholdKeyUi(_, payload) {
-    const { type, data: { id, share } = {} } = payload
-    // TODO: Navigate to route etc and get input
-    log.info(id, share)
-    if (type === THRESHOLD_KEY_QUESTION_INPUT) thresholdKeyController.setSecurityQuestionShareFromUserInput(id, {})
+    const { type, data: { id } = {} } = payload
+    log.info(id, type, router)
+    if (type === THRESHOLD_KEY_QUESTION_INPUT) {
+      router.push({ name: 'tkeyInputPassword', query: { type, id, ...router.currentRoute.query } })
+    } else if (type === THRESHOLD_KEY_STORE_DEVICE_FLOW) {
+      router.push({ name: 'tkeyInputDevice', query: { type, id, ...router.currentRoute.query } })
+    }
   },
   setSecurityQuestionShareFromUserInput(_, payload) {
     const { id, password } = payload
