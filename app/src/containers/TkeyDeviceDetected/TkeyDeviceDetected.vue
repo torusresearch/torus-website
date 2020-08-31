@@ -90,7 +90,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['tKeyStore']),
+    ...mapState(['tKeyStore', 'selectedAddress']),
     devices() {
       if (!this.tKeyStore.settingsPageData) return []
       const { allDeviceShares } = this.tKeyStore.settingsPageData
@@ -102,6 +102,16 @@ export default {
     },
     browser() {
       return bowser.parse(window.navigator.userAgent)
+    },
+  },
+  watch: {
+    selectedAddress(newAddress, oldAddress) {
+      if (newAddress !== oldAddress && newAddress !== '') {
+        let redirectPath = this.$route.query.redirect
+        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
+
+        this.$router.push(redirectPath).catch((_) => {})
+      }
     },
   },
   methods: {

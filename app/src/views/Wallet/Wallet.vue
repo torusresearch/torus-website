@@ -55,7 +55,6 @@ export default {
       pastTransactions: 'pastTransactions',
       paymentTxStore: 'paymentTx',
       wallet: 'wallet',
-      selectedAddress: 'selectedAddress',
     }),
     ...mapGetters(['collectibleBalances']),
     headerItems() {
@@ -106,17 +105,6 @@ export default {
     },
     isTkeyScreen() {
       return ['tkeyCreate', 'tkeyNewDevice', 'tkeyInputPassword', 'tkeyInputDevice', 'tkeyDeviceDetected'].includes(this.$route.name)
-    },
-  },
-  watch: {
-    selectedAddress(newAddress, oldAddress) {
-      if (newAddress !== oldAddress && newAddress !== '') {
-        let redirectPath = this.$route.query.redirect
-        if (!this.tKeyOnboardingComplete) redirectPath = `/wallet/tkey?redirect=${redirectPath || '/wallet'}`
-        else if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
-
-        this.$router.push(redirectPath).catch((_) => {})
-      }
     },
   },
   mounted() {
