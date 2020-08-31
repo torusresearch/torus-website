@@ -175,6 +175,9 @@
     &.v-input.v-input--dense > .v-input__control > .v-input__slot {
       min-height: inherit;
     }
+    .v-input__icon--append .v-icon {
+      -webkit-appearance: none;
+    }
   }
   
   .v-btn:not(.v-btn--text):not(.v-btn--icon) {
