@@ -129,11 +129,11 @@ class ThresholdKeyController extends EventEmitter {
     log.info(keyDetails)
     return new Promise((resolve, reject) => {
       const id = createRandomId()
-      this.store.updateState({ storeDeviceFlow: { id, status: 'unapproved', parsedShareDescriptions } })
+      this.store.updateState({ storeDeviceFlow: { [id]: { status: 'unapproved', parsedShareDescriptions } } })
       this.showStoreDeviceFlow({ id, parsedShareDescriptions })
       this.once(`${id}:storedevice:finished`, (data) => {
         const { storeDeviceFlow } = this.state
-        this.store.updateState({ storeDeviceFlow: deepmerge(storeDeviceFlow, { id, parsedShareDescriptions, status: data.status }) })
+        this.store.updateState({ storeDeviceFlow: deepmerge(storeDeviceFlow, { [id]: { parsedShareDescriptions, status: data.status } }) })
         switch (data.status) {
           case 'approved':
             return resolve(data.response)
@@ -149,11 +149,13 @@ class ThresholdKeyController extends EventEmitter {
   async getSecurityQuestionShareFromUserInput(share) {
     return new Promise((resolve, reject) => {
       const id = createRandomId()
-      this.store.updateState({ securityQuestionShareUserInput: { id, share, status: 'unapproved' } })
+      this.store.updateState({ securityQuestionShareUserInput: { [id]: { share, status: 'unapproved' } } })
       this.requestSecurityQuestionInput({ id, share })
       this.once(`${id}:securityquestion:finished`, (data) => {
         const { securityQuestionShareUserInput } = this.state
-        this.store.updateState({ securityQuestionShareUserInput: deepmerge(securityQuestionShareUserInput, { id, share, status: data.status }) })
+        this.store.updateState({
+          securityQuestionShareUserInput: deepmerge(securityQuestionShareUserInput, { [id]: { share, status: data.status } }),
+        })
         switch (data.status) {
           case 'approved':
             return resolve(data.password)
