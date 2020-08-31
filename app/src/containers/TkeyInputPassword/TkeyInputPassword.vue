@@ -29,6 +29,9 @@
                   :placeholder="t('tkeyNew.enterPassword')"
                   @click:append="showVerifyPassword = !showVerifyPassword"
                 />
+                <div v-if="incorrectPassword" class="text-right">
+                  <span class="caption error--text">{{ t('tkeyNew.incorrectPass') }}</span>
+                </div>
                 <v-layout class="mx-n2 mb-12 align-center btn-container">
                   <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                   <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
@@ -68,6 +71,7 @@ export default {
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
       },
+      incorrectPassword: false,
     }
   },
   computed: {

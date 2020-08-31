@@ -17,7 +17,7 @@
       </div>
       <v-progress-linear v-model="progressValue" class="mb-2" :color="progressColor" rounded background-color="torusGray3"></v-progress-linear>
       <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-        {{ t('tkeyCreateSetup.youNeedToBackup') }}
+        {{ t(progressDescription) }}
       </div>
     </div>
     <div>
@@ -55,7 +55,7 @@
               <v-icon class="backup-device-checkbox mr-2" :class="{ isDark: $vuetify.theme.dark }" @click="backupDeviceShare = !backupDeviceShare">
                 $vuetify.icon.checkbox{{ $vuetify.theme.dark ? '_dark' : '' }}_{{ backupDeviceShare ? 'checked' : 'unchecked' }}
               </v-icon>
-              <v-icon size="16" class="mr-1" :class="backupDeviceShare ? 'success--text' : 'warning--text'">$vuetify.icon.alert_circle_filled</v-icon>
+              <v-icon v-if="!backupDeviceShare" size="16" class="mr-1 warning--text">$vuetify.icon.alert_circle_filled</v-icon>
               <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">{{ t('tkeyCreateSetup.backupOnDevice') }}</div>
             </div>
           </v-expansion-panel-content>
@@ -171,10 +171,17 @@ export default {
   },
   computed: {
     progressColor() {
-      return this.progressValue > 200 / 3 ? 'success' : 'warning'
+      return this.progressValue > 200 / 3 || (this.progressValue === 200 / 3 && this.backupDeviceShare) ? 'success' : 'warning'
     },
     progressText() {
-      return this.progressValue > 200 / 3 ? 'tkeyCreateSetup.excellent' : 'tkeyCreateSetup.average'
+      if (this.progressValue === 200 / 3 && this.backupDeviceShare) return 'tkeyCreateSetup.good'
+      if (this.progressValue <= 200 / 3) return 'tkeyCreateSetup.average'
+      return 'tkeyCreateSetup.excellent'
+    },
+    progressDescription() {
+      if (this.progressValue === 200 / 3 && this.backupDeviceShare) return 'tkeyCreateSetup.youNeedPassword'
+      if (this.progressValue <= 200 / 3) return 'tkeyCreateSetup.youNeedBackupPassword'
+      return 'tkeyCreateSetup.youHaveSufficient'
     },
     browser() {
       const browser = bowser.getParser(window.navigator.userAgent)

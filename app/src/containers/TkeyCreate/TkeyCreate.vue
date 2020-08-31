@@ -19,7 +19,12 @@
               <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">{{ userInfo.verifierId }}</div>
               <div class="body-2 text_3--text">
                 <span>{{ t('tkeyCreate.walletAddress') }}: {{ slicedAddress }}</span>
-                <v-icon size="14" class="ml-1 text_3--text" :style="{ marginTop: '-2px' }">$vuetify.icons.question_filled</v-icon>
+
+                <HelpTooltip title="Wallet Address">
+                  <template v-slot:description>
+                    <div class="body-2 text-justify">This is your unique address, similar to a bank account number used to receive payments.</div>
+                  </template>
+                </HelpTooltip>
               </div>
             </div>
           </div>
@@ -31,9 +36,9 @@
         </div>
       </v-container>
     </div>
-    <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pa-0' : 'pa-4']">
+    <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pb-0 px-0' : 'pa-4']">
       <v-layout class="justify-center">
-        <v-flex :class="[$vuetify.breakpoint.xsOnly ? 'xs12' : tab === 1 ? 'xs7' : 'xs6']">
+        <v-flex class="xs12 sm10 md8 lg6">
           <v-tabs-items v-model="tab">
             <v-tab-item>
               <AddWallet @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
@@ -65,6 +70,7 @@
 import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
+import HelpTooltip from '../../components/helpers/HelpTooltip'
 import AddWallet from '../../components/Tkey/AddWallet'
 import CreatedWallet from '../../components/Tkey/CreatedWallet'
 import SetupWallet from '../../components/Tkey/SetupWallet'
@@ -73,7 +79,7 @@ import { addressSlicer } from '../../utils/utils'
 
 export default {
   name: 'TkeyCreate',
-  components: { AddWallet, SetupWallet, CreatedWallet },
+  components: { AddWallet, SetupWallet, CreatedWallet, HelpTooltip },
   data() {
     return {
       tab: 0,
