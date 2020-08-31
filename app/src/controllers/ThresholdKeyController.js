@@ -44,6 +44,7 @@ class ThresholdKeyController extends EventEmitter {
     const { requiredShares: shareCount } = keyDetails
     let requiredShares = shareCount
     const descriptionBuffer = []
+    let passwordEntered = false
     while (requiredShares > 0 && parsedShareDescriptions.length > 0) {
       const currentShare = parsedShareDescriptions.shift()
       if (currentShare.module === WEB_STORAGE_MODULE_KEY) {
@@ -60,6 +61,7 @@ class ThresholdKeyController extends EventEmitter {
           const password = await this.getSecurityQuestionShareFromUserInput(currentShare)
           await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].inputShareFromSecurityQuestions(password)
           requiredShares -= 1
+          passwordEntered = true
         } catch (error) {
           log.error(error, 'Unable to get user share from input')
         }
@@ -78,7 +80,7 @@ class ThresholdKeyController extends EventEmitter {
     }
 
     if (requiredShares <= 0) {
-      if (descriptionBuffer.length > 0) {
+      if (descriptionBuffer.length > 0 || passwordEntered) {
         try {
           const response = await this.storeDeviceFlow()
           const { isOld, oldIndex } = response
