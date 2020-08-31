@@ -45,4 +45,9 @@ export default {
     const { id, password } = payload
     thresholdKeyController.setSecurityQuestionShareFromUserInput(id, { password })
   },
+  setStoreDeviceFlow(_, payload) {
+    const { id, response } = payload
+    // response is { isOld: Boolean, oldIndex: '' }
+    thresholdKeyController.setStoreDeviceFlow(id, { response })
+  },
 }

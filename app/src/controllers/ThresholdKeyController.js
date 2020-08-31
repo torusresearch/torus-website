@@ -146,6 +146,12 @@ class ThresholdKeyController extends EventEmitter {
     })
   }
 
+  async setStoreDeviceFlow(id, payload) {
+    const { response, rejected } = payload
+    if (rejected) this.emit(`${id}:storedevice:finished`, { status: 'rejected' })
+    if (response) this.emit(`${id}:storedevice:finished`, { status: 'approved', response })
+  }
+
   async getSecurityQuestionShareFromUserInput(share) {
     return new Promise((resolve, reject) => {
       const id = createRandomId()
