@@ -45,8 +45,10 @@ class ThresholdKeyController extends EventEmitter {
     let requiredShares = shareCount
     const descriptionBuffer = []
     let passwordEntered = false
-    while (requiredShares > 0 && parsedShareDescriptions.length > 0) {
-      const currentShare = parsedShareDescriptions.shift()
+    let currentIndex = 0
+    while (requiredShares > 0 && currentIndex < parsedShareDescriptions.length) {
+      const currentShare = parsedShareDescriptions[currentIndex]
+      currentIndex += 1
       if (currentShare.module === WEB_STORAGE_MODULE_KEY) {
         try {
           await tKey.modules[WEB_STORAGE_MODULE_KEY].inputShareFromWebStorage()
@@ -63,6 +65,7 @@ class ThresholdKeyController extends EventEmitter {
           requiredShares -= 1
           passwordEntered = true
         } catch (error) {
+          currentIndex -= 1 // To Allow multiple entry of incorrect password
           log.error(error, 'Unable to get user share from input')
         }
       } else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
@@ -70,11 +73,11 @@ class ThresholdKeyController extends EventEmitter {
         await this.getShareFromChromeExtension()
         requiredShares -= 1
       }
-      if (parsedShareDescriptions.length === 0 && requiredShares > 0 && descriptionBuffer.length > 0) {
+      if (parsedShareDescriptions.length === currentIndex && requiredShares > 0 && descriptionBuffer.length > 0) {
         await this.getShareFromAnotherDevice()
         requiredShares -= 1
       }
-      if (parsedShareDescriptions.length === 0 && requiredShares > 0 && descriptionBuffer.length === 0) {
+      if (parsedShareDescriptions.length === currentIndex && requiredShares > 0 && descriptionBuffer.length === 0) {
         throw new Error('User lost his key')
       }
     }
