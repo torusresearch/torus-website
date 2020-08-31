@@ -83,6 +83,7 @@ class ThresholdKeyController extends EventEmitter {
     }
 
     if (requiredShares <= 0) {
+      const privKey = await tKey.reconstructKey()
       if (descriptionBuffer.length > 0 || passwordEntered) {
         try {
           const response = await this.storeDeviceFlow()
@@ -96,7 +97,6 @@ class ThresholdKeyController extends EventEmitter {
           log.error(error)
         }
       }
-      const privKey = await tKey.reconstructKey()
       await this.setSettingsPageData()
       return {
         ethAddress: generateAddressFromPrivateKey(privKey.toString('hex')),
@@ -129,7 +129,7 @@ class ThresholdKeyController extends EventEmitter {
   async generateAndStoreNewDeviceShare() {
     const { tKey } = this.state
     const newShare = await tKey.generateNewShare()
-    tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShare(newShare.newShareStores[newShare.newShareIndex.toString('hex')])
+    await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShare(newShare.newShareStores[newShare.newShareIndex.toString('hex')])
     await this.setSettingsPageData()
   }
 
