@@ -19,7 +19,7 @@
 
             <!-- BODY -->
             <div>
-              <v-form v-model="validVerifyPasswordForm">
+              <v-form v-model="validVerifyPasswordForm" @submit.prevent="onVerifyPassword">
                 <v-text-field
                   v-model="verifyPassword"
                   :append-icon="showVerifyPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
@@ -41,7 +41,7 @@
                     </a> -->
                   </v-flex>
                   <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                    <v-btn :disabled="!validVerifyPasswordForm" block large color="torusBrand1" class="white--text" @click="onVerifyPassword">
+                    <v-btn type="submit" :disabled="!validVerifyPasswordForm" block large color="torusBrand1" class="white--text">
                       {{ t('tkeyNew.confirm') }}
                     </v-btn>
                   </v-flex>
