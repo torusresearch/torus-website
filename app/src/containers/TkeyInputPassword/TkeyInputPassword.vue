@@ -73,15 +73,15 @@ export default {
   computed: {
     ...mapState(['tKeyStore']),
     shareInput() {
-      if (!this.tKeyStore.setSecurityQuestionShareFromUserInput) return []
-      return this.tKeyStore.setSecurityQuestionShareFromUserInput
+      if (!this.tKeyStore.securityQuestionShareUserInput) return {}
+      return this.tKeyStore.securityQuestionShareUserInput
     },
   },
   methods: {
     ...mapActions(['setSecurityQuestionShareFromUserInput']),
     onVerifyPassword() {
       this.setSecurityQuestionShareFromUserInput({
-        id: this.shareInput.id,
+        id: this.$route.query.id,
         password: this.verifyPassword,
       })
     },

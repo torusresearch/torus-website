@@ -170,7 +170,6 @@ class ThresholdKeyController extends EventEmitter {
 
   async setSecurityQuestionShareFromUserInput(id, payload) {
     const { password, rejected } = payload
-    log.info('payload', payload)
     if (rejected) this.emit(`${id}:securityquestion:finished`, { status: 'rejected' })
     if (password) this.emit(`${id}:securityquestion:finished`, { status: 'approved', password })
   }
