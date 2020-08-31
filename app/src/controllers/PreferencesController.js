@@ -376,8 +376,8 @@ class PreferencesController extends EventEmitter {
   }
 
   /* istanbul ignore next */
-  createUser(selectedCurrency, theme, verifier, verifierId, accountType, address) {
-    return post(
+  async createUser(selectedCurrency, theme, verifier, verifierId, accountType, address) {
+    await post(
       `${config.api}/user`,
       {
         default_currency: selectedCurrency,
@@ -388,6 +388,15 @@ class PreferencesController extends EventEmitter {
       },
       this.headers(address),
       { useAPIKey: true }
+    )
+    this.updateStore(
+      {
+        theme,
+        tKeyOnboardingComplete: false,
+        accountType: ACCOUNT_TYPE.NORMAL,
+        defaultPublicAddress: address,
+      },
+      address
     )
   }
 
