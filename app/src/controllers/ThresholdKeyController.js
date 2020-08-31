@@ -23,6 +23,7 @@ class ThresholdKeyController extends EventEmitter {
     super()
     this.store = new ObservableStore({})
     this.requestSecurityQuestionInput = opts.requestSecurityQuestionInput
+    this.showStoreDeviceFlow = opts.showStoreDeviceFlow
   }
 
   async checkIfTKeyExists(postboxKey) {
@@ -127,7 +128,7 @@ class ThresholdKeyController extends EventEmitter {
     log.info(keyDetails)
     return new Promise((resolve, reject) => {
       const id = createRandomId()
-      this.requestSecurityQuestionInput({ id, parsedShareDescriptions })
+      this.showStoreDeviceFlow({ id, parsedShareDescriptions })
       this.once(`${id}:storedevice:finished`, (data) => {
         switch (data.status) {
           case 'signed':
