@@ -387,6 +387,7 @@ export default {
           dispatch,
           commit,
           jwtToken: x.jwtToken,
+          accountType: x.accountType,
         })
       })
     )
