@@ -181,6 +181,7 @@ export const PASSWORD_QUESTION = 'what is your password?'
 export const THRESHOLD_KEY_PRIORITY_ORDER = [WEB_STORAGE_MODULE_KEY, SECURITY_QUESTIONS_MODULE_KEY, CHROME_EXTENSION_STORAGE_MODULE_KEY]
 
 export const THRESHOLD_KEY_QUESTION_INPUT = 'requestSecurityQuestionInput'
+export const THRESHOLD_KEY_STORE_DEVICE_FLOW = 'storeDeviceFlow'
 
 export const STORAGE_MAP = {
   [WEB_STORAGE_MODULE_KEY]: 'Web Storage',

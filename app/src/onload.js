@@ -4,7 +4,7 @@ import LocalMessageDuplexStream from 'post-message-stream'
 import Web3 from 'web3'
 
 import TorusController from './controllers/TorusController'
-import { MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME, THRESHOLD_KEY_QUESTION_INPUT } from './utils/enums'
+import { MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME, THRESHOLD_KEY_QUESTION_INPUT, THRESHOLD_KEY_STORE_DEVICE_FLOW } from './utils/enums'
 import setupMultiplex from './utils/setupMultiplex'
 import { getIFrameOrigin, isMain, storageAvailable } from './utils/utils'
 // import store from './store'
@@ -58,6 +58,7 @@ function onloadTorus(torus) {
     showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
     openPopup: triggerUi.bind(window, 'bindopenPopup'),
     requestSecurityQuestionInput: triggerThresholdUi.bind(window, THRESHOLD_KEY_QUESTION_INPUT),
+    showStoreDeviceFlow: triggerThresholdUi.bind(window, THRESHOLD_KEY_STORE_DEVICE_FLOW),
     storeProps: () => {
       const { state } = getStore()
       const { selectedAddress, wallet } = state || {}
