@@ -245,7 +245,7 @@ class ThresholdKeyController extends EventEmitter {
         const browserInfo = bowser.parse(x.userAgent)
         const dateFormated = new Date(x.dateAdded).toLocaleString()
 
-        x.title = `${browserInfo.browser.name} ${x.dateAdded}`
+        x.title = `${browserInfo.browser.name} ${dateFormated}`
         x.browserName = x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? 'Chrome Extension' : `${browserInfo.browser.name}`
         x.dateFormated = dateFormated
 
