@@ -124,6 +124,7 @@ export default {
       }
     },
     async setDefaultAddress(address) {
+      await this.setTKeyOnboardingStatus(true)
       await this.setDefaultPublicAddress(address)
       this.$router.push('/wallet').catch((_) => {})
     },
