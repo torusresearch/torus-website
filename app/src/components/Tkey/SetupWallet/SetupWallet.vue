@@ -76,7 +76,7 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
-            <v-form v-model="validPasswordForm" @submit.prevent="setFinalPassword">
+            <v-form v-model="validPasswordForm">
               <v-text-field
                 v-model="recoveryPassword"
                 :readonly="!!finalRecoveryPassword"
@@ -95,6 +95,7 @@
                   :disabled="!validPasswordForm"
                   class="caption white--text font-weight-bold"
                   color="torusBrand1"
+                  @click="setFinalPassword"
                 >
                   {{ t('tkeyNew.setPassword') }}
                 </v-btn>
