@@ -321,6 +321,7 @@
 </template>
 
 <script>
+import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
 import { THRESHOLD_KEY_QUESTION_INPUT, THRESHOLD_KEY_STORE_DEVICE_FLOW } from '../../utils/enums'
@@ -395,8 +396,7 @@ export default {
     },
     verifiedWithDevice(deviceId) {
       // from backend
-      // eslint-disable-next-line no-console
-      console.log('device', deviceId)
+      log.info(deviceId)
       return false
     },
   },

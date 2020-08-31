@@ -71,10 +71,20 @@ export default {
     }
   },
   computed: {
-    ...mapState(['tKeyStore']),
+    ...mapState(['tKeyStore', 'selectedAddress']),
     shareInput() {
       if (!this.tKeyStore.securityQuestionShareUserInput) return {}
       return this.tKeyStore.securityQuestionShareUserInput
+    },
+  },
+  watch: {
+    selectedAddress(newAddress, oldAddress) {
+      if (newAddress !== oldAddress && newAddress !== '') {
+        let redirectPath = this.$route.query.redirect
+        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
+
+        this.$router.push(redirectPath).catch((_) => {})
+      }
     },
   },
   methods: {

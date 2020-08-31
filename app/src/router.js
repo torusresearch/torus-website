@@ -207,8 +207,6 @@ function hasQueryParameters(route) {
 }
 
 router.beforeResolve((to, from, next) => {
-  // eslint-disable-next-line no-console
-  console.log(to, from, 'beforeResolve')
   if (
     Object.prototype.hasOwnProperty.call(to, 'meta') &&
     Object.prototype.hasOwnProperty.call(to.meta, 'requiresAuth') &&
