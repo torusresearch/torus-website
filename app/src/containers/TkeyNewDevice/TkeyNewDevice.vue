@@ -98,7 +98,7 @@
             rmb password
             2/3, 2/4 -->
             <div v-if="scenario === THRESHOLD_KEY_QUESTION_INPUT">
-              <v-form v-model="validVerifyPasswordForm">
+              <v-form v-model="validVerifyPasswordForm" @submit.prevent="onVerifyPassword">
                 <v-text-field
                   v-model="verifyPassword"
                   :append-icon="showVerifyPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
@@ -120,7 +120,7 @@
                     </a>
                   </v-flex>
                   <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                    <v-btn :disabled="!validVerifyPasswordForm" block large color="torusBrand1" class="white--text" @click="onVerifyPassword">
+                    <v-btn type="submit" :disabled="!validVerifyPasswordForm" block large color="torusBrand1" class="white--text">
                       {{ t('tkeyNew.confirm') }}
                     </v-btn>
                   </v-flex>
@@ -201,7 +201,7 @@
                     <v-icon v-else small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
                   </v-expansion-panel-header>
                   <v-expansion-panel-content class="pa-5">
-                    <v-form v-model="validRecoveryPasswordForm">
+                    <v-form v-model="validRecoveryPasswordForm" @submit.prevent="onRecoverPassword">
                       <v-text-field
                         v-model="recoveryPassword"
                         :append-icon="showRecoveryPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
@@ -215,14 +215,7 @@
                         <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                         <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'"></v-flex>
                         <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                          <v-btn
-                            :disabled="!validRecoveryPasswordForm"
-                            block
-                            large
-                            color="torusBrand1"
-                            class="white--text"
-                            @click="onRecoverPassword"
-                          >
+                          <v-btn :disabled="!validRecoveryPasswordForm" block large color="torusBrand1" class="white--text" type="submit">
                             {{ t('tkeyNew.confirm') }}
                           </v-btn>
                         </v-flex>
@@ -254,7 +247,7 @@
               </v-layout>
             </div>
 
-            <v-form v-if="scenario === SCENARIO_DEVICE_DETECTED" v-model="verifyDeviceForm">
+            <v-form v-if="scenario === SCENARIO_DEVICE_DETECTED" v-model="verifyDeviceForm" @submit.prevent="verifiedDevice = true">
               <div class="d-flex info-box py-3 px-6 mb-2 align-center">
                 <v-icon small class="mr-1">$vuetify.icons.browser</v-icon>
                 <div class="grow font-weight-bold body-2">{{ t('tkeyNew.browser') }}</div>
@@ -283,7 +276,7 @@
                   </a>
                 </v-flex>
                 <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                  <v-btn :disabled="!verifyDeviceForm" block large color="torusBrand1" class="white--text" @click="verifiedDevice = true">
+                  <v-btn :disabled="!verifyDeviceForm" block large color="torusBrand1" class="white--text" type="submit">
                     {{ t('tkeyNew.confirmAndAdd') }}
                   </v-btn>
                 </v-flex>
