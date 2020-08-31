@@ -91,6 +91,7 @@
               <div class="text-right">
                 <v-btn
                   v-if="!finalRecoveryPassword"
+                  type="submit"
                   :disabled="!validPasswordForm"
                   class="caption white--text font-weight-bold"
                   color="torusBrand1"

@@ -104,7 +104,7 @@
                     <v-icon v-else small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
                   </v-expansion-panel-header>
                   <v-expansion-panel-content class="pa-5">
-                    <v-form v-model="validRecoveryPasswordForm">
+                    <v-form v-model="validRecoveryPasswordForm" @submit.prevent="onRecoverPassword">
                       <v-text-field
                         v-model="recoveryPassword"
                         :append-icon="showRecoveryPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
@@ -118,14 +118,7 @@
                         <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
                         <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'"></v-flex>
                         <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                          <v-btn
-                            :disabled="!validRecoveryPasswordForm"
-                            block
-                            large
-                            color="torusBrand1"
-                            class="white--text"
-                            @click="onRecoverPassword"
-                          >
+                          <v-btn :disabled="!validRecoveryPasswordForm" block large color="torusBrand1" class="white--text" type="submit">
                             {{ t('tkeyNew.confirm') }}
                           </v-btn>
                         </v-flex>
