@@ -37,4 +37,8 @@ export default {
     log.info(id, share)
     if (type === THRESHOLD_KEY_QUESTION_INPUT) thresholdKeyController.setSecurityQuestionShareFromUserInput(id, {})
   },
+  setSecurityQuestionShareFromUserInput(_, payload) {
+    const { id, password } = payload
+    thresholdKeyController.setSecurityQuestionShareFromUserInput(id, { password })
+  },
 }

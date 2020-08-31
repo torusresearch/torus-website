@@ -76,6 +76,15 @@ class ThresholdKeyController extends EventEmitter {
     }
 
     if (requiredShares <= 0) {
+      if (descriptionBuffer.length > 0) {
+        const response = await this.storeDeviceFlow()
+        const { isOld, oldIndex } = response
+        if (!isOld) {
+          await this.generateAndStoreNewDeviceShare()
+        } else {
+          await this.copyShareUsingIndexAndStoreLocally(oldIndex)
+        }
+      }
       const privKey = await tKey.reconstructKey()
       await this.setSettingsPageData()
       return {
@@ -99,11 +108,44 @@ class ThresholdKeyController extends EventEmitter {
     await this.setSettingsPageData()
   }
 
+  async copyShareUsingIndexAndStoreLocally(index) {
+    const { tKey } = this.state
+    const outputshare = tKey.outputShare(index)
+    await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShare(outputshare)
+    await this.setSettingsPageData()
+  }
+
+  async generateAndStoreNewDeviceShare() {
+    const { tKey } = this.state
+    const newShare = await tKey.generateNewShare()
+    tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShare(newShare.newShareStores[newShare.newShareIndex.toString('hex')])
+    await this.setSettingsPageData()
+  }
+
+  async storeDeviceFlow() {
+    const { keyDetails, parsedShareDescriptions } = this.state
+    log.info(keyDetails)
+    return new Promise((resolve, reject) => {
+      const id = createRandomId()
+      this.requestSecurityQuestionInput({ id, parsedShareDescriptions })
+      this.once(`${id}:storedevice:finished`, (data) => {
+        switch (data.status) {
+          case 'signed':
+            return resolve(data.response)
+          case 'rejected':
+            return reject(ethErrors.provider.userRejectedRequest('Torus User Input Store device: User denied input.'))
+          default:
+            return reject(new Error(`Torus User Input Security Question: Unknown problem: ${JSON.stringify(parsedShareDescriptions)}`))
+        }
+      })
+    })
+  }
+
   async getSecurityQuestionShareFromUserInput(share) {
     return new Promise((resolve, reject) => {
       const id = createRandomId()
       this.requestSecurityQuestionInput({ id, share })
-      this.once(`${id}:finished`, (data) => {
+      this.once(`${id}:securityquestion:finished`, (data) => {
         switch (data.status) {
           case 'signed':
             return resolve(data.password)
@@ -118,8 +160,8 @@ class ThresholdKeyController extends EventEmitter {
 
   async setSecurityQuestionShareFromUserInput(id, payload) {
     const { password, rejected } = payload
-    if (rejected) this.emit(`${id}:finished`, { status: 'rejected' })
-    if (password) this.emit(`${id}:finished`, { status: 'signed', password })
+    if (rejected) this.emit(`${id}:securityquestion:finished`, { status: 'rejected' })
+    if (password) this.emit(`${id}:securityquestion:finished`, { status: 'signed', password })
   }
 
   async getShareFromChromeExtension() {
