@@ -83,13 +83,13 @@
           <v-icon size="10" class="torusBrand1--text">$vuetify.icons.download</v-icon>
           " {{ t('tkeySettings.iconToAllow') }}.
         </div>
-        <v-layout wrap>
+        <!-- <v-layout wrap>
           <v-flex class="ml-auto xs12 text-right">
             <v-btn large class="torus-btn1 py-1 torusBrand1--text" type="submit">
               {{ t('tkeySettings.addBrowser') }}
             </v-btn>
           </v-flex>
-        </v-layout>
+        </v-layout> -->
       </div>
 
       <div v-if="!hasPassword || isChangePassword" class="settings-container pa-4 mb-10">

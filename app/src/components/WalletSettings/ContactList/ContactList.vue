@@ -6,7 +6,7 @@
           <div class="body-2">{{ t('walletSettings.listContacts') }}</div>
           <div class="d-flex ml-auto">
             <v-text-field
-              v-if="!$vuetify.breakpoint.xsOnly"
+              v-if="!$vuetify.breakpoint.smAndDown"
               id="search-name"
               v-model="searchName"
               class="search-name caption"
@@ -32,12 +32,12 @@
             ></v-select>
           </div>
         </div>
-        <div v-if="$vuetify.breakpoint.xsOnly" class="mt-4">
+        <div v-if="$vuetify.breakpoint.smAndDown" class="mt-4">
           <v-text-field
             id="search-name"
             v-model="searchName"
             class="search-name caption"
-            :class="{ mobile: $vuetify.breakpoint.xsOnly }"
+            :class="{ mobile: $vuetify.breakpoint.smAndDown }"
             dense
             hide-details
             placeholder="Search by name"
