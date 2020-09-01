@@ -10,12 +10,14 @@ import ThresholdKey, { SecurityQuestionsModule, ServiceProviderBase, TorusStorag
 import config from '../config'
 import {
   CHROME_EXTENSION_STORAGE_MODULE_KEY,
+  ERROR_TIME,
   PASSWORD_QUESTION,
   SECURITY_QUESTIONS_MODULE_KEY,
   STORAGE_MAP,
   THRESHOLD_KEY_PRIORITY_ORDER,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
+import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import createRandomId from '../utils/random-id'
 import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey } from '../utils/utils'
 
@@ -64,22 +66,23 @@ class ThresholdKeyController extends EventEmitter {
           await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].inputShareFromSecurityQuestions(password)
           requiredShares -= 1
           passwordEntered = true
-          this.store.updateState({ passwordError: '' })
         } catch (error) {
           currentIndex -= 1 // To Allow multiple entry of incorrect password
           log.error(error, 'Unable to get user share from input')
-          this.store.updateState({ passwordError: 'Incorrect password' })
+          this.handleError(new Error('Incorrect password'))
         }
-      } else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
-        // default to password for now
-        await this.getShareFromChromeExtension()
-        requiredShares -= 1
       }
+      // else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
+      //   // default to password for now
+      //   await this.getShareFromChromeExtension()
+      //   requiredShares -= 1
+      // }
       if (parsedShareDescriptions.length === currentIndex && requiredShares > 0 && descriptionBuffer.length > 0) {
         await this.getShareFromAnotherDevice()
         requiredShares -= 1
       }
       if (parsedShareDescriptions.length === currentIndex && requiredShares > 0 && descriptionBuffer.length === 0) {
+        this.handleError('Cannot recover key')
         throw new Error('User lost his key')
       }
     }
@@ -107,6 +110,21 @@ class ThresholdKeyController extends EventEmitter {
     }
     // TODO: Don't throw but keep this promise in wait and get the other shares
     throw new Error('Requires more shares')
+  }
+
+  handleError(error) {
+    if (isErrorObject(error)) {
+      this.store.updateState({ error: `Oops, That didn't work. Pls reload and try again. \n${error.message}` })
+    } else if (error && typeof error === 'string') {
+      this.store.updateState({ error })
+    } else if (error && typeof error === 'object') {
+      const prettyError = prettyPrintData(error)
+      const payloadError = prettyError !== '' ? `Error: ${prettyError}` : 'Something went wrong. Pls try again'
+      this.store.updateState({ error: payloadError })
+    } else {
+      this.store.updateState({ error: error || '' })
+    }
+    setTimeout(() => this.store.updateState({ error: '' }), ERROR_TIME)
   }
 
   async changePassword(password) {
@@ -191,10 +209,12 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async getShareFromChromeExtension() {
+    this.handleError('Not supported')
     throw new TypeError('Not yet implemented')
   }
 
   async getShareFromAnotherDevice() {
+    this.handleError('Not supported')
     throw new TypeError('Not yet implemented')
   }
 

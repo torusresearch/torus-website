@@ -195,6 +195,7 @@ export default {
       this.$emit('tKeyOnboardingCancel')
     },
     async createWallet() {
+      if (this.creatingTkey) return
       this.$emit('createNewTKey', { password: this.finalRecoveryPassword, backup: this.backupDeviceShare })
     },
     setFinalPassword() {
