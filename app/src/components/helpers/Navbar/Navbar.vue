@@ -73,9 +73,25 @@
           {{ capitalizeFirstLetter(t(errorMsg)) }}
         </span>
         <v-spacer />
-        <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`" @click="clearMsg('SuccessMsg')">
+        <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`" @click="clearMsg('errorMsg')">
           $vuetify.icons.close
         </v-icon>
+      </div>
+    </v-system-bar>
+    <v-system-bar
+      v-show="tkeyError"
+      fixed
+      :color="`error ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
+      :class="[`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`, lrcMsg ? 'is-lrc' : '']"
+    >
+      <div class="container d-flex align-center">
+        <v-spacer />
+        <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`">$vuetify.icons.info</v-icon>
+        <span class="caption">
+          {{ capitalizeFirstLetter(t(tkeyError)) }}
+        </span>
+        <v-spacer />
+        <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`" @click="clearTkeyError">$vuetify.icons.close</v-icon>
       </div>
     </v-system-bar>
     <v-system-bar
@@ -97,7 +113,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { capitalizeFirstLetter } from '../../../utils/utils'
 import AccountMenu from '../../WalletAccount/AccountMenu'
@@ -128,7 +144,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userInfo', 'successMsg', 'errorMsg']),
+    ...mapState(['userInfo', 'successMsg', 'errorMsg', 'tKeyStore']),
     ...mapGetters(['getLogo']),
     bannerColor() {
       return this.$vuetify.theme.isDark ? this.$vuetify.theme.themes.dark.infoBanner : this.$vuetify.theme.themes.light.infoBanner
@@ -139,8 +155,12 @@ export default {
       }
       return ''
     },
+    tkeyError() {
+      return this.tKeyStore.error || ''
+    },
   },
   methods: {
+    ...mapActions(['clearTkeyError']),
     capitalizeFirstLetter,
     clearMsg(statusMessage) {
       this.$store.commit(`set${statusMessage}`, '')

@@ -69,7 +69,7 @@ class ThresholdKeyController extends EventEmitter {
         } catch (error) {
           currentIndex -= 1 // To Allow multiple entry of incorrect password
           log.error(error, 'Unable to get user share from input')
-          this.handleError(new Error('Incorrect password'))
+          this.handleError('tkeyNew.errorIncorrectPass')
         }
       }
       // else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
@@ -82,7 +82,7 @@ class ThresholdKeyController extends EventEmitter {
         requiredShares -= 1
       }
       if (parsedShareDescriptions.length === currentIndex && requiredShares > 0 && descriptionBuffer.length === 0) {
-        this.handleError('Cannot recover key')
+        this.handleError('tkeyNew.errorCannotRecover')
         throw new Error('User lost his key')
       }
     }
@@ -209,12 +209,12 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async getShareFromChromeExtension() {
-    this.handleError('Not supported')
+    this.handleError('tkeyNew.errorNotSupported')
     throw new TypeError('Not yet implemented')
   }
 
   async getShareFromAnotherDevice() {
-    this.handleError('Not supported')
+    this.handleError('tkeyNew.errorNotSupported')
     throw new TypeError('Not yet implemented')
   }
 
@@ -356,6 +356,10 @@ class ThresholdKeyController extends EventEmitter {
 
     this.store.updateState({ tKey })
     await this.setSettingsPageData()
+  }
+
+  clearTkeyError() {
+    this.store.updateState({ error: '' })
   }
 }
 

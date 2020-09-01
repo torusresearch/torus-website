@@ -52,4 +52,7 @@ export default {
     // response is { isOld: Boolean, oldIndex: '' }
     thresholdKeyController.setStoreDeviceFlow(id, { response, rejected })
   },
+  clearTkeyError() {
+    return thresholdKeyController.clearTkeyError()
+  },
 }

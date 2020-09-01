@@ -22,7 +22,7 @@
 
                 <HelpTooltip title="Wallet Address">
                   <template v-slot:description>
-                    <div class="body-2 text-justify">This is your unique address, similar to a bank account number used to receive payments.</div>
+                    <div class="body-2 text-justify">{{ t('tkeyCreate.walletAddressDesc') }}</div>
                   </template>
                 </HelpTooltip>
               </div>
