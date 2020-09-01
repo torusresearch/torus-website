@@ -37,6 +37,10 @@ export default class AssetsDetectionController {
     this.restartAssetDetection()
   }
 
+  stopAssetDetection() {
+    this.selectedAddress = ''
+  }
+
   /**
    * @type {Number}
    */
