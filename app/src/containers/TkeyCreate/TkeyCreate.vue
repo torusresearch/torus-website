@@ -11,12 +11,12 @@
               <img
                 :src="userInfo.profileImage"
                 class="align-start"
-                :alt="userInfo.userName"
+                :alt="userInfo.name"
                 onerror="if (!this.src.includes('/images/person.jpeg')) this.src = '/images/person.jpeg';"
               />
             </v-avatar>
             <div>
-              <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">{{ userInfo.verifierId }}</div>
+              <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">{{ userEmail }}</div>
               <div class="body-2 text_3--text">
                 <span>{{ t('tkeyCreate.walletAddress') }}: {{ slicedAddress }}</span>
 
@@ -93,6 +93,11 @@ export default {
       selectedAddress: 'selectedAddress',
       defaultPublicAddress: 'defaultPublicAddress',
     }),
+    userEmail() {
+      const verifierIdArray = this.userInfo.verifierId.split('|')
+      const verifierId = verifierIdArray[1] ? verifierIdArray[1] : verifierIdArray[0]
+      return this.userInfo.email ? this.userInfo.email : verifierId
+    },
     slicedAddress() {
       return this.$vuetify.breakpoint.xsOnly
         ? `${this.selectedAddress.slice(0, 4)}...${this.selectedAddress.slice(-3)}`

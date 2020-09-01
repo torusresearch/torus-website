@@ -102,7 +102,7 @@ export default {
     resetStore(detectTokensController.detectedTokensStore, detectTokensControllerHandler, detectTokensController.initState)
     resetStore(tokenRatesController.store, tokenRatesControllerHandler)
     resetStore(prefsController.billboardStore, billboardHandler)
-    resetStore(prefsController.store, prefsControllerHandler)
+    resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
