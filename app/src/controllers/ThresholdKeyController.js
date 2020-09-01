@@ -64,9 +64,11 @@ class ThresholdKeyController extends EventEmitter {
           await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].inputShareFromSecurityQuestions(password)
           requiredShares -= 1
           passwordEntered = true
+          this.store.updateState({ passwordError: '' })
         } catch (error) {
           currentIndex -= 1 // To Allow multiple entry of incorrect password
           log.error(error, 'Unable to get user share from input')
+          this.store.updateState({ passwordError: 'Incorrect password' })
         }
       } else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
         // default to password for now
