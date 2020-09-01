@@ -21,6 +21,13 @@ import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import createRandomId from '../utils/random-id'
 import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey } from '../utils/utils'
 
+function beforeUnloadHandler(e) {
+  // Cancel the event
+  e.preventDefault() // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+  // Chrome requires returnValue to be set
+  e.returnValue = 'You have unfinished changes'
+}
+
 class ThresholdKeyController extends EventEmitter {
   constructor(opts = {}) {
     super()
@@ -48,6 +55,8 @@ class ThresholdKeyController extends EventEmitter {
     const descriptionBuffer = []
     let passwordEntered = false
     let currentIndex = 0
+
+    window.addEventListener('beforeunload', beforeUnloadHandler)
     while (requiredShares > 0 && currentIndex < parsedShareDescriptions.length) {
       const currentShare = parsedShareDescriptions[currentIndex]
       currentIndex += 1
@@ -79,10 +88,13 @@ class ThresholdKeyController extends EventEmitter {
       // }
       if (parsedShareDescriptions.length === currentIndex && requiredShares > 0 && descriptionBuffer.length > 0) {
         await this.getShareFromAnotherDevice()
+        // TODO: remove when the method is implemented
+        window.removeEventListener('beforeunload', beforeUnloadHandler)
         requiredShares -= 1
       }
       if (parsedShareDescriptions.length === currentIndex && requiredShares > 0 && descriptionBuffer.length === 0) {
         this.handleError('tkeyNew.errorCannotRecover')
+        window.removeEventListener('beforeunload', beforeUnloadHandler)
         throw new Error('User lost his key')
       }
     }
@@ -103,11 +115,13 @@ class ThresholdKeyController extends EventEmitter {
         }
       }
       await this.setSettingsPageData()
+      window.removeEventListener('beforeunload', beforeUnloadHandler)
       return {
         ethAddress: generateAddressFromPrivateKey(privKey.toString('hex')),
         privKey: privKey.toString('hex'),
       }
     }
+    window.removeEventListener('beforeunload', beforeUnloadHandler)
     // TODO: Don't throw but keep this promise in wait and get the other shares
     throw new Error('Requires more shares')
   }

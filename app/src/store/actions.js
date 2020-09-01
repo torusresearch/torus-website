@@ -107,6 +107,7 @@ export default {
     resetStore(prefsController.errorStore, errorMessageHandler)
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
     resetStore(thresholdKeyController.store, tKeyHandler, {})
+    assetDetectionController.stopAssetDetection()
     torus.updateStaticData({ isUnlocked: false })
   },
   setSelectedCurrency({ commit }, payload) {
