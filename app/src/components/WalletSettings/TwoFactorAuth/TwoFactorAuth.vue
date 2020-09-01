@@ -109,7 +109,7 @@
             v-model="recoveryPasswordConfirm"
             :append-icon="showRecoveryPasswordConfirm ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
             :type="showRecoveryPasswordConfirm ? 'text' : 'password'"
-            :rules="[rules.required, rules.equalToPassword]"
+            :rules="[rules.required, equalToPassword]"
             outlined
             :placeholder="t('tkeyCreateSetup.confirmPassword')"
             @click:append="showRecoveryPasswordConfirm = !showRecoveryPasswordConfirm"
@@ -217,7 +217,6 @@ export default {
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
         minLength: (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!$%&*?@])[\d!$%&*?@A-Za-z]{10,}$/.test(v) || this.t('tkeyCreateSetup.passwordRules'),
-        equalToPassword: (value) => value === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch'),
       },
     }
   },
@@ -251,6 +250,9 @@ export default {
       const verifierIdArray = this.userInfo.verifierId.split('|')
       const verifierId = verifierIdArray[1] ? verifierIdArray[1] : verifierIdArray[0]
       return this.userInfo.email ? this.userInfo.email : verifierId
+    },
+    equalToPassword() {
+      return this.recoveryPasswordConfirm === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch')
     },
   },
   mounted() {

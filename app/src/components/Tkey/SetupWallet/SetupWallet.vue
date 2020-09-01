@@ -93,7 +93,7 @@
                 v-model="recoveryPasswordConfirm"
                 :append-icon="showRecoveryPasswordConfirm ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                 :type="showRecoveryPasswordConfirm ? 'text' : 'password'"
-                :rules="[rules.required, rules.equalToPassword]"
+                :rules="[rules.required, equalToPassword]"
                 outlined
                 :placeholder="t('tkeyCreateSetup.confirmPassword')"
                 @click:append="showRecoveryPasswordConfirm = !showRecoveryPasswordConfirm"
@@ -178,7 +178,7 @@ export default {
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
         minLength: (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!$%&*?@])[\d!$%&*?@A-Za-z]{10,}$/.test(v) || this.t('tkeyCreateSetup.passwordRules'),
-        equalToPassword: (value) => value === this.recoveryPassword || 'tkeyCreateSetup.passwordMatch',
+        equalToPassword: (value) => value === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch'),
       },
       panels: [1, 2],
       progressValue: 200 / 3,
@@ -204,6 +204,9 @@ export default {
       const browserInfo = browser.getBrowser()
 
       return `${browserInfo.name} V${browserInfo.version}`
+    },
+    equalToPassword() {
+      return this.recoveryPasswordConfirm === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch')
     },
   },
   methods: {

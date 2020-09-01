@@ -33,7 +33,7 @@
               <ContactList />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel v-if="isThreshold" class="my-2">
+          <v-expansion-panel v-show="isThreshold" class="my-2">
             <v-expansion-panel-header id="contact-list-panel-header">
               <v-icon size="12" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.two_factor'" />
               <div class="grow font-weight-bold title text_1--text">2FA Settings</div>
