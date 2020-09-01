@@ -499,7 +499,7 @@ export default {
         })
         if (Object.keys(tKeyStore).length > 0) {
           const postboxWallet = walletKeys.find((x) => wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-          await thresholdKeyController.rehydrate(postboxWallet?.privateKey, tKeyStore.tKey)
+          await thresholdKeyController.rehydrate(wallet[postboxWallet]?.privateKey, tKeyStore.tKey)
         }
         dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
