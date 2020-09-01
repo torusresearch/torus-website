@@ -224,7 +224,12 @@ class ThresholdKeyController extends EventEmitter {
     if (password) await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
     const privKey = await tKey.reconstructKey()
     if (backup) {
-      await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage()
+      try {
+        await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage()
+      } catch (error) {
+        log.error(error)
+        this.handleError(error)
+      }
     }
 
     log.info('privKey', privKey.toString('hex'))
