@@ -34,7 +34,7 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title class="font-weight-regular caption">
-                <span class="text_1--text">{{ account.verifierId }}</span>
+                <span class="text_1--text">{{ userEmail }}</span>
               </v-list-item-title>
             </v-list-item-content>
             <v-list-item-action class="ma-0"></v-list-item-action>
@@ -104,6 +104,15 @@
             :placeholder="t('tkeyCreateSetup.minAlphaNumeric')"
             autocomplete="new-password"
             @click:append="showRecoveryPassword = !showRecoveryPassword"
+          />
+          <v-text-field
+            v-model="recoveryPasswordConfirm"
+            :append-icon="showRecoveryPasswordConfirm ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
+            :type="showRecoveryPasswordConfirm ? 'text' : 'password'"
+            :rules="[rules.required, rules.equalToPassword]"
+            outlined
+            :placeholder="t('tkeyCreateSetup.confirmPassword')"
+            @click:append="showRecoveryPasswordConfirm = !showRecoveryPasswordConfirm"
           />
           <v-layout wrap>
             <v-flex class="ml-auto xs12 text-right">
@@ -203,9 +212,12 @@ export default {
       recoveryPassword: '',
       showRecoveryPassword: false,
       isChangePassword: false,
+      recoveryPasswordConfirm: '',
+      showRecoveryPasswordConfirm: false,
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
         minLength: (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!$%&*?@])[\d!$%&*?@A-Za-z]{10,}$/.test(v) || this.t('tkeyCreateSetup.passwordRules'),
+        equalToPassword: (value) => value === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch'),
       },
     }
   },
@@ -234,6 +246,11 @@ export default {
     authenticationThreshold() {
       if (!this.tKeyStore.settingsPageData) return ''
       return this.tKeyStore.settingsPageData.threshold
+    },
+    userEmail() {
+      const verifierIdArray = this.userInfo.verifierId.split('|')
+      const verifierId = verifierIdArray[1] ? verifierIdArray[1] : verifierIdArray[0]
+      return this.userInfo.email ? this.userInfo.email : verifierId
     },
   },
   mounted() {

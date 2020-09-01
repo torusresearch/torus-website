@@ -38,7 +38,7 @@
     </div>
     <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pb-0 px-0' : 'pa-4']">
       <v-layout class="justify-center">
-        <v-flex class="xs12 sm10 md8 lg6">
+        <v-flex class="xs12 sm10 md8 lg7">
           <v-tabs-items v-model="tab">
             <v-tab-item>
               <AddWallet @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
@@ -47,6 +47,7 @@
               <SetupWallet
                 :creating-tkey="creatingTkey"
                 :user-info="userInfo"
+                :user-email="userEmail"
                 @tKeyOnboardingCancel="tKeyOnboardingCancel"
                 @next="tab = 2"
                 @createNewTKey="createTKey"

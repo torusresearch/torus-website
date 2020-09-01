@@ -2,7 +2,7 @@
   <div>
     <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pa-0' : 'pa-4']">
       <v-layout class="justify-center">
-        <v-flex :class="[$vuetify.breakpoint.xsOnly ? 'xs12' : 'xs7']">
+        <v-flex class="xs12 sm10 md8 lg7">
           <div class="new-device-container" :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '', { 'is-dark': $vuetify.theme.dark }]">
             <!-- IMAGE -->
             <div class="text-center mb-2">
@@ -12,14 +12,14 @@
             <!-- TITLE -->
             <div>
               <div class="text-center new-device-header">
-                <div class="new-device-header__title">Save Device</div>
-                <div class="new-device-header__description">Save new device as a separate authentication factor or add it to an existing device</div>
+                <div class="new-device-header__title">{{ t('tkeyNew.saveDevice') }}</div>
+                <div class="new-device-header__description">{{ t('tkeyNew.saveNewDevice') }}</div>
               </div>
             </div>
             <div class="mb-10">
               <v-tabs v-model="activeTab" class="device-list-tab">
-                <v-tab>New Device</v-tab>
-                <v-tab>Old Device</v-tab>
+                <v-tab>{{ t('tkeyNew.newDevice') }}</v-tab>
+                <v-tab>{{ t('tkeyNew.oldDevice') }}</v-tab>
               </v-tabs>
               <v-tabs-items v-model="activeTab">
                 <v-tab-item class="py-3">
@@ -30,7 +30,7 @@
                     <div>
                       <div class="grow body-2">
                         <span class="font-weight-bold">{{ browser.os.name }}</span>
-                        (Current Device)
+                        ({{ t('tkeyNew.currentDevice') }})
                       </div>
                       <div class="grow font-weight-bold body-2">{{ browser.browser.name }}</div>
                     </div>
@@ -57,18 +57,20 @@
               </v-tabs-items>
             </div>
             <v-layout class="mx-n2 mb-12 align-center btn-container">
-              <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
-              <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
+              <v-flex v-if="!$vuetify.breakpoint.smAndDown" class="xs6 lg4 px-2"></v-flex>
+              <v-flex class="px-2 text-center xs6 lg4">
                 <a
                   class="caption text-decoration-none"
                   :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'"
                   @click="doNotSaveDevice"
                 >
-                  Do not save device
+                  {{ t('tkeyNew.doNotSave') }}
                 </a>
               </v-flex>
-              <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                <v-btn block large color="torusBrand1" class="white--text" @click="confirm">Confirm and save</v-btn>
+              <v-flex class="px-2 xs6 lg4">
+                <v-btn :loading="isConfirming" block large color="torusBrand1" class="caption font-weight-bold white--text" @click="confirm">
+                  {{ t('tkeyNew.confirmAndSave') }}
+                </v-btn>
               </v-flex>
             </v-layout>
           </div>
@@ -87,6 +89,7 @@ export default {
     return {
       activeTab: 0,
       selectedDevice: '',
+      isConfirming: false,
     }
   },
   computed: {
@@ -114,15 +117,22 @@ export default {
       }
     },
   },
+  beforeDestroy() {
+    this.isConfirming = false
+  },
   methods: {
     ...mapActions(['setStoreDeviceFlow']),
     selectBrowser(index) {
       this.selectedDevice = index
     },
     confirm() {
+      if (this.isConfirming) return
+      this.isConfirming = true
       this.setStoreDeviceFlow({ id: this.$route.query.id, response: { isOld: !!this.activeTab, oldIndex: this.selectedDevice } })
     },
     doNotSaveDevice() {
+      if (this.isConfirming) return
+      this.isConfirming = true
       this.setStoreDeviceFlow({ id: this.$route.query.id, rejected: true })
     },
   },

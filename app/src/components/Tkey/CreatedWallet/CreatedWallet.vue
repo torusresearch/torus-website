@@ -32,13 +32,7 @@
     </div>
 
     <div class="mt-9" :class="$vuetify.breakpoint.xsOnly ? 'text-right' : 'text-center'">
-      <v-btn
-        :x-large="!$vuetify.breakpoint.xsOnly"
-        :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
-        color="torusBrand1"
-        class="white--text"
-        @click="goToWallet"
-      >
+      <v-btn :x-large="!$vuetify.breakpoint.xsOnly" color="torusBrand1" class="caption font-weight-bold white--text" @click="goToWallet">
         {{ t('tkeyCreateDone.letsExplore') }}
       </v-btn>
     </div>

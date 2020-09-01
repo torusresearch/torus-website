@@ -2,7 +2,7 @@
   <div>
     <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pa-0' : 'pa-4']">
       <v-layout class="justify-center">
-        <v-flex :class="[$vuetify.breakpoint.xsOnly ? 'xs12' : 'xs7']">
+        <v-flex class="xs12 sm10 md8 lg7">
           <div class="new-device-container" :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '', { 'is-dark': $vuetify.theme.dark }]">
             <div class="text-center mb-10">
               <img src="../../assets/images/ob-verification.svg" alt="Verification Required" class="mr-2" />
@@ -30,18 +30,27 @@
                   @click:append="showVerifyPassword = !showVerifyPassword"
                 />
                 <v-layout class="mx-n2 mb-12 align-center btn-container">
-                  <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
-                  <v-flex class="px-2 text-center" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                    <!-- <a
+                  <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs2 px-2"></v-flex>
+                  <v-flex class="px-2 text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs6'">
+                    <!-- TODO: Change to on another method when sign in with another device is implemented -->
+                    <a
                       class="caption text-decoration-none"
                       :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'"
-                      @click="onAnotherMethod"
+                      @click="onSkipDeviceLogin"
                     >
-                      {{ t('tkeyNew.verifyViaAnother') }}
-                    </a> -->
+                      <!-- {{ t('tkeyNew.verifyViaAnother') }} -->
+                      {{ t('tkeyNew.skip') }}
+                    </a>
                   </v-flex>
                   <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
-                    <v-btn type="submit" :disabled="!validVerifyPasswordForm" block large color="torusBrand1" class="white--text">
+                    <v-btn
+                      type="submit"
+                      :disabled="!validVerifyPasswordForm"
+                      block
+                      large
+                      color="torusBrand1"
+                      class="caption font-weight-bold white--text"
+                    >
                       {{ t('tkeyNew.confirm') }}
                     </v-btn>
                   </v-flex>
@@ -68,6 +77,7 @@ export default {
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
       },
+      isConfirming: false,
     }
   },
   computed: {
@@ -87,8 +97,11 @@ export default {
       }
     },
   },
+  beforeDestroy() {
+    this.isConfirming = false
+  },
   methods: {
-    ...mapActions(['setSecurityQuestionShareFromUserInput']),
+    ...mapActions(['setSecurityQuestionShareFromUserInput', 'skipDeviceLogin']),
     onVerifyPassword() {
       this.setSecurityQuestionShareFromUserInput({
         id: this.$route.query.id,
@@ -97,6 +110,9 @@ export default {
     },
     onAnotherMethod() {
       // TODO
+    },
+    onSkipDeviceLogin() {
+      this.skipDeviceLogin()
     },
   },
 }

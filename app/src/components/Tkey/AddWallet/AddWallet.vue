@@ -46,10 +46,9 @@
         <v-btn
           block
           :x-large="!$vuetify.breakpoint.xsOnly"
-          :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
           outlined
           :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'"
-          class="body-2 font-weight-bold"
+          class="caption font-weight-bold"
           @click="tKeyOnboardingCancel"
         >
           {{ t('tkeyCreateAdd.notNow') }}
@@ -59,9 +58,8 @@
         <v-btn
           block
           :x-large="!$vuetify.breakpoint.xsOnly"
-          :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
           color="torusBrand1"
-          class="white--text body-2 font-weight-bold"
+          class="white--text caption font-weight-bold"
           :title="t('tkeyCreateAdd.sureLetsAdd')"
           @click="next"
         >

@@ -29,7 +29,7 @@
               {{ userInfo.typeOfLogin }} Login
             </div>
             <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-              {{ userInfo.verifierId }}
+              {{ userEmail }}
               <v-icon small class="ml-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
             </div>
           </v-expansion-panel-header>
@@ -88,6 +88,16 @@
                 autocomplete="new-password"
                 @click:append="showRecoveryPassword = !showRecoveryPassword"
               />
+              <v-text-field
+                v-if="!finalRecoveryPassword"
+                v-model="recoveryPasswordConfirm"
+                :append-icon="showRecoveryPasswordConfirm ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
+                :type="showRecoveryPasswordConfirm ? 'text' : 'password'"
+                :rules="[rules.required, rules.equalToPassword]"
+                outlined
+                :placeholder="t('tkeyCreateSetup.confirmPassword')"
+                @click:append="showRecoveryPasswordConfirm = !showRecoveryPasswordConfirm"
+              />
               <div class="text-right">
                 <v-btn
                   v-if="!finalRecoveryPassword"
@@ -110,7 +120,7 @@
         <v-btn
           block
           :x-large="!$vuetify.breakpoint.xsOnly"
-          :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
+          class="caption font-weight-bold"
           outlined
           :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'"
           @click="cancelOnboarding"
@@ -123,9 +133,8 @@
           block
           :disabled="!finalRecoveryPassword && !backupDeviceShare"
           :x-large="!$vuetify.breakpoint.xsOnly"
-          :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
           color="torusBrand1"
-          class="white--text"
+          class="white--text caption font-weight-bold"
           :loading="creatingTkey"
           @click="createWallet"
         >
@@ -153,6 +162,10 @@ export default {
     creatingTkey: {
       type: Boolean,
     },
+    userEmail: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -160,9 +173,12 @@ export default {
       recoveryPassword: '',
       finalRecoveryPassword: '',
       showRecoveryPassword: false,
+      recoveryPasswordConfirm: '',
+      showRecoveryPasswordConfirm: false,
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
         minLength: (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!$%&*?@])[\d!$%&*?@A-Za-z]{10,}$/.test(v) || this.t('tkeyCreateSetup.passwordRules'),
+        equalToPassword: (value) => value === this.recoveryPassword || 'tkeyCreateSetup.passwordMatch',
       },
       panels: [1, 2],
       progressValue: 200 / 3,

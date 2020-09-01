@@ -55,4 +55,8 @@ export default {
   clearTkeyError() {
     return thresholdKeyController.clearTkeyError()
   },
+  skipDeviceLogin({ dispatch, state }) {
+    const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
+    dispatch('updateSelectedAddress', { selectedAddress: normalAccountAddress })
+  },
 }

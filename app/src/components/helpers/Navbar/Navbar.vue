@@ -1,6 +1,17 @@
 <template>
   <v-app-bar app flat class="header-container" :color="$vuetify.theme.dark ? '' : 'white'">
-    <div class="d-flex align-end">
+    <div v-if="!showNav" class="d-flex align-end">
+      <img
+        v-if="!$vuetify.breakpoint.xsOnly"
+        class="home-link mr-1"
+        alt="Torus Logo"
+        :width="$store.state.whiteLabel.isActive ? '' : '135'"
+        :height="$store.state.whiteLabel.isActive ? '50' : '30'"
+        :src="getLogo.logo"
+      />
+      <img v-else src="../../../assets/img/icons/t-fill.svg" width="35" height="30" alt="Torus Logo" />
+    </div>
+    <div v-else class="d-flex align-end">
       <router-link v-if="!$vuetify.breakpoint.xsOnly" :to="{ name: 'walletHome' }">
         <img
           class="home-link mr-1"
