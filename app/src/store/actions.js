@@ -3,7 +3,6 @@ import clone from 'clone'
 import deepmerge from 'deepmerge'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
-import { toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import vuetify from '../plugins/vuetify'
@@ -116,22 +115,14 @@ export default {
       else commit('setCurrencyData', data)
     })
   },
-  async forceFetchTokens() {
+  async forceFetchTokens({ state }) {
     detectTokensController.refreshTokenBalances()
     assetDetectionController.restartAssetDetection()
+    const { selectedAddress } = state
     try {
-      const response = await prefsController.getEtherScanTokenBalances()
+      const response = await prefsController.getEtherScanTokenBalances(selectedAddress)
       const { data } = response
-      data.forEach((object) => {
-        detectTokensController.detectEtherscanTokenBalance(toChecksumAddress(object.contractAddress), {
-          decimals: object.tokenDecimal,
-          erc20: true,
-          logo: 'eth.svg',
-          name: object.name,
-          balance: object.balance,
-          symbol: object.ticker,
-        })
-      })
+      detectTokensController.detectEtherscanTokenBalance(data, selectedAddress)
     } catch {
       log.error('etherscan balance fetch failed')
     }

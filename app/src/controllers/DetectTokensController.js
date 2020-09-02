@@ -24,8 +24,7 @@ class DetectTokensController {
   constructor({ interval = DEFAULT_INTERVAL, network, provider } = {}) {
     this.interval = interval
     this.network = network
-    this.initState = { tokens: [] }
-    this.detectedTokensStore = new ObservableStore({ tokens: [] })
+    this.detectedTokensStore = new ObservableStore({})
     this._provider = provider
     this.web3 = new Web3(this._provider)
     this.selectedAddress = ''
@@ -36,12 +35,13 @@ class DetectTokensController {
    *
    */
   async detectNewTokens() {
-    if (this.network.getNetworkNameFromNetworkCode() !== MAINNET || this.selectedAddress === '') {
-      this.detectedTokensStore.putState({ tokens: [] })
+    const userAddress = this.selectedAddress
+    if (!userAddress) return
+    if (this.network.getNetworkNameFromNetworkCode() !== MAINNET) {
+      this.detectedTokensStore.updateState({ [userAddress]: [] })
       return
     }
     const tokensToDetect = []
-    // eslint-disable-next-line no-restricted-syntax
     for (const contractAddress in contracts) {
       if (contracts[contractAddress].erc20) {
         tokensToDetect.push(contractAddress)
@@ -50,7 +50,7 @@ class DetectTokensController {
     if (tokensToDetect.length > 0) {
       const web3Instance = this.web3
       const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
-      ethContract.methods.balances([this.selectedAddress], tokensToDetect).call({ from: this.selectedAddress }, (error, result) => {
+      ethContract.methods.balances([userAddress], tokensToDetect).call({ from: userAddress }, (error, result) => {
         if (error) {
           warn('MetaMask - DetectTokensController single call balance fetch failed', error)
           return
@@ -64,7 +64,7 @@ class DetectTokensController {
             // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
           }
         })
-        this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+        this.detectedTokensStore.updateState({ [userAddress]: nonZeroTokens })
       })
     }
   }
@@ -76,42 +76,51 @@ class DetectTokensController {
    * @returns {boolean} If balance is detected, token is added.
    *
    */
-  async detectEtherscanTokenBalance(contractAddress, data = {}) {
-    const nonZeroTokens = this.detectedTokensStore.getState().tokens
-    const index = nonZeroTokens.findIndex((element) => element.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
-    if (index === -1) {
-      nonZeroTokens.push({
-        ...data,
-        tokenAddress: contractAddress,
-        balance: `0x${new BigNumber(data.balance).times(new BigNumber(10).pow(new BigNumber(data.decimals))).toString(16)}`,
-      })
-      this.detectedTokensStore.putState({ tokens: nonZeroTokens })
-    }
+  async detectEtherscanTokenBalance(data = [], userAddress) {
+    const nonZeroTokens = this.detectedTokensStore.getState()[userAddress] || []
+    data.forEach((x) => {
+      const index = nonZeroTokens.findIndex((element) => element.tokenAddress.toLowerCase() === x.contractAddress.toLowerCase())
+      if (index === -1) {
+        nonZeroTokens.push({
+          ...x,
+          decimals: x.tokenDecimal,
+          erc20: true,
+          logo: 'eth.svg',
+          name: x.name,
+          symbol: x.ticker,
+          tokenAddress: x.contractAddress,
+          balance: `0x${new BigNumber(x.balance).times(new BigNumber(10).pow(new BigNumber(x.decimals))).toString(16)}`,
+        })
+      }
+    })
+    this.detectedTokensStore.updateState({ [userAddress]: nonZeroTokens })
   }
 
   async refreshTokenBalances() {
-    if (this.network.store.getState().provider.type !== MAINNET || this.selectedAddress === '') {
-      this.detectedTokensStore.putState({ tokens: [] })
+    const userAddress = this.selectedAddress
+    if (userAddress === '') return
+    if (this.network.store.getState().provider.type !== MAINNET) {
+      this.detectedTokensStore.updateState({ [userAddress]: [] })
       return
     }
-    const oldTokens = this.detectedTokensStore.getState().tokens
+    const oldTokens = this.detectedTokensStore.getState()[userAddress] || []
     const tokenAddresses = oldTokens.map((x) => x.tokenAddress)
     if (tokenAddresses.length > 0) {
       const web3Instance = this.web3
       const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
-      ethContract.methods.balances([this.selectedAddress], tokenAddresses).call({ from: this.selectedAddress }, (error, result) => {
+      ethContract.methods.balances([userAddress], tokenAddresses).call({ from: userAddress }, (error, result) => {
         if (error) {
           warn('MetaMask - DetectTokensController single call balance fetch failed', error)
           return
         }
         const nonZeroTokens = []
-        tokenAddresses.forEach((tokenAddress, index) => {
+        tokenAddresses.forEach((_, index) => {
           const balance = toHex(result[index])
           if (balance && balance !== '0x0') {
             nonZeroTokens.push({ ...oldTokens[index], balance })
           }
         })
-        this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+        this.detectedTokensStore.updateState({ [userAddress]: nonZeroTokens })
       })
     }
   }
@@ -125,7 +134,6 @@ class DetectTokensController {
     if (!this.selectedAddress) {
       return
     }
-    // this.detectedTokensStore.putState({ tokens: [] })
     this.detectNewTokens()
     this.interval = DEFAULT_INTERVAL
   }

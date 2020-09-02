@@ -506,8 +506,8 @@ class PreferencesController extends EventEmitter {
   }
 
   /* istanbul ignore next */
-  getEtherScanTokenBalances() {
-    return get(`${config.api}/tokenbalances`, this.headers(), { useAPIKey: true })
+  getEtherScanTokenBalances(address) {
+    return get(`${config.api}/tokenbalances`, this.headers(address), { useAPIKey: true })
   }
 
   async getBillboardContents() {

@@ -100,14 +100,6 @@ export default class AccountTracker {
       }
     })
 
-    const accountsToRemove = []
-    locals.forEach((local) => {
-      if (!addresses.includes(local)) {
-        accountsToRemove.push(local)
-      }
-    })
-
-    this.removeAccount(accountsToRemove)
     return this.addAccounts(accountsToAdd)
   }
 
@@ -227,11 +219,12 @@ export default class AccountTracker {
    * @param {*} deployedContractAddress
    */
   async _updateAccountsViaBalanceChecker(addresses, deployedContractAddress) {
-    const { accounts } = this.store.getState()
     const web3Instance = this.web3
     const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, deployedContractAddress)
     try {
       const result = await ethContract.methods.balances(addresses, [ZERO_ADDRESS]).call()
+      const { accounts } = this.store.getState()
+
       addresses.forEach((address, index) => {
         const balance = toHex(result[index])
         accounts[address] = { address, balance }
