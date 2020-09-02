@@ -71,7 +71,13 @@ class ThresholdKeyController extends EventEmitter {
       } else if (currentShare.module === SECURITY_QUESTIONS_MODULE_KEY) {
         // default to password for now
         try {
-          const password = await this.getSecurityQuestionShareFromUserInput(currentShare)
+          let password
+          try {
+            password = await this.getSecurityQuestionShareFromUserInput(currentShare)
+          } catch {
+            log.info('user is not willing to enter password')
+            break
+          }
           await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].inputShareFromSecurityQuestions(password)
           requiredShares -= 1
           passwordEntered = true

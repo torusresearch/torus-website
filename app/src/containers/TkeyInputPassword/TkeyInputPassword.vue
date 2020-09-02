@@ -108,11 +108,11 @@ export default {
         password: this.verifyPassword,
       })
     },
-    onAnotherMethod() {
-      // TODO
-    },
     onSkipDeviceLogin() {
-      this.skipDeviceLogin()
+      this.setSecurityQuestionShareFromUserInput({
+        id: this.$route.query.id,
+        rejected: true,
+      })
     },
   },
 }

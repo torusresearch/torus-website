@@ -9,9 +9,15 @@ const { thresholdKeyController } = torusController || {}
 
 export default {
   async addTKey({ dispatch }, { postboxKey, calledFromEmbed }) {
-    const thresholdKey = await thresholdKeyController.login(postboxKey.privKey)
-    log.info('tkey 2', thresholdKey)
-    return dispatch('initTorusKeyring', { keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }], calledFromEmbed, rehydrate: false })
+    try {
+      const thresholdKey = await thresholdKeyController.login(postboxKey.privKey)
+      log.info('tkey 2', thresholdKey)
+      return dispatch('initTorusKeyring', { keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }], calledFromEmbed, rehydrate: false })
+    } catch (error) {
+      // tkey login failed. Allow normal google one to proceed through
+      log.error(error)
+      return []
+    }
   },
   async createNewTKey({ state, dispatch }, payload) {
     const normalAccount = Object.values(state.wallet).find((x) => x.accountType === ACCOUNT_TYPE.NORMAL)
@@ -43,8 +49,8 @@ export default {
     }
   },
   setSecurityQuestionShareFromUserInput(_, payload) {
-    const { id, password } = payload
-    thresholdKeyController.setSecurityQuestionShareFromUserInput(id, { password })
+    const { id, password, rejected } = payload
+    thresholdKeyController.setSecurityQuestionShareFromUserInput(id, { password, rejected })
   },
   setStoreDeviceFlow(_, payload) {
     const { id, response, rejected } = payload
@@ -54,9 +60,5 @@ export default {
   },
   clearTkeyError() {
     return thresholdKeyController.clearTkeyError()
-  },
-  skipDeviceLogin({ dispatch, state }) {
-    const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-    dispatch('updateSelectedAddress', { selectedAddress: normalAccountAddress })
   },
 }
