@@ -43,7 +43,8 @@ export default class TorusKeyring extends EventEmitter {
   deserialize(privateKeys = []) {
     return new Promise((resolve, reject) => {
       try {
-        this.wallets = privateKeys.map((x) => this.generateWallet(x))
+        const existingKeys = this.wallets.map((x) => this.generatePrivKey(x))
+        this.wallets = [...new Set([...existingKeys, ...privateKeys])].map((x) => this.generateWallet(x))
         resolve()
       } catch (error) {
         reject(error)

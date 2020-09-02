@@ -19,7 +19,7 @@ export default {
       return []
     }
   },
-  async createNewTKey({ state, dispatch }, payload) {
+  async createNewTKey({ state, dispatch, commit }, payload) {
     const normalAccount = Object.values(state.wallet).find((x) => x.accountType === ACCOUNT_TYPE.NORMAL)
     const thresholdKey = await thresholdKeyController.createNewTKey({ postboxKey: normalAccount.privateKey, ...payload })
     log.info('tkey 2', thresholdKey)
@@ -28,6 +28,7 @@ export default {
       calledFromEmbed: false,
       rehydrate: false,
     })
+    commit('setTkeyExists', true)
     dispatch('updateSelectedAddress', { selectedAddress: thresholdKey.ethAddress }) // synchronous
   },
   addPassword(_, payload) {
