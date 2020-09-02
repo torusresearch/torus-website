@@ -26,26 +26,13 @@
     }
   }
 
-  .info-box {
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid #d3d5e2;
-    box-sizing: border-box;
-    border-radius: 6px;
-    &.select {
-      cursor: pointer;
-      &.active {
-        border: 1px solid var(--v-torusBrand1-base);
-      }
-    }
-  }
-
   .v-tabs.device-list-tab {
     ::v-deep .v-tabs-bar {
       background: none;
     }
   }
   .v-tabs-items {
-    background: none
+    background: none;
   }
 
   &.is-dark {
@@ -62,15 +49,6 @@
       }
     }
 
-    .info-box {
-      background: #3c3e45;
-      border: 0.5px solid #a2a5b5;
-      color: var(--v-text_2-base);
-      .v-icon {
-        color: var(--v-text_2-base);
-      }
-    }
-    
     ::v-deep .v-input.v-text-field--outlined > .v-input__control > .v-input__slot {
       background: #3c3e45;
       border-radius: 3px;
@@ -82,39 +60,6 @@
         line-height: 18px;
       }
     }
-  }
-}
-
-.tkey-footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 50px;
-}
-
-.v-expansion-panel {
-  border: 1px solid #e7e9f4;
-  border-radius: 6px;
-  margin-top: 0;
-  &::before {
-    box-shadow: none;
-  }
-  ::v-deep .v-expansion-panel-content__wrap {
-    padding: 0;
-  }
-}
-.v-expansion-panel:not(:first-child) {
-  &::after {
-    border: 0;
-  }
-}
-.v-expansion-panel-header {
-  min-height: unset;
-  &.v-expansion-panel-header--active {
-    border-bottom: 1px solid #e7e9f4;
-    border-radius: 6px;
-    min-height: unset;
   }
 }
 
@@ -138,5 +83,54 @@
     left: 0;
     width: 100%;
     padding: 20px;
+  }
+}
+
+.info-box {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #d3d5e2;
+  box-sizing: border-box;
+  border-radius: 6px;
+  &.select {
+    cursor: pointer;
+    &.active {
+      border: 1px solid var(--v-torusBrand1-base);
+    }
+  }
+  &--link {
+    cursor: pointer;
+    position: relative;
+    &::before {
+      background-color: currentColor;
+      bottom: 0;
+      content: "";
+      left: 0;
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      right: 0;
+      top: 0;
+      -webkit-transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+      transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+    }
+    &:hover::before {
+      opacity: 0.04;
+    }
+  }
+  &--menu {
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+.info-box.is-dark {
+  background: #3c3e45;
+  border: 0.5px solid #a2a5b5;
+  color: var(--v-text_2-base);
+  .v-icon {
+    color: var(--v-text_2-base);
+  }
+  &.info-box--menu {
+    border: 0;
   }
 }

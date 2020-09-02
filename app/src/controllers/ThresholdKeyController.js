@@ -299,7 +299,6 @@ class ThresholdKeyController extends EventEmitter {
 
         x.title = `${browserInfo.browser.name} ${dateFormated}`
         x.browserName = x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? 'Chrome Extension' : `${browserInfo.browser.name}`
-        x.dateFormated = dateFormated
 
         if (acc[x.shareIndex]) {
           acc[x.shareIndex].browsers = [...acc[x.shareIndex].browsers, x]
@@ -307,10 +306,10 @@ class ThresholdKeyController extends EventEmitter {
           const deviceInfo = `${STORAGE_MAP[x.module]} - ${browserInfo.os.name} ${browserInfo.browser.name}`
           acc[x.shareIndex] = {
             index: x.shareIndex,
-            osName: browserInfo.os.name,
+            osName: `${browserInfo.os.name} (${x.shareIndex.slice(0, 5)})`,
             icon: browserInfo.platform.type,
             groupTitle: deviceInfo,
-            dateAdded: dateFormated,
+            dateAdded: x.dateAdded,
             browsers: [x],
           }
         }

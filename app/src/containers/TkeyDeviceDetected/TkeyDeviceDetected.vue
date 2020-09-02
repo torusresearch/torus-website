@@ -23,8 +23,8 @@
               </v-tabs>
               <v-tabs-items v-model="activeTab">
                 <v-tab-item class="py-3">
-                  <div class="d-flex align-center info-box py-3 px-6 mb-6">
-                    <div class="mr-2">
+                  <div class="d-flex align-center info-box py-3 px-6 mb-6" :class="[{ 'is-dark': $vuetify.theme.dark }]">
+                    <div class="mr-4">
                       <v-icon>$vuetify.icons.device_detailed</v-icon>
                     </div>
                     <div>
@@ -32,27 +32,45 @@
                         <span class="font-weight-bold">{{ browser.os.name }}</span>
                         ({{ t('tkeyNew.currentDevice') }})
                       </div>
-                      <div class="grow font-weight-bold body-2">{{ browser.browser.name }}</div>
+                      <div class="grow body-2">{{ browser.browser.name }}</div>
                     </div>
                   </div>
                 </v-tab-item>
                 <v-tab-item class="py-3">
-                  <div
-                    v-for="device in devices"
-                    :key="device.index"
-                    class="d-flex align-center info-box select py-3 px-6 mb-6"
-                    :class="{ active: device.index === selectedDevice }"
-                    @click="selectBrowser(device.index)"
-                  >
-                    <div class="mr-2">
-                      <v-icon>$vuetify.icons.browser</v-icon>
+                  <v-menu offset-y bottom class="device-menu">
+                    <template v-slot:activator="{ on }">
+                      <div class="d-flex align-center info-box info-box--link py-3 px-6 mb-6" :class="[{ 'is-dark': $vuetify.theme.dark }]" v-on="on">
+                        <div class="mr-4">
+                          <v-icon>$vuetify.icons.device_detailed</v-icon>
+                        </div>
+                        <div>
+                          <div class="grow body-2">
+                            <span class="font-weight-bold">{{ selectedDeviceDetails.osName }}</span>
+                          </div>
+                          <div class="grow body-2">{{ selectedDeviceDetails.browserList }}</div>
+                          <div class="grow caption">{{ selectedDeviceDetails.dateFormated }}</div>
+                        </div>
+                      </div>
+                    </template>
+                    <div
+                      v-for="device in devices"
+                      :key="device.index"
+                      class="d-flex align-center info-box py-3 px-6 info-box--link info-box--menu"
+                      :class="[{ 'is-dark': $vuetify.theme.dark }]"
+                      @click="selectBrowser(device.index)"
+                    >
+                      <div class="mr-4">
+                        <v-icon>$vuetify.icons.device_detailed</v-icon>
+                      </div>
+                      <div>
+                        <div class="grow body-2">
+                          <span class="font-weight-bold">{{ device.osName }}</span>
+                        </div>
+                        <div class="grow body-2">{{ device.browserList }}</div>
+                        <div class="grow caption">{{ device.dateFormated }}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div class="grow font-weight-bold body-2">{{ device.osName }}</div>
-                      <div class="grow body-2">{{ device.browserList }}</div>
-                      <div class="grow caption">{{ device.dateAdded }}</div>
-                    </div>
-                  </div>
+                  </v-menu>
                 </v-tab-item>
               </v-tabs-items>
             </div>
@@ -97,14 +115,21 @@ export default {
     devices() {
       if (!this.tKeyStore.settingsPageData) return []
       const { allDeviceShares } = this.tKeyStore.settingsPageData
-      return Object.keys(allDeviceShares).map((x) => {
-        const share = allDeviceShares[x]
-        share.browserList = share.browsers.map((browser) => browser.browserName).join(', ')
-        return share
-      })
+      return Object.keys(allDeviceShares)
+        .map((x) => {
+          const share = allDeviceShares[x]
+          const dateFormated = new Date(share.dateAdded).toLocaleString()
+          share.browserList = share.browsers.map((browser) => browser.browserName).join(', ')
+          share.dateFormated = dateFormated
+          return share
+        })
+        .sort((a, b) => b.dateAdded - a.dateAdded)
     },
     browser() {
       return bowser.parse(window.navigator.userAgent)
+    },
+    selectedDeviceDetails() {
+      return this.devices.find((x) => x.index === this.selectedDevice) || {}
     },
   },
   watch: {
@@ -119,6 +144,9 @@ export default {
   },
   beforeDestroy() {
     this.isConfirming = false
+  },
+  mounted() {
+    this.selectedDevice = this.devices[0].index
   },
   methods: {
     ...mapActions(['setStoreDeviceFlow']),
