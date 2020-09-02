@@ -42,6 +42,7 @@ const initialState = {
   unapprovedMsgs: {},
   // preferences
   tKeyOnboardingComplete: true,
+  tKeyExists: false,
   defaultPublicAddress: '',
   selectedAddress: '',
   supportedNetworks: { ...SUPPORTED_NETWORK_TYPES },

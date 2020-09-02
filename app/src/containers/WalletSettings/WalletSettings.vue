@@ -112,12 +112,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(['wallet', 'selectedAddress']),
+    ...mapState(['wallet', 'selectedAddress', 'tKeyExists']),
     isThreshold() {
       return this.wallet[this.selectedAddress]?.accountType === ACCOUNT_TYPE.THRESHOLD
     },
     hasThreshold() {
-      return Object.values(this.wallet).some((x) => x.accountType === ACCOUNT_TYPE.THRESHOLD)
+      return this.tKeyExists
     },
   },
   mounted() {

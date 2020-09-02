@@ -416,6 +416,7 @@ export default {
     // if in iframe && keyExists, initialize tkey only if it's set as default address
     // if not in iframe && keyExists, initialize tkey always
     // inside an iframe
+    commit('setTkeyExists', keyExists)
     if (keyExists) {
       if (!isMain) {
         if (defaultAddresses[0] && defaultAddresses[0] !== postboxKey.ethAddress) {

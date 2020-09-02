@@ -51,6 +51,7 @@ if (storageAvailable('sessionStorage')) {
       tKeyOnboardingComplete: state.tKeyOnboardingComplete,
       defaultPublicAddress: state.defaultPublicAddress,
       tKeyStore: state.tKeyStore,
+      tKeyExists: state.tKeyExists,
     }),
   })
 }

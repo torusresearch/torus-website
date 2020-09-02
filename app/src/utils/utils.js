@@ -652,3 +652,7 @@ export function downloadItem(filename, text) {
 export function derivePubKeyXFromPolyID(polyID) {
   return polyID.split('|')[0]
 }
+
+export function passwordValidation(v) {
+  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\dA-Za-z]).\S{10,}$/.test(v)
+}

@@ -148,6 +148,8 @@
 <script>
 import bowser from 'bowser'
 
+import { passwordValidation } from '../../../utils/utils'
+
 export default {
   props: {
     userInfo: {
@@ -177,7 +179,7 @@ export default {
       showRecoveryPasswordConfirm: false,
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
-        minLength: (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!$%&*?@])[\d!$%&*?@A-Za-z]{10,}$/.test(v) || this.t('tkeyCreateSetup.passwordRules'),
+        minLength: (v) => passwordValidation(v) || this.t('tkeyCreateSetup.passwordRules'),
         equalToPassword: (value) => value === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch'),
       },
       panels: [1, 2],

@@ -93,6 +93,7 @@ export default {
       userInfo: 'userInfo',
       selectedAddress: 'selectedAddress',
       defaultPublicAddress: 'defaultPublicAddress',
+      tKeyExists: 'tKeyExists',
     }),
     userEmail() {
       const verifierIdArray = this.userInfo.verifierId.split('|')
@@ -122,23 +123,29 @@ export default {
       return this.defaultPublicAddress || Object.keys(this.wallets).find((x) => this.wallets[x].accountType === ACCOUNT_TYPE.THRESHOLD)
     },
   },
+  mounted() {
+    if (this.tKeyExists) this.redirectHome()
+  },
   methods: {
     ...mapActions(['setTKeyOnboardingStatus', 'setDefaultPublicAddress', 'createNewTKey']),
+    redirectHome() {
+      let redirectPath = this.$route.query.redirect
+      if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
+      this.$router.push(redirectPath).catch((_) => {})
+    },
     async tKeyOnboardingCancel() {
       try {
         await this.setTKeyOnboardingStatus(true)
-        let redirectPath = this.$route.query.redirect
-        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
-        this.$router.push(redirectPath).catch((_) => {})
       } catch (error) {
         log.error(error)
-        this.$router.push('/wallet').catch((_) => {})
+      } finally {
+        this.redirectHome()
       }
     },
     async setDefaultAddress(address) {
       await this.setTKeyOnboardingStatus(true)
       await this.setDefaultPublicAddress(address)
-      this.$router.push('/wallet').catch((_) => {})
+      this.redirectHome()
     },
     async createTKey(payload) {
       try {

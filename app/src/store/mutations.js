@@ -194,6 +194,9 @@ export default {
   setTKey(state, payload) {
     state.tKeyStore = payload
   },
+  setTkeyExists(state, payload) {
+    state.tKeyExists = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]

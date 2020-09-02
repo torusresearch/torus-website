@@ -179,6 +179,7 @@ import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
 import PopupLogin from '../../../containers/Popup/PopupLogin'
+import { passwordValidation } from '../../../utils/utils'
 import LinkingCompleted from '../LinkingCompleted'
 
 const AUTH_FACTORS = [
@@ -216,7 +217,7 @@ export default {
       showRecoveryPasswordConfirm: false,
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
-        minLength: (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!$%&*?@])[\d!$%&*?@A-Za-z]{10,}$/.test(v) || this.t('tkeyCreateSetup.passwordRules'),
+        minLength: (v) => passwordValidation(v) || this.t('tkeyCreateSetup.passwordRules'),
       },
     }
   },
