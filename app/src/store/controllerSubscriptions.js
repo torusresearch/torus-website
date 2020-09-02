@@ -81,12 +81,8 @@ export function messageManagerHandler({ unapprovedMsgs }) {
   getStore().commit('setMessages', unapprovedMsgs)
 }
 
-export function detectTokensControllerHandler({ tokens }) {
-  if (tokens.length > 0) {
-    getStore().commit('setTokenData', {
-      [torus.torusController.detectTokensController.selectedAddress]: tokens,
-    })
-  }
+export function detectTokensControllerHandler(state) {
+  getStore().commit('setTokenData', state)
   getStore().commit('setTokenDataLoaded')
 }
 
