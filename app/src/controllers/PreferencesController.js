@@ -370,9 +370,10 @@ class PreferencesController extends EventEmitter {
   /* istanbul ignore next */
   recalculatePastTx(address) {
     // This triggers store update which calculates past Tx status for that network
-    const state = this.state(address)
+    const selectedAddress = address || this.store.getState().selectedAddress
+    const state = this.state(selectedAddress)
     if (!state?.fetchedPastTx) return
-    this.calculatePastTx(state.fetchedPastTx, address)
+    this.calculatePastTx(state.fetchedPastTx, selectedAddress)
   }
 
   /* istanbul ignore next */
