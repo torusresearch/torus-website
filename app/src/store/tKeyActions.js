@@ -77,4 +77,9 @@ export default {
   clearTkeyError() {
     return thresholdKeyController.clearTkeyError()
   },
+  async manualAddTKey({ dispatch, state }, payload) {
+    await dispatch('addTKey', payload)
+    const thresholdWallet = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.THRESHOLD)
+    return dispatch('updateSelectedAddress', { selectedAddress: thresholdWallet })
+  },
 }

@@ -120,13 +120,13 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setDefaultPublicAddress', 'addTKey', 'updateSelectedAddress']),
+    ...mapActions(['setDefaultPublicAddress', 'manualAddTKey', 'updateSelectedAddress']),
     goToTkeyOnboarding() {
       this.$router.push({ name: 'tkeyCreate' }).catch((_) => {})
     },
     async loginWithTKey() {
       this.loggingWithTKey = true
-      await this.addTKey({})
+      await this.manualAddTKey({})
       this.loggingWithTKey = false
     },
   },

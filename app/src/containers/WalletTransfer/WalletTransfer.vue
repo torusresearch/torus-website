@@ -292,7 +292,7 @@
                     :to-verifier="selectedVerifier"
                     :from-address="selectedAddress"
                     :from-verifier-id="userInfo.verifierId"
-                    :from-verifier="userInfo.typeOfLogin"
+                    :from-verifier="fromVerifier"
                     :network-type="networkType"
                     :converted-amount="
                       convertedAmount
@@ -391,6 +391,7 @@ import MessageModal from '../../components/WalletTransfer/MessageModal'
 import config from '../../config'
 import torus from '../../torus'
 import {
+  ACCOUNT_TYPE,
   ALLOWED_VERIFIERS,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
@@ -488,6 +489,7 @@ export default {
       'selectedAddress',
       'userInfo',
       'networkType',
+      'wallet',
     ]),
     verifierOptions() {
       try {
@@ -583,6 +585,12 @@ export default {
     },
     selectedItemBalance() {
       return (this.selectedItem && this.selectedItem.computedBalance) || new BigNumber(0)
+    },
+    fromVerifier() {
+      return this.isThreshold ? 'wallet' : this.userInfo.typeOfLogin
+    },
+    isThreshold() {
+      return this.wallet[this.selectedAddress]?.accountType === ACCOUNT_TYPE.THRESHOLD
     },
   },
   watch: {
