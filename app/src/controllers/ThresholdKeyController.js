@@ -122,6 +122,7 @@ class ThresholdKeyController extends EventEmitter {
       }
       await this.setSettingsPageData()
       window.removeEventListener('beforeunload', beforeUnloadHandler)
+      log.info(privKey.toString('hex'), 'privKey')
       return {
         ethAddress: generateAddressFromPrivateKey(privKey.toString('hex')),
         privKey: privKey.toString('hex'),
