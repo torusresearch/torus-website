@@ -68,7 +68,6 @@ class PreferencesController extends EventEmitter {
    * @property {string} store.selectedCurrency A string showing the user selected currency
    * @property {string} store.theme the user selected theme
    * @property {string} store.locale the user selected locale
-   * @property {Array} store.billboard the contents of torus-billboard (depends on the locale)
    * @property {Array} store.contacts the contacts of the user
    * @property {object} store.permissions the stored permissions of the user for different domains
    * @property {string} store.jwtToken the token used to communicate with torus-backend
@@ -87,7 +86,7 @@ class PreferencesController extends EventEmitter {
     this.metadataStore = new ObservableStore({})
     this.errorStore = new ObservableStore('')
     this.successStore = new ObservableStore('')
-    this.billboardStore = new ObservableStore([])
+    this.billboardStore = new ObservableStore({})
   }
 
   headers(address) {
