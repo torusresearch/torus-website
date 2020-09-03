@@ -12,6 +12,7 @@ import {
   REDDIT,
   TWITCH,
   TWITTER,
+  WECHAT,
   WEIBO,
 } from '../../utils/enums'
 import DiscordHandler from './DiscordHandler'
@@ -47,6 +48,7 @@ const createHandler = ({ typeOfLogin, clientId, verifier, redirect_uri, preopenI
     case LINKEDIN:
     case TWITTER:
     case WEIBO:
+    case WECHAT:
     case EMAIL_PASSWORD:
     case JWT:
       if (!domain) throw new Error('Invalid params')

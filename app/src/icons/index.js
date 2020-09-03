@@ -240,6 +240,9 @@ export default {
   weibo: {
     component: VerifierWeiboIcon,
   },
+  wechat: {
+    component: VerifierWeiboIcon,
+  },
   linkedin: {
     component: VerifierLinkedinIcon,
   },

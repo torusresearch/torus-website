@@ -23,6 +23,7 @@ import {
   TWITCH_VERIFIER,
   TWITTER,
   TWITTER_VERIFIER,
+  WECHAT_VERIFIER,
   // WEIBO,
   // WEIBO_VERIFIER,
 } from './utils/enums'
@@ -41,6 +42,7 @@ const {
   VUE_APP_TWITTER_CLIENT_ID,
   VUE_APP_LOGIN_DOMAIN,
   VUE_APP_HOSTED_EMAIL_PASSWORDLESS_CLIENT_ID,
+  VUE_APP_WECHAT_CLIENT_ID,
 } = process.env
 
 const baseUrl = VUE_APP_BASE_ROUTE || 'https://localhost:3000'
@@ -221,6 +223,20 @@ export default {
         verifierIdField: 'name',
         connection: '',
         isVerifierIdCaseSensitive: false,
+      },
+    },
+    [WECHAT_VERIFIER]: {
+      description: '',
+      typeOfLogin: JWT,
+      name: 'wechat',
+      clientId: VUE_APP_WECHAT_CLIENT_ID,
+      logoHover: '',
+      logoLight: '',
+      logoDark: '',
+      showOnModal: true,
+      jwtParameters: {
+        domain: LOGIN_DOMAIN,
+        connection: '',
       },
     },
     // [WEIBO_VERIFIER]: {
