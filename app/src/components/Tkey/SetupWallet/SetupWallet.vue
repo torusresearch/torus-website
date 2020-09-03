@@ -11,11 +11,11 @@
     <div class="mb-8">
       <div class="d-flex align-center mb-2">
         <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-          {{ t('tkeyCreateSetup.authFactors') }} ({{ ~~((progressValue * 3) / 100) }}/3)
+          {{ t('tkeyCreateSetup.authFactors') }} ({{ ~~(progressValue / 100) }}/3)
         </div>
         <div class="ml-auto caption" :class="`${progressColor}--text`">{{ t(progressText) }}</div>
       </div>
-      <v-progress-linear v-model="progressValue" class="mb-2" :color="progressColor" rounded background-color="torusGray3"></v-progress-linear>
+      <v-progress-linear v-model="progressRate" class="mb-2" :color="progressColor" rounded background-color="torusGray3"></v-progress-linear>
       <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
         {{ t(progressDescription) }}
       </div>
@@ -52,7 +52,7 @@
               .
             </div>
             <div class="d-flex align-center allow-device-trigger">
-              <v-icon class="backup-device-checkbox mr-2" :class="{ isDark: $vuetify.theme.dark }" @click="backupDeviceShare = !backupDeviceShare">
+              <v-icon class="backup-device-checkbox mr-2" :class="{ isDark: $vuetify.theme.dark }" @click="onBackupDeviceShare">
                 $vuetify.icon.checkbox{{ $vuetify.theme.dark ? '_dark' : '' }}_{{ backupDeviceShare ? 'checked' : 'unchecked' }}
               </v-icon>
               <v-icon v-if="!backupDeviceShare" size="16" class="mr-1 warning--text">$vuetify.icon.alert_circle_filled</v-icon>
@@ -183,23 +183,24 @@ export default {
         equalToPassword: (value) => value === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch'),
       },
       panels: [1, 2],
-      progressValue: 200 / 3,
+      progressValue: 200,
       backupDeviceShare: false,
     }
   },
   computed: {
     progressColor() {
-      return this.progressValue > 200 / 3 || (this.progressValue === 200 / 3 && this.backupDeviceShare) ? 'success' : 'warning'
+      return this.progressValue > 200 ? 'success' : 'warning'
     },
     progressText() {
-      if (this.progressValue === 200 / 3 && this.backupDeviceShare) return 'tkeyCreateSetup.good'
-      if (this.progressValue <= 200 / 3) return 'tkeyCreateSetup.average'
+      if (this.progressValue > 200 && (!this.backupDeviceShare || !this.finalRecoveryPassword)) return 'tkeyCreateSetup.good'
+      if (this.progressValue <= 200) return 'tkeyCreateSetup.average'
       return 'tkeyCreateSetup.excellent'
     },
     progressDescription() {
-      if (this.progressValue === 200 / 3 && this.backupDeviceShare) return 'tkeyCreateSetup.youNeedPassword'
-      if (this.progressValue <= 200 / 3) return 'tkeyCreateSetup.youNeedBackupPassword'
-      return 'tkeyCreateSetup.youHaveSufficient'
+      if (this.progressValue >= 300) return 'tkeyCreateSetup.youHaveSufficient'
+      if (this.progressValue > 200 && this.backupDeviceShare) return 'tkeyCreateSetup.youNeedPassword'
+      if (this.progressValue > 200 && this.finalRecoveryPassword) return 'tkeyCreateSetup.youNeedBackup'
+      return 'tkeyCreateSetup.youNeedBackupPassword'
     },
     browser() {
       const browser = bowser.getParser(window.navigator.userAgent)
@@ -209,6 +210,9 @@ export default {
     },
     equalToPassword() {
       return this.recoveryPasswordConfirm === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch')
+    },
+    progressRate() {
+      return this.progressValue / 3
     },
   },
   methods: {
@@ -221,7 +225,11 @@ export default {
     },
     setFinalPassword() {
       this.finalRecoveryPassword = this.recoveryPassword
-      this.progressValue += 100 / 3
+      this.progressValue += 60
+    },
+    onBackupDeviceShare() {
+      this.backupDeviceShare = !this.backupDeviceShare
+      this.progressValue += this.backupDeviceShare ? 40 : -40
     },
   },
 }
