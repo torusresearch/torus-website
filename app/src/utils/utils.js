@@ -62,6 +62,7 @@ import {
   SVG,
   THEME_DARK_BLACK_NAME,
   TWITTER,
+  WECHAT,
   WEIBO,
   WYRE,
   XANPOOL,
@@ -603,6 +604,7 @@ export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifier
     case APPLE:
     case LINKEDIN:
     case LINE:
+    case WECHAT:
     case JWT:
       return caseSensitiveField(sub, isVerifierIdCaseSensitive)
     default:
