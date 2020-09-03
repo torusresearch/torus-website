@@ -656,3 +656,7 @@ export function derivePubKeyXFromPolyID(polyID) {
 export function passwordValidation(v) {
   return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\dA-Za-z]).\S{10,}$/.test(v)
 }
+
+export function padPrivateKey(privKey) {
+  return privKey.padStart(64, 0)
+}

@@ -124,8 +124,8 @@ class ThresholdKeyController extends EventEmitter {
       window.removeEventListener('beforeunload', beforeUnloadHandler)
       log.info(privKey.toString('hex'), 'privKey')
       return {
-        ethAddress: generateAddressFromPrivateKey(privKey.toString('hex')),
-        privKey: privKey.toString('hex'),
+        ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
+        privKey: privKey.toString('hex', 64),
       }
     }
     window.removeEventListener('beforeunload', beforeUnloadHandler)
@@ -253,11 +253,11 @@ class ThresholdKeyController extends EventEmitter {
       }
     }
 
-    log.info('privKey', privKey.toString('hex'))
+    log.info('privKey', privKey.toString('hex', 64))
     await this.setSettingsPageData()
     return {
-      ethAddress: generateAddressFromPrivateKey(privKey.toString('hex')),
-      privKey: privKey.toString('hex'),
+      ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
+      privKey: privKey.toString('hex', 64),
     }
   }
 
