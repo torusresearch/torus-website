@@ -51,7 +51,7 @@ const initialState = {
   paymentTx: [],
   theme: THEME_LIGHT_BLUE_NAME,
   locale: LOCALE_EN,
-  billboard: [],
+  billboard: {},
   contacts: [],
   permissions: [],
   userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate

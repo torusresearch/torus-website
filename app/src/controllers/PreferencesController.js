@@ -68,7 +68,6 @@ class PreferencesController extends EventEmitter {
    * @property {string} store.selectedCurrency A string showing the user selected currency
    * @property {string} store.theme the user selected theme
    * @property {string} store.locale the user selected locale
-   * @property {Array} store.billboard the contents of torus-billboard (depends on the locale)
    * @property {Array} store.contacts the contacts of the user
    * @property {object} store.permissions the stored permissions of the user for different domains
    * @property {string} store.jwtToken the token used to communicate with torus-backend
@@ -87,7 +86,7 @@ class PreferencesController extends EventEmitter {
     this.metadataStore = new ObservableStore({})
     this.errorStore = new ObservableStore('')
     this.successStore = new ObservableStore('')
-    this.billboardStore = new ObservableStore([])
+    this.billboardStore = new ObservableStore({})
   }
 
   headers(address) {
@@ -112,7 +111,17 @@ class PreferencesController extends EventEmitter {
    *
    * @return  {[void]}           void
    */
-  async init({ address, jwtToken, calledFromEmbed = false, userInfo = {}, rehydrate = false, accountType = ACCOUNT_TYPE.NORMAL, dispatch, commit }) {
+  async init({
+    address,
+    jwtToken,
+    calledFromEmbed = false,
+    userInfo = {},
+    rehydrate = false,
+    accountType = ACCOUNT_TYPE.NORMAL,
+    postboxAddress,
+    dispatch,
+    commit,
+  }) {
     let response = { token: jwtToken }
     if (!jwtToken) {
       const messageToSign = await this.getMessageForSigning(address)
@@ -129,7 +138,7 @@ class PreferencesController extends EventEmitter {
         { useAPIKey: true }
       )
     }
-    const accountState = this.updateStore({ jwtToken: response.token }, address)
+    const currentState = this.updateStore({ jwtToken: response.token }, address)
     const { verifier, verifierId } = userInfo
     const user = await this.sync(address)
     let defaultPublicAddress = address
@@ -139,6 +148,7 @@ class PreferencesController extends EventEmitter {
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
       defaultPublicAddress = default_public_address
     } else {
+      const accountState = this.store.getState()[postboxAddress] || currentState
       await this.createUser(accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
       commit('setNewUser', true)
       dispatch('setSelectedCurrency', { selectedCurrency: accountState.selectedCurrency, origin: 'store' })

@@ -362,7 +362,7 @@ export default {
     thresholdKeyController.store.subscribe(tKeyHandler)
   },
   async initTorusKeyring({ dispatch, commit, state }, payload) {
-    const { keys, calledFromEmbed, rehydrate } = payload
+    const { keys, calledFromEmbed, rehydrate, postboxAddress } = payload
     await torusController.initTorusKeyring(
       keys.map((x) => x.privKey),
       keys.map((x) => x.ethAddress)
@@ -380,6 +380,7 @@ export default {
           commit,
           jwtToken: x.jwtToken,
           accountType: x.accountType,
+          postboxAddress,
         })
       })
     )
