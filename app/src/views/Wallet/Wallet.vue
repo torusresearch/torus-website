@@ -14,13 +14,13 @@
       <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
       <router-view></router-view>
     </v-main>
-    <v-dialog v-if="badgesTopupDialog" v-model="badgesTopupDialog" persistent width="375">
+    <v-dialog v-if="!isTkeyScreen && badgesTopupDialog" v-model="badgesTopupDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_TOPUP]" @closeBadge="closeBadge" />
     </v-dialog>
-    <v-dialog v-else-if="badgesTransactionDialog" v-model="badgesTransactionDialog" persistent width="375">
+    <v-dialog v-else-if="!isTkeyScreen && badgesTransactionDialog" v-model="badgesTransactionDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_TRANSACTION]" @closeBadge="closeBadge" />
     </v-dialog>
-    <v-dialog v-else-if="badgesCollectibleDialog" v-model="badgesCollectibleDialog" persistent width="375">
+    <v-dialog v-else-if="!isTkeyScreen && badgesCollectibleDialog" v-model="badgesCollectibleDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_COLLECTIBLE]" @closeBadge="closeBadge" />
     </v-dialog>
   </div>
