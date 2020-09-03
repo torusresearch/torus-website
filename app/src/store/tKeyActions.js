@@ -12,7 +12,12 @@ export default {
     try {
       const thresholdKey = await thresholdKeyController.login(postboxKey.privKey)
       log.info('tkey 2', thresholdKey)
-      return dispatch('initTorusKeyring', { keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }], calledFromEmbed, rehydrate: false })
+      return dispatch('initTorusKeyring', {
+        keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
+        calledFromEmbed,
+        rehydrate: false,
+        postboxAddress: postboxKey.ethAddress,
+      })
     } catch (error) {
       // tkey login failed. Allow normal google one to proceed through
       log.error(error)

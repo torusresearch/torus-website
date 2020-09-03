@@ -111,7 +111,17 @@ class PreferencesController extends EventEmitter {
    *
    * @return  {[void]}           void
    */
-  async init({ address, jwtToken, calledFromEmbed = false, userInfo = {}, rehydrate = false, accountType = ACCOUNT_TYPE.NORMAL, dispatch, commit }) {
+  async init({
+    address,
+    jwtToken,
+    calledFromEmbed = false,
+    userInfo = {},
+    rehydrate = false,
+    accountType = ACCOUNT_TYPE.NORMAL,
+    postboxAddress,
+    dispatch,
+    commit,
+  }) {
     let response = { token: jwtToken }
     if (!jwtToken) {
       const messageToSign = await this.getMessageForSigning(address)
@@ -128,7 +138,7 @@ class PreferencesController extends EventEmitter {
         { useAPIKey: true }
       )
     }
-    const accountState = this.updateStore({ jwtToken: response.token }, address)
+    const currentState = this.updateStore({ jwtToken: response.token }, address)
     const { verifier, verifierId } = userInfo
     const user = await this.sync(address)
     let defaultPublicAddress = address
@@ -138,6 +148,7 @@ class PreferencesController extends EventEmitter {
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
       defaultPublicAddress = default_public_address
     } else {
+      const accountState = this.store.getState()[postboxAddress] || currentState
       await this.createUser(accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
       commit('setNewUser', true)
       dispatch('setSelectedCurrency', { selectedCurrency: accountState.selectedCurrency, origin: 'store' })
