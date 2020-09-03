@@ -5,7 +5,7 @@
     </div>
 
     <v-list dense outlined class="pa-0 account-list mb-2">
-      <v-list-item v-for="wallet in computedWallets" :key="wallet.key" class="pl-0">
+      <v-list-item v-for="wallet in computedWallets" :key="wallet.key" class="pl-0 pr-1">
         <v-list-item-avatar class="ma-0">
           <v-icon size="16" class="torusGray1--text">{{ `$vuetify.icons.${wallet.icon}` }}</v-icon>
         </v-list-item-avatar>
@@ -15,15 +15,32 @@
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-action class="ma-0">
-          <div v-if="wallet.isDefault" class="caption torus_1--text">{{ t('tkeySettings.default') }}</div>
-          <a v-else href="#" class="caption text-decoration-none" @click="setDefaultPublicAddress(wallet.key)">
+          <div v-if="wallet.isDefault" class="caption torus_1--text" :style="{ marginRight: '15px' }">
+            {{ t('tkeySettings.default') }}
+          </div>
+          <v-btn v-else-if="hasThresholdLogged" text small color="torusBrand1" class="caption" @click="setDefaultPublicAddress(wallet.key)">
             {{ t('tkeySettings.switchDefault') }}
-          </a>
+          </v-btn>
+        </v-list-item-action>
+      </v-list-item>
+      <v-list-item v-if="hasThreshold && !hasThresholdLogged" class="pl-0 pr-1">
+        <v-list-item-avatar class="ma-0">
+          <v-icon size="16" class="torusGray1--text">$vuetify.icons.wallet</v-icon>
+        </v-list-item-avatar>
+        <v-list-item-content>
+          <v-list-item-title class="font-weight-regular caption">
+            <span class="text_1--text">{{ t('tkeySettings.twoFaWallet') }}</span>
+          </v-list-item-title>
+        </v-list-item-content>
+        <v-list-item-action class="ma-0">
+          <v-btn :loading="loggingWithTKey" text small color="torusBrand1" class="caption" @click="loginWithTKey">
+            {{ t('tkeySettings.loginWithTkey') }}
+          </v-btn>
         </v-list-item-action>
       </v-list-item>
       <v-list-item v-if="!hasThreshold" class="pl-0 pr-1">
         <v-list-item-avatar class="ma-0">
-          <v-icon size="16" class="torusGray1--text">{{ `$vuetify.icons.wallet` }}</v-icon>
+          <v-icon size="16" class="torusGray1--text">$vuetify.icons.wallet</v-icon>
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title class="caption mb-3 mt-1">
@@ -71,6 +88,15 @@ export default {
       type: Boolean,
       default: false,
     },
+    hasThresholdLogged: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      loggingWithTKey: false,
+    }
   },
   computed: {
     ...mapState({
@@ -94,9 +120,14 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setDefaultPublicAddress']),
+    ...mapActions(['setDefaultPublicAddress', 'addTKey', 'updateSelectedAddress']),
     goToTkeyOnboarding() {
       this.$router.push({ name: 'tkeyCreate' }).catch((_) => {})
+    },
+    async loginWithTKey() {
+      this.loggingWithTKey = true
+      await this.addTKey({})
+      this.loggingWithTKey = false
     },
   },
 }

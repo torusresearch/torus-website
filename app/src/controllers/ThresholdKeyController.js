@@ -350,7 +350,7 @@ class ThresholdKeyController extends EventEmitter {
 
   async _init(postboxKey, tKeyJson) {
     const { tKey: stateTKey } = this.state
-    if (stateTKey) throw new Error('TKey already initialized')
+    if (stateTKey && stateTKey.privKey) throw new Error('TKey already initialized')
     const modules = {
       [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
       [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),

@@ -74,7 +74,7 @@
               <div class="grow font-weight-bold title text_1--text">{{ t('tkeySettings.defaultAccount') }}</div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <DefaultAccount :has-threshold="hasThreshold" />
+              <DefaultAccount :has-threshold="hasThreshold" :has-threshold-logged="hasThresholdLogged" />
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -118,6 +118,9 @@ export default {
     },
     hasThreshold() {
       return this.tKeyExists
+    },
+    hasThresholdLogged() {
+      return Object.values(this.wallet).some((x) => x.accountType === ACCOUNT_TYPE.THRESHOLD)
     },
   },
   mounted() {
