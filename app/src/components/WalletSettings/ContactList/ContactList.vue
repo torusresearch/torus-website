@@ -6,7 +6,7 @@
           <div class="body-2">{{ t('walletSettings.listContacts') }}</div>
           <div class="d-flex ml-auto">
             <v-text-field
-              v-if="!$vuetify.breakpoint.smAndDown"
+              v-if="!$vuetify.breakpoint.xsOnly"
               id="search-name"
               v-model="searchName"
               class="search-name caption"
@@ -32,12 +32,12 @@
             ></v-select>
           </div>
         </div>
-        <div v-if="$vuetify.breakpoint.smAndDown" class="mt-4">
+        <div v-if="$vuetify.breakpoint.xsOnly" class="mt-4">
           <v-text-field
             id="search-name"
             v-model="searchName"
             class="search-name caption"
-            :class="{ mobile: $vuetify.breakpoint.smAndDown }"
+            :class="{ mobile: $vuetify.breakpoint.xsOnly }"
             dense
             hide-details
             placeholder="Search by name"
@@ -123,14 +123,13 @@
             </v-flex>
 
             <v-layout wrap>
-              <v-flex class="ml-auto xs6 sm4" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : ''">
+              <v-flex class="ml-auto xs12 sm6 text-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : ''">
                 <v-btn
                   id="contact-submit-btn"
                   large
                   class="torus-btn1 py-1 gmt-add-address"
                   :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
                   :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
-                  block
                   type="submit"
                   :disabled="!contactFormValid"
                 >

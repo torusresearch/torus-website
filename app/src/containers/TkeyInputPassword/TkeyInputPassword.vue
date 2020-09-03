@@ -31,11 +31,11 @@
                 />
                 <v-layout class="mx-n2 mb-12 align-center btn-container">
                   <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs2 px-2"></v-flex>
-                  <v-flex class="px-2 text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs6'">
+                  <v-flex class="px-2 xs6" :class="$vuetify.breakpoint.xsOnly ? 'text-center' : 'text-right'">
                     <!-- TODO: Change to on another method when sign in with another device is implemented -->
                     <a
                       class="caption text-decoration-none"
-                      :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'"
+                      :class="[$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text']"
                       @click="onSkipDeviceLogin"
                     >
                       <!-- {{ t('tkeyNew.verifyViaAnother') }} -->

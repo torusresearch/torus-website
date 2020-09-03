@@ -1,5 +1,5 @@
 <template>
-  <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu">
+  <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu" :class="{ 'is-mobile': $vuetify.breakpoint.xsOnly }">
     <v-list class="pb-0 mb-2">
       <v-list-item>
         <v-list-item-avatar class="ml-2 mr-3">

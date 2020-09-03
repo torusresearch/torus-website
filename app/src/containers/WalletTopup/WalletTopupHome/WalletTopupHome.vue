@@ -32,7 +32,7 @@
         </div>
       </v-flex>
 
-      <v-flex id="providerForm" xs12 sm6 md7 mb-4 px-4>
+      <v-flex id="providerForm" xs12 md7 mb-4 px-4>
         <router-view></router-view>
       </v-flex>
     </v-layout>

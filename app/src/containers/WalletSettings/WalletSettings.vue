@@ -9,7 +9,7 @@
       </v-flex>
     </v-layout>
     <v-layout wrap mx-n4 mt-7>
-      <v-flex px-4 xs12 sm6>
+      <v-flex px-4 xs12 md6>
         <v-expansion-panels v-model="leftPanel" readonly multiple>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="privacy-panel-header">
@@ -44,7 +44,7 @@
           </v-expansion-panel>
         </v-expansion-panels>
       </v-flex>
-      <v-flex px-4 xs12 sm6>
+      <v-flex px-4 xs12 md6>
         <v-expansion-panels v-model="rightPanel" multiple>
           <v-expansion-panel readonly class="my-2">
             <v-expansion-panel-header id="network-panel-header">

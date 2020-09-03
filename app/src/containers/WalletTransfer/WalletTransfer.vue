@@ -6,8 +6,13 @@
         <QuickAddress />
       </div>
     </div>
-    <v-layout wrap mx-n4 :class="contractType === CONTRACT_TYPE_ERC721 && $vuetify.breakpoint.xsOnly ? 'mt-0' : 'mt-7'">
-      <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721 && $vuetify.breakpoint.xsOnly" px-4 xs12>
+    <v-layout wrap mx-n4 :class="[contractType === CONTRACT_TYPE_ERC721 && $vuetify.breakpoint.xsOnly ? 'mt-0' : 'mt-7']">
+      <v-flex
+        v-if="contractType !== CONTRACT_TYPE_ERC721 && $vuetify.breakpoint.smAndDown"
+        :class="[{ 'mb-4': $vuetify.breakpoint.smOnly }]"
+        px-4
+        xs12
+      >
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
             <span class="body-2 text_1--text">{{ t('walletTransfer.accountBalance') }}</span>
@@ -29,7 +34,7 @@
           </div>
         </v-card>
       </v-flex>
-      <v-flex xs12 sm6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+      <v-flex xs12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
         <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="off" autocomplete="off" @submit.prevent="sendCoin">
           <v-card
             :flat="$vuetify.breakpoint.xsOnly"
@@ -326,7 +331,7 @@
           </v-card>
         </v-form>
       </v-flex>
-      <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721 && !$vuetify.breakpoint.xsOnly" px-4 xs6>
+      <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721 && !$vuetify.breakpoint.smAndDown" px-4 xs6>
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
             <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
