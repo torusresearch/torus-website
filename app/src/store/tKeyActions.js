@@ -8,15 +8,25 @@ const { torusController } = torus || {}
 const { thresholdKeyController } = torusController || {}
 
 export default {
-  async addTKey({ dispatch }, { postboxKey, calledFromEmbed }) {
+  async addTKey({ dispatch, state }, { postboxKey, calledFromEmbed }) {
     try {
-      const thresholdKey = await thresholdKeyController.login(postboxKey.privKey)
+      let finalKey = postboxKey
+      if (!finalKey) {
+        const postboxWallet = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
+        const { privateKey, accountType } = state.wallet[postboxWallet]
+        finalKey = {
+          ethAddress: postboxWallet,
+          privKey: privateKey,
+          accountType,
+        }
+      }
+      const thresholdKey = await thresholdKeyController.login(finalKey.privKey)
       log.info('tkey 2', thresholdKey)
       return dispatch('initTorusKeyring', {
         keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
         calledFromEmbed,
         rehydrate: false,
-        postboxAddress: postboxKey.ethAddress,
+        postboxAddress: finalKey.ethAddress,
       })
     } catch (error) {
       // tkey login failed. Allow normal google one to proceed through
