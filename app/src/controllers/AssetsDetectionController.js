@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 /**
  * Assets Detection
  * Controller that passively polls on a set interval for assets auto detection

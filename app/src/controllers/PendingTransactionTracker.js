@@ -187,6 +187,7 @@ class PendingTransactionTracker extends EventEmitter {
         this.emit('tx:confirmed', txId, transactionReceipt)
       }
     } catch (error) {
+      // eslint-disable-next-line require-atomic-updates
       txMeta.warning = {
         error: error.message,
         message: 'There was a problem loading this transaction.',

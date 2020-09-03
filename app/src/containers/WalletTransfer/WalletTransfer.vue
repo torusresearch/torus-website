@@ -938,7 +938,7 @@ export default {
           },
           (error, transactionHash) => {
             if (error) {
-              const regEx = new RegExp('User denied transaction signature', 'i')
+              const regEx = /user denied transaction signature/i
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
@@ -971,7 +971,7 @@ export default {
           },
           (error, transactionHash) => {
             if (error) {
-              const regEx = new RegExp('User denied transaction signature', 'i')
+              const regEx = /user denied transaction signature/i
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
@@ -1000,7 +1000,7 @@ export default {
           },
           (error, transactionHash) => {
             if (error) {
-              const regEx = new RegExp('User denied transaction signature', 'i')
+              const regEx = /user denied transaction signature/i
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
