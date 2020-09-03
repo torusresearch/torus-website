@@ -1,3 +1,4 @@
+/* eslint-disable require-atomic-updates */
 import erc20Contracts from 'eth-contract-metadata'
 import { ethErrors } from 'eth-json-rpc-errors'
 import Common from 'ethereumjs-common'

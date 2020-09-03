@@ -1,3 +1,4 @@
+/* eslint-disable require-atomic-updates */
 import { addHexPrefix } from 'ethereumjs-util'
 import EthQuery from 'ethjs-query'
 
