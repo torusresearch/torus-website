@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@chaitanyapotti/random-id": "^1.0.3",
-    "@tkey/core": "^1.0.0",
+    "@tkey/core": "^1.0.1",
     "@toruslabs/fetch-node-details": "^2.3.0",
     "@toruslabs/http-helpers": "^1.3.4",
     "@toruslabs/torus.js": "^2.2.5",
