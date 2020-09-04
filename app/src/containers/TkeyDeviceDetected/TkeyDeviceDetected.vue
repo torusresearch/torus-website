@@ -76,7 +76,7 @@
             </div>
             <v-layout class="mx-n2 mb-12 align-center btn-container">
               <v-flex v-if="!$vuetify.breakpoint.smAndDown" class="xs6 lg4 px-2"></v-flex>
-              <v-flex class="px-2 text-center xs6 lg4">
+              <v-flex class="px-2 text-center xs5 sm6 lg4">
                 <a
                   class="caption text-decoration-none"
                   :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'"
@@ -85,7 +85,7 @@
                   {{ t('tkeyNew.doNotSave') }}
                 </a>
               </v-flex>
-              <v-flex class="px-2 xs6 lg4">
+              <v-flex class="px-2 xs7 sm6 lg4">
                 <v-btn :loading="isConfirming" block large color="torusBrand1" class="caption font-weight-bold white--text" @click="confirm">
                   {{ t('tkeyNew.confirmAndSave') }}
                 </v-btn>
