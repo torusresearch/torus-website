@@ -23,6 +23,7 @@ import {
   TWITCH_VERIFIER,
   TWITTER,
   TWITTER_VERIFIER,
+  WECHAT,
   WECHAT_VERIFIER,
   // WEIBO,
   // WEIBO_VERIFIER,
@@ -230,7 +231,7 @@ export default {
     },
     [WECHAT_VERIFIER]: {
       description: '',
-      typeOfLogin: JWT,
+      typeOfLogin: WECHAT,
       name: 'wechat',
       clientId: VUE_APP_WECHAT_CLIENT_ID,
       logoHover: '',
@@ -239,7 +240,7 @@ export default {
       showOnModal: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
-        connection: '',
+        connection: 'Wechat',
       },
     },
     // [WEIBO_VERIFIER]: {
