@@ -21,15 +21,21 @@
       </div>
     </div>
     <div>
-      <v-expansion-panels v-model="panels" multiple :class="$vuetify.breakpoint.xsOnly ? 'is-mobile' : ''">
+      <v-expansion-panels
+        v-model="panels"
+        multiple
+        :class="[{ 'is-mobile': $vuetify.breakpoint.xsOnly, 'is-xs-mobile': $vuetify.breakpoint.width < 350 }]"
+      >
         <v-expansion-panel class="mb-4" disabled>
           <v-expansion-panel-header class="py-2">
             <v-icon small class="mr-2 d-inline-flex mr-2 shrink">$vuetify.icons.{{ userInfo.typeOfLogin.toLowerCase() }}</v-icon>
             <div class="grow text-capitalize font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
               {{ userInfo.typeOfLogin }} Login
             </div>
-            <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-              {{ userEmail }}
+            <div class="ml-auto justify-end d-flex align-center">
+              <div class="caption more-details">
+                {{ userInfo.verifierId }}
+              </div>
               <v-icon small class="ml-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
             </div>
           </v-expansion-panel-header>
@@ -49,7 +55,6 @@
             <div class="body-2 mb-4" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
               {{ t('tkeyCreateSetup.authViaBrowser1') }} {{ t('tkeyCreateSetup.authViaBrowser2') }}
               <span class="font-weight-bold">{{ t('tkeyCreateSetup.authViaBrowser3') }}</span>
-              .
             </div>
             <div class="d-flex align-center allow-device-trigger">
               <v-icon class="backup-device-checkbox mr-2" :class="{ isDark: $vuetify.theme.dark }" @click="onBackupDeviceShare">

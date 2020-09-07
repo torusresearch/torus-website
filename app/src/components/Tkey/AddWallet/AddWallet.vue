@@ -23,7 +23,7 @@
             {{ t('tkeyCreateAdd.secureAssets') }}
           </div>
         </div>
-        <div class="d-flex align-center" :class="$vuetify.breakpoint.xsOnly ? 'justify-center' : ''">
+        <div class="d-flex align-center">
           <a
             class="body-2 text-decoration-none"
             :class="$vuetify.theme.dark ? 'text_2--text' : 'torusFont2--text'"
@@ -31,9 +31,7 @@
             target="_blank"
           >
             {{ t('tkeyCreateAdd.learnMore') }}
-            <v-icon v-if="!$vuetify.breakpoint.xsOnly" :class="$vuetify.theme.dark ? 'text_2--text' : 'torusFont2--text'" small>
-              $vuetify.icons.arrow_right
-            </v-icon>
+            <v-icon :class="$vuetify.theme.dark ? 'text_2--text' : 'torusFont2--text'" small>$vuetify.icons.arrow_right</v-icon>
           </a>
         </div>
       </div>

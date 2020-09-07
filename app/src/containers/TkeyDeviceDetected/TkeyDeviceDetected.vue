@@ -50,6 +50,9 @@
                           <div class="grow body-2">{{ selectedDeviceDetails.browserList }}</div>
                           <div class="grow caption">{{ selectedDeviceDetails.dateFormated }}</div>
                         </div>
+                        <div class="ml-auto">
+                          <v-icon right>$vuetify.icons.select</v-icon>
+                        </div>
                       </div>
                     </template>
                     <div
