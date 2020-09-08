@@ -1,4 +1,4 @@
-import { ethErrors } from 'eth-json-rpc-errors'
+import { ethErrors } from 'eth-rpc-errors'
 import JsonRpcEngine from 'json-rpc-engine'
 import asMiddleware from 'json-rpc-engine/src/asMiddleware'
 import log from 'loglevel'

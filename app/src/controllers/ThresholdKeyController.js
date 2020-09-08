@@ -2,7 +2,7 @@
 import ThresholdKey, { SecurityQuestionsModule, ServiceProviderBase, TorusStorageLayer, WebStorageModule } from '@tkey/core'
 import bowser from 'bowser'
 import deepmerge from 'deepmerge'
-import { ethErrors } from 'eth-json-rpc-errors'
+import { ethErrors } from 'eth-rpc-errors'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import EventEmitter from 'safe-event-emitter'
