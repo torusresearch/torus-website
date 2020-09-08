@@ -240,7 +240,7 @@ export default {
       showOnModal: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
-        connection: '',
+        connection: WECHAT,
       },
     },
     // [WEIBO_VERIFIER]: {
