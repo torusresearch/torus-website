@@ -58,14 +58,14 @@
                   <v-btn
                     block
                     class="login-btn"
-                    :class="{ active: verifier.name === activeButton }"
+                    :class="{ active: verifier.typeOfLogin === activeButton }"
                     type="button"
                     :title="`${t('login.loginWith')} ${verifier.name}`"
-                    @mouseover="loginBtnHover(verifier.name)"
+                    @mouseover="loginBtnHover(verifier.typeOfLogin)"
                     @click="startLogin(verifier.verifier)"
                   >
                     <img
-                      v-if="verifier.name === activeButton || $vuetify.breakpoint.xsOnly"
+                      v-if="verifier.typeOfLogin === activeButton || $vuetify.breakpoint.xsOnly"
                       :src="verifier.logoHover || require(`../../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)"
                       :alt="`${verifier.name} Icon`"
                     />
