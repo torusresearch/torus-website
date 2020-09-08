@@ -42,7 +42,9 @@
                     <span class="verifier-title__google-green">l</span>
                     <span class="verifier-title__google-red">e</span>
                   </span>
-                  <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButton}`">{{ activeButton }}</span>
+                  <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButton}`">
+                    {{ activeButtonDetails.name }}
+                  </span>
                 </span>
               </div>
               <div class="font-weight-bold verifier-subtitle torus_text--text">
@@ -238,6 +240,9 @@ export default {
       const { isActive, disclaimerHide } = this.whiteLabel
       const isUsingSpecialLogin = this.loginButtonsArray.some((x) => (x.typeOfLogin === GITHUB || x.typeOfLogin === TWITTER) && x.showOnModal)
       return disclaimerHide && !isUsingSpecialLogin && isActive
+    },
+    activeButtonDetails() {
+      return this.loginButtonsArray.find((x) => x.typeOfLogin === this.activeButton)
     },
   },
   mounted() {

@@ -179,7 +179,7 @@ import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
 import PopupLogin from '../../../containers/Popup/PopupLogin'
-import { passwordValidation } from '../../../utils/utils'
+import { getUserEmail, passwordValidation } from '../../../utils/utils'
 import LinkingCompleted from '../LinkingCompleted'
 
 const AUTH_FACTORS = [
@@ -248,9 +248,7 @@ export default {
       return this.tKeyStore.settingsPageData.threshold
     },
     userEmail() {
-      const verifierIdArray = this.userInfo.verifierId.split('|')
-      const verifierId = verifierIdArray[1] ? verifierIdArray[1] : verifierIdArray[0]
-      return this.userInfo.email ? this.userInfo.email : verifierId
+      return getUserEmail(this.userInfo)
     },
     equalToPassword() {
       return this.recoveryPasswordConfirm === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch')

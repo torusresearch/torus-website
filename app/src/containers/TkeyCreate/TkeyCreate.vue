@@ -76,7 +76,7 @@ import AddWallet from '../../components/Tkey/AddWallet'
 import CreatedWallet from '../../components/Tkey/CreatedWallet'
 import SetupWallet from '../../components/Tkey/SetupWallet'
 import { ACCOUNT_TYPE } from '../../utils/enums'
-import { addressSlicer } from '../../utils/utils'
+import { addressSlicer, getUserEmail } from '../../utils/utils'
 
 export default {
   name: 'TkeyCreate',
@@ -96,9 +96,7 @@ export default {
       tKeyExists: 'tKeyExists',
     }),
     userEmail() {
-      const verifierIdArray = this.userInfo.verifierId.split('|')
-      const verifierId = verifierIdArray[1] ? verifierIdArray[1] : verifierIdArray[0]
-      return this.userInfo.email ? this.userInfo.email : verifierId
+      return getUserEmail(this.userInfo)
     },
     slicedAddress() {
       return this.$vuetify.breakpoint.xsOnly
