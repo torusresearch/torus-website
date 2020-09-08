@@ -16,7 +16,13 @@
               />
             </v-avatar>
             <div>
-              <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">{{ userEmail }}</div>
+              <div
+                class="body-2"
+                :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'"
+                :style="{ maxWidth: '200px', overflowWrap: 'break-word' }"
+              >
+                {{ userEmail }}
+              </div>
               <div class="body-2 text_3--text">
                 <span>{{ t('tkeyCreate.walletAddress') }}: {{ slicedAddress }}</span>
 
@@ -39,7 +45,7 @@
     <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pb-0 px-0' : 'pa-4']">
       <v-layout class="justify-center">
         <v-flex class="xs12 sm10 md8 lg7">
-          <v-tabs-items v-model="tab">
+          <v-tabs-items v-model="tab" touchless>
             <v-tab-item>
               <AddWallet @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
             </v-tab-item>
