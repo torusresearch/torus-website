@@ -61,6 +61,7 @@ import VerifierPasswordlessIcon from './VerifierPasswordlessIcon.vue'
 import VerifierRedditIcon from './VerifierRedditIcon.vue'
 import VerifierTwitchIcon from './VerifierTwitchIcon.vue'
 import VerifierTwitterIcon from './VerifierTwitterIcon.vue'
+import VerifierWechatIcon from './VerifierWechatIcon.vue'
 import VerifierWeiboIcon from './VerifierWeiboIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
@@ -237,10 +238,10 @@ export default {
   twitter: {
     component: VerifierTwitterIcon,
   },
-  weibo: {
-    component: VerifierWeiboIcon,
-  },
   wechat: {
+    component: VerifierWechatIcon,
+  },
+  weibo: {
     component: VerifierWeiboIcon,
   },
   linkedin: {

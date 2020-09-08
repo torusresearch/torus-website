@@ -180,14 +180,14 @@
                       v-for="verifier in loginButtons"
                       :key="verifier.typeOfLogin"
                       class="login-btn gmt-login"
-                      :class="[{ active: verifier.name === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
+                      :class="[{ active: verifier.typeOfLogin === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
                       type="button"
                       :title="`${t('login.loginWith')} ${verifier.name}`"
                       @click="startLogin(verifier.verifier)"
-                      @mouseover="activeButton = verifier.name"
+                      @mouseover="activeButton = verifier.typeOfLogin"
                     >
                       <img
-                        v-if="verifier.name === activeButton"
+                        v-if="verifier.typeOfLogin === activeButton"
                         :src="require(`../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)"
                         :alt="`${verifier.name} Icon`"
                       />
