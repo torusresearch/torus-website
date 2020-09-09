@@ -6,6 +6,7 @@ import {
   GITHUB,
   GOOGLE,
   JWT,
+  KAKAO,
   LINE,
   LINKEDIN,
   PASSWORDLESS,
@@ -44,6 +45,7 @@ const createHandler = ({ typeOfLogin, clientId, verifier, redirect_uri, preopenI
       return new PasswordlessHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener, jwtParameters })
     case GITHUB:
     case APPLE:
+    case KAKAO:
     case LINE:
     case LINKEDIN:
     case TWITTER:

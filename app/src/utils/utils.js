@@ -26,6 +26,7 @@ import {
   GOERLI_DISPLAY_NAME,
   GOOGLE,
   JWT,
+  KAKAO,
   KOVAN,
   KOVAN_CHAIN_ID,
   KOVAN_CODE,
@@ -605,6 +606,7 @@ export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifier
     case LINKEDIN:
     case LINE:
     case WECHAT:
+    case KAKAO:
     case JWT:
       return caseSensitiveField(sub, isVerifierIdCaseSensitive)
     default:
