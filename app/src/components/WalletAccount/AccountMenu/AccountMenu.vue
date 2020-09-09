@@ -117,7 +117,7 @@ import { BroadcastChannel } from 'broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
-import { addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
+import { addressSlicer, broadcastChannelOptions, getUserEmail } from '../../../utils/utils'
 import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import ShowToolTip from '../../helpers/ShowToolTip'
@@ -148,9 +148,7 @@ export default {
       wallets: 'walletBalances',
     }),
     userEmail() {
-      const verifierIdArray = this.userInfo.verifierId.split('|')
-      const verifierId = verifierIdArray[1] ? verifierIdArray[1] : verifierIdArray[0]
-      return this.userInfo.email ? this.userInfo.email : verifierId
+      return getUserEmail(this.userInfo)
     },
     userId() {
       if (this.userInfo.typeOfLogin === DISCORD) {

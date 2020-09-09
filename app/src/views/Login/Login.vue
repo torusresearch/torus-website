@@ -164,7 +164,9 @@
                         <span class="verifier-title__google-green">l</span>
                         <span class="verifier-title__google-red">e</span>
                       </span>
-                      <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButton}`">{{ activeButton }}</span>
+                      <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButton}`">
+                        {{ activeButtonDetails.name }}
+                      </span>
                     </span>
                   </div>
                   <div class="font-weight-bold text_2--text" :class="[$vuetify.breakpoint.xsOnly ? 'headline' : 'display-2']">
@@ -428,6 +430,9 @@ export default {
     },
     showGoogleLogin() {
       return this.loginConfig[GOOGLE_VERIFIER].showOnModal
+    },
+    activeButtonDetails() {
+      return this.loginButtonsArray.find((x) => x.typeOfLogin === this.activeButton)
     },
   },
   watch: {
