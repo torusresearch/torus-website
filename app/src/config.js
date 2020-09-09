@@ -13,6 +13,8 @@ import {
   HOSTED_EMAIL_PASSWORDLESS_VERIFIER,
   JWT,
   // JWT,
+  KAKAO,
+  KAKAO_VERIFIER,
   LINE,
   LINE_VERIFIER,
   LINKEDIN,
@@ -44,6 +46,7 @@ const {
   VUE_APP_LOGIN_DOMAIN,
   VUE_APP_HOSTED_EMAIL_PASSWORDLESS_CLIENT_ID,
   VUE_APP_WECHAT_CLIENT_ID,
+  VUE_APP_KAKAO_CLIENT_ID,
 } = process.env
 
 const baseUrl = VUE_APP_BASE_ROUTE || 'https://localhost:3000'
@@ -229,7 +232,7 @@ export default {
     [WECHAT_VERIFIER]: {
       description: '',
       typeOfLogin: WECHAT,
-      name: 'WeChat',
+      name: 'Wechat',
       clientId: VUE_APP_WECHAT_CLIENT_ID,
       logoHover: '',
       logoLight: '',
@@ -237,7 +240,21 @@ export default {
       showOnModal: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
-        connection: '',
+        connection: 'Wechat',
+      },
+    },
+    [KAKAO_VERIFIER]: {
+      description: '',
+      typeOfLogin: KAKAO,
+      name: 'Kakao',
+      clientId: VUE_APP_KAKAO_CLIENT_ID,
+      logoHover: '',
+      logoLight: '',
+      logoDark: '',
+      showOnModal: true,
+      jwtParameters: {
+        domain: LOGIN_DOMAIN,
+        connection: 'Kakao',
       },
     },
     // [WEIBO_VERIFIER]: {

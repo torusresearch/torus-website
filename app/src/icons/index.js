@@ -55,6 +55,7 @@ import VerifierFacebookIcon from './VerifierFacebookIcon.vue'
 import VerifierGithubIcon from './VerifierGithubIcon.vue'
 import VerifierGoogleIcon from './VerifierGoogleIcon.vue'
 import VerifierJwtIcon from './VerifierJwtIcon.vue'
+import VerifierKakaoIcon from './VerifierKakaoIcon.vue'
 import VerifierLineIcon from './VerifierLineIcon.vue'
 import VerifierLinkedinIcon from './VerifierLinkedinIcon.vue'
 import VerifierPasswordlessIcon from './VerifierPasswordlessIcon.vue'
@@ -234,6 +235,9 @@ export default {
   },
   github: {
     component: VerifierGithubIcon,
+  },
+  kakao: {
+    component: VerifierKakaoIcon,
   },
   twitter: {
     component: VerifierTwitterIcon,
