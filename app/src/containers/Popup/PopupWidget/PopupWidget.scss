@@ -134,12 +134,6 @@
       font-size: 18px;
       font-weight: bold;
     }
-    .v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
-      border: 1px solid rgba(206, 208, 214, 0.3);
-      background-color: white;
-      color: var(--v-torusBrand1-base);;
-      box-shadow: 5px 5px 10px rgba(208, 218, 254, 0.25), -5px -5px 10px #FAFBFF;
-    }
   }
 
   .torus-widget__transaction-details {
@@ -171,9 +165,6 @@
     .torus-widget__amount-details {
       .amount {
         color: var(--v-torusFont2-base);
-      }
-      .v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
-        box-shadow: 5px 5px 10px rgba(36, 37, 41, 0.25), -5px -5px 10px #37383C;
       }
     }
   }
