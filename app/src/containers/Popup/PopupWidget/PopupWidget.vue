@@ -40,8 +40,15 @@
             </div>
           </div>
           <div class="ml-auto">
-            <v-btn fab depressed small title="Open Transfer Page" aria-label="Open Transfer Page" @click="showWalletPopup({ path: '/transfer' })">
-              <v-icon>$vuetify.icons.send</v-icon>
+            <v-btn
+              class="torus-btn1 torusBrand1--text"
+              small
+              fab
+              title="Open Transfer Page"
+              aria-label="Open Transfer Page"
+              @click="showWalletPopup({ path: '/transfer' })"
+            >
+              <v-icon size="20">$vuetify.icons.send</v-icon>
             </v-btn>
 
             <v-btn
@@ -49,7 +56,7 @@
               fab
               depressed
               small
-              class="ml-2"
+              class="ml-2 torus-btn1 torusBrand1--text"
               title="Open Topup Page"
               aria-label="Open Topupu Page"
               @click="showWalletPopup({ path: '/topup' })"

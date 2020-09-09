@@ -7,7 +7,10 @@ const postQuote = (requestObject, headers) => {
   try {
     const options = {
       mode: 'cors',
-      headers,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+        ...headers,
+      },
     }
     return post(`${config.xanpoolApiQuoteHost}`, requestObject, options)
   } catch (error) {
