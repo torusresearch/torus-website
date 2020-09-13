@@ -48,15 +48,15 @@
                   </v-flex>
                   <v-flex xs10 sm8 ml-auto mr-auto>
                     <v-layout wrap mx-n1>
-                      <v-flex v-for="verifier in loginButtonsMobile" :key="verifier.typeOfLogin" xs6 px-1 mt-2>
+                      <v-flex v-for="verifier in loginButtonsMobile" :key="verifier.name" xs6 px-1 mt-2>
                         <v-btn
                           class="login-btn login-btn--mobile gmt-login"
-                          :class="[{ isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
+                          :class="[{ isDark: $vuetify.theme.dark }, `gmt-login-${verifier.name.toLowerCase()}`]"
                           type="button"
                           :title="`${t('login.loginWith')} ${verifier.name}`"
                           @click="startLogin(verifier.verifier)"
                         >
-                          <img :src="require(`../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)" :alt="`${verifier.typeOfLogin} Icon`" />
+                          <img :src="require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)" :alt="`${verifier.name} Icon`" />
                         </v-btn>
                       </v-flex>
                     </v-layout>
@@ -69,16 +69,16 @@
                       </div>
                       <v-divider></v-divider>
                     </div>
-                    <div v-for="verifier in loginButtonsMobileLong" :key="verifier.typeOfLogin" class="mt-4">
+                    <div v-for="verifier in loginButtonsMobileLong" :key="verifier.name" class="mt-4">
                       <v-btn
-                        :id="`${verifier.typeOfLogin}LoginBtn`"
+                        :id="`${verifier.name}LoginBtn`"
                         :color="$vuetify.theme.dark ? '' : 'white'"
                         block
-                        :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-${verifier.typeOfLogin}`]"
+                        :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-${verifier.name.toLowerCase()}`]"
                         class="text-body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
                         @click="startLogin(verifier.verifier)"
                       >
-                        <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.typeOfLogin}` }}</v-icon>
+                        <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}</v-icon>
                         {{ t(verifier.description) }}
                       </v-btn>
                     </div>
@@ -164,7 +164,9 @@
                         <span class="verifier-title__google-green">l</span>
                         <span class="verifier-title__google-red">e</span>
                       </span>
-                      <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButton}`">{{ activeButton }}</span>
+                      <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButton.toLowerCase()}`">
+                        {{ activeButtonDetails.name }}
+                      </span>
                     </span>
                   </div>
                   <div class="font-weight-bold text_2--text" :class="[$vuetify.breakpoint.xsOnly ? 'headline' : 'display-2']">
@@ -178,9 +180,9 @@
                   <div :style="{ maxWidth: '400px' }">
                     <v-btn
                       v-for="verifier in loginButtons"
-                      :key="verifier.typeOfLogin"
+                      :key="verifier.name"
                       class="login-btn gmt-login"
-                      :class="[{ active: verifier.name === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.typeOfLogin}`]"
+                      :class="[{ active: verifier.name === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.name.toLowerCase()}`]"
                       type="button"
                       :title="`${t('login.loginWith')} ${verifier.name}`"
                       @click="startLogin(verifier.verifier)"
@@ -188,11 +190,11 @@
                     >
                       <img
                         v-if="verifier.name === activeButton"
-                        :src="require(`../../assets/img/icons/login-${verifier.typeOfLogin}.svg`)"
+                        :src="require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)"
                         :alt="`${verifier.name} Icon`"
                       />
                       <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
-                        {{ `$vuetify.icons.${verifier.typeOfLogin}` }}
+                        {{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}
                       </v-icon>
                     </v-btn>
                   </div>
@@ -205,7 +207,7 @@
                     </div>
                     <v-divider></v-divider>
                   </div>
-                  <div v-for="verifier in loginButtonsLong" :key="verifier.typeOfLogin" class="mt-2">
+                  <div v-for="verifier in loginButtonsLong" :key="verifier.name" class="mt-2">
                     <v-btn
                       id="emailLoginBtn"
                       :color="$vuetify.theme.dark ? '' : 'white'"
@@ -214,7 +216,7 @@
                       class="text-body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
                       @click="startLogin(verifier.verifier)"
                     >
-                      <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.typeOfLogin}` }}</v-icon>
+                      <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}</v-icon>
                       {{ t(verifier.description) }}
                     </v-btn>
                   </div>
@@ -428,6 +430,9 @@ export default {
     },
     showGoogleLogin() {
       return this.loginConfig[GOOGLE_VERIFIER].showOnModal
+    },
+    activeButtonDetails() {
+      return this.loginButtonsArray.find((x) => x.name === this.activeButton)
     },
   },
   watch: {

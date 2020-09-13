@@ -55,12 +55,14 @@ import VerifierFacebookIcon from './VerifierFacebookIcon.vue'
 import VerifierGithubIcon from './VerifierGithubIcon.vue'
 import VerifierGoogleIcon from './VerifierGoogleIcon.vue'
 import VerifierJwtIcon from './VerifierJwtIcon.vue'
+import VerifierKakaoIcon from './VerifierKakaoIcon.vue'
 import VerifierLineIcon from './VerifierLineIcon.vue'
 import VerifierLinkedinIcon from './VerifierLinkedinIcon.vue'
 import VerifierPasswordlessIcon from './VerifierPasswordlessIcon.vue'
 import VerifierRedditIcon from './VerifierRedditIcon.vue'
 import VerifierTwitchIcon from './VerifierTwitchIcon.vue'
 import VerifierTwitterIcon from './VerifierTwitterIcon.vue'
+import VerifierWechatIcon from './VerifierWechatIcon.vue'
 import VerifierWeiboIcon from './VerifierWeiboIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
@@ -234,8 +236,14 @@ export default {
   github: {
     component: VerifierGithubIcon,
   },
+  kakao: {
+    component: VerifierKakaoIcon,
+  },
   twitter: {
     component: VerifierTwitterIcon,
+  },
+  wechat: {
+    component: VerifierWechatIcon,
   },
   weibo: {
     component: VerifierWeiboIcon,
