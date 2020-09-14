@@ -34,7 +34,7 @@
             </div>
             <div class="ml-auto justify-end d-flex align-center">
               <div class="caption more-details">
-                {{ userInfo.verifierId }}
+                {{ userEmail }}
               </div>
               <v-icon small class="ml-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
             </div>
