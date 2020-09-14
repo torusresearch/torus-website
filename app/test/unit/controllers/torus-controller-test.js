@@ -19,7 +19,7 @@ const testAccount = {
   address: '0xa12164fed66719297d2cf407bb314d07feb12c02',
 }
 
-describe.only('MetaMaskController', () => {
+describe('MetaMaskController', () => {
   let metamaskController
   const sandbox = sinon.createSandbox()
   const noop = () => {}
@@ -360,7 +360,7 @@ describe.only('MetaMaskController', () => {
   })
 
   describe('#setupUntrustedCommunication', function () {
-    it.only('adds an origin to requests with untrusted communication', function (done) {
+    it('adds an origin to requests with untrusted communication', function (done) {
       // debugger
       const messageSender = {
         url: 'https://mycrypto.com',
