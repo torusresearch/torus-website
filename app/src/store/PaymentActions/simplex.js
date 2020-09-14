@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import randomId from '@chaitanyapotti/random-id'
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
@@ -120,7 +119,6 @@ export default {
       form.method = method
       form.action = path
       form.target = 'form-target'
-      // eslint-disable-next-line no-restricted-syntax
       for (const key in params) {
         if (Object.prototype.hasOwnProperty.call(params, key)) {
           const hiddenField = document.createElement('input')

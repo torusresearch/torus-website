@@ -1,7 +1,6 @@
-/* eslint-disable unicorn/prevent-abbreviations */
 import torus from '../torus'
 import { capitalizeFirstLetter } from '../utils/utils'
-// import store from './store'
+
 let storeReference
 let deferredDispatch = []
 function getStore() {

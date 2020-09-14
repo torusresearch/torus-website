@@ -341,7 +341,6 @@ export function validateVerifierId(selectedTypeOfLogin, value) {
   }
   if (selectedTypeOfLogin === GOOGLE) {
     return (
-      // eslint-disable-next-line max-len
       /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
       'walletSettings.invalidEmail'
     )

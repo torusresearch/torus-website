@@ -17,7 +17,6 @@ if (!isMain) {
   // setup handlers for communicationStream
   const passthroughStream = new stream.PassThrough({ objectMode: true })
   passthroughStream.on('data', (...arguments_) => {
-    // eslint-disable-next-line no-undef
     log.info('p data:', arguments_)
   })
 

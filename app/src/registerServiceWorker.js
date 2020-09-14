@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import log from 'loglevel'
 import { register } from 'register-service-worker'
 
