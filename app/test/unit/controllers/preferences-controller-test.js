@@ -438,7 +438,7 @@ describe('Preferences Controller', () => {
       assert.deepStrictEqual(preferencesController.state().tKeyOnboardingComplete, true)
     })
 
-    it.only('setSelectedAddress', async () => {
+    it('setSelectedAddress', async () => {
       preferencesController.setSelectedAddress(testAccount.address)
       assert.strictEqual(preferencesController.store.getState().selectedAddress, testAccount.address)
     })
