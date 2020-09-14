@@ -437,16 +437,16 @@ describe('Preferences Controller', () => {
       await preferencesController.setTKeyOnboardingStatus(true, testAccount.address)
       assert.deepStrictEqual(preferencesController.state().tKeyOnboardingComplete, true)
     })
+
+    it.only('setSelectedAddress', async () => {
+      preferencesController.setSelectedAddress(testAccount.address)
+      assert.strictEqual(preferencesController.store.getState().selectedAddress, testAccount.address)
+    })
   })
 
   it('setSiteMetadata', async () => {
     preferencesController.setSiteMetadata('google.com', { name: 'google' })
     assert.deepStrictEqual(preferencesController.metadataStore.getState(), { 'google.com': { name: 'google' } })
-  })
-
-  it('setSelectedAddress', async () => {
-    preferencesController.setSelectedAddress(testAccount.address)
-    assert.strictEqual(preferencesController.store.getState().selectedAddress, testAccount.address)
   })
 
   it('should not poll user without selectedaddress', async () => {
