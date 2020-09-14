@@ -26,6 +26,7 @@ import {
   GOERLI_DISPLAY_NAME,
   GOOGLE,
   JWT,
+  KAKAO,
   KOVAN,
   KOVAN_CHAIN_ID,
   KOVAN_CODE,
@@ -62,6 +63,7 @@ import {
   SVG,
   THEME_DARK_BLACK_NAME,
   TWITTER,
+  WECHAT,
   WEIBO,
   WYRE,
   XANPOOL,
@@ -603,6 +605,8 @@ export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifier
     case APPLE:
     case LINKEDIN:
     case LINE:
+    case WECHAT:
+    case KAKAO:
     case JWT:
       return caseSensitiveField(sub, isVerifierIdCaseSensitive)
     default:
@@ -659,4 +663,10 @@ export function passwordValidation(v) {
 
 export function padPrivateKey(privKey) {
   return privKey.padStart(64, 0)
+}
+
+export function getUserEmail(userInfo) {
+  const verifierIdArray = userInfo.verifierId.split('|')
+  const verifierId = verifierIdArray[2] || verifierIdArray[1] || verifierIdArray[0]
+  return userInfo.email ? userInfo.email : verifierId
 }
