@@ -368,6 +368,7 @@ class PreferencesController extends EventEmitter {
     }
   }
 
+  /* istanbul ignore next */
   async postPastTx(tx, address) {
     try {
       const response = await post(`${config.api}/transaction`, tx, this.headers(address), { useAPIKey: true })
@@ -584,6 +585,7 @@ class PreferencesController extends EventEmitter {
 
   setSelectedAddress(address) {
     if (this.store.getState().selectedAddress === address) return
+    if (!Object.keys(this.store.getState()).includes(address)) return
     this.store.updateState({ selectedAddress: address })
     this.recalculatePastTx(address)
     this.fetchEtherscanTx(address)
@@ -634,15 +636,18 @@ class PreferencesController extends EventEmitter {
     }
   }
 
+  /* istanbul ignore next */
   async getOpenSeaCollectibles(api) {
     return get(`${config.api}/opensea?url=${api}`, this.headers(), { useAPIKey: true })
   }
 
+  /* istanbul ignore next */
   async getTwitterId(payload) {
     const userId = await get(`${config.api}/twitter?screen_name=${payload.nick}`, this.headers(), { useAPIKey: true })
     return `${payload.typeOfLogin.toLowerCase()}|${userId.data.toString()}`
   }
 
+  /* istanbul ignore next */
   async sendEmail(payload) {
     return post(`${config.api}/transaction/sendemail`, payload.emailObject, this.headers(), { useAPIKey: true })
   }

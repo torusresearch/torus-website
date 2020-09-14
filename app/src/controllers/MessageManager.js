@@ -26,7 +26,6 @@ export default class MessageManager extends EventEmitter {
    * Controller in charge of managing - storing, adding, removing, updating - Messages.
    *
    * @typedef {Object} MessageManager
-   * @param {Object} opts @deprecated
    * @property {Object} store The observable store where Messages are saved.
    * @property {Object} store.unapprovedMsgs A collection of all Messages in the 'unapproved' state
    * @property {number} store.unapprovedMsgCount The count of all Messages in this.store.unapprobedMsgs

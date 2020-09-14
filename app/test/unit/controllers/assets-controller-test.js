@@ -6,6 +6,7 @@ import { createSandbox } from 'sinon'
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
 import AssetsController from '../../../src/controllers/AssetsController'
 import NetworkController from '../../../src/controllers/NetworkController'
+import PreferencesController from '../../../src/controllers/PreferencesController'
 
 const noop = () => {}
 const KUDOSADDRESS = '0x2aea4add166ebf38b63d09a75de1a7b94aa24163'
@@ -14,14 +15,24 @@ const TEST_ADDRESS_2 = '0xec1adf982415d2ef5ec55899b9bfb8bc0f29251b'
 const TEST_ADDRESS_3 = '0xeb9e64b93097bc15f01f13eae97015c57ab64823'
 const OPEN_SEA_API = `https://api.tor.us`
 
+const testAccount = {
+  key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
+  address: '0xa12164FeD66719297D2cF407bb314D07FEb12C02',
+}
 describe('AssetsController', () => {
   let assetsController
   let network
   let assetsContract
+  let prefsController
   const sandbox = createSandbox()
 
-  beforeEach(() => {
+  beforeEach(async () => {
     network = new NetworkController()
+    prefsController = new PreferencesController()
+    sandbox.stub(prefsController, 'sync')
+    sandbox.stub(prefsController, 'createUser')
+    await prefsController.init({ address: testAccount.address, rehydrate: true, jwtToken: 'hello', dispatch: noop, commit: noop })
+    prefsController.setSelectedAddress(testAccount.address)
     const networkControllerProviderConfig = {
       getAccounts: noop,
     }
@@ -34,8 +45,8 @@ describe('AssetsController', () => {
       selectedAddress: TEST_ADDRESS,
       assetContractController: assetsContract,
       network,
+      getOpenSeaCollectibles: prefsController.getOpenSeaCollectibles.bind(prefsController),
     })
-    assetsController.setJwtToken('hello')
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/foo')
       .reply(200, {
