@@ -232,7 +232,7 @@ export default {
     [WECHAT_VERIFIER]: {
       description: '',
       typeOfLogin: WECHAT,
-      name: 'Wechat',
+      name: 'WeChat',
       clientId: VUE_APP_WECHAT_CLIENT_ID,
       logoHover: '',
       logoLight: '',
