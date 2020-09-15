@@ -6,12 +6,14 @@ import {
   GITHUB,
   GOOGLE,
   JWT,
+  KAKAO,
   LINE,
   LINKEDIN,
   PASSWORDLESS,
   REDDIT,
   TWITCH,
   TWITTER,
+  WECHAT,
   WEIBO,
 } from '../../utils/enums'
 import DiscordHandler from './DiscordHandler'
@@ -43,10 +45,12 @@ const createHandler = ({ typeOfLogin, clientId, verifier, redirect_uri, preopenI
       return new PasswordlessHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener, jwtParameters })
     case GITHUB:
     case APPLE:
+    case KAKAO:
     case LINE:
     case LINKEDIN:
     case TWITTER:
     case WEIBO:
+    case WECHAT:
     case EMAIL_PASSWORD:
     case JWT:
       if (!domain) throw new Error('Invalid params')

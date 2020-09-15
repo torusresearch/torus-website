@@ -40,8 +40,15 @@
             </div>
           </div>
           <div class="ml-auto">
-            <v-btn fab depressed small title="Open Transfer Page" aria-label="Open Transfer Page" @click="showWalletPopup({ path: '/transfer' })">
-              <v-icon>$vuetify.icons.send</v-icon>
+            <v-btn
+              class="torus-btn1 torusBrand1--text"
+              small
+              fab
+              title="Open Transfer Page"
+              aria-label="Open Transfer Page"
+              @click="showWalletPopup({ path: '/transfer' })"
+            >
+              <v-icon size="20">$vuetify.icons.send</v-icon>
             </v-btn>
 
             <v-btn
@@ -49,7 +56,7 @@
               fab
               depressed
               small
-              class="ml-2"
+              class="ml-2 torus-btn1 torusBrand1--text"
               title="Open Topup Page"
               aria-label="Open Topupu Page"
               @click="showWalletPopup({ path: '/topup' })"
@@ -135,7 +142,7 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 import ShowToolTip from '../../../components/helpers/ShowToolTip'
 import config from '../../../config'
 import { ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_TOPUP, CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721 } from '../../../utils/enums'
-import { addressSlicer, significantDigits } from '../../../utils/utils'
+import { addressSlicer, getUserEmail, significantDigits } from '../../../utils/utils'
 
 export default {
   name: 'PopupWidget',
@@ -201,9 +208,7 @@ export default {
       }
     },
     userEmail() {
-      const verifierIdArray = this.userInfo.verifierId.split('|')
-      const verifierId = verifierIdArray[1] ? verifierIdArray[1] : verifierIdArray[0]
-      return this.userInfo.email ? this.userInfo.email : verifierId
+      return getUserEmail(this.userInfo)
     },
   },
   methods: {
