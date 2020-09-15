@@ -75,6 +75,7 @@ const walletBalances = (state) => {
 const loginButtonsArray = (state) => {
   const loginButtons = Object.entries(state.embedState.loginConfig).reduce((newArray, [key, value]) => {
     value.verifier = key
+    value.name = value.name || value.typeOfLogin
     if (value.showOnModal) newArray.push(value)
     return newArray
   }, [])
