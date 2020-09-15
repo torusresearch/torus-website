@@ -65,7 +65,7 @@ class ThresholdKeyController extends EventEmitter {
           await tKey.modules[WEB_STORAGE_MODULE_KEY].inputShareFromWebStorage()
           requiredShares -= 1
         } catch (error) {
-          log.error(error, 'unable to read share from device. Must be on other device')
+          log.warn(error, 'unable to read share from device. Must be on other device')
           descriptionBuffer.push(currentShare)
         }
       } else if (currentShare.module === SECURITY_QUESTIONS_MODULE_KEY) {
@@ -83,7 +83,7 @@ class ThresholdKeyController extends EventEmitter {
           passwordEntered = true
         } catch (error) {
           currentIndex -= 1 // To Allow multiple entry of incorrect password
-          log.error(error, 'Unable to get user share from input')
+          log.warn(error, 'Unable to get user share from input')
           this.handleError('tkeyNew.errorIncorrectPass')
         }
       }
@@ -129,7 +129,6 @@ class ThresholdKeyController extends EventEmitter {
       }
     }
     window.removeEventListener('beforeunload', beforeUnloadHandler)
-    // TODO: Don't throw but keep this promise in wait and get the other shares
     throw new Error('Requires more shares')
   }
 

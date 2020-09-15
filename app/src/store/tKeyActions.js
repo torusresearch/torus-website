@@ -1,8 +1,14 @@
+/* eslint-disable no-unused-vars */
 import log from 'loglevel'
 
+import config from '../config'
 import router from '../router'
 import torus from '../torus'
-import { ACCOUNT_TYPE, THRESHOLD_KEY_QUESTION_INPUT, THRESHOLD_KEY_STORE_DEVICE_FLOW } from '../utils/enums'
+import { ACCOUNT_TYPE, THRESHOLD_KEY_INPUT_ROUTE_MAPPING } from '../utils/enums'
+import PopupHandler from '../utils/PopupHandler'
+import { broadcastChannelOptions, isMain } from '../utils/utils'
+
+const { baseRoute } = config
 
 const { torusController } = torus || {}
 const { thresholdKeyController } = torusController || {}
@@ -55,13 +61,54 @@ export default {
   downloadShare(_, payload) {
     return thresholdKeyController.downloadShare(payload)
   },
-  showThresholdKeyUi(_, payload) {
+  showThresholdKeyUi({ dispatch }, payload) {
     const { type, data: { id } = {} } = payload
-    log.info(id, type, router)
-    if (type === THRESHOLD_KEY_QUESTION_INPUT) {
-      router.push({ name: 'tkeyInputPassword', query: { ...router.currentRoute.query, type, id } })
-    } else if (type === THRESHOLD_KEY_STORE_DEVICE_FLOW) {
-      router.push({ name: 'tkeyDeviceDetected', query: { ...router.currentRoute.query, type, id } })
+    log.info(id, type)
+    if (isMain) router.push({ name: THRESHOLD_KEY_INPUT_ROUTE_MAPPING[type].name, query: { ...router.currentRoute.query, id } })
+    else {
+      const bc = new BroadcastChannel(`tkey_channel_${id}`, broadcastChannelOptions)
+      const finalUrl = `${baseRoute}tkey/${THRESHOLD_KEY_INPUT_ROUTE_MAPPING[type].path}?integrity=true&instanceId=${id}&id=${id}`
+      const tKeyInputWindow = new PopupHandler({
+        url: finalUrl,
+        target: '_blank',
+        features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500',
+      })
+
+      const handleDeny = () => {
+        log.info('Tkey input denied')
+      }
+      const handleSuccess = () => {
+        log.info('tkey input success')
+      }
+
+      bc.addEventListener('message', async (ev) => {
+        // const { type = '', approve = false } = ev.data
+        // if (type === 'popup-loaded') {
+        //   await bc.postMessage({
+        //     data: {
+        //       origin: getIFrameOriginObject(),
+        //       payload: { ...payload, typeOfLogin: state.userInfo.typeOfLogin },
+        //       whiteLabel: state.whiteLabel,
+        //     },
+        //   })
+        // } else if (type === 'user-info-request-result') {
+        //   try {
+        //     if (approve) handleSuccess()
+        //     else handleDeny()
+        //   } catch (error) {
+        //     log.error(error)
+        //     handleDeny()
+        //   } finally {
+        //     bc.close()
+        //     userInfoRequestWindow.close()
+        //   }
+        // }
+      })
+
+      tKeyInputWindow.open()
+      tKeyInputWindow.once('close', () => {
+        handleDeny()
+      })
     }
   },
   setSecurityQuestionShareFromUserInput(_, payload) {

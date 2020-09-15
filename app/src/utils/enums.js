@@ -187,6 +187,17 @@ export const THRESHOLD_KEY_PRIORITY_ORDER = [WEB_STORAGE_MODULE_KEY, SECURITY_QU
 export const THRESHOLD_KEY_QUESTION_INPUT = 'requestSecurityQuestionInput'
 export const THRESHOLD_KEY_STORE_DEVICE_FLOW = 'storeDeviceFlow'
 
+export const TKEY_INPUT_PASSWORD_ROUTE = 'tkeyInputPassword'
+export const TKEY_STORE_DEVICE_ROUTE = 'tkeyDeviceDetected'
+
+export const TKEY_INPUT_PASSWORD_ROUTE_PATH = 'input-password'
+export const TKEY_STORE_DEVICE_ROUTE_PATH = 'device-detected'
+
+export const THRESHOLD_KEY_INPUT_ROUTE_MAPPING = {
+  [THRESHOLD_KEY_QUESTION_INPUT]: { name: TKEY_INPUT_PASSWORD_ROUTE, path: TKEY_INPUT_PASSWORD_ROUTE_PATH },
+  [THRESHOLD_KEY_STORE_DEVICE_FLOW]: { name: TKEY_STORE_DEVICE_ROUTE, path: TKEY_STORE_DEVICE_ROUTE_PATH },
+}
+
 export const STORAGE_MAP = {
   [WEB_STORAGE_MODULE_KEY]: 'Web Storage',
   [CHROME_EXTENSION_STORAGE_MODULE_KEY]: 'Chrome Extension',

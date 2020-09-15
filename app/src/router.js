@@ -18,6 +18,7 @@ import {
   WalletTopupXanpool,
 } from './containers/WalletTopup'
 import WalletTransfer from './containers/WalletTransfer'
+import { TKEY_INPUT_PASSWORD_ROUTE, TKEY_INPUT_PASSWORD_ROUTE_PATH, TKEY_STORE_DEVICE_ROUTE, TKEY_STORE_DEVICE_ROUTE_PATH } from './utils/enums'
 import Confirm from './views/Confirm'
 import Login from './views/Login'
 import Popup from './views/Popup'
@@ -163,16 +164,16 @@ const router = new Router({
               },
             },
             {
-              path: 'device-detected',
-              name: 'tkeyDeviceDetected',
+              path: TKEY_STORE_DEVICE_ROUTE_PATH,
+              name: TKEY_STORE_DEVICE_ROUTE,
               component: TkeyDeviceDetected,
               meta: {
                 requiresAuth: false,
               },
             },
             {
-              path: 'input-password',
-              name: 'tkeyInputPassword',
+              path: TKEY_INPUT_PASSWORD_ROUTE_PATH,
+              name: TKEY_INPUT_PASSWORD_ROUTE,
               component: TkeyInputPassword,
               meta: {
                 requiresAuth: false,
