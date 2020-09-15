@@ -34,7 +34,7 @@
                 </span>
                 <span v-else>
                   {{ t('login.your') }}
-                  <span v-if="activeButton === GOOGLE">
+                  <span v-if="activeButton === GOOGLE_VERIFIER">
                     <span class="verifier-title__google-blue">G</span>
                     <span class="verifier-title__google-red">o</span>
                     <span class="verifier-title__google-yellow">o</span>
@@ -42,7 +42,7 @@
                     <span class="verifier-title__google-green">l</span>
                     <span class="verifier-title__google-red">e</span>
                   </span>
-                  <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButton.toLowerCase()}`">
+                  <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButtonDetails.name.toLowerCase()}`">
                     {{ activeButtonDetails.name }}
                   </span>
                 </span>
@@ -56,18 +56,18 @@
             </v-flex>
             <v-flex xs12>
               <v-layout wrap mx-n1>
-                <v-flex v-for="verifier in loginButtons" :key="verifier.name" xs4 px-1 mt-2>
+                <v-flex v-for="verifier in loginButtons" :key="verifier.verifier" xs4 px-1 mt-2>
                   <v-btn
                     block
                     class="login-btn"
-                    :class="{ active: verifier.name === activeButton }"
+                    :class="{ active: verifier.verifier === activeButton }"
                     type="button"
                     :title="`${t('login.loginWith')} ${verifier.name}`"
-                    @mouseover="loginBtnHover(verifier.name)"
+                    @mouseover="loginBtnHover(verifier.verifier)"
                     @click="startLogin(verifier.verifier)"
                   >
                     <img
-                      v-if="verifier.name === activeButton || $vuetify.breakpoint.xsOnly"
+                      v-if="verifier.verifier === activeButton || $vuetify.breakpoint.xsOnly"
                       :src="verifier.logoHover || require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)"
                       :alt="`${verifier.name} Icon`"
                     />
@@ -88,7 +88,7 @@
                 </div>
                 <v-divider></v-divider>
               </div>
-              <div v-for="verifier in loginButtonsLong" :key="verifier.name" class="mt-4">
+              <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="mt-4">
                 <v-btn
                   :id="`${verifier.name}LoginBtn`"
                   :color="$vuetify.theme.dark ? '' : 'white'"
@@ -170,7 +170,7 @@ import log from 'loglevel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import PasswordlessLogin from '../../../components/helpers/PasswordLessLogin'
-import { GITHUB, GOOGLE, PASSWORDLESS, TWITTER } from '../../../utils/enums'
+import { GITHUB, GOOGLE_VERIFIER, PASSWORDLESS, TWITTER } from '../../../utils/enums'
 
 export default {
   name: 'PopupLogin',
@@ -187,7 +187,7 @@ export default {
   },
   data() {
     return {
-      GOOGLE,
+      GOOGLE_VERIFIER,
       PASSWORDLESS,
       showModal: true,
       activeButton: '',
@@ -242,11 +242,11 @@ export default {
       return disclaimerHide && !isUsingSpecialLogin && isActive
     },
     activeButtonDetails() {
-      return this.loginButtonsArray.find((x) => x.name === this.activeButton)
+      return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
     },
   },
   mounted() {
-    this.activeButton = (this.loginButtons.concat(this.loginButtonsLong)[0] || { typeOfLogin: GOOGLE }).typeOfLogin
+    this.activeButton = (this.loginButtons.concat(this.loginButtonsLong)[0] || { verifier: GOOGLE_VERIFIER }).verifier
   },
   methods: {
     loginBtnHover(verifier) {
