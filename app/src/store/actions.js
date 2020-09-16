@@ -137,6 +137,7 @@ export default {
           name: object.name,
           balance: object.balance,
           symbol: object.ticker,
+          isEtherscan: true,
         })
       })
     } catch {

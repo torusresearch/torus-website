@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import contracts from 'eth-contract-metadata'
-import { warn } from 'loglevel'
+import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 import Web3 from 'web3'
@@ -11,6 +11,24 @@ import { MAINNET } from '../utils/enums'
 const DEFAULT_INTERVAL = 180 * 1000
 
 const SINGLE_CALL_BALANCES_ADDRESS = '0xb1f8e55c7f64d203c1400b9d8555d050f94adf39'
+
+function getObjectFromArrayBasedonKey(oldArray, key) {
+  return oldArray.reduce((acc, x) => {
+    acc[x[key]] = x
+    return acc
+  }, {})
+}
+
+const mergeTokenArrays = (oldArray, newArray) => {
+  const oldMap = getObjectFromArrayBasedonKey(oldArray, 'tokenAddress')
+  const newMap = getObjectFromArrayBasedonKey(newArray, 'tokenAddress')
+  const finalArr = newArray
+  Object.keys(oldMap).forEach((x) => {
+    if (!newMap[x] && oldMap[x].isEtherscan) finalArr.push(oldMap[x])
+  })
+  return finalArr
+}
+
 /**
  * A controller that polls for token exchange
  * rates based on a user's current token list
@@ -52,7 +70,7 @@ class DetectTokensController {
       const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
       ethContract.methods.balances([this.selectedAddress], tokensToDetect).call({ from: this.selectedAddress }, (error, result) => {
         if (error) {
-          warn('MetaMask - DetectTokensController single call balance fetch failed', error)
+          log.warn('MetaMask - DetectTokensController single call balance fetch failed', error)
           return
         }
         const nonZeroTokens = []
@@ -64,7 +82,8 @@ class DetectTokensController {
             // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
           }
         })
-        this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+        const currentTokens = this.detectedTokensStore.getState().tokens
+        this.detectedTokensStore.putState({ tokens: mergeTokenArrays(currentTokens, nonZeroTokens) })
       })
     }
   }
@@ -86,6 +105,12 @@ class DetectTokensController {
         balance: `0x${new BigNumber(data.balance).times(new BigNumber(10).pow(new BigNumber(data.decimals))).toString(16)}`,
       })
       this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+    } else if (nonZeroTokens[index].isEtherscan) {
+      nonZeroTokens[index] = {
+        ...nonZeroTokens[index],
+        balance: `0x${new BigNumber(data.balance).times(new BigNumber(10).pow(new BigNumber(data.decimals))).toString(16)}`,
+      }
+      this.detectedTokensStore.putState({ tokens: nonZeroTokens })
     }
   }
 
@@ -101,7 +126,7 @@ class DetectTokensController {
       const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
       ethContract.methods.balances([this.selectedAddress], tokenAddresses).call({ from: this.selectedAddress }, (error, result) => {
         if (error) {
-          warn('MetaMask - DetectTokensController single call balance fetch failed', error)
+          log.warn('MetaMask - DetectTokensController single call balance fetch failed', error)
           return
         }
         const nonZeroTokens = []
@@ -111,7 +136,8 @@ class DetectTokensController {
             nonZeroTokens.push({ ...oldTokens[index], balance })
           }
         })
-        this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+        const currentTokens = this.detectedTokensStore.getState().tokens
+        this.detectedTokensStore.putState({ tokens: mergeTokenArrays(currentTokens, nonZeroTokens) })
       })
     }
   }
