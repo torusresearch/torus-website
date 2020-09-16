@@ -4,7 +4,7 @@ import log from 'loglevel'
 import config from '../config'
 import router from '../router'
 import torus from '../torus'
-import { ACCOUNT_TYPE, THRESHOLD_KEY_INPUT_ROUTE_MAPPING } from '../utils/enums'
+import { ACCOUNT_TYPE, THRESHOLD_KEY_INPUT_ROUTE_MAPPING, THRESHOLD_KEY_QUESTION_INPUT, THRESHOLD_KEY_STORE_DEVICE_FLOW } from '../utils/enums'
 import PopupHandler from '../utils/PopupHandler'
 import { broadcastChannelOptions, isMain } from '../utils/utils'
 
@@ -76,6 +76,11 @@ export default {
 
       const handleDeny = () => {
         log.info('Tkey input denied')
+        if (type === THRESHOLD_KEY_QUESTION_INPUT) {
+          dispatch('setSecurityQuestionShareFromUserInput', { id, password: '', rejected: true })
+        } else if (type === THRESHOLD_KEY_STORE_DEVICE_FLOW) {
+          dispatch('setStoreDeviceFlow', { id, response: '', rejected: true })
+        }
       }
       const handleSuccess = () => {
         log.info('tkey input success')
@@ -85,10 +90,10 @@ export default {
         const { eventType = '', details } = ev.data
         if (eventType === 'device_login_password') {
           const { id: keyId, password, rejected } = details
-          await thresholdKeyController.setSecurityQuestionShareFromUserInput(keyId, { password, rejected })
+          dispatch('setSecurityQuestionShareFromUserInput', { id: keyId, password, rejected })
         } else if (eventType === 'set_store_device_flow') {
           const { id: keyId, response, rejected } = details
-          await thresholdKeyController.setStoreDeviceFlow(keyId, { response, rejected })
+          dispatch('setStoreDeviceFlow', { id: keyId, response, rejected })
         }
 
         tKeyInputWindow.close()
