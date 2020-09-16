@@ -105,6 +105,8 @@
 import bowser from 'bowser'
 import { mapActions, mapState } from 'vuex'
 
+import { broadcastChannelOptions } from '../../utils/utils'
+
 export default {
   data() {
     return {
@@ -157,14 +159,25 @@ export default {
       this.selectedDevice = index
     },
     confirm() {
-      if (this.isConfirming) return
-      this.isConfirming = true
-      this.setStoreDeviceFlow({ id: this.$route.query.id, response: { isOld: !!this.activeTab, oldIndex: this.selectedDevice } })
+      this.triggerSetDeviceFlow({ id: this.$route.query.id, response: { isOld: !!this.activeTab, oldIndex: this.selectedDevice } })
     },
     doNotSaveDevice() {
+      this.triggerSetDeviceFlow({ id: this.$route.query.id, rejected: true })
+    },
+    async triggerSetDeviceFlow(details) {
       if (this.isConfirming) return
       this.isConfirming = true
-      this.setStoreDeviceFlow({ id: this.$route.query.id, rejected: true })
+
+      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      if (urlInstance && urlInstance !== '') {
+        const bc = new BroadcastChannel(`tkey_channel_${urlInstance}`, broadcastChannelOptions)
+        await bc.postMessage({
+          eventType: 'set_store_device_flow',
+          details,
+        })
+        bc.close()
+      }
+      this.setStoreDeviceFlow(details)
     },
   },
 }

@@ -67,7 +67,7 @@ export default {
     if (isMain) router.push({ name: THRESHOLD_KEY_INPUT_ROUTE_MAPPING[type].name, query: { ...router.currentRoute.query, id } })
     else {
       const bc = new BroadcastChannel(`tkey_channel_${id}`, broadcastChannelOptions)
-      const finalUrl = `${baseRoute}tkey/${THRESHOLD_KEY_INPUT_ROUTE_MAPPING[type].path}?integrity=true&instanceId=${id}&id=${id}`
+      const finalUrl = `${baseRoute}wallet/tkey/${THRESHOLD_KEY_INPUT_ROUTE_MAPPING[type].path}?integrity=true&instanceId=${id}&id=${id}`
       const tKeyInputWindow = new PopupHandler({
         url: finalUrl,
         target: '_blank',
@@ -82,7 +82,16 @@ export default {
       }
 
       bc.addEventListener('message', async (ev) => {
-        // const { type = '', approve = false } = ev.data
+        const { eventType = '', details } = ev.data
+        if (eventType === 'device_login_password') {
+          const { id: keyId, password, rejected } = details
+          await thresholdKeyController.setSecurityQuestionShareFromUserInput(keyId, { password, rejected })
+        } else if (eventType === 'set_store_device_flow') {
+          const { id: keyId, response, rejected } = details
+          await thresholdKeyController.setStoreDeviceFlow(keyId, { response, rejected })
+        }
+
+        tKeyInputWindow.close()
         // if (type === 'popup-loaded') {
         //   await bc.postMessage({
         //     data: {

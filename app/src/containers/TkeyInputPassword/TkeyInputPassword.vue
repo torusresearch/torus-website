@@ -67,6 +67,8 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 
+import { broadcastChannelOptions } from '../../utils/utils'
+
 export default {
   data() {
     return {
@@ -103,12 +105,28 @@ export default {
   methods: {
     ...mapActions(['setSecurityQuestionShareFromUserInput', 'skipDeviceLogin']),
     onVerifyPassword() {
-      this.setSecurityQuestionShareFromUserInput({
+      this.setPasswordInput({
         id: this.$route.query.id,
         password: this.verifyPassword,
       })
     },
     onSkipDeviceLogin() {
+      this.setPasswordInput({
+        id: this.$route.query.id,
+        rejected: true,
+      })
+    },
+    async setPasswordInput(details) {
+      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      if (urlInstance && urlInstance !== '') {
+        const bc = new BroadcastChannel(`tkey_channel_${urlInstance}`, broadcastChannelOptions)
+        await bc.postMessage({
+          eventType: 'device_login_password',
+          details,
+        })
+        bc.close()
+      }
+
       this.setSecurityQuestionShareFromUserInput({
         id: this.$route.query.id,
         rejected: true,
