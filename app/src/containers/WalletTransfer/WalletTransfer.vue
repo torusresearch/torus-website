@@ -588,7 +588,10 @@ export default {
   },
   watch: {
     selectedAddress(newValue, oldValue) {
-      if (newValue !== oldValue) this.calculateGas(newValue)
+      if (newValue !== oldValue) {
+        if (this.toEthAddress) this.calculateGas(this.toEthAddress)
+        else this.onTransferClick()
+      }
     },
   },
   mounted() {
@@ -837,8 +840,10 @@ export default {
         // Reset you send
         this.resetSendAll()
       }
-      this.gas = await this.calculateGas(this.toAddress)
-      this.updateTotalCost()
+      if (this.toEthAddress) {
+        this.gas = await this.calculateGas(this.toEthAddress)
+        this.updateTotalCost()
+      } else this.onTransferClick()
     },
     getEnsAddress(ens) {
       return torus.web3.eth.ens.getAddress(ens)
@@ -1089,7 +1094,8 @@ export default {
 
       if (data.isReset) {
         this.activeGasPrice = this.speedSelected === '' ? '' : this.activeGasPrice
-        this.calculateGas()
+        if (this.toEthAddress) this.calculateGas(this.toEthAddress)
+        else this.onTransferClick()
       }
 
       this.updateTotalCost()
