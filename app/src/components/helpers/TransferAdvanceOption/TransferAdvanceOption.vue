@@ -50,7 +50,7 @@
                     {{ t('walletTransfer.gasLimit') }}
                     <HelpTooltip :title="t('walletTransfer.gasLimit')" :description="t('walletTransfer.gasLimitDesc')"></HelpTooltip>
                   </span>
-                  <v-text-field id="advanced-gas" readonly outlined :value="advancedGas" required type="number"></v-text-field>
+                  <v-text-field id="advanced-gas" v-model="advancedGas" outlined required type="number"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
                   <span class="text-subtitle-2">{{ t('walletTransfer.sendAmount') }}</span>
@@ -188,7 +188,8 @@ export default {
       return totalCost
     },
     gasAmount() {
-      return this.advancedGas.times(this.advancedActiveGasPrice).times(new BigNumber(10).pow(new BigNumber(-9)))
+      const advancedGas = BigNumber.isBigNumber(this.advancedGas) ? this.advancedGas : new BigNumber(this.advancedGas)
+      return advancedGas.times(this.advancedActiveGasPrice).times(new BigNumber(10).pow(new BigNumber(-9)))
     },
     gasAmountDisplay() {
       return significantDigits(this.gasAmount)
@@ -226,8 +227,9 @@ export default {
     },
     saveOptions() {
       if (this.$refs.advanceOptionForm.validate()) {
+        const advancedGas = BigNumber.isBigNumber(this.advancedGas) ? this.advancedGas : new BigNumber(this.advancedGas)
         const payload = {
-          advancedGas: this.advancedGas,
+          advancedGas,
           advancedActiveGasPrice: this.advancedActiveGasPrice,
         }
 
