@@ -48,7 +48,7 @@
                   </v-flex>
                   <v-flex xs10 sm8 ml-auto mr-auto>
                     <v-layout wrap mx-n1>
-                      <v-flex v-for="verifier in loginButtonsMobile" :key="verifier.name" xs6 px-1 mt-2>
+                      <v-flex v-for="verifier in loginButtonsMobile" :key="verifier.verifier" xs6 px-1 mt-2>
                         <v-btn
                           class="login-btn login-btn--mobile gmt-login"
                           :class="[{ isDark: $vuetify.theme.dark }, `gmt-login-${verifier.name.toLowerCase()}`]"
@@ -69,7 +69,7 @@
                       </div>
                       <v-divider></v-divider>
                     </div>
-                    <div v-for="verifier in loginButtonsMobileLong" :key="verifier.name" class="mt-4">
+                    <div v-for="verifier in loginButtonsMobileLong" :key="verifier.verifier" class="mt-4">
                       <v-btn
                         :id="`${verifier.name}LoginBtn`"
                         :color="$vuetify.theme.dark ? '' : 'white'"
@@ -156,7 +156,7 @@
                   <div class="verifier-title font-weight-bold" :class="[$vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2']">
                     <span class="text_2--text">
                       {{ t('login.your') }}
-                      <span v-if="activeButton === GOOGLE">
+                      <span v-if="activeButton === GOOGLE_VERIFIER">
                         <span class="verifier-title__google-blue">G</span>
                         <span class="verifier-title__google-red">o</span>
                         <span class="verifier-title__google-yellow">o</span>
@@ -164,7 +164,7 @@
                         <span class="verifier-title__google-green">l</span>
                         <span class="verifier-title__google-red">e</span>
                       </span>
-                      <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButton.toLowerCase()}`">
+                      <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButtonDetails.name.toLowerCase()}`">
                         {{ activeButtonDetails.name }}
                       </span>
                     </span>
@@ -180,16 +180,19 @@
                   <div :style="{ maxWidth: '400px' }">
                     <v-btn
                       v-for="verifier in loginButtons"
-                      :key="verifier.name"
+                      :key="verifier.verifier"
                       class="login-btn gmt-login"
-                      :class="[{ active: verifier.name === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.name.toLowerCase()}`]"
+                      :class="[
+                        { active: verifier.verifier === activeButton, isDark: $vuetify.theme.dark },
+                        `gmt-login-${verifier.name.toLowerCase()}`,
+                      ]"
                       type="button"
                       :title="`${t('login.loginWith')} ${verifier.name}`"
                       @click="startLogin(verifier.verifier)"
-                      @mouseover="activeButton = verifier.name"
+                      @mouseover="activeButton = verifier.verifier"
                     >
                       <img
-                        v-if="verifier.name === activeButton"
+                        v-if="verifier.verifier === activeButton"
                         :src="require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)"
                         :alt="`${verifier.name} Icon`"
                       />
@@ -207,7 +210,7 @@
                     </div>
                     <v-divider></v-divider>
                   </div>
-                  <div v-for="verifier in loginButtonsLong" :key="verifier.name" class="mt-2">
+                  <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="mt-2">
                     <v-btn
                       id="emailLoginBtn"
                       :color="$vuetify.theme.dark ? '' : 'white'"
@@ -377,7 +380,7 @@ export default {
       GOOGLE,
       GOOGLE_VERIFIER,
       PASSWORDLESS,
-      activeButton: GOOGLE,
+      activeButton: GOOGLE_VERIFIER,
       loginInProgress: false,
       snackbar: false,
       snackbarText: '',
@@ -434,7 +437,7 @@ export default {
       return this.loginConfig[GOOGLE_VERIFIER].showOnModal
     },
     activeButtonDetails() {
-      return this.loginButtonsArray.find((x) => x.name === this.activeButton)
+      return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
     },
   },
   watch: {
