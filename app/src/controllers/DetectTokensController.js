@@ -20,8 +20,8 @@ function getObjectFromArrayBasedonKey(oldArray, key) {
 }
 
 const mergeTokenArrays = (oldArray, newArray) => {
-  const oldMap = getObjectFromArrayBasedonKey(oldArray, 'tokenAddress')
-  const newMap = getObjectFromArrayBasedonKey(newArray, 'tokenAddress')
+  const oldMap = getObjectFromArrayBasedonKey(oldArray || [], 'tokenAddress')
+  const newMap = getObjectFromArrayBasedonKey(newArray || [], 'tokenAddress')
   const finalArr = newArray
   Object.keys(oldMap).forEach((x) => {
     if (!newMap[x] && oldMap[x].isEtherscan) finalArr.push(oldMap[x])
@@ -82,8 +82,8 @@ class DetectTokensController {
             // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
           }
         })
-        const currentTokens = this.detectedTokensStore.getState().tokens
-        this.detectedTokensStore.putState({ [userAddress]: mergeTokenArrays(currentTokens, nonZeroTokens) })
+        const currentTokens = this.detectedTokensStore.getState()[userAddress] || []
+        this.detectedTokensStore.updateState({ [userAddress]: mergeTokenArrays(currentTokens, nonZeroTokens) })
       })
     }
   }
@@ -108,13 +108,13 @@ class DetectTokensController {
           name: x.name,
           symbol: x.ticker,
           tokenAddress: x.contractAddress,
-          balance: `0x${new BigNumber(x.balance).times(new BigNumber(10).pow(new BigNumber(x.decimals))).toString(16)}`,
+          balance: `0x${new BigNumber(x.balance).times(new BigNumber(10).pow(new BigNumber(x.tokenDecimal))).toString(16)}`,
           isEtherscan: true,
         })
       } else if (nonZeroTokens[index].isEtherscan) {
         nonZeroTokens[index] = {
           ...nonZeroTokens[index],
-          balance: `0x${new BigNumber(x.balance).times(new BigNumber(10).pow(new BigNumber(x.decimals))).toString(16)}`,
+          balance: `0x${new BigNumber(x.balance).times(new BigNumber(10).pow(new BigNumber(x.tokenDecimal))).toString(16)}`,
         }
       }
     })
@@ -145,8 +145,8 @@ class DetectTokensController {
             nonZeroTokens.push({ ...oldTokens[index], balance })
           }
         })
-        const currentTokens = this.detectedTokensStore.getState().tokens
-        this.detectedTokensStore.putState({ [userAddress]: mergeTokenArrays(currentTokens, nonZeroTokens) })
+        const currentTokens = this.detectedTokensStore.getState()[userAddress] || []
+        this.detectedTokensStore.updateState({ [userAddress]: mergeTokenArrays(currentTokens, nonZeroTokens) })
       })
     }
   }
