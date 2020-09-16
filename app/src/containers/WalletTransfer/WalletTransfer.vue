@@ -446,6 +446,7 @@ export default {
       timeTaken: '',
       convertedTotalCost: '',
       resetSpeed: false,
+      hasCustomGasLimit: false,
       qrErrorMsg: '',
       autoSelectVerifier: true,
       selectedVerifier: '',
@@ -896,7 +897,9 @@ export default {
           return
         }
         this.toEthAddress = toAddress
-        this.gas = await this.calculateGas(toAddress)
+        if (this.hasCustomGasLimit) {
+          this.gas = await this.calculateGas(toAddress)
+        }
         this.updateTotalCost()
         this.confirmDialog = true
       }
@@ -1091,6 +1094,10 @@ export default {
       this.activeGasPrice = data.activeGasPrice
       this.timeTaken = data.speed
       this.gas = data.gas
+
+      if (this.isAdvanceOption) {
+        this.hasCustomGasLimit = true
+      }
 
       if (data.isReset) {
         this.activeGasPrice = this.speedSelected === '' ? '' : this.activeGasPrice

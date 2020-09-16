@@ -148,10 +148,16 @@ function handleConfirm(ev) {
     let txMeta = unApprovedTransactions.find((x) => x.id === ev.data.id)
     log.info('STANDARD TX PARAMS:', txMeta)
 
-    if (ev.data.gasPrice) {
-      log.info('Changed gas price to:', ev.data.gasPrice)
+    if (ev.data.gasPrice || ev.data.gas) {
       const newTxMeta = JSON.parse(JSON.stringify(txMeta))
-      newTxMeta.txParams.gasPrice = ev.data.gasPrice
+      if (ev.data.gasPrice) {
+        log.info('Changed gas price to:', ev.data.gasPrice)
+        newTxMeta.txParams.gasPrice = ev.data.gasPrice
+      }
+      if (ev.data.gas) {
+        log.info('Changed gas limit to:', ev.data.gas)
+        newTxMeta.txParams.gas = ev.data.gas
+      }
       torusController.txController.updateTransaction(newTxMeta)
       txMeta = newTxMeta
       log.info('New txMeta: ', txMeta)
