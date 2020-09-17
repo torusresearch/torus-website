@@ -41,7 +41,7 @@
   }
   .v-tab {
     text-transform: none;
-    width: 280px;
+    width: 100%;
     border: 1px solid #D5D5D5;
     border-radius: 6px;
     background-color: var(--v-torusLight-base);
@@ -53,8 +53,11 @@
       color: var(--v-torusBrand1-base);
       background-color: var(--v-torusGray2-base);
     }
-    @media screen and (max-width: 600px) {
-      width: 100%;
+    @media screen and (min-width: 960px) {
+      width: 180px;
+    }
+    @media screen and (min-width: 1264px) {
+      width: 280px;
     }
   }
   &-token.v-tab {

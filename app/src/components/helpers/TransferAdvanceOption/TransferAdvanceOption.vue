@@ -7,7 +7,7 @@
     </template>
     <v-card class="advance-option py-4">
       <v-container>
-        <v-form ref="advanceOptionForm" :value="advanceOptionFormValid" lazy-validation @submit.prevent="saveOptions">
+        <v-form ref="advanceOptionForm" v-model="advanceOptionFormValid" lazy-validation @submit.prevent="saveOptions">
           <v-layout wrap>
             <v-flex xs12 px-4>
               <div class="font-weight-bold headline">{{ t('walletTransfer.transferDetails') }}</div>
@@ -40,7 +40,7 @@
                     :placeholder="t('walletTransfer.enterValue')"
                     outlined
                     :value="advancedActiveGasPrice"
-                    required
+                    :rules="[rules.valid, rules.moreThanZero]"
                     type="number"
                     @change="onChangeActiveGasPrice"
                   ></v-text-field>
@@ -50,7 +50,14 @@
                     {{ t('walletTransfer.gasLimit') }}
                     <HelpTooltip :title="t('walletTransfer.gasLimit')" :description="t('walletTransfer.gasLimitDesc')"></HelpTooltip>
                   </span>
-                  <v-text-field id="advanced-gas" readonly outlined :value="advancedGas" required type="number"></v-text-field>
+                  <v-text-field
+                    id="advanced-gas"
+                    :value="advancedGas"
+                    outlined
+                    :rules="[rules.valid, rules.moreThanZero]"
+                    type="number"
+                    @change="onChangeGasLimit"
+                  ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
                   <span class="text-subtitle-2">{{ t('walletTransfer.sendAmount') }}</span>
@@ -173,6 +180,10 @@ export default {
       advancedActiveGasPrice: new BigNumber('0'),
       advancedGas: new BigNumber('0'),
       CONTRACT_TYPE_ERC20,
+      rules: {
+        moreThanZero: (value) => new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount'),
+        valid: (value) => !!value || this.t('walletTransfer.required'),
+      },
     }
   },
   computed: {
@@ -188,7 +199,8 @@ export default {
       return totalCost
     },
     gasAmount() {
-      return this.advancedGas.times(this.advancedActiveGasPrice).times(new BigNumber(10).pow(new BigNumber(-9)))
+      const advancedGas = BigNumber.isBigNumber(this.advancedGas) ? this.advancedGas : new BigNumber(this.advancedGas)
+      return advancedGas.times(this.advancedActiveGasPrice).times(new BigNumber(10).pow(new BigNumber(-9)))
     },
     gasAmountDisplay() {
       return significantDigits(this.gasAmount)
@@ -219,15 +231,19 @@ export default {
   },
   methods: {
     onChangeActiveGasPrice(value) {
-      this.advancedActiveGasPrice = new BigNumber(value)
+      if (value) this.advancedActiveGasPrice = new BigNumber(value)
+    },
+    onChangeGasLimit(value) {
+      if (value) this.advancedGas = new BigNumber(value)
     },
     onCancel() {
       this.dialog = false
     },
     saveOptions() {
       if (this.$refs.advanceOptionForm.validate()) {
+        const advancedGas = BigNumber.isBigNumber(this.advancedGas) ? this.advancedGas : new BigNumber(this.advancedGas)
         const payload = {
-          advancedGas: this.advancedGas,
+          advancedGas,
           advancedActiveGasPrice: this.advancedActiveGasPrice,
         }
 
