@@ -93,6 +93,10 @@
             <div class="caption-2 text-right">(~ {{ speedSelected }} {{ t('walletTransfer.minute') }})</div>
           </div>
         </div>
+        <div v-if="gasEstimateFailed" class="caption text-right mt-1">
+          <v-icon x-small class="error--text mr-1">$vuetify.icons.alert</v-icon>
+          <span class="error--text">{{ t('walletTransfer.gasEstimateFail') }}</span>
+        </div>
       </v-flex>
     </v-layout>
     <v-divider class="mx-6 my-3"></v-divider>
@@ -270,6 +274,9 @@ export default {
     },
     insufficientFunds() {
       return this.contractType === CONTRACT_TYPE_ETH ? this.totalCostBn.gt(this.itemBalance) : this.transactionFeeEth.gt(this.ethBalance)
+    },
+    gasEstimateFailed() {
+      return this.transactionFee.isZero()
     },
   },
   methods: {

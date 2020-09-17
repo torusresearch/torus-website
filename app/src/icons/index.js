@@ -3,6 +3,7 @@ import ActivitiesIcon from './ActivitiesIcon.vue'
 import AddIcon from './AddIcon.vue'
 import AddressIcon from './AddressIcon.vue'
 import AlertCircleFilledIcon from './AlertCircleFilledIcon.vue'
+import AlertIcon from './AlertIcon.vue'
 import ArrowDownCircleIcon from './ArrowDownCircleIcon.vue'
 import ArrowLeftCircleIcon from './ArrowLeftCircleIcon.vue'
 import ArrowRightCircleIcon from './ArrowRightCircleIcon.vue'
@@ -359,5 +360,8 @@ export default {
   },
   checkbox_dark_unchecked: {
     component: CheckboxDarkUncheckedIcon,
+  },
+  alert: {
+    component: AlertIcon,
   },
 }
