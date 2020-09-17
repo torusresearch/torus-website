@@ -325,6 +325,7 @@ export default {
       selectedToken: '',
       gasCost: new BigNumber('0'),
       gasEstimate: new BigNumber('0'),
+      gasEstimateDefault: new BigNumber('0'),
       txData: '',
       txDataParams: '',
       sender: '',
@@ -594,6 +595,7 @@ export default {
         this.gasPrice = gweiGasPrice // gas price in gwei
         this.balanceUsd = significantDigits(this.balance.times(this.currencyMultiplier)) // in usd
         this.gasEstimate = new BigNumber(hexToNumber(gas)) // gas number
+        this.gasEstimateDefault = new BigNumber(hexToNumber(gas)) // gas number
         this.txData = data // data hex
         this.txDataParams = txDataParameters !== '' ? JSON.stringify(txDataParameters, null, 2) : ''
         this.sender = sender // address of sender
@@ -646,6 +648,7 @@ export default {
       this.gasEstimate = data.gas
 
       if (data.isReset) {
+        this.gasEstimate = this.gasEstimateDefault
         this.gasPrice = this.speedSelected === '' ? '' : this.gasPrice
       }
       this.calculateTransaction()

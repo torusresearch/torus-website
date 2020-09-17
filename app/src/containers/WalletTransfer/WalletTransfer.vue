@@ -897,7 +897,7 @@ export default {
           return
         }
         this.toEthAddress = toAddress
-        if (this.hasCustomGasLimit) {
+        if (!this.hasCustomGasLimit) {
           this.gas = await this.calculateGas(toAddress)
         }
         this.updateTotalCost()
@@ -1088,21 +1088,19 @@ export default {
 
       this.convertedTotalCost = gasPriceInCurrency.plus(toSendConverted)
     },
-    onSelectSpeed(data) {
+    async onSelectSpeed(data) {
       log.info('SET DATA: ', data)
       this.speedSelected = data.speedSelected
       this.activeGasPrice = data.activeGasPrice
       this.timeTaken = data.speed
       this.gas = data.gas
-
-      if (this.isAdvanceOption) {
-        this.hasCustomGasLimit = true
-      }
+      this.hasCustomGasLimit = data.isAdvanceOption
 
       if (data.isReset) {
         this.activeGasPrice = this.speedSelected === '' ? '' : this.activeGasPrice
-        if (this.toEthAddress) this.calculateGas(this.toEthAddress)
-        else this.onTransferClick()
+        if (this.toEthAddress) {
+          this.gas = await this.calculateGas(this.toEthAddress)
+        } else this.onTransferClick()
       }
 
       this.updateTotalCost()
