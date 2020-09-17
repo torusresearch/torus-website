@@ -112,7 +112,7 @@
               <v-flex xs4 pt-4 class="text-right hidden-xs-only">
                 <img
                   :src="require(`../../../assets/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)"
-                  style="height: 120px;"
+                  :style="{ height: '120px' }"
                   alt="Onboarding"
                 />
               </v-flex>
@@ -146,9 +146,9 @@
       </v-flex>
     </v-layout>
 
-    <v-layout wrap class="mt-6">
-      <v-flex xs12>
-        <v-tabs v-model="activeTab" class="home-tab" centered>
+    <v-layout wrap align-center class="mt-6">
+      <v-flex xs12 md6 :class="{ 'offset-md-3': $vuetify.breakpoint.mdAndUp }">
+        <v-tabs v-model="activeTab" class="home-tab" centered hide-slider>
           <v-tab :key="t('walletHome.tokens')" class="home-tab-token gmt-tokens-tab font-weight-bold">
             <v-icon class="mr-1" small left>$vuetify.icons.token</v-icon>
             {{ t('walletHome.tokens') }}
@@ -158,6 +158,21 @@
             {{ t('walletHome.collectibles') }}
           </v-tab>
         </v-tabs>
+      </v-flex>
+      <v-flex v-if="$vuetify.breakpoint.mdAndUp" xs12 md3 class="refresh text-right">
+        <div class="mb-1">
+          <v-btn
+            class="gmt-refresh-tokens refresh-btn"
+            :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
+            height="24"
+            aria-label="Refresh Balances"
+            @click="refreshBalances"
+          >
+            <v-icon left color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
+            <span class="caption text_2--text">Show all Tokens</span>
+          </v-btn>
+        </div>
+        <div class="text_3--text refresh-text" small>{{ t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
       </v-flex>
       <v-flex v-if="showSearch" xs12 mt-4>
         <v-text-field
@@ -180,7 +195,7 @@
       </v-tab-item>
     </v-tabs-items>
 
-    <v-layout class="mt-12">
+    <v-layout v-if="$vuetify.breakpoint.smAndDown" class="mt-10">
       <v-flex xs12 class="refresh text-right">
         <div class="mb-1">
           <v-btn

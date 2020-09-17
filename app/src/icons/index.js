@@ -2,6 +2,7 @@ import AccountIcon from './AccountIcon.vue'
 import ActivitiesIcon from './ActivitiesIcon.vue'
 import AddIcon from './AddIcon.vue'
 import AddressIcon from './AddressIcon.vue'
+import AlertIcon from './AlertIcon.vue'
 import ArrowDownCircleIcon from './ArrowDownCircleIcon.vue'
 import ArrowLeftCircleIcon from './ArrowLeftCircleIcon.vue'
 import ArrowRightCircleIcon from './ArrowRightCircleIcon.vue'
@@ -271,5 +272,8 @@ export default {
   },
   coins_approve: {
     component: CoinsApproveIcon,
+  },
+  alert: {
+    component: AlertIcon,
   },
 }

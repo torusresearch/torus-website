@@ -140,7 +140,7 @@
                         {{ t(props.message) }}
                       </template>
                     </v-combobox>
-                    <QrcodeCapture ref="captureQr" style="display: none;" @decode="onDecodeQr" />
+                    <QrcodeCapture ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                       <div class="v-messages">
                         <div class="v-messages__wrapper">
@@ -446,6 +446,7 @@ export default {
       timeTaken: '',
       convertedTotalCost: '',
       resetSpeed: false,
+      hasCustomGasLimit: false,
       qrErrorMsg: '',
       autoSelectVerifier: true,
       selectedVerifier: '',
@@ -588,7 +589,10 @@ export default {
   },
   watch: {
     selectedAddress(newValue, oldValue) {
-      if (newValue !== oldValue) this.calculateGas(newValue)
+      if (newValue !== oldValue) {
+        if (this.toEthAddress) this.calculateGas(this.toEthAddress)
+        else this.onTransferClick()
+      }
     },
   },
   mounted() {
@@ -803,7 +807,7 @@ export default {
           }
         })
       }
-      return Promise.resolve(new BigNumber('21000'))
+      return Promise.resolve(new BigNumber('0'))
     },
     getTransferMethod(contractType, selectedAddress, toAddress, value) {
       // For support of older ERC721
@@ -837,8 +841,10 @@ export default {
         // Reset you send
         this.resetSendAll()
       }
-      this.gas = await this.calculateGas(this.toAddress)
-      this.updateTotalCost()
+      if (this.toEthAddress) {
+        this.gas = await this.calculateGas(this.toEthAddress)
+        this.updateTotalCost()
+      } else this.onTransferClick()
     },
     getEnsAddress(ens) {
       return torus.web3.eth.ens.getAddress(ens)
@@ -891,7 +897,9 @@ export default {
           return
         }
         this.toEthAddress = toAddress
-        this.gas = await this.calculateGas(toAddress)
+        if (!this.hasCustomGasLimit) {
+          this.gas = await this.calculateGas(toAddress)
+        }
         this.updateTotalCost()
         this.confirmDialog = true
       }
@@ -1080,16 +1088,19 @@ export default {
 
       this.convertedTotalCost = gasPriceInCurrency.plus(toSendConverted)
     },
-    onSelectSpeed(data) {
+    async onSelectSpeed(data) {
       log.info('SET DATA: ', data)
       this.speedSelected = data.speedSelected
       this.activeGasPrice = data.activeGasPrice
       this.timeTaken = data.speed
       this.gas = data.gas
+      this.hasCustomGasLimit = data.isAdvanceOption
 
       if (data.isReset) {
         this.activeGasPrice = this.speedSelected === '' ? '' : this.activeGasPrice
-        this.calculateGas()
+        if (this.toEthAddress) {
+          this.gas = await this.calculateGas(this.toEthAddress)
+        } else this.onTransferClick()
       }
 
       this.updateTotalCost()

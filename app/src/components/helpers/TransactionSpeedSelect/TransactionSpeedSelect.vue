@@ -298,6 +298,7 @@ export default {
         speed,
         isReset: !!isReset,
         gas: updatedGas || this.gas,
+        isAdvanceOption: this.isAdvanceOption,
       })
     },
     setSelectedSpeed() {
