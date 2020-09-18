@@ -4,7 +4,7 @@ import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 import Web3 from 'web3'
-import { toHex } from 'web3-utils'
+import { toChecksumAddress, toHex } from 'web3-utils'
 
 import { MAINNET } from '../utils/enums'
 // By default, poll every 3 minutes
@@ -107,7 +107,7 @@ class DetectTokensController {
           logo: 'eth.svg',
           name: x.name,
           symbol: x.ticker,
-          tokenAddress: x.contractAddress,
+          tokenAddress: toChecksumAddress(x.contractAddress),
           balance: `0x${new BigNumber(x.balance).times(new BigNumber(10).pow(new BigNumber(x.tokenDecimal))).toString(16)}`,
           isEtherscan: true,
         })
