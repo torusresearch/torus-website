@@ -807,7 +807,7 @@ export default {
           }
         })
       }
-      return Promise.resolve(new BigNumber('0'))
+      return Promise.resolve(new BigNumber('21000'))
     },
     getTransferMethod(contractType, selectedAddress, toAddress, value) {
       // For support of older ERC721
