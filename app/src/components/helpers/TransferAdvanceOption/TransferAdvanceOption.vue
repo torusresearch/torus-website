@@ -60,19 +60,34 @@
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
-                  <span class="text-subtitle-2">{{ t('walletTransfer.sendAmount') }}</span>
+                  <span class="text-subtitle-2">Nonce</span>
+                  <v-combobox id="nonce" v-model="newNonce" outlined :items="nonceItems" :rules="[rules.validNonce]">
+                    <template v-slot:item="props">
+                      {{ t(props.item.text) }}
+                    </template>
+                    <template v-slot:selection="{ item }">
+                      {{ item.text ? t(item.text) : item }}
+                    </template>
+                  </v-combobox>
+                </v-flex>
+                <v-flex xs12 sm6 px-4>
+                  <span class="text-subtitle-2">{{ t('walletTransfer.transferFee') }}</span>
                   <template v-if="$vuetify.breakpoint.xsOnly">
-                    <span class="float-right">{{ displayAmount }} {{ symbol }}</span>
+                    <span class="float-right">
+                      <span id="transaction-fee-mobile">{{ gasAmountDisplay }}</span>
+                      ETH
+                    </span>
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>
                   <v-text-field
                     v-else
-                    :suffix="symbol"
+                    id="transaction-fee"
+                    suffix="ETH"
                     outlined
                     readonly
-                    :value="displayAmount"
+                    :value="gasAmountDisplay"
                     persistent-hint
-                    :hint="displayAmountConverted"
+                    :hint="gasAmountConverted"
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
@@ -172,6 +187,10 @@ export default {
       type: String,
       default: CONTRACT_TYPE_ETH,
     },
+    nonce: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -183,7 +202,22 @@ export default {
       rules: {
         moreThanZero: (value) => new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount'),
         valid: (value) => !!value || this.t('walletTransfer.required'),
+        validNonce: (value) => {
+          if (value === null) return this.t('walletTransfer.invalidInput')
+          const newValue = Number(value.value || value)
+          if (Number.isNaN(newValue)) {
+            return value.value === 'default' || this.t('walletTransfer.invalidInput')
+          }
+          return newValue > 0 || this.t('walletTransfer.invalidInput')
+        },
       },
+      newNonce: 0,
+      nonceItems: [
+        {
+          text: 'walletTransfer.default',
+          value: 'default',
+        },
+      ],
     }
   },
   computed: {
@@ -241,10 +275,14 @@ export default {
     },
     saveOptions() {
       if (this.$refs.advanceOptionForm.validate()) {
+        const nonce = Number(this.newNonce.value || this.newNonce)
+        // eslint-disable-next-line no-console
+        console.log('nonce', this.nonce, nonce)
         const advancedGas = BigNumber.isBigNumber(this.advancedGas) ? this.advancedGas : new BigNumber(this.advancedGas)
         const payload = {
           advancedGas,
           advancedActiveGasPrice: this.advancedActiveGasPrice,
+          nonce: Number.isNaN(nonce) ? 0 : nonce,
         }
 
         this.$emit('onSave', payload)
@@ -255,6 +293,7 @@ export default {
     updateDetails() {
       this.advancedActiveGasPrice = this.activeGasPrice
       this.advancedGas = this.gas
+      this.newNonce = this.nonce > 0 ? this.nonce : this.nonceItems[0]
     },
     convertedDisplay(amount, multiplier) {
       return !BigNumber.isBigNumber(amount) ? new BigNumber(amount).times(multiplier) : amount.times(multiplier)

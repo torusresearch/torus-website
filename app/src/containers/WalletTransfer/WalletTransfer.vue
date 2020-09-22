@@ -260,6 +260,7 @@
                 :selected-currency="selectedCurrency"
                 :currency-multiplier="getCurrencyTokenRate"
                 :currency-multiplier-eth="currencyMultiplier"
+                :nonce="nonce"
                 @onSelectSpeed="onSelectSpeed"
               />
               <v-flex v-if="contractType === CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
@@ -471,6 +472,7 @@ export default {
       TWITTER,
       etherscanLink: '',
       MESSAGE_MODAL_TYPE_SUCCESS,
+      nonce: 0,
     }
   },
   computed: {
@@ -807,7 +809,7 @@ export default {
           }
         })
       }
-      return Promise.resolve(new BigNumber('0'))
+      return Promise.resolve(new BigNumber('21000'))
     },
     getTransferMethod(contractType, selectedAddress, toAddress, value) {
       // For support of older ERC721
@@ -942,6 +944,7 @@ export default {
     async sendCoin() {
       const toAddress = this.toEthAddress
       const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
+      const nonce = this.nonce > 0 ? this.nonce : undefined
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value = `0x${this.amount
           .times(new BigNumber(10).pow(new BigNumber(18)))
@@ -955,6 +958,7 @@ export default {
             value,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
+            nonce, // do not send nonce if not set
           },
           (error, transactionHash) => {
             if (error) {
@@ -1095,9 +1099,11 @@ export default {
       this.timeTaken = data.speed
       this.gas = data.gas
       this.hasCustomGasLimit = data.isAdvanceOption
+      this.nonce = data.nonce || 0
 
       if (data.isReset) {
         this.activeGasPrice = this.speedSelected === '' ? '' : this.activeGasPrice
+        this.nonce = 0
         if (this.toEthAddress) {
           this.gas = await this.calculateGas(this.toEthAddress)
         } else this.onTransferClick()

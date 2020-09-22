@@ -364,6 +364,7 @@ export default {
       userInfo: {},
       contractType: CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
+      nonce: 0,
     }
   },
   computed: {
@@ -627,9 +628,10 @@ export default {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       const gasPriceHex = `0x${this.gasPrice.times(weiInGwei).toString(16)}`
       const gasHex = this.gasEstimate.eq(new BigNumber('0')) ? undefined : `0x${this.gasEstimate.toString(16)}`
+      const nonce = this.nonce > 0 ? this.nonce : undefined
       await bc.postMessage({
         name: 'tx-result',
-        data: { type: 'confirm-transaction', gasPrice: gasPriceHex, gas: gasHex, id: this.id, txType: this.type },
+        data: { type: 'confirm-transaction', gasPrice: gasPriceHex, gas: gasHex, id: this.id, txType: this.type, nonce },
       })
       bc.close()
     },
@@ -646,8 +648,10 @@ export default {
       this.gasPrice = data.activeGasPrice
       this.speed = data.speed
       this.gasEstimate = data.gas
+      this.nonce = data.nonce || 0
 
       if (data.isReset) {
+        this.nonce = 0
         this.gasEstimate = this.gasEstimateDefault
         this.gasPrice = this.speedSelected === '' ? '' : this.gasPrice
       }

@@ -158,6 +158,10 @@ function handleConfirm(ev) {
         log.info('Changed gas limit to:', ev.data.gas)
         newTxMeta.txParams.gas = ev.data.gas
       }
+      if (ev.data.nonce) {
+        log.info('Changed nonce to:', ev.data.nonce)
+        newTxMeta.txParams.nonce = ev.data.nonce
+      }
       torusController.txController.updateTransaction(newTxMeta)
       txMeta = newTxMeta
       log.info('New txMeta: ', txMeta)
