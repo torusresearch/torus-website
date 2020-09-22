@@ -296,15 +296,14 @@ export default {
       return `${significantDigits(this.getEthAmount(gas, gasPrice).toString())} ETH`
     },
     updateCosts(isReset, details) {
-      const { advanceGas, nonce } = details || {}
+      const { advancedGas, nonce } = details || {}
       const speed = this.speedSelected === 'average' ? this.averageGasPriceSpeed : this.fastestGasPriceSpeed
-
       this.$emit('onSelectSpeed', {
         speedSelected: this.speedSelected,
         activeGasPrice: this.activeGasPrice,
         speed,
         isReset: !!isReset,
-        gas: advanceGas || this.gas,
+        gas: advancedGas || this.gas,
         nonce,
         isAdvanceOption: this.isAdvanceOption,
       })

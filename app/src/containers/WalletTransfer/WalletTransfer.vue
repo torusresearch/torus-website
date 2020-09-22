@@ -944,7 +944,7 @@ export default {
     async sendCoin() {
       const toAddress = this.toEthAddress
       const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
-      const nonce = this.nonce > 0 ? this.nonce : undefined
+      const customNonce = this.nonce > 0 ? `0x${this.nonce.toString(16)}` : undefined
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value = `0x${this.amount
           .times(new BigNumber(10).pow(new BigNumber(18)))
@@ -958,7 +958,7 @@ export default {
             value,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
-            nonce, // do not send nonce if not set
+            customNonce,
           },
           (error, transactionHash) => {
             if (error) {
@@ -992,6 +992,7 @@ export default {
             from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
+            customNonce,
           },
           (error, transactionHash) => {
             if (error) {
@@ -1021,6 +1022,7 @@ export default {
             from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
+            customNonce,
           },
           (error, transactionHash) => {
             if (error) {

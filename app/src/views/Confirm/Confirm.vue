@@ -628,10 +628,11 @@ export default {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       const gasPriceHex = `0x${this.gasPrice.times(weiInGwei).toString(16)}`
       const gasHex = this.gasEstimate.eq(new BigNumber('0')) ? undefined : `0x${this.gasEstimate.toString(16)}`
-      const nonce = this.nonce > 0 ? this.nonce : undefined
+      const customNonce = this.nonce > 0 ? `0x${this.nonce.toString(16)}` : undefined
+
       await bc.postMessage({
         name: 'tx-result',
-        data: { type: 'confirm-transaction', gasPrice: gasPriceHex, gas: gasHex, id: this.id, txType: this.type, nonce },
+        data: { type: 'confirm-transaction', gasPrice: gasPriceHex, gas: gasHex, id: this.id, txType: this.type, customNonce },
       })
       bc.close()
     },

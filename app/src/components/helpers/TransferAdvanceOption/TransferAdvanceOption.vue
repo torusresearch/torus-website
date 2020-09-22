@@ -276,8 +276,6 @@ export default {
     saveOptions() {
       if (this.$refs.advanceOptionForm.validate()) {
         const nonce = Number(this.newNonce.value || this.newNonce)
-        // eslint-disable-next-line no-console
-        console.log('nonce', this.nonce, nonce)
         const advancedGas = BigNumber.isBigNumber(this.advancedGas) ? this.advancedGas : new BigNumber(this.advancedGas)
         const payload = {
           advancedGas,
