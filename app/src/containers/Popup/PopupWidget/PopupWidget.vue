@@ -5,7 +5,11 @@
         <div class="d-flex torus-widget__user-details">
           <div class="avatar-container">
             <v-avatar size="32">
-              <img :src="userInfo.profileImage" :alt="`${userInfo.verifierId} Avatar`" />
+              <img
+                :src="userInfo.profileImage"
+                :alt="`${userInfo.verifierId} Avatar`"
+                onerror="if (!this.src.includes('/images/person.jpeg')) this.src = '/images/person.jpeg';"
+              />
             </v-avatar>
           </div>
           <div class="details-container d-flex flex-column ml-2 pr-2">
@@ -76,31 +80,44 @@
           </div>
           <v-divider class="my-1"></v-divider>
           <div v-if="recentTransaction" class="d-flex mb-4 mt-2">
-            <div class="avatar-container">
-              <v-avatar size="40">
-                <img
-                  v-if="recentTransaction.type === CONTRACT_TYPE_ERC20"
-                  :src="`${logosUrl}/${recentTransaction.actionIcon}`"
-                  :alt="recentTransaction.from"
-                  height="36"
-                  onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
-                />
-                <img
-                  v-else-if="recentTransaction.action === ACTIVITY_ACTION_TOPUP"
-                  :src="require(`../../../assets/images/${recentTransaction.actionIcon}`)"
-                  :alt="recentTransaction.from"
-                  height="36"
-                />
-                <img
-                  v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC721"
-                  :src="recentTransaction.actionIcon"
-                  height="36"
-                  large
-                  color="primary"
-                  :alt="recentTransaction.from"
-                />
-                <v-icon v-else class="mx-2" color="primary">{{ recentTransaction.actionIcon }}</v-icon>
-              </v-avatar>
+            <div class="icon-holder">
+              <v-icon
+                v-if="[TOKEN_METHOD_APPROVE, DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].includes(recentTransaction.transaction_category)"
+                class="float-left"
+                size="24"
+                color="torusBrand1"
+              >
+                {{ recentTransaction.actionIcon }}
+              </v-icon>
+              <img
+                v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC20 && recentTransaction.actionIcon !== 'n/a'"
+                :src="`${logosUrl}/${recentTransaction.actionIcon}`"
+                :alt="`${recentTransaction.type_name} Icon`"
+                onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+              />
+              <v-icon v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC20" class="float-left" size="24" color="torusBrand1">
+                $vuetify.icons.token
+              </v-icon>
+              <img
+                v-else-if="recentTransaction.action === ACTIVITY_ACTION_TOPUP"
+                :src="require(`../../../assets/images/${recentTransaction.actionIcon}`)"
+                :alt="`${recentTransaction.type_name} Icon`"
+                class="ml-2"
+                width="30"
+              />
+              <img
+                v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC721 && recentTransaction.actionIcon !== 'n/a'"
+                :src="recentTransaction.actionIcon"
+                class="ml-1"
+                height="30"
+                large
+                :alt="`${recentTransaction.type_name} Icon`"
+                onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+              />
+              <v-icon v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC721" class="float-left" size="24" color="torusBrand1">
+                $vuetify.icons.collectibles
+              </v-icon>
+              <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ recentTransaction.actionIcon }}</v-icon>
             </div>
             <div class="ml-4 pt-1">
               <div class="caption text_2--text text-clamp-one">{{ recentTransaction.actionText }}</div>
@@ -141,8 +158,17 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ShowToolTip from '../../../components/helpers/ShowToolTip'
 import config from '../../../config'
-import { ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_TOPUP, CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721 } from '../../../utils/enums'
-import { addressSlicer, getUserEmail, significantDigits } from '../../../utils/utils'
+import {
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_TOPUP,
+  CONTRACT_INTERACTION_KEY,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
+  DEPLOY_CONTRACT_ACTION_KEY,
+  TOKEN_METHOD_APPROVE,
+} from '../../../utils/enums'
+import { addressSlicer, getUserEmail } from '../../../utils/utils'
 
 export default {
   name: 'PopupWidget',
@@ -160,6 +186,9 @@ export default {
   data() {
     return {
       activeWidget: false,
+      TOKEN_METHOD_APPROVE,
+      DEPLOY_CONTRACT_ACTION_KEY,
+      CONTRACT_INTERACTION_KEY,
       CONTRACT_TYPE_ERC20,
       ACTIVITY_ACTION_TOPUP,
       ACTIVITY_ACTION_SEND,
@@ -185,21 +214,14 @@ export default {
     },
     recentTransaction() {
       const oldTx = this.pastTransactions
-      const [recent] = oldTx.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) || []
+      const [recent] = oldTx.sort((a, b) => new Date(b.date) - new Date(a.date)) || []
       if (!recent) return undefined
-
-      const { id, type, created_at: createdAt, to, from } = recent
-      let totalAmountString = ''
-      if (recent.type === CONTRACT_TYPE_ERC721) totalAmountString = recent.symbol
-      else if (recent.type === CONTRACT_TYPE_ERC20)
-        totalAmountString = `${significantDigits(Number.parseFloat(recent.total_amount || recent.totalAmount))} ${recent.symbol}`
-      else totalAmountString = `${significantDigits(Number.parseFloat(recent.total_amount || recent.totalAmount))} ETH`
-      recent.action = this.wallets.includes(to) ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
+      const { id, type, date: createdAt, to, from, totalAmountString, action } = recent
       return {
         id,
         date: new Date(createdAt),
         type,
-        action: recent.action,
+        action,
         actionIcon: this.getIcon(recent),
         actionText: this.getActionText(recent),
         slicedTo: addressSlicer(to),
@@ -220,6 +242,9 @@ export default {
       this.$emit('onLogin')
     },
     getIcon(transaction) {
+      if ([TOKEN_METHOD_APPROVE, DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].includes(transaction.transaction_category)) {
+        return '$vuetify.icons.coins_approve'
+      }
       if (transaction.action === ACTIVITY_ACTION_TOPUP) {
         return `provider-${transaction.from.toLowerCase()}.svg`
       }
@@ -228,7 +253,7 @@ export default {
           return transaction.type_image_link // will be an opensea image url
         }
         if (transaction.type === CONTRACT_TYPE_ERC20) {
-          return `${transaction.type_image_link === 'n/a' ? 'eth.svg' : transaction.type_image_link}`
+          return transaction.type_image_link
         }
         const action = transaction.action.split('.')
         return action.length >= 1 ? `$vuetify.icons.coins_${transaction.action.split('.')[1].toLowerCase()}` : ''
