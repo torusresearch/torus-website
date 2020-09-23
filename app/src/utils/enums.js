@@ -372,3 +372,7 @@ export const SAFE_METHODS = [
 export const BADGES_TOPUP = 'topUp'
 export const BADGES_TRANSACTION = 'transaction'
 export const BADGES_COLLECTIBLE = 'collectible'
+
+export const IMPORT_OPTION_PRIVATE = 'private'
+export const IMPORT_OPTION_KEYSTORE = 'keystore'
+export const IMPORT_OPTION_SEEDPHRASE = 'seedphrase'

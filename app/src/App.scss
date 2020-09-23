@@ -266,4 +266,17 @@
       background-color: var(--v-torusBlack2-base);
     }
   }
+
+  .v-input--checkbox {
+    .v-icon {
+      cursor: pointer;
+      color: #ffffff !important;
+      -webkit-appearance: none;
+    }
+    &.theme--dark {
+      .v-icon {
+        color: #28292E;
+      }
+    }
+  }
 }

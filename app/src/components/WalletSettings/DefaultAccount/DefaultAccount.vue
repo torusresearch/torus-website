@@ -73,6 +73,8 @@
     </v-list>
 
     <div class="caption text_3--text mb-4 px-5">{{ t('tkeySettings.note') }}: {{ t('tkeySettings.theSelectedAccount') }}</div>
+
+    <AccountImport class="mt-10" />
   </div>
 </template>
 
@@ -80,9 +82,11 @@
 import { mapActions, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE } from '../../../utils/enums'
+import AccountImport from '../../WalletAccount/AccountImport'
 
 export default {
   name: 'DefaultAccount',
+  components: { AccountImport },
   props: {
     hasThreshold: {
       type: Boolean,

@@ -87,7 +87,9 @@
         <v-list-item-content class="caption font-weight-bold text_1--text">{{ t('accountMenu.importAccount') }}</v-list-item-content>
       </v-list-item>
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
-        <AccountImport @onClose="accountImportDialog = false" />
+        <v-card>
+          <AccountImport :is-modal="true" @onClose="accountImportDialog = false" />
+        </v-card>
       </v-dialog>
     </v-list>
 
