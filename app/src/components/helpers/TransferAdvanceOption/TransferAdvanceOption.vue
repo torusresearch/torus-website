@@ -208,7 +208,7 @@ export default {
           if (Number.isNaN(newValue)) {
             return value.value === 'default' || this.t('walletTransfer.invalidInput')
           }
-          return newValue > 0 || this.t('walletTransfer.invalidInput')
+          return newValue >= 0 || this.t('walletTransfer.invalidInput')
         },
       },
       newNonce: 0,
@@ -291,7 +291,7 @@ export default {
     updateDetails() {
       this.advancedActiveGasPrice = this.activeGasPrice
       this.advancedGas = this.gas
-      this.newNonce = this.nonce > 0 ? this.nonce : this.nonceItems[0]
+      this.newNonce = this.nonce >= 0 ? this.nonce : this.nonceItems[0]
     },
     convertedDisplay(amount, multiplier) {
       return !BigNumber.isBigNumber(amount) ? new BigNumber(amount).times(multiplier) : amount.times(multiplier)
