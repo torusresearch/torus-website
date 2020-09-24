@@ -427,6 +427,9 @@ class TransactionController extends EventEmitter {
       txMeta.txParams.nonce = addHexPrefix(customOrNonce.toString(16))
       // add nonce debugging information to txMeta
       txMeta.nonceDetails = nonceLock.nonceDetails
+      if (customNonceValue) {
+        txMeta.nonceDetails.customNonceValue = customNonceValue
+      }
       this.txStateManager.updateTx(txMeta, 'transactions#approveTransaction')
       // sign transaction
       const rawTx = await this.signTransaction(txId)
