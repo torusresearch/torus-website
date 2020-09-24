@@ -1,4 +1,4 @@
-import { TORUS_METHOD_PREFIX, WALLET_METHOD_PREFIX } from './enums'
+import { TORUS_METHOD_PREFIX, WALLET_METHOD_PREFIX } from '../../utils/enums'
 
 export const addInternalMethodPrefix = (method) => `${WALLET_METHOD_PREFIX}_${method}`
 

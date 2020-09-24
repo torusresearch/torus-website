@@ -3,10 +3,10 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 
 import config from '../../config'
+import PopupHandler from '../../handlers/Popup/PopupHandler'
 import { postOrder, postQuote } from '../../plugins/simplex'
 import torus from '../../torus'
 import { SIMPLEX } from '../../utils/enums'
-import PopupHandler from '../../utils/PopupHandler'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {

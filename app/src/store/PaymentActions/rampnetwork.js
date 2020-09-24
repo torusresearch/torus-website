@@ -1,7 +1,7 @@
 import config from '../../config'
+import PopupHandler from '../../handlers/Popup/PopupHandler'
 import getQuote from '../../plugins/rampnetwork'
 import { ETH } from '../../utils/enums'
-import PopupHandler from '../../utils/PopupHandler'
 import { paymentProviders } from '../../utils/utils'
 
 export default {

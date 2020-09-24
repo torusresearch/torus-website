@@ -1,6 +1,6 @@
 /* eslint-disable */
 import assert from 'assert'
-import * as txUtils from '../../../../src/utils/txUtils'
+import * as txUtils from '../../../../src/controllers/utils/txUtils'
 
 describe('txUtils', function () {
   describe('#validateTxParams', function () {

@@ -17,9 +17,9 @@ import {
   THRESHOLD_KEY_PRIORITY_ORDER,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
-import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import createRandomId from '../utils/random-id'
 import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey } from '../utils/utils'
+import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 function beforeUnloadHandler(e) {
   // Cancel the event

@@ -367,7 +367,7 @@ import {
   WalletTransferLoader,
   WalletTransferLoaderMobile,
 } from '../../content-loader'
-import createHandler from '../../store/Handlers/HandlerFactory'
+import { HandlerFactory as createHandler } from '../../handlers/Auth'
 import { GOOGLE, GOOGLE_VERIFIER, PASSWORDLESS } from '../../utils/enums'
 import { handleRedirectParameters } from '../../utils/utils'
 

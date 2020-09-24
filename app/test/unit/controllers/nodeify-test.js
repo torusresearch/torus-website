@@ -1,7 +1,7 @@
 /* eslint-disable */
 import assert from 'assert'
 
-import nodeify from '../../../src/utils/nodeify'
+import nodeify from '../../../src/controllers/utils/nodeify'
 
 describe('nodeify', function () {
   const obj = {

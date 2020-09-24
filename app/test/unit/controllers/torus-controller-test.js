@@ -9,7 +9,7 @@ import { obj as createThoughStream } from 'through2'
 import MetaMaskController from '../../../src/controllers/TorusController'
 import firstTimeState from '../../localhostState'
 // import createTxMeta from '../lib/createTxMeta'
-import setupMultiplex from '../../../src/utils/setupMultiplex'
+import setupMultiplex from '../../../src/controllers/utils/setupMultiplex'
 
 const TEST_ADDRESS = '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'
 const CUSTOM_RPC_URL = 'http://localhost:8545'

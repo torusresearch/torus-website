@@ -21,8 +21,8 @@ import {
 } from '../utils/enums'
 import { get, getEtherscanTransactions, getPastOrders, getWalletOrders, patch, post, remove } from '../utils/httpHelpers'
 import { notifyUser } from '../utils/notifications'
-import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
+import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000

@@ -1,6 +1,6 @@
 import assert from 'assert'
 
-import cleanErrorStack from '../../../src/utils/cleanErrorStack'
+import cleanErrorStack from '../../../src/controllers/utils/cleanErrorStack'
 
 describe('Clean Error Stack', () => {
   const testMessage = 'Test Message'
