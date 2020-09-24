@@ -1,3 +1,4 @@
+// import randomId from '@chaitanyapotti/random-id'
 import { EventEmitter } from 'events'
 
 import StreamWindow from './StreamWindow'
@@ -5,6 +6,7 @@ import StreamWindow from './StreamWindow'
 class PopupHandler extends EventEmitter {
   constructor({ url, target, features, preopenInstanceId }) {
     super()
+    // this.id = randomId()
     this.url = url instanceof URL ? url.href : url
     this.target = target || '_blank'
     this.features = features || 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200'
@@ -30,14 +32,17 @@ class PopupHandler extends EventEmitter {
   }
 
   open() {
+    // if window is already open
     if (!this.preopenInstanceId) {
+      // try to open a window first
       this.window = window.open(this.url, this.target, this.features)
       if (!this.window) {
-        this.window = new StreamWindow(undefined, this.url)
+        // if it's blocked, open streamwindow
+        this.window = new StreamWindow({ url: this.url })
       }
       return Promise.resolve()
     }
-    this.window = new StreamWindow(this.preopenInstanceId)
+    this.window = new StreamWindow({ preopenInstanceId: this.preopenInstanceId })
     return this.window.open(this.url)
   }
 

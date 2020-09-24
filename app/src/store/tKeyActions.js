@@ -97,26 +97,6 @@ export default {
         }
 
         tKeyInputWindow.close()
-        // if (type === 'popup-loaded') {
-        //   await bc.postMessage({
-        //     data: {
-        //       origin: getIFrameOriginObject(),
-        //       payload: { ...payload, typeOfLogin: state.userInfo.typeOfLogin },
-        //       whiteLabel: state.whiteLabel,
-        //     },
-        //   })
-        // } else if (type === 'user-info-request-result') {
-        //   try {
-        //     if (approve) handleSuccess()
-        //     else handleDeny()
-        //   } catch (error) {
-        //     log.error(error)
-        //     handleDeny()
-        //   } finally {
-        //     bc.close()
-        //     userInfoRequestWindow.close()
-        //   }
-        // }
       })
 
       tKeyInputWindow.open()

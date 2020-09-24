@@ -7,8 +7,9 @@ import { broadcastChannelOptions, fakeStream, getIFrameOrigin } from './utils'
 
 const windowStream = (torus && torus.communicationMux && torus.communicationMux.getStream('window')) || fakeStream
 
+// Used for windows which are opened by torus-embed
 class StreamWindow {
-  constructor(preopenInstanceId, url) {
+  constructor({ preopenInstanceId, url }) {
     this.preopenInstanceId = preopenInstanceId
     this.closed = false
     if (!preopenInstanceId) {
