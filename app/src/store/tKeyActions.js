@@ -2,10 +2,10 @@
 import log from 'loglevel'
 
 import config from '../config'
+import PopupHandler from '../handlers/Popup/PopupHandler'
 import router from '../router'
 import torus from '../torus'
 import { ACCOUNT_TYPE, THRESHOLD_KEY_INPUT_ROUTE_MAPPING, THRESHOLD_KEY_QUESTION_INPUT, THRESHOLD_KEY_STORE_DEVICE_FLOW } from '../utils/enums'
-import PopupHandler from '../utils/PopupHandler'
 import { broadcastChannelOptions, isMain } from '../utils/utils'
 
 const { baseRoute } = config

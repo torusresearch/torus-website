@@ -3,7 +3,7 @@ import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'
 import createScaffoldMiddleware from 'json-rpc-engine/src/createScaffoldMiddleware'
 import mergeMiddleware from 'json-rpc-engine/src/mergeMiddleware'
 
-import { formatTxMetaForRpcResult } from './utils'
+import { formatTxMetaForRpcResult } from '../../utils/utils'
 
 export default function createMetamaskMiddleware({
   version,

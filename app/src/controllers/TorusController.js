@@ -15,11 +15,6 @@ import pump from 'pump'
 import { toChecksumAddress } from 'web3-utils'
 
 import { version } from '../../package.json'
-import ComposableObservableStore from '../utils/ComposableObservableStore'
-import createLoggerMiddleware from '../utils/createLoggerMiddleware'
-// import setupMultiplex from '../utils/setupMultiplex'
-import createOriginMiddleware from '../utils/createOriginMiddleware'
-import nodeify from '../utils/nodeify'
 import createRandomId from '../utils/random-id'
 import AccountTracker from './AccountTracker'
 import AssetContractController from './AssetsContractController'
@@ -38,6 +33,11 @@ import TokenRatesController from './TokenRatesController'
 import KeyringController from './TorusKeyring'
 import TransactionController from './TransactionController'
 import TypedMessageManager from './TypedMessageManager'
+import ComposableObservableStore from './utils/ComposableObservableStore'
+import createLoggerMiddleware from './utils/createLoggerMiddleware'
+// import setupMultiplex from '../utils/setupMultiplex'
+import createOriginMiddleware from './utils/createOriginMiddleware'
+import nodeify from './utils/nodeify'
 // defaults and constants
 const GWEI_BN = new BN('1000000000')
 

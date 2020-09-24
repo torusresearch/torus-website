@@ -2,8 +2,8 @@ import randomId from '@chaitanyapotti/random-id'
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 
-import PopupHandler from '../../utils/PopupHandler'
 import { broadcastChannelOptions } from '../../utils/utils'
+import PopupHandler from '../Popup/PopupHandler'
 
 class AbstractLoginHandler {
   nonce = randomId()

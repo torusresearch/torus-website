@@ -1,9 +1,9 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 
-import config from '../config'
+import config from '../../config'
+import { broadcastChannelOptions, getIFrameOriginObject } from '../../utils/utils'
 import PopupHandler from './PopupHandler'
-import { broadcastChannelOptions, getIFrameOriginObject } from './utils'
 
 const { baseRoute } = config
 

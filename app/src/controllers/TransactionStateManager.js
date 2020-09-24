@@ -3,8 +3,8 @@ import ObservableStore from 'obs-store'
 import EventEmitter from 'safe-event-emitter'
 
 import createId from '../utils/random-id'
-import txStateHistoryHelper from '../utils/tx-state-history-helper'
-import { getFinalStates, normalizeTxParams as normalizeTxParameters } from '../utils/txUtils'
+import txStateHistoryHelper from './utils/tx-state-history-helper'
+import { getFinalStates, normalizeTxParams as normalizeTxParameters } from './utils/txUtils'
 /**
   TransactionStateManager is responsible for the state of a transaction and
   storing the transaction

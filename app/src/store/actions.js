@@ -5,12 +5,22 @@ import deepmerge from 'deepmerge'
 import log from 'loglevel'
 
 import config from '../config'
+import { HandlerFactory as createHandler } from '../handlers/Auth'
+import PopupHandler from '../handlers/Popup/PopupHandler'
 import vuetify from '../plugins/vuetify'
 import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
-import { ACCOUNT_TYPE, DISCORD, FACEBOOK, RPC, SUPPORTED_NETWORK_TYPES, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
+import {
+  ACCOUNT_TYPE,
+  DISCORD,
+  FACEBOOK,
+  FEATURES_POPUP_SMALL,
+  RPC,
+  SUPPORTED_NETWORK_TYPES,
+  USER_INFO_REQUEST_APPROVED,
+  USER_INFO_REQUEST_REJECTED,
+} from '../utils/enums'
 import { remove } from '../utils/httpHelpers'
-import PopupHandler from '../utils/PopupHandler'
 import { broadcastChannelOptions, fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
 import {
   accountTrackerHandler,
@@ -29,7 +39,6 @@ import {
   transactionControllerHandler,
   typedMessageManagerHandler,
 } from './controllerSubscriptions'
-import { HandlerFactory as createHandler } from './Handlers'
 import initialState from './state'
 
 const { baseRoute } = config
@@ -142,7 +151,7 @@ export default {
       url: finalUrl,
       preopenInstanceId,
       target: '_blank',
-      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375',
+      features: FEATURES_POPUP_SMALL,
     })
     bc.addEventListener('message', async (ev) => {
       const { type = '', approve = false } = ev.data

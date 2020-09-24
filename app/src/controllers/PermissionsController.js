@@ -11,8 +11,8 @@ import {
   // SAFE_METHODS, // methods that do not require any permissions to use
   WALLET_PREFIX,
 } from '../utils/enums'
-import createMethodMiddleware from '../utils/methodMiddleware'
-import getRestrictedMethods from '../utils/restrictedMethods'
+import createMethodMiddleware from './utils/methodMiddleware'
+import getRestrictedMethods from './utils/restrictedMethods'
 
 export default class PermissionsController {
   constructor({ getKeyringAccounts, setSiteMetadata } = {}) {

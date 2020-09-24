@@ -3,10 +3,10 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 
 import config from '../../config'
+import PopupHandler from '../../handlers/Popup/PopupHandler'
 import { getQuote, getSignature } from '../../plugins/moonpay'
 import torus from '../../torus'
 import { MOONPAY } from '../../utils/enums'
-import PopupHandler from '../../utils/PopupHandler'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {

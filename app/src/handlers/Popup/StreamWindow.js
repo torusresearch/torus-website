@@ -2,8 +2,8 @@ import randomId from '@chaitanyapotti/random-id'
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 
-import torus from '../torus'
-import { broadcastChannelOptions, fakeStream, getIFrameOrigin } from './utils'
+import torus from '../../torus'
+import { broadcastChannelOptions, fakeStream, getIFrameOrigin } from '../../utils/utils'
 
 const windowStream = (torus && torus.communicationMux && torus.communicationMux.getStream('window')) || fakeStream
 
