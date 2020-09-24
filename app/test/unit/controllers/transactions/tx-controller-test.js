@@ -372,7 +372,7 @@ describe('Transaction Controller', function () {
           const result = txController.txStateManager.getTx(txMeta.id)
           const params = result.txParams
 
-          assert.equal(parseInt(params.nonce), parseInt(originalNonceValue), 'nonce should change to customNonceValue')
+          assert.strictEqual(parseInt(params.nonce), parseInt(originalNonceValue), 'nonce should change to customNonceValue')
           signStub.restore()
           pubStub.restore()
           done()
