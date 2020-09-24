@@ -335,6 +335,48 @@ describe('Transaction Controller', function () {
     })
   })
 
+  describe('#approveTransaction:custom nonce', function () {
+    it('update nonce with custom nonce', function (done) {
+      const originalValue = '0x01'
+      const originalNonceValue = '0x02'
+      const txMeta = {
+        id: '1',
+        status: 'unapproved',
+        metamaskNetworkId: currentNetworkId,
+        txParams: {
+          nonce: originalValue,
+          customNonceValue: originalNonceValue,
+          gas: originalValue,
+          gasPrice: originalValue,
+        },
+      }
+      this.timeout(15000)
+
+      txController.addTx(txMeta)
+      providerResultStub.eth_estimateGas = '0x5209'
+
+      const signStub = sinon.stub(txController, 'signTransaction').callsFake(() => Promise.resolve())
+
+      const pubStub = sinon.stub(txController, 'publishTransaction').callsFake(() => {
+        txController.setTxHash('1', originalValue)
+        txController.txStateManager.setTxStatusSubmitted('1')
+      })
+
+      txController
+        .approveTransaction(txMeta.id)
+        .then(() => {
+          const result = txController.txStateManager.getTx(txMeta.id)
+          const params = result.txParams
+
+          assert.equal(parseInt(params.nonce), parseInt(originalNonceValue), 'nonce should change to customNonceValue')
+          signStub.restore()
+          pubStub.restore()
+          done()
+        })
+        .catch(done)
+    })
+  })
+
   describe('#sign replay-protected tx', function () {
     it('prepares a tx with the chainId set', function (done) {
       txController.addTx({ id: '1', status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams: {} }, noop)

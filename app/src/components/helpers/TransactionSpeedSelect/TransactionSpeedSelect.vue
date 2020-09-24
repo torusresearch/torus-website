@@ -65,6 +65,7 @@
           :currency-multiplier="currencyMultiplier"
           :currency-multiplier-eth="currencyMultiplierEth"
           :contract-type="contractType"
+          :nonce="nonce"
           @onSave="onSaveAdvanceOptions"
         />
       </v-flex>
@@ -85,6 +86,7 @@
           :currency-multiplier="currencyMultiplier"
           :currency-multiplier-eth="currencyMultiplierEth"
           :contract-type="contractType"
+          :nonce="nonce"
           @onSave="onSaveAdvanceOptions"
         />
       </v-flex>
@@ -189,6 +191,10 @@ export default {
       type: String,
       default: CONTRACT_TYPE_ETH,
     },
+    nonce: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -255,7 +261,7 @@ export default {
       this.activeGasPrice = details.advancedActiveGasPrice
 
       this.isAdvanceOption = true
-      this.updateCosts(false, details.advancedGas)
+      this.updateCosts(false, details)
     },
     resetAdvanceOption() {
       if (this.speedSelected === 'fastest') {
@@ -289,15 +295,16 @@ export default {
     getEthAmountDisplay(gas, gasPrice) {
       return `${significantDigits(this.getEthAmount(gas, gasPrice).toString())} ETH`
     },
-    updateCosts(isReset, updatedGas) {
+    updateCosts(isReset, details) {
+      const { advancedGas, nonce } = details || {}
       const speed = this.speedSelected === 'average' ? this.averageGasPriceSpeed : this.fastestGasPriceSpeed
-
       this.$emit('onSelectSpeed', {
         speedSelected: this.speedSelected,
         activeGasPrice: this.activeGasPrice,
         speed,
         isReset: !!isReset,
-        gas: updatedGas || this.gas,
+        gas: advancedGas || this.gas,
+        nonce,
         isAdvanceOption: this.isAdvanceOption,
       })
     },
