@@ -47,7 +47,7 @@ describe('Tests Wallet Activity Page', () => {
     const networkSelected = await page.$eval('.select-network-container .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
-    assert.equal(textToSelect, networkSelected)
+    assert.strictEqual(textToSelect, networkSelected)
   })
 
   it('Should go to wallet activity page', async () => {
@@ -64,7 +64,7 @@ describe('Tests Wallet Activity Page', () => {
       if (transactionData.count > transactionData.perPage) {
         const expectedPages = Math.ceil(transactionData.count / transactionData.perPage)
         const actualPages = await page.$$eval('.activity-pagination .v-pagination__item', (element) => element.length)
-        assert.equal(expectedPages, actualPages)
+        assert.strictEqual(expectedPages, actualPages)
       }
     }
   })
@@ -76,7 +76,7 @@ describe('Tests Wallet Activity Page', () => {
     const transactionFilter = await page.$eval('.nav-selector.transaction .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
-    assert.equal(textToSelect, transactionFilter)
+    assert.strictEqual(textToSelect, transactionFilter)
 
     // check if there are rows which is not textToSelect
     const negativeRowsCount = await page.evaluate(
@@ -87,7 +87,7 @@ describe('Tests Wallet Activity Page', () => {
       textToSelect,
       config
     )
-    assert.equal(negativeRowsCount, 0)
+    assert.strictEqual(negativeRowsCount, 0)
   })
 
   it('Should filter transaction date correctly', async () => {
@@ -101,7 +101,7 @@ describe('Tests Wallet Activity Page', () => {
     const dateFilter = await page.$eval('.nav-selector.period .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
-    assert.equal(textToSelect, dateFilter)
+    assert.strictEqual(textToSelect, dateFilter)
 
     // check if there are rows which more than 1 week old
     const oneWeekAgo = new Date()
@@ -114,6 +114,6 @@ describe('Tests Wallet Activity Page', () => {
       oneWeekAgo,
       config
     )
-    assert.equal(negativeRowsCount, 0)
+    assert.strictEqual(negativeRowsCount, 0)
   })
 })
