@@ -1,7 +1,7 @@
 import assert from 'assert'
 import ObservableStore from 'obs-store'
 
-import ComposableObservableStore from '../../../src/utils/ComposableObservableStore'
+import ComposableObservableStore from '../../../src/controllers/utils/ComposableObservableStore'
 
 describe('ComposableObservableStore', () => {
   it('should register initial state', () => {
@@ -13,7 +13,7 @@ describe('ComposableObservableStore', () => {
     const testStore = new ObservableStore()
     const store = new ComposableObservableStore(null, { TestStore: testStore })
     testStore.putState('state')
-    assert.deepEqual(store.getState(), { TestStore: 'state' })
+    assert.deepStrictEqual(store.getState(), { TestStore: 'state' })
   })
 
   it('should update structure', () => {
@@ -21,7 +21,7 @@ describe('ComposableObservableStore', () => {
     const store = new ComposableObservableStore()
     store.updateStructure({ TestStore: testStore })
     testStore.putState('state')
-    assert.deepEqual(store.getState(), { TestStore: 'state' })
+    assert.deepStrictEqual(store.getState(), { TestStore: 'state' })
   })
 
   it('should return flattened state', () => {
@@ -31,6 +31,6 @@ describe('ComposableObservableStore', () => {
       FooStore: fooStore,
       BarStore: barStore,
     })
-    assert.deepEqual(store.getFlatState(), { foo: 'foo', bar: 'bar' })
+    assert.deepStrictEqual(store.getFlatState(), { foo: 'foo', bar: 'bar' })
   })
 })
