@@ -108,7 +108,7 @@ export default {
           const { symbol: contractSymbol, name, logo } = contractParams
           symbol = contractSymbol
           type = 'erc20'
-          typeName = name
+          typeName = name || 'ERC20'
           typeImageLink = logo
           totalAmount = fromWei(toBN(amountValue && amountValue.value ? amountValue.value : txParams.value || 0))
           finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
