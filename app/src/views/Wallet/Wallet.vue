@@ -173,16 +173,16 @@ export default {
       this.wcConnector.on('call_request', (err, payload) => {
         log.info('CALL REQUEST', err, payload, torus)
         payload.params[0].isWalletConnectRequest = 'true'
-        torus.torusController.provider.send(payload, (error, result) => {
+        torus.torusController.provider.send(payload, (error, res) => {
           if (err) {
             log.info(`FAILED REJECT REQUEST, ERROR ${err.message}`)
             this.wcConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${error.message}` } })
-          } else if (result.error) {
-            log.info(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(result.error)}`)
+          } else if (res.error) {
+            log.info(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(res.error)}`)
             this.wcConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${JSON.stringify(result.error)}` } })
           } else {
-            log.info(`SUCCEEDED APPROVE REQUEST, RESULT ${JSON.stringify(result)}`)
-            this.wcConnector.approveRequest({ id: payload.id, result })
+            log.info(`SUCCEEDED APPROVE REQUEST, RESULT ${JSON.stringify(res)}`)
+            this.wcConnector.approveRequest({ id: payload.id, result: res.result })
           }
         })
       })
