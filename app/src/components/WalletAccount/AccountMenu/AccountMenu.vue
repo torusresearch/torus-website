@@ -20,8 +20,9 @@
         </v-list-item-title>
         <v-list-item-icon>
           <v-btn icon small color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="() => $refs && $refs.captureQr.$el.click()">
-            <QrcodeCapture ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
+            <v-icon small>$vuetify.icons.scan</v-icon>
           </v-btn>
+          <QrcodeCapture ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
         </v-list-item-icon>
       </v-list-item>
     </v-list>
