@@ -151,7 +151,7 @@ export default {
       if (uri) {
         log.info('CREATING NEW WALLET CONNECT SESSION', uri)
         this.wcConnector = new WalletConnect({ uri })
-        this.setWCConnectorSession(JSON.parse(JSON.stringif(this.wcConnector.session)))
+        this.setWCConnectorSession(JSON.parse(JSON.stringify(this.wcConnector.session)))
       } else if (Object.keys(this.wcConnectorSession).length > 0) {
         log.info('THERE IS A SESSION ALREADY', this.wcConnectorSession)
         this.wcConnector = new WalletConnect({ session: this.wcConnectorSession })
