@@ -146,7 +146,6 @@ export default {
   },
   data() {
     return {
-      isScanning: false,
       accountImportDialog: false,
       DISCORD,
     }
