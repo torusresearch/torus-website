@@ -177,6 +177,9 @@ export default {
           if (err) {
             log.info(`FAILED REJECT REQUEST, ERROR ${err.message}`)
             this.wcConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${error.message}` } })
+          } else if (result.error) {
+            log.info(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(result.error)}`)
+            this.wcConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${JSON.stringify(result.error)}` } })
           } else {
             log.info(`SUCCEEDED APPROVE REQUEST, RESULT ${JSON.stringify(result)}`)
             this.wcConnector.approveRequest({ id: payload.id, result })
