@@ -73,6 +73,7 @@ const initialState = {
   },
   etherscanTx: [],
   badgesCompletion: {},
+  wcConnectorURI: '',
   wcConnectorSession: {},
 }
 

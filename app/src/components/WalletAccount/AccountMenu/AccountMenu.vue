@@ -18,6 +18,12 @@
             <div>{{ t('accountMenu.account') }}</div>
           </div>
         </v-list-item-title>
+        <v-list-item-icon>
+          <v-btn icon small color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="() => $refs && $refs.captureQr.$el.click()">
+            <v-icon small>$vuetify.icons.scan</v-icon>
+          </v-btn>
+          <QrcodeCapture ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
+        </v-list-item-icon>
       </v-list-item>
     </v-list>
 
@@ -114,7 +120,8 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { QrcodeCapture } from 'vue-qrcode-reader'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import { DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
 import { addressSlicer, broadcastChannelOptions, getUserEmail } from '../../../utils/utils'
@@ -129,6 +136,7 @@ export default {
     ExportQrCode,
     AccountImport,
     LanguageSelector,
+    QrcodeCapture,
   },
   props: {
     headerItems: {
@@ -183,6 +191,7 @@ export default {
   },
   methods: {
     ...mapActions(['logOut', 'updateSelectedAddress']),
+    ...mapMutations(['setWCConnectorURI']),
     async logout() {
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
       if (urlInstance && urlInstance !== '') {
@@ -206,6 +215,9 @@ export default {
         })
         selectedAddressChannel.close()
       }
+    },
+    onDecodeQr(result) {
+      this.setWCConnectorURI(result)
     },
   },
 }

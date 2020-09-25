@@ -27,11 +27,14 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import WalletConnect from '@walletconnect/client'
+import log from 'loglevel'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
 import BadgesAlert from '../../components/WalletHome/BadgesAlert'
+import torus from '../../torus'
 import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION } from '../../utils/enums'
 
 export default {
@@ -50,6 +53,10 @@ export default {
   },
   computed: {
     ...mapState({
+      wcConnectorURI: 'wcConnectorURI',
+      wcConnectorSession: 'wcConnectorSession',
+      networkType: 'networkType',
+      selectedAddress: 'selectedAddress',
       whiteLabel: 'whiteLabel',
       badgesCompletion: 'badgesCompletion',
       pastTransactions: 'pastTransactions',
@@ -103,11 +110,81 @@ export default {
       return this.pastTransactions && this.pastTransactions.length > 0 && this.badgesCompletion[BADGES_TRANSACTION] === false
     },
   },
+  watch: {
+    selectedAddress(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        if (Object.keys(this.wcConnectorSession).length > 0 && this.wcConnectorSession.connected) {
+          this.wcConnector.updateSession({
+            chainId: this.networkType.chainId,
+            accounts: [this.selectedAddress],
+          })
+        }
+      }
+    },
+    networkType(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        if (Object.keys(this.wcConnectorSession).length > 0 && this.wcConnectorSession.connected) {
+          this.wcConnector.updateSession({
+            chainId: this.networkType.chainId,
+            accounts: [this.selectedAddress],
+          })
+        }
+      }
+    },
+  },
+  async mounted() {
+    await this.initWalletConnect(this.wcConnectorURI)
+  },
   methods: {
     ...mapActions(['setUserBadge']),
+    ...mapMutations(['setWCConnectorSession']),
     closeBadge(data) {
       this.setUserBadge(data.type)
       if (data.returnHome && !['walletHomeMain', 'walletHome'].includes(this.$route.name)) this.$router.push({ name: 'walletHome' })
+    },
+    async initWalletConnect(uri) {
+      if (uri) {
+        log.info('CREATING NEW WALLET CONNECT SESSION', uri)
+        this.wcConnector = new WalletConnect({ uri })
+        this.setWCConnectorSession(this.wcConnector.session)
+      } else if (Object.keys(this.wcConnectorSession).length > 0) {
+        log.info('THERE IS A SESSION ALREADY', this.wcConnectorSession)
+        this.wcConnector = new WalletConnect({ session: this.wcConnectorSession })
+      } else {
+        return
+      }
+      if (!this.wcConnector.connected) {
+        await this.wcConnector.createSession()
+      }
+      log.info('THIS IS THE WCCONNECTOR', this.wcConnector)
+      this.wcConnector.on('session_request', (err, payload) => {
+        log.info('SESSION REQUEST', err, payload)
+        this.wcConnector.approveSession({ chainId: this.networkType.chainId, accounts: [this.selectedAddress] })
+      })
+      this.wcConnector.on('session_update', (err, payload) => {
+        log.info('SESSION UPDATE', err, payload)
+      })
+      this.wcConnector.on('call_request', (err, payload) => {
+        log.info('CALL REQUEST', err, payload, torus)
+        payload.params[0].isWalletConnectRequest = 'true'
+        torus.torusController.provider.send(payload, (error, result) => {
+          if (err) {
+            log.info(`FAILED REJECT REQUEST, ERROR ${err.message}`)
+            this.wcConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${error.message}` } })
+          } else {
+            log.info(`SUCCEEDED APPROVE REQUEST, RESULT ${result}`)
+            this.wcConnector.approveRequest({ id: payload.id, result })
+          }
+        })
+      })
+      this.wcConnector.on('connect', (err, payload) => {
+        log.info('CONNECT', err, payload)
+      })
+      this.wcConnector.on('disconnect', (err, payload) => {
+        log.info('DISCONNECT', err, payload)
+        this.setWCConnectorSession({})
+      })
+      log.info('SESSION IS THIS', this.wcConnector.session)
     },
   },
 }
