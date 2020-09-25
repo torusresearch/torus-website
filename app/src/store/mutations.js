@@ -197,6 +197,9 @@ export default {
   setTkeyExists(state, payload) {
     state.tKeyExists = payload
   },
+  setShowVerifyLoginDialog(state, payload) {
+    state.showVerifyLoginDialog = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]

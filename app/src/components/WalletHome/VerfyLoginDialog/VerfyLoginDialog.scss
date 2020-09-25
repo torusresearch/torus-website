@@ -1,0 +1,33 @@
+.verify-login-container {
+  .header-container {
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+    border-radius: 6px;
+  }
+  .header-image-holder {
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.1);
+    .v-icon {
+      color: #586C85;
+    }
+  }
+  .close-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .details {
+    font-size: 14px;
+    line-height: 16px;
+  }
+  &.theme--dark {
+    .header-container {
+      box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+      border-bottom: 1px solid #343539;
+    }
+    .header-image-holder {
+      box-shadow: -5px -5px 10px #37383c, 5px 5px 10px #161616;
+      .v-icon {
+        color: #7F8FA4;
+      }
+    }
+  }
+}

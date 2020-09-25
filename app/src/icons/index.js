@@ -21,6 +21,7 @@ import CheckCircleIcon from './CheckCircleIcon.vue'
 import ChevronDoubleRightIcon from './ChevronDoubleRightIcon.vue'
 import ChevronLeftIcon from './ChevronLeftIcon.vue'
 import ChevronRightIcon from './ChevronRightIcon.vue'
+import ClickIcon from './ClickIcon.vue'
 import CloseCircleIcon from './CloseCircleIcon.vue'
 import CloseIcon from './CloseIcon.vue'
 import CoinsApproveIcon from './CoinsApproveIcon.vue'
@@ -363,5 +364,8 @@ export default {
   },
   alert: {
     component: AlertIcon,
+  },
+  click: {
+    component: ClickIcon,
   },
 }

@@ -23,15 +23,19 @@
     <v-dialog v-else-if="!isTkeyScreen && badgesCollectibleDialog" v-model="badgesCollectibleDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_COLLECTIBLE]" @closeBadge="closeBadge" />
     </v-dialog>
+    <v-dialog v-else-if="!isTkeyScreen && showVerifyLoginDialog" v-model="showVerifyLoginDialog" persistent width="236">
+      <VerfyLoginDialog @onClose="closeVerifyLoginDialog" />
+    </v-dialog>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
 import BadgesAlert from '../../components/WalletHome/BadgesAlert'
+import VerfyLoginDialog from '../../components/WalletHome/VerfyLoginDialog'
 import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION } from '../../utils/enums'
 
 export default {
@@ -39,6 +43,7 @@ export default {
     Navbar,
     AccountMenu,
     BadgesAlert,
+    VerfyLoginDialog,
   },
   data() {
     return {
@@ -55,6 +60,7 @@ export default {
       pastTransactions: 'pastTransactions',
       paymentTxStore: 'paymentTx',
       wallet: 'wallet',
+      showVerifyLoginDialog: 'showVerifyLoginDialog',
     }),
     ...mapGetters(['collectibleBalances']),
     headerItems() {
@@ -114,9 +120,13 @@ export default {
   },
   methods: {
     ...mapActions(['setUserBadge']),
+    ...mapMutations(['setShowVerifyLoginDialog']),
     closeBadge(data) {
       this.setUserBadge(data.type)
       if (data.returnHome && !['walletHomeMain', 'walletHome'].includes(this.$route.name)) this.$router.push({ name: 'walletHome' })
+    },
+    closeVerifyLoginDialog() {
+      this.setShowVerifyLoginDialog(false)
     },
   },
 }
