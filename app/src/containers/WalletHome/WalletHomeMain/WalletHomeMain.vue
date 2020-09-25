@@ -216,7 +216,9 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import WalletConnect from '@walletconnect/client'
+import log from 'loglevel'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
@@ -227,6 +229,7 @@ import Onboarding from '../../../components/WalletHome/Onboarding'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
 import config from '../../../config'
+import torus from '../../../torus'
 import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 
 export default {
@@ -240,14 +243,17 @@ export default {
       lastUpdated: '',
       dialogOnboarding: false,
       activeTab: 0,
+      connector: null,
     }
   },
   computed: {
     ...mapGetters(['tokenBalances']),
     ...mapState({
+      wcConnectorSession: 'wcConnectorSession',
       whiteLabel: 'whiteLabel',
       weiBalanceLoaded: 'weiBalanceLoaded',
       tokenDataLoaded: 'tokenDataLoaded',
+      selectedAddress: 'selectedAddress',
       selectedCurrency: 'selectedCurrency',
       networkType: 'networkType',
       isFreshAccount: 'isNewUser',
@@ -288,15 +294,39 @@ export default {
       return events
     },
   },
+  watch: {
+    selectedAddress(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        if (Object.keys(this.wcConnectorSession).length > 0 && this.wcConnectorSession.connected) {
+          this.wcConnector.updateSession({
+            chainId: this.networkType.chainId,
+            accounts: [this.selectedAddress],
+          })
+        }
+      }
+    },
+    networkType(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        if (Object.keys(this.wcConnectorSession).length > 0 && this.wcConnectorSession.connected) {
+          this.wcConnector.updateSession({
+            chainId: this.networkType.chainId,
+            accounts: [this.selectedAddress],
+          })
+        }
+      }
+    },
+  },
   mounted() {
     this.setDateUpdated()
 
+    this.initWalletConnect()
     this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
 
     this.$vuetify.goTo(0)
   },
   methods: {
     ...mapActions(['forceFetchTokens', 'setSelectedCurrency']),
+    ...mapMutations(['setWCConnectorSession']),
     select(selectedItem) {
       // this is so that we don't break their api
       this.selected = []
@@ -321,6 +351,50 @@ export default {
     },
     setDateUpdated() {
       this.lastUpdated = new Date().toLocaleString()
+    },
+    async initWalletConnect() {
+      const uri =
+        // eslint-disable-next-line max-len
+        'wc:390578bd-dbc4-474e-b52e-ed1638dc25c9@1?bridge=https%3A%2F%2Fbridge.walletconnect.org&key=22a7e5ad13f7d0ae19de9d7aec3691302632bb19076bc8c2bf57b506c32e5786'
+      // if (Object.keys(this.wcConnectorSession).length > 0) {
+      //   log.info('THERE IS A SESSION ALREADY', this.wcConnectorSession)
+      //   this.wcConnector = new WalletConnect({ session: this.wcConnectorSession })
+      // } else {
+      this.wcConnector = new WalletConnect({ uri })
+      this.setWCConnectorSession(this.wcConnector.session)
+      // }
+      if (!this.wcConnector.connected) {
+        await this.wcConnector.createSession()
+      }
+      log.info('THIS IS THE WCCONNECTOR', this.wcConnector)
+      this.wcConnector.on('session_request', (err, payload) => {
+        log.info('SESSION REQUEST', err, payload)
+        this.wcConnector.approveSession({ chainId: this.networkType.chainId, accounts: [this.selectedAddress] })
+      })
+      this.wcConnector.on('session_update', (err, payload) => {
+        log.info('SESSION UPDATE', err, payload)
+      })
+      this.wcConnector.on('call_request', (err, payload) => {
+        log.info('CALL REQUEST', err, payload, torus)
+        payload.params[0].isWalletConnectRequest = 'true'
+        torus.torusController.provider.send(payload, (error, result) => {
+          if (err) {
+            log.info(`FAILED REJECT REQUEST, ERROR ${err.message}`)
+            this.wcConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${error.message}` } })
+          } else {
+            log.info(`SUCCEEDED APPROVE REQUEST, RESULT ${result}`)
+            this.wcConnector.approveRequest({ id: payload.id, result })
+          }
+        })
+      })
+      this.wcConnector.on('connect', (err, payload) => {
+        log.info('CONNECT', err, payload)
+      })
+      this.wcConnector.on('disconnect', (err, payload) => {
+        log.info('DISCONNECT', err, payload)
+        this.setWCConnectorSession({})
+      })
+      log.info('SESSION IS THIS', this.wcConnector.session)
     },
   },
 }
