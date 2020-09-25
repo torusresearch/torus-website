@@ -187,6 +187,7 @@ export default {
       })
       this.wcConnector.on('disconnect', (err, payload) => {
         log.info('DISCONNECT', err, payload)
+        this.setWCConnectorURI('')
         this.setWCConnectorSession({})
       })
       log.info('SESSION IS THIS', this.wcConnector.session)
