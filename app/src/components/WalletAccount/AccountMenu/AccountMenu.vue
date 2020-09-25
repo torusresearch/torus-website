@@ -19,10 +19,9 @@
           </div>
         </v-list-item-title>
         <v-list-item-icon>
-          <v-btn icon small color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="startScan">
-            <v-icon small>$vuetify.icons.scan</v-icon>
+          <v-btn icon small color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="() => $refs && $refs.captureQr.$el.click()">
+            <QrcodeCapture ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
           </v-btn>
-          <QrcodeStream v-if="isScanning" :style="{ display: 'none' }" @decode="onDecodeQr" />
         </v-list-item-icon>
       </v-list-item>
     </v-list>
@@ -120,7 +119,7 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import { QrcodeStream } from 'vue-qrcode-reader'
+import { QrcodeCapture } from 'vue-qrcode-reader'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import { DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
@@ -136,7 +135,7 @@ export default {
     ExportQrCode,
     AccountImport,
     LanguageSelector,
-    QrcodeStream,
+    QrcodeCapture,
   },
   props: {
     headerItems: {
@@ -216,9 +215,6 @@ export default {
         })
         selectedAddressChannel.close()
       }
-    },
-    startScan() {
-      this.isScanning = true
     },
     onDecodeQr(result) {
       this.setWCConnectorURI(result)
