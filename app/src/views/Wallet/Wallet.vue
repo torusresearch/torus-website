@@ -151,7 +151,7 @@ export default {
       if (uri) {
         log.info('CREATING NEW WALLET CONNECT SESSION', uri)
         this.wcConnector = new WalletConnect({ uri })
-        this.setWCConnectorSession(this.wcConnector.session)
+        this.setWCConnectorSession(JSON.parse(JSON.stringif(this.wcConnector.session)))
       } else if (Object.keys(this.wcConnectorSession).length > 0) {
         log.info('THERE IS A SESSION ALREADY', this.wcConnectorSession)
         this.wcConnector = new WalletConnect({ session: this.wcConnectorSession })
@@ -168,6 +168,7 @@ export default {
       })
       this.wcConnector.on('session_update', (err, payload) => {
         log.info('SESSION UPDATE', err, payload)
+        this.setWCConnectorSession(JSON.parse(JSON.stringify(this.wcConnector.session)))
       })
       this.wcConnector.on('call_request', (err, payload) => {
         log.info('CALL REQUEST', err, payload, torus)
