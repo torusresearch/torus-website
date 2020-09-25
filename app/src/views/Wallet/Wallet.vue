@@ -131,6 +131,11 @@ export default {
         }
       }
     },
+    wcConnectorURI(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.initWalletConnect(newValue)
+      }
+    },
   },
   async mounted() {
     await this.initWalletConnect(this.wcConnectorURI)
