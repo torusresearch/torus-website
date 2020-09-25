@@ -67,6 +67,7 @@ import VerifierWechatIcon from './VerifierWechatIcon.vue'
 import VerifierWeiboIcon from './VerifierWeiboIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
+import WalletConnectIcon from './WalletConnectIcon.vue'
 
 export default {
   select: {
@@ -275,5 +276,8 @@ export default {
   },
   alert: {
     component: AlertIcon,
+  },
+  walletconnect: {
+    component: WalletConnectIcon,
   },
 }

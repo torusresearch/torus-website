@@ -3,7 +3,7 @@
     <Navbar :header-items="headerItems">
       <template v-slot:drawer>
         <v-btn v-if="$vuetify.breakpoint.smAndDown" id="menu-dropdown-mobile-btn" icon aria-label="Open Account Menu" @click="drawer = !drawer">
-          <v-icon class="torusBrand1--text">$vuetify.icons.menu</v-icon>
+          <v-icon class="torusBrand1--text">$vuetify.icons.walletconnect</v-icon>
         </v-btn>
       </template>
     </Navbar>
@@ -179,7 +179,7 @@ export default {
             this.wcConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${error.message}` } })
           } else if (res.error) {
             log.info(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(res.error)}`)
-            this.wcConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${JSON.stringify(result.error)}` } })
+            this.wcConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${JSON.stringify(res.error)}` } })
           } else {
             log.info(`SUCCEEDED APPROVE REQUEST, RESULT ${JSON.stringify(res)}`)
             this.wcConnector.approveRequest({ id: payload.id, result: res.result })
