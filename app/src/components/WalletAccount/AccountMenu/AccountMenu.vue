@@ -19,10 +19,10 @@
           </div>
         </v-list-item-title>
         <v-list-item-icon>
-          <v-btn icon small color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="() => $refs && $refs.captureQr.$el.click()">
+          <v-btn icon small color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="startScan">
             <v-icon small>$vuetify.icons.scan</v-icon>
           </v-btn>
-          <QrcodeStream ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
+          <QrcodeStream v-if="isScanning" :style="{ display: 'none' }" @decode="onDecodeQr" />
         </v-list-item-icon>
       </v-list-item>
     </v-list>
@@ -146,6 +146,7 @@ export default {
   },
   data() {
     return {
+      isScanning: false,
       accountImportDialog: false,
       DISCORD,
     }
@@ -215,6 +216,9 @@ export default {
         })
         selectedAddressChannel.close()
       }
+    },
+    startScan() {
+      this.isScanning = true
     },
     onDecodeQr(result) {
       this.setWCConnectorURI(result)
