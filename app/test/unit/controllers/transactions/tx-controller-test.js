@@ -50,7 +50,7 @@ describe('Transaction Controller', function () {
           resolve()
         }),
     })
-    txController.nonceTracker.getNonceLock = () => Promise.resolve({ nextNonce: 0, releaseLock: noop })
+    txController.nonceTracker.getNonceLock = () => Promise.resolve({ nextNonce: 0, releaseLock: noop, nonceDetails: {} })
   })
 
   describe('#getState', function () {
