@@ -1149,18 +1149,19 @@ export default {
       try {
         await promise
       } catch (error) {
+        this.noStreamApiSupport = true
         if (error.name === 'NotAllowedError') {
-          this.qrErrorMsg = 'ERROR: you need to grant camera access permisson'
+          log.error('ERROR: you need to grant camera access permisson')
         } else if (error.name === 'NotFoundError') {
-          this.qrErrorMsg = 'ERROR: no camera on this device'
+          log.error('ERROR: no camera on this device')
         } else if (error.name === 'NotSupportedError') {
-          this.qrErrorMsg = 'ERROR: secure context required (HTTPS, localhost)'
+          log.error('ERROR: secure context required (HTTPS, localhost)')
         } else if (error.name === 'NotReadableError') {
-          this.qrErrorMsg = 'ERROR: is the camera already in use?'
+          log.error('ERROR: is the camera already in use?')
         } else if (error.name === 'OverconstrainedError') {
-          this.qrErrorMsg = 'ERROR: installed cameras are not suitable'
+          log.error('ERROR: installed cameras are not suitable')
         } else if (error.name === 'StreamApiNotSupportedError') {
-          this.noStreamApiSupport = true
+          log.error('ERROR: Stream Api Not Supported')
         }
       }
     },
