@@ -1,5 +1,13 @@
 <template>
   <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu">
+    <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
+      <div class="qr-scan-container">
+        <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
+        <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
+          <v-icon>$vuetify.icons.close</v-icon>
+        </v-btn>
+      </div>
+    </v-dialog>
     <v-list class="pb-0 mb-2">
       <v-list-item>
         <v-list-item-avatar class="ml-2 mr-3">
@@ -22,14 +30,6 @@
           <v-btn icon color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="startQrScanning">
             <v-icon size="35">$vuetify.icons.walletconnect</v-icon>
           </v-btn>
-          <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
-            <div class="qr-scan-container">
-              <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
-              <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
-                <v-icon>$vuetify.icons.close</v-icon>
-              </v-btn>
-            </div>
-          </v-dialog>
         </v-list-item-icon>
       </v-list-item>
     </v-list>
