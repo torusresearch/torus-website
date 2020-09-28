@@ -22,8 +22,14 @@
           <v-btn icon color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="startQrScanning">
             <v-icon size="35">$vuetify.icons.walletconnect</v-icon>
           </v-btn>
-          <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
-          <v-dialog v-if="qrErrorMsg" width="375">{{ qrErrorMsg }}</v-dialog>
+          <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
+            <div class="qr-scan-container">
+              <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
+              <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
+                <v-icon>$vuetify.icons.close</v-icon>
+              </v-btn>
+            </div>
+          </v-dialog>
         </v-list-item-icon>
       </v-list-item>
     </v-list>
