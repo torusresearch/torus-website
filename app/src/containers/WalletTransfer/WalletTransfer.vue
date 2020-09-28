@@ -112,6 +112,7 @@
                       ref="contactSelected"
                       :name="randomName"
                       class="recipient-address"
+                      :class="{ hasQrError: qrErrorMsg !== '' }"
                       :value="contactSelected"
                       :items="contactList"
                       :placeholder="verifierPlaceholder"
