@@ -42,3 +42,12 @@
     }
   }
 }
+
+.qr-scan-container {
+  position: relative;
+  .close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
