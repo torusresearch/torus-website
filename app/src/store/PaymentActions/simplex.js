@@ -134,6 +134,7 @@ export default {
       features: 'width=1200, height=700',
       preopenInstanceId,
       channelName: `redirect_channel_${orderInstanceId}`,
+      channelId: orderInstanceId,
     })
     setTimeout(() => {
       form.submit()

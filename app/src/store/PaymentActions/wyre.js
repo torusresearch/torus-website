@@ -35,7 +35,12 @@ const Wyre = {
   async postWyreOrder(_, { path, params, preopenInstanceId, orderInstanceId }) {
     const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(params)))
     const finalUrl = `${path}?${parameterString.toString()}`
-    const wyreWindow = new PopupWithBcHandler({ preopenInstanceId, url: finalUrl, channelName: `redirect_channel_${orderInstanceId}` })
+    const wyreWindow = new PopupWithBcHandler({
+      preopenInstanceId,
+      url: finalUrl,
+      channelName: `redirect_channel_${orderInstanceId}`,
+      channelId: orderInstanceId,
+    })
     await wyreWindow.handle()
     return { success: true }
   },

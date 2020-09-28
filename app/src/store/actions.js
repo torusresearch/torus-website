@@ -156,6 +156,7 @@ export default {
         target: '_blank',
         features: FEATURES_POPUP_SMALL,
         channelName,
+        channelId: windowId,
       })
       const result = await providerChangeWindow.handleWithHandshake({
         payload: { origin: getIFrameOriginObject(), payload, currentNetwork: state.networkType, whiteLabel: state.whiteLabel },
@@ -197,6 +198,7 @@ export default {
         target: '_blank',
         features: FEATURES_POPUP_SMALL,
         channelName,
+        channelId: windowId,
       })
       const result = await userInfoRequestWindow.handleWithHandshake({
         payload: {

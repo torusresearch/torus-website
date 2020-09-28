@@ -62,7 +62,12 @@ export default {
     })
   },
   async postMoonpayOrder(_, { finalUrl, preopenInstanceId, orderInstanceId }) {
-    const moonpayWindow = new PopupWithBcHandler({ url: finalUrl, preopenInstanceId, channelName: `redirect_channel_${orderInstanceId}` })
+    const moonpayWindow = new PopupWithBcHandler({
+      url: finalUrl,
+      preopenInstanceId,
+      channelName: `redirect_channel_${orderInstanceId}`,
+      channelId: orderInstanceId,
+    })
     const result = await moonpayWindow.handle()
     const { queryParams: { transactionStatus = '' } = {} } = result
     if (transactionStatus !== 'failed') return { success: true }

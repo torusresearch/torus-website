@@ -28,7 +28,12 @@ class AbstractLoginHandler {
 
   async handleLoginWindow() {
     const channelName = `redirect_channel_${this.nonce}`
-    const verifierWindow = new PopupWithBcHandler({ channelName, url: this.finalURL, preopenInstanceId: this.preopenInstanceId })
+    const verifierWindow = new PopupWithBcHandler({
+      channelName,
+      url: this.finalURL,
+      preopenInstanceId: this.preopenInstanceId,
+      channelId: this.nonce,
+    })
     const localVerifier = this.verifier
     const result = await verifierWindow.handle(function successHandler(data) {
       const {

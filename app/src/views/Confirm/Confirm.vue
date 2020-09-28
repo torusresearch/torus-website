@@ -615,6 +615,16 @@ export default {
     bc.postMessage({ data: { type: POPUP_LOADED, id: queryParameterId } })
   },
   methods: {
+    setupForHijack() {
+      const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
+      log.info('setting up for hijack')
+      bc.addEventListener('message', (ev) => {
+        bc.close()
+        log.info('hijacking', ev.data)
+        const { redirect } = ev.data
+        window.location.href = redirect
+      })
+    },
     slicedAddress(user) {
       return addressSlicer(user) || '0x'
     },
@@ -623,16 +633,17 @@ export default {
       const gasPriceHex = `0x${this.gasPrice.times(weiInGwei).toString(16)}`
       const gasHex = this.gasEstimate.eq(new BigNumber('0')) ? undefined : `0x${this.gasEstimate.toString(16)}`
       const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
-
       await bc.postMessage({
         data: { type: POPUP_RESULT, gasPrice: gasPriceHex, gas: gasHex, id: this.id, txType: this.type, customNonceValue, approve: true },
       })
       bc.close()
+      this.setupForHijack()
     },
     async triggerDeny() {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({ data: { type: POPUP_RESULT, id: this.id, txType: this.type, approve: false } })
       bc.close()
+      this.setupForHijack()
     },
     topUp() {
       this.$router.push({ path: '/wallet/topup' }).catch((_) => {})

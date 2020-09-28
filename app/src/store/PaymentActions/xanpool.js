@@ -33,7 +33,12 @@ export default {
   async postXanpoolOrder(_, { path, params, preopenInstanceId, orderInstanceId }) {
     const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(params)))
     const finalUrl = `${path}?${parameterString.toString()}`
-    const xanpoolWindow = new PopupWithBcHandler({ preopenInstanceId, url: finalUrl, channelName: `redirect_channel_${orderInstanceId}` })
+    const xanpoolWindow = new PopupWithBcHandler({
+      preopenInstanceId,
+      url: finalUrl,
+      channelName: `redirect_channel_${orderInstanceId}`,
+      channelId: orderInstanceId,
+    })
     await xanpoolWindow.handle()
     return { success: true }
   },

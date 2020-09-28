@@ -133,7 +133,7 @@ export default {
           Object.keys(params).forEach((key) => {
             if (params[key]) finalUrl.searchParams.append(key, params[key])
           })
-        const handledWindow = new PopupWithBcHandler({ url: finalUrl, preopenInstanceId, channelName: `redirect_channel_${channelId}` })
+        const handledWindow = new PopupWithBcHandler({ url: finalUrl, preopenInstanceId, channelName: `redirect_channel_${channelId}`, channelId })
         const result = await handledWindow.handle()
         const { queryParams: { transactionStatus = '' } = {} } = result
         log.info(result)

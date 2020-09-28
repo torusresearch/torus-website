@@ -95,6 +95,7 @@ const VuexStore = new Vuex.Store({
         target: '_blank',
         features: FEATURES_POPUP_SMALL,
         channelName,
+        channelId: windowId,
       })
       const popupPayload = {
         id: windowId,
