@@ -629,7 +629,7 @@ export default {
   },
   methods: {
     startQrScanning() {
-      this.camera = 'rear'
+      this.camera = 'auto'
     },
     setSelectedVerifierFromToAddress(toAddress) {
       if (toAddress.startsWith('0x')) {

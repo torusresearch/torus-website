@@ -19,11 +19,11 @@
           </div>
         </v-list-item-title>
         <v-list-item-icon>
-          <v-btn icon small color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="startQrScanning">
-            <v-icon size="20">$vuetify.icons.walletconnect</v-icon>
+          <v-btn icon color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="startQrScanning">
+            <v-icon size="35">$vuetify.icons.walletconnect</v-icon>
           </v-btn>
           <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
-          <v-dialog v-model="dialog" width="375">{{ qrErrorMsg }}</v-dialog>
+          <v-dialog v-if="qrErrorMsg" width="375">{{ qrErrorMsg }}</v-dialog>
         </v-list-item-icon>
       </v-list-item>
     </v-list>
@@ -221,7 +221,7 @@ export default {
       }
     },
     startQrScanning() {
-      this.camera = 'rear'
+      this.camera = 'auto'
     },
     onDecodeQr(result) {
       try {
