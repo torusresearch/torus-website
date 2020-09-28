@@ -80,7 +80,7 @@ import { BroadcastChannel } from 'broadcast-channel'
 import { mapGetters } from 'vuex'
 
 import { ChangeProviderScreenLoader } from '../../content-loader'
-import { SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
+import { POPUP_LOADED, POPUP_RESULT, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
@@ -129,19 +129,19 @@ export default {
 
       bc.close()
     })
-    bc.postMessage({ data: { type: 'popup-loaded' } })
+    bc.postMessage({ data: { type: POPUP_LOADED } })
   },
   methods: {
     async triggerSign() {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({
-        data: { type: 'provider-change-result', approve: true },
+        data: { type: POPUP_RESULT, approve: true },
       })
       bc.close()
     },
     async triggerDeny() {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-      await bc.postMessage({ data: { type: 'provider-change-result', approve: false } })
+      await bc.postMessage({ data: { type: POPUP_RESULT, approve: false } })
       bc.close()
     },
     editPermissions() {

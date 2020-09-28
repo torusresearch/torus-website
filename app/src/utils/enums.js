@@ -374,3 +374,5 @@ export const BADGES_TRANSACTION = 'transaction'
 export const BADGES_COLLECTIBLE = 'collectible'
 
 export const FEATURES_POPUP_SMALL = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375'
+export const POPUP_LOADED = 'popup-loaded'
+export const POPUP_RESULT = 'popup_result'
