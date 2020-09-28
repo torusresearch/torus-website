@@ -638,7 +638,7 @@ export default {
   },
   methods: {
     startQrScanning() {
-      if (!this.noStreamApiSupport) this.camera = 'auto'
+      if (!this.noStreamApiSupport) this.camera = 'rear'
       else if (this.$refs) {
         this.$refs.captureQr.$el.click()
       }
