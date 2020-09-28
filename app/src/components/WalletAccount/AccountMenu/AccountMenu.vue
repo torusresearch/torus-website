@@ -229,6 +229,7 @@ export default {
     },
     startQrScanning() {
       this.camera = 'auto'
+      this.showQrScanner = true
     },
     onDecodeQr(result) {
       try {

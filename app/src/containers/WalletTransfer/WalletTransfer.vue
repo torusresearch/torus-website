@@ -639,6 +639,7 @@ export default {
   methods: {
     startQrScanning() {
       this.camera = 'auto'
+      this.showQrScanner = true
     },
     setSelectedVerifierFromToAddress(toAddress) {
       if (toAddress.startsWith('0x')) {
