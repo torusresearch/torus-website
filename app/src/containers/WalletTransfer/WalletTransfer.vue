@@ -133,13 +133,14 @@
                         {{ t(props.message) }}
                       </template>
                     </v-combobox>
-                    <QrcodeStream
-                      v-if="!noStreamApiSupport"
-                      :camera="camera"
-                      :style="camera === 'off' && { display: 'none' }"
-                      @decode="onDecodeQr"
-                      @init="onInit"
-                    />
+                    <v-dialog v-if="!noStreamApiSupport" v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
+                      <div class="qr-scan-container">
+                        <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
+                        <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
+                          <v-icon>$vuetify.icons.close</v-icon>
+                        </v-btn>
+                      </div>
+                    </v-dialog>
                     <QrcodeCapture v-else ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                       <div class="v-messages">
@@ -476,6 +477,7 @@ export default {
       nonce: -1,
       noStreamApiSupport: false,
       camera: 'off',
+      showQrScanner: false,
     }
   },
   computed: {
@@ -638,8 +640,10 @@ export default {
   },
   methods: {
     startQrScanning() {
-      if (!this.noStreamApiSupport) this.camera = 'auto'
-      else if (this.$refs) {
+      if (!this.noStreamApiSupport) {
+        this.camera = 'auto'
+        this.showQrScanner = true
+      } else if (this.$refs) {
         this.$refs.captureQr.$el.click()
       }
     },
@@ -1130,9 +1134,11 @@ export default {
         if (qrUrl.href.includes('ethereum:') && isAddress(qrUrl.pathname)) {
           this.toAddress = qrUrl.pathname
           this.selectedVerifier = ETH
+          this.qrErrorMsg = ''
         } else if (qrUrl.searchParams.has('to')) {
           this.selectedVerifier = ETH
           this.toAddress = qrUrl.searchParams.get('to')
+          this.qrErrorMsg = ''
         } else {
           this.toAddress = ''
           this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
@@ -1142,12 +1148,14 @@ export default {
         if (isAddress(parsedResult)) {
           this.selectedVerifier = ETH
           this.toAddress = parsedResult
+          this.qrErrorMsg = ''
         } else {
           this.toAddress = ''
           this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
         }
       } finally {
         this.camera = 'off'
+        this.showQrScanner = false
         this.contactSelected = this.toAddress
       }
     },
@@ -1180,6 +1188,10 @@ export default {
       if (this.$refs.contactSelected && this.$refs.contactSelected.$refs && this.$refs.contactSelected.$refs.input) {
         this.$refs.contactSelected.$refs.input.name = randomId()
       }
+    },
+    closeQRScanner() {
+      this.camera = 'off'
+      this.showQrScanner = false
     },
   },
 }
