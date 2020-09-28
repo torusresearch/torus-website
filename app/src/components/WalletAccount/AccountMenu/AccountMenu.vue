@@ -158,6 +158,7 @@ export default {
       DISCORD,
       camera: 'off',
       qrErrorMsg: '',
+      showQrScanner: false,
     }
   },
   computed: {
@@ -234,6 +235,7 @@ export default {
         this.setWCConnectorURI(result)
       } finally {
         this.camera = 'off'
+        this.showQrScanner = false
       }
     },
     async onInit(promise) {
