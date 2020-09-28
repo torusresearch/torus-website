@@ -133,14 +133,7 @@
                         {{ t(props.message) }}
                       </template>
                     </v-combobox>
-                    <QrcodeStream
-                      v-if="!noStreamApiSupport"
-                      :camera="camera"
-                      :style="camera === 'off' && { display: 'none' }"
-                      @decode="onDecodeQr"
-                      @init="onInit"
-                    />
-                    <QrcodeCapture v-else ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
+                    <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                       <div class="v-messages">
                         <div class="v-messages__wrapper">
@@ -378,7 +371,7 @@ import BigNumber from 'bignumber.js'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import log from 'loglevel'
-import { QrcodeCapture, QrcodeStream } from 'vue-qrcode-reader'
+import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapGetters, mapState } from 'vuex'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
@@ -413,7 +406,6 @@ export default {
   components: {
     TransactionSpeedSelect,
     MessageModal,
-    QrcodeCapture,
     QrcodeStream,
     AddContact,
     ComponentLoader,
@@ -474,7 +466,6 @@ export default {
       etherscanLink: '',
       MESSAGE_MODAL_TYPE_SUCCESS,
       nonce: -1,
-      noStreamApiSupport: false,
       camera: 'off',
     }
   },
@@ -638,10 +629,7 @@ export default {
   },
   methods: {
     startQrScanning() {
-      if (!this.noStreamApiSupport) this.camera = 'rear'
-      else if (this.$refs) {
-        this.$refs.captureQr.$el.click()
-      }
+      this.camera = 'rear'
     },
     setSelectedVerifierFromToAddress(toAddress) {
       if (toAddress.startsWith('0x')) {
@@ -1156,21 +1144,23 @@ export default {
         await promise
       } catch (error) {
         log.error(error)
-        this.noStreamApiSupport = true
-        this.$nextTick(() => {
-          this.startQrScanning()
-        })
         if (error.name === 'NotAllowedError') {
+          this.qrErrorMsg = 'ERROR: you need to grant camera access permisson'
           log.error('ERROR: you need to grant camera access permisson')
         } else if (error.name === 'NotFoundError') {
+          this.qrErrorMsg = 'ERROR: no camera on this device'
           log.error('ERROR: no camera on this device')
         } else if (error.name === 'NotSupportedError') {
+          this.qrErrorMsg = 'ERROR: secure context required (HTTPS, localhost)'
           log.error('ERROR: secure context required (HTTPS, localhost)')
         } else if (error.name === 'NotReadableError') {
+          this.qrErrorMsg = 'ERROR: is the camera already in use?'
           log.error('ERROR: is the camera already in use?')
         } else if (error.name === 'OverconstrainedError') {
+          this.qrErrorMsg = 'ERROR: installed cameras are not suitable'
           log.error('ERROR: installed cameras are not suitable')
         } else if (error.name === 'StreamApiNotSupportedError') {
+          this.qrErrorMsg = 'ERROR: Stream Api Not Supported'
           log.error('ERROR: Stream Api Not Supported')
         }
       }
