@@ -133,8 +133,14 @@
                         {{ t(props.message) }}
                       </template>
                     </v-combobox>
-                    <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
-                    <QrcodeCapture v-if="noStreamApiSupport" ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
+                    <QrcodeStream
+                      v-if="!noStreamApiSupport"
+                      :camera="camera"
+                      :style="camera === 'off' && { display: 'none' }"
+                      @decode="onDecodeQr"
+                      @init="onInit"
+                    />
+                    <QrcodeCapture v-else ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                       <div class="v-messages">
                         <div class="v-messages__wrapper">
@@ -1149,7 +1155,11 @@ export default {
       try {
         await promise
       } catch (error) {
+        log.error(error)
         this.noStreamApiSupport = true
+        this.$nextTick(() => {
+          this.startQrScanning()
+        })
         if (error.name === 'NotAllowedError') {
           log.error('ERROR: you need to grant camera access permisson')
         } else if (error.name === 'NotFoundError') {
