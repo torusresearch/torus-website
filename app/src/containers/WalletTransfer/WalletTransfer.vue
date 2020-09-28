@@ -1187,10 +1187,6 @@ export default {
         this.$refs.contactSelected.$refs.input.name = randomId()
       }
     },
-    closeQRScanner() {
-      this.camera = 'off'
-      this.showQrScanner = false
-    },
   },
 }
 </script>
