@@ -125,14 +125,7 @@
                       @input="contactChanged"
                     >
                       <template v-slot:append>
-                        <v-btn
-                          icon
-                          small
-                          color="torusBrand1"
-                          title="Capture QR"
-                          aria-label="Capture QR"
-                          @click="() => $refs && $refs.captureQr.$el.click()"
-                        >
+                        <v-btn icon small color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="startQrScanning">
                           <v-icon small>$vuetify.icons.scan</v-icon>
                         </v-btn>
                       </template>
@@ -140,7 +133,14 @@
                         {{ t(props.message) }}
                       </template>
                     </v-combobox>
-                    <QrcodeCapture ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
+                    <QrcodeStream
+                      v-if="!noStreamApiSupport"
+                      :camera="camera"
+                      :style="camera === 'off' && { display: 'none' }"
+                      @decode="onDecodeQr"
+                      @init="onInit"
+                    />
+                    <QrcodeCapture v-else ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                       <div class="v-messages">
                         <div class="v-messages__wrapper">
@@ -378,7 +378,7 @@ import BigNumber from 'bignumber.js'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import log from 'loglevel'
-import { QrcodeCapture } from 'vue-qrcode-reader'
+import { QrcodeCapture, QrcodeStream } from 'vue-qrcode-reader'
 import { mapGetters, mapState } from 'vuex'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
@@ -414,6 +414,7 @@ export default {
     TransactionSpeedSelect,
     MessageModal,
     QrcodeCapture,
+    QrcodeStream,
     AddContact,
     ComponentLoader,
     TransferConfirm,
@@ -473,6 +474,8 @@ export default {
       etherscanLink: '',
       MESSAGE_MODAL_TYPE_SUCCESS,
       nonce: -1,
+      noStreamApiSupport: false,
+      camera: 'off',
     }
   },
   computed: {
@@ -634,6 +637,12 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
+    startQrScanning() {
+      if (!this.noStreamApiSupport) this.camera = 'auto'
+      else if (this.$refs) {
+        this.$refs.captureQr.$el.click()
+      }
+    },
     setSelectedVerifierFromToAddress(toAddress) {
       if (toAddress.startsWith('0x')) {
         this.selectedVerifier = ETH
@@ -1118,24 +1127,52 @@ export default {
     onDecodeQr(result) {
       try {
         const qrUrl = new URL(result)
-        const qrParameters = new URLSearchParams(qrUrl.search)
-        if (qrParameters.has('to')) {
+        if (qrUrl.href.includes('ethereum:') && isAddress(qrUrl.pathname)) {
+          this.toAddress = qrUrl.pathname
           this.selectedVerifier = ETH
-          this.toAddress = qrParameters.get('to')
+        } else if (qrUrl.searchParams.has('to')) {
+          this.selectedVerifier = ETH
+          this.toAddress = qrUrl.searchParams.get('to')
         } else {
           this.toAddress = ''
           this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
         }
       } catch {
-        if (isAddress(result)) {
+        const parsedResult = result.replace('ethereum:', '')
+        if (isAddress(parsedResult)) {
           this.selectedVerifier = ETH
-          this.toAddress = result
+          this.toAddress = parsedResult
         } else {
           this.toAddress = ''
           this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
         }
       } finally {
+        this.camera = 'off'
         this.contactSelected = this.toAddress
+      }
+    },
+    async onInit(promise) {
+      try {
+        await promise
+      } catch (error) {
+        log.error(error)
+        this.noStreamApiSupport = true
+        this.$nextTick(() => {
+          this.startQrScanning()
+        })
+        if (error.name === 'NotAllowedError') {
+          log.error('ERROR: you need to grant camera access permisson')
+        } else if (error.name === 'NotFoundError') {
+          log.error('ERROR: no camera on this device')
+        } else if (error.name === 'NotSupportedError') {
+          log.error('ERROR: secure context required (HTTPS, localhost)')
+        } else if (error.name === 'NotReadableError') {
+          log.error('ERROR: is the camera already in use?')
+        } else if (error.name === 'OverconstrainedError') {
+          log.error('ERROR: installed cameras are not suitable')
+        } else if (error.name === 'StreamApiNotSupportedError') {
+          log.error('ERROR: Stream Api Not Supported')
+        }
       }
     },
     setRandomId() {
