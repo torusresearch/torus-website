@@ -5,7 +5,7 @@ import { ETH } from '../../utils/enums'
 import { paymentProviders } from '../../utils/utils'
 
 export default {
-  fetchRampNetworkQuote(context, payload) {
+  fetchRampNetworkQuote(_, payload) {
     // returns a promise
     return getQuote({
       digital_currency: (payload.selectedCryptoCurrency || ETH).toLowerCase(),

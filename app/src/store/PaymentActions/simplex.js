@@ -1,13 +1,10 @@
 import randomId from '@chaitanyapotti/random-id'
-import { BroadcastChannel } from 'broadcast-channel'
-import log from 'loglevel'
 
 import config from '../../config'
 import PopupHandler from '../../handlers/Popup/PopupHandler'
+import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import { postOrder, postQuote } from '../../plugins/simplex'
-import torus from '../../torus'
 import { SIMPLEX } from '../../utils/enums'
-import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   fetchSimplexQuote({ state }, payload) {
@@ -32,15 +29,15 @@ export default {
         const finalUrl = `${config.baseUrl}/redirect?preopenInstanceId=${preopenInstanceId}`
         const handledWindow = new PopupHandler({ url: finalUrl, target: 'form-target' })
         handledWindow.open()
-
         handledWindow.once('close', () => {
           reject(new Error('user closed simplex popup'))
         })
       }
+      const orderInstanceId = randomId()
       const instanceState = encodeURIComponent(
         window.btoa(
           JSON.stringify({
-            instanceId: torus.instanceId,
+            instanceId: orderInstanceId,
             provider: SIMPLEX,
           })
         )
@@ -91,6 +88,7 @@ export default {
           } = result.result
           return dispatch('postSimplexOrder', {
             preopenInstanceId,
+            orderInstanceId,
             path: payment_post_url,
             params: {
               payment_flow_type: 'wallet',
@@ -113,60 +111,34 @@ export default {
         .catch((error) => reject(error))
     })
   },
-  postSimplexOrder(context, { path, params, method = 'post', preopenInstanceId }) {
-    return new Promise((resolve, reject) => {
-      const form = document.createElement('form')
-      form.method = method
-      form.action = path
-      form.target = 'form-target'
-      for (const key in params) {
-        if (Object.prototype.hasOwnProperty.call(params, key)) {
-          const hiddenField = document.createElement('input')
-          hiddenField.type = 'hidden'
-          hiddenField.name = key
-          hiddenField.value = params[key]
-          form.append(hiddenField)
-        }
+  async postSimplexOrder(_, { path, params, method = 'post', preopenInstanceId, orderInstanceId }) {
+    const form = document.createElement('form')
+    form.method = method
+    form.action = path
+    form.target = 'form-target'
+    for (const key in params) {
+      if (Object.prototype.hasOwnProperty.call(params, key)) {
+        const hiddenField = document.createElement('input')
+        hiddenField.type = 'hidden'
+        hiddenField.name = key
+        hiddenField.value = params[key]
+        form.append(hiddenField)
       }
-      document.body.append(form)
-      // Handle communication with simplex window here
+    }
+    document.body.append(form)
+    // Handle communication with simplex window here
 
-      const simplexWindow = new PopupHandler({ url: 'about:blank', target: 'form-target', features: 'width=1200, height=700', preopenInstanceId })
-
-      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-
-      bc.addEventListener('message', (ev) => {
-        try {
-          const {
-            instanceParams: { provider },
-          } = ev.data || {}
-          if (ev.error && ev.error !== '') {
-            log.error(ev.error)
-            reject(new Error(ev.error))
-          } else if (provider === SIMPLEX) {
-            resolve({ success: true })
-          }
-        } catch (error) {
-          reject(error)
-        } finally {
-          bc.close()
-          simplexWindow.close()
-        }
-      })
-      simplexWindow
-        .open()
-        .then(() => {
-          log.info('submitting form')
-          setTimeout(() => {
-            form.submit()
-          }, 2000)
-        })
-        .catch((error) => log.error(error))
-
-      simplexWindow.once('close', () => {
-        bc.close()
-        reject(new Error('user closed simplex popup'))
-      })
+    const simplexWindow = new PopupWithBcHandler({
+      url: 'about:blank',
+      target: 'form-target',
+      features: 'width=1200, height=700',
+      preopenInstanceId,
+      channelName: `redirect_channel_${orderInstanceId}`,
     })
+    setTimeout(() => {
+      form.submit()
+    }, 2000)
+    await simplexWindow.handle()
+    return { success: true }
   },
 }

@@ -1,16 +1,14 @@
-import { BroadcastChannel } from 'broadcast-channel'
-import log from 'loglevel'
+import randomId from '@chaitanyapotti/random-id'
 
 import config from '../../config'
-import PopupHandler from '../../handlers/Popup/PopupHandler'
+import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import getQuote from '../../plugins/wyre'
-import torus from '../../torus'
 import { WYRE } from '../../utils/enums'
-import { broadcastChannelOptions } from '../../utils/utils'
 
 const Wyre = {
   fetchWyreOrder({ state, dispatch }, { currentOrder, preopenInstanceId, selectedAddress }) {
-    const instanceState = encodeURIComponent(window.btoa(JSON.stringify({ instanceId: torus.instanceId, provider: WYRE })))
+    const orderInstanceId = randomId()
+    const instanceState = encodeURIComponent(window.btoa(JSON.stringify({ instanceId: orderInstanceId, provider: WYRE })))
     const parameters = {
       accountId: config.wyreAccountId,
       dest: selectedAddress ? `ethereum:${selectedAddress}` : undefined,
@@ -18,10 +16,10 @@ const Wyre = {
       redirectUrl: `${config.redirect_uri}?state=${instanceState}`,
       referenceId: selectedAddress || state.selectedAddress,
       sourceAmount: currentOrder.sourceAmount || undefined,
-      failureRedirectUrl: `${config.redirect_uri}?state=${instanceState}`,
+      failureRedirectUrl: `${config.redirect_uri}?state=${instanceState}&error=payment_failed`,
     }
 
-    return dispatch('postWyreOrder', { params: parameters, path: config.wyreHost, preopenInstanceId })
+    return dispatch('postWyreOrder', { params: parameters, path: config.wyreHost, preopenInstanceId, orderInstanceId })
   },
   fetchWyreQuote({ state }, payload) {
     // returns a promise
@@ -34,38 +32,12 @@ const Wyre = {
       { Authorization: `Bearer ${state.jwtToken[state.selectedAddress]}` }
     )
   },
-  postWyreOrder(context, { path, params, preopenInstanceId }) {
-    return new Promise((resolve, reject) => {
-      const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(params)))
-      const finalUrl = `${path}?${parameterString.toString()}`
-      const wyreWindow = new PopupHandler({ preopenInstanceId, url: finalUrl })
-
-      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-      bc.addEventListener('message', (ev) => {
-        try {
-          const {
-            instanceParams: { provider },
-          } = ev.data || {}
-          if (ev.error && ev.error !== '') {
-            log.error(ev.error)
-            reject(new Error(ev.error))
-          } else if (provider === WYRE) {
-            resolve({ success: true })
-          }
-        } catch (error) {
-          reject(error)
-        } finally {
-          bc.close()
-          wyreWindow.close()
-        }
-      })
-
-      wyreWindow.open()
-      wyreWindow.once('close', () => {
-        bc.close()
-        reject(new Error('user closed wyre popup'))
-      })
-    })
+  async postWyreOrder(_, { path, params, preopenInstanceId, orderInstanceId }) {
+    const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(params)))
+    const finalUrl = `${path}?${parameterString.toString()}`
+    const wyreWindow = new PopupWithBcHandler({ preopenInstanceId, url: finalUrl, channelName: `redirect_channel_${orderInstanceId}` })
+    await wyreWindow.handle()
+    return { success: true }
   },
 }
 

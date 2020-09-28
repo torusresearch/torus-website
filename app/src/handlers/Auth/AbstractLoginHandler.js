@@ -1,9 +1,6 @@
 import randomId from '@chaitanyapotti/random-id'
-import { BroadcastChannel } from 'broadcast-channel'
-import log from 'loglevel'
 
-import { broadcastChannelOptions } from '../../utils/utils'
-import PopupHandler from '../Popup/PopupHandler'
+import PopupWithBcHandler from '../Popup/PopupWithBcHandler'
 
 class AbstractLoginHandler {
   nonce = randomId()
@@ -29,44 +26,21 @@ class AbstractLoginHandler {
     )
   }
 
-  handleLoginWindow() {
-    return new Promise((resolve, reject) => {
-      const bc = new BroadcastChannel(`redirect_channel_${this.nonce}`, broadcastChannelOptions)
-      const handleData = async (ev) => {
-        try {
-          const { error, data } = ev
-          log.info(ev, 'event')
-          const {
-            instanceParams: { verifier: returnedVerifier },
-            hashParams: { access_token: accessToken, id_token: idToken },
-          } = data || {}
-          if (error) {
-            log.error(ev.error)
-            reject(new Error(error))
-            return
-          }
-          if (ev.data && returnedVerifier === this.verifier) {
-            await bc.postMessage({ success: true })
-            resolve({ accessToken, idToken: idToken || '' })
-          }
-        } catch (error) {
-          log.error(error)
-          reject(error)
-        }
-      }
-      const verifierWindow = new PopupHandler({ url: this.finalURL, preopenInstanceId: this.preopenInstanceId })
-      bc.addEventListener('message', async (ev) => {
-        await handleData(ev)
-        bc.close()
-        verifierWindow.close()
-      })
-
-      verifierWindow.open()
-      verifierWindow.once('close', () => {
-        if (bc) bc.close()
-        reject(new Error('user closed popup'))
-      })
+  async handleLoginWindow() {
+    const channelName = `redirect_channel_${this.nonce}`
+    const verifierWindow = new PopupWithBcHandler({ channelName, url: this.finalURL, preopenInstanceId: this.preopenInstanceId })
+    const localVerifier = this.verifier
+    const result = await verifierWindow.handle(function successHandler(data) {
+      const {
+        instanceParams: { verifier: returnedVerifier },
+      } = data
+      if (returnedVerifier === localVerifier) return this.bc.postMessage({ success: true })
+      return undefined
     })
+    const {
+      hashParams: { access_token: accessToken, id_token: idToken },
+    } = result
+    return { accessToken, idToken: idToken || '' }
   }
 }
 
