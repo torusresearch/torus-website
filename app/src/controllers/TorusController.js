@@ -148,7 +148,7 @@ export default class TorusController extends EventEmitter {
       getGasPrice: this.getGasPrice.bind(this),
       storeProps: this.opts.storeProps,
     })
-    this.txController.on('newUnapprovedTx', (txMeta) => options.showUnapprovedTx(txMeta))
+    this.txController.on('newUnapprovedTx', (txMeta, request) => options.showUnapprovedTx(txMeta, request))
 
     this.txController.on('tx:status-update', (txId, status) => {
       if (status === 'confirmed' || status === 'failed') {
@@ -430,7 +430,7 @@ export default class TorusController extends EventEmitter {
     const messageId = createRandomId()
     const promise = this.messageManager.addUnapprovedMessageAsync(messageParameters, request, messageId)
     this.sendUpdate()
-    this.opts.showUnconfirmedMessage(messageId)
+    this.opts.showUnconfirmedMessage(messageId, request)
     return promise
   }
 
@@ -489,7 +489,7 @@ export default class TorusController extends EventEmitter {
     const messageId = createRandomId()
     const promise = this.personalMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageId)
     this.sendUpdate()
-    this.opts.showUnconfirmedMessage(messageId)
+    this.opts.showUnconfirmedMessage(messageId, request)
     return promise
   }
 
@@ -543,7 +543,7 @@ export default class TorusController extends EventEmitter {
     const messageId = createRandomId()
     const promise = this.typedMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageVersion, messageId)
     this.sendUpdate()
-    this.opts.showUnconfirmedMessage(messageId)
+    this.opts.showUnconfirmedMessage(messageId, request)
     return promise
   }
 
