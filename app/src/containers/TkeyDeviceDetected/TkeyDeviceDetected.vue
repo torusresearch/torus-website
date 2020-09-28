@@ -103,6 +103,7 @@
 
 <script>
 import bowser from 'bowser'
+import { BroadcastChannel } from 'broadcast-channel'
 import { mapActions, mapState } from 'vuex'
 
 import { broadcastChannelOptions } from '../../utils/utils'
@@ -172,8 +173,10 @@ export default {
       if (urlInstance && urlInstance !== '') {
         const bc = new BroadcastChannel(`tkey_channel_${urlInstance}`, broadcastChannelOptions)
         await bc.postMessage({
-          eventType: 'set_store_device_flow',
-          details,
+          data: {
+            eventType: 'set_store_device_flow',
+            details,
+          },
         })
         bc.close()
       } else this.setStoreDeviceFlow(details)
