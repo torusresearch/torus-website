@@ -3,6 +3,7 @@ import log from 'loglevel'
 
 import config from '../config'
 import PopupHandler from '../handlers/Popup/PopupHandler'
+import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import router from '../router'
 import torus from '../torus'
 import { ACCOUNT_TYPE, THRESHOLD_KEY_INPUT_ROUTE_MAPPING, THRESHOLD_KEY_QUESTION_INPUT, THRESHOLD_KEY_STORE_DEVICE_FLOW } from '../utils/enums'
@@ -61,19 +62,11 @@ export default {
   downloadShare(_, payload) {
     return thresholdKeyController.downloadShare(payload)
   },
-  showThresholdKeyUi({ dispatch }, payload) {
+  async showThresholdKeyUi({ dispatch }, payload) {
     const { type, data: { id } = {} } = payload
     log.info(id, type)
     if (isMain) router.push({ name: THRESHOLD_KEY_INPUT_ROUTE_MAPPING[type].name, query: { ...router.currentRoute.query, id } })
     else {
-      const bc = new BroadcastChannel(`tkey_channel_${id}`, broadcastChannelOptions)
-      const finalUrl = `${baseRoute}wallet/tkey/${THRESHOLD_KEY_INPUT_ROUTE_MAPPING[type].path}?integrity=true&instanceId=${id}&id=${id}`
-      const tKeyInputWindow = new PopupHandler({
-        url: finalUrl,
-        target: '_blank',
-        features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500',
-      })
-
       const handleDeny = () => {
         log.info('Tkey input denied')
         if (type === THRESHOLD_KEY_QUESTION_INPUT) {
@@ -82,12 +75,9 @@ export default {
           dispatch('setStoreDeviceFlow', { id, response: '', rejected: true })
         }
       }
-      const handleSuccess = () => {
-        log.info('tkey input success')
-      }
-
-      bc.addEventListener('message', async (ev) => {
-        const { eventType = '', details } = ev.data
+      const handleSuccess = (data) => {
+        log.info('tkey input success', data)
+        const { eventType = '', details } = data
         if (eventType === 'device_login_password') {
           const { id: keyId, password, rejected } = details
           dispatch('setSecurityQuestionShareFromUserInput', { id: keyId, password, rejected })
@@ -95,14 +85,21 @@ export default {
           const { id: keyId, response, rejected } = details
           dispatch('setStoreDeviceFlow', { id: keyId, response, rejected })
         }
-
-        tKeyInputWindow.close()
-      })
-
-      tKeyInputWindow.open()
-      tKeyInputWindow.once('close', () => {
+      }
+      try {
+        const finalUrl = `${baseRoute}wallet/tkey/${THRESHOLD_KEY_INPUT_ROUTE_MAPPING[type].path}?integrity=true&instanceId=${id}&id=${id}`
+        const tKeyInputWindow = new PopupWithBcHandler({
+          url: finalUrl,
+          target: '_blank',
+          features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500',
+          channelName: `tkey_channel_${id}`,
+        })
+        const result = await tKeyInputWindow.handle()
+        handleSuccess(result)
+      } catch (error) {
+        log.error(error)
         handleDeny()
-      })
+      }
     }
   },
   setSecurityQuestionShareFromUserInput(_, payload) {

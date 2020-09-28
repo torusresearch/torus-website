@@ -125,12 +125,7 @@ export default {
           details,
         })
         bc.close()
-      }
-
-      this.setSecurityQuestionShareFromUserInput({
-        id: this.$route.query.id,
-        rejected: true,
-      })
+      } else this.setSecurityQuestionShareFromUserInput(details)
     },
   },
 }

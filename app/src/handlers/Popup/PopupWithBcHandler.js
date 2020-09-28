@@ -22,7 +22,7 @@ class PopupWithBcHandler extends PopupHandler {
             reject(new Error(error))
             return
           }
-          await successExtraFn.call(this, data)
+          if (successExtraFn) await successExtraFn.call(this, data)
           resolve(data)
         } catch (error) {
           reject(error)

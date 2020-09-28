@@ -176,8 +176,7 @@ export default {
           details,
         })
         bc.close()
-      }
-      this.setStoreDeviceFlow(details)
+      } else this.setStoreDeviceFlow(details)
     },
   },
 }
