@@ -22,7 +22,8 @@
           <v-btn icon small color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="() => $refs && $refs.captureQr.$el.click()">
             <v-icon small>$vuetify.icons.walletconnect</v-icon>
           </v-btn>
-          <QrcodeCapture ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
+          <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
+          <v-dialog v-model="dialog" width="375">{{ qrErrorMsg }}</v-dialog>
         </v-list-item-icon>
       </v-list-item>
     </v-list>
@@ -120,7 +121,8 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import { QrcodeCapture } from 'vue-qrcode-reader'
+import log from 'loglevel'
+import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import { DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
@@ -136,7 +138,7 @@ export default {
     ExportQrCode,
     AccountImport,
     LanguageSelector,
-    QrcodeCapture,
+    QrcodeStream,
   },
   props: {
     headerItems: {
@@ -148,6 +150,8 @@ export default {
     return {
       accountImportDialog: false,
       DISCORD,
+      camera: 'off',
+      qrErrorMsg: '',
     }
   },
   computed: {
@@ -216,8 +220,39 @@ export default {
         selectedAddressChannel.close()
       }
     },
+
     onDecodeQr(result) {
-      this.setWCConnectorURI(result)
+      try {
+        this.setWCConnectorURI(result)
+      } finally {
+        this.camera = 'off'
+      }
+    },
+    async onInit(promise) {
+      try {
+        await promise
+      } catch (error) {
+        log.error(error)
+        if (error.name === 'NotAllowedError') {
+          this.qrErrorMsg = 'ERROR: you need to grant camera access permisson'
+          log.error('ERROR: you need to grant camera access permisson')
+        } else if (error.name === 'NotFoundError') {
+          this.qrErrorMsg = 'ERROR: no camera on this device'
+          log.error('ERROR: no camera on this device')
+        } else if (error.name === 'NotSupportedError') {
+          this.qrErrorMsg = 'ERROR: secure context required (HTTPS, localhost)'
+          log.error('ERROR: secure context required (HTTPS, localhost)')
+        } else if (error.name === 'NotReadableError') {
+          this.qrErrorMsg = 'ERROR: is the camera already in use?'
+          log.error('ERROR: is the camera already in use?')
+        } else if (error.name === 'OverconstrainedError') {
+          this.qrErrorMsg = 'ERROR: installed cameras are not suitable'
+          log.error('ERROR: installed cameras are not suitable')
+        } else if (error.name === 'StreamApiNotSupportedError') {
+          this.qrErrorMsg = 'ERROR: Stream Api Not Supported'
+          log.error('ERROR: Stream Api Not Supported')
+        }
+      }
     },
   },
 }
