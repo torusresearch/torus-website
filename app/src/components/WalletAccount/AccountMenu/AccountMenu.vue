@@ -262,6 +262,10 @@ export default {
         }
       }
     },
+    closeQRScanner() {
+      this.camera = 'off'
+      this.showQrScanner = false
+    },
   },
 }
 </script>

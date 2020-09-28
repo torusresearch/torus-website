@@ -1177,6 +1177,10 @@ export default {
         }
       }
     },
+    closeQRScanner() {
+      this.camera = 'off'
+      this.showQrScanner = false
+    },
     setRandomId() {
       // patch fix because vuetify stopped passing attributes to underlying component
       if (this.$refs.contactSelected && this.$refs.contactSelected.$refs && this.$refs.contactSelected.$refs.input) {
