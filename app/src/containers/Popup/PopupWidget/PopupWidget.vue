@@ -2,26 +2,29 @@
   <div class="torus-widget" :class="embedState.buttonPosition">
     <v-dialog v-if="loggedIn" v-model="activeWidget" max-width="375" @click:outside="showWidget">
       <div class="torus-widget__panel pa-4" :class="[embedState.buttonPosition, $vuetify.theme.isDark ? 'isDark' : '']">
-        <div class="d-flex torus-widget__user-details" :class="{ isThreshold }">
-          <v-icon v-if="isThreshold" small class="ml-3">$vuetify.icons.wallet</v-icon>
-          <div v-else class="avatar-container">
+        <div class="d-flex torus-widget__user-details">
+          <div class="avatar-container">
             <v-avatar size="32">
+              <div v-if="isThreshold" class="avatar-two-factor">
+                <span class="caption font-weight-bold">2FA</span>
+              </div>
               <img
+                v-else
                 :src="userInfo.profileImage"
                 :alt="`${userInfo.verifierId} Avatar`"
                 onerror="if (!this.src.includes('/images/person.jpeg')) this.src = '/images/person.jpeg';"
               />
             </v-avatar>
           </div>
-          <div class="details-container d-flex flex-column pr-2" :class="[isThreshold ? 'ml-0' : 'ml-2']">
+          <div class="details-container d-flex flex-column pr-2 ml-2">
             <div class="d-flex align-center">
-              <v-icon v-if="!isThreshold" size="12" class="details-container__icon torusGray1--text">{{ `$vuetify.icons.${userIcon}` }}</v-icon>
+              <v-icon size="12" class="details-container__icon torusGray1--text">{{ `$vuetify.icons.${userIcon}` }}</v-icon>
               <div class="details-container__text ml-2 font-weight-bold" :title="userEmail">{{ userEmail }}</div>
               <!-- Will add when dropdown available -->
               <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->
             </div>
             <div class="d-flex align-center">
-              <img v-if="!isThreshold" class="details-container__icon" src="../../../assets/img/icons/address-wallet.svg" alt="Address Icon" />
+              <img class="details-container__icon" src="../../../assets/img/icons/address-wallet.svg" alt="Address Icon" />
               <div class="details-container__text ml-2">
                 <ShowToolTip :address="fullAddress">
                   {{ address }}
@@ -232,7 +235,7 @@ export default {
       }
     },
     userEmail() {
-      return this.isThreshold ? this.t('tkeySettings.twoFaKey') : getUserEmail(this.userInfo)
+      return this.isThreshold ? this.t('tkeySettings.twoFaWallet') : getUserEmail(this.userInfo)
     },
     userIcon() {
       return this.isThreshold ? 'wallet' : this.userInfo.typeOfLogin.toLowerCase()

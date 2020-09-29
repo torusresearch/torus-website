@@ -100,16 +100,21 @@
     margin-left: 20px;
     padding: 10px 0;
 
-    &.isThreshold {
-      margin-left: 0;
-    }
-
     .avatar-container {
       padding: 2px;
       border: 2px solid #b3c0ce;
       border-radius: 50%;
       background-color: #ffffff;
       margin-left: -20px;
+    }
+    
+    .avatar-two-factor {
+      background-color: var(--v-torusBrand4-base);
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+      color: #5C6C7F;
+      padding: 5px 0;
     }
   }
 
