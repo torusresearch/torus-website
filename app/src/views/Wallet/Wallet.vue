@@ -167,6 +167,7 @@ export default {
       this.wcConnector.on('session_request', (err, payload) => {
         log.info('SESSION REQUEST', err, payload)
         this.wcConnector.approveSession({ chainId: this.networkType.chainId, accounts: [this.selectedAddress] })
+        this.setWCConnectorSession(JSON.parse(JSON.stringify(this.wcConnector.session)))
       })
       this.wcConnector.on('session_update', (err, payload) => {
         log.info('SESSION UPDATE', err, payload)
@@ -189,7 +190,8 @@ export default {
         })
       })
       this.wcConnector.on('connect', (err, payload) => {
-        log.info('CONNECT', err, payload)
+        log.info('SESSION UPDATE', err, payload)
+        this.setWCConnectorSession(JSON.parse(JSON.stringify(this.wcConnector.session)))
       })
       this.wcConnector.on('disconnect', (err, payload) => {
         log.info('DISCONNECT', err, payload)
