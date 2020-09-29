@@ -29,7 +29,7 @@
         <v-list-item-icon>
           <div class="mr-5">
             <v-btn icon color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="toggleWC">
-              <v-icon v-if="wcConnectorSession && wcConnectorSession.connected" size="30">$vuetify.icons.disconnect</v-icon>
+              <v-icon v-if="wcConnectorSession && wcConnectorSession.connected" size="20">$vuetify.icons.disconnect</v-icon>
               <v-icon v-else size="45">$vuetify.icons.walletconnect</v-icon>
             </v-btn>
           </div>

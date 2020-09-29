@@ -144,7 +144,7 @@ export default {
   },
   methods: {
     ...mapActions(['setUserBadge']),
-    ...mapMutations(['setWCConnectorSession']),
+    ...mapMutations(['setWCConnectorSession', 'setWCConnectorURI']),
     closeBadge(data) {
       this.setUserBadge(data.type)
       if (data.returnHome && !['walletHomeMain', 'walletHome'].includes(this.$route.name)) this.$router.push({ name: 'walletHome' })
