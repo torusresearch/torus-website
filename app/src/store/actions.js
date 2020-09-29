@@ -1,4 +1,4 @@
-import { BroadcastChannel } from 'broadcast-channel'
+import randomId from '@chaitanyapotti/random-id'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
 // import jwtDecode from 'jwt-decode'
@@ -7,6 +7,7 @@ import log from 'loglevel'
 import config from '../config'
 import { HandlerFactory as createHandler } from '../handlers/Auth'
 import PopupHandler from '../handlers/Popup/PopupHandler'
+import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../plugins/vuetify'
 import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
@@ -21,7 +22,7 @@ import {
   USER_INFO_REQUEST_REJECTED,
 } from '../utils/enums'
 import { remove } from '../utils/httpHelpers'
-import { broadcastChannelOptions, fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
+import { fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
 import {
   accountTrackerHandler,
   assetControllerHandler,
@@ -136,7 +137,7 @@ export default {
       log.error('etherscan balance fetch failed')
     }
   },
-  showProviderChangePopup({ dispatch, state }, payload) {
+  async showProviderChangePopup({ dispatch, state }, payload) {
     const { override, preopenInstanceId } = payload
 
     if (override) {
@@ -145,61 +146,35 @@ export default {
       }, 500)
       return
     }
-    const bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
-    const finalUrl = `${baseRoute}providerchange?integrity=true&instanceId=${torus.instanceId}`
-    const providerChangeWindow = new PopupHandler({
-      url: finalUrl,
-      preopenInstanceId,
-      target: '_blank',
-      features: FEATURES_POPUP_SMALL,
-    })
-    bc.addEventListener('message', async (ev) => {
-      const { type = '', approve = false } = ev.data
-      if (type === 'popup-loaded') {
-        await bc.postMessage({
-          data: {
-            origin: getIFrameOriginObject(),
-            payload,
-            currentNetwork: state.networkType,
-            whiteLabel: state.whiteLabel,
-          },
-        })
-      } else if (type === 'provider-change-result') {
-        try {
-          log.info('Provider change', approve)
-          if (approve) {
-            await dispatch('setProviderType', payload)
-            handleProviderChangeSuccess()
-          } else {
-            handleProviderChangeDeny('user denied provider change request')
-          }
-        } catch {
-          handleProviderChangeDeny('Internal error occured')
-        } finally {
-          bc.close()
-          providerChangeWindow.close()
-        }
+    try {
+      const windowId = randomId()
+      const channelName = `torus_provider_change_channel_${windowId}`
+      const finalUrl = `${baseRoute}providerchange?integrity=true&instanceId=${windowId}`
+      const providerChangeWindow = new PopupWithBcHandler({
+        url: finalUrl,
+        preopenInstanceId,
+        target: '_blank',
+        features: FEATURES_POPUP_SMALL,
+        channelName,
+      })
+      const result = await providerChangeWindow.handleWithHandshake({
+        payload: { origin: getIFrameOriginObject(), payload, currentNetwork: state.networkType, whiteLabel: state.whiteLabel },
+      })
+      const { approve = false } = result
+      if (approve) {
+        await dispatch('setProviderType', payload)
+        handleProviderChangeSuccess()
+      } else {
+        handleProviderChangeDeny('user denied provider change request')
       }
-    })
-
-    providerChangeWindow.open()
-    providerChangeWindow.once('close', () => {
-      bc.close()
+    } catch (error) {
+      log.error(error)
       handleProviderChangeDeny('user denied provider change request')
-    })
+    }
   },
-  showUserInfoRequestPopup({ dispatch, state }, payload) {
+  async showUserInfoRequestPopup({ dispatch, state }, payload) {
     const { preopenInstanceId } = payload
     log.info(preopenInstanceId, 'userinfo')
-    const bc = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`, broadcastChannelOptions)
-    const finalUrl = `${baseRoute}userinforequest?integrity=true&instanceId=${torus.instanceId}`
-    const userInfoRequestWindow = new PopupHandler({
-      url: finalUrl,
-      preopenInstanceId,
-      target: '_blank',
-      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=760,width=500',
-    })
-
     const handleDeny = () => {
       log.info('User Info Request denied')
       dispatch('updateUserInfoAccess', { approved: false })
@@ -212,35 +187,34 @@ export default {
       delete returnObject.verifierParams
       userInfoStream.write({ name: 'user_info_response', data: { payload: returnObject, approved: true } })
     }
-
-    bc.addEventListener('message', async (ev) => {
-      const { type = '', approve = false } = ev.data
-      if (type === 'popup-loaded') {
-        await bc.postMessage({
-          data: {
-            origin: getIFrameOriginObject(),
-            payload: { ...payload, typeOfLogin: state.userInfo.typeOfLogin },
-            whiteLabel: state.whiteLabel,
-          },
-        })
-      } else if (type === 'user-info-request-result') {
-        try {
-          if (approve) handleSuccess()
-          else handleDeny()
-        } catch (error) {
-          log.error(error)
-          handleDeny()
-        } finally {
-          bc.close()
-          userInfoRequestWindow.close()
-        }
+    try {
+      const windowId = randomId()
+      const channelName = `user_info_request_channel_${windowId}`
+      const finalUrl = `${baseRoute}userinforequest?integrity=true&instanceId=${windowId}`
+      const userInfoRequestWindow = new PopupWithBcHandler({
+        url: finalUrl,
+        preopenInstanceId,
+        target: '_blank',
+        features: FEATURES_POPUP_SMALL,
+        channelName,
+      })
+      const result = await userInfoRequestWindow.handleWithHandshake({
+        payload: {
+          origin: getIFrameOriginObject(),
+          payload: { ...payload, typeOfLogin: state.userInfo.typeOfLogin },
+          whiteLabel: state.whiteLabel,
+        },
+      })
+      const { approve = false } = result
+      if (approve) {
+        handleSuccess()
+      } else {
+        handleDeny()
       }
-    })
-
-    userInfoRequestWindow.open()
-    userInfoRequestWindow.once('close', () => {
+    } catch (error) {
+      log.error(error)
       handleDeny()
-    })
+    }
   },
   showWalletPopup(context, payload) {
     const finalUrl = `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`

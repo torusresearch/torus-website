@@ -6,10 +6,10 @@ import VuexPersistence from 'vuex-persist'
 import { fromWei, hexToUtf8 } from 'web3-utils'
 
 import config from '../config'
-import ConfirmHandler from '../handlers/Popup/ConfirmHandler'
+import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import torus from '../torus'
-import { TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
-import { storageAvailable } from '../utils/utils'
+import { FEATURES_POPUP_SMALL, TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
+import { getIFrameOriginObject, storageAvailable } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
 import mutations from './mutations'
@@ -17,6 +17,8 @@ import paymentActions from './PaymentActions'
 import preferencesActions from './preferencesActions'
 import defaultState from './state'
 import tKeyActions from './tKeyActions'
+
+const { baseRoute } = config
 
 Vue.use(Vuex)
 
@@ -83,43 +85,65 @@ const VuexStore = new Vuex.Store({
     ...paymentActions,
     ...preferencesActions,
     ...tKeyActions,
-    async showPopup({ state }, payload) {
+    async showPopup({ state }, { payload, preopenInstanceId }) {
       const isTx = payload && typeof payload === 'object'
-      const confirmHandler = new ConfirmHandler(isTx ? payload.id : payload)
-      confirmHandler.isTx = isTx
-      confirmHandler.selectedCurrency = state.selectedCurrency
-      confirmHandler.tokenRates = state.tokenRates
-      confirmHandler.jwtToken = state.jwtToken[state.selectedAddress]
-      confirmHandler.currencyData = state.currencyData
-      confirmHandler.networkType = state.networkType
-      confirmHandler.whiteLabel = state.whiteLabel
-      confirmHandler.selectedAddress = state.selectedAddress
+      const windowId = isTx ? payload.id : payload
+      const channelName = `torus_channel_${windowId}`
+      const finalUrl = `${baseRoute}confirm?instanceId=${windowId}&integrity=true&id=${windowId}`
+      const confirmWindow = new PopupWithBcHandler({
+        url: finalUrl,
+        target: '_blank',
+        features: FEATURES_POPUP_SMALL,
+        channelName,
+        preopenInstanceId,
+      })
+      const popupPayload = {
+        id: windowId,
+        origin: getIFrameOriginObject(),
+        selectedCurrency: state.selectedCurrency,
+        tokenRates: state.tokenRates,
+        jwtToken: state.jwtToken[state.selectedAddress],
+        currencyData: state.currencyData,
+        network: state.networkType,
+        whiteLabel: state.whiteLabel,
+        selectedAddress: state.selectedAddress,
+      }
       if (isTx) {
         const txParameters = payload
         txParameters.userInfo = state.userInfo
         log.info(txParameters, 'txParams')
-        confirmHandler.txParams = txParameters
-        confirmHandler.txType = TX_TRANSACTION
+        popupPayload.txParams = txParameters
+        popupPayload.type = TX_TRANSACTION
       } else {
         const { msgParams, type } = getLatestMessageParameters(payload)
-        confirmHandler.msgParams = msgParams
-        confirmHandler.txType = type
+        popupPayload.msgParams = { msgParams, id: windowId }
+        popupPayload.type = type
       }
       let weiBalance = 0
       try {
         weiBalance = await getBalance(state, state.selectedAddress)
       } catch (error) {
         log.error(error, 'Unable to fetch balance within 5 secs')
-        handleDeny(confirmHandler.id, confirmHandler.txType)
+        handleDeny(windowId, popupPayload.type)
         return
       }
-      confirmHandler.balance = fromWei(weiBalance.toString())
+      popupPayload.balance = fromWei(weiBalance.toString())
+
       if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
-        handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
-      } else if (confirmHandler.txType === TX_MESSAGE && isTorusSignedMessage(confirmHandler.msgParams)) {
-        handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
+        handleConfirm({ data: { txType: popupPayload.type, id: popupPayload.id } })
+      } else if (popupPayload.type === TX_MESSAGE && isTorusSignedMessage(popupPayload.msgParams)) {
+        handleConfirm({ data: { txType: popupPayload.type, id: popupPayload.id } })
       } else {
-        confirmHandler.open(handleConfirm, handleDeny)
+        try {
+          const result = await confirmWindow.handleWithHandshake({
+            payload: popupPayload,
+          })
+          const { approve = false } = result
+          if (approve) handleConfirm({ data: result })
+          else handleDeny(popupPayload.id, popupPayload.type)
+        } catch {
+          handleDeny(popupPayload.id, popupPayload.type)
+        }
       }
     },
   },

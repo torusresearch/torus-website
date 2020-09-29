@@ -282,6 +282,8 @@ import {
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
+  POPUP_LOADED,
+  POPUP_RESULT,
   SEND_ETHER_ACTION_KEY,
   TOKEN_METHOD_APPROVE,
   TOKEN_METHOD_TRANSFER,
@@ -487,7 +489,7 @@ export default {
     this.channel = `torus_channel_${instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
-      if (ev.name !== 'send-params') return
+      log.info(ev, 'event')
       const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, whiteLabel, currencyData, network } = ev.data || {}
 
       this.$store.commit('setWhiteLabel', whiteLabel)
@@ -609,8 +611,9 @@ export default {
         }
       }
       this.type = type // type of tx
+      bc.close()
     })
-    bc.postMessage({ name: 'popup-loaded', data: { id: queryParameterId } })
+    bc.postMessage({ data: { type: POPUP_LOADED, id: queryParameterId } })
   },
   methods: {
     slicedAddress(user) {
@@ -623,14 +626,13 @@ export default {
       const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
 
       await bc.postMessage({
-        name: 'tx-result',
-        data: { type: 'confirm-transaction', gasPrice: gasPriceHex, gas: gasHex, id: this.id, txType: this.type, customNonceValue },
+        data: { type: POPUP_RESULT, gasPrice: gasPriceHex, gas: gasHex, id: this.id, txType: this.type, customNonceValue, approve: true },
       })
       bc.close()
     },
     async triggerDeny() {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-      await bc.postMessage({ name: 'tx-result', data: { type: 'deny-transaction', id: this.id, txType: this.type } })
+      await bc.postMessage({ data: { type: POPUP_RESULT, id: this.id, txType: this.type, approve: false } })
       bc.close()
     },
     topUp() {
