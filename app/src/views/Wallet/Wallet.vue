@@ -132,7 +132,9 @@ export default {
       }
     },
     wcConnectorURI(newValue, oldValue) {
-      if (newValue !== oldValue) {
+      if (newValue === '') {
+        this.wcConnector.killSession()
+      } else if (newValue !== oldValue) {
         this.initWalletConnect(newValue)
       }
     },

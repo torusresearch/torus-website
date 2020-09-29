@@ -27,9 +27,12 @@
           </div>
         </v-list-item-title>
         <v-list-item-icon>
-          <v-btn icon color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="startQrScanning">
-            <v-icon size="35">$vuetify.icons.walletconnect</v-icon>
-          </v-btn>
+          <div class="mr-5">
+            <v-btn icon color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="toggleWC">
+              <v-icon v-if="wcConnectorSession && wcConnectorSession.connected" size="30">$vuetify.icons.disconnect</v-icon>
+              <v-icon v-else size="45">$vuetify.icons.walletconnect</v-icon>
+            </v-btn>
+          </div>
         </v-list-item-icon>
       </v-list-item>
     </v-list>
@@ -162,7 +165,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userInfo', 'selectedAddress', 'selectedCurrency', 'currencyData']),
+    ...mapState(['userInfo', 'selectedAddress', 'selectedCurrency', 'currencyData', 'wcConnectorSession']),
     ...mapGetters({
       wallets: 'walletBalances',
     }),
@@ -227,9 +230,13 @@ export default {
         selectedAddressChannel.close()
       }
     },
-    startQrScanning() {
-      this.camera = 'auto'
-      this.showQrScanner = true
+    toggleWC() {
+      if (this.wcConnectorSession && this.wcConnectorSession.connected) {
+        this.setWCConnectorURI('')
+      } else {
+        this.camera = 'auto'
+        this.showQrScanner = true
+      }
     },
     onDecodeQr(result) {
       try {
