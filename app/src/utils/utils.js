@@ -304,7 +304,12 @@ export async function isSmartContractAddress(address, web3) {
 
 export function getEtherScanHashLink(txHash, network) {
   if (!ETHERSCAN_SUPPORTED_NETWORKS.has(network)) return ''
-  return network === 'mainnet' ? `https://etherscan.io/tx/${txHash}` : `https://${network}.etherscan.io/tx/${txHash}`
+  return network === MAINNET ? `https://etherscan.io/tx/${txHash}` : `https://${network}.etherscan.io/tx/${txHash}`
+}
+
+export function getEtherScanAddressLink(address, network) {
+  if (!ETHERSCAN_SUPPORTED_NETWORKS.has(network)) return ''
+  return network === MAINNET ? `https://etherscan.io/address/${address}` : `https://${network}.etherscan.io/address/${address}`
 }
 
 export const statusObject = {

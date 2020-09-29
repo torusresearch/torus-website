@@ -58,6 +58,11 @@
                 <v-icon class="torusFont2--text" x-small v-text="'$vuetify.icons.qr'" />
               </ExportQrCode>
             </span>
+            <span>
+              <a class="etherscan-lnk" color="torusBrand1" :href="etherscanAddressLink(acc.address)" target="_blank" rel="noreferrer noopener">
+                <v-icon class="torusFont2--text" x-small v-text="'$vuetify.icons.qr'" />
+              </a>
+            </span>
           </div>
         </div>
       </div>
@@ -117,7 +122,7 @@ import { BroadcastChannel } from 'broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
-import { addressSlicer, broadcastChannelOptions, getUserEmail } from '../../../utils/utils'
+import { addressSlicer, broadcastChannelOptions, getEtherScanAddressLink, getUserEmail } from '../../../utils/utils'
 import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import ShowToolTip from '../../helpers/ShowToolTip'
@@ -143,7 +148,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userInfo', 'selectedAddress', 'selectedCurrency', 'currencyData']),
+    ...mapState(['userInfo', 'selectedAddress', 'selectedCurrency', 'currencyData', 'networkType']),
     ...mapGetters({
       wallets: 'walletBalances',
     }),
@@ -183,6 +188,9 @@ export default {
   },
   methods: {
     ...mapActions(['logOut', 'updateSelectedAddress']),
+    etherscanAddressLink(address) {
+      return getEtherScanAddressLink(address, this.networkType.host)
+    },
     async logout() {
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
       if (urlInstance && urlInstance !== '') {
