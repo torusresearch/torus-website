@@ -171,7 +171,7 @@ class TransactionController extends EventEmitter {
 
   async newUnapprovedTransaction(txParameters, options = {}) {
     log.debug(`MetaMaskController newUnapprovedTransaction ${JSON.stringify(txParameters)}`)
-    const initialTxMeta = await this.addUnapprovedTransaction(txParameters, options.origin)
+    const initialTxMeta = await this.addUnapprovedTransaction(txParameters, options)
 
     // listen for tx completion (success, fail)
     return new Promise((resolve, reject) => {
@@ -197,7 +197,7 @@ class TransactionController extends EventEmitter {
   @returns {txMeta}
   */
 
-  async addUnapprovedTransaction(txParameters, origin) {
+  async addUnapprovedTransaction(txParameters, request) {
     // validate
     log.debug(`MetaMaskController addUnapprovedTransaction ${JSON.stringify(txParameters)}`)
     const normalizedTxParameters = txUtils.normalizeTxParams(txParameters)
@@ -214,13 +214,13 @@ class TransactionController extends EventEmitter {
       type: TRANSACTION_TYPE_STANDARD,
     })
 
-    if (origin === 'metamask') {
+    if (request.origin === 'metamask') {
       // Assert the from address is the selected address
       if (normalizedTxParameters.from !== this.getSelectedAddress()) {
         throw ethErrors.rpc.internal({
           message: 'Internally initiated transaction is using invalid account.',
           data: {
-            origin,
+            origin: request.origin,
             fromAddress: normalizedTxParameters.from,
             selectedAddress: this.getSelectedAddress(),
           },
@@ -231,11 +231,11 @@ class TransactionController extends EventEmitter {
       // the specified address
       const permittedAddresses = new Set([await this.getSelectedAddress()])
       if (!permittedAddresses.has(normalizedTxParameters.from)) {
-        throw ethErrors.provider.unauthorized({ data: { origin } })
+        throw ethErrors.provider.unauthorized({ data: { origin: request.origin } })
       }
     }
 
-    txMeta.origin = origin
+    txMeta.origin = request.origin
 
     const { transactionCategory, getCodeResponse, methodParams, contractParams } = await this._determineTransactionCategory(txParameters)
     txMeta.transactionCategory = transactionCategory
@@ -254,7 +254,7 @@ class TransactionController extends EventEmitter {
       throw error
     }
 
-    this.emit('newUnapprovedTx', txMeta)
+    this.emit('newUnapprovedTx', txMeta, request)
 
     txMeta.loadingDefaults = false
 

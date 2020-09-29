@@ -28,9 +28,9 @@ export function injectStore(s) {
   deferredDispatch = []
 }
 
-function triggerUi(type, payload) {
-  log.info(`TRIGGERUI:${type}`, payload)
-  getStore().dispatch('showPopup', payload)
+function triggerUi(type, payload, request) {
+  log.info(`TRIGGERUI:${type}`, payload, request)
+  getStore().dispatch('showPopup', { payload, preopenInstanceId: request.preopenInstanceId })
 }
 
 function onloadTorus(torus) {
