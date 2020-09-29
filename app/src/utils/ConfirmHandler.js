@@ -8,8 +8,9 @@ import { broadcastChannelOptions, getIFrameOriginObject } from './utils'
 const { baseRoute } = config
 
 class ConfirmHandler {
-  constructor(id) {
+  constructor(id, preopenInstanceId) {
     this.id = id
+    this.preopenInstanceId = preopenInstanceId
     this.txType = undefined
     this.confirmWindow = {}
     this.bc = new BroadcastChannel(`torus_channel_${id}`, broadcastChannelOptions)
@@ -21,6 +22,7 @@ class ConfirmHandler {
       url: finalUrl,
       target: '_blank',
       features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500',
+      preopenInstanceId: this.preopenInstanceId,
     })
     this.confirmWindow.open()
 

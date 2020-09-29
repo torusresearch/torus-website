@@ -75,9 +75,9 @@ const VuexStore = new Vuex.Store({
   actions: {
     ...actions,
     ...paymentActions,
-    async showPopup({ state }, payload) {
+    async showPopup({ state }, { payload, preopenInstanceId }) {
       const isTx = payload && typeof payload === 'object'
-      const confirmHandler = new ConfirmHandler(isTx ? payload.id : payload)
+      const confirmHandler = new ConfirmHandler(isTx ? payload.id : payload, preopenInstanceId)
       confirmHandler.isTx = isTx
       confirmHandler.selectedCurrency = state.selectedCurrency
       confirmHandler.tokenRates = state.tokenRates
