@@ -49,7 +49,7 @@
                 acc.accountType === ACCOUNT_TYPE.NORMAL
                   ? userEmail
                   : acc.accountType === ACCOUNT_TYPE.THRESHOLD
-                  ? '2FA Key'
+                  ? t('tkeySettings.twoFaKey')
                   : `${t('accountMenu.account')} #${index + 1}`
               }}
             </span>

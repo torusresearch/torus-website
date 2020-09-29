@@ -2,8 +2,9 @@
   <div class="torus-widget" :class="embedState.buttonPosition">
     <v-dialog v-if="loggedIn" v-model="activeWidget" max-width="375" @click:outside="showWidget">
       <div class="torus-widget__panel pa-4" :class="[embedState.buttonPosition, $vuetify.theme.isDark ? 'isDark' : '']">
-        <div class="d-flex torus-widget__user-details">
-          <div class="avatar-container">
+        <div class="d-flex torus-widget__user-details" :class="{ isThreshold }">
+          <v-icon v-if="isThreshold" small class="ml-3">$vuetify.icons.wallet</v-icon>
+          <div v-else class="avatar-container">
             <v-avatar size="32">
               <img
                 :src="userInfo.profileImage"
@@ -12,15 +13,15 @@
               />
             </v-avatar>
           </div>
-          <div class="details-container d-flex flex-column ml-2 pr-2">
+          <div class="details-container d-flex flex-column pr-2" :class="[isThreshold ? 'ml-0' : 'ml-2']">
             <div class="d-flex align-center">
-              <v-icon size="12" class="details-container__icon torusGray1--text">{{ `$vuetify.icons.${userInfo.typeOfLogin.toLowerCase()}` }}</v-icon>
-              <div class="details-container__text ml-2" :title="userEmail">{{ userEmail }}</div>
+              <v-icon v-if="!isThreshold" size="12" class="details-container__icon torusGray1--text">{{ `$vuetify.icons.${userIcon}` }}</v-icon>
+              <div class="details-container__text ml-2 font-weight-bold" :title="userEmail">{{ userEmail }}</div>
               <!-- Will add when dropdown available -->
               <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->
             </div>
             <div class="d-flex align-center">
-              <img class="details-container__icon" src="../../../assets/img/icons/address-wallet.svg" alt="Address Icon" />
+              <img v-if="!isThreshold" class="details-container__icon" src="../../../assets/img/icons/address-wallet.svg" alt="Address Icon" />
               <div class="details-container__text ml-2">
                 <ShowToolTip :address="fullAddress">
                   {{ address }}
@@ -159,6 +160,7 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 import ShowToolTip from '../../../components/helpers/ShowToolTip'
 import config from '../../../config'
 import {
+  ACCOUNT_TYPE,
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_TOPUP,
@@ -198,11 +200,11 @@ export default {
   },
   computed: {
     ...mapState({
-      address: (state) => `${state.selectedAddress.slice(0, 12)}...${state.selectedAddress.slice(-12)}`,
+      address: (state) => `${state.selectedAddress.slice(0, 10)}...${state.selectedAddress.slice(-10)}`,
       fullAddress: (state) => state.selectedAddress,
       userInfo: 'userInfo',
       selectedCurrency: 'selectedCurrency',
-      wallets: (state) => Object.keys(state.wallet).filter((x) => x !== state.selectedAddress),
+      wallet: 'wallet',
       embedState: 'embedState',
       pastTransactions: 'pastTransactions',
       whiteLabel: 'whiteLabel',
@@ -230,7 +232,13 @@ export default {
       }
     },
     userEmail() {
-      return getUserEmail(this.userInfo)
+      return this.isThreshold ? this.t('tkeySettings.twoFaKey') : getUserEmail(this.userInfo)
+    },
+    userIcon() {
+      return this.isThreshold ? 'wallet' : this.userInfo.typeOfLogin.toLowerCase()
+    },
+    isThreshold() {
+      return this.wallet[this.fullAddress]?.accountType === ACCOUNT_TYPE.THRESHOLD
     },
   },
   methods: {

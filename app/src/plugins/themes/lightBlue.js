@@ -14,6 +14,7 @@ export default {
   torusFontLink1: '#0364FF',
   torusFontLink2: '#5495F7',
   torusBlack: '#252529',
+  torusBlack2: '#2F3136',
   torusLight: '#FCFCFC',
 
   // Fixed Colors

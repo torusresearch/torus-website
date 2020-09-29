@@ -1,5 +1,6 @@
 <template>
   <v-container px-0 py-0>
+    <DappCreateTkey />
     <template v-if="type === 'none'">
       <ChangeProviderScreenLoader />
     </template>
@@ -79,6 +80,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { mapGetters } from 'vuex'
 
+import DappCreateTkey from '../../components/helpers/DappCreateTkey'
 import { ChangeProviderScreenLoader } from '../../content-loader'
 import { SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
@@ -87,6 +89,7 @@ export default {
   name: 'Confirm',
   components: {
     ChangeProviderScreenLoader,
+    DappCreateTkey,
   },
   data() {
     return {
