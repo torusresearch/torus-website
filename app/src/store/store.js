@@ -85,7 +85,7 @@ const VuexStore = new Vuex.Store({
     ...paymentActions,
     ...preferencesActions,
     ...tKeyActions,
-    async showPopup({ state }, payload) {
+    async showPopup({ state }, { payload, preopenInstanceId }) {
       const isTx = payload && typeof payload === 'object'
       const windowId = isTx ? payload.id : payload
       const channelName = `torus_channel_${windowId}`
@@ -95,6 +95,7 @@ const VuexStore = new Vuex.Store({
         target: '_blank',
         features: FEATURES_POPUP_SMALL,
         channelName,
+        preopenInstanceId,
       })
       const popupPayload = {
         id: windowId,

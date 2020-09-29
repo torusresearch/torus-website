@@ -183,7 +183,7 @@ describe('Transaction Controller', function () {
 
     it('should add an unapproved transaction and return a valid txMeta', function (done) {
       txController
-        .addUnapprovedTransaction({ from: selectedAddress })
+        .addUnapprovedTransaction({ from: selectedAddress }, { origin: '' })
         .then((txMeta) => {
           assert('id' in txMeta, 'should have a id')
           assert('time' in txMeta, 'should have a time stamp')
@@ -208,7 +208,7 @@ describe('Transaction Controller', function () {
         assert(txMetaFromEmit, 'txMeta is falsey')
         done()
       })
-      txController.addUnapprovedTransaction({ from: selectedAddress }).catch(done)
+      txController.addUnapprovedTransaction({ from: selectedAddress }, { origin: '' }).catch(done)
     })
 
     it("should fail if the from address isn't the selected address", function (done) {
@@ -229,7 +229,7 @@ describe('Transaction Controller', function () {
         assert(txMetaFromEmit, 'txMeta is falsey')
         done()
       })
-      txController.addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' }).catch(done)
+      txController.addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' }, { origin: '' }).catch(done)
     })
 
     it('should fail if netId is loading', function (done) {
