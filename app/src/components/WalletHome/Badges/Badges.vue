@@ -1,5 +1,5 @@
 <template>
-  <v-layout wrap class="badges-container">
+  <v-layout v-if="!allCompleted" wrap class="badges-container">
     <v-flex xs12>
       <div class="display-1" :class="$vuetify.theme.dark ? 'torusGray2--text' : 'text_2--text'">{{ t('walletHome.gettingStarted') }}</div>
     </v-flex>
@@ -51,7 +51,7 @@ export default {
           image: 'badge-topped-wallet',
           link: '/wallet/topup',
           linkText: this.t('walletHome.goToTopUp'),
-          completed: this.badgesCompletion[BADGES_TOPUP],
+          completed: this.badgesCompletion[BADGES_TOPUP] === undefined ? true : this.badgesCompletion[BADGES_TOPUP],
           external: false,
         },
         {
@@ -59,7 +59,7 @@ export default {
           image: 'badge-first-transaction',
           link: '/wallet/transfer',
           linkText: this.t('walletHome.goToTransfer'),
-          completed: this.badgesCompletion[BADGES_TRANSACTION],
+          completed: this.badgesCompletion[BADGES_TRANSACTION] === undefined ? true : this.badgesCompletion[BADGES_TRANSACTION],
           external: false,
         },
         {
@@ -67,7 +67,7 @@ export default {
           image: 'badge-first-collectible',
           link: 'https://opensea.io/',
           linkText: this.t('walletHome.goToOpensea'),
-          completed: this.badgesCompletion[BADGES_COLLECTIBLE],
+          completed: this.badgesCompletion[BADGES_COLLECTIBLE] === undefined ? true : this.badgesCompletion[BADGES_COLLECTIBLE],
           external: true,
         },
       ]
