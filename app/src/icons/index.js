@@ -21,11 +21,13 @@ import CoinsSendIcon from './CoinsSendIcon.vue'
 import CoinsTopupIcon from './CoinsTopupIcon.vue'
 import CollectibleIcon from './CollectibleIcon.vue'
 import CopyIcon from './CopyIcon.vue'
+import DisconnectIcon from './DisconnectIcon.vue'
 import DownloadIcon from './DownloadIcon.vue'
 import EthIcon from './EthIcon.vue'
 import GlobeIcon from './GlobeIcon.vue'
 import InfoIcon from './InfoIcon.vue'
 import KeyIcon from './KeyIcon.vue'
+import LinkIcon from './LinkIcon.vue'
 import ListIcon from './ListIcon.vue'
 import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
@@ -67,6 +69,7 @@ import VerifierWechatIcon from './VerifierWechatIcon.vue'
 import VerifierWeiboIcon from './VerifierWeiboIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
+import WalletConnectIcon from './WalletConnectIcon.vue'
 
 export default {
   select: {
@@ -275,5 +278,14 @@ export default {
   },
   alert: {
     component: AlertIcon,
+  },
+  walletconnect: {
+    component: WalletConnectIcon,
+  },
+  disconnect: {
+    component: DisconnectIcon,
+  },
+  link: {
+    component: LinkIcon,
   },
 }

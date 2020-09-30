@@ -1,6 +1,6 @@
 <template>
   <v-flex v-if="isConfirm" xs12>
-    <v-layout wrap align-center>
+    <v-layout wrap align-center class="mb-2">
       <v-flex xs3>
         <span class="caption">{{ t('walletTransfer.transactionFee') }}</span>
       </v-flex>
@@ -73,7 +73,7 @@
   </v-flex>
   <v-flex v-else xs12 mb-3>
     <v-layout>
-      <v-flex class="body-2 mb-1">
+      <v-flex class="body-2 mb-2">
         <span>
           {{ t('walletTransfer.transferFee') }}
         </span>

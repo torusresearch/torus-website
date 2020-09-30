@@ -38,7 +38,7 @@
           >
             <v-layout wrap>
               <v-flex xs12>
-                <span class="body-2">{{ t('walletTransfer.selectItem') }}</span>
+                <div class="body-2 mb-2">{{ t('walletTransfer.selectItem') }}</div>
                 <div v-if="selectedItemDisplay">
                   <v-menu transition="slide-y-transition" bottom>
                     <template v-slot:activator="{ on }">
@@ -104,7 +104,7 @@
                 </div>
               </v-flex>
               <v-flex xs12 mt-6>
-                <span class="body-2">{{ t('walletTransfer.transferMode') }}</span>
+                <div class="body-2 mb-2">{{ t('walletTransfer.transferMode') }}</div>
                 <v-layout wrap class="mx-n2">
                   <v-flex xs12 sm8 class="recipient-address-container px-2">
                     <v-combobox
@@ -126,7 +126,7 @@
                       @input="contactChanged"
                     >
                       <template v-slot:append>
-                        <v-btn icon small color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="startQrScanning">
+                        <v-btn icon small color="torusBrand1" title="Capture QR" tabindex="-1" aria-label="Capture QR" @click="startQrScanning">
                           <v-icon small>$vuetify.icons.scan</v-icon>
                         </v-btn>
                       </template>
@@ -134,7 +134,7 @@
                         {{ t(props.message) }}
                       </template>
                     </v-combobox>
-                    <v-dialog v-if="!noStreamApiSupport" v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
+                    <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
                       <div class="qr-scan-container">
                         <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
                         <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
@@ -142,7 +142,6 @@
                         </v-btn>
                       </div>
                     </v-dialog>
-                    <QrcodeCapture v-else ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                       <div class="v-messages">
                         <div class="v-messages__wrapper">
@@ -175,7 +174,7 @@
                 </v-layout>
               </v-flex>
               <v-flex xs12 class="you-send-container">
-                <div>
+                <div class="mb-2">
                   <span class="body-2">{{ t('walletTransfer.youSend') }}</span>
                   <a
                     v-if="contractType !== CONTRACT_TYPE_ERC721 && !isSendAll"
@@ -380,7 +379,7 @@ import BigNumber from 'bignumber.js'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import log from 'loglevel'
-import { QrcodeCapture, QrcodeStream } from 'vue-qrcode-reader'
+import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapGetters, mapState } from 'vuex'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
@@ -415,7 +414,6 @@ export default {
   components: {
     TransactionSpeedSelect,
     MessageModal,
-    QrcodeCapture,
     QrcodeStream,
     AddContact,
     ComponentLoader,
@@ -476,7 +474,6 @@ export default {
       etherscanLink: '',
       MESSAGE_MODAL_TYPE_SUCCESS,
       nonce: -1,
-      noStreamApiSupport: false,
       camera: 'off',
       showQrScanner: false,
     }
@@ -641,12 +638,8 @@ export default {
   },
   methods: {
     startQrScanning() {
-      if (!this.noStreamApiSupport) {
-        this.camera = 'auto'
-        this.showQrScanner = true
-      } else if (this.$refs) {
-        this.$refs.captureQr.$el.click()
-      }
+      this.camera = 'auto'
+      this.showQrScanner = true
     },
     setSelectedVerifierFromToAddress(toAddress) {
       if (toAddress.startsWith('0x')) {
@@ -1165,34 +1158,36 @@ export default {
         await promise
       } catch (error) {
         log.error(error)
-        this.noStreamApiSupport = true
-        this.$nextTick(() => {
-          this.startQrScanning()
-        })
         if (error.name === 'NotAllowedError') {
+          this.qrErrorMsg = 'ERROR: you need to grant camera access permisson'
           log.error('ERROR: you need to grant camera access permisson')
         } else if (error.name === 'NotFoundError') {
+          this.qrErrorMsg = 'ERROR: no camera on this device'
           log.error('ERROR: no camera on this device')
         } else if (error.name === 'NotSupportedError') {
+          this.qrErrorMsg = 'ERROR: secure context required (HTTPS, localhost)'
           log.error('ERROR: secure context required (HTTPS, localhost)')
         } else if (error.name === 'NotReadableError') {
+          this.qrErrorMsg = 'ERROR: is the camera already in use?'
           log.error('ERROR: is the camera already in use?')
         } else if (error.name === 'OverconstrainedError') {
+          this.qrErrorMsg = 'ERROR: installed cameras are not suitable'
           log.error('ERROR: installed cameras are not suitable')
         } else if (error.name === 'StreamApiNotSupportedError') {
+          this.qrErrorMsg = 'ERROR: Stream Api Not Supported'
           log.error('ERROR: Stream Api Not Supported')
         }
       }
+    },
+    closeQRScanner() {
+      this.camera = 'off'
+      this.showQrScanner = false
     },
     setRandomId() {
       // patch fix because vuetify stopped passing attributes to underlying component
       if (this.$refs.contactSelected && this.$refs.contactSelected.$refs && this.$refs.contactSelected.$refs.input) {
         this.$refs.contactSelected.$refs.input.name = randomId()
       }
-    },
-    closeQRScanner() {
-      this.camera = 'off'
-      this.showQrScanner = false
     },
   },
 }
