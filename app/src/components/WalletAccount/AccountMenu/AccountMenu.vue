@@ -43,7 +43,7 @@
           </div>
         </div>
         <div class="d-flex align-start mt-1">
-          <div class="account-list__address-container pt-1" :style="{ maxWidth: $vuetify.breakpoint.xsOnly ? '140px' : 'inherit' }">
+          <div class="account-list__address-container pt-1" :style="{ maxWidth: $vuetify.breakpoint.xsOnly ? '140px' : '180px' }">
             <div v-if="userId && index === 0" class="account-list__address">{{ userId }}</div>
             <div class="account-list__address mt-1">{{ acc.address }}</div>
           </div>
@@ -53,15 +53,15 @@
                 <v-icon size="12" class="torusFont2--text" v-text="'$vuetify.icons.copy'" />
               </ShowToolTip>
             </span>
-            <span>
+            <span class="mr-1">
               <ExportQrCode :custom-address="acc.address">
                 <v-icon class="torusFont2--text" x-small v-text="'$vuetify.icons.qr'" />
               </ExportQrCode>
             </span>
             <span>
-              <a class="etherscan-lnk" color="torusBrand1" :href="etherscanAddressLink(acc.address)" target="_blank" rel="noreferrer noopener">
-                <v-icon class="torusFont2--text" x-small v-text="'$vuetify.icons.qr'" />
-              </a>
+              <v-btn icon small class="etherscan-lnk" :href="etherscanAddressLink(acc.address)" target="_blank" rel="noreferrer noopener">
+                <v-icon class="torusFont2--text" x-small v-text="'$vuetify.icons.link'" />
+              </v-btn>
             </span>
           </div>
         </div>

@@ -38,7 +38,7 @@
           >
             <v-layout wrap>
               <v-flex xs12>
-                <span class="body-2">{{ t('walletTransfer.selectItem') }}</span>
+                <div class="body-2 mb-2">{{ t('walletTransfer.selectItem') }}</div>
                 <div v-if="selectedItemDisplay">
                   <v-menu transition="slide-y-transition" bottom>
                     <template v-slot:activator="{ on }">
@@ -104,7 +104,7 @@
                 </div>
               </v-flex>
               <v-flex xs12 mt-6>
-                <span class="body-2">{{ t('walletTransfer.transferMode') }}</span>
+                <div class="body-2 mb-2">{{ t('walletTransfer.transferMode') }}</div>
                 <v-layout wrap class="mx-n2">
                   <v-flex xs12 sm8 class="recipient-address-container px-2">
                     <v-combobox
@@ -173,7 +173,7 @@
                 </v-layout>
               </v-flex>
               <v-flex xs12 class="you-send-container">
-                <div>
+                <div class="mb-2">
                   <span class="body-2">{{ t('walletTransfer.youSend') }}</span>
                   <a
                     v-if="contractType !== CONTRACT_TYPE_ERC721 && !isSendAll"

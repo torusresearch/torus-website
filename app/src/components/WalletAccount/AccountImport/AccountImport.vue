@@ -7,7 +7,7 @@
         </v-flex>
         <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
           <v-flex xs12 mt-4>
-            <span class="text-subtitle-2">{{ t('accountMenu.selectImportType') }}</span>
+            <div class="text-subtitle-2 mb-2">{{ t('accountMenu.selectImportType') }}</div>
             <v-select
               v-model="selectedType"
               outlined
@@ -24,7 +24,7 @@
             <v-form ref="privateKeyForm" v-model="privateKeyFormValid" lazy-validation @submit.prevent="">
               <v-layout wrap>
                 <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
-                  <span class="text-subtitle-2">{{ t('accountMenu.inputPrivateKey') }}:</span>
+                  <div class="text-subtitle-2 mb-2">{{ t('accountMenu.inputPrivateKey') }}:</div>
                   <v-text-field
                     v-model="privateKey"
                     class="private-key"
@@ -88,7 +88,7 @@
                   <div v-show="selectedFileName !== ''" class="text-right">{{ t('accountMenu.selectedFile') }}: {{ selectedFileName }}</div>
                 </v-flex>
                 <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
-                  <span class="text-subtitle-2">{{ t('accountMenu.enterPassword') }}:</span>
+                  <div class="text-subtitle-2 mb-2">{{ t('accountMenu.enterPassword') }}:</div>
                   <v-text-field
                     v-model="jsonPassword"
                     class="password-input"
