@@ -170,7 +170,7 @@
           </v-list-item>
           <div v-if="transaction.etherscanLink" class="text-right mr-4" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
             <v-btn
-              class="torus-btn1 body-2 px-5"
+              class="torus-btn1 px-5"
               :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
               :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
               :href="transaction.etherscanLink"
