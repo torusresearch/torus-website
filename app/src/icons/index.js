@@ -26,6 +26,7 @@ import EthIcon from './EthIcon.vue'
 import GlobeIcon from './GlobeIcon.vue'
 import InfoIcon from './InfoIcon.vue'
 import KeyIcon from './KeyIcon.vue'
+import LinkIcon from './LinkIcon.vue'
 import ListIcon from './ListIcon.vue'
 import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
@@ -275,5 +276,8 @@ export default {
   },
   alert: {
     component: AlertIcon,
+  },
+  link: {
+    component: LinkIcon,
   },
 }

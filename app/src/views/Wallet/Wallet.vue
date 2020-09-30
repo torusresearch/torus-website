@@ -14,7 +14,7 @@
       <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
       <router-view></router-view>
     </v-main>
-    <v-dialog v-if="badgesTopupDialog" v-model="badgesTopupDialog" persistent width="375">
+    <!-- <v-dialog v-if="badgesTopupDialog" v-model="badgesTopupDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_TOPUP]" @closeBadge="closeBadge" />
     </v-dialog>
     <v-dialog v-else-if="badgesTransactionDialog" v-model="badgesTransactionDialog" persistent width="375">
@@ -22,7 +22,7 @@
     </v-dialog>
     <v-dialog v-else-if="badgesCollectibleDialog" v-model="badgesCollectibleDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_COLLECTIBLE]" @closeBadge="closeBadge" />
-    </v-dialog>
+    </v-dialog> -->
   </div>
 </template>
 
@@ -31,14 +31,14 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
-import BadgesAlert from '../../components/WalletHome/BadgesAlert'
+// import BadgesAlert from '../../components/WalletHome/BadgesAlert'
 import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION } from '../../utils/enums'
 
 export default {
   components: {
     Navbar,
     AccountMenu,
-    BadgesAlert,
+    // BadgesAlert,
   },
   data() {
     return {
