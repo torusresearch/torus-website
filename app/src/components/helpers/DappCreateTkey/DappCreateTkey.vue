@@ -2,7 +2,7 @@
   <div v-if="!tKeyExists && showLoginTkey" class="container d-flex">
     <span class="caption">
       {{ t('dappCreateTkey.linkDesc1') }}
-      <a @click="goToTkeyOnboarding">{{ t('dappCreateTkey.linkDesc2') }}</a>
+      <a @click="openOnboarding">{{ t('dappCreateTkey.linkDesc2') }}</a>
       {{ t('dappCreateTkey.linkDesc3') }}
     </span>
     <v-spacer />
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   data() {
@@ -25,8 +25,10 @@ export default {
     ...mapState(['tKeyExists']),
   },
   methods: {
-    goToTkeyOnboarding() {
-      this.$router.push({ name: 'tkeyCreate' }).catch((_) => {})
+    ...mapActions(['showWalletPopup']),
+    openOnboarding() {
+      this.showWalletPopup({ path: '/tkey' })
+      this.showLoginTkey = false
     },
   },
 }

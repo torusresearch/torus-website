@@ -5,8 +5,11 @@
         <div class="d-flex torus-widget__user-details">
           <div class="avatar-container">
             <v-avatar size="32">
-              <div v-if="isThreshold" class="avatar-two-factor">
+              <div v-if="accountType === ACCOUNT_TYPE.THRESHOLD" class="avatar-two-factor">
                 <span class="caption font-weight-bold">2FA</span>
+              </div>
+              <div v-else-if="accountType === ACCOUNT_TYPE.IMPORTED" class="avatar-import">
+                <v-icon>$vuetify.icons.person</v-icon>
               </div>
               <img
                 v-else
@@ -18,21 +21,19 @@
           </div>
           <div class="details-container d-flex flex-column pr-2 ml-2">
             <div class="d-flex align-center">
-              <v-icon size="12" class="details-container__icon torusGray1--text">{{ `$vuetify.icons.${userIcon}` }}</v-icon>
+              <v-icon size="12" class="details-container__icon text_2--text">{{ `$vuetify.icons.${userIcon}` }}</v-icon>
               <div class="details-container__text ml-2 font-weight-bold" :title="userEmail">{{ userEmail }}</div>
               <!-- Will add when dropdown available -->
               <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->
             </div>
             <div class="d-flex align-center">
-              <img class="details-container__icon" src="../../../assets/img/icons/address-wallet.svg" alt="Address Icon" />
-              <div class="details-container__text ml-2">
+              <v-icon size="12" class="details-container__icon text_2--text">{{ `$vuetify.icons.address` }}</v-icon>
+              <div class="details-container__text caption ml-2">
                 <ShowToolTip :address="fullAddress">
-                  {{ address }}
-                </ShowToolTip>
-              </div>
-              <div class="ml-auto mr-1 mt-n1">
-                <ShowToolTip :address="fullAddress">
-                  <v-icon size="12" class="text_2--text">$vuetify.icons.copy</v-icon>
+                  <div class="d-flex align-center">
+                    {{ address }}
+                    <v-icon size="12" class="ml-4 text_2--text">$vuetify.icons.copy_outline</v-icon>
+                  </div>
                 </ShowToolTip>
               </div>
             </div>
@@ -199,6 +200,7 @@ export default {
       ACTIVITY_ACTION_SEND,
       CONTRACT_TYPE_ERC721,
       logosUrl: config.logosUrl,
+      ACCOUNT_TYPE,
     }
   },
   computed: {
@@ -235,13 +237,28 @@ export default {
       }
     },
     userEmail() {
-      return this.isThreshold ? this.t('tkeySettings.twoFaWallet') : getUserEmail(this.userInfo)
+      if (this.accountType === ACCOUNT_TYPE.THRESHOLD) {
+        return this.t('tkeySettings.twoFaWallet')
+      }
+      if (this.accountType === ACCOUNT_TYPE.IMPORTED) {
+        const index = Object.keys(this.wallet)
+          .filter((x) => this.wallet[x].accountType === ACCOUNT_TYPE.IMPORTED)
+          .indexOf(this.fullAddress)
+        return `${this.t('accountMenu.importedAccount')} ${index + 1}`
+      }
+      return getUserEmail(this.userInfo)
     },
     userIcon() {
-      return this.isThreshold ? 'wallet' : this.userInfo.typeOfLogin.toLowerCase()
+      if (this.accountType === ACCOUNT_TYPE.THRESHOLD) {
+        return 'wallet'
+      }
+      if (this.accountType === ACCOUNT_TYPE.IMPORTED) {
+        return 'person_circle'
+      }
+      return this.userInfo.typeOfLogin.toLowerCase()
     },
-    isThreshold() {
-      return this.wallet[this.fullAddress]?.accountType === ACCOUNT_TYPE.THRESHOLD
+    accountType() {
+      return this.wallet[this.fullAddress]?.accountType
     },
   },
   methods: {

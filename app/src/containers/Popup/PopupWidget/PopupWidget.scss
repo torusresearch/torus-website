@@ -116,6 +116,17 @@
       color: #5C6C7F;
       padding: 5px 0;
     }
+
+    .avatar-import {
+      background-color: var(--v-torusBrand4-base);
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+      padding: 5px 0;
+      .v-icon{
+        color: #B3C0CE;
+      }
+    }
   }
 
   .details-container {
@@ -128,7 +139,6 @@
       font-size: 14px;
       line-height: 16px;
       color: var(--v-text_2-base);
-      width: 200px;
       white-space: nowrap;
     }
   }

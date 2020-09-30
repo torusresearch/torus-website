@@ -29,6 +29,7 @@ import CoinsSendIcon from './CoinsSendIcon.vue'
 import CoinsTopupIcon from './CoinsTopupIcon.vue'
 import CollectibleIcon from './CollectibleIcon.vue'
 import CopyIcon from './CopyIcon.vue'
+import CopyOutlineIcon from './CopyOutlineIcon.vue'
 import DeviceDesktopIcon from './DeviceDesktopIcon.vue'
 import DeviceDetailedIcon from './DeviceDetailedIcon.vue'
 import DeviceIcon from './DeviceIcon.vue'
@@ -363,5 +364,8 @@ export default {
   },
   alert: {
     component: AlertIcon,
+  },
+  copy_outline: {
+    component: CopyOutlineIcon,
   },
 }

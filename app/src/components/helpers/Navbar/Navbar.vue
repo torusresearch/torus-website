@@ -6,7 +6,7 @@
         class="home-link mr-1"
         alt="Torus Logo"
         :width="$store.state.whiteLabel.isActive ? '' : '135'"
-        :height="$store.state.whiteLabel.isActive ? '50' : '30'"
+        :height="$store.state.whiteLabel.isActive ? '30' : '30'"
         :src="getLogo.logo"
       />
       <img v-else src="../../../assets/img/icons/t-fill.svg" width="35" height="30" alt="Torus Logo" />
@@ -17,7 +17,7 @@
           class="home-link mr-1"
           alt="Torus Logo"
           :width="$store.state.whiteLabel.isActive ? '' : '135'"
-          :height="$store.state.whiteLabel.isActive ? '50' : '30'"
+          :height="$store.state.whiteLabel.isActive ? '30' : '30'"
           :src="getLogo.logo"
         />
       </router-link>
