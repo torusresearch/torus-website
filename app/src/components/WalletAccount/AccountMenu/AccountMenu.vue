@@ -137,7 +137,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import { QrcodeStream } from 'vue-qrcode-reader'
-import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
 import { addressSlicer, broadcastChannelOptions, getEtherScanAddressLink, getUserEmail } from '../../../utils/utils'
@@ -209,8 +209,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['logOut', 'updateSelectedAddress']),
-    ...mapMutations(['setWCConnectorURI']),
+    ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
     etherscanAddressLink(address) {
       return getEtherScanAddressLink(address, this.networkType.host)
     },
@@ -239,16 +238,19 @@ export default {
       }
     },
     toggleWC() {
-      if (this.wcConnectorSession && this.wcConnectorSession.connected) {
-        this.setWCConnectorURI('')
+      if (this.wcConnectorSession?.connected) {
+        this.disconnectWalletConnect()
       } else {
         this.camera = 'auto'
         this.showQrScanner = true
       }
     },
-    onDecodeQr(result) {
+    async onDecodeQr(result) {
       try {
-        this.setWCConnectorURI(result)
+        log.info(result, 'qr decoded')
+        await this.initWalletConnect({ uri: result })
+      } catch (error) {
+        log.error(error)
       } finally {
         this.camera = 'off'
         this.showQrScanner = false
