@@ -1,4 +1,4 @@
-import WalletConnector from '@walletconnect/client'
+import WalletConnect from '@walletconnect/client'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
@@ -21,8 +21,9 @@ class WalletConnectController {
     // options includes the uri
     log.info(options, 'wc init options')
     // TODO: set origin if wallet connect in store.js
-    if (options?.session && this.walletConnector?.killSession) this.walletConnector.killSession()
-    this.walletConnector = new WalletConnector(options)
+    // To kill session if the user scans a new uri
+    if (this.walletConnector?.uri !== options?.uri && this.walletConnector?.killSession) this.walletConnector.killSession()
+    this.walletConnector = new WalletConnect(options)
     log.info(this.walletConnector)
     if (!this.walletConnector.connected) {
       await this.walletConnector.createSession()

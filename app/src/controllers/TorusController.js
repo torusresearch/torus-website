@@ -348,6 +348,7 @@ export default class TorusController extends EventEmitter {
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
     this.prefsController.setSelectedAddress(address)
+    this.walletConnectController.setSelectedAddress(address)
   }
 
   /**
