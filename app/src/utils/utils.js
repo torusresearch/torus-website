@@ -516,7 +516,7 @@ export function selectChainId(network, store) {
 export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
 
 export const getIFrameOrigin = () => {
-  const originHref = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+  const originHref = window.location.ancestorOrigins?.length > 0 ? window.location.ancestorOrigins[0] : document.referrer
   return originHref
 }
 
