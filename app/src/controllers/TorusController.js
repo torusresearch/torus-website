@@ -38,6 +38,7 @@ import createLoggerMiddleware from './utils/createLoggerMiddleware'
 // import setupMultiplex from '../utils/setupMultiplex'
 import createOriginMiddleware from './utils/createOriginMiddleware'
 import nodeify from './utils/nodeify'
+import WalletConnectController from './WalletConnectController'
 // defaults and constants
 const GWEI_BN = new BN('1000000000')
 
@@ -126,6 +127,7 @@ export default class TorusController extends EventEmitter {
       this.detectTokensController.restartTokenDetection()
       this.assetDetectionController.restartAssetDetection()
       this.prefsController.recalculatePastTx()
+      this.walletConnectController.updateSession()
     })
 
     this.publicConfigStore = this.initPublicConfigStore()
@@ -208,6 +210,11 @@ export default class TorusController extends EventEmitter {
 
     this.prefsController.on('addEtherscanTransactions', (txs) => {
       this.txController.addEtherscanTransactions(txs)
+    })
+
+    this.walletConnectController = new WalletConnectController({
+      provider: this.provider,
+      network: this.networkController,
     })
   }
 
@@ -345,6 +352,7 @@ export default class TorusController extends EventEmitter {
     this.prefsController.setSelectedAddress(address)
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
+    this.walletConnectController.setSelectedAddress(address)
   }
 
   /**

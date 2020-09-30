@@ -125,3 +125,7 @@ export function billboardHandler(state) {
 export function tKeyHandler(state) {
   getStore().commit('setTKey', state)
 }
+
+export function walletConnectHandler(state) {
+  getStore().commit('setWCConnectorSession', state)
+}

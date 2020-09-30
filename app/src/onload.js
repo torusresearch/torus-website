@@ -30,7 +30,7 @@ export function injectStore(s) {
 
 function triggerUi(type, payload, request) {
   log.info(`TRIGGERUI:${type}`, payload, request)
-  getStore().dispatch('showPopup', { payload, preopenInstanceId: request.preopenInstanceId })
+  getStore().dispatch('showPopup', { payload, request })
 }
 
 function triggerThresholdUi(type, payload) {
