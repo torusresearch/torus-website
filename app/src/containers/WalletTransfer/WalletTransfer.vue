@@ -131,6 +131,7 @@
                           color="torusBrand1"
                           title="Capture QR"
                           aria-label="Capture QR"
+                          tabindex="-1"
                           @click="() => $refs && $refs.captureQr.$el.click()"
                         >
                           <v-icon small>$vuetify.icons.scan</v-icon>
