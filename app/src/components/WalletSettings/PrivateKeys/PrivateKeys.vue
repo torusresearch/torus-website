@@ -22,6 +22,7 @@
                           v-model="keyStorePassword"
                           small
                           :rules="[rules.required]"
+                          autocomplete="new-password"
                           :type="showJsonPassword ? 'text' : 'password'"
                         >
                           <template v-slot:append>

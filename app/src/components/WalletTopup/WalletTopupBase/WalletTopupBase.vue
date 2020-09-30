@@ -11,7 +11,7 @@
           </v-flex>
 
           <v-flex xs12 sm4>
-            <div class="body-2">{{ t('walletTopUp.wannaBuy') }}</div>
+            <div class="body-2 mb-2">{{ t('walletTopUp.wannaBuy') }}</div>
             <v-select
               id="cryptocurrency"
               v-model="selectedCryptoCurrency"
@@ -27,7 +27,7 @@
 
           <v-layout wrap mx-n2>
             <v-flex xs12 sm8 px-2>
-              <div>
+              <div class="mb-2">
                 <span class="body-2">{{ t('walletTopUp.youSend') }}</span>
                 <span class="caption float-right">
                   {{ t('walletTopUp.min') }} {{ selectedProvider === XANPOOL ? '0.1 ETH' : minOrderValue }}, {{ t('walletTopUp.max') }}
