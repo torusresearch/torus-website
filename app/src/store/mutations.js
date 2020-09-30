@@ -188,6 +188,12 @@ export default {
   setRehydrationStatus(state, payload) {
     state.isRehydrationComplete = payload
   },
+  addConfirmModal(state, payload) {
+    state.confirmModals = [...state.confirmModals, payload]
+  },
+  deleteConfirmModal(state, payload) {
+    state.confirmModals = state.confirmModals.filter((x) => x.id !== payload)
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
