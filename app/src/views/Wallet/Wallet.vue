@@ -50,6 +50,8 @@ export default {
   },
   computed: {
     ...mapState({
+      networkType: 'networkType',
+      selectedAddress: 'selectedAddress',
       whiteLabel: 'whiteLabel',
       badgesCompletion: 'badgesCompletion',
       pastTransactions: 'pastTransactions',

@@ -125,3 +125,7 @@ export function paymentTxHandler(state) {
 export function etherscanTxHandler(state) {
   getStore().commit('setEtherscanTx', state)
 }
+
+export function walletConnectHandler(state) {
+  getStore().commit('setWCConnectorSession', state)
+}

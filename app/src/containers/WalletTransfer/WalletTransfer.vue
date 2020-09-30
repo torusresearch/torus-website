@@ -112,6 +112,7 @@
                       ref="contactSelected"
                       :name="randomName"
                       class="recipient-address"
+                      :class="{ hasQrError: qrErrorMsg !== '' }"
                       :value="contactSelected"
                       :items="contactList"
                       :placeholder="verifierPlaceholder"
@@ -125,15 +126,7 @@
                       @input="contactChanged"
                     >
                       <template v-slot:append>
-                        <v-btn
-                          icon
-                          small
-                          color="torusBrand1"
-                          title="Capture QR"
-                          aria-label="Capture QR"
-                          tabindex="-1"
-                          @click="() => $refs && $refs.captureQr.$el.click()"
-                        >
+                        <v-btn icon small color="torusBrand1" title="Capture QR" tabindex="-1" aria-label="Capture QR" @click="startQrScanning">
                           <v-icon small>$vuetify.icons.scan</v-icon>
                         </v-btn>
                       </template>
@@ -141,7 +134,14 @@
                         {{ t(props.message) }}
                       </template>
                     </v-combobox>
-                    <QrcodeCapture ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
+                    <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
+                      <div class="qr-scan-container">
+                        <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
+                        <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
+                          <v-icon>$vuetify.icons.close</v-icon>
+                        </v-btn>
+                      </div>
+                    </v-dialog>
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                       <div class="v-messages">
                         <div class="v-messages__wrapper">
@@ -379,7 +379,7 @@ import BigNumber from 'bignumber.js'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import log from 'loglevel'
-import { QrcodeCapture } from 'vue-qrcode-reader'
+import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapGetters, mapState } from 'vuex'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
@@ -414,7 +414,7 @@ export default {
   components: {
     TransactionSpeedSelect,
     MessageModal,
-    QrcodeCapture,
+    QrcodeStream,
     AddContact,
     ComponentLoader,
     TransferConfirm,
@@ -474,6 +474,8 @@ export default {
       etherscanLink: '',
       MESSAGE_MODAL_TYPE_SUCCESS,
       nonce: -1,
+      camera: 'off',
+      showQrScanner: false,
     }
   },
   computed: {
@@ -635,6 +637,10 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
+    startQrScanning() {
+      this.camera = 'auto'
+      this.showQrScanner = true
+    },
     setSelectedVerifierFromToAddress(toAddress) {
       if (toAddress.startsWith('0x')) {
         this.selectedVerifier = ETH
@@ -1119,25 +1125,63 @@ export default {
     onDecodeQr(result) {
       try {
         const qrUrl = new URL(result)
-        const qrParameters = new URLSearchParams(qrUrl.search)
-        if (qrParameters.has('to')) {
+        if (qrUrl.href.includes('ethereum:') && isAddress(qrUrl.pathname)) {
+          this.toAddress = qrUrl.pathname
           this.selectedVerifier = ETH
-          this.toAddress = qrParameters.get('to')
+          this.qrErrorMsg = ''
+        } else if (qrUrl.searchParams.has('to')) {
+          this.selectedVerifier = ETH
+          this.toAddress = qrUrl.searchParams.get('to')
+          this.qrErrorMsg = ''
         } else {
           this.toAddress = ''
           this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
         }
       } catch {
-        if (isAddress(result)) {
+        const parsedResult = result.replace('ethereum:', '')
+        if (isAddress(parsedResult)) {
           this.selectedVerifier = ETH
-          this.toAddress = result
+          this.toAddress = parsedResult
+          this.qrErrorMsg = ''
         } else {
           this.toAddress = ''
           this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
         }
       } finally {
+        this.camera = 'off'
+        this.showQrScanner = false
         this.contactSelected = this.toAddress
       }
+    },
+    async onInit(promise) {
+      try {
+        await promise
+      } catch (error) {
+        log.error(error)
+        if (error.name === 'NotAllowedError') {
+          this.qrErrorMsg = 'ERROR: you need to grant camera access permisson'
+          log.error('ERROR: you need to grant camera access permisson')
+        } else if (error.name === 'NotFoundError') {
+          this.qrErrorMsg = 'ERROR: no camera on this device'
+          log.error('ERROR: no camera on this device')
+        } else if (error.name === 'NotSupportedError') {
+          this.qrErrorMsg = 'ERROR: secure context required (HTTPS, localhost)'
+          log.error('ERROR: secure context required (HTTPS, localhost)')
+        } else if (error.name === 'NotReadableError') {
+          this.qrErrorMsg = 'ERROR: is the camera already in use?'
+          log.error('ERROR: is the camera already in use?')
+        } else if (error.name === 'OverconstrainedError') {
+          this.qrErrorMsg = 'ERROR: installed cameras are not suitable'
+          log.error('ERROR: installed cameras are not suitable')
+        } else if (error.name === 'StreamApiNotSupportedError') {
+          this.qrErrorMsg = 'ERROR: Stream Api Not Supported'
+          log.error('ERROR: Stream Api Not Supported')
+        }
+      }
+    },
+    closeQRScanner() {
+      this.camera = 'off'
+      this.showQrScanner = false
     },
     setRandomId() {
       // patch fix because vuetify stopped passing attributes to underlying component

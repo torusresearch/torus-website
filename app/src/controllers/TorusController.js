@@ -37,6 +37,7 @@ import TokenRatesController from './TokenRatesController'
 import KeyringController from './TorusKeyring'
 import TransactionController from './TransactionController'
 import TypedMessageManager from './TypedMessageManager'
+import WalletConnectController from './WalletConnectController'
 // defaults and constants
 const GWEI_BN = new BN('1000000000')
 
@@ -121,6 +122,7 @@ export default class TorusController extends EventEmitter {
       this.detectTokensController.restartTokenDetection()
       this.assetDetectionController.restartAssetDetection()
       this.prefsController.recalculatePastTx()
+      this.walletConnectController.updateSession()
     })
 
     // key mgmt
@@ -198,6 +200,11 @@ export default class TorusController extends EventEmitter {
 
     this.prefsController.on('addEtherscanTransactions', (txs) => {
       this.txController.addEtherscanTransactions(txs)
+    })
+
+    this.walletConnectController = new WalletConnectController({
+      provider: this.provider,
+      network: this.networkController,
     })
   }
 
@@ -341,6 +348,7 @@ export default class TorusController extends EventEmitter {
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
     this.prefsController.setSelectedAddress(address)
+    this.walletConnectController.setSelectedAddress(address)
   }
 
   /**

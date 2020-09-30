@@ -1,5 +1,13 @@
 <template>
   <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu">
+    <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
+      <div class="qr-scan-container">
+        <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
+        <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
+          <v-icon>$vuetify.icons.close</v-icon>
+        </v-btn>
+      </div>
+    </v-dialog>
     <v-list class="pb-0 mb-2">
       <v-list-item>
         <v-list-item-avatar class="ml-2 mr-3">
@@ -18,6 +26,14 @@
             <div>{{ t('accountMenu.account') }}</div>
           </div>
         </v-list-item-title>
+        <v-list-item-icon v-if="$vuetify.breakpoint.xsOnly">
+          <div class="mr-5">
+            <v-btn small class="wallet-connect-btn" icon title="Capture QR" aria-label="Capture QR" @click="toggleWC">
+              <v-icon v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">$vuetify.icons.disconnect</v-icon>
+              <v-icon v-else size="16">$vuetify.icons.walletconnect</v-icon>
+            </v-btn>
+          </div>
+        </v-list-item-icon>
       </v-list-item>
     </v-list>
 
@@ -119,6 +135,8 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
+import log from 'loglevel'
+import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
@@ -134,6 +152,7 @@ export default {
     ExportQrCode,
     AccountImport,
     LanguageSelector,
+    QrcodeStream,
   },
   props: {
     headerItems: {
@@ -145,10 +164,13 @@ export default {
     return {
       accountImportDialog: false,
       DISCORD,
+      camera: 'off',
+      qrErrorMsg: '',
+      showQrScanner: false,
     }
   },
   computed: {
-    ...mapState(['userInfo', 'selectedAddress', 'selectedCurrency', 'currencyData', 'networkType']),
+    ...mapState(['userInfo', 'selectedAddress', 'selectedCurrency', 'currencyData', 'networkType', 'wcConnectorSession']),
     ...mapGetters({
       wallets: 'walletBalances',
     }),
@@ -187,7 +209,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['logOut', 'updateSelectedAddress']),
+    ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
     etherscanAddressLink(address) {
       return getEtherScanAddressLink(address, this.networkType.host)
     },
@@ -214,6 +236,55 @@ export default {
         })
         selectedAddressChannel.close()
       }
+    },
+    toggleWC() {
+      if (this.wcConnectorSession?.connected) {
+        this.disconnectWalletConnect()
+      } else {
+        this.camera = 'auto'
+        this.showQrScanner = true
+      }
+    },
+    async onDecodeQr(result) {
+      try {
+        log.info(result, 'qr decoded')
+        await this.initWalletConnect({ uri: result })
+      } catch (error) {
+        log.error(error)
+      } finally {
+        this.camera = 'off'
+        this.showQrScanner = false
+      }
+    },
+    async onInit(promise) {
+      try {
+        await promise
+      } catch (error) {
+        log.error(error)
+        if (error.name === 'NotAllowedError') {
+          this.qrErrorMsg = 'ERROR: you need to grant camera access permisson'
+          log.error('ERROR: you need to grant camera access permisson')
+        } else if (error.name === 'NotFoundError') {
+          this.qrErrorMsg = 'ERROR: no camera on this device'
+          log.error('ERROR: no camera on this device')
+        } else if (error.name === 'NotSupportedError') {
+          this.qrErrorMsg = 'ERROR: secure context required (HTTPS, localhost)'
+          log.error('ERROR: secure context required (HTTPS, localhost)')
+        } else if (error.name === 'NotReadableError') {
+          this.qrErrorMsg = 'ERROR: is the camera already in use?'
+          log.error('ERROR: is the camera already in use?')
+        } else if (error.name === 'OverconstrainedError') {
+          this.qrErrorMsg = 'ERROR: installed cameras are not suitable'
+          log.error('ERROR: installed cameras are not suitable')
+        } else if (error.name === 'StreamApiNotSupportedError') {
+          this.qrErrorMsg = 'ERROR: Stream Api Not Supported'
+          log.error('ERROR: Stream Api Not Supported')
+        }
+      }
+    },
+    closeQRScanner() {
+      this.camera = 'off'
+      this.showQrScanner = false
     },
   },
 }

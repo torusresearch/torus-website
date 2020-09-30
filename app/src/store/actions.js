@@ -38,6 +38,7 @@ import {
   tokenRatesControllerHandler,
   transactionControllerHandler,
   typedMessageManagerHandler,
+  walletConnectHandler,
 } from './controllerSubscriptions'
 import { HandlerFactory as createHandler } from './Handlers'
 import initialState from './state'
@@ -56,6 +57,7 @@ const {
   prefsController,
   networkController,
   assetDetectionController,
+  walletConnectController,
 } = torusController || {}
 
 // stream to send logged in status
@@ -112,6 +114,7 @@ export default {
     resetStore(prefsController.store, prefsControllerHandler, prefsController.initState)
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
+    resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(prefsController.paymentTxStore, paymentTxHandler, [])
     resetStore(prefsController.pastTransactionsStore, pastTransactionsHandler, [])
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
@@ -375,6 +378,7 @@ export default {
     prefsController.paymentTxStore.subscribe(paymentTxHandler)
     prefsController.pastTransactionsStore.subscribe(pastTransactionsHandler)
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
+    walletConnectController.store.subscribe(walletConnectHandler)
   },
   initTorusKeyring(_, payload) {
     return torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
@@ -506,6 +510,7 @@ export default {
       networkId,
       jwtToken,
       userInfo: { verifier },
+      wcConnectorSession,
     } = state
     try {
       // if jwtToken expires, logout
@@ -528,6 +533,7 @@ export default {
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
+        dispatch('initWalletConnect', { session: wcConnectorSession })
         log.info('rehydrated wallet')
         torus.updateStaticData({ isUnlocked: true })
       }
@@ -657,5 +663,11 @@ export default {
   },
   setUserBadge(context, payload) {
     prefsController.setUserBadge(payload)
+  },
+  initWalletConnect(_, payload) {
+    return walletConnectController.init(payload)
+  },
+  disconnectWalletConnect(_, __) {
+    return walletConnectController.disconnect()
   },
 }
