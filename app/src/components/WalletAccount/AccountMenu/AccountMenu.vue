@@ -26,11 +26,11 @@
             <div>{{ t('accountMenu.account') }}</div>
           </div>
         </v-list-item-title>
-        <v-list-item-icon>
+        <v-list-item-icon v-if="$vuetify.breakpoint.xsOnly">
           <div class="mr-5">
-            <v-btn icon color="torusBrand1" title="Capture QR" aria-label="Capture QR" @click="toggleWC">
-              <v-icon v-if="wcConnectorSession && wcConnectorSession.connected" size="20">$vuetify.icons.disconnect</v-icon>
-              <v-icon v-else size="45">$vuetify.icons.walletconnect</v-icon>
+            <v-btn small class="wallet-connect-btn" icon title="Capture QR" aria-label="Capture QR" @click="toggleWC">
+              <v-icon v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">$vuetify.icons.disconnect</v-icon>
+              <v-icon v-else size="16">$vuetify.icons.walletconnect</v-icon>
             </v-btn>
           </div>
         </v-list-item-icon>
