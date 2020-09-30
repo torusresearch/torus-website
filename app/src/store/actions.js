@@ -533,7 +533,7 @@ export default {
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
-        dispatch('initWalletConnect', { session: wcConnectorSession })
+        if (Object.keys(wcConnectorSession).length > 0) dispatch('initWalletConnect', { session: wcConnectorSession })
         log.info('rehydrated wallet')
         torus.updateStaticData({ isUnlocked: true })
       }
