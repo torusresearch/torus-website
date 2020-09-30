@@ -240,7 +240,6 @@ export default {
       lastUpdated: '',
       dialogOnboarding: false,
       activeTab: 0,
-      connector: null,
     }
   },
   computed: {

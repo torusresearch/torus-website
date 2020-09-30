@@ -19,7 +19,6 @@ class WalletConnectController {
 
   async init(options) {
     // options includes the uri
-    log.info(options, 'wc init options')
     // TODO: set origin if wallet connect in store.js
     // To kill session if the user scans a new uri
     if (this.walletConnector?.uri !== options?.uri && this.walletConnector?.killSession) this.walletConnector.killSession()
@@ -52,7 +51,7 @@ class WalletConnectController {
         log.info(`CALL REQUEST INTERNAL, ERROR ${err.message}`)
         this.walletConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${err.message}` } })
       }
-      payload.params[0].isWalletConnectRequest = 'true'
+      payload.isWalletConnectRequest = 'true'
       this.provider.send(payload, (error, res) => {
         if (error) {
           log.info(`FAILED REJECT REQUEST, ERROR ${error.message}`)
@@ -78,12 +77,10 @@ class WalletConnectController {
   }
 
   get sessionConfig() {
-    const a = {
+    return {
       chainId: this.network.getProviderConfig().chainId,
       accounts: [this.selectedAddress],
     }
-    log.info(a, 'session config')
-    return a
   }
 
   setSelectedAddress(address) {

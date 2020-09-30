@@ -76,9 +76,9 @@ const VuexStore = new Vuex.Store({
   actions: {
     ...actions,
     ...paymentActions,
-    async showPopup({ state }, { payload, preopenInstanceId }) {
+    async showPopup({ state }, { payload, request }) {
       const isTx = payload && typeof payload === 'object'
-      const confirmHandler = new ConfirmHandler(isTx ? payload.id : payload, preopenInstanceId)
+      const confirmHandler = new ConfirmHandler(isTx ? payload.id : payload, request.preopenInstanceId)
       confirmHandler.isTx = isTx
       confirmHandler.selectedCurrency = state.selectedCurrency
       confirmHandler.tokenRates = state.tokenRates
@@ -106,17 +106,15 @@ const VuexStore = new Vuex.Store({
         return
       }
       confirmHandler.balance = fromWei(weiBalance.toString())
-      if (payload.txParams.isWalletConnectRequest || payload.msgParams.isWalletConnectRequest) {
+      if (request.isWalletConnectRequest && window.location === window.parent.location && window.location.origin === config.baseUrl) {
         confirmHandler.open(handleConfirm, handleDeny)
-        log.debug(isTorusSignedMessage, config)
+      } else if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
+        handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
+      } else if (confirmHandler.txType === TX_MESSAGE && isTorusSignedMessage(confirmHandler.msgParams)) {
+        handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
+      } else {
+        confirmHandler.open(handleConfirm, handleDeny)
       }
-      // } else if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
-      //   handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
-      // } else if (confirmHandler.txType === TX_MESSAGE && isTorusSignedMessage(confirmHandler.msgParams)) {
-      //   handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
-      // } else {
-      //   confirmHandler.open(handleConfirm, handleDeny)
-      // }
     },
   },
 })
