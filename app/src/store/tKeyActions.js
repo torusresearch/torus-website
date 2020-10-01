@@ -89,7 +89,7 @@ export default {
         const tKeyInputWindow = new PopupWithBcHandler({
           url: finalUrl,
           target: '_blank',
-          features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500',
+          features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=760,width=500',
           channelName: `tkey_channel_${id}`,
         })
         const result = await tKeyInputWindow.handle()

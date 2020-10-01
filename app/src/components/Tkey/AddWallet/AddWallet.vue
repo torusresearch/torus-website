@@ -39,7 +39,7 @@
         <img :src="require(`../../../assets/images/ob-add-2fa${$vuetify.theme.dark ? '-dark' : ''}.svg`)" alt="Add 2-FA" />
       </div>
     </div>
-    <v-layout class="mx-n2 mt-9 mb-12">
+    <v-layout class="mx-n2 mt-9 mb-6">
       <v-flex class="xs6 px-2">
         <v-btn
           block

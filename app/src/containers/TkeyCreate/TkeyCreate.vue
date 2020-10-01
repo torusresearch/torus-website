@@ -117,7 +117,7 @@ export default {
             key,
             keySliced: addressSlicer(key),
             accountType,
-            icon: accountType === ACCOUNT_TYPE.THRESHOLD ? 'wallet_fill' : this.userInfo.typeOfLogin.toLowerCase(),
+            icon: accountType === ACCOUNT_TYPE.THRESHOLD ? 'wallet' : this.userInfo.typeOfLogin.toLowerCase(),
             title: accountType === ACCOUNT_TYPE.THRESHOLD ? this.t('tkeyCreateDone.yourWallet') : this.userInfo.verifierId,
           })
         return acc

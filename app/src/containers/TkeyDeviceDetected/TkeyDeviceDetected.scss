@@ -30,6 +30,9 @@
     ::v-deep .v-tabs-bar {
       background: none;
     }
+    .v-tab {
+      text-transform: none;
+    }
   }
   .v-tabs-items {
     background: none;
