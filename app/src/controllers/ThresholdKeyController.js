@@ -106,7 +106,7 @@ class ThresholdKeyController extends EventEmitter {
     }
 
     if (requiredShares <= 0) {
-      const privKey = await tKey.reconstructKey()
+      const { privKey } = await tKey.reconstructKey()
       if (descriptionBuffer.length > 0 || passwordEntered) {
         try {
           const response = await this.storeDeviceFlow()
@@ -122,7 +122,7 @@ class ThresholdKeyController extends EventEmitter {
       }
       await this.setSettingsPageData()
       window.removeEventListener('beforeunload', beforeUnloadHandler)
-      log.info(privKey.toString('hex'), 'privKey')
+      log.info(privKey.toString('hex', 64), 'privKey')
       return {
         ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
         privKey: privKey.toString('hex', 64),
@@ -240,12 +240,15 @@ class ThresholdKeyController extends EventEmitter {
 
   async createNewTKey({ postboxKey, password, backup }) {
     await this._init(postboxKey)
-    const { tKey } = this.state
+    const { tKey, settingsPageData = {} } = this.state
     if (password) await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
-    const privKey = await tKey.reconstructKey()
+    const { privKey } = await tKey.reconstructKey()
     if (backup) {
       try {
-        await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage()
+        const { deviceShare } = settingsPageData
+        if (deviceShare) {
+          await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage(deviceShare.share.shareIndex)
+        }
       } catch (error) {
         log.error(error)
         this.handleError(error)
