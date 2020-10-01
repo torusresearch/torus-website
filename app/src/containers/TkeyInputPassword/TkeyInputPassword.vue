@@ -3,7 +3,10 @@
     <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pa-0' : 'pa-4']">
       <v-layout class="justify-center">
         <v-flex class="xs12 sm10 md8 lg7">
-          <div class="new-device-container" :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '', { 'is-dark': $vuetify.theme.dark }]">
+          <div
+            class="new-device-container"
+            :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '', { 'is-dark': $vuetify.theme.dark, isDapp: urlInstance }]"
+          >
             <div class="text-center mb-10">
               <img src="../../assets/images/ob-verification.svg" alt="Verification Required" class="mr-2" />
             </div>
@@ -89,6 +92,9 @@ export default {
       if (!this.tKeyStore.securityQuestionShareUserInput) return {}
       return this.tKeyStore.securityQuestionShareUserInput
     },
+    urlInstance() {
+      return new URLSearchParams(window.location.search).get('instanceId')
+    },
   },
   watch: {
     selectedAddress(newAddress, oldAddress) {
@@ -118,9 +124,8 @@ export default {
       })
     },
     async setPasswordInput(details) {
-      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
-      if (urlInstance && urlInstance !== '') {
-        const bc = new BroadcastChannel(`tkey_channel_${urlInstance}`, broadcastChannelOptions)
+      if (this.urlInstance && this.urlInstance !== '') {
+        const bc = new BroadcastChannel(`tkey_channel_${this.urlInstance}`, broadcastChannelOptions)
         await bc.postMessage({
           data: {
             eventType: 'device_login_password',

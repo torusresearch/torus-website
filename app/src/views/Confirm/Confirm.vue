@@ -1,5 +1,6 @@
 <template>
   <v-container px-0 py-0 class="confirm-container">
+    <DappCreateTkey />
     <template v-if="type === TX_TRANSACTION">
       <v-layout pa-6 class="elevation-1">
         <v-flex text-center xs12>
@@ -239,7 +240,7 @@
             </v-list-item>
           </v-list>
         </v-flex>
-        <v-flex xs12 mt-8 mx-6>
+        <v-flex xs12 my-8 mx-6>
           <v-layout mx-n2>
             <v-flex xs6 px-2>
               <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
@@ -269,6 +270,7 @@ import VueJsonPretty from 'vue-json-pretty'
 import { mapGetters } from 'vuex'
 import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
+import DappCreateTkey from '../../components/helpers/DappCreateTkey'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
@@ -292,7 +294,6 @@ import {
   TX_TYPED_MESSAGE,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
-// import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
 import { addressSlicer, broadcastChannelOptions, significantDigits } from '../../utils/utils'
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
@@ -303,9 +304,9 @@ export default {
     VueJsonPretty,
     PopupScreenLoader,
     TransactionSpeedSelect,
-    // PermissionConfirm,
     NetworkDisplay,
     ShowToolTip,
+    DappCreateTkey,
   },
   data() {
     return {
