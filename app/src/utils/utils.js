@@ -304,7 +304,12 @@ export async function isSmartContractAddress(address, web3) {
 
 export function getEtherScanHashLink(txHash, network) {
   if (!ETHERSCAN_SUPPORTED_NETWORKS.has(network)) return ''
-  return network === 'mainnet' ? `https://etherscan.io/tx/${txHash}` : `https://${network}.etherscan.io/tx/${txHash}`
+  return network === MAINNET ? `https://etherscan.io/tx/${txHash}` : `https://${network}.etherscan.io/tx/${txHash}`
+}
+
+export function getEtherScanAddressLink(address, network) {
+  if (!ETHERSCAN_SUPPORTED_NETWORKS.has(network)) return ''
+  return network === MAINNET ? `https://etherscan.io/address/${address}` : `https://${network}.etherscan.io/address/${address}`
 }
 
 export const statusObject = {
@@ -510,7 +515,7 @@ export function selectChainId(network, store) {
 export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
 
 export const getIFrameOrigin = () => {
-  const originHref = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+  const originHref = window.location.ancestorOrigins?.length > 0 ? window.location.ancestorOrigins[0] : document.referrer
   return originHref
 }
 

@@ -39,6 +39,7 @@ import {
   tokenRatesControllerHandler,
   transactionControllerHandler,
   typedMessageManagerHandler,
+  walletConnectHandler,
 } from './controllerSubscriptions'
 import initialState from './state'
 
@@ -57,6 +58,7 @@ const {
   networkController,
   assetDetectionController,
   thresholdKeyController,
+  walletConnectController,
 } = torusController || {}
 
 // stream to send logged in status
@@ -114,6 +116,7 @@ export default {
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
+    resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
     resetStore(thresholdKeyController.store, tKeyHandler, {})
     assetDetectionController.stopAssetDetection()
@@ -343,6 +346,7 @@ export default {
     prefsController.store.subscribe(prefsControllerHandler)
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
     thresholdKeyController.store.subscribe(tKeyHandler)
+    walletConnectController.store.subscribe(walletConnectHandler)
   },
   async initTorusKeyring({ dispatch, commit, state }, payload) {
     const { keys, calledFromEmbed, rehydrate, postboxAddress } = payload
@@ -442,6 +446,7 @@ export default {
       jwtToken,
       userInfo: { verifier },
       tKeyStore,
+      wcConnectorSession,
     } = state
     try {
       // if jwtToken expires, logout
@@ -481,6 +486,7 @@ export default {
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
+        if (Object.keys(wcConnectorSession).length > 0) dispatch('initWalletConnect', { session: wcConnectorSession })
         log.info('rehydrated wallet')
         torus.updateStaticData({ isUnlocked: true })
       }
@@ -502,5 +508,11 @@ export default {
     widgetStream.write({
       data: payload,
     })
+  },
+  initWalletConnect(_, payload) {
+    return walletConnectController.init(payload)
+  },
+  disconnectWalletConnect(_, __) {
+    return walletConnectController.disconnect()
   },
 }

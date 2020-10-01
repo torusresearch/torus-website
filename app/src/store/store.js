@@ -54,6 +54,7 @@ if (storageAvailable('sessionStorage')) {
       defaultPublicAddress: state.defaultPublicAddress,
       tKeyStore: state.tKeyStore,
       tKeyExists: state.tKeyExists,
+      wcConnectorSession: state.wcConnectorSession,
     }),
   })
 }
@@ -85,7 +86,7 @@ const VuexStore = new Vuex.Store({
     ...paymentActions,
     ...preferencesActions,
     ...tKeyActions,
-    async showPopup({ state }, { payload, preopenInstanceId }) {
+    async showPopup({ state }, { payload, request }) {
       const isTx = payload && typeof payload === 'object'
       const windowId = isTx ? payload.id : payload
       const channelName = `torus_channel_${windowId}`
@@ -95,7 +96,7 @@ const VuexStore = new Vuex.Store({
         target: '_blank',
         features: FEATURES_POPUP_SMALL,
         channelName,
-        preopenInstanceId,
+        preopenInstanceId: request.preopenInstanceId,
       })
       const popupPayload = {
         id: windowId,
@@ -129,7 +130,18 @@ const VuexStore = new Vuex.Store({
       }
       popupPayload.balance = fromWei(weiBalance.toString())
 
-      if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
+      if (request.isWalletConnectRequest && window.location === window.parent.location && window.location.origin === config.baseUrl) {
+        try {
+          const result = await confirmWindow.handleWithHandshake({
+            payload: popupPayload,
+          })
+          const { approve = false } = result
+          if (approve) handleConfirm({ data: result })
+          else handleDeny(popupPayload.id, popupPayload.type)
+        } catch {
+          handleDeny(popupPayload.id, popupPayload.type)
+        }
+      } else if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: popupPayload.type, id: popupPayload.id } })
       } else if (popupPayload.type === TX_MESSAGE && isTorusSignedMessage(popupPayload.msgParams)) {
         handleConfirm({ data: { txType: popupPayload.type, id: popupPayload.id } })

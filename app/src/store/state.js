@@ -76,6 +76,7 @@ const initialState = {
   etherscanTx: [],
   badgesCompletion: {},
   tKeyStore: {},
+  wcConnectorSession: {},
 }
 
 export default initialState

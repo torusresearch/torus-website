@@ -168,13 +168,18 @@
               <NetworkDisplay :minimal="true" :network="transaction.networkType" :store-network-type="networkType"></NetworkDisplay>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item v-if="transaction.etherscanLink">
-            <v-list-item-content class="details-value text_2--text text-right mt-1">
-              <a class="etherscan-lnk" color="torusBrand1" :href="transaction.etherscanLink" target="_blank" rel="noreferrer noopener">
-                {{ t('walletActivity.viewOnEtherscan') }}
-              </a>
-            </v-list-item-content>
-          </v-list-item>
+          <div v-if="transaction.etherscanLink" class="text-right mr-4" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
+            <v-btn
+              class="torus-btn1 px-5"
+              :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+              :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
+              :href="transaction.etherscanLink"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {{ t('walletActivity.viewOnEtherscan') }}
+            </v-btn>
+          </div>
         </v-list>
       </v-flex>
     </v-layout>

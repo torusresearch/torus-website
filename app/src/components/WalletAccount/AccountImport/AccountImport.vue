@@ -7,7 +7,7 @@
         </v-flex>
         <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
           <v-flex xs12 mt-4>
-            <span class="text-subtitle-2">{{ t('accountMenu.selectImportType') }}</span>
+            <div class="text-subtitle-2 mb-2">{{ t('accountMenu.selectImportType') }}</div>
             <v-select
               v-model="selectedType"
               outlined
@@ -21,17 +21,17 @@
         </v-flex>
         <template v-if="selectedType === 'private'">
           <v-flex xs12>
-            <v-form ref="privateKeyForm" v-model="privateKeyFormValid" lazy-validation @submit.prevent="">
+            <v-form ref="privateKeyForm" v-model="privateKeyFormValid" lazy-validation aria-autocomplete="off" autocomplete="off" @submit.prevent="">
               <v-layout wrap>
                 <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
-                  <span class="text-subtitle-2">{{ t('accountMenu.inputPrivateKey') }}:</span>
+                  <div class="text-subtitle-2 mb-2">{{ t('accountMenu.inputPrivateKey') }}:</div>
                   <v-text-field
                     v-model="privateKey"
                     class="private-key"
                     outlined
                     :type="showPrivateKey ? 'text' : 'password'"
                     :rules="[rules.required]"
-                    name="private-key"
+                    :name="randomName"
                     :label="t('accountMenu.privateKey')"
                     single-line
                     @input="canShowError = false"
@@ -88,7 +88,7 @@
                   <div v-show="selectedFileName !== ''" class="text-right">{{ t('accountMenu.selectedFile') }}: {{ selectedFileName }}</div>
                 </v-flex>
                 <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
-                  <span class="text-subtitle-2">{{ t('accountMenu.enterPassword') }}:</span>
+                  <div class="text-subtitle-2 mb-2">{{ t('accountMenu.enterPassword') }}:</div>
                   <v-text-field
                     v-model="jsonPassword"
                     class="password-input"
@@ -97,6 +97,7 @@
                     :rules="[rules.required]"
                     :type="showJsonPassword ? 'text' : 'password'"
                     :placeholder="t('accountMenu.password')"
+                    autocomplete="current-password"
                     @click:append="toggleJsonPasswordShow"
                   >
                     <template v-slot:append>
@@ -141,6 +142,7 @@
 /* eslint-disable import/default */
 /* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable import/extensions */
+import randomId from '@chaitanyapotti/random-id'
 import { BroadcastChannel } from 'broadcast-channel'
 import { bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
@@ -185,6 +187,9 @@ export default {
           value: 'keystore',
         },
       ]
+    },
+    randomName() {
+      return `torus-${randomId()}`
     },
   },
   methods: {

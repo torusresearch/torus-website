@@ -16,7 +16,7 @@
             <v-flex xs12 mt-4>
               <v-layout wrap>
                 <v-flex xs12 sm6 px-4>
-                  <span class="text-subtitle-2">
+                  <div class="text-subtitle-2 mb-2">
                     {{ t('walletTransfer.gasPrice') }} (GWEI)
                     <HelpTooltip :title="t('walletTransfer.gasPrice')">
                       <template v-slot:description>
@@ -34,7 +34,7 @@
                         </div>
                       </template>
                     </HelpTooltip>
-                  </span>
+                  </div>
                   <v-text-field
                     id="gas-price"
                     :placeholder="t('walletTransfer.enterValue')"
@@ -46,10 +46,10 @@
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
-                  <span class="text-subtitle-2">
+                  <div class="text-subtitle-2 mb-2">
                     {{ t('walletTransfer.gasLimit') }}
                     <HelpTooltip :title="t('walletTransfer.gasLimit')" :description="t('walletTransfer.gasLimitDesc')"></HelpTooltip>
-                  </span>
+                  </div>
                   <v-text-field
                     id="advanced-gas"
                     :value="advancedGas"
@@ -60,7 +60,7 @@
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
-                  <span class="text-subtitle-2">Nonce</span>
+                  <div class="text-subtitle-2 mb-2">Nonce</div>
                   <v-combobox id="nonce" v-model="newNonce" outlined :items="nonceItems" :rules="[rules.validNonce]">
                     <template v-slot:item="props">
                       {{ t(props.item.text) }}
@@ -71,7 +71,7 @@
                   </v-combobox>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
-                  <span class="text-subtitle-2">{{ t('walletTransfer.transferFee') }}</span>
+                  <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.transferFee') }}</div>
                   <template v-if="$vuetify.breakpoint.xsOnly">
                     <span class="float-right">
                       <span id="transaction-fee-mobile">{{ gasAmountDisplay }}</span>
@@ -91,7 +91,7 @@
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
-                  <span class="text-subtitle-2">{{ t('walletTransfer.transferFee') }}</span>
+                  <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.transferFee') }}</div>
                   <template v-if="$vuetify.breakpoint.xsOnly">
                     <span class="float-right">
                       <span id="transaction-fee-mobile">{{ gasAmountDisplay }}</span>
@@ -111,7 +111,7 @@
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mt-5' : ''">
-                  <span class="text-subtitle-2">{{ t('walletTransfer.newTotal') }}</span>
+                  <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.newTotal') }}</div>
                   <template v-if="$vuetify.breakpoint.xsOnly">
                     <span class="float-right text-subtitle-1 font-weight-bold torusBrand1--text">
                       {{ totalCost }}{{ contractType !== CONTRACT_TYPE_ERC20 ? ` ${symbol}` : '' }}

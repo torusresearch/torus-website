@@ -35,11 +35,13 @@ import DeviceDetailedIcon from './DeviceDetailedIcon.vue'
 import DeviceIcon from './DeviceIcon.vue'
 import DeviceMobileIcon from './DeviceMobileIcon.vue'
 import DeviceTabletIcon from './DeviceTabletIcon.vue'
+import DisconnectIcon from './DisconnectIcon.vue'
 import DownloadIcon from './DownloadIcon.vue'
 import EthIcon from './EthIcon.vue'
 import GlobeIcon from './GlobeIcon.vue'
 import InfoIcon from './InfoIcon.vue'
 import KeyIcon from './KeyIcon.vue'
+import LinkIcon from './LinkIcon.vue'
 import ListIcon from './ListIcon.vue'
 import LockFilledIcon from './LockFilledIcon.vue'
 import LockIcon from './LockIcon.vue'
@@ -88,6 +90,7 @@ import VerifierWechatIcon from './VerifierWechatIcon.vue'
 import VerifierWeiboIcon from './VerifierWeiboIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
+import WalletConnectIcon from './WalletConnectIcon.vue'
 import WalletFillIcon from './WalletFillIcon.vue'
 import WalletIcon from './WalletIcon.vue'
 
@@ -367,5 +370,14 @@ export default {
   },
   copy_outline: {
     component: CopyOutlineIcon,
+  },
+  walletconnect: {
+    component: WalletConnectIcon,
+  },
+  disconnect: {
+    component: DisconnectIcon,
+  },
+  link: {
+    component: LinkIcon,
   },
 }
