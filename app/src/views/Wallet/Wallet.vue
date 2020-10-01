@@ -23,27 +23,31 @@
     <v-dialog v-else-if="badgesCollectibleDialog" v-model="badgesCollectibleDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_COLLECTIBLE]" @closeBadge="closeBadge" />
     </v-dialog> -->
-    <v-dialog v-model="showDialog" persistent width="375">
+    <v-dialog v-model="showDialog" persistent width="500">
       <v-card>
+        <ConfirmForm
+          :current-confirm-modal="currentConfirmModal"
+          :is-confirm-modal="true"
+          @triggerSign="handleConfirmModal"
+          @triggerDeny="handleConfirmModal"
+        />
+      </v-card>
+      <!-- <v-card>
         <v-card-title>Confirm</v-card-title>
         <v-card-text>Confirm or deny this tx {{ currentConfirmModal && currentConfirmModal.id }}</v-card-text>
         <v-card-actions>
-          <v-btn text color="deep-purple accent-4" @click="handleConfirmModal({ ...currentConfirmModal, approve: true })">
-            Confirm
-          </v-btn>
-          <v-btn text color="deep-purple accent-4" @click="handleConfirmModal({ ...currentConfirmModal, approve: false })">
-            Deny
-          </v-btn>
+          <v-btn text color="deep-purple accent-4" @click="handleConfirmModal({ ...currentConfirmModal, approve: true })">Confirm</v-btn>
+          <v-btn text color="deep-purple accent-4" @click="handleConfirmModal({ ...currentConfirmModal, approve: false })">Deny</v-btn>
         </v-card-actions>
-      </v-card>
+      </v-card> -->
     </v-dialog>
   </div>
 </template>
 
 <script>
-import log from 'loglevel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
+import ConfirmForm from '../../components/Confirm/ConfirmForm'
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
 // import BadgesAlert from '../../components/WalletHome/BadgesAlert'
@@ -53,6 +57,7 @@ export default {
   components: {
     Navbar,
     AccountMenu,
+    ConfirmForm,
     // BadgesAlert,
   },
   data() {
@@ -78,8 +83,20 @@ export default {
       return !!this.currentConfirmModal
     },
     currentConfirmModal() {
-      log.info(this.confirmModals, 'modals')
-      return this.confirmModals.length > 0 ? this.confirmModals[0] : undefined
+      if (this.confirmModals.length > 0) {
+        const { txType: type, txParams, selectedCurrency, currencyData, balance, networkType: network, jwtToken, tokenRates } = this.confirmModals[0]
+        return {
+          type,
+          txParams,
+          selectedCurrency,
+          currencyData,
+          balance,
+          network,
+          jwtToken,
+          tokenRates,
+        }
+      }
+      return undefined
     },
     headerItems() {
       const items = [
