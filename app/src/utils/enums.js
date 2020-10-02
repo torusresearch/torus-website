@@ -181,21 +181,26 @@ export const ACCOUNT_TYPE = {
 export const WEB_STORAGE_MODULE_KEY = 'webStorage'
 export const SECURITY_QUESTIONS_MODULE_KEY = 'securityQuestions'
 export const CHROME_EXTENSION_STORAGE_MODULE_KEY = 'chromeExtensionStorage'
+export const SHARE_TRANSFER_MODULE_KEY = 'shareTransfer'
 export const PASSWORD_QUESTION = 'what is your password?'
 export const THRESHOLD_KEY_PRIORITY_ORDER = [WEB_STORAGE_MODULE_KEY, SECURITY_QUESTIONS_MODULE_KEY, CHROME_EXTENSION_STORAGE_MODULE_KEY]
 
 export const THRESHOLD_KEY_QUESTION_INPUT = 'requestSecurityQuestionInput'
 export const THRESHOLD_KEY_STORE_DEVICE_FLOW = 'storeDeviceFlow'
+export const THRESHOLD_KEY_SHARE_TRANSFER_INPUT = 'requestShareTransferInput'
 
 export const TKEY_INPUT_PASSWORD_ROUTE = 'tkeyInputPassword'
 export const TKEY_STORE_DEVICE_ROUTE = 'tkeyDeviceDetected'
+export const TKEY_INPUT_SHARE_TRANSFER_ROUTE = 'tkeyShareTransfer'
 
 export const TKEY_INPUT_PASSWORD_ROUTE_PATH = 'input-password'
 export const TKEY_STORE_DEVICE_ROUTE_PATH = 'device-detected'
+export const TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH = 'share-transfer'
 
 export const THRESHOLD_KEY_INPUT_ROUTE_MAPPING = {
   [THRESHOLD_KEY_QUESTION_INPUT]: { name: TKEY_INPUT_PASSWORD_ROUTE, path: TKEY_INPUT_PASSWORD_ROUTE_PATH },
   [THRESHOLD_KEY_STORE_DEVICE_FLOW]: { name: TKEY_STORE_DEVICE_ROUTE, path: TKEY_STORE_DEVICE_ROUTE_PATH },
+  [THRESHOLD_KEY_SHARE_TRANSFER_INPUT]: { name: TKEY_INPUT_SHARE_TRANSFER_ROUTE, path: TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH },
 }
 
 export const STORAGE_MAP = {

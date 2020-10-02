@@ -69,6 +69,7 @@ describe('MetaMaskController', () => {
       platform: { showTransactionNotification: () => {} },
       requestSecurityQuestionInput: noop,
       showStoreDeviceFlow: noop,
+      requestShareTransferInput: noop,
     })
     // disable diagnostics
     metamaskController.diagnostics = null

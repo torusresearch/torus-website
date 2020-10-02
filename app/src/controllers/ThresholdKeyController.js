@@ -13,6 +13,7 @@ import {
   ERROR_TIME,
   PASSWORD_QUESTION,
   SECURITY_QUESTIONS_MODULE_KEY,
+  SHARE_TRANSFER_MODULE_KEY,
   STORAGE_MAP,
   THRESHOLD_KEY_PRIORITY_ORDER,
   WEB_STORAGE_MODULE_KEY,
@@ -34,6 +35,7 @@ class ThresholdKeyController extends EventEmitter {
     this.store = new ObservableStore({})
     this.requestSecurityQuestionInput = opts.requestSecurityQuestionInput
     this.showStoreDeviceFlow = opts.showStoreDeviceFlow
+    this.requestShareTransferInput = opts.requestShareTransferInput
   }
 
   async checkIfTKeyExists(postboxKey) {
@@ -52,7 +54,7 @@ class ThresholdKeyController extends EventEmitter {
     log.info(keyDetails)
     const { requiredShares: shareCount } = keyDetails
     let requiredShares = shareCount
-    const descriptionBuffer = []
+    let descriptionBuffer = []
     let passwordEntered = false
     let currentIndex = 0
 
@@ -76,7 +78,8 @@ class ThresholdKeyController extends EventEmitter {
             password = await this.getSecurityQuestionShareFromUserInput(currentShare)
           } catch {
             log.info('user is not willing to enter password')
-            break
+            // eslint-disable-next-line no-continue
+            continue
           }
           await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].inputShareFromSecurityQuestions(password)
           requiredShares -= 1
@@ -86,23 +89,27 @@ class ThresholdKeyController extends EventEmitter {
           log.warn(error, 'Unable to get user share from input')
           this.handleError('tkeyNew.errorIncorrectPass')
         }
+      } else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
+        // transfer share from other device
+        descriptionBuffer.push(currentShare)
       }
-      // else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
-      //   // default to password for now
-      //   await this.getShareFromChromeExtension()
-      //   requiredShares -= 1
-      // }
-      if (parsedShareDescriptions.length === currentIndex && requiredShares > 0 && descriptionBuffer.length > 0) {
-        await this.getShareFromAnotherDevice()
-        // TODO: remove when the method is implemented
-        window.removeEventListener('beforeunload', beforeUnloadHandler)
+    }
+
+    while (requiredShares > 0 && descriptionBuffer.length > 0) {
+      try {
+        const shareStore = await this.getShareFromAnotherDevice(descriptionBuffer)
+        descriptionBuffer = descriptionBuffer.filter((x) => x.shareIndex.toString('hex') !== shareStore.share.shareIndex.toString('hex'))
         requiredShares -= 1
+      } catch {
+        log.warn('User declined share transfer')
+        break
       }
-      if (parsedShareDescriptions.length === currentIndex && requiredShares > 0 && descriptionBuffer.length === 0) {
-        this.handleError('tkeyNew.errorCannotRecover')
-        window.removeEventListener('beforeunload', beforeUnloadHandler)
-        throw new Error('User lost his key')
-      }
+    }
+
+    if (requiredShares > 0 && descriptionBuffer.length === 0) {
+      this.handleError('tkeyNew.errorCannotRecover')
+      window.removeEventListener('beforeunload', beforeUnloadHandler)
+      throw new Error('Cannot recover key')
     }
 
     if (requiredShares <= 0) {
@@ -228,14 +235,32 @@ class ThresholdKeyController extends EventEmitter {
     if (password) this.emit(`${id}:securityquestion:finished`, { status: 'approved', password })
   }
 
-  async getShareFromChromeExtension() {
-    this.handleError('tkeyNew.errorNotSupported')
-    throw new TypeError('Not yet implemented')
+  getShareFromAnotherDevice(shareDescriptions) {
+    const id = createRandomId()
+    this.store.updateState({ shareTransferInput: { [id]: { shareDescriptions: parseShares(shareDescriptions), status: 'unapproved' } } })
+    this.requestShareTransferInput({ id, shareDescriptions })
+    const { tKey } = this.state
+    return tKey.modules[SHARE_TRANSFER_MODULE_KEY].requestNewShare(window.navigator.userAgent).then((encPubKey) => {
+      this.once(`${id}:sharetransfer:finished`, (data) => {
+        const { shareTransferInput } = this.state
+        this.store.updateState({
+          shareTransferInput: deepmerge(shareTransferInput, { [id]: { shareDescriptions, status: data.status } }),
+        })
+        switch (data.status) {
+          case 'approved':
+            return tKey.modules[SHARE_TRANSFER_MODULE_KEY].startRequestStatusCheck(encPubKey, true) // returns share promise
+          case 'rejected':
+            return Promise.reject(ethErrors.provider.userRejectedRequest('Torus Share Transfer: User denied transfer.'))
+          default:
+            return Promise.reject(new Error(`Torus Share Transfer: Unknown problem: ${JSON.stringify(shareTransferInput)}`))
+        }
+      })
+    })
   }
 
-  async getShareFromAnotherDevice() {
-    this.handleError('tkeyNew.errorNotSupported')
-    throw new TypeError('Not yet implemented')
+  async setShareTransferStatus(id, payload) {
+    const { success } = payload
+    this.emit(`${id}:sharetransfer:finished`, { status: success ? 'approved' : 'rejected' })
   }
 
   async createNewTKey({ postboxKey, password, backup }) {
@@ -295,30 +320,9 @@ class ThresholdKeyController extends EventEmitter {
       })
 
     // Total device shares
-    const allDeviceShares = parsedShareDescriptions.reduce((acc, x) => {
-      if (x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY || x.module === WEB_STORAGE_MODULE_KEY) {
-        const browserInfo = bowser.parse(x.userAgent)
-        const dateFormated = new Date(x.dateAdded).toLocaleString()
-
-        x.title = `${browserInfo.browser.name} ${dateFormated}`
-        x.browserName = x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? 'Chrome Extension' : `${browserInfo.browser.name}`
-
-        if (acc[x.shareIndex]) {
-          acc[x.shareIndex].browsers = [...acc[x.shareIndex].browsers, x]
-        } else {
-          const deviceInfo = `${STORAGE_MAP[x.module]} - ${browserInfo.os.name} ${browserInfo.browser.name}`
-          acc[x.shareIndex] = {
-            index: x.shareIndex,
-            osName: `${browserInfo.os.name} (${x.shareIndex.slice(0, 5)})`,
-            icon: browserInfo.platform.type,
-            groupTitle: deviceInfo,
-            dateAdded: x.dateAdded,
-            browsers: [x],
-          }
-        }
-      }
-      return acc
-    }, {})
+    const allDeviceShares = parseShares(
+      parsedShareDescriptions.filter((x) => x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY || x.module === WEB_STORAGE_MODULE_KEY)
+    )
 
     // For ondevice share
     try {
@@ -386,3 +390,28 @@ class ThresholdKeyController extends EventEmitter {
 }
 
 export default ThresholdKeyController
+function parseShares(parsedShareDescriptions) {
+  return parsedShareDescriptions.reduce((acc, x) => {
+    const browserInfo = bowser.parse(x.userAgent)
+    const dateFormated = new Date(x.dateAdded).toLocaleString()
+
+    x.title = `${browserInfo.browser.name} ${dateFormated}`
+    x.browserName = x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? 'Chrome Extension' : `${browserInfo.browser.name}`
+
+    if (acc[x.shareIndex]) {
+      acc[x.shareIndex].browsers = [...acc[x.shareIndex].browsers, x]
+    } else {
+      const deviceInfo = `${STORAGE_MAP[x.module]} - ${browserInfo.os.name} ${browserInfo.browser.name}`
+      acc[x.shareIndex] = {
+        index: x.shareIndex,
+        osName: `${browserInfo.os.name} (${x.shareIndex.slice(0, 5)})`,
+        icon: browserInfo.platform.type,
+        groupTitle: deviceInfo,
+        dateAdded: x.dateAdded,
+        browsers: [x],
+      }
+    }
+
+    return acc
+  }, {})
+}

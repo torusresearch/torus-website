@@ -4,7 +4,13 @@ import config from '../config'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import router from '../router'
 import torus from '../torus'
-import { ACCOUNT_TYPE, THRESHOLD_KEY_INPUT_ROUTE_MAPPING, THRESHOLD_KEY_QUESTION_INPUT, THRESHOLD_KEY_STORE_DEVICE_FLOW } from '../utils/enums'
+import {
+  ACCOUNT_TYPE,
+  THRESHOLD_KEY_INPUT_ROUTE_MAPPING,
+  THRESHOLD_KEY_QUESTION_INPUT,
+  THRESHOLD_KEY_SHARE_TRANSFER_INPUT,
+  THRESHOLD_KEY_STORE_DEVICE_FLOW,
+} from '../utils/enums'
 import { isMain } from '../utils/utils'
 
 const { baseRoute } = config
@@ -71,6 +77,8 @@ export default {
           dispatch('setSecurityQuestionShareFromUserInput', { id, password: '', rejected: true })
         } else if (type === THRESHOLD_KEY_STORE_DEVICE_FLOW) {
           dispatch('setStoreDeviceFlow', { id, response: '', rejected: true })
+        } else if (type === THRESHOLD_KEY_SHARE_TRANSFER_INPUT) {
+          dispatch('setShareTransferInput', { id, success: false })
         }
       }
       const handleSuccess = (data) => {
@@ -82,6 +90,9 @@ export default {
         } else if (eventType === 'set_store_device_flow') {
           const { id: keyId, response, rejected } = details
           dispatch('setStoreDeviceFlow', { id: keyId, response, rejected })
+        } else if (eventType === 'share_transfer_success') {
+          const { id: keyId, success } = details
+          dispatch('setShareTransferInput', { id: keyId, success })
         }
       }
       try {
@@ -109,6 +120,10 @@ export default {
     log.info('payload', payload)
     // response is { isOld: Boolean, oldIndex: '' }
     thresholdKeyController.setStoreDeviceFlow(id, { response, rejected })
+  },
+  setShareTransferInput(_, payload) {
+    const { id, success } = payload
+    thresholdKeyController.setShareTransferStatus(id, { success })
   },
   clearTkeyError() {
     return thresholdKeyController.clearTkeyError()
