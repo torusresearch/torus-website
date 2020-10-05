@@ -5,7 +5,7 @@ import TkeyCreate from './containers/TkeyCreate'
 import TkeyDeviceDetected from './containers/TkeyDeviceDetected'
 import TkeyInputDevice from './containers/TkeyInputDevice'
 import TkeyInputPassword from './containers/TkeyInputPassword'
-import TkeyInputShareTransfer from './containers/TkeyInputShareTransfer'
+// import TkeyInputShareTransfer from './containers/TkeyInputShareTransfer'
 import TkeyNewDevice from './containers/TkeyNewDevice'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
@@ -22,7 +22,7 @@ import WalletTransfer from './containers/WalletTransfer'
 import {
   TKEY_INPUT_PASSWORD_ROUTE,
   TKEY_INPUT_PASSWORD_ROUTE_PATH,
-  TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
+  // TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
   TKEY_STORE_DEVICE_ROUTE,
   TKEY_STORE_DEVICE_ROUTE_PATH,
 } from './utils/enums'
@@ -186,14 +186,14 @@ const router = new Router({
                 requiresAuth: false,
               },
             },
-            {
-              path: TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
-              name: TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
-              component: TkeyInputShareTransfer,
-              meta: {
-                requiresAuth: false,
-              },
-            },
+            // {
+            //   path: TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
+            //   name: TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
+            //   component: TkeyInputShareTransfer,
+            //   meta: {
+            //     requiresAuth: false,
+            //   },
+            // },
             {
               path: 'input-device',
               name: 'tkeyInputDevice',
