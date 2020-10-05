@@ -483,155 +483,166 @@ export default {
         this.calculateTransaction()
       }
     },
+    currentConfirmModal(newValue, oldValue) {
+      if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
+        this.updateConfirmModal()
+      }
+    },
   },
-  async mounted() {
-    if (!this.currentConfirmModal) return
-    const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, currencyData, network } =
-      this.currentConfirmModal || {}
-    this.selectedCurrency = selectedCurrency
-    this.currencyData = currencyData
-    this.balance = new BigNumber(balance)
-    log.info({ msgParams, txParams })
-    this.origin = origin
-    if (type !== TX_TRANSACTION) {
-      const { msgParams: { message, typedMessages } = {}, id = '' } = msgParams || {}
-      let finalTypedMessages = typedMessages
-      try {
-        finalTypedMessages = typedMessages && JSON.parse(typedMessages)
-      } catch (error) {
-        log.error(error)
-      }
-      this.id = id
-      this.message = message
-      this.typedMessages = finalTypedMessages
-    } else {
-      let finalValue = new BigNumber('0')
-      const { simulationFails, id, transactionCategory, methodParams, contractParams, txParams: txObject, userInfo } = txParams || {}
-      const { value, to, data, from: sender, gas, gasPrice } = txObject || {}
-      const { reason = '' } = simulationFails || {}
-      if (value) {
-        finalValue = new BigNumber(fromWei(value.toString()))
-      }
-      // Get ABI for method
-      let txDataParameters = ''
-      if (contractParams.erc721) {
-        txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
-        this.contractType = CONTRACT_TYPE_ERC721
-      } else if (contractParams.erc20) {
-        txDataParameters = tokenABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
-        this.contractType = CONTRACT_TYPE_ERC20
-      }
-      // Get Params from method type ABI
-      let amountTo
-      let amountValue
-      if (methodParams && Array.isArray(methodParams)) {
-        if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
-          ;[amountTo, amountValue] = methodParams || []
-        } else [amountTo, amountValue] = methodParams || []
-      }
-      log.info(methodParams, 'params')
-      const checkSummedTo = toChecksumAddress(to)
-      const tokenObject = contractParams
-      const decimals = new BigNumber(tokenObject.decimals || '0')
-      this.userInfo = userInfo
-      this.selectedToken = tokenObject.symbol || 'ERC20'
-      this.id = id
-      this.network = network
-      this.transactionCategory = transactionCategory
-      const gweiGasPrice = new BigNumber(hexToNumber(gasPrice)).div(weiInGwei)
-      // sending to who
-      this.amountTo = amountTo ? amountTo.value : checkSummedTo
-      // sending what value
-      this.amountValue = amountValue ? new BigNumber(amountValue.value).div(new BigNumber(10).pow(new BigNumber(decimals))) : new BigNumber('0')
-      // Get token and collectible info
-      if (methodParams && contractParams.erc20) {
-        let tokenRateMultiplier = tokenRates[checkSummedTo.toLowerCase()]
-        if (!tokenRateMultiplier) {
-          const pairs = checkSummedTo
-          const query = `contract_addresses=${pairs}&vs_currencies=eth`
-          let prices = {}
+  mounted() {
+    this.updateConfirmModal()
+  },
+  methods: {
+    async updateConfirmModal() {
+      if (!this.currentConfirmModal) return
+      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, currencyData, network } =
+        this.currentConfirmModal || {}
+      this.selectedCurrency = selectedCurrency
+      this.currencyData = currencyData
+      this.balance = new BigNumber(balance)
+      log.info({ msgParams, txParams })
+      this.origin = origin
+      if (type !== TX_TRANSACTION) {
+        const { msgParams: { message, typedMessages } = {}, id = '' } = msgParams || {}
+        let finalTypedMessages = typedMessages
+        try {
+          finalTypedMessages = typedMessages && JSON.parse(typedMessages)
+        } catch (error) {
+          log.error(error)
+        }
+        this.id = id
+        this.message = message
+        this.typedMessages = finalTypedMessages
+      } else {
+        let finalValue = new BigNumber('0')
+        const { simulationFails, id, transactionCategory, methodParams, contractParams, txParams: txObject, userInfo } = txParams || {}
+        const { value, to, data, from: sender, gas, gasPrice } = txObject || {}
+        const { reason = '' } = simulationFails || {}
+        if (value) {
+          finalValue = new BigNumber(fromWei(value.toString()))
+        }
+        // Get ABI for method
+        let txDataParameters = ''
+        if (contractParams.erc721) {
+          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          this.contractType = CONTRACT_TYPE_ERC721
+        } else if (contractParams.erc20) {
+          txDataParameters = tokenABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          this.contractType = CONTRACT_TYPE_ERC20
+        }
+        // Get Params from method type ABI
+        let amountTo
+        let amountValue
+        if (methodParams && Array.isArray(methodParams)) {
+          if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
+            ;[amountTo, amountValue] = methodParams || []
+          } else [amountTo, amountValue] = methodParams || []
+        }
+        log.info(methodParams, 'params')
+        const checkSummedTo = toChecksumAddress(to)
+        const tokenObject = contractParams
+        const decimals = new BigNumber(tokenObject.decimals || '0')
+        this.userInfo = userInfo
+        this.selectedToken = tokenObject.symbol || 'ERC20'
+        this.id = id
+        this.network = network
+        this.transactionCategory = transactionCategory
+        const gweiGasPrice = new BigNumber(hexToNumber(gasPrice)).div(weiInGwei)
+        // sending to who
+        this.amountTo = amountTo ? amountTo.value : checkSummedTo
+        // sending what value
+        this.amountValue = amountValue ? new BigNumber(amountValue.value).div(new BigNumber(10).pow(new BigNumber(decimals))) : new BigNumber('0')
+        // Get token and collectible info
+        if (methodParams && contractParams.erc20) {
+          let tokenRateMultiplier = tokenRates[checkSummedTo.toLowerCase()]
+          if (!tokenRateMultiplier) {
+            const pairs = checkSummedTo
+            const query = `contract_addresses=${pairs}&vs_currencies=eth`
+            let prices = {}
+            try {
+              prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
+              const lowerCheckSum = checkSummedTo.toLowerCase()
+              tokenRateMultiplier = prices[lowerCheckSum] && prices[lowerCheckSum].eth ? prices[lowerCheckSum].eth : 0 // token price in eth
+            } catch (error) {
+              log.info(error)
+            }
+          }
+          this.tokenPrice = new BigNumber(tokenRateMultiplier)
+          this.amountTokenValueConverted = this.tokenPrice.times(this.amountValue).times(this.currencyMultiplier)
+        } else if (methodParams && contractParams.erc721) {
+          log.info(methodParams, contractParams)
+          this.isNonFungibleToken = true
+          let assetDetails = {}
           try {
-            prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
-            const lowerCheckSum = checkSummedTo.toLowerCase()
-            tokenRateMultiplier = prices[lowerCheckSum] && prices[lowerCheckSum].eth ? prices[lowerCheckSum].eth : 0 // token price in eth
+            const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
+            assetDetails = await get(
+              `${config.api}/opensea?url=${url}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${jwtToken}`,
+                },
+              },
+              { useAPIKey: true }
+            )
+            this.assetDetails = {
+              name: assetDetails.data.name || '',
+              logo: assetDetails.data.image_thumbnail_url || '',
+            }
           } catch (error) {
             log.info(error)
           }
         }
-        this.tokenPrice = new BigNumber(tokenRateMultiplier)
-        this.amountTokenValueConverted = this.tokenPrice.times(this.amountValue).times(this.currencyMultiplier)
-      } else if (methodParams && contractParams.erc721) {
-        log.info(methodParams, contractParams)
-        this.isNonFungibleToken = true
-        let assetDetails = {}
-        try {
-          const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
-          assetDetails = await get(
-            `${config.api}/opensea?url=${url}`,
-            {
-              headers: {
-                Authorization: `Bearer ${jwtToken}`,
-              },
-            },
-            { useAPIKey: true }
-          )
-          this.assetDetails = {
-            name: assetDetails.data.name || '',
-            logo: assetDetails.data.image_thumbnail_url || '',
-          }
-        } catch (error) {
-          log.info(error)
+        this.currencyRateDate = this.getDate()
+        this.receiver = to // address of receiver
+        this.value = finalValue // value of eth sending
+        this.dollarValue = significantDigits(finalValue.times(this.currencyMultiplier))
+        this.gasPrice = gweiGasPrice // gas price in gwei
+        this.balanceUsd = significantDigits(this.balance.times(this.currencyMultiplier)) // in usd
+        this.gasEstimate = new BigNumber(hexToNumber(gas)) // gas number
+        this.gasEstimateDefault = new BigNumber(hexToNumber(gas)) // gas number
+        this.txData = data // data hex
+        this.txDataParams = txDataParameters !== '' ? JSON.stringify(txDataParameters, null, 2) : ''
+        this.sender = sender // address of sender
+        this.gasCost = gweiGasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
+        this.txFees = this.gasCost.times(this.currencyMultiplier)
+        const ethCost = finalValue.plus(this.gasCost)
+        this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
+        const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
+        this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
+        this.totalUsdCost = significantDigits(ethCost.times(this.currencyMultiplier))
+        if (reason) {
+          this.errorMsg = reason
+          this.canShowError = true
+        }
+        if (this.balance.lt(ethCost) && !this.canShowError) {
+          this.errorMsg = 'dappTransfer.insufficientFunds'
+          this.topUpErrorShow = true
         }
       }
-      this.currencyRateDate = this.getDate()
-      this.receiver = to // address of receiver
-      this.value = finalValue // value of eth sending
-      this.dollarValue = significantDigits(finalValue.times(this.currencyMultiplier))
-      this.gasPrice = gweiGasPrice // gas price in gwei
-      this.balanceUsd = significantDigits(this.balance.times(this.currencyMultiplier)) // in usd
-      this.gasEstimate = new BigNumber(hexToNumber(gas)) // gas number
-      this.gasEstimateDefault = new BigNumber(hexToNumber(gas)) // gas number
-      this.txData = data // data hex
-      this.txDataParams = txDataParameters !== '' ? JSON.stringify(txDataParameters, null, 2) : ''
-      this.sender = sender // address of sender
-      this.gasCost = gweiGasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
-      this.txFees = this.gasCost.times(this.currencyMultiplier)
-      const ethCost = finalValue.plus(this.gasCost)
-      this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
-      const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
-      this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-      this.totalUsdCost = significantDigits(ethCost.times(this.currencyMultiplier))
-      if (reason) {
-        this.errorMsg = reason
-        this.canShowError = true
-      }
-      if (this.balance.lt(ethCost) && !this.canShowError) {
-        this.errorMsg = 'dappTransfer.insufficientFunds'
-        this.topUpErrorShow = true
-      }
-    }
-    this.type = type // type of tx
-  },
-  methods: {
+      this.type = type // type of tx
+    },
     slicedAddress(user) {
       return addressSlicer(user) || '0x'
     },
     triggerSign() {
+      const gasPriceHex = `0x${this.gasPrice.times(weiInGwei).toString(16)}`
+      const gasHex = this.gasEstimate.eq(new BigNumber('0')) ? undefined : `0x${this.gasEstimate.toString(16)}`
+      const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
       if (this.isConfirmModal) {
         this.$emit('triggerSign', {
           id: this.id,
           txType: this.type,
-          gasPrice: this.gasPrice,
-          gas: this.gasEstimate,
-          customNonceValue: this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined,
+          gasPrice: gasPriceHex,
+          gas: gasHex,
+          customNonceValue,
           approve: true,
         })
       } else {
         this.$emit('triggerSign', {
           id: this.id,
-          gasPrice: this.gasPrice,
-          gasEstimate: this.gasEstimate,
-          nonce: this.nonce,
+          gasPrice: gasPriceHex,
+          gas: gasHex,
+          customNonceValue,
         })
       }
     },

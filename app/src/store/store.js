@@ -107,7 +107,6 @@ const VuexStore = new Vuex.Store({
       }
       confirmHandler.balance = fromWei(weiBalance.toString())
       if (request.isWalletConnectRequest && window.location === window.parent.location && window.location.origin === config.baseUrl) {
-        log.info('handling confirm modal')
         commit('addConfirmModal', JSON.parse(JSON.stringify(confirmHandler)))
       } else if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
@@ -118,10 +117,22 @@ const VuexStore = new Vuex.Store({
       }
     },
     handleConfirmModal({ commit }, payload) {
-      const { approve, id, txType } = payload
-      // const { id, txType, gasPrice, gas, customNonceValue, approve } = payload
-      if (approve) handleConfirm({ data: payload })
-      else handleDeny(id, txType)
+      const { gasPrice, gas, customNonceValue, id, approve, txType } = payload
+
+      if (approve) {
+        handleConfirm({
+          data: {
+            ...payload,
+            id,
+            gasPrice,
+            gas,
+            customNonceValue,
+            txType,
+          },
+        })
+      } else {
+        handleDeny(id, txType)
+      }
       commit('deleteConfirmModal', id)
     },
   },

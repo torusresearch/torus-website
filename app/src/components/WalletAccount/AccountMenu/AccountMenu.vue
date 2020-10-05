@@ -1,6 +1,6 @@
 <template>
   <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu">
-    <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
+    <v-dialog :value="showQrScanner" :width="showQrScannerState === 'loaded' ? 600 : 0" @click:outside="closeQRScanner">
       <div class="qr-scan-container">
         <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
         <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
@@ -166,7 +166,7 @@ export default {
       DISCORD,
       camera: 'off',
       qrErrorMsg: '',
-      showQrScanner: false,
+      showQrScannerState: '',
     }
   },
   computed: {
@@ -174,6 +174,9 @@ export default {
     ...mapGetters({
       wallets: 'walletBalances',
     }),
+    showQrScanner() {
+      return !!this.showQrScannerState
+    },
     userEmail() {
       return getUserEmail(this.userInfo)
     },
@@ -242,7 +245,7 @@ export default {
         this.disconnectWalletConnect()
       } else {
         this.camera = 'auto'
-        this.showQrScanner = true
+        this.showQrScannerState = 'loading'
       }
     },
     async onDecodeQr(result) {
@@ -253,12 +256,14 @@ export default {
         log.error(error)
       } finally {
         this.camera = 'off'
-        this.showQrScanner = false
+        this.showQrScannerState = ''
       }
     },
     async onInit(promise) {
       try {
         await promise
+        log.info('ONINIT IS BEING CALLED', this.showQrScannerState)
+        this.showQrScannerState = 'loaded'
       } catch (error) {
         log.error(error)
         if (error.name === 'NotAllowedError') {
@@ -284,7 +289,7 @@ export default {
     },
     closeQRScanner() {
       this.camera = 'off'
-      this.showQrScanner = false
+      this.showQrScannerState = ''
     },
   },
 }

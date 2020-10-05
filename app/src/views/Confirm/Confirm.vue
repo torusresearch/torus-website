@@ -8,14 +8,12 @@
 </template>
 
 <script>
-import BigNumber from 'bignumber.js'
 import { BroadcastChannel } from 'broadcast-channel'
 
 import ConfirmForm from '../../components/Confirm/ConfirmForm'
 import { PopupScreenLoader } from '../../content-loader'
 import { broadcastChannelOptions } from '../../utils/utils'
 
-const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
 export default {
   name: 'Confirm',
   components: {
@@ -62,15 +60,12 @@ export default {
     bc.postMessage({ name: 'popup-loaded', data: { id: queryParameterId } })
   },
   methods: {
-    async triggerSign({ gasPrice, gasEstimate, nonce, id }) {
+    async triggerSign({ gasPrice, gas, customNonceValue, id }) {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-      const gasPriceHex = `0x${gasPrice.times(weiInGwei).toString(16)}`
-      const gasHex = gasEstimate.eq(new BigNumber('0')) ? undefined : `0x${gasEstimate.toString(16)}`
-      const customNonceValue = nonce >= 0 ? `0x${nonce.toString(16)}` : undefined
 
       await bc.postMessage({
         name: 'tx-result',
-        data: { type: 'confirm-transaction', gasPrice: gasPriceHex, gas: gasHex, id, txType: this.type, customNonceValue },
+        data: { type: 'confirm-transaction', gasPrice, gas, id, txType: this.type, customNonceValue },
       })
       bc.close()
     },
