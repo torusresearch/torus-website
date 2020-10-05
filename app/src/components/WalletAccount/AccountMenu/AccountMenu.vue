@@ -1,6 +1,6 @@
 <template>
   <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu">
-    <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
+    <v-dialog v-model="showQrScanner" :width="qrLoading ? 0 : 600" @click:outside="closeQRScanner">
       <div class="qr-scan-container">
         <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
         <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
@@ -167,6 +167,7 @@ export default {
       camera: 'off',
       qrErrorMsg: '',
       showQrScanner: false,
+      qrLoading: true,
     }
   },
   computed: {
@@ -259,6 +260,7 @@ export default {
     async onInit(promise) {
       try {
         await promise
+        this.qrLoading = false
       } catch (error) {
         log.error(error)
         if (error.name === 'NotAllowedError') {

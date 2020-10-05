@@ -76,7 +76,7 @@ const VuexStore = new Vuex.Store({
   actions: {
     ...actions,
     ...paymentActions,
-    async showPopup({ state }, { payload, request }) {
+    async showPopup({ state, commit }, { payload, request }) {
       const isTx = payload && typeof payload === 'object'
       const confirmHandler = new ConfirmHandler(isTx ? payload.id : payload, request.preopenInstanceId)
       confirmHandler.isTx = isTx
@@ -107,7 +107,7 @@ const VuexStore = new Vuex.Store({
       }
       confirmHandler.balance = fromWei(weiBalance.toString())
       if (request.isWalletConnectRequest && window.location === window.parent.location && window.location.origin === config.baseUrl) {
-        confirmHandler.open(handleConfirm, handleDeny)
+        commit('addConfirmModal', JSON.parse(JSON.stringify(confirmHandler)))
       } else if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
       } else if (confirmHandler.txType === TX_MESSAGE && isTorusSignedMessage(confirmHandler.msgParams)) {
@@ -115,6 +115,25 @@ const VuexStore = new Vuex.Store({
       } else {
         confirmHandler.open(handleConfirm, handleDeny)
       }
+    },
+    handleConfirmModal({ commit }, payload) {
+      const { gasPrice, gas, customNonceValue, id, approve, txType } = payload
+
+      if (approve) {
+        handleConfirm({
+          data: {
+            ...payload,
+            id,
+            gasPrice,
+            gas,
+            customNonceValue,
+            txType,
+          },
+        })
+      } else {
+        handleDeny(id, txType)
+      }
+      commit('deleteConfirmModal', id)
     },
   },
 })
