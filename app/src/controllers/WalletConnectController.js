@@ -23,10 +23,9 @@ class WalletConnectController {
     // options includes the uri
     // TODO: set origin if wallet connect in store.js
     // To kill session if the user scans a new uri
-    log.info('INIT WALLETCONNECT', options)
     if (this.walletConnector?.uri !== options?.uri && this.walletConnector?.killSession) this.walletConnector.killSession()
-    if (!options.storage) {
-      options.storage = new WalletConnectNoopStorage()
+    if (!options.sessionStorage) {
+      options.sessionStorage = new WalletConnectNoopStorage()
     }
     this.walletConnector = new WalletConnect(options)
     log.info(this.walletConnector)
