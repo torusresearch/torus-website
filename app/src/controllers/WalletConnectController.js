@@ -2,7 +2,7 @@ import WalletConnect from '@walletconnect/client'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
-import WalletConnectSessionStorage from './WalletConnectSessionStorage'
+import WalletConnectNoopStorage from './WalletConnectNoopStorage'
 
 class WalletConnectController {
   constructor(options) {
@@ -25,7 +25,7 @@ class WalletConnectController {
     // To kill session if the user scans a new uri
     if (this.walletConnector?.uri !== options?.uri && this.walletConnector?.killSession) this.walletConnector.killSession()
     if (!options.sessionStorage) {
-      options.sessionStorage = new WalletConnectSessionStorage()
+      options.sessionStorage = new WalletConnectNoopStorage()
     }
     this.walletConnector = new WalletConnect(options)
     log.info(this.walletConnector)
