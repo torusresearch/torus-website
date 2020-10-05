@@ -3,10 +3,8 @@ import Router from 'vue-router'
 
 import TkeyCreate from './containers/TkeyCreate'
 import TkeyDeviceDetected from './containers/TkeyDeviceDetected'
-import TkeyInputDevice from './containers/TkeyInputDevice'
 import TkeyInputPassword from './containers/TkeyInputPassword'
-// import TkeyInputShareTransfer from './containers/TkeyInputShareTransfer'
-import TkeyNewDevice from './containers/TkeyNewDevice'
+import TkeyInputShareTransfer from './containers/TkeyInputShareTransfer'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
@@ -20,9 +18,12 @@ import {
 } from './containers/WalletTopup'
 import WalletTransfer from './containers/WalletTransfer'
 import {
+  TKEY_CREATE_ROUTE,
+  TKEY_CREATE_ROUTE_PATH,
   TKEY_INPUT_PASSWORD_ROUTE,
   TKEY_INPUT_PASSWORD_ROUTE_PATH,
-  // TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
+  TKEY_INPUT_SHARE_TRANSFER_ROUTE,
+  TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
   TKEY_STORE_DEVICE_ROUTE,
   TKEY_STORE_DEVICE_ROUTE_PATH,
 } from './utils/enums'
@@ -163,8 +164,8 @@ const router = new Router({
           component: Tkey,
           children: [
             {
-              path: '/',
-              name: 'tkeyCreate',
+              path: TKEY_CREATE_ROUTE,
+              name: TKEY_CREATE_ROUTE_PATH,
               component: TkeyCreate,
               meta: {
                 requiresAuth: false,
@@ -186,26 +187,10 @@ const router = new Router({
                 requiresAuth: false,
               },
             },
-            // {
-            //   path: TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
-            //   name: TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
-            //   component: TkeyInputShareTransfer,
-            //   meta: {
-            //     requiresAuth: false,
-            //   },
-            // },
             {
-              path: 'input-device',
-              name: 'tkeyInputDevice',
-              component: TkeyInputDevice,
-              meta: {
-                requiresAuth: false,
-              },
-            },
-            {
-              path: 'new-device',
-              name: 'tkeyNewDevice',
-              component: TkeyNewDevice,
+              path: TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
+              name: TKEY_INPUT_SHARE_TRANSFER_ROUTE,
+              component: TkeyInputShareTransfer,
               meta: {
                 requiresAuth: false,
               },

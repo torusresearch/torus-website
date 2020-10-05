@@ -32,7 +32,15 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
 // import BadgesAlert from '../../components/WalletHome/BadgesAlert'
-import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION } from '../../utils/enums'
+import {
+  BADGES_COLLECTIBLE,
+  BADGES_TOPUP,
+  BADGES_TRANSACTION,
+  TKEY_CREATE_ROUTE,
+  TKEY_INPUT_PASSWORD_ROUTE,
+  TKEY_INPUT_SHARE_TRANSFER_ROUTE,
+  TKEY_STORE_DEVICE_ROUTE,
+} from '../../utils/enums'
 
 export default {
   components: {
@@ -106,12 +114,12 @@ export default {
       return this.pastTransactions && this.pastTransactions.length > 0 && this.badgesCompletion[BADGES_TRANSACTION] === false
     },
     isTkeyScreen() {
-      return ['tkeyCreate', 'tkeyNewDevice', 'tkeyInputPassword', 'tkeyInputDevice', 'tkeyDeviceDetected'].includes(this.$route.name)
+      return [TKEY_CREATE_ROUTE, TKEY_INPUT_PASSWORD_ROUTE, TKEY_INPUT_SHARE_TRANSFER_ROUTE, TKEY_STORE_DEVICE_ROUTE].includes(this.$route.name)
     },
   },
   mounted() {
     if (Object.keys(this.wallet).length === 0) {
-      this.$router.push({ name: 'login' })
+      // this.$router.push({ name: 'login' })
     }
   },
   methods: {
