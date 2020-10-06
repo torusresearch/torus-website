@@ -1,6 +1,7 @@
-import WalletConnect from '@walletconnect/client'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
+
+import WalletConnect from './WalletConnect'
 
 class WalletConnectController {
   constructor(options) {
