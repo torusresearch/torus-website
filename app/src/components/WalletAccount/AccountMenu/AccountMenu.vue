@@ -1,5 +1,8 @@
 <template>
   <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu">
+    <v-dialog v-if="qrErrorMsg !== ''">
+      {{ qrErrorMsg }}
+    </v-dialog>
     <v-dialog v-model="showQrScanner" :width="qrLoading ? 0 : 600" @click:outside="closeQRScanner">
       <div class="qr-scan-container">
         <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
