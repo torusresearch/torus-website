@@ -1,89 +1,59 @@
 <template>
   <v-layout>
     <v-flex xs12 text-center>
-      <v-dialog :value="loginDialog && showModal" max-width="375" persistent>
+      <v-dialog class="login-dialog-modal" :value="loginDialog && showModal" :fullscreen="$vuetify.breakpoint.width < 385" max-width="375" persistent>
         <v-card class="login-dialog-container">
-          <v-layout wrap>
-            <v-flex text-center class="login-header" xs12 pt-8 pb-6 px-6>
-              <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? '50' : '30'" :src="getLogo.logo" />
-              <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="closeDialog">
-                <v-icon>$vuetify.icons.close</v-icon>
-              </v-btn>
-            </v-flex>
-          </v-layout>
-          <v-layout wrap pa-6>
-            <v-flex xs12>
-              <div class="verifier-title headline torus_text--text font-weight-bold">
-                <span v-if="$vuetify.breakpoint.xsOnly">
-                  {{ t('login.your') }}
-                  <img
-                    :src="require(`../../../assets/images/login-verifiers-${$vuetify.theme.dark ? 'dark' : 'light'}.gif`)"
-                    alt="Login Verifier Icon"
-                  />
-                </span>
-                <span v-else>
-                  {{ t('login.your') }}
-                  <span v-if="activeButton === GOOGLE_VERIFIER">
-                    <span class="verifier-title__google-blue">G</span>
-                    <span class="verifier-title__google-red">o</span>
-                    <span class="verifier-title__google-yellow">o</span>
-                    <span class="verifier-title__google-blue">g</span>
-                    <span class="verifier-title__google-green">l</span>
-                    <span class="verifier-title__google-red">e</span>
-                  </span>
-                  <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButtonDetails.name.toLowerCase()}`">
-                    {{ activeButtonDetails.name }}
-                  </span>
-                </span>
-              </div>
-              <div class="font-weight-bold verifier-subtitle torus_text--text">
-                {{ t('login.digitalWallet') }}
-              </div>
-            </v-flex>
-            <v-flex xs12 mt-7>
-              <div class="text-body-1 torus_text--text">{{ t('login.signUpIn') }}</div>
-            </v-flex>
-            <v-flex xs12>
-              <v-layout wrap mx-n1>
-                <v-flex v-for="verifier in loginButtons" :key="verifier.verifier" xs4 px-1 mt-2>
-                  <v-btn
-                    block
-                    class="login-btn"
-                    :class="{ active: verifier.verifier === activeButton }"
-                    type="button"
-                    :title="`${t('login.loginWith')} ${verifier.name}`"
-                    @mouseover="loginBtnHover(verifier.verifier)"
-                    @click="startLogin(verifier.verifier)"
-                  >
-                    <img
-                      v-if="verifier.verifier === activeButton || $vuetify.breakpoint.xsOnly"
-                      :src="verifier.logoHover || require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)"
-                      :alt="`${verifier.name} Icon`"
-                    />
-                    <img v-else-if="$vuetify.theme.isDark && verifier.logoLight" :src="verifier.logoLight" :alt="`${verifier.name} Icon`" />
-                    <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
-                    <v-icon v-else size="30" :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
-                      {{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}
-                    </v-icon>
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-            </v-flex>
-            <v-flex v-if="loginButtonsLong.length > 0" xs12 mt-4 class="text-center">
-              <div class="d-flex align-center">
+          <div class="px-6 pt-10 mb-8">
+            <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="closeDialog">
+              <v-icon>$vuetify.icons.close</v-icon>
+            </v-btn>
+            <div class="display-1 text_2--text">
+              <span>{{ t('dappLogin.signIn') }}</span>
+            </div>
+            <div class="headline font-weight-regular text_2--text">{{ t('dappLogin.yourDigital') }}</div>
+          </div>
+          <div :class="{ 'has-more': viewMoreOptions }" class="login-btns-container mx-6">
+            <v-btn
+              v-if="showGoogleLogin"
+              id="loginBtn"
+              block
+              large
+              :color="$vuetify.theme.dark ? '' : 'white'"
+              :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-google`]"
+              class="text_2--text login-btn-long mb-2"
+              @click="startLogin(GOOGLE_VERIFIER)"
+            >
+              <img class="mr-5" src="../../../assets/img/icons/login-google.svg" :class="$vuetify.theme.dark ? 'torus-dark' : ''" alt="Google Icon" />
+              {{ t('dappLogin.continue') }} Google
+            </v-btn>
+            <v-layout wrap mx-n1>
+              <v-flex v-for="verifier in loginButtons" :key="verifier.verifier" xs4 px-1>
+                <v-btn
+                  block
+                  class="login-btn active"
+                  type="button"
+                  :title="`${t('login.loginWith')} ${verifier.name}`"
+                  @click="startLogin(verifier.verifier)"
+                >
+                  <img :src="require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)" :alt="`${verifier.name} Icon`" />
+                </v-btn>
+              </v-flex>
+            </v-layout>
+            <v-flex xs12 mt-4 class="text-center">
+              <div class="d-flex align-center mb-4">
                 <v-divider></v-divider>
                 <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
                   <div class="body-2 text_2--text">{{ t('login.or') }}</div>
                 </div>
                 <v-divider></v-divider>
               </div>
-              <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="mt-4">
+              <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="mb-2">
                 <v-btn
                   :id="`${verifier.name}LoginBtn`"
                   :color="$vuetify.theme.dark ? '' : 'white'"
                   block
                   :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-${verifier.name.toLowerCase()}`]"
-                  class="text-body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
+                  class="text_2--text login-btn-long"
                   @click="startLogin(verifier.verifier)"
                 >
                   <img
@@ -100,45 +70,58 @@
                     :src="verifier.logoDark"
                     :alt="`${verifier.name} Icon`"
                   />
-                  <v-icon v-else class="mr-4">{{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}</v-icon>
-                  {{ t(verifier.description) }}
+                  <img
+                    v-else
+                    class="mr-4"
+                    height="20"
+                    :src="
+                      verifier.logoHover ||
+                      require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}${
+                        $vuetify.theme.isDark && verifier.hasLightLogo ? '-light' : ''
+                      }.svg`)
+                    "
+                    :alt="`${verifier.name} Icon`"
+                  />
+                  <span>
+                    {{ t('dappLogin.continue') }}
+                    <span class="text-capitalize">{{ verifier.name }}</span>
+                  </span>
                 </v-btn>
               </div>
             </v-flex>
-            <v-flex xs12 mb-6 class="footer-notes">
-              <div v-if="!canHideDisclaimer1" class="text_3--text mb-4">
-                <span>{{ t('dappLogin.termsAuth01') }}</span>
-                <br />
-                <span>{{ t('dappLogin.termsAuth02') }}</span>
-                <a
-                  class="privacy-learn-more text_3--text"
-                  href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  {{ t('dappLogin.termsLearnMore') }}
-                </a>
-              </div>
-              <v-divider class="mb-4"></v-divider>
-              <div class="d-flex justify-center footer-links">
-                <div class="mr-4">
-                  <a :href="tncLink" target="_blank" rel="noreferrer noopener">
-                    {{ t('dappLogin.termsConditions') }}
-                  </a>
-                </div>
-                <div class="mr-4">
-                  <a :href="privacyPolicy" target="_blank" rel="noreferrer noopener">
-                    {{ t('dappLogin.privacyPolicy') }}
-                  </a>
-                </div>
-                <div class="mr-4">
-                  <a :href="contactLink" target="_blank" rel="noreferrer noopener">
-                    {{ t('dappLogin.contactUs') }}
-                  </a>
-                </div>
-              </div>
-            </v-flex>
-          </v-layout>
+          </div>
+          <div class="d-flex align-center px-6 mb-10">
+            <v-spacer></v-spacer>
+            <a :class="{ 'has-more': viewMoreOptions }" class="view-option-selector" @click="viewMoreOptions = !viewMoreOptions">
+              <span class="body-2 torusBrand1--text">{{ viewMoreOptions ? t('dappLogin.viewLess') : t('dappLogin.viewMore') }}</span>
+              <v-icon class="torusBrand1--text">$vuetify.icons.select</v-icon>
+            </a>
+          </div>
+          <div v-if="!canHideDisclaimer1 && !viewMoreOptions" class="text_3--text mb-10 px-6 footer-notes">
+            <span>{{ t('dappLogin.termsAuth01') }}</span>
+            <br />
+            <span>{{ t('dappLogin.termsAuth02') }}</span>
+            <a
+              class="privacy-learn-more text_3--text"
+              href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {{ t('dappLogin.termsLearnMore') }}
+            </a>
+          </div>
+          <div class="d-flex justify-center caption footer-links pt-3 pb-4" :class="{ smallScreen: $vuetify.breakpoint.width < 385 }">
+            <div>
+              <a class="text-decoration-none text_2--text" :href="tncLink" target="_blank" rel="noreferrer noopener">
+                {{ t('dappLogin.termsConditions') }}
+              </a>
+            </div>
+            <v-divider class="mx-3" vertical></v-divider>
+            <div class="d-flex align-center">
+              <span class="text_2--text mr-1">{{ t('dappLogin.poweredBy') }}</span>
+              <img alt="Torus Logo" height="10" :src="getLogo.logo" />
+            </div>
+          </div>
         </v-card>
       </v-dialog>
       <PasswordlessLogin
@@ -159,7 +142,9 @@ import log from 'loglevel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import PasswordlessLogin from '../../../components/helpers/PasswordLessLogin'
-import { GITHUB, GOOGLE_VERIFIER, PASSWORDLESS, TWITTER } from '../../../utils/enums'
+import { DISCORD_VERIFIER, FACEBOOK_VERIFIER, GITHUB, GOOGLE_VERIFIER, PASSWORDLESS, TWITTER, TWITTER_VERIFIER } from '../../../utils/enums'
+
+const DAPP_MAIN_LOGIN = [FACEBOOK_VERIFIER, TWITTER_VERIFIER, DISCORD_VERIFIER]
 
 export default {
   name: 'PopupLogin',
@@ -175,19 +160,24 @@ export default {
       GOOGLE_VERIFIER,
       PASSWORDLESS,
       showModal: true,
-      activeButton: '',
       passwordlessLoginDialog: false,
       passwordlessEmailSent: false,
+      DAPP_MAIN_LOGIN,
+      viewMoreOptions: false,
     }
   },
   computed: {
     ...mapGetters(['loginButtonsArray', 'getLogo']),
-    ...mapState(['whiteLabel']),
+    ...mapState({
+      whiteLabel: 'whiteLabel',
+      loginConfig: (state) => state.embedState.loginConfig,
+    }),
     loginButtons() {
-      return this.loginButtonsArray.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => DAPP_MAIN_LOGIN.includes(button.verifier))
     },
     loginButtonsLong() {
-      return this.loginButtonsArray.filter((button) => button.description && button.typeOfLogin !== PASSWORDLESS)
+      const buttons = this.loginButtonsArray.filter((button) => !DAPP_MAIN_LOGIN.includes(button.verifier) && button.verifier !== GOOGLE_VERIFIER)
+      return this.viewMoreOptions ? buttons : buttons.slice(0, 1)
     },
     localeSelected() {
       return this.$vuetify.lang.current
@@ -226,17 +216,11 @@ export default {
       const isUsingSpecialLogin = this.loginButtonsArray.some((x) => (x.typeOfLogin === GITHUB || x.typeOfLogin === TWITTER) && x.showOnModal)
       return disclaimerHide && !isUsingSpecialLogin && isActive
     },
-    activeButtonDetails() {
-      return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
+    showGoogleLogin() {
+      return this.loginConfig[GOOGLE_VERIFIER].showOnModal
     },
-  },
-  mounted() {
-    this.activeButton = (this.loginButtons.concat(this.loginButtonsLong)[0] || { verifier: GOOGLE_VERIFIER }).verifier
   },
   methods: {
-    loginBtnHover(verifier) {
-      if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
-    },
     async startLogin(verifier) {
       if (verifier === PASSWORDLESS) {
         this.passwordlessLoginDialog = true

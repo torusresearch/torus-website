@@ -56,7 +56,14 @@
                           :title="`${t('login.loginWith')} ${verifier.name}`"
                           @click="startLogin(verifier.verifier)"
                         >
-                          <img :src="require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)" :alt="`${verifier.name} Icon`" />
+                          <img
+                            :src="
+                              require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}${
+                                $vuetify.theme.isDark && verifier.hasLightLogo ? '-light' : ''
+                              }.svg`)
+                            "
+                            :alt="`${verifier.name} Icon`"
+                          />
                         </v-btn>
                       </v-flex>
                     </v-layout>

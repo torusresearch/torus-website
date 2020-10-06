@@ -261,7 +261,7 @@ export default {
   jwt: {
     component: VerifierJwtIcon,
   },
-  passwordless: {
+  email: {
     component: VerifierPasswordlessIcon,
   },
   apple: {
