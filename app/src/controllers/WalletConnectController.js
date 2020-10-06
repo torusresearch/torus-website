@@ -95,6 +95,10 @@ class WalletConnectController {
     this.walletConnector?.updateSession(this.sessionConfig)
     if (this.walletConnector) this.setStoreSession()
   }
+
+  getPeerMetaURL() {
+    return this.walletConnector?.peerMeta?.url
+  }
 }
 
 export default WalletConnectController
