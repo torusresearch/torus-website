@@ -501,7 +501,7 @@ export default {
       this.currencyData = currencyData
       this.balance = new BigNumber(balance)
       log.info({ msgParams, txParams })
-      this.origin = origin
+      this.origin = origin || this.origin
       if (type !== TX_TRANSACTION) {
         const { msgParams: { message, typedMessages } = {}, id = '' } = msgParams || {}
         let finalTypedMessages = typedMessages

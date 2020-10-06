@@ -107,6 +107,15 @@ const VuexStore = new Vuex.Store({
       }
       confirmHandler.balance = fromWei(weiBalance.toString())
       if (request.isWalletConnectRequest && window.location === window.parent.location && window.location.origin === config.baseUrl) {
+        const originObj = { href: '', hostname: '' }
+        try {
+          const peerMetaURL = new URL(torus.torusController.walletConnectController.getPeerMetaURL())
+          originObj.href = peerMetaURL.href
+          originObj.hostname = peerMetaURL.hostname
+        } catch (error) {
+          log.error('could not get peer meta URL for walletconnect', error)
+        }
+        confirmHandler.origin = originObj
         commit('addConfirmModal', JSON.parse(JSON.stringify(confirmHandler)))
       } else if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
