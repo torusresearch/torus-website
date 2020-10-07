@@ -119,7 +119,7 @@ export default {
   },
   mounted() {
     if (Object.keys(this.wallet).length === 0) {
-      // this.$router.push({ name: 'login' })
+      this.$router.push({ name: 'login' })
     }
   },
   methods: {

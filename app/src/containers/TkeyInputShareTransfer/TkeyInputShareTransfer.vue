@@ -69,36 +69,22 @@
                     <v-icon v-else small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
                   </v-expansion-panel-header>
                   <v-expansion-panel-content class="pa-5">
-                    <v-form v-model="validPasswordForm">
+                    <v-form v-model="validVerifyPasswordForm" @submit.prevent="onVerifyPassword">
                       <v-text-field
-                        v-model="recoveryPassword"
-                        :readonly="!!finalRecoveryPassword"
-                        :append-icon="showRecoveryPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
-                        :type="showRecoveryPassword ? 'text' : 'password'"
-                        :rules="[rules.required, rules.minLength]"
+                        v-model="verifyPassword"
+                        :append-icon="showVerifyPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
+                        :type="showVerifyPassword ? 'text' : 'password'"
+                        :rules="[rules.required]"
                         outlined
-                        :placeholder="t('tkeyCreateSetup.minAlphaNumeric')"
-                        autocomplete="new-password"
-                        @click:append="showRecoveryPassword = !showRecoveryPassword"
-                      />
-                      <v-text-field
-                        v-if="!finalRecoveryPassword"
-                        v-model="recoveryPasswordConfirm"
-                        :append-icon="showRecoveryPasswordConfirm ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
-                        :type="showRecoveryPasswordConfirm ? 'text' : 'password'"
-                        :rules="[rules.required, equalToPassword]"
-                        outlined
-                        :placeholder="t('tkeyCreateSetup.confirmPassword')"
-                        @click:append="showRecoveryPasswordConfirm = !showRecoveryPasswordConfirm"
+                        :placeholder="t('tkeyNew.enterPassword')"
+                        @click:append="showVerifyPassword = !showVerifyPassword"
                       />
                       <div class="text-right">
                         <v-btn
-                          v-if="!finalRecoveryPassword"
-                          type="button"
-                          :disabled="!validPasswordForm"
+                          type="submit"
+                          :disabled="!validVerifyPasswordForm"
                           class="caption white--text font-weight-bold px-10"
                           color="torusBrand1"
-                          @click="setFinalPassword"
                         >
                           Confirm
                         </v-btn>
@@ -297,17 +283,13 @@ export default {
   data() {
     return {
       tKeyStore: TKEY_STORE,
-      validPasswordForm: true,
-      recoveryPassword: '',
-      finalRecoveryPassword: '',
-      showRecoveryPassword: false,
-      recoveryPasswordConfirm: '',
-      showRecoveryPasswordConfirm: false,
+      validVerifyPasswordForm: true,
+      verifyPassword: '',
+      showVerifyPassword: false,
       recoveryPasswordSucess: false,
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
         minLength: (v) => passwordValidation(v) || this.t('tkeyCreateSetup.passwordRules'),
-        equalToPassword: (value) => value === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch'),
       },
     }
   },
@@ -326,17 +308,14 @@ export default {
         })
         .sort((a, b) => b.dateAdded - a.dateAdded)
     },
-    equalToPassword() {
-      return this.recoveryPasswordConfirm === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch')
-    },
     hasPasswordSetUp() {
       // Check if user has a password
       return true
     },
   },
   methods: {
-    setFinalPassword() {
-      // Set new password
+    onVerifyPassword() {
+      // verify password
       this.recoveryPasswordSucess = true
     },
     verifiedWithDevice() {
