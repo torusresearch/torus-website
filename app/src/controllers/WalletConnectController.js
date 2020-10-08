@@ -1,6 +1,7 @@
-import WalletConnect from '@walletconnect/client'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
+
+import WalletConnect from './WalletConnect'
 
 class WalletConnectController {
   constructor(options) {
@@ -12,7 +13,7 @@ class WalletConnectController {
   }
 
   async disconnect() {
-    this.walletConnector.killSession({ message: 'User disconnected' })
+    this.walletConnector.killSession()
     this.walletConnector = undefined
     this.store.putState({})
   }
@@ -93,6 +94,10 @@ class WalletConnectController {
   updateSession() {
     this.walletConnector?.updateSession(this.sessionConfig)
     if (this.walletConnector) this.setStoreSession()
+  }
+
+  getPeerMetaURL() {
+    return this.walletConnector?.peerMeta?.url
   }
 }
 

@@ -114,6 +114,7 @@ export default {
     resetStore(prefsController.store, prefsControllerHandler, prefsController.initState)
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
+    walletConnectController.disconnect()
     resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(prefsController.paymentTxStore, paymentTxHandler, [])
     resetStore(prefsController.pastTransactionsStore, pastTransactionsHandler, [])
