@@ -98,7 +98,7 @@ function resetStore(store, handler, initState) {
 }
 
 export default {
-  logOut({ commit, state }, _) {
+  async logOut({ commit, state }, _) {
     commit('logOut', { ...initialState, networkType: state.networkType, networkId: state.networkId })
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
@@ -114,7 +114,7 @@ export default {
     resetStore(prefsController.store, prefsControllerHandler, prefsController.initState)
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
-    walletConnectController.disconnect()
+    await walletConnectController.disconnect()
     resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(prefsController.paymentTxStore, paymentTxHandler, [])
     resetStore(prefsController.pastTransactionsStore, pastTransactionsHandler, [])
