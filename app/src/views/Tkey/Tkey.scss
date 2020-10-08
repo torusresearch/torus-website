@@ -16,9 +16,13 @@
     }
   }
 
+  .v-btn:not(.v-btn--round).v-size--large {
+    height: 40px;
+  }
+
   .v-divider, hr {
     border: 0;
-    border-top: 0.5px solid #A2A5B5;
+    border-top: 0.5px solid #B3C0CE;
   }
 
   .v-sheet.v-app-bar.v-toolbar:not(.v-sheet--outlined).header-container {

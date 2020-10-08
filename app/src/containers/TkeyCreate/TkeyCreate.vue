@@ -28,7 +28,7 @@
 
                 <HelpTooltip title="Wallet Address">
                   <template v-slot:description>
-                    <div class="body-2 text-justify">{{ t('tkeyCreate.walletAddressDesc') }}</div>
+                    <div class="caption text_3--text">{{ t('tkeyCreate.walletAddressDesc') }}</div>
                   </template>
                 </HelpTooltip>
               </div>
