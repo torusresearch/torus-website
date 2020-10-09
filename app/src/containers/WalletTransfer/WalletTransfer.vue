@@ -210,7 +210,9 @@
                   v-if="contractType !== CONTRACT_TYPE_ERC721"
                   id="you-send"
                   ref="youSend"
-                  :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
+                  :hint="
+                    amount <= 0 ? '' : convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''
+                  "
                   persistent-hint
                   type="number"
                   outlined
