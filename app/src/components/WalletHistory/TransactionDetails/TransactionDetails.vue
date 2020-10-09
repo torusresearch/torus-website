@@ -20,7 +20,7 @@
                 (transaction.type === CONTRACT_TYPE_ERC20 && transaction.actionIcon !== 'n/a') ||
                 transaction.action === ACTIVITY_ACTION_TOPUP ||
                 (transaction.type === CONTRACT_TYPE_ERC721 && transaction.actionIcon !== 'n/a') ||
-                transaction.type === ETH
+                transaction.type === CONTRACT_TYPE_ETH
               ),
           }"
         >
@@ -61,7 +61,7 @@
             $vuetify.icons.collectibles
           </v-icon>
           <img
-            v-else
+            v-else-if="transaction.type === CONTRACT_TYPE_ETH"
             :src="`${logosUrl}/${transaction.actionIcon}`"
             height="36"
             large
@@ -69,6 +69,7 @@
             onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
             :style="{ marginRight: '16px', marginLeft: '13px' }"
           />
+          <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
         </div>
         <div class="caption text_1--text d-flex" :class="{ 'font-weight-medium': !$vuetify.breakpoint.xsOnly }">
           <span>{{ transaction.actionText }}</span>
@@ -209,8 +210,8 @@ import {
   CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
-  ETH,
   TOKEN_METHOD_APPROVE,
 } from '../../../utils/enums'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
@@ -236,13 +237,13 @@ export default {
       ACTIVITY_STATUS_UNSUCCESSFUL,
       ACTIVITY_STATUS_PENDING,
       ACTIVITY_ACTION_TOPUP,
+      CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721,
       TOKEN_METHOD_APPROVE,
       DEPLOY_CONTRACT_ACTION_KEY,
       CONTRACT_INTERACTION_KEY,
       logosUrl: config.logosUrl,
-      ETH,
     }
   },
   computed: mapState(['networkType']),

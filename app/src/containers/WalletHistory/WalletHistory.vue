@@ -89,6 +89,7 @@ import {
   CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
   MAINNET,
   TOKEN_METHOD_APPROVE,
@@ -226,7 +227,11 @@ export default {
         if (activity.type === CONTRACT_TYPE_ERC20) {
           return activity.type_image_link
         }
-        return 'eth.svg'
+        if (activity.type === CONTRACT_TYPE_ETH) {
+          return 'eth.svg'
+        }
+        const action = activity.action.split('.')
+        return action.length >= 1 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''
       }
       return ''
     },
