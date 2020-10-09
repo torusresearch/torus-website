@@ -2,6 +2,7 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 
 import config from '../config'
+import { FEATURES_CONFIRM_WINDOW } from './enums'
 import PopupHandler from './PopupHandler'
 import { broadcastChannelOptions, getIFrameOriginObject } from './utils'
 
@@ -21,7 +22,7 @@ class ConfirmHandler {
     this.confirmWindow = new PopupHandler({
       url: finalUrl,
       target: '_blank',
-      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500',
+      features: FEATURES_CONFIRM_WINDOW,
       preopenInstanceId: this.preopenInstanceId,
     })
     this.confirmWindow.open()

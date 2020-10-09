@@ -13,6 +13,8 @@ import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   DISCORD,
   FACEBOOK,
+  FEATURES_DEFAULT_WALLET_WINDOW,
+  FEATURES_PROVIDER_CHANGE_WINDOW,
   RPC,
   SUPPORTED_NETWORK_TYPES,
   TOKEN_METHOD_TRANSFER_FROM,
@@ -163,7 +165,7 @@ export default {
       url: finalUrl,
       preopenInstanceId,
       target: '_blank',
-      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375',
+      features: FEATURES_PROVIDER_CHANGE_WINDOW,
     })
     bc.addEventListener('message', async (ev) => {
       const { type = '', approve = false } = ev.data
@@ -209,7 +211,7 @@ export default {
       url: finalUrl,
       preopenInstanceId,
       target: '_blank',
-      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500',
+      features: FEATURES_PROVIDER_CHANGE_WINDOW,
     })
 
     const handleDeny = () => {
@@ -256,7 +258,7 @@ export default {
   },
   showWalletPopup(context, payload) {
     const finalUrl = `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`
-    const walletWindow = new PopupHandler({ url: finalUrl })
+    const walletWindow = new PopupHandler({ url: finalUrl, features: FEATURES_DEFAULT_WALLET_WINDOW })
     walletWindow.open()
     walletWindow.window.blur()
     setTimeout(walletWindow.window.focus(), 0)
