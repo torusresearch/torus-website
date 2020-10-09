@@ -31,11 +31,11 @@
                     <template v-slot:badge>
                       <span class="font-weight-bold twitter-badge" v-on="on">?</span>
                     </template>
-                    <v-btn icon class="link-box torusGray1--text" :href="toVeriferUrl" target="_blank" @click="checkedTwitter = true">
-                      <v-icon>
+                    <a icon class="link-box torusGray1--text" :href="toVeriferUrl" target="_blank" @click="checkedTwitter = true">
+                      <v-icon size="20" class="torusGray1--text">
                         {{ `$vuetify.icons.${toVerifier === ETH ? 'account' : toVerifier.toLowerCase()}` }}
                       </v-icon>
-                    </v-btn>
+                    </a>
                   </v-badge>
                 </template>
                 <span>
