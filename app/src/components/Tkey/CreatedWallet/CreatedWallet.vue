@@ -5,8 +5,10 @@
     </div>
 
     <div class="text-center mb-6">
-      <div class="headline mb-1" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">{{ t('tkeyCreateDone.selectDefault') }}</div>
-      <div class="caption text_3--text">{{ t('tkeyCreateDone.theDefaultAccount') }}</div>
+      <div class="created-headline mb-1" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'text_1--text'">
+        {{ t('tkeyCreateDone.selectDefault') }}
+      </div>
+      <div class="caption" :class="$vuetify.theme.dark ? 'text_2--text' : 'text_3--text'">{{ t('tkeyCreateDone.theDefaultAccount') }}</div>
     </div>
 
     <!-- Default Wallet -->
@@ -18,7 +20,7 @@
       @click="setDefaultPublicAddress(wallet.key)"
     >
       <div class="mr-4">
-        <v-icon :color="wallet.key === selectedWallet ? 'torusBrand1' : 'torusGray3'">
+        <v-icon class="radio-icon">
           {{ `$vuetify.icons.${wallet.key === selectedWallet ? 'radioOn' : 'radioOff'}` }}
         </v-icon>
       </div>
@@ -32,7 +34,7 @@
     </div>
 
     <div class="mt-9" :class="$vuetify.breakpoint.xsOnly ? 'text-right' : 'text-center'">
-      <v-btn :x-large="!$vuetify.breakpoint.xsOnly" color="torusBrand1" class="caption font-weight-bold white--text" @click="goToWallet">
+      <v-btn :x-large="!$vuetify.breakpoint.xsOnly" color="torusBrand1" class="body-2 font-weight-bold white--text px-16" @click="goToWallet">
         {{ t('tkeyCreateDone.letsExplore') }}
       </v-btn>
     </div>

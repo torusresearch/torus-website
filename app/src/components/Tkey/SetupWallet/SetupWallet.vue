@@ -1,8 +1,8 @@
 <template>
   <div class="setup-wallet-container" :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark }]">
     <div class="text-center mb-6">
-      <div class="headline mb-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">{{ t('tkeyCreateSetup.walletAuth') }}</div>
-      <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+      <div class="headline mb-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'text_1--text'">{{ t('tkeyCreateSetup.walletAuth') }}</div>
+      <div class="body-2 text_2--text">
         {{ t('tkeyCreateSetup.youWouldRequire1') }}
         <span class="font-weight-bold">{{ t('tkeyCreateSetup.youWouldRequire2') }}</span>
         {{ t('tkeyCreateSetup.youWouldRequire3') }}
@@ -10,13 +10,11 @@
     </div>
     <div class="mb-8">
       <div class="d-flex align-center mb-2">
-        <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-          {{ t('tkeyCreateSetup.authFactors') }} ({{ ~~(progressValue / 100) }}/3)
-        </div>
+        <div class="caption text_2--text">{{ t('tkeyCreateSetup.authFactors') }} ({{ ~~(progressValue / 100) }}/3)</div>
         <div class="ml-auto caption" :class="`${progressColor}--text`">{{ t(progressText) }}</div>
       </div>
       <v-progress-linear v-model="progressRate" class="mb-2" :color="progressColor" rounded background-color="torusGray3"></v-progress-linear>
-      <div class="caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+      <div class="caption text_2--text">
         {{ t(progressDescription) }}
       </div>
     </div>
@@ -28,12 +26,12 @@
       >
         <v-expansion-panel class="mb-4" disabled>
           <v-expansion-panel-header class="py-2">
-            <v-icon small class="mr-2 d-inline-flex mr-2 shrink">$vuetify.icons.{{ userInfo.typeOfLogin.toLowerCase() }}</v-icon>
-            <div class="grow text-capitalize font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+            <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.{{ userInfo.typeOfLogin.toLowerCase() }}</v-icon>
+            <div class="grow text-capitalize font-weight-bold body-2 text_2--text" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
               {{ userInfo.typeOfLogin }} Login
             </div>
             <div class="ml-auto justify-end d-flex align-center">
-              <div class="caption more-details">
+              <div class="caption more-details text_2--text">
                 {{ userEmail }}
               </div>
               <v-icon small class="ml-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
@@ -42,17 +40,17 @@
         </v-expansion-panel>
         <v-expansion-panel class="mb-4">
           <v-expansion-panel-header class="py-2">
-            <v-icon small class="d-inline-flex mr-2 shrink">$vuetify.icons.browser</v-icon>
-            <div class="grow font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+            <v-icon class="d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.browser</v-icon>
+            <div class="grow font-weight-bold body-2 text_2--text">
               {{ t('tkeyCreateSetup.browser') }}
             </div>
-            <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+            <div class="ml-auto text-right caption text_2--text">
               {{ browser }}
               <v-icon small class="m1-1 success--text" v-text="'$vuetify.icons.check_circle_filled'" />
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
-            <div class="body-2 mb-4" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+            <div class="body-2 mb-4 text_2--text">
               {{ t('tkeyCreateSetup.authViaBrowser1') }} {{ t('tkeyCreateSetup.authViaBrowser2') }}
               <span class="font-weight-bold">{{ t('tkeyCreateSetup.authViaBrowser3') }}</span>
             </div>
@@ -61,14 +59,39 @@
                 $vuetify.icon.checkbox{{ $vuetify.theme.dark ? '_dark' : '' }}_{{ backupDeviceShare ? 'checked' : 'unchecked' }}
               </v-icon>
               <v-icon v-if="!backupDeviceShare" size="16" class="mr-1 warning--text">$vuetify.icon.alert_circle_filled</v-icon>
-              <div class="body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">{{ t('tkeyCreateSetup.backupOnDevice') }}</div>
+              <div class="body-2 text_2--text">{{ t('tkeyCreateSetup.backupOnDevice') }}</div>
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel class="mb-4">
           <v-expansion-panel-header class="py-2">
-            <v-icon small class="mr-2 d-inline-flex mr-2 shrink">$vuetify.icons.shield_lock</v-icon>
-            <div class="grow font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+            <v-icon
+              class="mr-2 d-inline-flex mr-2 shrink"
+              size="24"
+              :class="
+                $vuetify.theme.dark
+                  ? finalRecoveryPassword
+                    ? 'text_2--text'
+                    : 'torusFont1--text'
+                  : finalRecoveryPassword
+                  ? 'text_2--text'
+                  : 'text_1--text'
+              "
+            >
+              $vuetify.icons.shield_lock
+            </v-icon>
+            <div
+              class="grow font-weight-bold body-2"
+              :class="
+                $vuetify.theme.dark
+                  ? finalRecoveryPassword
+                    ? 'text_2--text'
+                    : 'torusFont1--text'
+                  : finalRecoveryPassword
+                  ? 'text_2--text'
+                  : 'text_1--text'
+              "
+            >
               {{ t('tkeyCreateSetup.recoveryPass') }}
             </div>
             <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
@@ -125,7 +148,7 @@
         <v-btn
           block
           :x-large="!$vuetify.breakpoint.xsOnly"
-          class="caption font-weight-bold"
+          class="body-2 font-weight-bold"
           outlined
           :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'"
           @click="cancelOnboarding"
@@ -139,7 +162,7 @@
           :disabled="!finalRecoveryPassword && !backupDeviceShare"
           :x-large="!$vuetify.breakpoint.xsOnly"
           color="torusBrand1"
-          class="white--text caption font-weight-bold"
+          class="white--text body-2 font-weight-bold"
           :loading="creatingTkey"
           @click="createWallet"
         >

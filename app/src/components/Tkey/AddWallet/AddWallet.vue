@@ -1,6 +1,9 @@
 <template>
   <div class="add-wallet-container" :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark }]">
-    <div class="text_1--text text-center mb-9" :class="$vuetify.breakpoint.xsOnly ? 'headline' : 'display-1'">
+    <div
+      class="text-center mb-9"
+      :class="[$vuetify.breakpoint.xsOnly ? 'headline' : 'display-1', $vuetify.theme.dark ? 'torusFont2--text' : 'text_1--text']"
+    >
       {{ t('tkeyCreateAdd.addAccount') }}
     </div>
     <div class="d-flex add-wallet-info" :class="$vuetify.breakpoint.xsOnly ? 'is-mobile flex-column' : ''">
@@ -31,7 +34,7 @@
             target="_blank"
           >
             {{ t('tkeyCreateAdd.learnMore') }}
-            <v-icon :class="$vuetify.theme.dark ? 'text_2--text' : 'torusFont2--text'" small>$vuetify.icons.arrow_right</v-icon>
+            <v-icon :class="$vuetify.theme.dark ? 'text_2--text' : 'torusFont2--text'" small>$vuetify.icons.page_next</v-icon>
           </a>
         </div>
       </div>
@@ -46,7 +49,7 @@
           :x-large="!$vuetify.breakpoint.xsOnly"
           outlined
           :color="$vuetify.theme.dark ? 'white' : 'torusBrand1'"
-          class="caption font-weight-bold"
+          class="body-2 font-weight-bold"
           @click="tKeyOnboardingCancel"
         >
           {{ t('tkeyCreateAdd.notNow') }}
@@ -57,7 +60,7 @@
           block
           :x-large="!$vuetify.breakpoint.xsOnly"
           color="torusBrand1"
-          class="white--text caption font-weight-bold"
+          class="white--text body-2 font-weight-bold"
           :title="t('tkeyCreateAdd.sureLetsAdd')"
           @click="next"
         >
