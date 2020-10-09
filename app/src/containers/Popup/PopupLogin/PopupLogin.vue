@@ -184,10 +184,14 @@ export default {
     ...mapGetters(['loginButtonsArray', 'getLogo']),
     ...mapState(['whiteLabel']),
     loginButtons() {
-      return this.loginButtonsArray.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter(
+        (button) => (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && !button.description && button.typeOfLogin !== PASSWORDLESS
+      )
     },
     loginButtonsLong() {
-      return this.loginButtonsArray.filter((button) => button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter(
+        (button) => (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.description && button.typeOfLogin !== PASSWORDLESS
+      )
     },
     localeSelected() {
       return this.$vuetify.lang.current
