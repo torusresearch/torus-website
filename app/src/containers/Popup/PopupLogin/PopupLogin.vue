@@ -14,20 +14,39 @@
           </div>
           <div :class="{ 'has-more': viewMoreOptions }" class="login-btns-container mx-6">
             <v-btn
-              v-if="showGoogleLogin"
-              id="loginBtn"
+              v-for="verifier in mainButtonsLong"
+              :key="verifier.verifier"
               block
               large
               :color="$vuetify.theme.dark ? '' : 'white'"
               :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-google`]"
               class="text_2--text login-btn-long mb-2"
-              @click="startLogin(GOOGLE_VERIFIER)"
+              @click="startLogin(verifier.verifier)"
             >
-              <img class="mr-5" src="../../../assets/img/icons/login-google.svg" :class="$vuetify.theme.dark ? 'torus-dark' : ''" alt="Google Icon" />
-              {{ t('dappLogin.continue') }} Google
+              <img
+                v-if="$vuetify.theme.isDark && verifier.logoLight"
+                class="mr-4"
+                height="20"
+                :src="verifier.logoLight"
+                :alt="`${verifier.name} Icon`"
+              />
+              <img
+                v-else-if="!$vuetify.theme.isDark && verifier.logoDark"
+                class="mr-4"
+                height="20"
+                :src="verifier.logoDark"
+                :alt="`${verifier.name} Icon`"
+              />
+              <img
+                v-else
+                class="mr-3"
+                :src="require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)"
+                :alt="`${verifier.name} Icon`"
+              />
+              {{ formatDescription(verifier) }}
             </v-btn>
             <v-layout wrap mx-n1>
-              <v-flex v-for="verifier in loginButtons" :key="verifier.verifier" xs4 px-1>
+              <v-flex v-for="verifier in mainButtons" :key="verifier.verifier" xs4 px-1>
                 <v-btn
                   block
                   class="login-btn active"
@@ -35,7 +54,9 @@
                   :title="`${t('login.loginWith')} ${verifier.name}`"
                   @click="startLogin(verifier.verifier)"
                 >
-                  <img :src="require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)" :alt="`${verifier.name} Icon`" />
+                  <img v-if="$vuetify.theme.isDark && verifier.logoLight" height="20" :src="verifier.logoLight" :alt="`${verifier.name} Icon`" />
+                  <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark" height="20" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
+                  <img v-else :src="require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)" :alt="`${verifier.name} Icon`" />
                 </v-btn>
               </v-flex>
             </v-layout>
@@ -83,8 +104,7 @@
                     :alt="`${verifier.name} Icon`"
                   />
                   <span>
-                    {{ t('dappLogin.continue') }}
-                    <span class="text-capitalize">{{ verifier.name }}</span>
+                    {{ formatDescription(verifier) }}
                   </span>
                 </v-btn>
               </div>
@@ -142,9 +162,7 @@ import log from 'loglevel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import PasswordlessLogin from '../../../components/helpers/PasswordLessLogin'
-import { DISCORD_VERIFIER, FACEBOOK_VERIFIER, GITHUB, GOOGLE_VERIFIER, PASSWORDLESS, TWITTER, TWITTER_VERIFIER } from '../../../utils/enums'
-
-const DAPP_MAIN_LOGIN = [FACEBOOK_VERIFIER, TWITTER_VERIFIER, DISCORD_VERIFIER]
+import { GITHUB, GOOGLE_VERIFIER, PASSWORDLESS, TWITTER } from '../../../utils/enums'
 
 export default {
   name: 'PopupLogin',
@@ -162,7 +180,6 @@ export default {
       showModal: true,
       passwordlessLoginDialog: false,
       passwordlessEmailSent: false,
-      DAPP_MAIN_LOGIN,
       viewMoreOptions: false,
     }
   },
@@ -172,11 +189,14 @@ export default {
       whiteLabel: 'whiteLabel',
       loginConfig: (state) => state.embedState.loginConfig,
     }),
-    loginButtons() {
-      return this.loginButtonsArray.filter((button) => DAPP_MAIN_LOGIN.includes(button.verifier))
+    mainButtonsLong() {
+      return this.loginButtonsArray.filter((button) => button.mainOption && button.description !== '')
+    },
+    mainButtons() {
+      return this.loginButtonsArray.filter((button) => button.mainOption && button.description === '')
     },
     loginButtonsLong() {
-      const buttons = this.loginButtonsArray.filter((button) => !DAPP_MAIN_LOGIN.includes(button.verifier) && button.verifier !== GOOGLE_VERIFIER)
+      const buttons = this.loginButtonsArray.filter((button) => !button.mainOption)
       return this.viewMoreOptions ? buttons : buttons.slice(0, 1)
     },
     localeSelected() {
@@ -242,6 +262,10 @@ export default {
     ...mapActions({
       triggerLogin: 'triggerLogin',
     }),
+    formatDescription(verifier) {
+      const finalDesc = verifier.description ? this.t(verifier.description) : this.t('dappLogin.continue')
+      return finalDesc.replace(/{verifier}/gi, verifier.name.charAt(0).toUpperCase() + verifier.name.slice(1))
+    },
   },
 }
 </script>

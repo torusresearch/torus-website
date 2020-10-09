@@ -73,15 +73,14 @@
   }
 
   .login-btns-container {
-    height: 225px;
-    overflow-y: hidden;
-    overflow-x: hidden;
+    overflow-y: show;
+    overflow-x: show;
     &.has-more {
       height: 285px;
       overflow-y: scroll;
       overflow-x: hidden;
       margin-bottom: 8px;
-      padding-bottom: 28px;
+      padding-bottom: 10px;
       scrollbar-width: thin;
       scrollbar-color: #d3d3d4 #eef2f4;
     }

@@ -86,7 +86,7 @@
                         @click="startLogin(verifier.verifier)"
                       >
                         <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}</v-icon>
-                        {{ t(verifier.description) }}
+                        {{ formatDescription(verifier) }}
                       </v-btn>
                     </div>
                   </v-flex>
@@ -225,9 +225,17 @@
                       :class="$vuetify.theme.dark ? 'torus-dark' : ''"
                       class="text-body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
                       @click="startLogin(verifier.verifier)"
+                      @mouseover="activeButton = verifier.verifier"
                     >
-                      <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}</v-icon>
-                      {{ t(verifier.description) }}
+                      <img
+                        v-if="verifier.verifier === activeButton"
+                        height="24"
+                        class="mr-4"
+                        :src="require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)"
+                        :alt="`${verifier.name} Icon`"
+                      />
+                      <v-icon v-else class="mr-4">{{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}</v-icon>
+                      {{ formatDescription(verifier) }}
                     </v-btn>
                   </div>
                 </v-flex>
@@ -387,7 +395,7 @@ export default {
       GOOGLE,
       GOOGLE_VERIFIER,
       PASSWORDLESS,
-      activeButton: GOOGLE_VERIFIER,
+      activeButton: '',
       loginInProgress: false,
       snackbar: false,
       snackbarText: '',
@@ -427,16 +435,20 @@ export default {
       return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
     },
     loginButtons() {
-      return this.loginButtonsArray.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => !button.torusDescription && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsMobile() {
-      return this.loginButtonsArray.filter((button) => button.typeOfLogin !== GOOGLE && !button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter(
+        (button) => button.typeOfLogin !== GOOGLE && !button.torusDescription && button.typeOfLogin !== PASSWORDLESS
+      )
     },
     loginButtonsLong() {
-      return this.loginButtonsArray.filter((button) => button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.torusDescription && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsMobileLong() {
-      return this.loginButtonsArray.filter((button) => button.typeOfLogin !== GOOGLE && button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter(
+        (button) => button.typeOfLogin !== GOOGLE && button.torusDescription && button.typeOfLogin !== PASSWORDLESS
+      )
     },
     showGoogleLogin() {
       return this.loginConfig[GOOGLE_VERIFIER].showOnModal
@@ -458,6 +470,9 @@ export default {
     if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
 
     this.isLogout = this.$route.name !== 'login'
+
+    if (this.loginButtons.length > 0) this.activeButton = this.loginButtons[0].verifier
+    else if (this.loginButtonsLong.length > 0) this.activeButton = this.loginButtonsLong[0].verifier
 
     this.scroll()
 
@@ -532,6 +547,10 @@ export default {
       window.addEventListener('scroll', () => {
         this.scrollOnTop = window.pageYOffset < 40
       })
+    },
+    formatDescription(verifier) {
+      const finalDesc = verifier.torusDescription ? this.t(verifier.torusDescription) : this.t('dappLogin.continue')
+      return finalDesc.replace(/{verifier}/gi, verifier.name.charAt(0).toUpperCase() + verifier.name.slice(1))
     },
   },
 }

@@ -93,13 +93,16 @@ export default {
     [GOOGLE_VERIFIER]: {
       typeOfLogin: GOOGLE,
       name: GOOGLE,
-      description: '',
+      description: 'dappLogin.continue',
       clientId: VUE_APP_GOOGLE_CLIENT_ID,
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: false,
       showOnModal: true,
+      mainOption: true,
+      // For torus only
+      hasLightLogo: false,
+      torusDescription: '',
     },
     [FACEBOOK_VERIFIER]: {
       description: '',
@@ -109,8 +112,11 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: false,
+      mainOption: true,
       showOnModal: true,
+      // For torus only
+      hasLightLogo: false,
+      torusDescription: '',
     },
     [TWITTER_VERIFIER]: {
       description: '',
@@ -120,13 +126,16 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: false,
+      mainOption: true,
       showOnModal: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'twitter',
         isVerifierIdCaseSensitive: false,
       },
+      // For torus only
+      hasLightLogo: false,
+      torusDescription: '',
     },
     [DISCORD_VERIFIER]: {
       description: '',
@@ -136,8 +145,11 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: false,
+      mainOption: true,
       showOnModal: true,
+      // For torus only
+      hasLightLogo: false,
+      torusDescription: '',
     },
     [HOSTED_EMAIL_PASSWORDLESS_VERIFIER]: {
       description: '',
@@ -147,7 +159,6 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: true,
       showOnModal: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
@@ -155,6 +166,9 @@ export default {
         connection: '',
         isVerifierIdCaseSensitive: false,
       },
+      // For torus only
+      hasLightLogo: true,
+      torusDescription: '',
     },
     [LINE_VERIFIER]: {
       description: '',
@@ -164,12 +178,13 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: false,
       showOnModal: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'line',
       },
+      // For torus only
+      hasLightLogo: false,
     },
     [REDDIT_VERIFIER]: {
       description: '',
@@ -179,8 +194,10 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: false,
       showOnModal: true,
+      // For torus only
+      hasLightLogo: false,
+      torusDescription: '',
     },
     [APPLE_VERIFIER]: {
       description: '',
@@ -190,12 +207,14 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: true,
       showOnModal: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'apple',
       },
+      // For torus only
+      hasLightLogo: true,
+      torusDescription: '',
     },
     [GITHUB_VERIFIER]: {
       description: '',
@@ -205,13 +224,15 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: true,
       showOnModal: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'github',
         isVerifierIdCaseSensitive: false,
       },
+      // For torus only
+      hasLightLogo: true,
+      torusDescription: '',
     },
     [TWITCH_VERIFIER]: {
       description: '',
@@ -221,8 +242,10 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: false,
       showOnModal: true,
+      // For torus only
+      hasLightLogo: false,
+      torusDescription: '',
     },
     [LINKEDIN_VERIFIER]: {
       description: '',
@@ -232,12 +255,14 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: false,
       showOnModal: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'linkedin',
       },
+      // For torus only
+      hasLightLogo: false,
+      torusDescription: '',
     },
     [WECHAT_VERIFIER]: {
       description: '',
@@ -247,12 +272,14 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: false,
       showOnModal: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'Wechat',
       },
+      // For torus only
+      hasLightLogo: false,
+      torusDescription: '',
     },
     [KAKAO_VERIFIER]: {
       description: '',
@@ -262,12 +289,14 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      hasLightLogo: false,
       showOnModal: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'Kakao',
       },
+      // For torus only
+      hasLightLogo: false,
+      torusDescription: '',
     },
     // [WEIBO_VERIFIER]: {
     //   description: '',
@@ -282,6 +311,9 @@ export default {
     //     connection: 'weibo',
     //     isVerifierIdCaseSensitive: false,
     //   },
+    //   For torus only
+    //   hasLightLogo: false,
+    //   torusDescription: '',
     // },
   },
 
