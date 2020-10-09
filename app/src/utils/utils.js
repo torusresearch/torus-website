@@ -1,5 +1,6 @@
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
+import Bowser from 'bowser'
 import { addHexPrefix, BN, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import { isAddress } from 'web3-utils'
@@ -19,6 +20,7 @@ import {
   ENVIRONMENT_TYPE_NOTIFICATION,
   ENVIRONMENT_TYPE_POPUP,
   ETH,
+  FEATURE_NOT_SUPPORTED_DEVICE,
   GITHUB,
   GOERLI,
   GOERLI_CHAIN_ID,
@@ -644,4 +646,15 @@ export function getUserEmail(userInfo) {
   const verifierIdArray = userInfo.verifierId.split('|')
   const verifierId = verifierIdArray[2] || verifierIdArray[1] || verifierIdArray[0]
   return userInfo.email ? userInfo.email : verifierId
+}
+
+export function isSupportedFeature(feature) {
+  const browser = Bowser.parse(window.navigator.userAgent)
+  const osName = browser.os.name
+  const browserName = browser.browser.name
+  const foundNotSupported =
+    FEATURE_NOT_SUPPORTED_DEVICE[feature].filter((item) => {
+      return item.os === osName && item.browsers.includes(browserName)
+    }).length > 0
+  return !foundNotSupported
 }

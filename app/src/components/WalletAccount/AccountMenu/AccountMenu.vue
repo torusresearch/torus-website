@@ -26,7 +26,7 @@
             <div>{{ t('accountMenu.account') }}</div>
           </div>
         </v-list-item-title>
-        <v-list-item-icon v-if="$vuetify.breakpoint.xsOnly">
+        <v-list-item-icon v-if="$vuetify.breakpoint.xsOnly && qrStreamSupported">
           <div class="mr-5">
             <v-btn small class="wallet-connect-btn" icon title="Capture QR" aria-label="Capture QR" @click="toggleWC">
               <v-icon v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">$vuetify.icons.disconnect</v-icon>
@@ -139,8 +139,8 @@ import log from 'loglevel'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
-import { DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
-import { addressSlicer, broadcastChannelOptions, getEtherScanAddressLink, getUserEmail } from '../../../utils/utils'
+import { DISCORD, FEATURE_QR_STREM, GITHUB, TWITTER } from '../../../utils/enums'
+import { addressSlicer, broadcastChannelOptions, getEtherScanAddressLink, getUserEmail, isSupportedFeature } from '../../../utils/utils'
 import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import ShowToolTip from '../../helpers/ShowToolTip'
@@ -207,6 +207,9 @@ export default {
         return this.headerItems.filter((item) => item.name !== 'home')
       }
       return []
+    },
+    qrStreamSupported() {
+      return isSupportedFeature(FEATURE_QR_STREM)
     },
   },
   watch: {
