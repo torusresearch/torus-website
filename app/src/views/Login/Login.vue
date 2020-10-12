@@ -171,7 +171,14 @@
                         <span class="verifier-title__google-green">l</span>
                         <span class="verifier-title__google-red">e</span>
                       </span>
-                      <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButtonDetails.name.toLowerCase()}`">
+                      <span
+                        v-else-if="activeButton"
+                        class="text-capitalize"
+                        :class="[
+                          `verifier-title__${activeButtonDetails.name.toLowerCase()}`,
+                          { 'white--text': activeButtonDetails.hasLightLogo && $vuetify.theme.dark },
+                        ]"
+                      >
                         {{ activeButtonDetails.name }}
                       </span>
                     </span>
@@ -200,10 +207,14 @@
                     >
                       <img
                         v-if="verifier.verifier === activeButton"
-                        :src="require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)"
+                        :src="
+                          require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}${
+                            verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''
+                          }.svg`)
+                        "
                         :alt="`${verifier.name} Icon`"
                       />
-                      <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
+                      <v-icon v-else class="text_3--text">
                         {{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}
                       </v-icon>
                     </v-btn>

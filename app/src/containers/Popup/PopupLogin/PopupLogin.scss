@@ -12,6 +12,15 @@
     color: #dfdfdf;
   }
 
+  .verifier-title {
+    img {
+      height: 18px;
+      margin-bottom: -4px;
+      margin-left: 2px;
+    }
+    @include loginTypes()
+  }
+
   .login-btn.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
     background: #ffffff;
     border: 1px solid #f1f2f6;
@@ -19,10 +28,10 @@
     box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
     min-width: inherit;
     padding: 0;
-    height: 48px;
+    height: 60px;
     img {
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
     }
   }
 
@@ -31,16 +40,16 @@
     border: 1px solid #f1f2f6 !important;
     box-sizing: border-box;
     box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
-    height: 48px;
+    height: 60px;
     font-size: 16px;
     font-weight: 400;
-    padding: 0 40px;
+    padding: 0 36px;
 
     &.torus-dark {
       background: #2f3136 !important;
       border: 1px solid #404145 !important;
       box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
-      color: #ffffff !important;
+      color: var(--v-text_3-base) !important;
     }
 
     ::v-deep .v-btn__content {
@@ -48,8 +57,8 @@
     }
 
     img {
-      width: 24px;
-      height: 24px;
+      width: 26px;
+      height: 26px;
     }
   }
 
@@ -72,41 +81,21 @@
     }
   }
 
-  .login-btns-container {
-    overflow-y: show;
-    overflow-x: show;
+  .v-btn.view-option-selector:not(.v-btn--text):not(.v-btn--icon):not(.v-btn--round) {
+    height: 25px;
+    border-radius: 12.5px;
+    padding: 3px 12px 3px 20px;
+    background: var(--v-torusGray4-base);
+    box-shadow: none;
+    color:  var(--v-text_2-base);
     &.has-more {
-      height: 285px;
-      overflow-y: scroll;
-      overflow-x: hidden;
-      margin-bottom: 8px;
-      padding-bottom: 10px;
-      scrollbar-width: thin;
-      scrollbar-color: #d3d3d4 #eef2f4;
+      .v-icon {
+        transform: rotate(-180deg);
+      }
     }
-    /* width */
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-    /* Track */
-    &::-webkit-scrollbar-track {
-      background: #eef2f4;
-      border-radius: 6px;
-    }
-    /* Handle */
-    &::-webkit-scrollbar-thumb {
-      background: #d3d3d4;
-      border-radius: 6px;
-    }
-    /* Handle on hover */
-    &::-webkit-scrollbar-thumb:hover {
-      background: #a8a8a9;
-    }
-  }
-
-  .view-option-selector.has-more {
-    .v-icon {
-      transform: rotate(-180deg);
+    &.theme--dark {
+      background:  var(--v-torusBlack2-base);
+      color:  var(--v-text_2-base);
     }
   }
 
@@ -122,24 +111,6 @@
       background: #2f3136;
       border: 1px solid #404145;
       box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
-    }
-
-    .login-btns-container {
-      &.has-more {
-        scrollbar-color: #5C6C7F #2F3136;
-      }
-      /* Track */
-      &::-webkit-scrollbar-track {
-        background: #2f3136;
-      }
-      /* Handle */
-      &::-webkit-scrollbar-thumb {
-        background: #5c6c7f;
-      }
-      /* Handle on hover */
-      &::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a9;
-      }
     }
 
     .footer-links {

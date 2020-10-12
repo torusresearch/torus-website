@@ -293,7 +293,7 @@ export default {
       torusDescription: '',
     },
     [HOSTED_EMAIL_PASSWORDLESS_VERIFIER]: {
-      description: '',
+      description: 'dappLogin.continue',
       typeOfLogin: JWT,
       name: 'email',
       clientId: VUE_APP_HOSTED_EMAIL_PASSWORDLESS_CLIENT_ID,
