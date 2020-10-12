@@ -283,12 +283,16 @@ class TransactionController extends EventEmitter {
     const gasPriceNumber = Number(txParams.gasPrice)
     txMeta.gasPriceSpecified = Boolean(gasPriceNumber)
     let { gasPrice } = txParams
+    const a = Date.now()
+    log.info(gasPrice, gasPriceNumber, 'using gas price')
     if (!gasPrice || !gasPriceNumber) {
       gasPrice = this.getGasPrice ? this.getGasPrice() : await this.query.gasPrice()
     }
+    log.info('got gas price', Date.now() - a)
     txParams.gasPrice = addHexPrefix(gasPrice.toString(16))
     // set gasLimit
     const result = await this.txGasUtil.analyzeGasUsage(txMeta, getCodeResponse)
+    log.info('analyzed gas usage', Date.now() - a)
     return result
   }
 
