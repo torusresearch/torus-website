@@ -88,14 +88,14 @@ class TxGasUtil {
         return SIMPLE_GAS_COST
       }
     }
-
     // fallback to block gasLimit
     const blockGasLimitBN = hexToBn(blockGasLimitHex)
     const saferGasLimitBN = BnMultiplyByFraction(blockGasLimitBN, 19, 20)
     txParams.gas = bnToHex(saferGasLimitBN)
 
     // estimate tx gas requirements
-    return this.query.estimateGas(txParams)
+    const estimatedgas = await this.query.estimateGas(txParams)
+    return estimatedgas
   }
 
   /**

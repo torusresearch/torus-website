@@ -99,6 +99,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
     },
     [FACEBOOK_VERIFIER]: {
       description: '',
@@ -109,6 +110,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
     },
     [REDDIT_VERIFIER]: {
       description: '',
@@ -119,6 +121,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
     },
     [TWITCH_VERIFIER]: {
       description: '',
@@ -129,6 +132,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
     },
     [DISCORD_VERIFIER]: {
       description: '',
@@ -139,6 +143,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
     },
 
     [APPLE_VERIFIER]: {
@@ -150,6 +155,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'apple',
@@ -164,6 +170,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'github',
@@ -179,6 +186,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'linkedin',
@@ -193,6 +201,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'twitter',
@@ -208,6 +217,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'line',
@@ -222,6 +232,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         verifierIdField: 'name',
@@ -238,6 +249,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'Wechat',
@@ -252,6 +264,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'Kakao',

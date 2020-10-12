@@ -291,21 +291,21 @@ describe('AssetsDetectionController', () => {
     assert.deepStrictEqual(assets.state.collectibles, [
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04gg',
-        tokenId: 2577,
+        tokenId: '2577',
         name: 'ID 2577',
         image: 'url GG',
         description: 'Description 2577',
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04ii',
-        tokenId: 2578,
+        tokenId: '2578',
         name: 'ID 2578',
         image: 'url II',
         description: 'Description 2578',
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04hh',
-        tokenId: 2574,
+        tokenId: '2574',
         name: 'ID 2574',
         image: 'url HH',
         description: 'Description 2574',
