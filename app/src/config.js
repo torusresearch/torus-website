@@ -100,6 +100,7 @@ export default {
       logoDark: '',
       showOnModal: true,
       mainOption: true,
+      showOnMobile: true,
       // For torus only
       hasLightLogo: false,
       torusDescription: '',
@@ -112,8 +113,9 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      mainOption: true,
       showOnModal: true,
+      mainOption: true,
+      showOnMobile: true,
       // For torus only
       hasLightLogo: false,
       torusDescription: '',
@@ -126,8 +128,9 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      mainOption: true,
       showOnModal: true,
+      mainOption: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'twitter',
@@ -145,29 +148,11 @@ export default {
       logoHover: '',
       logoLight: '',
       logoDark: '',
-      mainOption: true,
       showOnModal: true,
+      mainOption: true,
+      showOnMobile: true,
       // For torus only
       hasLightLogo: false,
-      torusDescription: '',
-    },
-    [HOSTED_EMAIL_PASSWORDLESS_VERIFIER]: {
-      description: '',
-      typeOfLogin: JWT,
-      name: 'email',
-      clientId: VUE_APP_HOSTED_EMAIL_PASSWORDLESS_CLIENT_ID,
-      logoHover: '',
-      logoLight: '',
-      logoDark: '',
-      showOnModal: true,
-      jwtParameters: {
-        domain: LOGIN_DOMAIN,
-        verifierIdField: 'name',
-        connection: '',
-        isVerifierIdCaseSensitive: false,
-      },
-      // For torus only
-      hasLightLogo: true,
       torusDescription: '',
     },
     [LINE_VERIFIER]: {
@@ -179,12 +164,14 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'line',
       },
       // For torus only
       hasLightLogo: false,
+      torusDescription: '',
     },
     [REDDIT_VERIFIER]: {
       description: '',
@@ -195,6 +182,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       // For torus only
       hasLightLogo: false,
       torusDescription: '',
@@ -208,6 +196,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'apple',
@@ -225,6 +214,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'github',
@@ -243,6 +233,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       // For torus only
       hasLightLogo: false,
       torusDescription: '',
@@ -256,6 +247,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'linkedin',
@@ -273,6 +265,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'Wechat',
@@ -290,12 +283,33 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'Kakao',
       },
       // For torus only
       hasLightLogo: false,
+      torusDescription: '',
+    },
+    [HOSTED_EMAIL_PASSWORDLESS_VERIFIER]: {
+      description: '',
+      typeOfLogin: JWT,
+      name: 'email',
+      clientId: VUE_APP_HOSTED_EMAIL_PASSWORDLESS_CLIENT_ID,
+      logoHover: '',
+      logoLight: '',
+      logoDark: '',
+      showOnModal: true,
+      showOnMobile: true,
+      jwtParameters: {
+        domain: LOGIN_DOMAIN,
+        verifierIdField: 'name',
+        connection: '',
+        isVerifierIdCaseSensitive: false,
+      },
+      // For torus only
+      hasLightLogo: true,
       torusDescription: '',
     },
     // [WEIBO_VERIFIER]: {

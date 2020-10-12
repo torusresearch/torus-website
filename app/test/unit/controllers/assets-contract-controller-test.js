@@ -32,7 +32,7 @@ describe('AssetsContractController', () => {
 
   it('should get collectible tokenId correctly', async () => {
     const tokenId = await assetsContract.getCollectibleTokenId(GODSADDRESS, '0x9a90bd8d1149a88b42a99cf62215ad955d6f498a', 0)
-    assert(tokenId !== 0)
+    assert(tokenId !== '0')
   })
 
   it('should get collectible tokenURI correctly', async () => {

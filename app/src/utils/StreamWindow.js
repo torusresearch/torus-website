@@ -38,6 +38,7 @@ class StreamWindow {
       this.url = url
       bc.addEventListener('message', (ev) => {
         const { preopenInstanceId: openedId, message } = ev.data
+        log.info('receiving msg', ev)
         if (this.preopenInstanceId === openedId && message === 'popup_loaded') {
           if (this.writeInterval) clearInterval(this.writeInterval)
           log.info(ev.data, getIFrameOrigin())
@@ -49,6 +50,7 @@ class StreamWindow {
             },
           })
             .then(() => {
+              log.info('sent url', ev)
               bc.close()
               resolve()
             })
@@ -60,6 +62,7 @@ class StreamWindow {
         }
       })
       this.writeInterval = setInterval(() => {
+        log.info('posting about setup', this.preopenInstanceId)
         bc.postMessage({
           data: {
             preopenInstanceId: this.preopenInstanceId,

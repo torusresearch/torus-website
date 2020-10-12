@@ -13,7 +13,7 @@ class WalletConnectController {
   }
 
   async disconnect() {
-    this.walletConnector.killSession()
+    await this.walletConnector.killSession()
     this.walletConnector = undefined
     this.store.putState({})
   }

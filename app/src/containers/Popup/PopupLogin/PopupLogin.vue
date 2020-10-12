@@ -190,10 +190,14 @@ export default {
       loginConfig: (state) => state.embedState.loginConfig,
     }),
     mainButtonsLong() {
-      return this.loginButtonsArray.filter((button) => button.mainOption && button.description !== '')
+      return this.loginButtonsArray.filter(
+        (button) => (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.mainOption && button.description !== ''
+      )
     },
     mainButtons() {
-      return this.loginButtonsArray.filter((button) => button.mainOption && button.description === '')
+      return this.loginButtonsArray.filter(
+        (button) => (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.mainOption && button.description === ''
+      )
     },
     loginButtonsLong() {
       const buttons = this.loginButtonsArray.filter((button) => !button.mainOption)

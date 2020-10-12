@@ -439,7 +439,7 @@ export default {
     },
     loginButtonsMobile() {
       return this.loginButtonsArray.filter(
-        (button) => button.typeOfLogin !== GOOGLE && !button.torusDescription && button.typeOfLogin !== PASSWORDLESS
+        (button) => button.showOnMobile && button.typeOfLogin !== GOOGLE && !button.torusDescription && button.typeOfLogin !== PASSWORDLESS
       )
     },
     loginButtonsLong() {
@@ -447,7 +447,7 @@ export default {
     },
     loginButtonsMobileLong() {
       return this.loginButtonsArray.filter(
-        (button) => button.typeOfLogin !== GOOGLE && button.torusDescription && button.typeOfLogin !== PASSWORDLESS
+        (button) => button.showOnMobile && button.typeOfLogin !== GOOGLE && button.torusDescription && button.typeOfLogin !== PASSWORDLESS
       )
     },
     showGoogleLogin() {
