@@ -1,6 +1,6 @@
 <template>
   <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu">
-    <v-dialog v-model="showQrScanner" :width="qrLoading ? 0 : 600" @click:outside="closeQRScanner">
+    <v-dialog v-model="showQrScanner" :eager="true" :width="qrLoading ? 0 : 600" @click:outside="closeQRScanner">
       <div class="qr-scan-container">
         <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
         <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
@@ -26,7 +26,7 @@
             <div>{{ t('accountMenu.account') }}</div>
           </div>
         </v-list-item-title>
-        <v-list-item-icon v-if="$vuetify.breakpoint.xsOnly">
+        <v-list-item-icon v-if="$vuetify.breakpoint.xsOnly && hasStreamApiSupport">
           <div class="mr-5">
             <v-btn small class="wallet-connect-btn" icon title="Capture QR" aria-label="Capture QR" @click="toggleWC">
               <v-icon v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">$vuetify.icons.disconnect</v-icon>
@@ -168,6 +168,7 @@ export default {
       qrErrorMsg: '',
       showQrScanner: false,
       qrLoading: true,
+      hasStreamApiSupport: true,
     }
   },
   computed: {
@@ -271,6 +272,7 @@ export default {
         await promise
         this.qrLoading = false
       } catch (error) {
+        this.hasStreamApiSupport = false
         log.error(error)
         if (error.name === 'NotAllowedError') {
           this.qrErrorMsg = 'accountMenu.qrErrorNeedCameraPermission'
