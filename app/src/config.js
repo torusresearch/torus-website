@@ -100,6 +100,7 @@ export default {
       logoDark: '',
       showOnModal: true,
       mainOption: true,
+      showOnDesktop: true,
       showOnMobile: true,
       // For torus only
       hasLightLogo: false,
@@ -115,6 +116,7 @@ export default {
       logoDark: '',
       showOnModal: true,
       mainOption: true,
+      showOnDesktop: true,
       showOnMobile: true,
       // For torus only
       hasLightLogo: false,
@@ -130,6 +132,7 @@ export default {
       logoDark: '',
       showOnModal: true,
       mainOption: true,
+      showOnDesktop: true,
       showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
@@ -150,6 +153,7 @@ export default {
       logoDark: '',
       showOnModal: true,
       mainOption: true,
+      showOnDesktop: true,
       showOnMobile: true,
       // For torus only
       hasLightLogo: false,
@@ -164,6 +168,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnDesktop: true,
       showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
@@ -182,6 +187,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnDesktop: true,
       showOnMobile: true,
       // For torus only
       hasLightLogo: false,
@@ -196,6 +202,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnDesktop: true,
       showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
@@ -214,6 +221,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnDesktop: true,
       showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
@@ -233,6 +241,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnDesktop: true,
       showOnMobile: true,
       // For torus only
       hasLightLogo: false,
@@ -247,6 +256,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnDesktop: true,
       showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
@@ -265,6 +275,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnDesktop: true,
       showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
@@ -283,6 +294,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnDesktop: true,
       showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
@@ -301,6 +313,7 @@ export default {
       logoLight: '',
       logoDark: '',
       showOnModal: true,
+      showOnDesktop: true,
       showOnMobile: true,
       jwtParameters: {
         domain: LOGIN_DOMAIN,

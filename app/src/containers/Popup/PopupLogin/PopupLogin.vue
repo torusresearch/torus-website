@@ -217,15 +217,19 @@ export default {
       whiteLabel: 'whiteLabel',
     }),
     mainButtonsLong() {
-      return this.loginButtonsArray.filter(
-        (button) => (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.mainOption && button.description !== ''
-      )
+      return this.loginButtonsArray.filter((button) => {
+        return (
+          ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
+          button.mainOption &&
+          button.description !== ''
+        )
+      })
     },
     mainButtons() {
       return this.loginButtonsArray.filter((button) => {
         if (this.viewMoreOptions) {
           return (
-            (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) &&
+            ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
             button.description === '' &&
             button.verifier !== HOSTED_EMAIL_PASSWORDLESS_VERIFIER
           )
@@ -234,7 +238,12 @@ export default {
       })
     },
     loginButtonsLong() {
-      return this.loginButtonsArray.filter((button) => !button.mainOption && button.description !== '')
+      return this.loginButtonsArray.filter(
+        (button) =>
+          ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
+          !button.mainOption &&
+          button.description !== ''
+      )
     },
     localeSelected() {
       return this.$vuetify.lang.current

@@ -446,7 +446,7 @@ export default {
       return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
     },
     loginButtons() {
-      return this.loginButtonsArray.filter((button) => !button.torusDescription && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.showOnDesktop && !button.torusDescription && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsMobile() {
       return this.loginButtonsArray.filter(
@@ -454,7 +454,7 @@ export default {
       )
     },
     loginButtonsLong() {
-      return this.loginButtonsArray.filter((button) => button.torusDescription && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.showOnDesktop && button.torusDescription && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsMobileLong() {
       return this.loginButtonsArray.filter(
@@ -462,7 +462,7 @@ export default {
       )
     },
     showGoogleLogin() {
-      return this.loginConfig[GOOGLE_VERIFIER].showOnModal
+      return this.loginConfig[GOOGLE_VERIFIER].showOnModal && this.loginConfig[GOOGLE_VERIFIER].showOnMobile
     },
     activeButtonDetails() {
       return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
