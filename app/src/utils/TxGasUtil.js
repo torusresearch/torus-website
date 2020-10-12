@@ -1,6 +1,5 @@
 import { addHexPrefix } from 'ethereumjs-util'
 import EthQuery from 'ethjs-query'
-import log from 'loglevel'
 
 import { BnMultiplyByFraction, bnToHex, hexToBn } from './utils'
 
@@ -15,7 +14,7 @@ and used to do things like calculate gas of a tx.
 
 class TxGasUtil {
   constructor(provider) {
-    this.query = new EthQuery(provider, { debug: true })
+    this.query = new EthQuery(provider)
   }
 
   /**
@@ -23,14 +22,10 @@ class TxGasUtil {
     @returns {object} the txMeta object with the gas written to the txParams
   */
   async analyzeGasUsage(txMeta) {
-    const a = Date.now()
-    log.info('starting gas price analysis')
     const block = await this.query.getBlockByNumber('latest', false)
-    log.info('got block', Date.now() - a)
     let estimatedGasHex
     try {
       estimatedGasHex = await this.estimateTxGas(txMeta, block.gasLimit)
-      log.info('estimated gas', Date.now() - a)
     } catch (error) {
       txMeta.simulationFails = {
         reason: error.message,
@@ -68,12 +63,9 @@ class TxGasUtil {
     const recipient = txParams.to
     const hasRecipient = Boolean(recipient)
 
-    const a = new Date()
     // see if we can set the gas based on the recipient
     if (hasRecipient) {
-      log.info('getting code')
       const code = await this.query.getCode(recipient)
-      log.info('got code', Date.now() - a)
       // For an address with no code, geth will return '0x', and ganache-core v2.2.1 will return '0x0'
       const codeIsEmpty = !code || code === '0x' || code === '0x0'
 
@@ -96,7 +88,6 @@ class TxGasUtil {
         return SIMPLE_GAS_COST
       }
     }
-    log.info('estimatingg gas by query', Date.now() - a)
     // fallback to block gasLimit
     const blockGasLimitBN = hexToBn(blockGasLimitHex)
     const saferGasLimitBN = BnMultiplyByFraction(blockGasLimitBN, 19, 20)
@@ -104,7 +95,6 @@ class TxGasUtil {
 
     // estimate tx gas requirements
     const estimatedgas = await this.query.estimateGas(txParams)
-    log.info('estimated gas from eth query', Date.now() - a)
     return estimatedgas
   }
 
