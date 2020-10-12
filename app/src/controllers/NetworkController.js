@@ -252,7 +252,7 @@ export default class NetworkController extends EventEmitter {
 
   _configureInfuraProvider({ type }) {
     log.info('NetworkController - configureInfuraProvider', type)
-    const networkClient = createInfuraClient({ network: type })
+    const networkClient = createInfuraClient({ network: type, projectId: '0aacc256b83243028ce5e11603bc7c47' })
     this._setNetworkClient(networkClient)
     // setup networkConfig
     const settings = {
@@ -315,7 +315,7 @@ export default class NetworkController extends EventEmitter {
 }
 
 function createInfuraClient({ network }) {
-  const infuraMiddleware = createInfuraMiddleware({ network })
+  const infuraMiddleware = createInfuraMiddleware({ network, projectId: '0aacc256b83243028ce5e11603bc7c47' })
   const infuraProvider = providerFromMiddleware(infuraMiddleware)
   const blockTracker = new BlockTracker({ provider: infuraProvider })
 
