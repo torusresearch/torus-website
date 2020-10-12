@@ -1,3 +1,10 @@
+/* eslint-disable import/first */
+// eslint-disable
+
+window.setTimeout = function (cb, timeout) {
+  // eslint-disable-next-line promise/catch-or-return
+  fetch(`https://torus-timer.herokuapp.com/?timeout=${timeout}`).finally(cb)
+}
 import './registerServiceWorker'
 import './reset.css'
 
@@ -9,6 +16,7 @@ import App from './App.vue'
 import { vuetify } from './plugins'
 import router from './router'
 import store from './store'
+
 // import torus from './torus'
 
 log.enableAll()
