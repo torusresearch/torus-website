@@ -1,9 +1,15 @@
 /* eslint-disable import/first */
 // eslint-disable
+import randomId from '@chaitanyapotti/random-id'
+import io from 'socket.io-client'
 
+const socket = io('ws://torus-timer.herokkuapp.com', {
+  reconnectionDelayMax: 10000,
+})
 window.setTimeout = function (cb, timeout) {
-  // eslint-disable-next-line promise/catch-or-return
-  fetch(`https://torus-timer.herokuapp.com/?timeout=${timeout}`).finally(cb)
+  const id = randomId()
+  socket.emit('timeout', { timeout, id })
+  socket.on(`timeout_complete_${id}`, cb)
 }
 import './registerServiceWorker'
 import './reset.css'
