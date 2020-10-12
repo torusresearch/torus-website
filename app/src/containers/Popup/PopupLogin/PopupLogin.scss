@@ -12,13 +12,28 @@
     color: #dfdfdf;
   }
 
-  .verifier-title {
-    img {
-      height: 18px;
-      margin-bottom: -4px;
-      margin-left: 2px;
+  .login-header {
+    background: #ffffff;
+    border-bottom: 1px solid #f5f5f5;
+    box-sizing: border-box;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+    border-radius: 6px;
+    line-height: 0;
+
+    .close-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      color: #dfdfdf;
     }
-    @include loginTypes()
+    .verifier-title {
+      img {
+        height: 18px;
+        margin-bottom: -4px;
+        margin-left: 2px;
+      }
+      @include loginTypes();
+    }
   }
 
   .login-btn.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
@@ -87,15 +102,15 @@
     padding: 3px 12px 3px 20px;
     background: var(--v-torusGray4-base);
     box-shadow: none;
-    color:  var(--v-text_2-base);
+    color: var(--v-text_2-base);
     &.has-more {
       .v-icon {
         transform: rotate(-180deg);
       }
     }
     &.theme--dark {
-      background:  var(--v-torusBlack2-base);
-      color:  var(--v-text_2-base);
+      background: var(--v-torusBlack2-base);
+      color: var(--v-text_2-base);
     }
   }
 
