@@ -272,7 +272,6 @@ export default {
         await promise
         this.qrLoading = false
       } catch (error) {
-        this.hasStreamApiSupport = false
         log.error(error)
         if (error.name === 'NotAllowedError') {
           this.qrErrorMsg = 'accountMenu.qrErrorNeedCameraPermission'
@@ -292,6 +291,8 @@ export default {
         } else if (error.name === 'StreamApiNotSupportedError') {
           this.qrErrorMsg = 'accountMenu.qrErrorStreamAPINotSupported'
           log.error('ERROR: Stream Api not supported')
+
+          this.hasStreamApiSupport = false
         }
       }
     },
