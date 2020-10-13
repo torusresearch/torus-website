@@ -145,7 +145,11 @@
               <v-icon>$vuetify.icons.select</v-icon>
             </v-btn>
           </div>
-          <div v-if="!canHideDisclaimer1 && !viewMoreOptions" class="text_3--text mb-4 px-6 footer-notes">
+          <div
+            v-if="!canHideDisclaimer1 && !viewMoreOptions"
+            class="text_3--text px-6 footer-notes"
+            :class="$vuetify.breakpoint.xsOnly ? 'pb-13' : 'mb-4'"
+          >
             <span>{{ t('dappLogin.termsAuth01') }}</span>
             <br />
             <span>{{ t('dappLogin.termsAuth02') }}</span>

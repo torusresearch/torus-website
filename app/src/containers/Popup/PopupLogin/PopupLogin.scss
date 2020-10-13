@@ -1,9 +1,5 @@
 @import '../../../scss/login-types.mixin';
 
-::v-deep .v-dialog {
-  overflow-y: hidden;
-}
-
 .login-dialog-container.v-card {
   .close-btn {
     position: absolute;
