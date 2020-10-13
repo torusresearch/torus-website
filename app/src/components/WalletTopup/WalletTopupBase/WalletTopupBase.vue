@@ -27,9 +27,9 @@
 
           <v-layout wrap mx-n2>
             <v-flex xs12 sm8 px-2>
-              <div class="mb-2">
+              <div class="mb-2 d-flex align-center">
                 <span class="body-2">{{ t('walletTopUp.youSend') }}</span>
-                <span class="caption float-right">
+                <span class="caption ml-auto">
                   {{ t('walletTopUp.min') }} {{ selectedProvider === XANPOOL ? '0.1 ETH' : minOrderValue }}, {{ t('walletTopUp.max') }}
                   {{ maxOrderValue }} USD*
                 </span>
@@ -69,7 +69,10 @@
                 </div>
               </div>
             </v-flex>
-            <v-flex xs12 sm4 px-2 mt-2>
+            <v-flex xs12 sm4 px-2>
+              <div v-if="!$vuetify.breakpoint.xsOnly" class="mb-2 d-flex align-center" :style="{ height: '20px' }">
+                <span class="body-2">&nbsp;</span>
+              </div>
               <v-select
                 id="currency-selector"
                 v-model="selectedCurrency"
