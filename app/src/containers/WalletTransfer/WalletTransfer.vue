@@ -577,8 +577,9 @@ export default {
     },
     tweetData() {
       const share = new URL('https://twitter.com/intent/tweet')
-      const amount = `${this.displayAmount} ${
-        !this.toggle_exclusive ? (this.contractType === CONTRACT_TYPE_ERC721 ? '' : this.selectedItem.symbol) : this.selectedCurrency
+      const selectedAsset = this.contractType === CONTRACT_TYPE_ERC721 ? this.assetSelected.name : this.selectedItem.symbol
+      const amount = `${this.contractType === CONTRACT_TYPE_ERC721 ? '' : this.displayAmount} ${
+        !this.toggle_exclusive ? selectedAsset : this.selectedCurrency
       }`
       const message = this.t('walletTransfer.transferTweet')
         .replace(/{address}/gi, this.toAddress)
