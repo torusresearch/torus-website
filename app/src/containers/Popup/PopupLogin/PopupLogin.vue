@@ -301,6 +301,9 @@ export default {
       }
     },
   },
+  mounted() {
+    this.chooseAndSetActiveButton()
+  },
   methods: {
     chooseAndSetActiveButton() {
       // if present in any visible ones, don't do anything
