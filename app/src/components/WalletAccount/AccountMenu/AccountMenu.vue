@@ -177,7 +177,7 @@ export default {
       wallets: 'walletBalances',
     }),
     userEmail() {
-      return getUserEmail(this.userInfo)
+      return getUserEmail(this.userInfo, this.t('accountMenu.wallet'))
     },
     userId() {
       if (this.userInfo.typeOfLogin === DISCORD) {
