@@ -164,8 +164,8 @@
                 {{ t('dappLogin.termsConditions') }}
               </a>
             </div>
-            <v-divider class="mx-3" vertical></v-divider>
-            <div class="d-flex align-center">
+            <v-divider v-if="!whiteLabel.isActive" class="mx-3" vertical></v-divider>
+            <div v-if="!whiteLabel.isActive" class="d-flex align-center">
               <span class="text_2--text mr-1">{{ t('dappLogin.poweredBy') }}</span>
               <img alt="Torus Logo" height="10" :src="getLogo.logo" />
             </div>
