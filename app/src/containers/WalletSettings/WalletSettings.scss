@@ -13,6 +13,9 @@
       &::before {
         @include elevationOne()
       }
+      &:not(:first-child)::after {
+        border: 0;
+      }
     }
     &.theme--dark {
       .v-expansion-panel-header {

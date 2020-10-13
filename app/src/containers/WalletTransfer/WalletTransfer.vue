@@ -38,7 +38,7 @@
           >
             <v-layout wrap>
               <v-flex xs12>
-                <span class="body-2">{{ t('walletTransfer.selectItem') }}</span>
+                <div class="body-2 mb-2">{{ t('walletTransfer.selectItem') }}</div>
                 <div v-if="selectedItemDisplay">
                   <v-menu transition="slide-y-transition" bottom>
                     <template v-slot:activator="{ on }">
@@ -104,7 +104,7 @@
                 </div>
               </v-flex>
               <v-flex xs12 mt-6>
-                <span class="body-2">{{ t('walletTransfer.transferMode') }}</span>
+                <div class="body-2 mb-2">{{ t('walletTransfer.transferMode') }}</div>
                 <v-layout wrap class="mx-n2">
                   <v-flex xs12 sm8 class="recipient-address-container px-2">
                     <v-combobox
@@ -112,6 +112,7 @@
                       ref="contactSelected"
                       :name="randomName"
                       class="recipient-address"
+                      :class="{ hasQrError: qrErrorMsg !== '' }"
                       :value="contactSelected"
                       :items="contactList"
                       :placeholder="verifierPlaceholder"
@@ -125,14 +126,7 @@
                       @input="contactChanged"
                     >
                       <template v-slot:append>
-                        <v-btn
-                          icon
-                          small
-                          color="torusBrand1"
-                          title="Capture QR"
-                          aria-label="Capture QR"
-                          @click="() => $refs && $refs.captureQr.$el.click()"
-                        >
+                        <v-btn icon small color="torusBrand1" title="Capture QR" tabindex="-1" aria-label="Capture QR" @click="startQrScanning">
                           <v-icon small>$vuetify.icons.scan</v-icon>
                         </v-btn>
                       </template>
@@ -140,7 +134,14 @@
                         {{ t(props.message) }}
                       </template>
                     </v-combobox>
-                    <QrcodeCapture ref="captureQr" :style="{ display: 'none' }" @decode="onDecodeQr" />
+                    <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
+                      <div class="qr-scan-container">
+                        <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
+                        <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
+                          <v-icon>$vuetify.icons.close</v-icon>
+                        </v-btn>
+                      </div>
+                    </v-dialog>
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                       <div class="v-messages">
                         <div class="v-messages__wrapper">
@@ -173,7 +174,7 @@
                 </v-layout>
               </v-flex>
               <v-flex xs12 class="you-send-container">
-                <div>
+                <div class="mb-2">
                   <span class="body-2">{{ t('walletTransfer.youSend') }}</span>
                   <a
                     v-if="contractType !== CONTRACT_TYPE_ERC721 && !isSendAll"
@@ -209,7 +210,9 @@
                   v-if="contractType !== CONTRACT_TYPE_ERC721"
                   id="you-send"
                   ref="youSend"
-                  :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
+                  :hint="
+                    amount <= 0 ? '' : convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''
+                  "
                   persistent-hint
                   type="number"
                   outlined
@@ -260,6 +263,7 @@
                 :selected-currency="selectedCurrency"
                 :currency-multiplier="getCurrencyTokenRate"
                 :currency-multiplier-eth="currencyMultiplier"
+                :nonce="nonce"
                 @onSelectSpeed="onSelectSpeed"
               />
               <v-flex v-if="contractType === CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
@@ -377,7 +381,7 @@ import BigNumber from 'bignumber.js'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import log from 'loglevel'
-import { QrcodeCapture } from 'vue-qrcode-reader'
+import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapGetters, mapState } from 'vuex'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
@@ -412,7 +416,7 @@ export default {
   components: {
     TransactionSpeedSelect,
     MessageModal,
-    QrcodeCapture,
+    QrcodeStream,
     AddContact,
     ComponentLoader,
     TransferConfirm,
@@ -427,7 +431,7 @@ export default {
       collectibleSelected: {},
       assetSelected: {},
       tokenAddress: '0x',
-      toEthAddress: '0x',
+      toEthAddress: '',
       amount: new BigNumber('0'),
       displayAmount: new BigNumber('0'),
       convertedAmount: '',
@@ -471,6 +475,9 @@ export default {
       TWITTER,
       etherscanLink: '',
       MESSAGE_MODAL_TYPE_SUCCESS,
+      nonce: -1,
+      camera: 'off',
+      showQrScanner: false,
     }
   },
   computed: {
@@ -570,8 +577,9 @@ export default {
     },
     tweetData() {
       const share = new URL('https://twitter.com/intent/tweet')
-      const amount = `${this.displayAmount} ${
-        !this.toggle_exclusive ? (this.contractType === CONTRACT_TYPE_ERC721 ? '' : this.selectedItem.symbol) : this.selectedCurrency
+      const selectedAsset = this.contractType === CONTRACT_TYPE_ERC721 ? this.assetSelected.name : this.selectedItem.symbol
+      const amount = `${this.contractType === CONTRACT_TYPE_ERC721 ? '' : this.displayAmount} ${
+        !this.toggle_exclusive ? selectedAsset : this.selectedCurrency
       }`
       const message = this.t('walletTransfer.transferTweet')
         .replace(/{address}/gi, this.toAddress)
@@ -591,7 +599,6 @@ export default {
     selectedAddress(newValue, oldValue) {
       if (newValue !== oldValue) {
         if (this.toEthAddress) this.calculateGas(this.toEthAddress)
-        else this.onTransferClick()
       }
     },
   },
@@ -632,6 +639,10 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
+    startQrScanning() {
+      this.camera = 'auto'
+      this.showQrScanner = true
+    },
     setSelectedVerifierFromToAddress(toAddress) {
       if (toAddress.startsWith('0x')) {
         this.selectedVerifier = ETH
@@ -654,7 +665,7 @@ export default {
       }
       return nick
     },
-    onChangeDisplayAmount(value) {
+    async onChangeDisplayAmount(value) {
       this.sendAmountError = ''
       if ((BigNumber.isBigNumber(value) && !this.displayAmount.eq(value)) || !BigNumber.isBigNumber(value)) {
         this.displayAmount = BigNumber.isBigNumber(value) ? value : new BigNumber(value || '0')
@@ -670,6 +681,10 @@ export default {
           ? significantDigits(this.displayAmount.div(this.getCurrencyTokenRate), false, 4)
           : significantDigits(this.displayAmount.times(this.getCurrencyTokenRate), false, 4)
 
+        log.info(this.toEthAddress, 'address')
+        if (this.toEthAddress) {
+          this.gas = await this.calculateGas(this.toEthAddress)
+        }
         this.updateTotalCost()
       }
     },
@@ -733,12 +748,15 @@ export default {
       else if (contact && contact.value) value = contact.value
       return validateVerifierId(this.selectedVerifier, value)
     },
-    verifierChangedManual() {
+    async verifierChangedManual() {
       this.setRandomId()
       this.autoSelectVerifier = false
       this.$refs.form.validate()
+      if (this.selectedVerifier && this.toAddress) {
+        this.toEthAddress = await this.calculateEthAddress()
+      }
     },
-    contactChanged(contact) {
+    async contactChanged(contact) {
       this.contactSelected = contact
       if (contact) this.toAddress = contact
       log.info(contact, 'contactChanged')
@@ -753,6 +771,10 @@ export default {
         }
       }
       this.ensError = ''
+
+      if (this.selectedVerifier && this.toAddress) {
+        this.toEthAddress = await this.calculateEthAddress()
+      }
     },
     calculateGas(toAddress) {
       this.sendEthToContractError = false
@@ -844,49 +866,46 @@ export default {
       if (this.toEthAddress) {
         this.gas = await this.calculateGas(this.toEthAddress)
         this.updateTotalCost()
-      } else this.onTransferClick()
+      }
     },
     getEnsAddress(ens) {
       return torus.web3.eth.ens.getAddress(ens)
     },
+    async calculateEthAddress() {
+      let toAddress
+      log.info(this.toAddress, this.selectedVerifier)
+      if (isAddress(this.toAddress)) {
+        toAddress = toChecksumAddress(this.toAddress)
+      } else if (this.selectedVerifier === ENS) {
+        try {
+          const ethAddr = await this.getEnsAddress(this.toAddress)
+          log.info(ethAddr)
+          toAddress = ethAddr
+        } catch (error) {
+          log.error(error)
+          this.ensError = 'Invalid ENS address'
+        }
+      } else {
+        try {
+          const { loginConfig } = this.$store.state.embedState
+          const foundLoginConfig = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
+          const validVeriferId = await this.getIdFromNick(this.toAddress, this.selectedVerifier)
+          this.convertedVerifierId = validVeriferId
+          if (foundLoginConfig) {
+            toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
+              verifier: foundLoginConfig,
+              verifierId: validVeriferId.startsWith('@') ? validVeriferId.replace('@', '').toLowerCase() : validVeriferId.toLowerCase(),
+            })
+          }
+        } catch (error) {
+          log.error(error)
+        }
+      }
+      return toAddress
+    },
     async onTransferClick() {
       if (this.$refs.form.validate()) {
-        let toAddress
-        log.info(this.toAddress, this.selectedVerifier)
-        if (isAddress(this.toAddress)) {
-          toAddress = toChecksumAddress(this.toAddress)
-        } else if (this.selectedVerifier === ENS) {
-          try {
-            const ethAddr = await this.getEnsAddress(this.toAddress)
-            log.info(ethAddr)
-            toAddress = ethAddr
-          } catch (error) {
-            log.error(error)
-            this.ensError = 'Invalid ENS address'
-            return
-          }
-        } else {
-          try {
-            const { loginConfig } = this.$store.state.embedState
-            const foundLoginConfig = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
-            const validVeriferId = await this.getIdFromNick(this.toAddress, this.selectedVerifier)
-            this.convertedVerifierId = validVeriferId
-            if (foundLoginConfig) {
-              toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
-                verifier: foundLoginConfig,
-                verifierId: validVeriferId.startsWith('@') ? validVeriferId.replace('@', '').toLowerCase() : validVeriferId.toLowerCase(),
-              })
-            }
-          } catch (error) {
-            // Show error body
-            this.messageModalShow = true
-            this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-            this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-            this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
-            log.error(error)
-            return
-          }
-        }
+        const toAddress = await this.calculateEthAddress()
         if (!isAddress(toAddress)) {
           // Show error body
           this.messageModalShow = true
@@ -942,6 +961,7 @@ export default {
     async sendCoin() {
       const toAddress = this.toEthAddress
       const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
+      const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value = `0x${this.amount
           .times(new BigNumber(10).pow(new BigNumber(18)))
@@ -955,6 +975,7 @@ export default {
             value,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
+            customNonceValue,
           },
           (error, transactionHash) => {
             if (error) {
@@ -988,6 +1009,7 @@ export default {
             from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
+            customNonceValue,
           },
           (error, transactionHash) => {
             if (error) {
@@ -1017,6 +1039,7 @@ export default {
             from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
+            customNonceValue,
           },
           (error, transactionHash) => {
             if (error) {
@@ -1095,12 +1118,14 @@ export default {
       this.timeTaken = data.speed
       this.gas = data.gas
       this.hasCustomGasLimit = data.isAdvanceOption
+      this.nonce = data.nonce || -1
 
       if (data.isReset) {
         this.activeGasPrice = this.speedSelected === '' ? '' : this.activeGasPrice
+        this.nonce = -1
         if (this.toEthAddress) {
           this.gas = await this.calculateGas(this.toEthAddress)
-        } else this.onTransferClick()
+        }
       }
 
       this.updateTotalCost()
@@ -1110,25 +1135,63 @@ export default {
     onDecodeQr(result) {
       try {
         const qrUrl = new URL(result)
-        const qrParameters = new URLSearchParams(qrUrl.search)
-        if (qrParameters.has('to')) {
+        if (qrUrl.href.includes('ethereum:') && isAddress(qrUrl.pathname)) {
+          this.toAddress = qrUrl.pathname
           this.selectedVerifier = ETH
-          this.toAddress = qrParameters.get('to')
+          this.qrErrorMsg = ''
+        } else if (qrUrl.searchParams.has('to')) {
+          this.selectedVerifier = ETH
+          this.toAddress = qrUrl.searchParams.get('to')
+          this.qrErrorMsg = ''
         } else {
           this.toAddress = ''
           this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
         }
       } catch {
-        if (isAddress(result)) {
+        const parsedResult = result.replace('ethereum:', '')
+        if (isAddress(parsedResult)) {
           this.selectedVerifier = ETH
-          this.toAddress = result
+          this.toAddress = parsedResult
+          this.qrErrorMsg = ''
         } else {
           this.toAddress = ''
           this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
         }
       } finally {
+        this.camera = 'off'
+        this.showQrScanner = false
         this.contactSelected = this.toAddress
       }
+    },
+    async onInit(promise) {
+      try {
+        await promise
+      } catch (error) {
+        log.error(error)
+        if (error.name === 'NotAllowedError') {
+          this.qrErrorMsg = 'ERROR: you need to grant camera access permisson'
+          log.error('ERROR: you need to grant camera access permisson')
+        } else if (error.name === 'NotFoundError') {
+          this.qrErrorMsg = 'ERROR: no camera on this device'
+          log.error('ERROR: no camera on this device')
+        } else if (error.name === 'NotSupportedError') {
+          this.qrErrorMsg = 'ERROR: secure context required (HTTPS, localhost)'
+          log.error('ERROR: secure context required (HTTPS, localhost)')
+        } else if (error.name === 'NotReadableError') {
+          this.qrErrorMsg = 'ERROR: is the camera already in use?'
+          log.error('ERROR: is the camera already in use?')
+        } else if (error.name === 'OverconstrainedError') {
+          this.qrErrorMsg = 'ERROR: installed cameras are not suitable'
+          log.error('ERROR: installed cameras are not suitable')
+        } else if (error.name === 'StreamApiNotSupportedError') {
+          this.qrErrorMsg = 'ERROR: Stream Api Not Supported'
+          log.error('ERROR: Stream Api Not Supported')
+        }
+      }
+    },
+    closeQRScanner() {
+      this.camera = 'off'
+      this.showQrScanner = false
     },
     setRandomId() {
       // patch fix because vuetify stopped passing attributes to underlying component

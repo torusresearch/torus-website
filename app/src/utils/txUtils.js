@@ -10,10 +10,12 @@ const normalizers = {
   from: (from, LowerCase = true) => (LowerCase ? addHexPrefix(from).toLowerCase() : addHexPrefix(from)),
   to: (to, LowerCase = true) => (LowerCase ? addHexPrefix(to).toLowerCase() : addHexPrefix(to)),
   nonce: (nonce) => addHexPrefix(nonce),
+  customNonceValue: (nonce) => addHexPrefix(nonce),
   value: (value) => addHexPrefix(value),
   data: (data) => addHexPrefix(data),
   gas: (gas) => addHexPrefix(gas),
   gasPrice: (gasPrice) => addHexPrefix(gasPrice),
+  isWalletConnectRequest: (isWalletConnectRequest) => isWalletConnectRequest,
 }
 
 /**

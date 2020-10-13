@@ -16,7 +16,7 @@
             <v-flex xs12 mt-4>
               <v-layout wrap>
                 <v-flex xs12 sm6 px-4>
-                  <span class="text-subtitle-2">
+                  <div class="text-subtitle-2 mb-2">
                     {{ t('walletTransfer.gasPrice') }} (GWEI)
                     <HelpTooltip :title="t('walletTransfer.gasPrice')">
                       <template v-slot:description>
@@ -34,7 +34,7 @@
                         </div>
                       </template>
                     </HelpTooltip>
-                  </span>
+                  </div>
                   <v-text-field
                     id="gas-price"
                     :placeholder="t('walletTransfer.enterValue')"
@@ -46,10 +46,10 @@
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
-                  <span class="text-subtitle-2">
+                  <div class="text-subtitle-2 mb-2">
                     {{ t('walletTransfer.gasLimit') }}
                     <HelpTooltip :title="t('walletTransfer.gasLimit')" :description="t('walletTransfer.gasLimitDesc')"></HelpTooltip>
-                  </span>
+                  </div>
                   <v-text-field
                     id="advanced-gas"
                     :value="advancedGas"
@@ -60,23 +60,38 @@
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
-                  <span class="text-subtitle-2">{{ t('walletTransfer.sendAmount') }}</span>
+                  <div class="text-subtitle-2 mb-2">Nonce</div>
+                  <v-combobox id="nonce" v-model="newNonce" outlined :items="nonceItems" :rules="[rules.validNonce]">
+                    <template v-slot:item="props">
+                      {{ t(props.item.text) }}
+                    </template>
+                    <template v-slot:selection="{ item }">
+                      {{ item.text ? t(item.text) : item }}
+                    </template>
+                  </v-combobox>
+                </v-flex>
+                <v-flex xs12 sm6 px-4>
+                  <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.transferFee') }}</div>
                   <template v-if="$vuetify.breakpoint.xsOnly">
-                    <span class="float-right">{{ displayAmount }} {{ symbol }}</span>
+                    <span class="float-right">
+                      <span id="transaction-fee-mobile">{{ gasAmountDisplay }}</span>
+                      ETH
+                    </span>
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>
                   <v-text-field
                     v-else
-                    :suffix="symbol"
+                    id="transaction-fee"
+                    suffix="ETH"
                     outlined
                     readonly
-                    :value="displayAmount"
+                    :value="gasAmountDisplay"
                     persistent-hint
-                    :hint="displayAmountConverted"
+                    :hint="gasAmountConverted"
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
-                  <span class="text-subtitle-2">{{ t('walletTransfer.transferFee') }}</span>
+                  <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.transferFee') }}</div>
                   <template v-if="$vuetify.breakpoint.xsOnly">
                     <span class="float-right">
                       <span id="transaction-fee-mobile">{{ gasAmountDisplay }}</span>
@@ -96,7 +111,7 @@
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mt-5' : ''">
-                  <span class="text-subtitle-2">{{ t('walletTransfer.newTotal') }}</span>
+                  <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.newTotal') }}</div>
                   <template v-if="$vuetify.breakpoint.xsOnly">
                     <span class="float-right text-subtitle-1 font-weight-bold torusBrand1--text">
                       {{ totalCost }}{{ contractType !== CONTRACT_TYPE_ERC20 ? ` ${symbol}` : '' }}
@@ -172,6 +187,10 @@ export default {
       type: String,
       default: CONTRACT_TYPE_ETH,
     },
+    nonce: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -183,7 +202,22 @@ export default {
       rules: {
         moreThanZero: (value) => new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount'),
         valid: (value) => !!value || this.t('walletTransfer.required'),
+        validNonce: (value) => {
+          if (value === null) return this.t('walletTransfer.invalidInput')
+          const newValue = Number(value.value || value)
+          if (Number.isNaN(newValue)) {
+            return value.value === 'default' || this.t('walletTransfer.invalidInput')
+          }
+          return newValue >= 0 || this.t('walletTransfer.invalidInput')
+        },
       },
+      newNonce: 0,
+      nonceItems: [
+        {
+          text: 'walletTransfer.default',
+          value: 'default',
+        },
+      ],
     }
   },
   computed: {
@@ -241,10 +275,12 @@ export default {
     },
     saveOptions() {
       if (this.$refs.advanceOptionForm.validate()) {
+        const nonce = Number(this.newNonce.value || this.newNonce)
         const advancedGas = BigNumber.isBigNumber(this.advancedGas) ? this.advancedGas : new BigNumber(this.advancedGas)
         const payload = {
           advancedGas,
           advancedActiveGasPrice: this.advancedActiveGasPrice,
+          nonce: Number.isNaN(nonce) ? 0 : nonce,
         }
 
         this.$emit('onSave', payload)
@@ -255,6 +291,7 @@ export default {
     updateDetails() {
       this.advancedActiveGasPrice = this.activeGasPrice
       this.advancedGas = this.gas
+      this.newNonce = this.nonce >= 0 ? this.nonce : this.nonceItems[0]
     },
     convertedDisplay(amount, multiplier) {
       return !BigNumber.isBigNumber(amount) ? new BigNumber(amount).times(multiplier) : amount.times(multiplier)

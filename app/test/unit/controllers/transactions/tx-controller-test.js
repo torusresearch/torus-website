@@ -50,7 +50,7 @@ describe('Transaction Controller', function () {
           resolve()
         }),
     })
-    txController.nonceTracker.getNonceLock = () => Promise.resolve({ nextNonce: 0, releaseLock: noop })
+    txController.nonceTracker.getNonceLock = () => Promise.resolve({ nextNonce: 0, releaseLock: noop, nonceDetails: {} })
   })
 
   describe('#getState', function () {
@@ -183,7 +183,7 @@ describe('Transaction Controller', function () {
 
     it('should add an unapproved transaction and return a valid txMeta', function (done) {
       txController
-        .addUnapprovedTransaction({ from: selectedAddress })
+        .addUnapprovedTransaction({ from: selectedAddress }, { origin: '' })
         .then((txMeta) => {
           assert('id' in txMeta, 'should have a id')
           assert('time' in txMeta, 'should have a time stamp')
@@ -204,7 +204,7 @@ describe('Transaction Controller', function () {
         assert(txMetaFromEmit, 'txMeta is falsey')
         done()
       })
-      txController.addUnapprovedTransaction({ from: selectedAddress }).catch(done)
+      txController.addUnapprovedTransaction({ from: selectedAddress }, { origin: '' }).catch(done)
     })
 
     it("should fail if the from address isn't the selected address", function (done) {
@@ -225,7 +225,7 @@ describe('Transaction Controller', function () {
         assert(txMetaFromEmit, 'txMeta is falsey')
         done()
       })
-      txController.addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' }).catch(done)
+      txController.addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' }, { origin: '' }).catch(done)
     })
 
     it('should fail if netId is loading', function (done) {
@@ -327,6 +327,48 @@ describe('Transaction Controller', function () {
           assert.equal(params.gasPrice, originalValue, 'gas price unmodified')
           assert.equal(result.hash, originalValue, `hash was set \n got: ${result.hash} \n expected: ${originalValue}`)
           assert.equal(result.status, 'submitted', 'Should have reached the submitted status.')
+          signStub.restore()
+          pubStub.restore()
+          done()
+        })
+        .catch(done)
+    })
+  })
+
+  describe('#approveTransaction:custom nonce', function () {
+    it('update nonce with custom nonce', function (done) {
+      const originalValue = '0x01'
+      const originalNonceValue = '0x02'
+      const txMeta = {
+        id: '1',
+        status: 'unapproved',
+        metamaskNetworkId: currentNetworkId,
+        txParams: {
+          nonce: originalValue,
+          customNonceValue: originalNonceValue,
+          gas: originalValue,
+          gasPrice: originalValue,
+        },
+      }
+      this.timeout(15000)
+
+      txController.addTx(txMeta)
+      providerResultStub.eth_estimateGas = '0x5209'
+
+      const signStub = sinon.stub(txController, 'signTransaction').callsFake(() => Promise.resolve())
+
+      const pubStub = sinon.stub(txController, 'publishTransaction').callsFake(() => {
+        txController.setTxHash('1', originalValue)
+        txController.txStateManager.setTxStatusSubmitted('1')
+      })
+
+      txController
+        .approveTransaction(txMeta.id)
+        .then(() => {
+          const result = txController.txStateManager.getTx(txMeta.id)
+          const params = result.txParams
+
+          assert.equal(parseInt(params.nonce), parseInt(originalNonceValue), 'nonce should change to customNonceValue')
           signStub.restore()
           pubStub.restore()
           done()

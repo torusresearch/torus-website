@@ -304,7 +304,12 @@ export async function isSmartContractAddress(address, web3) {
 
 export function getEtherScanHashLink(txHash, network) {
   if (!ETHERSCAN_SUPPORTED_NETWORKS.has(network)) return ''
-  return network === 'mainnet' ? `https://etherscan.io/tx/${txHash}` : `https://${network}.etherscan.io/tx/${txHash}`
+  return network === MAINNET ? `https://etherscan.io/tx/${txHash}` : `https://${network}.etherscan.io/tx/${txHash}`
+}
+
+export function getEtherScanAddressLink(address, network) {
+  if (!ETHERSCAN_SUPPORTED_NETWORKS.has(network)) return ''
+  return network === MAINNET ? `https://etherscan.io/address/${address}` : `https://${network}.etherscan.io/address/${address}`
 }
 
 export const statusObject = {
@@ -447,7 +452,7 @@ export const paymentProviders = {
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'mailto:support@xanpool.com',
-    minOrderValue: 30,
+    minOrderValue: 100,
     maxOrderValue: 2500,
     validCurrencies: ['SGD', 'HKD', 'MYR', 'PHP', 'INR', 'VND', 'THB', 'IDR'],
     validCryptoCurrencies: ['ETH', 'USDT'],
@@ -511,7 +516,7 @@ export function selectChainId(network, store) {
 export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
 
 export const getIFrameOrigin = () => {
-  const originHref = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+  const originHref = window.location.ancestorOrigins?.length > 0 ? window.location.ancestorOrigins[0] : document.referrer
   return originHref
 }
 
@@ -635,8 +640,7 @@ export const handleRedirectParameters = (hash, queryParameters) => {
   return { error, instanceParameters, hashParameters }
 }
 
-export function getUserEmail(userInfo) {
-  const verifierIdArray = userInfo.verifierId.split('|')
-  const verifierId = verifierIdArray[2] || verifierIdArray[1] || verifierIdArray[0]
-  return userInfo.email ? userInfo.email : verifierId
+export function getUserEmail(userInfo, walletDisplay) {
+  const typeOfLoginDisplay = userInfo.typeOfLogin.charAt(0).toUpperCase() + userInfo.typeOfLogin.slice(1)
+  return (userInfo.typeOfLogin !== APPLE && userInfo.email) || userInfo.name || `${typeOfLoginDisplay} ${walletDisplay}`
 }

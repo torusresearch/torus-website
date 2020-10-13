@@ -21,16 +21,19 @@ import CoinsSendIcon from './CoinsSendIcon.vue'
 import CoinsTopupIcon from './CoinsTopupIcon.vue'
 import CollectibleIcon from './CollectibleIcon.vue'
 import CopyIcon from './CopyIcon.vue'
+import DisconnectIcon from './DisconnectIcon.vue'
 import DownloadIcon from './DownloadIcon.vue'
 import EthIcon from './EthIcon.vue'
 import GlobeIcon from './GlobeIcon.vue'
 import InfoIcon from './InfoIcon.vue'
 import KeyIcon from './KeyIcon.vue'
+import LinkIcon from './LinkIcon.vue'
 import ListIcon from './ListIcon.vue'
 import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
 import MenuIcon from './MenuIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
+import PersonCircleIcon from './PersonCircleIcon.vue'
 import PersonIcon from './PersonIcon.vue'
 import QrIcon from './QrIcon.vue'
 import QuestionIcon from './QuestionIcon.vue'
@@ -67,6 +70,7 @@ import VerifierWechatIcon from './VerifierWechatIcon.vue'
 import VerifierWeiboIcon from './VerifierWeiboIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
+import WalletConnectIcon from './WalletConnectIcon.vue'
 
 export default {
   select: {
@@ -258,7 +262,7 @@ export default {
   jwt: {
     component: VerifierJwtIcon,
   },
-  passwordless: {
+  email: {
     component: VerifierPasswordlessIcon,
   },
   apple: {
@@ -275,5 +279,17 @@ export default {
   },
   alert: {
     component: AlertIcon,
+  },
+  walletconnect: {
+    component: WalletConnectIcon,
+  },
+  disconnect: {
+    component: DisconnectIcon,
+  },
+  link: {
+    component: LinkIcon,
+  },
+  person_circle: {
+    component: PersonCircleIcon,
   },
 }

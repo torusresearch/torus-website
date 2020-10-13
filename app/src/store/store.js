@@ -46,6 +46,7 @@ if (storageAvailable('sessionStorage')) {
       pastTransactions: state.pastTransactions,
       paymentTx: state.paymentTx,
       etherscanTx: state.etherscanTx,
+      wcConnectorSession: state.wcConnectorSession,
     }),
   })
 }
@@ -75,9 +76,9 @@ const VuexStore = new Vuex.Store({
   actions: {
     ...actions,
     ...paymentActions,
-    async showPopup({ state }, payload) {
+    async showPopup({ state, commit }, { payload, request }) {
       const isTx = payload && typeof payload === 'object'
-      const confirmHandler = new ConfirmHandler(isTx ? payload.id : payload)
+      const confirmHandler = new ConfirmHandler(isTx ? payload.id : payload, request.preopenInstanceId)
       confirmHandler.isTx = isTx
       confirmHandler.selectedCurrency = state.selectedCurrency
       confirmHandler.tokenRates = state.tokenRates
@@ -105,13 +106,43 @@ const VuexStore = new Vuex.Store({
         return
       }
       confirmHandler.balance = fromWei(weiBalance.toString())
-      if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
+      if (request.isWalletConnectRequest && window.location === window.parent.location && window.location.origin === config.baseUrl) {
+        const originObj = { href: '', hostname: '' }
+        try {
+          const peerMetaURL = new URL(torus.torusController.walletConnectController.getPeerMetaURL())
+          originObj.href = peerMetaURL.href
+          originObj.hostname = peerMetaURL.hostname
+        } catch (error) {
+          log.error('could not get peer meta URL for walletconnect', error)
+        }
+        confirmHandler.origin = originObj
+        commit('addConfirmModal', JSON.parse(JSON.stringify(confirmHandler)))
+      } else if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
       } else if (confirmHandler.txType === TX_MESSAGE && isTorusSignedMessage(confirmHandler.msgParams)) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
       } else {
         confirmHandler.open(handleConfirm, handleDeny)
       }
+    },
+    handleConfirmModal({ commit }, payload) {
+      const { gasPrice, gas, customNonceValue, id, approve, txType } = payload
+
+      if (approve) {
+        handleConfirm({
+          data: {
+            ...payload,
+            id,
+            gasPrice,
+            gas,
+            customNonceValue,
+            txType,
+          },
+        })
+      } else {
+        handleDeny(id, txType)
+      }
+      commit('deleteConfirmModal', id)
     },
   },
 })
@@ -148,7 +179,7 @@ function handleConfirm(ev) {
     let txMeta = unApprovedTransactions.find((x) => x.id === ev.data.id)
     log.info('STANDARD TX PARAMS:', txMeta)
 
-    if (ev.data.gasPrice || ev.data.gas) {
+    if (ev.data.gasPrice || ev.data.gas || ev.data.customNonceValue) {
       const newTxMeta = JSON.parse(JSON.stringify(txMeta))
       if (ev.data.gasPrice) {
         log.info('Changed gas price to:', ev.data.gasPrice)
@@ -157,6 +188,10 @@ function handleConfirm(ev) {
       if (ev.data.gas) {
         log.info('Changed gas limit to:', ev.data.gas)
         newTxMeta.txParams.gas = ev.data.gas
+      }
+      if (ev.data.customNonceValue) {
+        log.info('Changed nonce to:', ev.data.customNonceValue)
+        newTxMeta.txParams.customNonceValue = ev.data.customNonceValue
       }
       torusController.txController.updateTransaction(newTxMeta)
       txMeta = newTxMeta

@@ -137,9 +137,21 @@
   }
 
   .torus-widget__transaction-details {
-    .avatar-container {
+    .icon-holder {
+      min-height: 40px;
+      min-width: 40px;
+      width: 40px;
       border: 1px solid #b3c0ce;
       border-radius: 50%;
+      display: flex;
+      img {
+        margin: auto;
+        max-height: 36px;
+        max-width: 30px;
+      }
+      .v-icon {
+        margin: auto;
+      }
     }
     .caption {
       color: #b3c0ce;

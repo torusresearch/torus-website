@@ -13,6 +13,8 @@ import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   DISCORD,
   FACEBOOK,
+  FEATURES_DEFAULT_WALLET_WINDOW,
+  FEATURES_PROVIDER_CHANGE_WINDOW,
   RPC,
   SUPPORTED_NETWORK_TYPES,
   TOKEN_METHOD_TRANSFER_FROM,
@@ -38,6 +40,7 @@ import {
   tokenRatesControllerHandler,
   transactionControllerHandler,
   typedMessageManagerHandler,
+  walletConnectHandler,
 } from './controllerSubscriptions'
 import { HandlerFactory as createHandler } from './Handlers'
 import initialState from './state'
@@ -56,6 +59,7 @@ const {
   prefsController,
   networkController,
   assetDetectionController,
+  walletConnectController,
 } = torusController || {}
 
 // stream to send logged in status
@@ -96,7 +100,7 @@ function resetStore(store, handler, initState) {
 }
 
 export default {
-  logOut({ commit, state }, _) {
+  async logOut({ commit, state }, _) {
     commit('logOut', { ...initialState, networkType: state.networkType, networkId: state.networkId })
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
@@ -112,6 +116,8 @@ export default {
     resetStore(prefsController.store, prefsControllerHandler, prefsController.initState)
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
+    await walletConnectController.disconnect()
+    resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(prefsController.paymentTxStore, paymentTxHandler, [])
     resetStore(prefsController.pastTransactionsStore, pastTransactionsHandler, [])
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
@@ -159,7 +165,7 @@ export default {
       url: finalUrl,
       preopenInstanceId,
       target: '_blank',
-      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375',
+      features: FEATURES_PROVIDER_CHANGE_WINDOW,
     })
     bc.addEventListener('message', async (ev) => {
       const { type = '', approve = false } = ev.data
@@ -205,7 +211,7 @@ export default {
       url: finalUrl,
       preopenInstanceId,
       target: '_blank',
-      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500',
+      features: FEATURES_PROVIDER_CHANGE_WINDOW,
     })
 
     const handleDeny = () => {
@@ -252,7 +258,7 @@ export default {
   },
   showWalletPopup(context, payload) {
     const finalUrl = `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`
-    const walletWindow = new PopupHandler({ url: finalUrl })
+    const walletWindow = new PopupHandler({ url: finalUrl, features: FEATURES_DEFAULT_WALLET_WINDOW })
     walletWindow.open()
     walletWindow.window.blur()
     setTimeout(walletWindow.window.focus(), 0)
@@ -375,6 +381,7 @@ export default {
     prefsController.paymentTxStore.subscribe(paymentTxHandler)
     prefsController.pastTransactionsStore.subscribe(pastTransactionsHandler)
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
+    walletConnectController.store.subscribe(walletConnectHandler)
   },
   initTorusKeyring(_, payload) {
     return torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
@@ -506,6 +513,7 @@ export default {
       networkId,
       jwtToken,
       userInfo: { verifier },
+      wcConnectorSession,
     } = state
     try {
       // if jwtToken expires, logout
@@ -528,6 +536,7 @@ export default {
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
+        if (Object.keys(wcConnectorSession).length > 0) dispatch('initWalletConnect', { session: wcConnectorSession })
         log.info('rehydrated wallet')
         torus.updateStaticData({ isUnlocked: true })
       }
@@ -584,15 +593,15 @@ export default {
           // Get asset name of the 721
           const selectedAddressAssets = state.assets[state.selectedAddress]
           if (selectedAddressAssets) {
-            const contract = selectedAddressAssets.find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
+            const contract = selectedAddressAssets.find((x) => x.address.toLowerCase() === txParams.to.toLowerCase()) || {}
             log.info(contract, amountValue)
             if (contract) {
               const { name: foundAssetName } = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
               assetName = foundAssetName || ''
               symbol = assetName
               type = 'erc721'
-              typeName = name
-              typeImageLink = logo
+              typeName = contract.name || name
+              typeImageLink = contract.logo || logo
               totalAmount = fromWei(toBN(txParams.value || 0))
               finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
             }
@@ -618,7 +627,7 @@ export default {
           const { symbol: contractSymbol, name, logo } = contractParams
           symbol = contractSymbol
           type = 'erc20'
-          typeName = name
+          typeName = name || 'ERC20'
           typeImageLink = logo
           totalAmount = fromWei(toBN(amountValue && amountValue.value ? amountValue.value : txParams.value || 0))
           finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
@@ -657,5 +666,11 @@ export default {
   },
   setUserBadge(context, payload) {
     prefsController.setUserBadge(payload)
+  },
+  initWalletConnect(_, payload) {
+    return walletConnectController.init(payload)
+  },
+  disconnectWalletConnect(_, __) {
+    return walletConnectController.disconnect()
   },
 }

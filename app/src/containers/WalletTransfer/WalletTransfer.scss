@@ -62,6 +62,9 @@
       }
     }    
   }
+  ::v-deep .recipient-address.hasQrError .v-text-field__details {
+    margin-bottom: 2px;
+  }
 }
 
 .v-btn.share-btn {
@@ -82,5 +85,14 @@
     span {
       color: #55ACEE;
     }
+  }
+}
+
+.qr-scan-container {
+  position: relative;
+  .close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 }

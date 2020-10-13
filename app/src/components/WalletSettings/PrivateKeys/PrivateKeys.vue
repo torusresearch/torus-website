@@ -22,7 +22,9 @@
                           v-model="keyStorePassword"
                           small
                           :rules="[rules.required]"
+                          autocomplete="new-password"
                           :type="showJsonPassword ? 'text' : 'password'"
+                          :placeholder="t('walletSettings.enterPassword')"
                         >
                           <template v-slot:append>
                             <v-btn icon aria-label="Show/Hide JSON Password" @click="showJsonPassword = !showJsonPassword">

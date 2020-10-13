@@ -37,6 +37,7 @@ import TokenRatesController from './TokenRatesController'
 import KeyringController from './TorusKeyring'
 import TransactionController from './TransactionController'
 import TypedMessageManager from './TypedMessageManager'
+import WalletConnectController from './WalletConnectController'
 // defaults and constants
 const GWEI_BN = new BN('1000000000')
 
@@ -121,6 +122,7 @@ export default class TorusController extends EventEmitter {
       this.detectTokensController.restartTokenDetection()
       this.assetDetectionController.restartAssetDetection()
       this.prefsController.recalculatePastTx()
+      this.walletConnectController.updateSession()
     })
 
     // key mgmt
@@ -145,7 +147,7 @@ export default class TorusController extends EventEmitter {
       getGasPrice: this.getGasPrice.bind(this),
       storeProps: this.opts.storeProps,
     })
-    this.txController.on('newUnapprovedTx', (txMeta) => options.showUnapprovedTx(txMeta))
+    this.txController.on('newUnapprovedTx', (txMeta, request) => options.showUnapprovedTx(txMeta, request))
 
     this.txController.on('tx:status-update', (txId, status) => {
       if (status === 'confirmed' || status === 'failed') {
@@ -198,6 +200,11 @@ export default class TorusController extends EventEmitter {
 
     this.prefsController.on('addEtherscanTransactions', (txs) => {
       this.txController.addEtherscanTransactions(txs)
+    })
+
+    this.walletConnectController = new WalletConnectController({
+      provider: this.provider,
+      network: this.networkController,
     })
   }
 
@@ -341,6 +348,7 @@ export default class TorusController extends EventEmitter {
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
     this.prefsController.setSelectedAddress(address)
+    this.walletConnectController.setSelectedAddress(address)
   }
 
   /**
@@ -426,7 +434,7 @@ export default class TorusController extends EventEmitter {
     const messageId = createRandomId()
     const promise = this.messageManager.addUnapprovedMessageAsync(messageParameters, request, messageId)
     this.sendUpdate()
-    this.opts.showUnconfirmedMessage(messageId)
+    this.opts.showUnconfirmedMessage(messageId, request)
     return promise
   }
 
@@ -485,7 +493,7 @@ export default class TorusController extends EventEmitter {
     const messageId = createRandomId()
     const promise = this.personalMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageId)
     this.sendUpdate()
-    this.opts.showUnconfirmedMessage(messageId)
+    this.opts.showUnconfirmedMessage(messageId, request)
     return promise
   }
 
@@ -539,7 +547,7 @@ export default class TorusController extends EventEmitter {
     const messageId = createRandomId()
     const promise = this.typedMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageVersion, messageId)
     this.sendUpdate()
-    this.opts.showUnconfirmedMessage(messageId)
+    this.opts.showUnconfirmedMessage(messageId, request)
     return promise
   }
 

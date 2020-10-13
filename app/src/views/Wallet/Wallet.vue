@@ -14,7 +14,7 @@
       <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
       <router-view></router-view>
     </v-main>
-    <v-dialog v-if="badgesTopupDialog" v-model="badgesTopupDialog" persistent width="375">
+    <!-- <v-dialog v-if="badgesTopupDialog" v-model="badgesTopupDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_TOPUP]" @closeBadge="closeBadge" />
     </v-dialog>
     <v-dialog v-else-if="badgesTransactionDialog" v-model="badgesTransactionDialog" persistent width="375">
@@ -22,6 +22,24 @@
     </v-dialog>
     <v-dialog v-else-if="badgesCollectibleDialog" v-model="badgesCollectibleDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_COLLECTIBLE]" @closeBadge="closeBadge" />
+    </v-dialog> -->
+    <v-dialog v-model="showDialog" persistent width="500">
+      <v-card>
+        <ConfirmForm
+          :current-confirm-modal="currentConfirmModal"
+          :is-confirm-modal="true"
+          @triggerSign="handleConfirmModal"
+          @triggerDeny="handleConfirmModal"
+        />
+      </v-card>
+      <!-- <v-card>
+        <v-card-title>Confirm</v-card-title>
+        <v-card-text>Confirm or deny this tx {{ currentConfirmModal && currentConfirmModal.id }}</v-card-text>
+        <v-card-actions>
+          <v-btn text color="deep-purple accent-4" @click="handleConfirmModal({ ...currentConfirmModal, approve: true })">Confirm</v-btn>
+          <v-btn text color="deep-purple accent-4" @click="handleConfirmModal({ ...currentConfirmModal, approve: false })">Deny</v-btn>
+        </v-card-actions>
+      </v-card> -->
     </v-dialog>
   </div>
 </template>
@@ -29,16 +47,18 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
 
+import ConfirmForm from '../../components/Confirm/ConfirmForm'
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
-import BadgesAlert from '../../components/WalletHome/BadgesAlert'
+// import BadgesAlert from '../../components/WalletHome/BadgesAlert'
 import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION } from '../../utils/enums'
 
 export default {
   components: {
     Navbar,
     AccountMenu,
-    BadgesAlert,
+    ConfirmForm,
+    // BadgesAlert,
   },
   data() {
     return {
@@ -50,12 +70,45 @@ export default {
   },
   computed: {
     ...mapState({
+      networkType: 'networkType',
+      selectedAddress: 'selectedAddress',
       whiteLabel: 'whiteLabel',
       badgesCompletion: 'badgesCompletion',
       pastTransactions: 'pastTransactions',
       paymentTxStore: 'paymentTx',
+      confirmModals: 'confirmModals',
     }),
     ...mapGetters(['collectibleBalances']),
+    showDialog() {
+      return !!this.currentConfirmModal
+    },
+    currentConfirmModal() {
+      if (this.confirmModals.length > 0) {
+        const {
+          txType: type,
+          txParams,
+          selectedCurrency,
+          currencyData,
+          balance,
+          networkType: network,
+          jwtToken,
+          tokenRates,
+          origin,
+        } = this.confirmModals[0]
+        return {
+          type,
+          txParams,
+          selectedCurrency,
+          currencyData,
+          balance,
+          network,
+          jwtToken,
+          tokenRates,
+          origin,
+        }
+      }
+      return undefined
+    },
     headerItems() {
       const items = [
         { name: 'home', display: this.t('navBar.home'), route: '/wallet/home', icon: 'settings' },
@@ -104,7 +157,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setUserBadge']),
+    ...mapActions(['setUserBadge', 'handleConfirmModal']),
     closeBadge(data) {
       this.setUserBadge(data.type)
       if (data.returnHome && !['walletHomeMain', 'walletHome'].includes(this.$route.name)) this.$router.push({ name: 'walletHome' })
