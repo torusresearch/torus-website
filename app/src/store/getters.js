@@ -73,12 +73,18 @@ const walletBalances = (state) => {
 }
 
 const loginButtonsArray = (state) => {
-  const loginButtons = Object.entries(state.embedState.loginConfig).reduce((newArray, [key, value]) => {
-    value.verifier = key
-    value.name = value.name || value.typeOfLogin
-    if (value.showOnModal) newArray.push(value)
-    return newArray
-  }, [])
+  const loginButtons = Object.entries(state.embedState.loginConfig)
+    .reduce((newArray, [key, value]) => {
+      value.verifier = key
+      value.name = value.name || value.typeOfLogin
+      if (value.showOnModal) newArray.push(value)
+      return newArray
+    }, [])
+    .sort((a, b) => {
+      const aPriority = a.priority >= 0 ? a.priority : 99
+      const bPriority = b.priority >= 0 ? b.priority : 99
+      return aPriority - bPriority
+    })
 
   return loginButtons
 }

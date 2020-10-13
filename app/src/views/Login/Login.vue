@@ -56,7 +56,14 @@
                           :title="`${t('login.loginWith')} ${verifier.name}`"
                           @click="startLogin(verifier.verifier)"
                         >
-                          <img :src="require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)" :alt="`${verifier.name} Icon`" />
+                          <img
+                            :src="
+                              require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}${
+                                $vuetify.theme.isDark && verifier.hasLightLogo ? '-light' : ''
+                              }.svg`)
+                            "
+                            :alt="`${verifier.name} Icon`"
+                          />
                         </v-btn>
                       </v-flex>
                     </v-layout>
@@ -79,7 +86,7 @@
                         @click="startLogin(verifier.verifier)"
                       >
                         <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}</v-icon>
-                        {{ t(verifier.description) }}
+                        {{ formatDescription(verifier) }}
                       </v-btn>
                     </div>
                   </v-flex>
@@ -164,7 +171,14 @@
                         <span class="verifier-title__google-green">l</span>
                         <span class="verifier-title__google-red">e</span>
                       </span>
-                      <span v-else-if="activeButton" class="text-capitalize" :class="`verifier-title__${activeButtonDetails.name.toLowerCase()}`">
+                      <span
+                        v-else-if="activeButton"
+                        class="text-capitalize"
+                        :class="[
+                          `verifier-title__${activeButtonDetails.name.toLowerCase()}`,
+                          { 'white--text': activeButtonDetails.hasLightLogo && $vuetify.theme.dark },
+                        ]"
+                      >
                         {{ activeButtonDetails.name }}
                       </span>
                     </span>
@@ -193,10 +207,14 @@
                     >
                       <img
                         v-if="verifier.verifier === activeButton"
-                        :src="require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)"
+                        :src="
+                          require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}${
+                            verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''
+                          }.svg`)
+                        "
                         :alt="`${verifier.name} Icon`"
                       />
-                      <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
+                      <v-icon v-else class="text_3--text">
                         {{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}
                       </v-icon>
                     </v-btn>
@@ -218,9 +236,17 @@
                       :class="$vuetify.theme.dark ? 'torus-dark' : ''"
                       class="text-body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
                       @click="startLogin(verifier.verifier)"
+                      @mouseover="activeButton = verifier.verifier"
                     >
-                      <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}</v-icon>
-                      {{ t(verifier.description) }}
+                      <img
+                        v-if="verifier.verifier === activeButton"
+                        height="24"
+                        class="mr-4"
+                        :src="require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)"
+                        :alt="`${verifier.name} Icon`"
+                      />
+                      <v-icon v-else class="mr-4">{{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}</v-icon>
+                      {{ formatDescription(verifier) }}
                     </v-btn>
                   </div>
                 </v-flex>
@@ -380,7 +406,7 @@ export default {
       GOOGLE,
       GOOGLE_VERIFIER,
       PASSWORDLESS,
-      activeButton: GOOGLE_VERIFIER,
+      activeButton: '',
       loginInProgress: false,
       snackbar: false,
       snackbarText: '',
@@ -420,23 +446,23 @@ export default {
       return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
     },
     loginButtons() {
-      return this.loginButtonsArray.filter((button) => !button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.showOnDesktop && !button.torusDescription && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsMobile() {
       return this.loginButtonsArray.filter(
-        (button) => button.showOnMobile && button.typeOfLogin !== GOOGLE && !button.description && button.typeOfLogin !== PASSWORDLESS
+        (button) => button.showOnMobile && button.typeOfLogin !== GOOGLE && !button.torusDescription && button.typeOfLogin !== PASSWORDLESS
       )
     },
     loginButtonsLong() {
-      return this.loginButtonsArray.filter((button) => button.description && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.showOnDesktop && button.torusDescription && button.typeOfLogin !== PASSWORDLESS)
     },
     loginButtonsMobileLong() {
       return this.loginButtonsArray.filter(
-        (button) => button.showOnMobile && button.typeOfLogin !== GOOGLE && button.description && button.typeOfLogin !== PASSWORDLESS
+        (button) => button.showOnMobile && button.typeOfLogin !== GOOGLE && button.torusDescription && button.typeOfLogin !== PASSWORDLESS
       )
     },
     showGoogleLogin() {
-      return this.loginConfig[GOOGLE_VERIFIER].showOnModal
+      return this.loginConfig[GOOGLE_VERIFIER].showOnModal && this.loginConfig[GOOGLE_VERIFIER].showOnMobile
     },
     activeButtonDetails() {
       return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
@@ -455,6 +481,9 @@ export default {
     if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
 
     this.isLogout = this.$route.name !== 'login'
+
+    if (this.loginButtons.length > 0) this.activeButton = this.loginButtons[0].verifier
+    else if (this.loginButtonsLong.length > 0) this.activeButton = this.loginButtonsLong[0].verifier
 
     this.scroll()
 
@@ -529,6 +558,10 @@ export default {
       window.addEventListener('scroll', () => {
         this.scrollOnTop = window.pageYOffset < 40
       })
+    },
+    formatDescription(verifier) {
+      const finalDesc = verifier.torusDescription ? this.t(verifier.torusDescription) : this.t('dappLogin.continue')
+      return finalDesc.replace(/{verifier}/gi, verifier.name.charAt(0).toUpperCase() + verifier.name.slice(1))
     },
   },
 }
