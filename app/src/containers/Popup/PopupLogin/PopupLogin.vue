@@ -98,7 +98,7 @@
                 </v-btn>
               </v-flex>
             </v-layout>
-            <v-flex xs12 mt-2 mb-4 class="text-center">
+            <v-flex v-if="loginButtonsLong.length > 0" xs12 mt-2 mb-4 class="text-center">
               <div class="d-flex align-center mb-4">
                 <v-divider></v-divider>
                 <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
@@ -164,23 +164,14 @@
                 {{ t('dappLogin.termsConditions') }}
               </a>
             </div>
-            <v-divider class="mx-3" vertical></v-divider>
-            <div class="d-flex align-center">
+            <v-divider v-if="!whiteLabel.isActive" class="mx-3" vertical></v-divider>
+            <div v-if="!whiteLabel.isActive" class="d-flex align-center">
               <span class="text_2--text mr-1">{{ t('dappLogin.poweredBy') }}</span>
               <img alt="Torus Logo" height="10" :src="getLogo.logo" />
             </div>
           </div>
         </v-card>
       </v-dialog>
-      <PasswordlessLogin
-        :passwordless-login-dialog="passwordlessLoginDialog"
-        :passwordless-email-sent="passwordlessEmailSent"
-        @cancel="
-          passwordlessLoginDialog = false
-          passwordlessEmailSent = false
-        "
-        @sendLink="passwordlessEmailSent = true"
-      />
     </v-flex>
   </v-layout>
 </template>
@@ -189,12 +180,10 @@
 import log from 'loglevel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
-import PasswordlessLogin from '../../../components/helpers/PasswordLessLogin'
-import { GITHUB, GOOGLE_VERIFIER, HOSTED_EMAIL_PASSWORDLESS_VERIFIER, TWITTER } from '../../../utils/enums'
+import { GITHUB, GOOGLE_VERIFIER, TWITTER } from '../../../utils/enums'
 
 export default {
   name: 'PopupLogin',
-  components: { PasswordlessLogin },
   props: {
     loginDialog: {
       type: Boolean,
@@ -206,8 +195,6 @@ export default {
       GOOGLE_VERIFIER,
       showModal: true,
       activeButton: '',
-      passwordlessLoginDialog: false,
-      passwordlessEmailSent: false,
       viewMoreOptions: false,
     }
   },
@@ -230,8 +217,7 @@ export default {
         if (this.viewMoreOptions) {
           return (
             ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
-            button.description === '' &&
-            button.verifier !== HOSTED_EMAIL_PASSWORDLESS_VERIFIER
+            button.description === ''
           )
         }
         return (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.mainOption && button.description === ''
@@ -320,10 +306,6 @@ export default {
       if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
     },
     async startLogin(verifier) {
-      if (verifier === HOSTED_EMAIL_PASSWORDLESS_VERIFIER) {
-        this.passwordlessLoginDialog = true
-        return
-      }
       try {
         this.showModal = false
         await this.triggerLogin({ verifier, calledFromEmbed: true })
