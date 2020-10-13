@@ -32,7 +32,7 @@
         </div>
       </v-flex>
 
-      <v-flex id="providerForm" xs12 sm6 md7 mb-4 px-4>
+      <v-flex id="providerForm" mb-4 px-4 :class="$vuetify.breakpoint.width > 800 ? 'xs7' : 'xs12'">
         <router-view></router-view>
       </v-flex>
     </v-layout>
