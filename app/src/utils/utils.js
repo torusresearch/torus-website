@@ -452,7 +452,7 @@ export const paymentProviders = {
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'mailto:support@xanpool.com',
-    minOrderValue: 30,
+    minOrderValue: 100,
     maxOrderValue: 2500,
     validCurrencies: ['SGD', 'HKD', 'MYR', 'PHP', 'INR', 'VND', 'THB', 'IDR'],
     validCryptoCurrencies: ['ETH', 'USDT'],

@@ -69,7 +69,7 @@
                 </div>
               </div>
             </v-flex>
-            <v-flex xs12 sm4 px-2>
+            <v-flex xs12 sm4 px-2 mt-2>
               <v-select
                 id="currency-selector"
                 v-model="selectedCurrency"
