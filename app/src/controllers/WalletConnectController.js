@@ -13,14 +13,15 @@ class WalletConnectController {
   }
 
   async disconnect() {
-    await this.walletConnector.killSession()
-    this.walletConnector = undefined
+    if (this.walletConnector) {
+      await this.walletConnector.killSession()
+      this.walletConnector = undefined
+    }
     this.store.putState({})
   }
 
   async init(options) {
     // options includes the uri
-    // TODO: set origin if wallet connect in store.js
     // To kill session if the user scans a new uri
     if (this.walletConnector?.uri !== options?.uri && this.walletConnector?.killSession) this.walletConnector.killSession()
     this.walletConnector = new WalletConnect(options)
