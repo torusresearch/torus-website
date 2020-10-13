@@ -1,7 +1,7 @@
 <template>
   <v-layout>
     <v-flex xs12 text-center>
-      <v-dialog class="login-dialog-modal" :value="loginDialog && showModal" :fullscreen="$vuetify.breakpoint.width < 385" max-width="375" persistent>
+      <v-dialog class="login-dialog-modal" :value="loginDialog && showModal" max-width="375" persistent>
         <v-card class="login-dialog-container">
           <div class="login-header px-6 py-8 mb-5">
             <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="closeDialog">
