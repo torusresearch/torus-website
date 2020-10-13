@@ -245,6 +245,9 @@ export default {
           button.description !== ''
       )
     },
+    allActiveButtons() {
+      return [...this.mainButtonsLong, ...this.mainButtons, ...this.loginButtonsLong]
+    },
     localeSelected() {
       return this.$vuetify.lang.current
     },
@@ -287,18 +290,29 @@ export default {
     },
   },
   watch: {
-    mainButtonsLong(newValue, oldValue) {
-      if (!this.$vuetify.breakpoint.xsOnly && newValue !== oldValue && newValue && newValue.length > 0) {
-        this.activeButton = newValue[0].verifier
+    loginButtonsArray(newValue, oldValue) {
+      if (newValue !== oldValue && newValue.length > 0) {
+        this.chooseAndSetActiveButton()
       }
     },
-    mainButtons(newValue, oldValue) {
-      if (!this.$vuetify.breakpoint.xsOnly && newValue !== oldValue && this.mainButtonsLong.length === 0 && newValue && newValue.length > 0) {
-        this.activeButton = newValue[0].verifier
+    viewMoreOptions(newValue, oldValue) {
+      if (newValue !== oldValue && !this.$vuetify.breakpoint.xsOnly) {
+        this.chooseAndSetActiveButton()
       }
     },
   },
   methods: {
+    chooseAndSetActiveButton() {
+      // if present in any visible ones, don't do anything
+      // else, set it to first of main buttons long
+      // if not present, set it to first of main buttons long
+      if (this.activeButton && this.allActiveButtons.find((x) => x.verifier === this.activeButton)) {
+        return
+      }
+      if (this.mainButtonsLong.length > 0) this.activeButton = this.mainButtonsLong[0].verifier
+      else if (this.mainButtons.length > 0) this.activeButton = this.mainButtons[0].verifier
+      else if (this.loginButtonsLong.length > 0) this.activeButton = this.loginButtonsLong[0].verifier
+    },
     loginBtnHover(verifier) {
       if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
     },
