@@ -98,7 +98,7 @@
                 </v-btn>
               </v-flex>
             </v-layout>
-            <v-flex xs12 mt-2 mb-4 class="text-center">
+            <v-flex v-if="loginButtonsLong.length > 0" xs12 mt-2 mb-4 class="text-center">
               <div class="d-flex align-center mb-4">
                 <v-divider></v-divider>
                 <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
