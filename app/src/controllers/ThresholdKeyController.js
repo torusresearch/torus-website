@@ -404,7 +404,8 @@ function parseShares(parsedShareDescriptions) {
       const deviceInfo = `${STORAGE_MAP[x.module]} - ${browserInfo.os.name} ${browserInfo.browser.name}`
       acc[x.shareIndex] = {
         index: x.shareIndex,
-        osName: `${browserInfo.os.name} (${x.shareIndex.slice(0, 5)})`,
+        osName: browserInfo.os.name,
+        indexShort: x.shareIndex.slice(0, 5),
         icon: browserInfo.platform.type,
         groupTitle: deviceInfo,
         dateAdded: x.dateAdded,

@@ -7,6 +7,10 @@
     }
   }
 
+  .v-tab {
+    letter-spacing: 0;
+  }
+
   .text-clamp-one {
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -95,9 +99,9 @@
 
   /* Header 6 10px*/
   .caption {
-    font-size: 0.75rem;
+    font-size: 0.75rem !important;
     line-height: 0.875rem;
-    letter-spacing: 0;
+    letter-spacing: 0 !important;
     font-weight: normal;
   }
 

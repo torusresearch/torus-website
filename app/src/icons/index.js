@@ -4,11 +4,6 @@ import AddIcon from './AddIcon.vue'
 import AddressIcon from './AddressIcon.vue'
 import AlertCircleFilledIcon from './AlertCircleFilledIcon.vue'
 import AlertIcon from './AlertIcon.vue'
-import ArrowDownCircleIcon from './ArrowDownCircleIcon.vue'
-import ArrowLeftCircleIcon from './ArrowLeftCircleIcon.vue'
-import ArrowRightCircleIcon from './ArrowRightCircleIcon.vue'
-import ArrowRightIcon from './ArrowRightIcon.vue'
-import ArrowUpCircleIcon from './ArrowUpCircleIcon.vue'
 import BalanceIcon from './BalanceIcon.vue'
 import BrowserIcon from './BrowserIcon.vue'
 import CalendarIcon from './CalendarIcon.vue'
@@ -127,18 +122,6 @@ export default {
   },
   visibility_off: {
     component: VisibilityOffIcon,
-  },
-  arrow_up_circle: {
-    component: ArrowUpCircleIcon,
-  },
-  arrow_down_circle: {
-    component: ArrowDownCircleIcon,
-  },
-  arrow_left_circle: {
-    component: ArrowLeftCircleIcon,
-  },
-  arrow_right_circle: {
-    component: ArrowRightCircleIcon,
   },
   check_circle: {
     component: CheckCircleIcon,
@@ -313,9 +296,6 @@ export default {
   },
   wallet: {
     component: WalletIcon,
-  },
-  arrow_right: {
-    component: ArrowRightIcon,
   },
   wallet_fill: {
     component: WalletFillIcon,

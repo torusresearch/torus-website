@@ -32,6 +32,9 @@
     }
     .v-tab {
       text-transform: none;
+      font-size: 12px;
+      line-height: 18px;
+      min-height: 30px;
     }
   }
   .v-tabs-items {
@@ -68,6 +71,7 @@
 
 .new-device-container.is-mobile {
   padding: 80px 24px 120px;
+  min-height: unset;
   .new-device-header {
     margin-bottom: 16px;
     &__title {
@@ -79,13 +83,6 @@
       font-size: 12px;
       line-height: 18px;
     }
-  }
-  .tkey-footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 20px;
   }
 }
 
@@ -124,11 +121,43 @@
     border: 0;
     border-radius: 0;
   }
-}
 
+  .device-details {
+    &--name {
+      font-size: 14px;
+      line-height: 1.25rem;
+      font-weight: bold;
+    }
+    &--index {
+      font-size: 12px;
+      line-height: 0.875rem;
+    }
+    &--list {
+      font-size: 12px;
+      line-height: 0.875rem;
+    }
+  }
+}
+.info-box.is-mobile {
+  .device-details {
+    &--name {
+      font-size: 12px;
+      line-height: 0.875rem;
+      font-weight: bold;
+    }
+    &--index {
+      font-size: 10px;
+      line-height: 0.857rem;
+    }
+    &--list {
+      font-size: 12px;
+      line-height: 0.875rem;
+    }
+  }
+}
 .info-box.is-dark {
-  background: #3c3e45;
-  border: 0.5px solid #a2a5b5;
+  background: var(--v-torusBlack-base);
+  border: 0;
   color: var(--v-text_2-base);
   .v-icon {
     color: var(--v-text_2-base);

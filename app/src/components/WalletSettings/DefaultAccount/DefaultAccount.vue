@@ -80,6 +80,7 @@
 import { mapActions, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE } from '../../../utils/enums'
+import { getUserEmail } from '../../../utils/utils'
 
 export default {
   name: 'DefaultAccount',
@@ -111,12 +112,15 @@ export default {
           acc.push({
             key,
             accountType,
-            isDefault: this.defaultPublicAddress ? key === this.defaultPublicAddress : accountType === ACCOUNT_TYPE.NORMAL,
+            isDefault: this.defaultPublicAddress && this.hasThreshold ? key === this.defaultPublicAddress : accountType === ACCOUNT_TYPE.NORMAL,
             icon: accountType === ACCOUNT_TYPE.THRESHOLD ? 'wallet' : this.userInfo.typeOfLogin.toLowerCase(),
-            title: accountType === ACCOUNT_TYPE.THRESHOLD ? '2FA' : this.t('tkeySettings.newWallet'),
+            title: accountType === ACCOUNT_TYPE.THRESHOLD ? '2FA' : this.userEmail,
           })
         return acc
       }, [])
+    },
+    userEmail() {
+      return getUserEmail(this.userInfo)
     },
   },
   methods: {

@@ -1,23 +1,34 @@
 <template>
   <div>
-    <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pa-0' : 'pa-4']">
+    <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pt-6 px-0' : 'pa-4']">
       <v-layout class="justify-center">
         <v-flex class="xs12 sm10 md8 lg7">
           <div
             class="new-device-container"
             :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '', { 'is-dark': $vuetify.theme.dark, isDapp: urlInstance }]"
           >
-            <div class="text-center mb-10">
-              <img src="../../assets/images/ob-verification.svg" alt="Verification Required" class="mr-2" />
+            <div
+              class="text-center"
+              :class="$vuetify.breakpoint.xsOnly ? 'mb-7' : 'mb-4'"
+              :style="{ height: $vuetify.breakpoint.xsOnly ? '66px' : '107px' }"
+            >
+              <img
+                src="../../assets/images/ob-verification.svg"
+                :height="$vuetify.breakpoint.xsOnly ? '82' : ''"
+                alt="Verification Required"
+                class="mr-2"
+              />
             </div>
 
             <!-- TITLE -->
             <div class="text-center new-device-header">
-              <div class="new-device-header__title">{{ t('tkeyNew.verificationReq') }}</div>
-              <div class="new-device-header__description">
+              <div class="new-device-header__title" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">
+                {{ t('tkeyNew.verificationReq') }}
+              </div>
+              <div class="new-device-header__description text_2--text">
                 {{ t('tkeyNew.youAreAccessing') }}
               </div>
-              <div class="new-device-header__description">{{ t('tkeyNew.verifyWithPass') }}</div>
+              <div class="new-device-header__description text_2--text">{{ t('tkeyNew.verifyWithPass') }}</div>
             </div>
 
             <!-- BODY -->
@@ -60,6 +71,7 @@
                 </v-layout>
               </v-form>
             </div>
+            <NewDeviceFooter />
           </div>
         </v-flex>
       </v-layout>
@@ -71,9 +83,11 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { mapActions, mapState } from 'vuex'
 
+import NewDeviceFooter from '../../components/Tkey/NewDeviceFooter'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
+  components: { NewDeviceFooter },
   data() {
     return {
       // verify password

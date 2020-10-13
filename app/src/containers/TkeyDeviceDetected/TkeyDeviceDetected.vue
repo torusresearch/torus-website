@@ -1,54 +1,68 @@
 <template>
   <div>
-    <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pa-0' : 'pa-4']">
+    <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pt-6 px-0' : 'pa-4']">
       <v-layout class="justify-center">
         <v-flex class="xs12 sm10 md8 lg7">
           <div class="new-device-container" :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '', { 'is-dark': $vuetify.theme.dark }]">
             <!-- IMAGE -->
-            <div class="text-center mb-2">
-              <img src="../../assets/images/ob-verification-done.svg" alt="Verified" class="mr-2" />
+            <div
+              class="text-center"
+              :class="$vuetify.breakpoint.xsOnly ? 'mb-7' : 'mb-6'"
+              :style="{ height: $vuetify.breakpoint.xsOnly ? '66px' : '111px' }"
+            >
+              <img src="../../assets/images/ob-verification-done.svg" alt="Verified" class="mr-2" :height="$vuetify.breakpoint.xsOnly ? '82' : ''" />
             </div>
 
             <!-- TITLE -->
             <div>
               <div class="text-center new-device-header">
-                <div class="new-device-header__title">{{ t('tkeyNew.saveDevice') }}</div>
-                <div class="new-device-header__description">{{ t('tkeyNew.saveNewDevice') }}</div>
+                <div class="new-device-header__title" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">
+                  {{ t('tkeyNew.saveDevice') }}
+                </div>
+                <div class="new-device-header__description text_2--text">{{ t('tkeyNew.saveNewDevice') }}</div>
               </div>
             </div>
-            <div class="mb-10">
-              <v-tabs v-model="activeTab" class="device-list-tab">
-                <v-tab>{{ t('tkeyNew.newDevice') }}</v-tab>
-                <v-tab>{{ t('tkeyNew.oldDevice') }}</v-tab>
+            <div>
+              <v-tabs v-model="activeTab" height="30" centered :fixed-tabs="$vuetify.breakpoint.xsOnly" class="device-list-tab">
+                <v-tab>{{ t($vuetify.breakpoint.xsOnly ? 'tkeyNew.newDevice' : 'tkeyNew.newDeviceLong') }}</v-tab>
+                <v-tab>{{ t($vuetify.breakpoint.xsOnly ? 'tkeyNew.oldDevice' : 'tkeyNew.oldDeviceLong') }}</v-tab>
               </v-tabs>
               <v-tabs-items v-model="activeTab">
                 <v-tab-item class="py-3">
-                  <div class="d-flex align-center info-box py-3 px-6 mb-6" :class="[{ 'is-dark': $vuetify.theme.dark }]">
+                  <div
+                    class="d-flex align-center info-box py-3 px-6"
+                    :class="[{ 'is-dark': $vuetify.theme.dark, 'is-mobile': $vuetify.breakpoint.xsOnly }]"
+                  >
                     <div class="mr-4">
                       <v-icon>$vuetify.icons.device_detailed</v-icon>
                     </div>
-                    <div>
-                      <div class="grow body-2">
-                        <span class="font-weight-bold">{{ browser.os.name }}</span>
-                        ({{ t('tkeyNew.currentDevice') }})
+                    <div class="device-details">
+                      <div class="grow d-flex align-center">
+                        <span class="device-details--name mr-1">{{ browser.os.name }}</span>
+                        <span class="device-details--index">({{ t('tkeyNew.currentDevice') }})</span>
                       </div>
-                      <div class="grow body-2">{{ browser.browser.name }}</div>
+                      <div class="grow device-details--list">{{ browser.browser.name }}</div>
                     </div>
                   </div>
                 </v-tab-item>
                 <v-tab-item class="py-3">
                   <v-menu offset-y bottom class="device-menu">
                     <template v-slot:activator="{ on }">
-                      <div class="d-flex align-center info-box info-box--link py-3 px-6 mb-6" :class="[{ 'is-dark': $vuetify.theme.dark }]" v-on="on">
+                      <div
+                        class="d-flex align-center info-box info-box--link py-3 px-6"
+                        :class="[{ 'is-dark': $vuetify.theme.dark, 'is-mobile': $vuetify.breakpoint.xsOnly }]"
+                        v-on="on"
+                      >
                         <div class="mr-4">
                           <v-icon>$vuetify.icons.device_detailed</v-icon>
                         </div>
-                        <div>
-                          <div class="grow body-2">
-                            <span class="font-weight-bold">{{ selectedDeviceDetails.osName }}</span>
+                        <div class="device-details">
+                          <div class="grow d-flex align-center">
+                            <span class="device-details--name mr-1">{{ selectedDeviceDetails.osName }}</span>
+                            <span class="device-details--index">({{ selectedDeviceDetails.indexShort }})</span>
                           </div>
-                          <div class="grow body-2">{{ selectedDeviceDetails.browserList }}</div>
-                          <div class="grow caption">{{ selectedDeviceDetails.dateFormated }}</div>
+                          <div class="grow device-details--name font-weight-regular">{{ selectedDeviceDetails.browserList }}</div>
+                          <div class="grow device-details--index">{{ selectedDeviceDetails.dateFormated }}</div>
                         </div>
                         <div class="ml-auto">
                           <v-icon right>$vuetify.icons.select</v-icon>
@@ -59,18 +73,19 @@
                       v-for="device in devices"
                       :key="device.index"
                       class="d-flex align-center info-box py-3 px-6 info-box--link info-box--menu"
-                      :class="[{ 'is-dark': $vuetify.theme.dark }]"
+                      :class="[{ 'is-dark': $vuetify.theme.dark, 'is-mobile': $vuetify.breakpoint.xsOnly }]"
                       @click="selectBrowser(device.index)"
                     >
                       <div class="mr-4">
                         <v-icon>$vuetify.icons.device_detailed</v-icon>
                       </div>
-                      <div>
-                        <div class="grow body-2">
-                          <span class="font-weight-bold">{{ device.osName }}</span>
+                      <div class="device-details">
+                        <div class="grow d-flex align-center">
+                          <span class="device-details--name mr-1">{{ device.osName }}</span>
+                          <span class="device-details--index">({{ device.indexShort }})</span>
                         </div>
-                        <div class="grow body-2">{{ device.browserList }}</div>
-                        <div class="grow caption">{{ device.dateFormated }}</div>
+                        <div class="grow device-details--name font-weight-regular">{{ device.browserList }}</div>
+                        <div class="grow device-details--index">{{ device.dateFormated }}</div>
                       </div>
                     </div>
                   </v-menu>
@@ -94,6 +109,7 @@
                 </v-btn>
               </v-flex>
             </v-layout>
+            <NewDeviceFooter />
           </div>
         </v-flex>
       </v-layout>
@@ -106,9 +122,11 @@ import bowser from 'bowser'
 import { BroadcastChannel } from 'broadcast-channel'
 import { mapActions, mapState } from 'vuex'
 
+import NewDeviceFooter from '../../components/Tkey/NewDeviceFooter'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
+  components: { NewDeviceFooter },
   data() {
     return {
       activeTab: 0,

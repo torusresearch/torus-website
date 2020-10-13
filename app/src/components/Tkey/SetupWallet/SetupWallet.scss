@@ -29,16 +29,14 @@
 }
 .v-expansion-panels {
   .v-expansion-panel-header {
-    min-height: unset;
+    min-height: 48px;
     &.v-expansion-panel-header--active {
       border-bottom: 1px solid #e7e9f4;
       border-radius: 6px;
-      min-height: unset;
     }
   }
   .more-details {
     text-align: right;
-    color: var(--v-text_2-base);
   }
   &.is-mobile {
     .v-expansion-panel-header {
@@ -48,7 +46,6 @@
     .more-details {
       font-size: 10px !important;
       text-align: right;
-      color: var(--v-text_2-base);
       max-width: 150px;
       overflow-wrap: break-word;
     }
@@ -62,7 +59,6 @@
   &.theme--dark {
     .more-details {
       text-align: right;
-      color: var(--v-torusFont1-base);
     }
   }
  }
