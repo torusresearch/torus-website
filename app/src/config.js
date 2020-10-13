@@ -276,7 +276,7 @@ export default {
       logoDark: '',
       showOnModal: true,
       showOnDesktop: true,
-      showOnMobile: true,
+      showOnMobile: false,
       jwtParameters: {
         domain: LOGIN_DOMAIN,
         connection: 'Wechat',
