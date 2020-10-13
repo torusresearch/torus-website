@@ -198,7 +198,6 @@ class TransactionController extends EventEmitter {
   */
 
   async addUnapprovedTransaction(txParameters, request) {
-    const a = Date.now()
     // validate
     log.debug(`MetaMaskController addUnapprovedTransaction ${JSON.stringify(txParameters)}`)
     const normalizedTxParameters = txUtils.normalizeTxParams(txParameters)
@@ -236,8 +235,6 @@ class TransactionController extends EventEmitter {
       }
     }
 
-    log.info('setting origin', Date.now() - a)
-
     txMeta.origin = request.origin
 
     const { transactionCategory, getCodeResponse, methodParams, contractParams } = await this._determineTransactionCategory(txParameters)
@@ -246,12 +243,10 @@ class TransactionController extends EventEmitter {
     txMeta.contractParams = contractParams
 
     this.addTx(txMeta)
-    log.info('added tx meta', Date.now() - a)
 
     try {
       // add default tx params
       txMeta = await this.addTxGasDefaults(txMeta, getCodeResponse)
-      log.info('calculated gas defaults', Date.now() - a)
     } catch (error) {
       log.warn(error)
       txMeta.loadingDefaults = false
@@ -262,8 +257,6 @@ class TransactionController extends EventEmitter {
     this.emit('newUnapprovedTx', txMeta, request)
 
     txMeta.loadingDefaults = false
-
-    log.info('updating tx', Date.now() - a)
 
     // save txMeta
     this.txStateManager.updateTx(txMeta)
