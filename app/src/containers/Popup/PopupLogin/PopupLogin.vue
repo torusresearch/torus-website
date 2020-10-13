@@ -1,7 +1,7 @@
 <template>
   <v-layout>
     <v-flex xs12 text-center>
-      <v-dialog class="login-dialog-modal" :value="loginDialog && showModal" max-width="375" persistent>
+      <v-dialog class="login-dialog-modal" :value="loginDialog && showModal" max-width="375" persistent scrollable>
         <v-card class="login-dialog-container">
           <div class="login-header px-6 py-8 mb-5">
             <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="closeDialog">
@@ -172,15 +172,6 @@
           </div>
         </v-card>
       </v-dialog>
-      <PasswordlessLogin
-        :passwordless-login-dialog="passwordlessLoginDialog"
-        :passwordless-email-sent="passwordlessEmailSent"
-        @cancel="
-          passwordlessLoginDialog = false
-          passwordlessEmailSent = false
-        "
-        @sendLink="passwordlessEmailSent = true"
-      />
     </v-flex>
   </v-layout>
 </template>
@@ -189,12 +180,10 @@
 import log from 'loglevel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
-import PasswordlessLogin from '../../../components/helpers/PasswordLessLogin'
-import { GITHUB, GOOGLE_VERIFIER, HOSTED_EMAIL_PASSWORDLESS_VERIFIER, TWITTER } from '../../../utils/enums'
+import { GITHUB, GOOGLE_VERIFIER, TWITTER } from '../../../utils/enums'
 
 export default {
   name: 'PopupLogin',
-  components: { PasswordlessLogin },
   props: {
     loginDialog: {
       type: Boolean,
@@ -206,8 +195,6 @@ export default {
       GOOGLE_VERIFIER,
       showModal: true,
       activeButton: '',
-      passwordlessLoginDialog: false,
-      passwordlessEmailSent: false,
       viewMoreOptions: false,
     }
   },
@@ -230,8 +217,7 @@ export default {
         if (this.viewMoreOptions) {
           return (
             ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
-            button.description === '' &&
-            button.verifier !== HOSTED_EMAIL_PASSWORDLESS_VERIFIER
+            button.description === ''
           )
         }
         return (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.mainOption && button.description === ''
@@ -320,10 +306,6 @@ export default {
       if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
     },
     async startLogin(verifier) {
-      if (verifier === HOSTED_EMAIL_PASSWORDLESS_VERIFIER) {
-        this.passwordlessLoginDialog = true
-        return
-      }
       try {
         this.showModal = false
         await this.triggerLogin({ verifier, calledFromEmbed: true })

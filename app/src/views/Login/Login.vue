@@ -359,16 +359,6 @@
       {{ snackbarText }}
       <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
     </v-snackbar>
-    <!-- TODO trigger sendLink  -->
-    <PasswordlessLogin
-      :passwordless-login-dialog="passwordlessLoginDialog"
-      :passwordless-email-sent="passwordlessEmailSent"
-      @cancel="
-        passwordlessLoginDialog = false
-        passwordlessEmailSent = false
-      "
-      @sendLink="passwordlessEmailSent = true"
-    />
   </div>
 </template>
 
@@ -376,7 +366,6 @@
 import log from 'loglevel'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
-import PasswordlessLogin from '../../components/helpers/PasswordLessLogin'
 import {
   WalletActivityLoader,
   WalletActivityLoaderMobile,
@@ -394,25 +383,22 @@ import {
   WalletTransferLoaderMobile,
 } from '../../content-loader'
 import createHandler from '../../store/Handlers/HandlerFactory'
-import { GOOGLE, GOOGLE_VERIFIER, PASSWORDLESS } from '../../utils/enums'
+import { GOOGLE, GOOGLE_VERIFIER } from '../../utils/enums'
 import { handleRedirectParameters } from '../../utils/utils'
 
 export default {
   name: 'Login',
-  components: { WalletLoginLoader, WalletLoginLoaderMobile, PasswordlessLogin },
+  components: { WalletLoginLoader, WalletLoginLoaderMobile },
   data() {
     return {
       isLogout: false,
       GOOGLE,
       GOOGLE_VERIFIER,
-      PASSWORDLESS,
       activeButton: '',
       loginInProgress: false,
       snackbar: false,
       snackbarText: '',
       snackbarColor: 'error',
-      passwordlessLoginDialog: false,
-      passwordlessEmailSent: false,
       scrollOnTop: true,
     }
   },
@@ -446,20 +432,16 @@ export default {
       return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
     },
     loginButtons() {
-      return this.loginButtonsArray.filter((button) => button.showOnDesktop && !button.torusDescription && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.showOnDesktop && !button.torusDescription)
     },
     loginButtonsMobile() {
-      return this.loginButtonsArray.filter(
-        (button) => button.showOnMobile && button.typeOfLogin !== GOOGLE && !button.torusDescription && button.typeOfLogin !== PASSWORDLESS
-      )
+      return this.loginButtonsArray.filter((button) => button.showOnMobile && button.typeOfLogin !== GOOGLE && !button.torusDescription)
     },
     loginButtonsLong() {
-      return this.loginButtonsArray.filter((button) => button.showOnDesktop && button.torusDescription && button.typeOfLogin !== PASSWORDLESS)
+      return this.loginButtonsArray.filter((button) => button.showOnDesktop && button.torusDescription)
     },
     loginButtonsMobileLong() {
-      return this.loginButtonsArray.filter(
-        (button) => button.showOnMobile && button.typeOfLogin !== GOOGLE && button.torusDescription && button.typeOfLogin !== PASSWORDLESS
-      )
+      return this.loginButtonsArray.filter((button) => button.showOnMobile && button.typeOfLogin !== GOOGLE && button.torusDescription)
     },
     showGoogleLogin() {
       return this.loginConfig[GOOGLE_VERIFIER].showOnModal && this.loginConfig[GOOGLE_VERIFIER].showOnMobile
@@ -534,10 +516,6 @@ export default {
     }),
     ...mapMutations(['setUserInfo']),
     async startLogin(verifier) {
-      if (verifier === PASSWORDLESS) {
-        this.passwordlessLoginDialog = true
-        return
-      }
       try {
         this.loginInProgress = true
         await this.triggerLogin({ verifier, calledFromEmbed: false })
