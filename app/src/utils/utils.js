@@ -640,8 +640,7 @@ export const handleRedirectParameters = (hash, queryParameters) => {
   return { error, instanceParameters, hashParameters }
 }
 
-export function getUserEmail(userInfo) {
-  const verifierIdArray = userInfo.verifierId.split('|')
-  const verifierId = verifierIdArray[2] || verifierIdArray[1] || verifierIdArray[0]
-  return userInfo.email ? userInfo.email : verifierId
+export function getUserEmail(userInfo, walletDisplay) {
+  const typeOfLoginDisplay = userInfo.typeOfLogin.charAt(0).toUpperCase() + userInfo.typeOfLogin.slice(1)
+  return (userInfo.typeOfLogin !== APPLE && userInfo.email) || userInfo.name || `${typeOfLoginDisplay} ${walletDisplay}`
 }

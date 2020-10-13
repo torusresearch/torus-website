@@ -48,7 +48,7 @@
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
             <v-icon :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
-              {{ `$vuetify.icons.${index === 0 ? userInfo.typeOfLogin.toLowerCase() : 'account'}` }}
+              {{ `$vuetify.icons.${index === 0 ? userInfo.typeOfLogin.toLowerCase() : 'person_circle'}` }}
             </v-icon>
           </div>
           <div class="caption text_1--text font-weight-bold account-list__user-email" :style="{ paddingLeft: '2px' }">
@@ -177,7 +177,7 @@ export default {
       wallets: 'walletBalances',
     }),
     userEmail() {
-      return getUserEmail(this.userInfo)
+      return getUserEmail(this.userInfo, this.t('accountMenu.wallet'))
     },
     userId() {
       if (this.userInfo.typeOfLogin === DISCORD) {

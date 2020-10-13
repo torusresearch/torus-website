@@ -33,6 +33,7 @@ import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
 import MenuIcon from './MenuIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
+import PersonCircleIcon from './PersonCircleIcon.vue'
 import PersonIcon from './PersonIcon.vue'
 import QrIcon from './QrIcon.vue'
 import QuestionIcon from './QuestionIcon.vue'
@@ -287,5 +288,8 @@ export default {
   },
   link: {
     component: LinkIcon,
+  },
+  person_circle: {
+    component: PersonCircleIcon,
   },
 }

@@ -162,7 +162,7 @@ export default {
     [LINE_VERIFIER]: {
       description: '',
       typeOfLogin: LINE,
-      name: LINE,
+      name: 'LINE',
       clientId: VUE_APP_LINE_CLIENT_ID,
       logoHover: '',
       logoLight: '',

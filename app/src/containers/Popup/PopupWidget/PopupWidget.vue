@@ -230,7 +230,7 @@ export default {
       }
     },
     userEmail() {
-      return getUserEmail(this.userInfo)
+      return getUserEmail(this.userInfo, this.t('accountMenu.wallet'))
     },
   },
   methods: {
