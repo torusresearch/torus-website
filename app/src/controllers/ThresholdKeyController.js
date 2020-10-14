@@ -2,6 +2,7 @@
 import ThresholdKey from '@tkey/core'
 import SecurityQuestionsModule from '@tkey/security-questions'
 import ServiceProviderBase from '@tkey/service-provider-base'
+import ShareTransferModule from '@tkey/share-transfer'
 import TorusStorageLayer from '@tkey/storage-layer-torus'
 import WebStorageModule from '@tkey/web-storage'
 import bowser from 'bowser'
@@ -364,6 +365,7 @@ class ThresholdKeyController extends EventEmitter {
     const modules = {
       [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
       [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),
+      [SHARE_TRANSFER_MODULE_KEY]: new ShareTransferModule(),
     }
     const serviceProvider = new ServiceProviderBase({ postboxKey })
     const storageLayer = new TorusStorageLayer({ serviceProvider, hostUrl: config.metadataHost })
