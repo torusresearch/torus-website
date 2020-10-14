@@ -1,5 +1,9 @@
 /* eslint-disable no-await-in-loop */
-import ThresholdKey, { SecurityQuestionsModule, ServiceProviderBase, TorusStorageLayer, WebStorageModule } from '@tkey/core'
+import ThresholdKey from '@tkey/core'
+import SecurityQuestionsModule from '@tkey/security-questions'
+import ServiceProviderBase from '@tkey/service-provider-base'
+import TorusStorageLayer from '@tkey/storage-layer-torus'
+import WebStorageModule from '@tkey/web-storage'
 import bowser from 'bowser'
 import deepmerge from 'deepmerge'
 import { ethErrors } from 'eth-rpc-errors'
