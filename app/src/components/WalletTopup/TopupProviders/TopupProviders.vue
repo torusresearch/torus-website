@@ -1,5 +1,5 @@
 <template>
-  <v-flex xs12 md5 mb-4 px-4 class="topup-providers">
+  <v-flex mb-4 px-4 class="topup-providers" :class="$vuetify.breakpoint.width > 800 ? 'xs5' : 'xs12'">
     <v-card
       v-for="targetProvider in activeProviders"
       :key="targetProvider.name"
@@ -118,7 +118,7 @@ export default {
   },
   methods: {
     scrollToPosition() {
-      if (!this.$vuetify.breakpoint.smAndDown) return
+      if (!this.$vuetify.breakpoint.width > 800) return
       const element = document.querySelector('#write-to-us')
       setTimeout(() => {
         if (element) {

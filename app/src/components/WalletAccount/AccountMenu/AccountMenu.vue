@@ -1,6 +1,6 @@
 <template>
   <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu" :class="{ 'is-mobile': $vuetify.breakpoint.xsOnly }">
-    <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
+    <v-dialog v-model="showQrScanner" :eager="true" :width="qrLoading ? 0 : 600" @click:outside="closeQRScanner">
       <div class="qr-scan-container">
         <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
         <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
@@ -26,7 +26,7 @@
             <div>{{ t('accountMenu.account') }}</div>
           </div>
         </v-list-item-title>
-        <v-list-item-icon v-if="$vuetify.breakpoint.xsOnly">
+        <v-list-item-icon v-if="$vuetify.breakpoint.xsOnly && hasStreamApiSupport">
           <div class="mr-5">
             <v-btn small class="wallet-connect-btn" icon title="Capture QR" aria-label="Capture QR" @click="toggleWC">
               <v-icon v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">$vuetify.icons.disconnect</v-icon>
@@ -139,7 +139,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import { QrcodeStream } from 'vue-qrcode-reader'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE, DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
 import { addressSlicer, broadcastChannelOptions, getEtherScanAddressLink, getUserEmail } from '../../../utils/utils'
@@ -178,6 +178,8 @@ export default {
       camera: 'off',
       qrErrorMsg: '',
       showQrScanner: false,
+      qrLoading: true,
+      hasStreamApiSupport: true,
     }
   },
   computed: {
@@ -216,8 +218,17 @@ export default {
       return []
     },
   },
+  watch: {
+    qrErrorMsg(value) {
+      if (value) {
+        this.setErrorMsg(value)
+        this.qrErrorMsg = ''
+      }
+    },
+  },
   methods: {
     ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
+    ...mapMutations(['setErrorMsg']),
     etherscanAddressLink(address) {
       return getEtherScanAddressLink(address, this.networkType.host)
     },
@@ -264,7 +275,7 @@ export default {
           .indexOf(account.address)
         return `${this.t('accountMenu.importedAccount')} ${index + 1}`
       }
-      return getUserEmail(this.userInfo)
+      return getUserEmail(this.userInfo, this.t('accountMenu.wallet'))
     },
     toggleWC() {
       if (this.wcConnectorSession?.connected) {
@@ -288,26 +299,29 @@ export default {
     async onInit(promise) {
       try {
         await promise
+        this.qrLoading = false
       } catch (error) {
         log.error(error)
         if (error.name === 'NotAllowedError') {
-          this.qrErrorMsg = 'ERROR: you need to grant camera access permisson'
+          this.qrErrorMsg = 'accountMenu.qrErrorNeedCameraPermission'
           log.error('ERROR: you need to grant camera access permisson')
         } else if (error.name === 'NotFoundError') {
-          this.qrErrorMsg = 'ERROR: no camera on this device'
+          this.qrErrorMsg = 'accountMenu.qrErrorNoCamera'
           log.error('ERROR: no camera on this device')
         } else if (error.name === 'NotSupportedError') {
-          this.qrErrorMsg = 'ERROR: secure context required (HTTPS, localhost)'
+          this.qrErrorMsg = 'accountMenu.qrErrorSecureContextRequired'
           log.error('ERROR: secure context required (HTTPS, localhost)')
         } else if (error.name === 'NotReadableError') {
-          this.qrErrorMsg = 'ERROR: is the camera already in use?'
+          this.qrErrorMsg = 'accountMenu.qrErrorCameraAlreadyInUse'
           log.error('ERROR: is the camera already in use?')
         } else if (error.name === 'OverconstrainedError') {
-          this.qrErrorMsg = 'ERROR: installed cameras are not suitable'
+          this.qrErrorMsg = 'accountMenu.qrErrorInstalledCamerasAreNotSuitable'
           log.error('ERROR: installed cameras are not suitable')
         } else if (error.name === 'StreamApiNotSupportedError') {
-          this.qrErrorMsg = 'ERROR: Stream Api Not Supported'
-          log.error('ERROR: Stream Api Not Supported')
+          this.qrErrorMsg = 'accountMenu.qrErrorStreamAPINotSupported'
+          log.error('ERROR: Stream Api not supported')
+
+          this.hasStreamApiSupport = false
         }
       }
     },

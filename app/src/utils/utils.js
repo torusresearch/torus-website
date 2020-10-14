@@ -451,7 +451,7 @@ export const paymentProviders = {
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'mailto:support@xanpool.com',
-    minOrderValue: 30,
+    minOrderValue: 100,
     maxOrderValue: 2500,
     validCurrencies: ['SGD', 'HKD', 'MYR', 'PHP', 'INR', 'VND', 'THB', 'IDR'],
     validCryptoCurrencies: ['ETH', 'USDT'],
@@ -669,8 +669,7 @@ export function padPrivateKey(privKey) {
   return privKey.padStart(64, 0)
 }
 
-export function getUserEmail(userInfo) {
-  const verifierIdArray = userInfo.verifierId.split('|')
-  const verifierId = verifierIdArray[2] || verifierIdArray[1] || verifierIdArray[0]
-  return userInfo.email ? userInfo.email : verifierId
+export function getUserEmail(userInfo, walletDisplay) {
+  const typeOfLoginDisplay = userInfo.typeOfLogin.charAt(0).toUpperCase() + userInfo.typeOfLogin.slice(1)
+  return (userInfo.typeOfLogin !== APPLE && userInfo.email) || userInfo.name || `${typeOfLoginDisplay} ${walletDisplay}`
 }

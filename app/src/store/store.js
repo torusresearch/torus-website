@@ -8,7 +8,7 @@ import { fromWei, hexToUtf8 } from 'web3-utils'
 import config from '../config'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import torus from '../torus'
-import { FEATURES_POPUP_SMALL, TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
+import { FEATURES_CONFIRM_WINDOW, TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
 import { getIFrameOriginObject, storageAvailable } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
@@ -86,7 +86,7 @@ const VuexStore = new Vuex.Store({
     ...paymentActions,
     ...preferencesActions,
     ...tKeyActions,
-    async showPopup({ state }, { payload, request }) {
+    async showPopup({ state, commit }, { payload, request }) {
       const isTx = payload && typeof payload === 'object'
       const windowId = isTx ? payload.id : payload
       const channelName = `torus_channel_${windowId}`
@@ -94,7 +94,7 @@ const VuexStore = new Vuex.Store({
       const confirmWindow = new PopupWithBcHandler({
         url: finalUrl,
         target: '_blank',
-        features: FEATURES_POPUP_SMALL,
+        features: FEATURES_CONFIRM_WINDOW,
         channelName,
         preopenInstanceId: request.preopenInstanceId,
       })
@@ -131,16 +131,16 @@ const VuexStore = new Vuex.Store({
       popupPayload.balance = fromWei(weiBalance.toString())
 
       if (request.isWalletConnectRequest && window.location === window.parent.location && window.location.origin === config.baseUrl) {
+        const originObj = { href: '', hostname: '' }
         try {
-          const result = await confirmWindow.handleWithHandshake({
-            payload: popupPayload,
-          })
-          const { approve = false } = result
-          if (approve) handleConfirm({ data: result })
-          else handleDeny(popupPayload.id, popupPayload.type)
-        } catch {
-          handleDeny(popupPayload.id, popupPayload.type)
+          const peerMetaURL = new URL(torus.torusController.walletConnectController.getPeerMetaURL())
+          originObj.href = peerMetaURL.href
+          originObj.hostname = peerMetaURL.hostname
+        } catch (error) {
+          log.error('could not get peer meta URL for walletconnect', error)
         }
+        popupPayload.origin = originObj
+        commit('addConfirmModal', JSON.parse(JSON.stringify(popupPayload)))
       } else if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: popupPayload.type, id: popupPayload.id } })
       } else if (popupPayload.type === TX_MESSAGE && isTorusSignedMessage(popupPayload.msgParams)) {
@@ -157,6 +157,25 @@ const VuexStore = new Vuex.Store({
           handleDeny(popupPayload.id, popupPayload.type)
         }
       }
+    },
+    handleConfirmModal({ commit }, payload) {
+      const { gasPrice, gas, customNonceValue, id, approve, txType } = payload
+
+      if (approve) {
+        handleConfirm({
+          data: {
+            ...payload,
+            id,
+            gasPrice,
+            gas,
+            customNonceValue,
+            txType,
+          },
+        })
+      } else {
+        handleDeny(id, txType)
+      }
+      commit('deleteConfirmModal', id)
     },
   },
 })

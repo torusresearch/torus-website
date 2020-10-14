@@ -15,7 +15,8 @@ import {
   ACCOUNT_TYPE,
   DISCORD,
   FACEBOOK,
-  FEATURES_POPUP_SMALL,
+  FEATURES_DEFAULT_WALLET_WINDOW,
+  FEATURES_PROVIDER_CHANGE_WINDOW,
   RPC,
   SUPPORTED_NETWORK_TYPES,
   USER_INFO_REQUEST_APPROVED,
@@ -99,7 +100,7 @@ function resetStore(store, handler, initState) {
 }
 
 export default {
-  logOut({ commit, state }, _) {
+  async logOut({ commit, state }, _) {
     commit('logOut', { ...initialState, networkType: state.networkType, networkId: state.networkId })
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
@@ -116,6 +117,7 @@ export default {
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
+    await walletConnectController.disconnect()
     resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
     resetStore(thresholdKeyController.store, tKeyHandler, {})
@@ -157,7 +159,7 @@ export default {
         url: finalUrl,
         preopenInstanceId,
         target: '_blank',
-        features: FEATURES_POPUP_SMALL,
+        features: FEATURES_PROVIDER_CHANGE_WINDOW,
         channelName,
       })
       const result = await providerChangeWindow.handleWithHandshake({
@@ -198,7 +200,7 @@ export default {
         url: finalUrl,
         preopenInstanceId,
         target: '_blank',
-        features: FEATURES_POPUP_SMALL,
+        features: FEATURES_PROVIDER_CHANGE_WINDOW,
         channelName,
       })
       const result = await userInfoRequestWindow.handleWithHandshake({
@@ -221,7 +223,7 @@ export default {
   },
   showWalletPopup(context, payload) {
     const finalUrl = `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`
-    const walletWindow = new PopupHandler({ url: finalUrl })
+    const walletWindow = new PopupHandler({ url: finalUrl, features: FEATURES_DEFAULT_WALLET_WINDOW })
     walletWindow.open()
     walletWindow.window.blur()
     setTimeout(walletWindow.window.focus(), 0)

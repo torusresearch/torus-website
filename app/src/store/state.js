@@ -77,6 +77,7 @@ const initialState = {
   badgesCompletion: {},
   tKeyStore: {},
   wcConnectorSession: {},
+  confirmModals: [],
 }
 
 export default initialState

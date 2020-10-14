@@ -78,7 +78,7 @@
           {{ capitalizeFirstLetter(t(errorMsg)) }}
         </span>
         <v-spacer />
-        <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`" @click="clearMsg('errorMsg')">
+        <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`" @click="clearMsg('ErrorMsg')">
           $vuetify.icons.close
         </v-icon>
       </div>

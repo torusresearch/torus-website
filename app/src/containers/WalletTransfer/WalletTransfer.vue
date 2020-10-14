@@ -215,7 +215,9 @@
                   v-if="contractType !== CONTRACT_TYPE_ERC721"
                   id="you-send"
                   ref="youSend"
-                  :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
+                  :hint="
+                    amount <= 0 ? '' : convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''
+                  "
                   persistent-hint
                   type="number"
                   outlined
@@ -435,7 +437,7 @@ export default {
       collectibleSelected: {},
       assetSelected: {},
       tokenAddress: '0x',
-      toEthAddress: '0x',
+      toEthAddress: '',
       amount: new BigNumber('0'),
       displayAmount: new BigNumber('0'),
       convertedAmount: '',
@@ -581,8 +583,9 @@ export default {
     },
     tweetData() {
       const share = new URL('https://twitter.com/intent/tweet')
-      const amount = `${this.displayAmount} ${
-        !this.toggle_exclusive ? (this.contractType === CONTRACT_TYPE_ERC721 ? '' : this.selectedItem.symbol) : this.selectedCurrency
+      const selectedAsset = this.contractType === CONTRACT_TYPE_ERC721 ? this.assetSelected.name : this.selectedItem.symbol
+      const amount = `${this.contractType === CONTRACT_TYPE_ERC721 ? '' : this.displayAmount} ${
+        !this.toggle_exclusive ? selectedAsset : this.selectedCurrency
       }`
       const message = this.t('walletTransfer.transferTweet')
         .replace(/{address}/gi, this.toAddress)
@@ -608,7 +611,6 @@ export default {
     selectedAddress(newValue, oldValue) {
       if (newValue !== oldValue) {
         if (this.toEthAddress) this.calculateGas(this.toEthAddress)
-        else this.onTransferClick()
       }
     },
   },
@@ -674,7 +676,7 @@ export default {
       }
       return nick
     },
-    onChangeDisplayAmount(value) {
+    async onChangeDisplayAmount(value) {
       this.sendAmountError = ''
       if ((BigNumber.isBigNumber(value) && !this.displayAmount.eq(value)) || !BigNumber.isBigNumber(value)) {
         this.displayAmount = BigNumber.isBigNumber(value) ? value : new BigNumber(value || '0')
@@ -690,6 +692,10 @@ export default {
           ? significantDigits(this.displayAmount.div(this.getCurrencyTokenRate), false, 4)
           : significantDigits(this.displayAmount.times(this.getCurrencyTokenRate), false, 4)
 
+        log.info(this.toEthAddress, 'address')
+        if (this.toEthAddress) {
+          this.gas = await this.calculateGas(this.toEthAddress)
+        }
         this.updateTotalCost()
       }
     },
@@ -743,12 +749,15 @@ export default {
       else if (contact && contact.value) value = contact.value
       return validateVerifierId(this.selectedVerifier, value)
     },
-    verifierChangedManual() {
+    async verifierChangedManual() {
       this.setRandomId()
       this.autoSelectVerifier = false
       this.$refs.form.validate()
+      if (this.selectedVerifier && this.toAddress) {
+        this.toEthAddress = await this.calculateEthAddress()
+      }
     },
-    contactChanged(contact) {
+    async contactChanged(contact) {
       this.contactSelected = contact
       if (contact) this.toAddress = contact
       log.info(contact, 'contactChanged')
@@ -763,6 +772,10 @@ export default {
         }
       }
       this.ensError = ''
+
+      if (this.selectedVerifier && this.toAddress) {
+        this.toEthAddress = await this.calculateEthAddress()
+      }
     },
     calculateGas(toAddress) {
       this.sendEthToContractError = false
@@ -854,49 +867,46 @@ export default {
       if (this.toEthAddress) {
         this.gas = await this.calculateGas(this.toEthAddress)
         this.updateTotalCost()
-      } else this.onTransferClick()
+      }
     },
     getEnsAddress(ens) {
       return torus.web3.eth.ens.getAddress(ens)
     },
+    async calculateEthAddress() {
+      let toAddress
+      log.info(this.toAddress, this.selectedVerifier)
+      if (isAddress(this.toAddress)) {
+        toAddress = toChecksumAddress(this.toAddress)
+      } else if (this.selectedVerifier === ENS) {
+        try {
+          const ethAddr = await this.getEnsAddress(this.toAddress)
+          log.info(ethAddr)
+          toAddress = ethAddr
+        } catch (error) {
+          log.error(error)
+          this.ensError = 'Invalid ENS address'
+        }
+      } else {
+        try {
+          const { loginConfig } = this.$store.state.embedState
+          const foundLoginConfig = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
+          const validVeriferId = await this.getIdFromNick(this.toAddress, this.selectedVerifier)
+          this.convertedVerifierId = validVeriferId
+          if (foundLoginConfig) {
+            toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
+              verifier: foundLoginConfig,
+              verifierId: validVeriferId.startsWith('@') ? validVeriferId.replace('@', '').toLowerCase() : validVeriferId.toLowerCase(),
+            })
+          }
+        } catch (error) {
+          log.error(error)
+        }
+      }
+      return toAddress
+    },
     async onTransferClick() {
       if (this.$refs.form.validate()) {
-        let toAddress
-        log.info(this.toAddress, this.selectedVerifier)
-        if (isAddress(this.toAddress)) {
-          toAddress = toChecksumAddress(this.toAddress)
-        } else if (this.selectedVerifier === ENS) {
-          try {
-            const ethAddr = await this.getEnsAddress(this.toAddress)
-            log.info(ethAddr)
-            toAddress = ethAddr
-          } catch (error) {
-            log.error(error)
-            this.ensError = 'Invalid ENS address'
-            return
-          }
-        } else {
-          try {
-            const { loginConfig } = this.$store.state.embedState
-            const foundLoginConfig = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
-            const validVeriferId = await this.getIdFromNick(this.toAddress, this.selectedVerifier)
-            this.convertedVerifierId = validVeriferId
-            if (foundLoginConfig) {
-              toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
-                verifier: foundLoginConfig,
-                verifierId: validVeriferId.startsWith('@') ? validVeriferId.replace('@', '').toLowerCase() : validVeriferId.toLowerCase(),
-              })
-            }
-          } catch (error) {
-            // Show error body
-            this.messageModalShow = true
-            this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-            this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-            this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
-            log.error(error)
-            return
-          }
-        }
+        const toAddress = await this.calculateEthAddress()
         if (!isAddress(toAddress)) {
           // Show error body
           this.messageModalShow = true
@@ -1116,7 +1126,7 @@ export default {
         this.nonce = -1
         if (this.toEthAddress) {
           this.gas = await this.calculateGas(this.toEthAddress)
-        } else this.onTransferClick()
+        }
       }
 
       this.updateTotalCost()

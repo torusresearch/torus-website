@@ -125,7 +125,7 @@ export default class AssetsDetectionController {
       // eslint-disable-next-line no-await-in-loop
       await this.assetController.addCollectible(
         contractAddress,
-        Number(tokenID),
+        tokenID.toString(),
         {
           description,
           image: imageURL || (contractImage || '').replace('=s60', '=s240'),

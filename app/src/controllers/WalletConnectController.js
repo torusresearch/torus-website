@@ -1,6 +1,7 @@
-import WalletConnect from '@walletconnect/client'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
+
+import WalletConnect from './WalletConnect'
 
 class WalletConnectController {
   constructor(options) {
@@ -12,14 +13,15 @@ class WalletConnectController {
   }
 
   async disconnect() {
-    this.walletConnector.killSession({ message: 'User disconnected' })
-    this.walletConnector = undefined
+    if (this.walletConnector) {
+      await this.walletConnector.killSession()
+      this.walletConnector = undefined
+    }
     this.store.putState({})
   }
 
   async init(options) {
     // options includes the uri
-    // TODO: set origin if wallet connect in store.js
     // To kill session if the user scans a new uri
     if (this.walletConnector?.uri !== options?.uri && this.walletConnector?.killSession) this.walletConnector.killSession()
     this.walletConnector = new WalletConnect(options)
@@ -93,6 +95,10 @@ class WalletConnectController {
   updateSession() {
     this.walletConnector?.updateSession(this.sessionConfig)
     if (this.walletConnector) this.setStoreSession()
+  }
+
+  getPeerMetaURL() {
+    return this.walletConnector?.peerMeta?.url
   }
 }
 
