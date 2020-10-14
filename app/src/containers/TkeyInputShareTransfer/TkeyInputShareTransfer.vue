@@ -5,14 +5,25 @@
         <v-flex :class="[$vuetify.breakpoint.xsOnly ? 'xs12' : 'xs7']">
           <div class="new-device-container" :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '', { 'is-dark': $vuetify.theme.dark }]">
             <!-- IMAGE -->
-            <div class="text-center">
-              <img src="../../assets/images/ob-verification-methods.svg" alt="Verification Methods" class="mr-2" />
+            <div
+              class="text-center"
+              :class="$vuetify.breakpoint.xsOnly ? 'mb-7' : 'mb-4'"
+              :style="{ height: $vuetify.breakpoint.xsOnly ? '66px' : '107px' }"
+            >
+              <img
+                src="../../assets/images/ob-verification-methods.svg"
+                :height="$vuetify.breakpoint.xsOnly ? '82' : ''"
+                alt="Verification Methods"
+                class="mr-2"
+              />
             </div>
 
             <!-- TITLE -->
             <div class="text-center new-device-header">
               <template>
-                <div class="new-device-header__title">{{ t('tkeyNew.verificationMethods') }}</div>
+                <div class="new-device-header__title">
+                  {{ t('tkeyNew.verificationMethods') }}
+                </div>
                 <div class="new-device-header__description">
                   {{ t('tkeyNew.youRequireNum').replace('{num}', tKeyStore.keyDetails.threshold) }}
                 </div>
@@ -27,9 +38,9 @@
               <v-expansion-panels>
                 <v-expansion-panel v-for="device in devices" :key="device.index" class="mb-2">
                   <v-expansion-panel-header class="py-2">
-                    <div class="grow font-weight-bold body-2 text_2--text">
-                      <v-icon class="mr-1">$vuetify.icons.device_detailed</v-icon>
-                      {{ device.groupTitle }}
+                    <div class="grow font-weight-bold body-2">
+                      <v-icon class="mr-1 text_2--text">$vuetify.icons.device_detailed</v-icon>
+                      <span class="text_2--text">{{ device.groupTitle }}</span>
                     </div>
                     <v-icon
                       v-if="verifiedWithDevice(device.index)"
@@ -45,20 +56,45 @@
                     </div>
 
                     <div v-for="browser in device.browsers" :key="browser.dateAdded" class="d-flex info-box py-3 px-6 mb-2 align-center">
-                      <div class="grow font-weight-bold body-2">
+                      <div class="grow text_2--text font-weight-bold body-2">
                         <v-icon class="mr-1">$vuetify.icons.browser</v-icon>
                         {{ browser.title }}
                       </div>
-                      <div class="ml-auto text-right caption">{{ t('tkeyNew.refId') }}: {{ browser.dateAdded }}</div>
+                      <div class="ml-auto text-right text_2--text caption">{{ t('tkeyNew.refId') }}: {{ browser.dateAdded }}</div>
                     </div>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
                 <!-- If user has password setup -->
                 <v-expansion-panel v-if="hasPasswordSetUp" class="mb-2">
                   <v-expansion-panel-header class="py-2">
-                    <div class="grow font-weight-bold body-2 text_2--text">
-                      <v-icon class="mr-1">$vuetify.icons.password</v-icon>
-                      {{ t('tkeyNew.recoveryPass') }}
+                    <div class="grow font-weight-bold body-2">
+                      <v-icon
+                        class="mr-1"
+                        :class="
+                          $vuetify.theme.dark
+                            ? recoveryPasswordSucess
+                              ? 'text_2--text'
+                              : 'torusFont1--text'
+                            : recoveryPasswordSucess
+                            ? 'text_2--text'
+                            : 'text_1--text'
+                        "
+                      >
+                        $vuetify.icons.shield_lock
+                      </v-icon>
+                      <span
+                        :class="
+                          $vuetify.theme.dark
+                            ? recoveryPasswordSucess
+                              ? 'text_2--text'
+                              : 'torusFont1--text'
+                            : recoveryPasswordSucess
+                            ? 'text_2--text'
+                            : 'text_1--text'
+                        "
+                      >
+                        {{ t('tkeyNew.recoveryPass') }}
+                      </span>
                     </div>
                     <v-icon
                       v-if="recoveryPasswordSucess"
@@ -76,10 +112,11 @@
                         :type="showVerifyPassword ? 'text' : 'password'"
                         :rules="[rules.required]"
                         outlined
+                        :readonly="recoveryPasswordSucess"
                         :placeholder="t('tkeyNew.enterPassword')"
                         @click:append="showVerifyPassword = !showVerifyPassword"
                       />
-                      <div class="text-right">
+                      <div v-if="!recoveryPasswordSucess" class="text-right">
                         <v-btn
                           type="submit"
                           :disabled="!validVerifyPasswordForm"
@@ -95,21 +132,7 @@
               </v-expansion-panels>
               <div class="caption text-right text_2--text">{{ t('tkeyNew.skip') }}</div>
             </div>
-
-            <div class="tkey-footer">
-              <hr class="mb-2" />
-              <v-layout>
-                <v-flex class="x6">
-                  <div class="d-flex align-center">
-                    <v-icon x-small class="mr-1">$vuetify.icons.lock_filled</v-icon>
-                    <div class="caption">{{ t('tkeyNew.secureTorus') }}</div>
-                  </div>
-                </v-flex>
-                <v-flex class="x6 caption text-right">
-                  {{ t('tkeyNew.contactSupport') }}
-                </v-flex>
-              </v-layout>
-            </div>
+            <NewDeviceFooter />
           </div>
         </v-flex>
       </v-layout>
@@ -121,6 +144,7 @@
 /* eslint-disable max-len */
 // import { mapState } from 'vuex'
 
+import NewDeviceFooter from '../../components/Tkey/NewDeviceFooter'
 import { passwordValidation } from '../../utils/utils'
 
 // FOR TESTING
@@ -280,6 +304,7 @@ const TKEY_STORE = {
 }
 
 export default {
+  components: { NewDeviceFooter },
   data() {
     return {
       tKeyStore: TKEY_STORE,
