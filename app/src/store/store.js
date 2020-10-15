@@ -9,7 +9,7 @@ import config from '../config'
 import torus from '../torus'
 import ConfirmHandler from '../utils/ConfirmHandler'
 import { TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
-import { storageAvailable } from '../utils/utils'
+import { isPwa, storageAvailable } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
 import mutations from './mutations'
@@ -20,10 +20,10 @@ Vue.use(Vuex)
 
 let vuexPersist
 
-if (storageAvailable('sessionStorage')) {
+if (storageAvailable(isPwa ? 'localStorage' : 'sessionStorage')) {
   vuexPersist = new VuexPersistence({
     key: 'torus-app',
-    storage: window.sessionStorage,
+    storage: isPwa ? window.localStorage : window.sessionStorage,
     reducer: (state) => ({
       userInfo: state.userInfo,
       userInfoAccess: state.userInfoAccess,
