@@ -645,4 +645,4 @@ export function getUserEmail(userInfo, walletDisplay) {
   return (userInfo.typeOfLogin !== APPLE && userInfo.email) || userInfo.name || `${typeOfLoginDisplay} ${walletDisplay}`
 }
 
-export const isPwa = navigator.standalone || window.matchMedia('(display-mode: standalone)').matches || document.referrer.includes('android-app://')
+export const isPwa = navigator.standalone || matchMedia('(display-mode: standalone)').matches || document.referrer.includes('android-app://')
