@@ -9,7 +9,7 @@ import config from '../config'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import torus from '../torus'
 import { FEATURES_CONFIRM_WINDOW, TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
-import { getIFrameOriginObject, storageAvailable } from '../utils/utils'
+import { getIFrameOriginObject, isPwa, storageAvailable } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
 import mutations from './mutations'
@@ -24,10 +24,10 @@ Vue.use(Vuex)
 
 let vuexPersist
 
-if (storageAvailable('sessionStorage')) {
+if (storageAvailable(isPwa ? 'localStorage' : 'sessionStorage')) {
   vuexPersist = new VuexPersistence({
     key: 'torus-app',
-    storage: window.sessionStorage,
+    storage: isPwa ? window.localStorage : window.sessionStorage,
     reducer: (state) => ({
       userInfo: state.userInfo,
       userInfoAccess: state.userInfoAccess,
