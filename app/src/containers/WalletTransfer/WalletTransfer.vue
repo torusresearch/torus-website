@@ -1,7 +1,9 @@
 <template>
   <v-container class="wallet-transfer pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4 mobile-view' : ''">
     <div class="d-flex align-center">
-      <div class="font-weight-bold display-1 text_2--text float-left">{{ t('walletTransfer.transferDetails') }}</div>
+      <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
+        {{ t('walletTransfer.transferDetails') }}
+      </div>
       <div class="ml-auto">
         <QuickAddress />
       </div>

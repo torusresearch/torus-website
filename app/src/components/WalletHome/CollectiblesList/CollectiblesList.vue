@@ -1,21 +1,28 @@
 <template>
   <v-layout v-if="collectibleBalances.length > 0" class="collectibles-tab-container mx-n4" wrap align-center>
     <v-flex v-for="(collectible, i) in collectibleBalances" :key="i" class="xs12 sm6 md4 lg3 px-4 mb-4">
-      <v-card class="elevation-1" :class="$vuetify.breakpoint.xsOnly ? 'pt-1 pb-2 px-5' : 'py-2 px-5'">
-        <v-list-item class="px-0" router-link :to="{ name: 'walletHomeCollectible', params: { address: collectible.address } }" title="View Assets">
-          <v-list-item-avatar :size="$vuetify.breakpoint.xsOnly ? 36 : 50">
+      <v-card class="elevation-1">
+        <v-list-item
+          :class="$vuetify.breakpoint.xsOnly ? 'pt-3 pb-8 px-4' : 'py-2 px-5'"
+          router-link
+          :to="{ name: 'walletHomeCollectible', params: { address: collectible.address } }"
+          title="View Assets"
+        >
+          <v-list-item-avatar :size="$vuetify.breakpoint.xsOnly ? 36 : 50" :class="$vuetify.breakpoint.xsOnly ? 'my-0' : ''">
             <v-img :src="collectible.logo" :alt="collectible.name"></v-img>
           </v-list-item-avatar>
           <v-list-item-content>
-            <v-list-item-title class="caption text_1--text font-weight-bold mb-2">{{ collectible.name }}</v-list-item-title>
+            <v-list-item-title class="caption text_1--text font-weight-bold" :class="{ 'mb-2': !$vuetify.breakpoint.xsOnly }">
+              {{ collectible.name }}
+            </v-list-item-title>
             <v-list-item-subtitle v-if="!$vuetify.breakpoint.xsOnly" class="text_3--text caption">
               {{ collectible.assets.length }} {{ collectible.assets.length > 1 ? t('walletHome.assets') : t('walletHome.asset') }}
             </v-list-item-subtitle>
           </v-list-item-content>
+          <div v-if="$vuetify.breakpoint.xsOnly" class="text-right text_3--text asset-note">
+            {{ collectible.assets.length }} {{ collectible.assets.length > 1 ? t('walletHome.assets') : t('walletHome.asset') }}
+          </div>
         </v-list-item>
-        <div v-if="$vuetify.breakpoint.xsOnly" class="text-right text_3--text">
-          {{ collectible.assets.length }} {{ collectible.assets.length > 1 ? t('walletHome.assets') : t('walletHome.asset') }}
-        </div>
       </v-card>
     </v-flex>
   </v-layout>
