@@ -487,6 +487,7 @@ export default {
         redirect_uri: '',
         preopenInstanceId: '',
         jwtParameters: jwtParameters || {},
+        redirectToOpener: true,
       })
       const userInfo = await loginHandler.getUserInfo({ accessToken, idToken })
       const { profileImage, name, email, verifierId, typeOfLogin: returnTypeOfLogin } = userInfo

@@ -24,7 +24,7 @@ import PasswordlessHandler from './PasswordlessHandler'
 import RedditHandler from './RedditHandler'
 import TwitchHandler from './TwitchHandler'
 
-const createHandler = ({ typeOfLogin, clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false, jwtParameters }) => {
+const createHandler = ({ typeOfLogin, clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = true, jwtParameters }) => {
   if (!verifier || !typeOfLogin || !clientId) {
     throw new Error('Invalid params')
   }

@@ -31,7 +31,7 @@ class AbstractLoginHandler {
 
   handleLoginWindow() {
     return new Promise((resolve, reject) => {
-      const bc = new BroadcastChannel(`redirect_channel_${this.nonce}`, broadcastChannelOptions)
+      let bc = new BroadcastChannel(`redirect_channel_${this.nonce}`, broadcastChannelOptions)
       const handleData = async (ev) => {
         try {
           const { error, data } = ev
@@ -55,11 +55,31 @@ class AbstractLoginHandler {
         }
       }
       const verifierWindow = new PopupHandler({ url: this.finalURL, preopenInstanceId: this.preopenInstanceId })
-      bc.addEventListener('message', async (ev) => {
-        await handleData(ev)
-        bc.close()
-        verifierWindow.close()
-      })
+
+      if (!this.redirectToOpener) {
+        bc = new BroadcastChannel(`redirect_channel_${this.nonce}`, broadcastChannelOptions)
+        bc.addEventListener('message', async (ev) => {
+          await handleData(ev)
+          bc.close()
+          verifierWindow.close()
+        })
+      } else {
+        const postMessageEventHandler = async (postMessageEvent) => {
+          if (!postMessageEvent.data) return
+          const ev = postMessageEvent.data
+          if (ev.channel !== `redirect_channel_${this.nonce}`) return
+          window.removeEventListener('message', postMessageEventHandler)
+          handleData(ev)
+          verifierWindow.close()
+        }
+        window.addEventListener('message', postMessageEventHandler)
+      }
+
+      // bc.addEventListener('message', async (ev) => {
+      //   await handleData(ev)
+      //   bc.close()
+      //   verifierWindow.close()
+      // })
 
       verifierWindow.open()
       verifierWindow.once('close', () => {

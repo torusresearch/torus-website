@@ -1,6 +1,7 @@
 import './registerServiceWorker'
 import './reset.css'
 
+import extension from 'extensionizer'
 import log from 'loglevel'
 import Vue from 'vue'
 import VueGtm from 'vue-gtm'
@@ -64,3 +65,8 @@ new Vue({
 }).$mount('#app')
 
 // window.Vue = vue
+
+// setting up stream
+// setup stream to background
+const extensionPort = chrome.runtime.connect({ name: windowType })
+const connectionStream = new PortStream(extensionPort)

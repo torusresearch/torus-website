@@ -6,7 +6,7 @@ import Web3 from 'web3'
 import TorusController from './controllers/TorusController'
 import { MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME } from './utils/enums'
 import setupMultiplex from './utils/setupMultiplex'
-import { getIFrameOrigin, isMain, isPwa, storageAvailable } from './utils/utils'
+import { isMain, isPwa, storageAvailable } from './utils/utils'
 // import store from './store'
 let storeReference
 let deferredDispatch = []
@@ -96,9 +96,9 @@ function onloadTorus(torus) {
   torus.communicationMux = setupMultiplex(communicationStream)
   torus.communicationMux.setMaxListeners(50)
 
-  const providerOutStream = torus.metamaskMux.getStream('provider')
+  // const providerOutStream = torus.metamaskMux.getStream('provider')
 
-  torusController.setupUntrustedCommunication(providerOutStream, getIFrameOrigin())
+  // torusController.setupUntrustedCommunication(providerOutStream, getIFrameOrigin())
 
   return torus
 }

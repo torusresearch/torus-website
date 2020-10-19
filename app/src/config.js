@@ -49,11 +49,11 @@ const {
   VUE_APP_KAKAO_CLIENT_ID,
 } = process.env
 
-const baseUrl = VUE_APP_BASE_ROUTE || 'https://localhost:3000'
+const baseUrl = VUE_APP_BASE_ROUTE || 'https://scripts.toruswallet.io/redirectTorusExtension.html'
 
 const baseRoute = baseUrl + process.env.BASE_URL
 
-const redirectURI = `${baseUrl}/redirect`
+const redirectURI = `${baseUrl}`
 
 const LOGIN_DOMAIN = VUE_APP_LOGIN_DOMAIN
 
