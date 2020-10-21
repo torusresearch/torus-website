@@ -1,17 +1,20 @@
 <template>
   <div class="quick-address d-flex align-center">
     <div class="ml-auto">
-      <ExportQrCode>
-        <v-icon x-small v-text="'$vuetify.icons.qr'" />
-      </ExportQrCode>
-    </div>
-    <div class="ml-2">
       <ShowToolTip :address="selectedAddress">
         <v-btn small class="address-btn" aria-label="Copy Address">
           <v-icon left size="9" v-text="'$vuetify.icons.address'" />
           <span>{{ slicedAddress }}</span>
         </v-btn>
       </ShowToolTip>
+    </div>
+    <div class="ml-2">
+      <ExportQrCode>
+        <v-icon x-small v-text="'$vuetify.icons.qr'" />
+      </ExportQrCode>
+    </div>
+    <div v-if="$vuetify.breakpoint.xsOnly">
+      <WalletConnect />
     </div>
   </div>
 </template>
@@ -21,9 +24,10 @@ import { mapState } from 'vuex'
 
 import ExportQrCode from '../ExportQrCode'
 import ShowToolTip from '../ShowToolTip'
+import WalletConnect from '../WalletConnect'
 
 export default {
-  components: { ExportQrCode, ShowToolTip },
+  components: { ExportQrCode, ShowToolTip, WalletConnect },
   computed: {
     ...mapState(['selectedAddress']),
     slicedAddress() {
