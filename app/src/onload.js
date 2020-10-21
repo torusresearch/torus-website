@@ -13,7 +13,7 @@ import {
   THRESHOLD_KEY_SHARE_TRANSFER_INPUT,
   THRESHOLD_KEY_STORE_DEVICE_FLOW,
 } from './utils/enums'
-import { getIFrameOrigin, isMain, storageAvailable } from './utils/utils'
+import { getIFrameOrigin, isMain, isPwa, storageAvailable } from './utils/utils'
 // import store from './store'
 let storeReference
 let deferredDispatch = []
@@ -48,8 +48,9 @@ function triggerThresholdUi(type, payload) {
 function onloadTorus(torus) {
   let sessionData
 
-  if (storageAvailable('sessionStorage')) {
-    sessionData = sessionStorage.getItem('torus-app')
+  if (storageAvailable(!isPwa ? 'sessionStorage' : 'localStorage')) {
+    const storage = isPwa ? localStorage : sessionStorage
+    sessionData = storage.getItem('torus-app')
   }
 
   const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || {

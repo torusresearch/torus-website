@@ -19,7 +19,8 @@
               !(
                 (transaction.type === CONTRACT_TYPE_ERC20 && transaction.actionIcon !== 'n/a') ||
                 transaction.action === ACTIVITY_ACTION_TOPUP ||
-                (transaction.type === CONTRACT_TYPE_ERC721 && transaction.actionIcon !== 'n/a')
+                (transaction.type === CONTRACT_TYPE_ERC721 && transaction.actionIcon !== 'n/a') ||
+                transaction.type === CONTRACT_TYPE_ETH
               ),
           }"
         >
@@ -59,6 +60,15 @@
           <v-icon v-else-if="transaction.type === CONTRACT_TYPE_ERC721" class="float-left" size="24" color="torusBrand1">
             $vuetify.icons.collectibles
           </v-icon>
+          <img
+            v-else-if="transaction.type === CONTRACT_TYPE_ETH"
+            :src="`${logosUrl}/${transaction.actionIcon}`"
+            height="36"
+            large
+            :alt="`${transaction.type_name} Icon`"
+            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+            :style="{ marginRight: '16px', marginLeft: '13px' }"
+          />
           <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
         </div>
         <div class="caption text_1--text d-flex" :class="{ 'font-weight-medium': !$vuetify.breakpoint.xsOnly }">
@@ -200,6 +210,7 @@ import {
   CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
   TOKEN_METHOD_APPROVE,
 } from '../../../utils/enums'
@@ -226,6 +237,7 @@ export default {
       ACTIVITY_STATUS_UNSUCCESSFUL,
       ACTIVITY_STATUS_PENDING,
       ACTIVITY_ACTION_TOPUP,
+      CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721,
       TOKEN_METHOD_APPROVE,

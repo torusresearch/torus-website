@@ -1,7 +1,10 @@
-
 @import '../../scss/elevation-one.mixin';
 
 .wallet-settings {
+  .page-title {
+    font-size: 20px;
+    line-height: 23px;
+  }
   .v-expansion-panels {
     .v-expansion-panel-header {
       border-top: 0;
@@ -14,9 +17,11 @@
     }
     .v-expansion-panel {
       &::before {
-        @include elevationOne()
+        @include elevationOne();
       }
-      border: 1px solid #F5F5F5;
+      &:not(:first-child)::after {
+        border: 0;
+      }
     }
     &.theme--dark {
       .v-expansion-panel-header {

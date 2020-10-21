@@ -74,15 +74,15 @@ export default {
           // Get asset name of the 721
           const selectedAddressAssets = state.assets[state.selectedAddress]
           if (selectedAddressAssets) {
-            const contract = selectedAddressAssets.find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
+            const contract = selectedAddressAssets.find((x) => x.address.toLowerCase() === txParams.to.toLowerCase()) || {}
             log.info(contract, amountValue)
             if (contract) {
               const { name: foundAssetName } = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
               assetName = foundAssetName || ''
               symbol = assetName
               type = 'erc721'
-              typeName = name
-              typeImageLink = logo
+              typeName = contract.name || name
+              typeImageLink = contract.logo || logo
               totalAmount = fromWei(toBN(txParams.value || 0))
               finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
             }

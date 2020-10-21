@@ -1,0 +1,17 @@
+.v-btn.v-btn--icon.wallet-connect-btn {
+  background: var(--v-torusGray4-base);
+  color: var(--v-torusFont2-base);
+  &.theme--dark {
+    background: var(--v-torusBlack2-base);
+    color: var(--v-torusFont1-base);
+  }
+}
+
+.qr-scan-container {
+  position: relative;
+  .close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}

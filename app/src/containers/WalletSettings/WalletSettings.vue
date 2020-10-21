@@ -2,15 +2,17 @@
   <v-container class="wallet-settings" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
       <v-flex xs6>
-        <div class="font-weight-bold text_1--text display-1 float-left">{{ t('walletSettings.settings') }}</div>
+        <div class="font-weight-bold text_1--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
+          {{ t('walletSettings.settings') }}
+        </div>
       </v-flex>
       <v-flex xs6>
         <QuickAddress />
       </v-flex>
     </v-layout>
     <v-layout wrap mx-n4 mt-7>
-      <v-flex px-4 xs12 md6>
-        <v-expansion-panels v-model="leftPanel" readonly multiple>
+      <v-flex px-4 xs12 sm6>
+        <v-expansion-panels v-model="leftPanel" multiple>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="privacy-panel-header">
               <v-icon size="20" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
@@ -46,7 +48,7 @@
       </v-flex>
       <v-flex px-4 xs12 md6>
         <v-expansion-panels v-model="rightPanel" multiple>
-          <v-expansion-panel readonly class="my-2">
+          <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="network-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.globe'" />
               <div class="grow font-weight-bold title text_1--text">
@@ -57,7 +59,7 @@
               <Network />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel readonly class="my-2">
+          <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="display-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.server'" />
               <div class="grow font-weight-bold title text_1--text">

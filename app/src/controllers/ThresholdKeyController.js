@@ -1,5 +1,10 @@
 /* eslint-disable no-await-in-loop */
-import ThresholdKey, { SecurityQuestionsModule, ServiceProviderBase, TorusStorageLayer, WebStorageModule } from '@tkey/core'
+import ThresholdKey from '@tkey/core'
+import SecurityQuestionsModule from '@tkey/security-questions'
+import ServiceProviderBase from '@tkey/service-provider-base'
+import ShareTransferModule from '@tkey/share-transfer'
+import TorusStorageLayer from '@tkey/storage-layer-torus'
+import WebStorageModule from '@tkey/web-storage'
 import bowser from 'bowser'
 import deepmerge from 'deepmerge'
 import { ethErrors } from 'eth-rpc-errors'
@@ -40,7 +45,7 @@ class ThresholdKeyController extends EventEmitter {
 
   async checkIfTKeyExists(postboxKey) {
     const storageLayer = new TorusStorageLayer({ hostUrl: config.metadataHost })
-    const metadata = await storageLayer.getMetadata(postboxKey)
+    const metadata = await storageLayer.getMetadata({ privKey: postboxKey })
     return Object.keys(metadata).length > 0
   }
 
@@ -360,6 +365,7 @@ class ThresholdKeyController extends EventEmitter {
     const modules = {
       [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
       [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),
+      [SHARE_TRANSFER_MODULE_KEY]: new ShareTransferModule(),
     }
     const serviceProvider = new ServiceProviderBase({ postboxKey })
     const storageLayer = new TorusStorageLayer({ serviceProvider, hostUrl: config.metadataHost })

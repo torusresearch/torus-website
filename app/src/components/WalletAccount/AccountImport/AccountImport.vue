@@ -21,7 +21,14 @@
         </v-flex>
         <template v-if="selectedType === 'private'">
           <v-flex xs12>
-            <v-form ref="privateKeyForm" v-model="privateKeyFormValid" lazy-validation aria-autocomplete="off" autocomplete="off" @submit.prevent="">
+            <v-form
+              ref="privateKeyForm"
+              v-model="privateKeyFormValid"
+              lazy-validation
+              aria-autocomplete="off"
+              autocomplete="off"
+              @submit.prevent="importViaPrivateKey"
+            >
               <v-layout wrap>
                 <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <div class="text-subtitle-2 mb-2">{{ t('accountMenu.inputPrivateKey') }}:</div>
@@ -58,7 +65,7 @@
                     :loading="isLoadingPrivate"
                     :disabled="!privateKeyFormValid || isLoadingPrivate"
                     class="px-8 white--text"
-                    @click.prevent="importViaPrivateKey"
+                    type="submit"
                   >
                     {{ t('accountMenu.import') }}
                   </v-btn>
@@ -69,7 +76,7 @@
         </template>
         <template v-if="selectedType === 'keystore'">
           <v-flex xs12>
-            <v-form ref="jsonFileForm" v-model="jsonFileFormValid" lazy-validation @submit.prevent="">
+            <v-form ref="jsonFileForm" v-model="jsonFileFormValid" lazy-validation @submit.prevent="importViaKeyStoreFile">
               <v-layout wrap>
                 <v-flex xs12 mb-2 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <v-layout wrap align-center justify-space-between>
@@ -124,7 +131,7 @@
                     :loading="isLoadingKeystore"
                     :disabled="!jsonFileFormValid || isLoadingKeystore"
                     class="px-8 white--text gmt-import-account"
-                    @click.prevent="importViaKeyStoreFile"
+                    type="submit"
                   >
                     {{ t('accountMenu.import') }}
                   </v-btn>

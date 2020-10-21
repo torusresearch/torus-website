@@ -131,7 +131,6 @@ export default {
     const simplexWindow = new PopupWithBcHandler({
       url: 'about:blank',
       target: 'form-target',
-      features: 'width=1200, height=700',
       preopenInstanceId,
       channelName: `redirect_channel_${orderInstanceId}`,
     })

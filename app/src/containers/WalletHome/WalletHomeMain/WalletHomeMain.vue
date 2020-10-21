@@ -1,7 +1,9 @@
 <template>
   <v-container class="wallet-home pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <div class="d-flex align-center">
-      <div class="font-weight-bold display-1 text_2--text float-left">{{ t('walletHome.walletHome') }}</div>
+      <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
+        {{ t('walletHome.walletHome') }}
+      </div>
       <div class="ml-auto">
         <QuickAddress />
       </div>
@@ -29,7 +31,7 @@
                     <v-btn
                       x-small
                       text
-                      class="text_3--text"
+                      class="text_3--text px-3"
                       :class="{ 'currency-selector': $vuetify.breakpoint.mAndUp }"
                       title="Select currency"
                       aria-label="Select currency"
@@ -39,11 +41,12 @@
                       <v-icon class="text_3--text" small>$vuetify.icons.select</v-icon>
                     </v-btn>
                   </template>
-                  <v-list dense>
+                  <v-list class="pa-0" dense>
                     <v-list-item-group color="torusBrand1">
                       <v-list-item
                         v-for="supportedCurrency in supportedCurrencies"
                         :key="supportedCurrency"
+                        class="px-2"
                         :class="selectedCurrency === supportedCurrency ? 'active' : ''"
                         @click="onCurrencyChange(supportedCurrency)"
                       >

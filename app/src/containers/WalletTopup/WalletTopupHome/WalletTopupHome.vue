@@ -1,7 +1,7 @@
 <template>
   <v-container class="wallet-topup-view pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <div class="d-flex align-center">
-      <div class="font-weight-bold display-1 text-left text_2--text">
+      <div class="font-weight-bold text-left text_2--text page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
         <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
           {{ t('walletTopUp.purchaseVia') }}
           <span class="text-capitalize">{{ selectedProvider }}</span>
@@ -32,7 +32,7 @@
         </div>
       </v-flex>
 
-      <v-flex id="providerForm" xs12 md7 mb-4 px-4>
+      <v-flex id="providerForm" mb-4 px-4 :class="$vuetify.breakpoint.width > 800 ? 'xs7' : 'xs12'">
         <router-view></router-view>
       </v-flex>
     </v-layout>
@@ -79,3 +79,7 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+@import 'WalletTopupHome.scss';
+</style>

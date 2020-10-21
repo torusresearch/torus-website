@@ -1,6 +1,7 @@
 // import randomId from '@chaitanyapotti/random-id'
 import { EventEmitter } from 'events'
 
+import { FEATURES_DEFAULT_POPUP_WINDOW } from '../../utils/enums'
 import StreamWindow from './StreamWindow'
 
 class PopupHandler extends EventEmitter {
@@ -9,7 +10,7 @@ class PopupHandler extends EventEmitter {
     // this.id = randomId()
     this.url = url instanceof URL ? url.href : url
     this.target = target || '_blank'
-    this.features = features || 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200'
+    this.features = features || FEATURES_DEFAULT_POPUP_WINDOW
     this.window = undefined
     this.windowTimer = {}
     this.iClosedWindow = false

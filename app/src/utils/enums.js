@@ -1,3 +1,7 @@
+import { SECURITY_QUESTIONS_MODULE_NAME } from '@tkey/security-questions'
+import { SHARE_TRANSFER_MODULE_NAME } from '@tkey/share-transfer'
+import { WEB_STORAGE_MODULE_NAME } from '@tkey/web-storage'
+
 export const ETH = 'eth'
 
 export const PLATFORM_BRAVE = 'Brave'
@@ -178,10 +182,10 @@ export const ACCOUNT_TYPE = {
   IMPORTED: 'imported',
 }
 
-export const WEB_STORAGE_MODULE_KEY = 'webStorage'
-export const SECURITY_QUESTIONS_MODULE_KEY = 'securityQuestions'
+export const WEB_STORAGE_MODULE_KEY = WEB_STORAGE_MODULE_NAME
+export const SECURITY_QUESTIONS_MODULE_KEY = SECURITY_QUESTIONS_MODULE_NAME
 export const CHROME_EXTENSION_STORAGE_MODULE_KEY = 'chromeExtensionStorage'
-export const SHARE_TRANSFER_MODULE_KEY = 'shareTransfer'
+export const SHARE_TRANSFER_MODULE_KEY = SHARE_TRANSFER_MODULE_NAME
 export const PASSWORD_QUESTION = 'what is your password?'
 export const THRESHOLD_KEY_PRIORITY_ORDER = [WEB_STORAGE_MODULE_KEY, SECURITY_QUESTIONS_MODULE_KEY, CHROME_EXTENSION_STORAGE_MODULE_KEY]
 
@@ -380,6 +384,9 @@ export const BADGES_TOPUP = 'topUp'
 export const BADGES_TRANSACTION = 'transaction'
 export const BADGES_COLLECTIBLE = 'collectible'
 
-export const FEATURES_POPUP_SMALL = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=760,width=375'
 export const POPUP_LOADED = 'popup-loaded'
 export const POPUP_RESULT = 'popup_result'
+export const FEATURES_PROVIDER_CHANGE_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375'
+export const FEATURES_DEFAULT_WALLET_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=740,width=1315'
+export const FEATURES_DEFAULT_POPUP_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200'
+export const FEATURES_CONFIRM_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=450'
