@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import TkeyCreate from './containers/TkeyCreate'
+import TKeyDappInput from './containers/TKeyDappInput'
+import TKeyInput from './containers/TKeyInput'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
@@ -159,9 +161,9 @@ const router = new Router({
               },
             },
             {
-              path: '/dapp-input',
+              path: 'dapp-input',
               name: 'tkeyDappInput',
-              component: TkeyCreate,
+              component: TKeyDappInput,
               meta: {
                 requiresAuth: false,
               },
@@ -169,7 +171,7 @@ const router = new Router({
             {
               path: 'input',
               name: 'tKeyInput',
-              component: TkeyCreate,
+              component: TKeyInput,
               meta: {
                 requiresAuth: false,
               },

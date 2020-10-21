@@ -51,15 +51,7 @@ import ConfirmForm from '../../components/Confirm/ConfirmForm'
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
 // import BadgesAlert from '../../components/WalletHome/BadgesAlert'
-import {
-  BADGES_COLLECTIBLE,
-  BADGES_TOPUP,
-  BADGES_TRANSACTION,
-  TKEY_CREATE_ROUTE,
-  TKEY_INPUT_PASSWORD_ROUTE,
-  TKEY_INPUT_SHARE_TRANSFER_ROUTE,
-  TKEY_STORE_DEVICE_ROUTE,
-} from '../../utils/enums'
+import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION } from '../../utils/enums'
 
 export default {
   components: {
@@ -165,7 +157,7 @@ export default {
       return this.pastTransactions && this.pastTransactions.length > 0 && this.badgesCompletion[BADGES_TRANSACTION] === false
     },
     isTkeyScreen() {
-      return [TKEY_CREATE_ROUTE, TKEY_INPUT_PASSWORD_ROUTE, TKEY_INPUT_SHARE_TRANSFER_ROUTE, TKEY_STORE_DEVICE_ROUTE].includes(this.$route.name)
+      return ['tkeyCreate', 'tkeyDappInput', 'tKeyInput'].includes(this.$route.name)
     },
   },
   mounted() {
