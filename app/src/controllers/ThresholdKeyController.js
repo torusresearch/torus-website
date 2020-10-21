@@ -45,7 +45,7 @@ class ThresholdKeyController extends EventEmitter {
 
   async checkIfTKeyExists(postboxKey) {
     const storageLayer = new TorusStorageLayer({ hostUrl: config.metadataHost })
-    const metadata = await storageLayer.getMetadata(postboxKey)
+    const metadata = await storageLayer.getMetadata({ privKey: postboxKey })
     return Object.keys(metadata).length > 0
   }
 
