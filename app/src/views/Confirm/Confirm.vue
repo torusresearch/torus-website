@@ -29,6 +29,7 @@ export default {
       id: 0,
       type: 'none',
       currentConfirmModal: undefined,
+      channel: '',
     }
   },
   mounted() {
@@ -38,7 +39,6 @@ export default {
     this.channel = `torus_channel_${instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
-      if (ev.name !== 'send-params') return
       const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, whiteLabel, currencyData, network } = ev.data || {}
       if (txParams && txParams.id.toString() !== queryParameterId) return
       this.type = type
@@ -57,8 +57,6 @@ export default {
       }
 
       this.$store.commit('setWhiteLabel', whiteLabel)
-
-      if (txParams && txParams.id.toString() !== queryParameterId) return
       bc.close()
     })
     bc.postMessage({ data: { type: POPUP_LOADED, id: queryParameterId } })

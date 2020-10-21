@@ -78,7 +78,6 @@ export default {
       }
       try {
         const popupPayload = {
-          id: windowId,
           whiteLabel: state.whiteLabel,
           data,
         }
