@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TkeyInputForm :tkey-store="tKeyStore" :selected-address="selectedAddress" />
+    <TkeyInputForm :tkey-store="tKeyStore" />
   </div>
 </template>
 
@@ -13,7 +13,7 @@ export default {
   name: 'TkeyInput',
   components: { TkeyInputForm },
   computed: {
-    ...mapState(['tKeyStore', 'selectedAddress']),
+    ...mapState(['tKeyStore']),
   },
 }
 </script>

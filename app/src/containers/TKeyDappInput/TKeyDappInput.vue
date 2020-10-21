@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TkeyInputForm :current-form-data="currentFormData" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
+    <TkeyInputForm :tkey-store="currentFormData" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
   </div>
 </template>
 
