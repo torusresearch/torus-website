@@ -1,11 +1,11 @@
 <template>
   <div>
-    <TkeyInputForm :tkey-store="tKeyStore" :selected-address="selectedAddress" />
+    <TkeyInputForm :current-form-data="tKeyStore" :selected-address="selectedAddress" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 import TkeyInputForm from '../../components/Tkey/TkeyInputForm'
 
@@ -14,6 +14,15 @@ export default {
   components: { TkeyInputForm },
   computed: {
     ...mapState(['tKeyStore', 'selectedAddress']),
+  },
+  methods: {
+    ...mapActions(['setTkeyInputFlow']),
+    triggerSign({ data }) {
+      this.setTkeyInputFlow({ response: data })
+    },
+    triggerDeny() {
+      this.setTkeyInputFlow({ rejected: true })
+    },
   },
 }
 </script>
