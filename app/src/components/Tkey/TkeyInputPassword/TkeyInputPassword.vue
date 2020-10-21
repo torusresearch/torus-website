@@ -81,13 +81,25 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import { mapActions, mapState } from 'vuex'
+import { mapActions } from 'vuex'
 
 import { broadcastChannelOptions } from '../../../utils/utils'
 import NewDeviceFooter from '../NewDeviceFooter'
 
 export default {
   components: { NewDeviceFooter },
+  props: {
+    tKeyStore: {
+      type: Object,
+      default() {
+        return {}
+      },
+    },
+    selectedAddress: {
+      type: String,
+      default: '',
+    },
+  },
   data() {
     return {
       // verify password
@@ -101,7 +113,6 @@ export default {
     }
   },
   computed: {
-    ...mapState(['tKeyStore', 'selectedAddress']),
     shareInput() {
       if (!this.tKeyStore.securityQuestionShareUserInput) return {}
       return this.tKeyStore.securityQuestionShareUserInput
