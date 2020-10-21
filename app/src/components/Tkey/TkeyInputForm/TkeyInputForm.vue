@@ -1,8 +1,8 @@
 <template>
   <div>
-    <TkeyInputPassword :tkey-store="tKeyStore" :selected-address="selectedAddress" />
+    <TkeyInputPassword :tkey-store="tKeyStore" :selected-address="selectedAddress" @setPasswordInput="setInput" />
     <TkeyInputShareTransfer :tkey-store="tKeyStore" />
-    <TkeyDeviceDetected :tkey-store="tKeyStore" :selected-address="selectedAddress" />
+    <TkeyDeviceDetected :tkey-store="tKeyStore" :selected-address="selectedAddress" @setStoreDeviceFlow="setInput" />
   </div>
 </template>
 
@@ -24,6 +24,13 @@ export default {
     selectedAddress: {
       type: String,
       default: '',
+    },
+  },
+  methods: {
+    setInput(details) {
+      const { rejected } = details
+      if (rejected) this.$emit('triggerDeny')
+      else this.$emit('triggerSign', details)
     },
   },
 }

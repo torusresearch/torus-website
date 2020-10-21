@@ -135,7 +135,7 @@ export default {
     this.isConfirming = false
   },
   methods: {
-    ...mapActions(['setSecurityQuestionShareFromUserInput', 'skipDeviceLogin']),
+    ...mapActions(['setSecurityQuestionShareFromUserInput']),
     onVerifyPassword() {
       this.setPasswordInput({
         id: this.$route.query.id,
@@ -158,7 +158,8 @@ export default {
           },
         })
         bc.close()
-      } else this.setSecurityQuestionShareFromUserInput(details)
+      } else this.$emit('setPasswordInput', details)
+      // this.setSecurityQuestionShareFromUserInput(details)
     },
   },
 }

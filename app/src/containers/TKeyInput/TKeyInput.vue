@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     ...mapActions(['setTkeyInputFlow']),
-    triggerSign({ data }) {
+    triggerSign(data) {
       this.setTkeyInputFlow({ response: data })
     },
     triggerDeny() {
