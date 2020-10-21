@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TkeyInputForm :current-form-data="tKeyStore" :selected-address="selectedAddress" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
+    <TkeyInputForm :tkey-store="tKeyStore" :selected-address="selectedAddress" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
   </div>
 </template>
 
@@ -13,7 +13,7 @@ export default {
   name: 'TkeyInput',
   components: { TkeyInputForm },
   computed: {
-    ...mapState(['tKeyStore', 'selectedAddress']),
+    ...mapState(['tKeyStore']),
   },
   methods: {
     ...mapActions(['setTkeyInputFlow']),
