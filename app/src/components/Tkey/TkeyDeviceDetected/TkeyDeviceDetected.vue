@@ -125,13 +125,25 @@
 <script>
 import bowser from 'bowser'
 import { BroadcastChannel } from 'broadcast-channel'
-import { mapActions, mapState } from 'vuex'
+import { mapActions } from 'vuex'
 
 import { broadcastChannelOptions } from '../../../utils/utils'
 import NewDeviceFooter from '../NewDeviceFooter'
 
 export default {
   components: { NewDeviceFooter },
+  props: {
+    tKeyStore: {
+      type: Object,
+      default() {
+        return {}
+      },
+    },
+    selectedAddress: {
+      type: String,
+      default: '',
+    },
+  },
   data() {
     return {
       activeTab: 0,
@@ -140,7 +152,6 @@ export default {
     }
   },
   computed: {
-    ...mapState(['tKeyStore', 'selectedAddress']),
     devices() {
       if (!this.tKeyStore.settingsPageData) return []
       const { allDeviceShares } = this.tKeyStore.settingsPageData
