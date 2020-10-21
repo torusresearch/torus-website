@@ -118,7 +118,7 @@ export default {
   },
   methods: {
     scrollToPosition() {
-      if (!this.$vuetify.breakpoint.width > 800) return
+      if (this.$vuetify.breakpoint.width > 800) return
       const element = document.querySelector('#write-to-us')
       setTimeout(() => {
         if (element) {
