@@ -1,16 +1,11 @@
+import randomId from '@chaitanyapotti/random-id'
 import log from 'loglevel'
 
 import config from '../config'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import router from '../router'
 import torus from '../torus'
-import {
-  ACCOUNT_TYPE,
-  THRESHOLD_KEY_INPUT_ROUTE_MAPPING,
-  THRESHOLD_KEY_QUESTION_INPUT,
-  THRESHOLD_KEY_SHARE_TRANSFER_INPUT,
-  THRESHOLD_KEY_STORE_DEVICE_FLOW,
-} from '../utils/enums'
+import { ACCOUNT_TYPE, FEATURES_DEFAULT_POPUP_WINDOW } from '../utils/enums'
 import { isMain } from '../utils/utils'
 
 const { baseRoute } = config
@@ -66,64 +61,62 @@ export default {
   downloadShare(_, payload) {
     return thresholdKeyController.downloadShare(payload)
   },
-  async showThresholdKeyUi({ dispatch }, payload) {
-    const { type, data: { id } = {} } = payload
-    log.info(id, type)
-    if (isMain) router.push({ name: THRESHOLD_KEY_INPUT_ROUTE_MAPPING[type].name, query: { ...router.currentRoute.query, id } })
+  async showThresholdKeyUi({ state, dispatch }, payload) {
+    const { type, data } = payload
+    // data is store of thresholdkeycontroller
+    log.info(data, type)
+    if (isMain) router.push({ name: 'tKeyInput' })
     else {
-      const handleDeny = () => {
-        log.info('Tkey input denied')
-        if (type === THRESHOLD_KEY_QUESTION_INPUT) {
-          dispatch('setSecurityQuestionShareFromUserInput', { id, password: '', rejected: true })
-        } else if (type === THRESHOLD_KEY_STORE_DEVICE_FLOW) {
-          dispatch('setStoreDeviceFlow', { id, response: '', rejected: true })
-        } else if (type === THRESHOLD_KEY_SHARE_TRANSFER_INPUT) {
-          dispatch('setShareTransferInput', { id, success: false })
-        }
+      const windowId = randomId()
+      const handleDeny = (error) => {
+        log.info('Tkey input denied', error)
+        dispatch('setTkeyInputFlow', { rejected: true })
       }
-      const handleSuccess = (data) => {
-        log.info('tkey input success', data)
-        const { eventType = '', details } = data
-        if (eventType === 'device_login_password') {
-          const { id: keyId, password, rejected } = details
-          dispatch('setSecurityQuestionShareFromUserInput', { id: keyId, password, rejected })
-        } else if (eventType === 'set_store_device_flow') {
-          const { id: keyId, response, rejected } = details
-          dispatch('setStoreDeviceFlow', { id: keyId, response, rejected })
-        } else if (eventType === 'share_transfer_success') {
-          const { id: keyId, success } = details
-          dispatch('setShareTransferInput', { id: keyId, success })
-        }
+      const handleSuccess = (successData) => {
+        log.info('tkey input success', successData)
+        dispatch('setTkeyInputFlow', { response: successData })
       }
       try {
-        const finalUrl = `${baseRoute}wallet/tkey/${THRESHOLD_KEY_INPUT_ROUTE_MAPPING[type].path}?integrity=true&instanceId=${id}&id=${id}`
+        const popupPayload = {
+          id: windowId,
+          whiteLabel: state.whiteLabel,
+          data,
+        }
+        const finalUrl = `${baseRoute}wallet/tkey/dapp-input?integrity=true&instanceId=${windowId}`
         const tKeyInputWindow = new PopupWithBcHandler({
           url: finalUrl,
           target: '_blank',
-          features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=760,width=500',
-          channelName: `tkey_channel_${id}`,
+          features: FEATURES_DEFAULT_POPUP_WINDOW,
+          channelName: `tkey_channel_${windowId}`,
         })
-        const result = await tKeyInputWindow.handle()
-        handleSuccess(result)
+        const result = await tKeyInputWindow.handleWithHandshake({
+          payload: popupPayload, // send tkey store
+        })
+        const { approve = false, data: resultData, error } = result
+        if (approve) handleSuccess(resultData)
+        else handleDeny(error)
       } catch (error) {
         log.error(error)
-        handleDeny()
+        handleDeny(error)
       }
     }
   },
-  setSecurityQuestionShareFromUserInput(_, payload) {
-    const { id, password, rejected } = payload
-    thresholdKeyController.setSecurityQuestionShareFromUserInput(id, { password, rejected })
-  },
-  setStoreDeviceFlow(_, payload) {
-    const { id, response, rejected } = payload
-    log.info('payload', payload)
-    // response is { isOld: Boolean, oldIndex: '' }
-    thresholdKeyController.setStoreDeviceFlow(id, { response, rejected })
-  },
-  setShareTransferInput(_, payload) {
-    const { id, success } = payload
-    thresholdKeyController.setShareTransferStatus(id, { success })
+  // setSecurityQuestionShareFromUserInput(_, payload) {
+  //   const { id, password, rejected } = payload
+  //   thresholdKeyController.setSecurityQuestionShareFromUserInput(id, { password, rejected })
+  // },
+  // setStoreDeviceFlow(_, payload) {
+  //   const { id, response, rejected } = payload
+  //   log.info('payload', payload)
+  //   // response is { isOld: Boolean, oldIndex: '' }
+  //   thresholdKeyController.setStoreDeviceFlow(id, { response, rejected })
+  // },
+  // setShareTransferInput(_, payload) {
+  //   const { id, success } = payload
+  //   thresholdKeyController.setShareTransferStatus(id, { success })
+  // },
+  setTkeyInputFlow(_, payload) {
+    thresholdKeyController.setTkeyInputFlow(payload)
   },
   clearTkeyError() {
     return thresholdKeyController.clearTkeyError()

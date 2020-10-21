@@ -5,14 +5,7 @@ import Web3 from 'web3'
 
 import TorusController from './controllers/TorusController'
 import setupMultiplex from './controllers/utils/setupMultiplex'
-import {
-  MAINNET,
-  MAINNET_CODE,
-  MAINNET_DISPLAY_NAME,
-  THRESHOLD_KEY_QUESTION_INPUT,
-  THRESHOLD_KEY_SHARE_TRANSFER_INPUT,
-  THRESHOLD_KEY_STORE_DEVICE_FLOW,
-} from './utils/enums'
+import { MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME } from './utils/enums'
 import { getIFrameOrigin, isMain, isPwa, storageAvailable } from './utils/utils'
 // import store from './store'
 let storeReference
@@ -65,9 +58,7 @@ function onloadTorus(torus) {
     unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
     showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
     openPopup: triggerUi.bind(window, 'bindopenPopup'),
-    requestSecurityQuestionInput: triggerThresholdUi.bind(window, THRESHOLD_KEY_QUESTION_INPUT),
-    showStoreDeviceFlow: triggerThresholdUi.bind(window, THRESHOLD_KEY_STORE_DEVICE_FLOW),
-    requestShareTransferInput: triggerThresholdUi.bind(window, THRESHOLD_KEY_SHARE_TRANSFER_INPUT),
+    requestTkeyInput: triggerThresholdUi.bind(window, 'requestTkeyInput'),
     storeProps: () => {
       const { state } = getStore()
       const { selectedAddress, wallet } = state || {}

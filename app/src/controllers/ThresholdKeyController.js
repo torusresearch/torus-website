@@ -6,7 +6,6 @@ import ShareTransferModule from '@tkey/share-transfer'
 import TorusStorageLayer from '@tkey/storage-layer-torus'
 import WebStorageModule from '@tkey/web-storage'
 import bowser from 'bowser'
-import deepmerge from 'deepmerge'
 import { ethErrors } from 'eth-rpc-errors'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
@@ -23,7 +22,6 @@ import {
   THRESHOLD_KEY_PRIORITY_ORDER,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
-import createRandomId from '../utils/random-id'
 import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
@@ -38,9 +36,7 @@ class ThresholdKeyController extends EventEmitter {
   constructor(opts = {}) {
     super()
     this.store = new ObservableStore({})
-    this.requestSecurityQuestionInput = opts.requestSecurityQuestionInput
-    this.showStoreDeviceFlow = opts.showStoreDeviceFlow
-    this.requestShareTransferInput = opts.requestShareTransferInput
+    this.requestTkeyInput = opts.requestTkeyInput
   }
 
   async checkIfTKeyExists(postboxKey) {
@@ -54,94 +50,105 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async login(postboxKey, tKeyJson) {
-    await this._init(postboxKey, tKeyJson)
-    const { keyDetails, tKey, parsedShareDescriptions } = this.state
-    log.info(keyDetails)
-    const { requiredShares: shareCount } = keyDetails
-    let requiredShares = shareCount
-    let descriptionBuffer = []
-    let passwordEntered = false
-    let currentIndex = 0
+    try {
+      await this._init(postboxKey, tKeyJson)
+      const { keyDetails } = this.state
+      log.info(keyDetails)
+      // const { requiredShares: shareCount } = keyDetails
+      // const requiredShares = shareCount
+      // const descriptionBuffer = []
+      // const passwordEntered = false
+      // const currentIndex = 0
 
-    window.addEventListener('beforeunload', beforeUnloadHandler)
-    while (requiredShares > 0 && currentIndex < parsedShareDescriptions.length) {
-      const currentShare = parsedShareDescriptions[currentIndex]
-      currentIndex += 1
-      if (currentShare.module === WEB_STORAGE_MODULE_KEY) {
-        try {
-          await tKey.modules[WEB_STORAGE_MODULE_KEY].inputShareFromWebStorage()
-          requiredShares -= 1
-        } catch (error) {
-          log.warn(error, 'unable to read share from device. Must be on other device')
-          descriptionBuffer.push(currentShare)
-        }
-      } else if (currentShare.module === SECURITY_QUESTIONS_MODULE_KEY) {
-        // default to password for now
-        try {
-          let password
-          try {
-            password = await this.getSecurityQuestionShareFromUserInput(currentShare)
-          } catch {
-            log.info('user is not willing to enter password')
-            // eslint-disable-next-line no-continue
-            continue
-          }
-          await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].inputShareFromSecurityQuestions(password)
-          requiredShares -= 1
-          passwordEntered = true
-        } catch (error) {
-          currentIndex -= 1 // To Allow multiple entry of incorrect password
-          log.warn(error, 'Unable to get user share from input')
-          this.handleError('tkeyNew.errorIncorrectPass')
-        }
-      } else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
-        // transfer share from other device
-        descriptionBuffer.push(currentShare)
-      }
-    }
+      window.addEventListener('beforeunload', beforeUnloadHandler)
+      // while (requiredShares > 0 && currentIndex < parsedShareDescriptions.length) {
+      //   const currentShare = parsedShareDescriptions[currentIndex]
+      //   currentIndex += 1
+      //   if (currentShare.module === WEB_STORAGE_MODULE_KEY) {
+      //     try {
+      //       await tKey.modules[WEB_STORAGE_MODULE_KEY].inputShareFromWebStorage()
+      //       requiredShares -= 1
+      //     } catch (error) {
+      //       log.warn(error, 'unable to read share from device. Must be on other device')
+      //       descriptionBuffer.push(currentShare)
+      //     }
+      //   } else if (currentShare.module === SECURITY_QUESTIONS_MODULE_KEY) {
+      //     // default to password for now
+      //     try {
+      //       let password
+      //       try {
+      //         password = await this.getSecurityQuestionShareFromUserInput(currentShare)
+      //       } catch {
+      //         log.info('user is not willing to enter password')
+      //         // eslint-disable-next-line no-continue
+      //         continue
+      //       }
+      //       await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].inputShareFromSecurityQuestions(password)
+      //       requiredShares -= 1
+      //       passwordEntered = true
+      //     } catch (error) {
+      //       currentIndex -= 1 // To Allow multiple entry of incorrect password
+      //       log.warn(error, 'Unable to get user share from input')
+      //       this.handleError('tkeyNew.errorIncorrectPass')
+      //     }
+      //   } else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
+      //     // transfer share from other device
+      //     descriptionBuffer.push(currentShare)
+      //   }
+      // }
 
-    while (requiredShares > 0 && descriptionBuffer.length > 0) {
-      try {
-        const shareStore = await this.getShareFromAnotherDevice(descriptionBuffer)
-        descriptionBuffer = descriptionBuffer.filter((x) => x.shareIndex.toString('hex') !== shareStore.share.shareIndex.toString('hex'))
-        requiredShares -= 1
-      } catch {
-        log.warn('User declined share transfer')
-        break
-      }
-    }
+      // while (requiredShares > 0 && descriptionBuffer.length > 0) {
+      //   try {
+      //     const shareStore = await this.getShareFromAnotherDevice(descriptionBuffer)
+      //     descriptionBuffer = descriptionBuffer.filter((x) => x.shareIndex.toString('hex') !== shareStore.share.shareIndex.toString('hex'))
+      //     requiredShares -= 1
+      //   } catch {
+      //     log.warn('User declined share transfer')
+      //     break
+      //   }
+      // }
 
-    if (requiredShares > 0 && descriptionBuffer.length === 0) {
-      this.handleError('tkeyNew.errorCannotRecover')
-      window.removeEventListener('beforeunload', beforeUnloadHandler)
-      throw new Error('Cannot recover key')
-    }
+      // if (requiredShares > 0 && descriptionBuffer.length === 0) {
+      //   this.handleError('tkeyNew.errorCannotRecover')
+      //   window.removeEventListener('beforeunload', beforeUnloadHandler)
+      //   throw new Error('Cannot recover key')
+      // }
 
-    if (requiredShares <= 0) {
-      const { privKey } = await tKey.reconstructKey()
-      if (descriptionBuffer.length > 0 || passwordEntered) {
-        try {
-          const response = await this.storeDeviceFlow()
-          const { isOld, oldIndex } = response
-          if (!isOld) {
-            await this.generateAndStoreNewDeviceShare()
-          } else {
-            await this.copyShareUsingIndexAndStoreLocally(oldIndex)
-          }
-        } catch (error) {
-          log.error(error)
-        }
-      }
-      await this.setSettingsPageData()
-      window.removeEventListener('beforeunload', beforeUnloadHandler)
-      log.info(privKey.toString('hex', 64), 'privKey')
+      const tkeyJsonReturned = await this.tkeyInputFlow()
+      await this.rehydrate(postboxKey, tkeyJsonReturned)
+
+      // if (requiredShares <= 0) {
+      // const { privKey } = await tKey.reconstructKey()
+      // if (descriptionBuffer.length > 0 || passwordEntered) {
+      //   try {
+      //     const response = await this.storeDeviceFlow()
+      //     const { isOld, oldIndex } = response
+      //     if (!isOld) {
+      //       await this.generateAndStoreNewDeviceShare()
+      //     } else {
+      //       await this.copyShareUsingIndexAndStoreLocally(oldIndex)
+      //     }
+      //   } catch (error) {
+      //     log.error(error)
+      //   }
+      // }
+      // await this.setSettingsPageData()
+      // window.removeEventListener('beforeunload', beforeUnloadHandler)
+      // log.info(privKey.toString('hex', 64), 'privKey')
+      // return {
+      //   ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
+      //   privKey: privKey.toString('hex', 64),
+      // }
+      // }
+      const { tKey } = this.state
+      log.info(tKey.privKey.toString('hex', 64), 'privKey')
       return {
-        ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
-        privKey: privKey.toString('hex', 64),
+        ethAddress: generateAddressFromPrivateKey(tKey.privKey.toString('hex', 64)),
+        privKey: tKey.privKey.toString('hex', 64),
       }
+    } finally {
+      window.removeEventListener('beforeunload', beforeUnloadHandler)
     }
-    window.removeEventListener('beforeunload', beforeUnloadHandler)
-    throw new Error('Requires more shares')
   }
 
   handleError(error) {
@@ -185,88 +192,110 @@ class ThresholdKeyController extends EventEmitter {
     await this.setSettingsPageData()
   }
 
-  async storeDeviceFlow() {
-    const { parsedShareDescriptions } = this.state
+  async tkeyInputFlow() {
     return new Promise((resolve, reject) => {
-      const id = createRandomId()
-      this.store.updateState({ storeDeviceFlow: { [id]: { status: 'unapproved', parsedShareDescriptions } } })
-      this.showStoreDeviceFlow({ id, parsedShareDescriptions })
-      this.once(`${id}:storedevice:finished`, (data) => {
-        const { storeDeviceFlow } = this.state
-        this.store.updateState({ storeDeviceFlow: deepmerge(storeDeviceFlow, { [id]: { parsedShareDescriptions, status: data.status } }) })
+      this.requestTkeyInput(this.state)
+      this.once('input:finished', (data) => {
         switch (data.status) {
           case 'approved':
             return resolve(data.response)
           case 'rejected':
-            return reject(ethErrors.provider.userRejectedRequest('Torus User Input Store device: User denied input.'))
+            return reject(ethErrors.provider.userRejectedRequest('Torus User Input: User denied input.'))
           default:
-            return reject(new Error(`Torus User Input Security Question: Unknown problem: ${JSON.stringify(parsedShareDescriptions)}`))
+            return reject(new Error(`Torus User Input: Unknown problem: ${JSON.stringify(this.state)}`))
         }
       })
     })
   }
 
-  async setStoreDeviceFlow(id, payload) {
+  async setTkeyInputFlow(payload) {
     const { response, rejected } = payload
-    if (rejected) this.emit(`${id}:storedevice:finished`, { status: 'rejected' })
-    if (response) this.emit(`${id}:storedevice:finished`, { status: 'approved', response })
+    if (rejected) this.emit('input:finished', { status: 'rejected' })
+    if (response) this.emit('input:finished', { status: 'approved', response })
   }
 
-  async getSecurityQuestionShareFromUserInput(share) {
-    return new Promise((resolve, reject) => {
-      const id = createRandomId()
-      this.store.updateState({ securityQuestionShareUserInput: { [id]: { share, status: 'unapproved' } } })
-      this.requestSecurityQuestionInput({ id, share })
-      this.once(`${id}:securityquestion:finished`, (data) => {
-        const { securityQuestionShareUserInput } = this.state
-        this.store.updateState({
-          securityQuestionShareUserInput: deepmerge(securityQuestionShareUserInput, { [id]: { share, status: data.status } }),
-        })
-        switch (data.status) {
-          case 'approved':
-            return resolve(data.password)
-          case 'rejected':
-            return reject(ethErrors.provider.userRejectedRequest('Torus User Input Security Question: User denied input.'))
-          default:
-            return reject(new Error(`Torus User Input Security Question: Unknown problem: ${JSON.stringify(share)}`))
-        }
-      })
-    })
-  }
+  // async storeDeviceFlow() {
+  //   const { parsedShareDescriptions } = this.state
+  //   return new Promise((resolve, reject) => {
+  //     const id = createRandomId()
+  //     this.store.updateState({ storeDeviceFlow: { [id]: { status: 'unapproved', parsedShareDescriptions } } })
+  //     this.showStoreDeviceFlow({ id, parsedShareDescriptions })
+  //     this.once(`${id}:storedevice:finished`, (data) => {
+  //       const { storeDeviceFlow } = this.state
+  //       this.store.updateState({ storeDeviceFlow: deepmerge(storeDeviceFlow, { [id]: { parsedShareDescriptions, status: data.status } }) })
+  //       switch (data.status) {
+  //         case 'approved':
+  //           return resolve(data.response)
+  //         case 'rejected':
+  //           return reject(ethErrors.provider.userRejectedRequest('Torus User Input Store device: User denied input.'))
+  //         default:
+  //           return reject(new Error(`Torus User Input Security Question: Unknown problem: ${JSON.stringify(parsedShareDescriptions)}`))
+  //       }
+  //     })
+  //   })
+  // }
 
-  async setSecurityQuestionShareFromUserInput(id, payload) {
-    const { password, rejected } = payload
-    if (rejected) this.emit(`${id}:securityquestion:finished`, { status: 'rejected' })
-    if (password) this.emit(`${id}:securityquestion:finished`, { status: 'approved', password })
-  }
+  // async setStoreDeviceFlow(id, payload) {
+  //   const { response, rejected } = payload
+  //   if (rejected) this.emit(`${id}:storedevice:finished`, { status: 'rejected' })
+  //   if (response) this.emit(`${id}:storedevice:finished`, { status: 'approved', response })
+  // }
 
-  getShareFromAnotherDevice(shareDescriptions) {
-    const id = createRandomId()
-    this.store.updateState({ shareTransferInput: { [id]: { shareDescriptions: parseShares(shareDescriptions), status: 'unapproved' } } })
-    this.requestShareTransferInput({ id, shareDescriptions })
-    const { tKey } = this.state
-    return tKey.modules[SHARE_TRANSFER_MODULE_KEY].requestNewShare(window.navigator.userAgent).then((encPubKey) => {
-      this.once(`${id}:sharetransfer:finished`, (data) => {
-        const { shareTransferInput } = this.state
-        this.store.updateState({
-          shareTransferInput: deepmerge(shareTransferInput, { [id]: { shareDescriptions, status: data.status } }),
-        })
-        switch (data.status) {
-          case 'approved':
-            return tKey.modules[SHARE_TRANSFER_MODULE_KEY].startRequestStatusCheck(encPubKey, true) // returns share promise
-          case 'rejected':
-            return Promise.reject(ethErrors.provider.userRejectedRequest('Torus Share Transfer: User denied transfer.'))
-          default:
-            return Promise.reject(new Error(`Torus Share Transfer: Unknown problem: ${JSON.stringify(shareTransferInput)}`))
-        }
-      })
-    })
-  }
+  // async getSecurityQuestionShareFromUserInput(share) {
+  //   return new Promise((resolve, reject) => {
+  //     const id = createRandomId()
+  //     this.store.updateState({ securityQuestionShareUserInput: { [id]: { share, status: 'unapproved' } } })
+  //     this.requestSecurityQuestionInput({ id, share })
+  //     this.once(`${id}:securityquestion:finished`, (data) => {
+  //       const { securityQuestionShareUserInput } = this.state
+  //       this.store.updateState({
+  //         securityQuestionShareUserInput: deepmerge(securityQuestionShareUserInput, { [id]: { share, status: data.status } }),
+  //       })
+  //       switch (data.status) {
+  //         case 'approved':
+  //           return resolve(data.password)
+  //         case 'rejected':
+  //           return reject(ethErrors.provider.userRejectedRequest('Torus User Input Security Question: User denied input.'))
+  //         default:
+  //           return reject(new Error(`Torus User Input Security Question: Unknown problem: ${JSON.stringify(share)}`))
+  //       }
+  //     })
+  //   })
+  // }
 
-  async setShareTransferStatus(id, payload) {
-    const { success } = payload
-    this.emit(`${id}:sharetransfer:finished`, { status: success ? 'approved' : 'rejected' })
-  }
+  // async setSecurityQuestionShareFromUserInput(id, payload) {
+  //   const { password, rejected } = payload
+  //   if (rejected) this.emit(`${id}:securityquestion:finished`, { status: 'rejected' })
+  //   if (password) this.emit(`${id}:securityquestion:finished`, { status: 'approved', password })
+  // }
+
+  // getShareFromAnotherDevice(shareDescriptions) {
+  //   const id = createRandomId()
+  //   this.store.updateState({ shareTransferInput: { [id]: { shareDescriptions: parseShares(shareDescriptions), status: 'unapproved' } } })
+  //   this.requestShareTransferInput({ id, shareDescriptions })
+  //   const { tKey } = this.state
+  //   return tKey.modules[SHARE_TRANSFER_MODULE_KEY].requestNewShare(window.navigator.userAgent).then((encPubKey) => {
+  //     this.once(`${id}:sharetransfer:finished`, (data) => {
+  //       const { shareTransferInput } = this.state
+  //       this.store.updateState({
+  //         shareTransferInput: deepmerge(shareTransferInput, { [id]: { shareDescriptions, status: data.status } }),
+  //       })
+  //       switch (data.status) {
+  //         case 'approved':
+  //           return tKey.modules[SHARE_TRANSFER_MODULE_KEY].startRequestStatusCheck(encPubKey, true) // returns share promise
+  //         case 'rejected':
+  //           return Promise.reject(ethErrors.provider.userRejectedRequest('Torus Share Transfer: User denied transfer.'))
+  //         default:
+  //           return Promise.reject(new Error(`Torus Share Transfer: Unknown problem: ${JSON.stringify(shareTransferInput)}`))
+  //       }
+  //     })
+  //   })
+  // }
+
+  // async setShareTransferStatus(id, payload) {
+  //   const { success } = payload
+  //   this.emit(`${id}:sharetransfer:finished`, { status: success ? 'approved' : 'rejected' })
+  // }
 
   async createNewTKey({ postboxKey, password, backup }) {
     await this._init(postboxKey)
@@ -360,8 +389,8 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async _init(postboxKey, tKeyJson) {
-    const { tKey: stateTKey } = this.state
-    if (stateTKey && stateTKey.privKey) throw new Error('TKey already initialized')
+    // const { tKey: stateTKey } = this.state
+    // if (stateTKey && stateTKey.privKey) throw new Error('TKey already initialized')
     const modules = {
       [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
       [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),
