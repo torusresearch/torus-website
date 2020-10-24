@@ -4,9 +4,10 @@ import log from 'loglevel'
 import config from '../../config'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MOONPAY, RAMPNETWORK, WYRE, XANPOOL } from '../../utils/enums'
+import { MERCURYO, MOONPAY, RAMPNETWORK, WYRE, XANPOOL } from '../../utils/enums'
 import PopupHandler from '../../utils/PopupHandler'
 import { broadcastChannelOptions, fakeStream, paymentProviders } from '../../utils/utils'
+import mercuryo from './mercuryo'
 import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
 import simplex from './simplex'
@@ -40,6 +41,7 @@ export default {
   ...moonpay,
   ...wyre,
   ...xanpool,
+  ...mercuryo,
   async initiateTopup({ state, dispatch }, { provider, params, preopenInstanceId }) {
     if (paymentProviders[provider] && paymentProviders[provider].api) {
       try {
@@ -103,7 +105,11 @@ export default {
         } else if (provider === WYRE) {
           // wyre
           const { success } = await dispatch('fetchWyreOrder', {
-            currentOrder: { destCurrency: selectedParameters.selectedCryptoCurrency || '', sourceAmount: selectedParameters.fiatValue || '' },
+            currentOrder: {
+              destCurrency: selectedParameters.selectedCryptoCurrency || undefined,
+              sourceAmount: selectedParameters.fiatValue || undefined,
+              sourceCurrency: selectedParameters.selectedCurrency || undefined,
+            },
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
           })
@@ -116,6 +122,19 @@ export default {
               fiatValue: selectedParameters.fiatValue || '',
               selectedCurrency: selectedParameters.selectedCurrency || '',
             },
+            preopenInstanceId,
+            selectedAddress: selectedParameters.selectedAddress,
+          })
+          handleSuccess(success)
+        } else if (provider === MERCURYO) {
+          // moonpay
+          const currentOrder = {
+            currency: selectedParameters.selectedCryptoCurrency || '',
+            fiat_amount: selectedParameters.fiatValue || '',
+            fiat_currency: selectedParameters.selectedCurrency || '',
+          }
+          const { success } = await dispatch('fetchMercuryoOrder', {
+            currentOrder,
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
           })
@@ -153,7 +172,7 @@ export default {
             handledWindow.close()
           }
         })
-        // Handle communication with moonpay window here
+        // Handle communication with window here
         handledWindow.open()
         handledWindow.once('close', () => {
           bc.close()
