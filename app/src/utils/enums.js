@@ -259,6 +259,7 @@ export const SIMPLEX = 'simplex'
 export const MOONPAY = 'moonpay'
 export const WYRE = 'wyre'
 export const CRYPTO = 'crypto'
+export const MERCURYO = 'mercuryo'
 export const PNG = 'png'
 export const SVG = 'svg'
 

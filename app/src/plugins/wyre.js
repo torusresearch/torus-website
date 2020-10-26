@@ -1,7 +1,7 @@
 import log from 'loglevel'
 
 import config from '../config'
-import { get } from '../utils/httpHelpers'
+import { get, post } from '../utils/httpHelpers'
 
 const getQuote = (parameters = {}, headers) => {
   try {
@@ -9,7 +9,6 @@ const getQuote = (parameters = {}, headers) => {
       mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
-        Accept: 'application/json',
         ...headers,
       },
     }
@@ -22,4 +21,20 @@ const getQuote = (parameters = {}, headers) => {
   return undefined
 }
 
-export default getQuote
+const getWalletOrder = (payload, headers) => {
+  try {
+    const options = {
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+    }
+    return post(`${config.wyreApiHost}/quote/reserve`, payload, options)
+  } catch (error) {
+    log.error(error)
+  }
+  return undefined
+}
+
+export { getQuote, getWalletOrder }
