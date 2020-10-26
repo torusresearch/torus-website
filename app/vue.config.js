@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
 const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
+const extensionPlugin = require('./extensionPlugin')
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 
@@ -55,6 +56,9 @@ module.exports = {
         .plugin('service-worker-integrity')
         .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
         .after('workbox')
+    }
+    if (process.env.VUE_APP_TORUS_BUILD_ENV === 'extension') {
+      config.plugin('vue-extension').use(extensionPlugin).after('workbox')
     }
     // else {
     //   config.module.rule('sourcemap').test(/\.js$/).enforce('pre').use('source-map-loader').loader('source-map-loader').end()
