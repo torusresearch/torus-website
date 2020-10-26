@@ -1,12 +1,14 @@
 <template>
   <div>
-    <TkeyInputPassword :tkey-store="tKeyStore" :selected-address="selectedAddress" @setPasswordInput="setInput" />
-    <TkeyInputShareTransfer :tkey-store="tKeyStore" />
-    <TkeyDeviceDetected :tkey-store="tKeyStore" :selected-address="selectedAddress" @setStoreDeviceFlow="setInput" />
+    <TkeyInputPassword @setPasswordInput="setInput" />
+    <TkeyInputShareTransfer />
+    <TkeyDeviceDetected @setStoreDeviceFlow="setInput" />
   </div>
 </template>
 
 <script>
+import createTKeyInstance from '../../../handlers/Tkey/TkeyFactory'
+import { calculateSettingsPageData } from '../../../handlers/Tkey/TkeyUtils'
 import TkeyDeviceDetected from '../TkeyDeviceDetected'
 import TkeyInputPassword from '../TkeyInputPassword'
 import TkeyInputShareTransfer from '../TkeyInputShareTransfer'
@@ -21,10 +23,21 @@ export default {
         return {}
       },
     },
-    selectedAddress: {
+    postboxKey: {
       type: String,
       default: '',
     },
+  },
+  data() {
+    return {
+      tKey: undefined,
+      settingsData: {},
+    }
+  },
+  async mounted() {
+    // Create tkey instance here
+    this.tKey = await createTKeyInstance(this.postboxKey, this.tKeyStore)
+    this.settingsData = await calculateSettingsPageData(this.tKey)
   },
   methods: {
     setInput(details) {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TkeyInputForm :tkey-store="currentFormData" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
+    <TkeyInputForm :tkey-store="currentFormData" :postbox-key="postboxKey" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
   </div>
 </template>
 
@@ -18,6 +18,7 @@ export default {
     return {
       channel: '',
       currentFormData: undefined,
+      postboxKey: '',
     }
   },
   mounted() {
@@ -26,8 +27,9 @@ export default {
     this.channel = `tkey_channel_${instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
-      const { whiteLabel, data } = ev.data || {}
+      const { whiteLabel, data, postboxKey } = ev.data || {}
       this.currentFormData = data
+      this.postboxKey = postboxKey
       this.$store.commit('setWhiteLabel', whiteLabel)
 
       bc.close()

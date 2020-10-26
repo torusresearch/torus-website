@@ -1,27 +1,13 @@
-/* eslint-disable no-await-in-loop */
-import ThresholdKey from '@tkey/core'
-import SecurityQuestionsModule from '@tkey/security-questions'
-import ServiceProviderBase from '@tkey/service-provider-base'
-import ShareTransferModule from '@tkey/share-transfer'
 import TorusStorageLayer from '@tkey/storage-layer-torus'
-import WebStorageModule from '@tkey/web-storage'
-import bowser from 'bowser'
 import { ethErrors } from 'eth-rpc-errors'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import EventEmitter from 'safe-event-emitter'
 
 import config from '../config'
-import {
-  CHROME_EXTENSION_STORAGE_MODULE_KEY,
-  ERROR_TIME,
-  PASSWORD_QUESTION,
-  SECURITY_QUESTIONS_MODULE_KEY,
-  SHARE_TRANSFER_MODULE_KEY,
-  STORAGE_MAP,
-  THRESHOLD_KEY_PRIORITY_ORDER,
-  WEB_STORAGE_MODULE_KEY,
-} from '../utils/enums'
+import createTKeyInstance from '../handlers/Tkey/TkeyFactory'
+import { calculateSettingsPageData } from '../handlers/Tkey/TkeyUtils'
+import { ERROR_TIME, PASSWORD_QUESTION, SECURITY_QUESTIONS_MODULE_KEY, WEB_STORAGE_MODULE_KEY } from '../utils/enums'
 import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
@@ -194,7 +180,7 @@ class ThresholdKeyController extends EventEmitter {
 
   async tkeyInputFlow() {
     return new Promise((resolve, reject) => {
-      this.requestTkeyInput(this.state)
+      this.requestTkeyInput(this.state.tKey)
       this.once('input:finished', (data) => {
         switch (data.status) {
           case 'approved':
@@ -202,7 +188,7 @@ class ThresholdKeyController extends EventEmitter {
           case 'rejected':
             return reject(ethErrors.provider.userRejectedRequest('Torus User Input: User denied input.'))
           default:
-            return reject(new Error(`Torus User Input: Unknown problem: ${JSON.stringify(this.state)}`))
+            return reject(new Error(`Torus User Input: Unknown problem: ${JSON.stringify(this.state.tKey)}`))
         }
       })
     })
@@ -337,44 +323,7 @@ class ThresholdKeyController extends EventEmitter {
 
   async setSettingsPageData() {
     const { tKey } = this.state
-    const onDeviceShare = {}
-    const passwordShare = {}
-
-    const keyDetails = tKey.getKeyDetails()
-    const { shareDescriptions, totalShares, threshold: thresholdShares } = keyDetails
-    const parsedShareDescriptions = Object.keys(shareDescriptions)
-      .map((x) => {
-        return shareDescriptions[x].map((y) => {
-          return { ...JSON.parse(y), shareIndex: x }
-        })
-      })
-      .flatMap((x) => x)
-      .sort((a, b) => {
-        return THRESHOLD_KEY_PRIORITY_ORDER.indexOf(a.module) - THRESHOLD_KEY_PRIORITY_ORDER.indexOf(b.module)
-      })
-
-    // Total device shares
-    const allDeviceShares = parseShares(
-      parsedShareDescriptions.filter((x) => x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY || x.module === WEB_STORAGE_MODULE_KEY)
-    )
-
-    // For ondevice share
-    try {
-      const onDeviceLocalShare = await tKey.modules[WEB_STORAGE_MODULE_KEY].getDeviceShare()
-      if (onDeviceLocalShare) {
-        onDeviceShare.available = true
-        onDeviceShare.share = onDeviceLocalShare
-      }
-    } catch {
-      onDeviceShare.available = false
-    }
-
-    // password share
-    const passwordModules = parsedShareDescriptions.filter((x) => x.module === SECURITY_QUESTIONS_MODULE_KEY)
-    passwordShare.available = passwordModules.length > 0
-
-    // Current threshold
-    const threshold = `${thresholdShares}/${totalShares}`
+    const { onDeviceShare, allDeviceShares, passwordShare, threshold, parsedShareDescriptions, keyDetails } = await calculateSettingsPageData(tKey)
 
     this.store.updateState({
       settingsPageData: {
@@ -391,27 +340,7 @@ class ThresholdKeyController extends EventEmitter {
   async _init(postboxKey, tKeyJson) {
     // const { tKey: stateTKey } = this.state
     // if (stateTKey && stateTKey.privKey) throw new Error('TKey already initialized')
-    const modules = {
-      [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
-      [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),
-      [SHARE_TRANSFER_MODULE_KEY]: new ShareTransferModule(),
-    }
-    const serviceProvider = new ServiceProviderBase({ postboxKey })
-    const storageLayer = new TorusStorageLayer({ serviceProvider, hostUrl: config.metadataHost })
-    let tKey
-    if (!tKeyJson) {
-      tKey = new ThresholdKey({
-        serviceProvider,
-        storageLayer,
-        modules,
-      })
-      await tKey.initialize()
-    } else
-      tKey = await ThresholdKey.fromJSON(tKeyJson, {
-        modules,
-        serviceProvider,
-        storageLayer,
-      })
+    const tKey = await createTKeyInstance(postboxKey, tKeyJson)
     // await tKey.initializeNewKey({ initializeModules: true })
     // const keyDetails = tKey.getKeyDetails()
 
@@ -425,29 +354,3 @@ class ThresholdKeyController extends EventEmitter {
 }
 
 export default ThresholdKeyController
-function parseShares(parsedShareDescriptions) {
-  return parsedShareDescriptions.reduce((acc, x) => {
-    const browserInfo = bowser.parse(x.userAgent)
-    const dateFormated = new Date(x.dateAdded).toLocaleString()
-
-    x.title = `${browserInfo.browser.name} ${dateFormated}`
-    x.browserName = x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? 'Chrome Extension' : `${browserInfo.browser.name}`
-
-    if (acc[x.shareIndex]) {
-      acc[x.shareIndex].browsers = [...acc[x.shareIndex].browsers, x]
-    } else {
-      const deviceInfo = `${STORAGE_MAP[x.module]} - ${browserInfo.os.name} ${browserInfo.browser.name}`
-      acc[x.shareIndex] = {
-        index: x.shareIndex,
-        osName: browserInfo.os.name,
-        indexShort: x.shareIndex.slice(0, 5),
-        icon: browserInfo.platform.type,
-        groupTitle: deviceInfo,
-        dateAdded: x.dateAdded,
-        browsers: [x],
-      }
-    }
-
-    return acc
-  }, {})
-}

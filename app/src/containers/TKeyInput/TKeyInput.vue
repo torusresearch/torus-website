@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TkeyInputForm :tkey-store="tKeyStore" :selected-address="selectedAddress" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
+    <TkeyInputForm :tkey-store="tKeyStore" :postbox-key="postboxKey" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
   </div>
 </template>
 
@@ -8,12 +8,17 @@
 import { mapActions, mapState } from 'vuex'
 
 import TkeyInputForm from '../../components/Tkey/TkeyInputForm'
+import { ACCOUNT_TYPE } from '../../utils/enums'
 
 export default {
   name: 'TkeyInput',
   components: { TkeyInputForm },
   computed: {
-    ...mapState(['tKeyStore']),
+    ...mapState(['tKeyStore'], 'wallet'),
+    postboxKey() {
+      const postboxWallet = Object.keys(this.wallet).find((x) => this.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
+      return this.wallet[postboxWallet]?.privateKey
+    },
   },
   methods: {
     ...mapActions(['setTkeyInputFlow']),

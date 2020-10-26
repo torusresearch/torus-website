@@ -77,9 +77,11 @@ export default {
         dispatch('setTkeyInputFlow', { response: successData })
       }
       try {
+        const postboxWallet = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
         const popupPayload = {
           whiteLabel: state.whiteLabel,
           data,
+          postboxKey: state.wallet[postboxWallet]?.privateKey,
         }
         const finalUrl = `${baseRoute}wallet/tkey/dapp-input?integrity=true&instanceId=${windowId}`
         const tKeyInputWindow = new PopupWithBcHandler({
