@@ -54,5 +54,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'TkeyDappInput.scss';
+// @import 'TkeyDappInput.scss';
 </style>

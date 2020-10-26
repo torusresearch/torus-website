@@ -36,5 +36,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'TkeyInput.scss';
+// @import 'TkeyInput.scss';
 </style>
