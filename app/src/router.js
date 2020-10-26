@@ -9,6 +9,7 @@ import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/
 import WalletSettings from './containers/WalletSettings'
 import {
   WalletTopupHome,
+  WalletTopupMercuryo,
   WalletTopupMoonpay,
   WalletTopupRampNetwork,
   WalletTopupSimplex,
@@ -145,6 +146,11 @@ const router = new Router({
               path: 'xanpool',
               name: 'walletTopupXanpool',
               component: WalletTopupXanpool,
+            },
+            {
+              path: 'mercuryo',
+              name: 'walletTopupMercuryo',
+              component: WalletTopupMercuryo,
             },
           ],
         },
