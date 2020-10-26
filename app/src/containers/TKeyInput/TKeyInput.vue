@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TkeyInputForm :tkey-store="tKeyStore" :postbox-key="postboxKey" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
+    <TkeyInputForm :t-key-store="tKeyStore" :postbox-key="postboxKey" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
   </div>
 </template>
 
@@ -14,7 +14,10 @@ export default {
   name: 'TkeyInput',
   components: { TkeyInputForm },
   computed: {
-    ...mapState(['tKeyStore'], 'wallet'),
+    ...mapState({
+      tKeyStore: (state) => state.tKeyStore.tKey,
+      wallet: 'wallet',
+    }),
     postboxKey() {
       const postboxWallet = Object.keys(this.wallet).find((x) => this.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
       return this.wallet[postboxWallet]?.privateKey
