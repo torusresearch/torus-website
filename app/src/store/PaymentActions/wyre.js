@@ -54,7 +54,7 @@ export default {
         referenceId: selectedAddress,
       }
 
-      getWalletOrder(parameters, { Authorization: `Bearer ${state.jwtToken}` })
+      getWalletOrder(parameters, {})
         .then(({ data }) => dispatch('postWyreOrder', { finalUrl: data.url, preopenInstanceId }))
         .then((response) => resolve(response))
         .catch((error) => reject(error))

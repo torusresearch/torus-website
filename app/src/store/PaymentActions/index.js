@@ -127,7 +127,7 @@ export default {
           })
           handleSuccess(success)
         } else if (provider === MERCURYO) {
-          // moonpay
+          // mercuryo
           const currentOrder = {
             currency: selectedParameters.selectedCryptoCurrency || '',
             fiat_amount: selectedParameters.fiatValue || '',
