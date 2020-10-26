@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TkeyInputForm :tkey-store="currentFormData" :postbox-key="postboxKey" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
+    <TkeyInputForm :t-key-json="currentFormData" :postbox-key="postboxKey" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
   </div>
 </template>
 

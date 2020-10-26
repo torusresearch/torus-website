@@ -17,7 +17,7 @@ export default {
   name: 'TkeyInputForm',
   components: { TkeyInputPassword, TkeyInputShareTransfer, TkeyDeviceDetected },
   props: {
-    tKeyStore: {
+    tKeyJson: {
       type: Object,
       default() {
         return {}
@@ -36,7 +36,7 @@ export default {
   },
   async mounted() {
     // Create tkey instance here
-    this.tKey = await createTKeyInstance(this.postboxKey, this.tKeyStore)
+    this.tKey = await createTKeyInstance(this.postboxKey, this.tKeyJson)
     this.settingsData = await calculateSettingsPageData(this.tKey)
   },
   methods: {

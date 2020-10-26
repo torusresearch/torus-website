@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TkeyInputForm :t-key-store="tKeyStore" :postbox-key="postboxKey" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
+    <TkeyInputForm :t-key-json="tKeyJson" :postbox-key="postboxKey" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
   </div>
 </template>
 
@@ -15,7 +15,7 @@ export default {
   components: { TkeyInputForm },
   computed: {
     ...mapState({
-      tKeyStore: (state) => state.tKeyStore.tKey,
+      tKeyJson: (state) => state.tKeyStore.tKey,
       wallet: 'wallet',
     }),
     postboxKey() {
