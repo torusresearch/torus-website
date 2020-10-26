@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import TorusStorageLayer from '@tkey/storage-layer-torus'
 import { ethErrors } from 'eth-rpc-errors'
 import log from 'loglevel'
@@ -7,7 +8,13 @@ import EventEmitter from 'safe-event-emitter'
 import config from '../config'
 import createTKeyInstance from '../handlers/Tkey/TkeyFactory'
 import { calculateSettingsPageData } from '../handlers/Tkey/TkeyUtils'
-import { ERROR_TIME, PASSWORD_QUESTION, SECURITY_QUESTIONS_MODULE_KEY, WEB_STORAGE_MODULE_KEY } from '../utils/enums'
+import {
+  CHROME_EXTENSION_STORAGE_MODULE_KEY,
+  ERROR_TIME,
+  PASSWORD_QUESTION,
+  SECURITY_QUESTIONS_MODULE_KEY,
+  WEB_STORAGE_MODULE_KEY,
+} from '../utils/enums'
 import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
@@ -38,50 +45,57 @@ class ThresholdKeyController extends EventEmitter {
   async login(postboxKey, tKeyJson) {
     try {
       await this._init(postboxKey, tKeyJson)
-      const { keyDetails } = this.state
+      const { keyDetails, tKey, parsedShareDescriptions } = this.state
       log.info(keyDetails)
-      // const { requiredShares: shareCount } = keyDetails
-      // const requiredShares = shareCount
-      // const descriptionBuffer = []
+      const { requiredShares: shareCount } = keyDetails
+      let requiredShares = shareCount
+      const descriptionBuffer = []
       // const passwordEntered = false
-      // const currentIndex = 0
+      let currentIndex = 0
 
       window.addEventListener('beforeunload', beforeUnloadHandler)
-      // while (requiredShares > 0 && currentIndex < parsedShareDescriptions.length) {
-      //   const currentShare = parsedShareDescriptions[currentIndex]
-      //   currentIndex += 1
-      //   if (currentShare.module === WEB_STORAGE_MODULE_KEY) {
-      //     try {
-      //       await tKey.modules[WEB_STORAGE_MODULE_KEY].inputShareFromWebStorage()
-      //       requiredShares -= 1
-      //     } catch (error) {
-      //       log.warn(error, 'unable to read share from device. Must be on other device')
-      //       descriptionBuffer.push(currentShare)
-      //     }
-      //   } else if (currentShare.module === SECURITY_QUESTIONS_MODULE_KEY) {
-      //     // default to password for now
-      //     try {
-      //       let password
-      //       try {
-      //         password = await this.getSecurityQuestionShareFromUserInput(currentShare)
-      //       } catch {
-      //         log.info('user is not willing to enter password')
-      //         // eslint-disable-next-line no-continue
-      //         continue
-      //       }
-      //       await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].inputShareFromSecurityQuestions(password)
-      //       requiredShares -= 1
-      //       passwordEntered = true
-      //     } catch (error) {
-      //       currentIndex -= 1 // To Allow multiple entry of incorrect password
-      //       log.warn(error, 'Unable to get user share from input')
-      //       this.handleError('tkeyNew.errorIncorrectPass')
-      //     }
-      //   } else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
-      //     // transfer share from other device
-      //     descriptionBuffer.push(currentShare)
-      //   }
-      // }
+      while (requiredShares > 0 && currentIndex < parsedShareDescriptions.length) {
+        const currentShare = parsedShareDescriptions[currentIndex]
+        currentIndex += 1
+        if (currentShare.module === WEB_STORAGE_MODULE_KEY) {
+          try {
+            await tKey.modules[WEB_STORAGE_MODULE_KEY].inputShareFromWebStorage()
+            requiredShares -= 1
+          } catch (error) {
+            log.warn(error, 'unable to read share from device. Must be on other device')
+            descriptionBuffer.push(currentShare)
+          }
+        } else if (currentShare.module === SECURITY_QUESTIONS_MODULE_KEY) {
+          // // default to password for now
+          // try {
+          //   let password
+          //   try {
+          //     password = await this.getSecurityQuestionShareFromUserInput(currentShare)
+          //   } catch {
+          //     log.info('user is not willing to enter password')
+          //     // eslint-disable-next-line no-continue
+          //     continue
+          //   }
+          //   await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].inputShareFromSecurityQuestions(password)
+          //   requiredShares -= 1
+          //   passwordEntered = true
+          // } catch (error) {
+          //   currentIndex -= 1 // To Allow multiple entry of incorrect password
+          //   log.warn(error, 'Unable to get user share from input')
+          //   this.handleError('tkeyNew.errorIncorrectPass')
+          // }
+          descriptionBuffer.push(currentShare)
+        } else if (currentShare.module === CHROME_EXTENSION_STORAGE_MODULE_KEY) {
+          // transfer share from other device
+          descriptionBuffer.push(currentShare)
+        }
+      }
+
+      // Need input from UI
+      if (requiredShares > 0 && descriptionBuffer.length > 0) {
+        const tkeyJsonReturned = await this.tkeyInputFlow()
+        await this.rehydrate(postboxKey, tkeyJsonReturned)
+      }
 
       // while (requiredShares > 0 && descriptionBuffer.length > 0) {
       //   try {
@@ -94,14 +108,21 @@ class ThresholdKeyController extends EventEmitter {
       //   }
       // }
 
-      // if (requiredShares > 0 && descriptionBuffer.length === 0) {
-      //   this.handleError('tkeyNew.errorCannotRecover')
-      //   window.removeEventListener('beforeunload', beforeUnloadHandler)
-      //   throw new Error('Cannot recover key')
-      // }
+      const { keyDetails: newDetails } = this.state
 
-      const tkeyJsonReturned = await this.tkeyInputFlow()
-      await this.rehydrate(postboxKey, tkeyJsonReturned)
+      if (newDetails.requiredShares > 0) {
+        this.handleError('tkeyNew.errorCannotRecover')
+        throw new Error('Cannot recover key')
+      } else {
+        const { tKey: newTKey } = this.state
+        const { privKey } = await newTKey.reconstructKey()
+        await this.setSettingsPageData()
+        log.info(privKey.toString('hex', 64), 'privKey')
+        return {
+          ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
+          privKey: privKey.toString('hex', 64),
+        }
+      }
 
       // if (requiredShares <= 0) {
       // const { privKey } = await tKey.reconstructKey()
@@ -126,12 +147,8 @@ class ThresholdKeyController extends EventEmitter {
       //   privKey: privKey.toString('hex', 64),
       // }
       // }
-      const { tKey } = this.state
-      log.info(tKey.privKey.toString('hex', 64), 'privKey')
-      return {
-        ethAddress: generateAddressFromPrivateKey(tKey.privKey.toString('hex', 64)),
-        privKey: tKey.privKey.toString('hex', 64),
-      }
+      // const { tKey } = this.state
+      // log.info(tKey.privKey.toString('hex', 64), 'privKey')
     } finally {
       window.removeEventListener('beforeunload', beforeUnloadHandler)
     }
