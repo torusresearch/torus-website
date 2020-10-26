@@ -8,13 +8,13 @@
             <div
               class="text-center"
               :class="$vuetify.breakpoint.xsOnly ? 'mb-7' : 'mb-6'"
-              :style="{ height: $vuetify.breakpoint.xsOnly ? '66px' : '111px' }"
+              :style="{ height: $vuetify.breakpoint.xsOnly ? '66px' : '100px' }"
             >
               <img
                 src="../../../assets/images/ob-verification-done.svg"
                 alt="Verified"
                 class="mr-2"
-                :height="$vuetify.breakpoint.xsOnly ? '82' : ''"
+                :height="$vuetify.breakpoint.xsOnly ? '82' : '125'"
               />
             </div>
 
@@ -133,7 +133,7 @@ import NewDeviceFooter from '../NewDeviceFooter'
 export default {
   components: { NewDeviceFooter },
   props: {
-    tKeyStore: {
+    allDeviceShares: {
       type: Object,
       default() {
         return {}
@@ -153,11 +153,9 @@ export default {
   },
   computed: {
     devices() {
-      if (!this.tKeyStore.settingsPageData) return []
-      const { allDeviceShares } = this.tKeyStore.settingsPageData
-      return Object.keys(allDeviceShares)
+      return Object.keys(this.allDeviceShares)
         .map((x) => {
-          const share = allDeviceShares[x]
+          const share = this.allDeviceShares[x]
           const dateFormated = new Date(share.dateAdded).toLocaleString()
           share.browserList = share.browsers.map((browser) => browser.browserName).join(', ')
           share.dateFormated = dateFormated

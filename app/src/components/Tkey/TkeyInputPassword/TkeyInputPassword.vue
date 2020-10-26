@@ -3,18 +3,15 @@
     <v-container :class="[$vuetify.breakpoint.xsOnly ? 'pt-6 px-0' : 'pa-4']">
       <v-layout class="justify-center">
         <v-flex class="xs12 sm10 md8 lg7">
-          <div
-            class="new-device-container"
-            :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '', { 'is-dark': $vuetify.theme.dark, isDapp: urlInstance }]"
-          >
+          <div class="new-device-container" :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '', { 'is-dark': $vuetify.theme.dark, isDapp }]">
             <div
               class="text-center"
               :class="$vuetify.breakpoint.xsOnly ? 'mb-7' : 'mb-4'"
-              :style="{ height: $vuetify.breakpoint.xsOnly ? '66px' : '107px' }"
+              :style="{ height: $vuetify.breakpoint.xsOnly ? '66px' : '100px' }"
             >
               <img
                 src="../../../assets/images/ob-verification.svg"
-                :height="$vuetify.breakpoint.xsOnly ? '82' : ''"
+                :height="$vuetify.breakpoint.xsOnly ? '82' : '125'"
                 alt="Verification Required"
                 class="mr-2"
               />
@@ -38,22 +35,22 @@
                   v-model="verifyPassword"
                   :append-icon="showVerifyPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                   :type="showVerifyPassword ? 'text' : 'password'"
-                  :rules="[rules.required]"
+                  :rules="[rules.required, passwordError]"
                   outlined
                   :placeholder="t('tkeyNew.enterPassword')"
                   @click:append="showVerifyPassword = !showVerifyPassword"
+                  @keydown="passwordEntered = false"
                 />
                 <v-layout class="mx-n2 mb-12 align-center btn-container">
-                  <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs2 px-2"></v-flex>
-                  <v-flex class="px-2 xs6" :class="$vuetify.breakpoint.xsOnly ? 'text-center' : 'text-right'">
-                    <!-- TODO: Change to on another method when sign in with another device is implemented -->
+                  <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="xs4 px-2"></v-flex>
+                  <v-flex class="px-2 xs4 text-center">
                     <a
                       class="caption text-decoration-none"
                       :class="[$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text']"
                       @click="onSkipDeviceLogin"
                     >
-                      <!-- {{ t('tkeyNew.verifyViaAnother') }} -->
-                      {{ t('tkeyNew.skip') }}
+                      {{ t('tkeyNew.verifyViaAnother') }}
+                      <!-- {{ t('tkeyNew.skip') }} -->
                     </a>
                   </v-flex>
                   <v-flex class="px-2" :class="$vuetify.breakpoint.xsOnly ? 'xs6' : 'xs4'">
@@ -80,10 +77,8 @@
 </template>
 
 <script>
-import { BroadcastChannel } from 'broadcast-channel'
 import { mapActions } from 'vuex'
 
-import { broadcastChannelOptions } from '../../../utils/utils'
 import NewDeviceFooter from '../NewDeviceFooter'
 
 export default {
@@ -95,9 +90,9 @@ export default {
         return {}
       },
     },
-    selectedAddress: {
-      type: String,
-      default: '',
+    incorrectPassword: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -110,25 +105,16 @@ export default {
         required: (value) => !!value || this.t('tkeyNew.required'),
       },
       isConfirming: false,
+      passwordEntered: false,
     }
   },
   computed: {
-    shareInput() {
-      if (!this.tKeyStore.securityQuestionShareUserInput) return {}
-      return this.tKeyStore.securityQuestionShareUserInput
+    isDapp() {
+      return false
     },
-    urlInstance() {
-      return new URLSearchParams(window.location.search).get('instanceId')
-    },
-  },
-  watch: {
-    selectedAddress(newAddress, oldAddress) {
-      if (newAddress !== oldAddress && newAddress !== '') {
-        let redirectPath = this.$route.query.redirect
-        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
-
-        this.$router.push(redirectPath).catch((_) => {})
-      }
+    passwordError() {
+      if (!this.passwordEntered) return true
+      return this.incorrectPassword && 'Incorrect password'
     },
   },
   beforeDestroy() {
@@ -137,29 +123,14 @@ export default {
   methods: {
     ...mapActions(['setSecurityQuestionShareFromUserInput']),
     onVerifyPassword() {
-      this.setPasswordInput({
-        id: this.$route.query.id,
-        password: this.verifyPassword,
-      })
+      this.passwordEntered = true
+      this.$emit('setPasswordInput', this.verifyPassword)
     },
     onSkipDeviceLogin() {
-      this.setPasswordInput({
-        id: this.$route.query.id,
-        rejected: true,
-      })
-    },
-    async setPasswordInput(details) {
-      if (this.urlInstance && this.urlInstance !== '') {
-        const bc = new BroadcastChannel(`tkey_channel_${this.urlInstance}`, broadcastChannelOptions)
-        await bc.postMessage({
-          data: {
-            eventType: 'device_login_password',
-            details,
-          },
-        })
-        bc.close()
-      } else this.$emit('setPasswordInput', details)
-      // this.setSecurityQuestionShareFromUserInput(details)
+      // this.setPasswordInput({
+      //   id: this.$route.query.id,
+      //   rejected: true,
+      // })
     },
   },
 }

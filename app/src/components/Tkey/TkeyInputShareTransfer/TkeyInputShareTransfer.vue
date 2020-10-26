@@ -8,11 +8,11 @@
             <div
               class="text-center"
               :class="$vuetify.breakpoint.xsOnly ? 'mb-7' : 'mb-4'"
-              :style="{ height: $vuetify.breakpoint.xsOnly ? '66px' : '107px' }"
+              :style="{ height: $vuetify.breakpoint.xsOnly ? '66px' : '100px' }"
             >
               <img
                 src="../../../assets/images/ob-verification-methods.svg"
-                :height="$vuetify.breakpoint.xsOnly ? '82' : ''"
+                :height="$vuetify.breakpoint.xsOnly ? '82' : '125'"
                 alt="Verification Methods"
                 class="mr-2"
               />
@@ -22,25 +22,26 @@
             <div class="text-center new-device-header">
               <template>
                 <div class="new-device-header__title">
-                  {{ t('tkeyNew.verificationMethods') }}
+                  {{ t('tkeyNew.newLoginDetected') }}
                 </div>
                 <div class="new-device-header__description">
-                  {{ t('tkeyNew.youRequireNum').replace('{num}', tKeyStore.keyDetails.threshold) }}
+                  {{ t('tkeyNew.itSeems1') }}
                 </div>
                 <div class="new-device-header__description">
-                  <span class="font-weight-bold">{{ t('tkeyNew.verifyYourIdentity') }}</span>
-                  {{ t('tkeyNew.verifyWithAny') }}:
+                  {{ t('tkeyNew.itSeems2') }}
+                  <span class="font-weight-bold">{{ t('tkeyNew.itSeems3') }}</span>
+                  {{ t('tkeyNew.itSeems4').replace('{num}', tKeyStore.keyDetails.threshold) }}:
                 </div>
               </template>
             </div>
 
             <div>
               <v-expansion-panels>
-                <v-expansion-panel v-for="device in devices" :key="device.index" class="mb-2">
+                <v-expansion-panel v-for="device in devices" :key="device.index" :disabled="verifiedWithDevice(device.index)" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2">
-                      <v-icon class="mr-1 text_2--text">$vuetify.icons.device_detailed</v-icon>
-                      <span class="text_2--text">{{ device.groupTitle }}</span>
+                      <v-icon class="mr-4 text_2--text">$vuetify.icons.device_{{ device.icon }}</v-icon>
+                      <span class="text_2--text text-capitalize">{{ t('tkeyNew.device') }} - {{ device.icon }}</span>
                     </div>
                     <v-icon
                       v-if="verifiedWithDevice(device.index)"
@@ -48,7 +49,7 @@
                       class="d-inline-flex ml-auto success--text shrink"
                       v-text="'$vuetify.icons.check_circle_filled'"
                     />
-                    <v-icon small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
+                    <v-icon v-else small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
                   </v-expansion-panel-header>
                   <v-expansion-panel-content class="pa-5">
                     <div class="body-2 text_2--text mb-4">
@@ -69,7 +70,7 @@
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2">
                       <v-icon
-                        class="mr-1"
+                        class="mr-3"
                         :class="
                           $vuetify.theme.dark
                             ? recoveryPasswordSucess
@@ -123,7 +124,7 @@
                           class="caption white--text font-weight-bold px-10"
                           color="torusBrand1"
                         >
-                          Confirm
+                          {{ t('tkeyNew.confirm') }}
                         </v-btn>
                       </div>
                     </v-form>
