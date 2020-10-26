@@ -52,6 +52,7 @@ export default {
         address: selectedAddress,
         email: state.userInfo.email || undefined,
         return_url: `${config.redirect_uri}?state=${instanceState}`,
+        merchant_transaction_id: randomId(),
       }
 
       const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(parameters)))
