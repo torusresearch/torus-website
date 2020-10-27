@@ -1,11 +1,6 @@
 <template>
   <div class="tkey-input-form">
-    <!-- <TkeyInputPassword
-      v-if="securityQuestions.show && !securityQuestions.finished"
-      :incorrect-password="incorrectPassword"
-      @setPasswordInput="enterPassword"
-    /> -->
-    <TkeyInputShareTransfer
+    <TkeyInputView
       v-if="!userInputCompleted"
       :security-questions="securityQuestions"
       :incorrect-password="incorrectPassword"
@@ -25,11 +20,11 @@ import createTKeyInstance from '../../../handlers/Tkey/TkeyFactory'
 import { calculateSettingsPageData } from '../../../handlers/Tkey/TkeyUtils'
 import { SECURITY_QUESTIONS_MODULE_KEY } from '../../../utils/enums'
 import TkeyDeviceDetected from '../TkeyDeviceDetected'
-import TkeyInputShareTransfer from '../TkeyInputShareTransfer'
+import TkeyInputView from '../TkeyInputView'
 
 export default {
   name: 'TkeyInputForm',
-  components: { TkeyInputShareTransfer, TkeyDeviceDetected },
+  components: { TkeyInputView, TkeyDeviceDetected },
   props: {
     tKeyJson: {
       type: Object,

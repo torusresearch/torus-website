@@ -30,13 +30,41 @@
                 <div class="new-device-header__description">
                   {{ t('tkeyNew.itSeems2') }}
                   <span class="font-weight-bold">{{ t('tkeyNew.itSeems3') }}</span>
-                  {{ t('tkeyNew.itSeems4').replace('{num}', requiredShares) }}:
+                  {{ t('tkeyNew.itSeems4').replace('{num}', threshold) }}:
                 </div>
               </template>
             </div>
 
             <div>
               <v-expansion-panels :value="panels" multiple>
+                <v-expansion-panel v-for="device in devices" :key="device.index" :disabled="verifiedWithDevice(device.index)" class="mb-2">
+                  <v-expansion-panel-header class="py-2">
+                    <div class="grow font-weight-bold body-2">
+                      <v-icon class="mr-4 text_2--text">$vuetify.icons.device_{{ device.icon }}</v-icon>
+                      <span class="text_2--text text-capitalize">{{ t('tkeyNew.device') }} - {{ device.icon }}</span>
+                    </div>
+                    <v-icon
+                      v-if="verifiedWithDevice(device.index)"
+                      small
+                      class="d-inline-flex ml-auto success--text shrink"
+                      v-text="'$vuetify.icons.check_circle_filled'"
+                    />
+                    <v-icon v-else small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content class="pa-5">
+                    <div class="body-2 text_2--text mb-4">
+                      {{ t('tkeyNew.loginToTorus') }}
+                    </div>
+
+                    <div v-for="browser in device.browsers" :key="browser.dateAdded" class="d-flex info-box py-3 px-6 mb-2 align-center">
+                      <div class="grow text_2--text font-weight-bold body-2">
+                        <v-icon class="mr-1">$vuetify.icons.browser</v-icon>
+                        {{ browser.title }}
+                      </div>
+                      <div class="ml-auto text-right text_2--text caption">{{ t('tkeyNew.refId') }}: {{ browser.dateAdded }}</div>
+                    </div>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
                 <!-- If user has password setup -->
                 <v-expansion-panel v-if="securityQuestions.show" class="mb-2">
                   <v-expansion-panel-header class="py-2">
@@ -87,7 +115,6 @@
                         outlined
                         :readonly="securityQuestions.finished"
                         :placeholder="t('tkeyNew.enterPassword')"
-                        autocomplete="password"
                         @click:append="showVerifyPassword = !showVerifyPassword"
                         @keydown="passwordEntered = false"
                       />
@@ -104,38 +131,8 @@
                     </v-form>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
-                <v-expansion-panel v-for="device in devices" :key="device.index" :disabled="verifiedWithDevice(device.index)" class="mb-2">
-                  <v-expansion-panel-header class="py-2">
-                    <div class="grow font-weight-bold body-2">
-                      <v-icon class="mr-4 text_2--text">$vuetify.icons.device_{{ device.icon }}</v-icon>
-                      <span class="text_2--text text-capitalize">{{ t('tkeyNew.device') }} - {{ device.icon }}</span>
-                    </div>
-                    <v-icon
-                      v-if="verifiedWithDevice(device.index)"
-                      small
-                      class="d-inline-flex ml-auto success--text shrink"
-                      v-text="'$vuetify.icons.check_circle_filled'"
-                    />
-                    <v-icon v-else small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
-                  </v-expansion-panel-header>
-                  <v-expansion-panel-content class="pa-5">
-                    <div class="body-2 text_2--text mb-4">
-                      {{ t('tkeyNew.loginToTorus') }}
-                    </div>
-
-                    <div v-for="browser in device.browsers" :key="browser.dateAdded" class="d-flex info-box py-3 px-6 mb-2 align-center">
-                      <div class="grow text_2--text font-weight-bold body-2">
-                        <v-icon class="mr-1">$vuetify.icons.browser</v-icon>
-                        {{ browser.title }}
-                      </div>
-                      <div class="ml-auto text-right text_2--text caption">{{ t('tkeyNew.refId') }}: {{ browser.dateAdded }}</div>
-                    </div>
-                  </v-expansion-panel-content>
-                </v-expansion-panel>
               </v-expansion-panels>
-              <div class="text-right">
-                <a class="caption text_2--text" @click="skipLogin">{{ t('tkeyNew.skip') }}</a>
-              </div>
+              <div class="caption text-right text_2--text">{{ t('tkeyNew.skip') }}</div>
             </div>
             <NewDeviceFooter />
           </div>
@@ -158,7 +155,7 @@ export default {
         return {}
       },
     },
-    requiredShares: {
+    threshold: {
       type: Number,
       default: 0,
     },
@@ -198,8 +195,8 @@ export default {
         .sort((a, b) => b.dateAdded - a.dateAdded)
     },
     passwordError() {
-      if (!this.passwordEntered || !this.incorrectPassword) return true
-      return this.t('tkeyNew.errorIncorrectPass')
+      if (!this.passwordEntered) return true
+      return this.incorrectPassword && 'Incorrect password'
     },
     panels() {
       const panels = []
@@ -209,19 +206,16 @@ export default {
   },
   methods: {
     onVerifyPassword() {
-      this.$emit('setPasswordInput', this.verifyPassword)
       this.passwordEntered = true
+      this.$emit('setPasswordInput', this.verifyPassword)
     },
     verifiedWithDevice() {
       return false
-    },
-    skipLogin() {
-      this.$emit('skipLogin', { rejected: true })
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-@import 'TkeyInputShareTransfer.scss';
+@import 'TkeyInputView.scss';
 </style>
