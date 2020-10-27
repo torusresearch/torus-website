@@ -12,7 +12,7 @@
   .new-device-header {
     margin-bottom: 24px;
     &__title {
-      color: var(--v-text_1-base);
+      color: var(--v-torusFont1-base);
       font-weight: bold;
       font-size: 24px;
       line-height: 28px;
@@ -41,16 +41,13 @@
 
     .new-device-header {
       &__title {
-        color: var(--v-torusFont1-base);
-      }
-      &__description {
-        color: var(--v-torusFont1-base);
+        color: var(--v-torusFont2-base);
       }
     }
 
     .info-box {
-      background: #3c3e45;
-      border: 0.5px solid #a2a5b5;
+      background: var(--v-torusBlack-base);
+      border: 0;
       color: var(--v-text_2-base);
       .v-icon {
         color: var(--v-text_2-base);
@@ -58,8 +55,11 @@
     }
     
     ::v-deep .v-input.v-text-field--outlined > .v-input__control > .v-input__slot {
-      background: #3c3e45;
-      border-radius: 3px;
+      background: #28292E;
+      border-radius: 6px;
+      fieldset {
+        border: 0;
+      }
       .v-select__selection--comma {
         color: var(--v-text_2-base) !important;
       }
@@ -68,6 +68,12 @@
         line-height: 18px;
       }
     }
+  }
+
+  &.isDapp {
+    background: transparent;
+    border-bottom: 0;
+    box-shadow: none;
   }
 }
 

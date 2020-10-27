@@ -181,9 +181,7 @@ export default class TorusController extends EventEmitter {
     })
 
     this.thresholdKeyController = new ThresholdKeyController({
-      requestSecurityQuestionInput: this.opts.requestSecurityQuestionInput.bind(this.thresholdKeyController),
-      showStoreDeviceFlow: this.opts.showStoreDeviceFlow.bind(this.thresholdKeyController),
-      requestShareTransferInput: this.opts.requestShareTransferInput.bind(this.thresholdKeyController),
+      requestTkeyInput: this.opts.requestTkeyInput.bind(this.thresholdKeyController),
     })
 
     this.networkController.lookupNetwork()

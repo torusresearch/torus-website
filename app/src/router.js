@@ -2,11 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import TkeyCreate from './containers/TkeyCreate'
-import TkeyDeviceDetected from './containers/TkeyDeviceDetected'
-import TkeyInputDevice from './containers/TkeyInputDevice'
-import TkeyInputPassword from './containers/TkeyInputPassword'
-// import TkeyInputShareTransfer from './containers/TkeyInputShareTransfer'
-import TkeyNewDevice from './containers/TkeyNewDevice'
+import TKeyDappInput from './containers/TKeyDappInput'
+import TKeyInput from './containers/TKeyInput'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
@@ -20,13 +17,6 @@ import {
   WalletTopupXanpool,
 } from './containers/WalletTopup'
 import WalletTransfer from './containers/WalletTransfer'
-import {
-  TKEY_INPUT_PASSWORD_ROUTE,
-  TKEY_INPUT_PASSWORD_ROUTE_PATH,
-  // TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
-  TKEY_STORE_DEVICE_ROUTE,
-  TKEY_STORE_DEVICE_ROUTE_PATH,
-} from './utils/enums'
 import Confirm from './views/Confirm'
 import Login from './views/Login'
 import Popup from './views/Popup'
@@ -177,41 +167,17 @@ const router = new Router({
               },
             },
             {
-              path: TKEY_STORE_DEVICE_ROUTE_PATH,
-              name: TKEY_STORE_DEVICE_ROUTE,
-              component: TkeyDeviceDetected,
+              path: 'dapp-input',
+              name: 'tkeyDappInput',
+              component: TKeyDappInput,
               meta: {
                 requiresAuth: false,
               },
             },
             {
-              path: TKEY_INPUT_PASSWORD_ROUTE_PATH,
-              name: TKEY_INPUT_PASSWORD_ROUTE,
-              component: TkeyInputPassword,
-              meta: {
-                requiresAuth: false,
-              },
-            },
-            // {
-            //   path: TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
-            //   name: TKEY_INPUT_SHARE_TRANSFER_ROUTE_PATH,
-            //   component: TkeyInputShareTransfer,
-            //   meta: {
-            //     requiresAuth: false,
-            //   },
-            // },
-            {
-              path: 'input-device',
-              name: 'tkeyInputDevice',
-              component: TkeyInputDevice,
-              meta: {
-                requiresAuth: false,
-              },
-            },
-            {
-              path: 'new-device',
-              name: 'tkeyNewDevice',
-              component: TkeyNewDevice,
+              path: 'input',
+              name: 'tKeyInput',
+              component: TKeyInput,
               meta: {
                 requiresAuth: false,
               },

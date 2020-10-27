@@ -8,9 +8,14 @@
             <div
               class="text-center"
               :class="$vuetify.breakpoint.xsOnly ? 'mb-7' : 'mb-6'"
-              :style="{ height: $vuetify.breakpoint.xsOnly ? '66px' : '111px' }"
+              :style="{ height: $vuetify.breakpoint.xsOnly ? '66px' : '100px' }"
             >
-              <img src="../../assets/images/ob-verification-done.svg" alt="Verified" class="mr-2" :height="$vuetify.breakpoint.xsOnly ? '82' : ''" />
+              <img
+                src="../../../assets/images/ob-verification-done.svg"
+                alt="Verified"
+                class="mr-2"
+                :height="$vuetify.breakpoint.xsOnly ? '82' : '125'"
+              />
             </div>
 
             <!-- TITLE -->
@@ -119,14 +124,19 @@
 
 <script>
 import bowser from 'bowser'
-import { BroadcastChannel } from 'broadcast-channel'
-import { mapActions, mapState } from 'vuex'
 
-import NewDeviceFooter from '../../components/Tkey/NewDeviceFooter'
-import { broadcastChannelOptions } from '../../utils/utils'
+import NewDeviceFooter from '../NewDeviceFooter'
 
 export default {
   components: { NewDeviceFooter },
+  props: {
+    allDeviceShares: {
+      type: Object,
+      default() {
+        return {}
+      },
+    },
+  },
   data() {
     return {
       activeTab: 0,
@@ -135,13 +145,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['tKeyStore', 'selectedAddress']),
     devices() {
-      if (!this.tKeyStore.settingsPageData) return []
-      const { allDeviceShares } = this.tKeyStore.settingsPageData
-      return Object.keys(allDeviceShares)
+      return Object.keys(this.allDeviceShares)
         .map((x) => {
-          const share = allDeviceShares[x]
+          const share = this.allDeviceShares[x]
           const dateFormated = new Date(share.dateAdded).toLocaleString()
           share.browserList = share.browsers.map((browser) => browser.browserName).join(', ')
           share.dateFormated = dateFormated
@@ -156,16 +163,6 @@ export default {
       return this.devices.find((x) => x.index === this.selectedDevice) || {}
     },
   },
-  watch: {
-    selectedAddress(newAddress, oldAddress) {
-      if (newAddress !== oldAddress && newAddress !== '') {
-        let redirectPath = this.$route.query.redirect
-        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
-
-        this.$router.push(redirectPath).catch((_) => {})
-      }
-    },
-  },
   beforeDestroy() {
     this.isConfirming = false
   },
@@ -173,31 +170,19 @@ export default {
     this.selectedDevice = this.devices[0].index
   },
   methods: {
-    ...mapActions(['setStoreDeviceFlow']),
     selectBrowser(index) {
       this.selectedDevice = index
     },
     confirm() {
-      this.triggerSetDeviceFlow({ id: this.$route.query.id, response: { isOld: !!this.activeTab, oldIndex: this.selectedDevice } })
+      this.triggerSetDeviceFlow({ isOld: !!this.activeTab, oldIndex: this.selectedDevice })
     },
     doNotSaveDevice() {
-      this.triggerSetDeviceFlow({ id: this.$route.query.id, rejected: true })
+      this.triggerSetDeviceFlow({ rejected: true })
     },
     async triggerSetDeviceFlow(details) {
       if (this.isConfirming) return
       this.isConfirming = true
-
-      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
-      if (urlInstance && urlInstance !== '') {
-        const bc = new BroadcastChannel(`tkey_channel_${urlInstance}`, broadcastChannelOptions)
-        await bc.postMessage({
-          data: {
-            eventType: 'set_store_device_flow',
-            details,
-          },
-        })
-        bc.close()
-      } else this.setStoreDeviceFlow(details)
+      this.$emit('storeDevice', details)
     },
   },
 }

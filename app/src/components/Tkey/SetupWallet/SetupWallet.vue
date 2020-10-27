@@ -27,7 +27,7 @@
         <v-expansion-panel class="mb-4" disabled>
           <v-expansion-panel-header class="py-2">
             <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.{{ userInfo.typeOfLogin.toLowerCase() }}</v-icon>
-            <div class="grow text-capitalize font-weight-bold body-2 text_2--text" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+            <div class="grow text-capitalize font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
               {{ userInfo.typeOfLogin }} Login
             </div>
             <div class="ml-auto justify-end d-flex align-center">

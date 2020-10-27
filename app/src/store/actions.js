@@ -464,26 +464,26 @@ export default {
       // }
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
+      const walletKeys = Object.keys(wallet)
+      dispatch('subscribeToControllers')
+      await dispatch('initTorusKeyring', {
+        keys: walletKeys.map((x) => {
+          const { privateKey, accountType } = wallet[x]
+          return {
+            ethAddress: x,
+            privKey: privateKey,
+            accountType,
+            jwtToken: jwtToken[x],
+          }
+        }),
+        calledFromEmbed: false,
+        rehydrate: true,
+      })
+      if (Object.keys(tKeyStore).length > 0) {
+        const postboxWallet = walletKeys.find((x) => wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
+        if (postboxWallet) await thresholdKeyController.rehydrate(wallet[postboxWallet]?.privateKey, tKeyStore.tKey)
+      }
       if (selectedAddress && wallet[selectedAddress]) {
-        const walletKeys = Object.keys(wallet)
-        dispatch('subscribeToControllers')
-        await dispatch('initTorusKeyring', {
-          keys: walletKeys.map((x) => {
-            const { privateKey, accountType } = wallet[x]
-            return {
-              ethAddress: x,
-              privKey: privateKey,
-              accountType,
-              jwtToken: jwtToken[x],
-            }
-          }),
-          calledFromEmbed: false,
-          rehydrate: true,
-        })
-        if (Object.keys(tKeyStore).length > 0) {
-          const postboxWallet = walletKeys.find((x) => wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-          await thresholdKeyController.rehydrate(wallet[postboxWallet]?.privateKey, tKeyStore.tKey)
-        }
         dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
