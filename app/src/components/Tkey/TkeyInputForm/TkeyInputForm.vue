@@ -1,16 +1,19 @@
 <template>
   <div class="tkey-input-form">
-    <TkeyInputPassword
+    <!-- <TkeyInputPassword
       v-if="securityQuestions.show && !securityQuestions.finished"
       :incorrect-password="incorrectPassword"
       @setPasswordInput="enterPassword"
-    />
-    <TkeyInputShareTransfer v-if="shareTransfer.show && !shareTransfer.finished" />
-    <TkeyDeviceDetected
-      v-if="!securityQuestions.show && !shareTransfer.show"
+    /> -->
+    <TkeyInputShareTransfer
+      v-if="shareTransfer.show && !shareTransfer.finished"
+      :security-questions="securityQuestions"
+      :incorrect-password="incorrectPassword"
+      :threshold="settingsData && settingsData.keyDetails.threshold"
       :all-device-shares="settingsData && settingsData.allDeviceShares"
-      @setStoreDeviceFlow="setInput"
+      @setPasswordInput="enterPassword"
     />
+    <TkeyDeviceDetected v-if="userInputCompleted" :all-device-shares="settingsData && settingsData.allDeviceShares" @setStoreDeviceFlow="setInput" />
   </div>
 </template>
 
@@ -21,12 +24,11 @@ import createTKeyInstance from '../../../handlers/Tkey/TkeyFactory'
 import { calculateSettingsPageData } from '../../../handlers/Tkey/TkeyUtils'
 import { SECURITY_QUESTIONS_MODULE_KEY } from '../../../utils/enums'
 import TkeyDeviceDetected from '../TkeyDeviceDetected'
-import TkeyInputPassword from '../TkeyInputPassword'
 import TkeyInputShareTransfer from '../TkeyInputShareTransfer'
 
 export default {
   name: 'TkeyInputForm',
-  components: { TkeyInputPassword, TkeyInputShareTransfer, TkeyDeviceDetected },
+  components: { TkeyInputShareTransfer, TkeyDeviceDetected },
   props: {
     tKeyJson: {
       type: Object,
@@ -52,6 +54,7 @@ export default {
         finished: false,
       },
       incorrectPassword: false,
+      userInputCompleted: false,
     }
   },
   async mounted() {
@@ -98,6 +101,7 @@ export default {
       if (requiredShares === 0) {
         this.securityQuestions.show = false
         this.shareTransfer.show = false
+        this.userInputCompleted = true
         // finish fn
       }
     },

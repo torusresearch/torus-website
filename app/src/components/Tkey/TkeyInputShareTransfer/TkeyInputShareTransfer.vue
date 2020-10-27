@@ -30,13 +30,13 @@
                 <div class="new-device-header__description">
                   {{ t('tkeyNew.itSeems2') }}
                   <span class="font-weight-bold">{{ t('tkeyNew.itSeems3') }}</span>
-                  {{ t('tkeyNew.itSeems4').replace('{num}', tKeyStore.keyDetails.threshold) }}:
+                  {{ t('tkeyNew.itSeems4').replace('{num}', threshold) }}:
                 </div>
               </template>
             </div>
 
             <div>
-              <v-expansion-panels>
+              <v-expansion-panels :value="panels" multiple>
                 <v-expansion-panel v-for="device in devices" :key="device.index" :disabled="verifiedWithDevice(device.index)" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2">
@@ -66,17 +66,17 @@
                   </v-expansion-panel-content>
                 </v-expansion-panel>
                 <!-- If user has password setup -->
-                <v-expansion-panel v-if="hasPasswordSetUp" class="mb-2">
+                <v-expansion-panel v-if="securityQuestions.show" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2">
                       <v-icon
                         class="mr-3"
                         :class="
                           $vuetify.theme.dark
-                            ? recoveryPasswordSucess
+                            ? securityQuestions.finished
                               ? 'text_2--text'
                               : 'torusFont1--text'
-                            : recoveryPasswordSucess
+                            : securityQuestions.finished
                             ? 'text_2--text'
                             : 'text_1--text'
                         "
@@ -86,10 +86,10 @@
                       <span
                         :class="
                           $vuetify.theme.dark
-                            ? recoveryPasswordSucess
+                            ? securityQuestions.finished
                               ? 'text_2--text'
                               : 'torusFont1--text'
-                            : recoveryPasswordSucess
+                            : securityQuestions.finished
                             ? 'text_2--text'
                             : 'text_1--text'
                         "
@@ -98,7 +98,7 @@
                       </span>
                     </div>
                     <v-icon
-                      v-if="recoveryPasswordSucess"
+                      v-if="securityQuestions.finished"
                       small
                       class="d-inline-flex ml-auto success--text shrink"
                       v-text="'$vuetify.icons.check_circle_filled'"
@@ -111,13 +111,14 @@
                         v-model="verifyPassword"
                         :append-icon="showVerifyPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                         :type="showVerifyPassword ? 'text' : 'password'"
-                        :rules="[rules.required]"
+                        :rules="[rules.required, passwordError]"
                         outlined
-                        :readonly="recoveryPasswordSucess"
+                        :readonly="securityQuestions.finished"
                         :placeholder="t('tkeyNew.enterPassword')"
                         @click:append="showVerifyPassword = !showVerifyPassword"
+                        @keydown="passwordEntered = false"
                       />
-                      <div v-if="!recoveryPasswordSucess" class="text-right">
+                      <div v-if="!securityQuestions.finished" class="text-right">
                         <v-btn
                           type="submit"
                           :disabled="!validVerifyPasswordForm"
@@ -142,177 +143,39 @@
 </template>
 
 <script>
-/* eslint-disable max-len */
-// import { mapState } from 'vuex'
-
 import { passwordValidation } from '../../../utils/utils'
 import NewDeviceFooter from '../NewDeviceFooter'
 
-// FOR TESTING
-const TKEY_STORE = {
-  tKey: {
-    shares: {
-      '034505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c|039381067019534cc7a69f117cae7afbf559845299242a3148ef7f99422c87259b': {
-        1: {
-          share: { share: 'a052ec69d4e3c9153372013fd59035bc2d620700749a2253d6f54854680871f4', shareIndex: '1' },
-          polynomialID:
-            '034505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c|039381067019534cc7a69f117cae7afbf559845299242a3148ef7f99422c87259b',
-        },
-        b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2: {
-          share: {
-            share: '9a307fe9153cc8cfe484d31a6a8150dd481183879c9cd3b9719444c951945234',
-            shareIndex: 'b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2',
-          },
-          polynomialID:
-            '034505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c|039381067019534cc7a69f117cae7afbf559845299242a3148ef7f99422c87259b',
-        },
-      },
-      '034505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c|0304111756a3198bd8654fd45786af96630c98eb9f6d2c81536438e102074ccff0': {
-        1: {
-          share: { share: 'cd9218832d59ed46760fc5beef9f5014e5d3a8734d5b19f3ee3a57367f9d9cac', shareIndex: '1' },
-          polynomialID:
-            '034505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c|0304111756a3198bd8654fd45786af96630c98eb9f6d2c81536438e102074ccff0',
-        },
-        b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2: {
-          share: {
-            share: '486455175643d8b39a131e7c4244aced70ad607a23f34a5897f2ed3e522c4bea',
-            shareIndex: 'b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2',
-          },
-          polynomialID:
-            '034505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c|0304111756a3198bd8654fd45786af96630c98eb9f6d2c81536438e102074ccff0',
-        },
-        '7f824fa4e20d310224b67727e6eb2a5e14048ccdc4c012e2be53d1cdb4be4154': {
-          share: {
-            share: 'c06685cec3d9afbc2aece726ee232d348e33c86c1e074132e826b8a52455085b',
-            shareIndex: '7f824fa4e20d310224b67727e6eb2a5e14048ccdc4c012e2be53d1cdb4be4154',
-          },
-          polynomialID:
-            '034505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c|0304111756a3198bd8654fd45786af96630c98eb9f6d2c81536438e102074ccff0',
-        },
-      },
-    },
-    enableLogging: false,
-    privKey: '1fb557390c17669af1f5ea0590b9a22d6db8962b6ce04c793fa06cb1373d51bf',
-    metadata: {
-      pubKey: '034505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c',
-      polyIDList: [
-        '034505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c|039381067019534cc7a69f117cae7afbf559845299242a3148ef7f99422c87259b|0x0|1|b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2',
-        '034505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c|0304111756a3198bd8654fd45786af96630c98eb9f6d2c81536438e102074ccff0|0x0|1|7f824fa4e20d310224b67727e6eb2a5e14048ccdc4c012e2be53d1cdb4be4154|b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2',
-      ],
-      scopedStore: {},
-      generalStore: {
-        securityQuestions: {
-          nonce: '53c28c281f53d089d4b847cc2910bfeaad6b56d2b02038c573b951092cea203d',
-          polynomialID:
-            '034505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c|0304111756a3198bd8654fd45786af96630c98eb9f6d2c81536438e102074ccff0',
-          questions: 'what is your password?',
-          shareIndex: '7f824fa4e20d310224b67727e6eb2a5e14048ccdc4c012e2be53d1cdb4be4154',
-          sqPublicShare: {
-            shareCommitment: {
-              x: '1dba0b39c0eea77670a2723e3e7f95ce6d0abb3e9d282234dbb52920e2f213fd',
-              y: '6879e7a01d0766fbd7dec8a972d00a76e98fafd69ed349e32c90ecc0c6182718',
-            },
-            shareIndex: '7f824fa4e20d310224b67727e6eb2a5e14048ccdc4c012e2be53d1cdb4be4154',
-          },
-        },
-        shareDescriptions: {
-          '7f824fa4e20d310224b67727e6eb2a5e14048ccdc4c012e2be53d1cdb4be4154': [
-            '{"module":"securityQuestions","questions":"what is your password?","dateAdded":1601888928747}',
-          ],
-          b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2: [
-            '{"module":"webStorage","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36","dateAdded":1601888926595}',
-          ],
-        },
-      },
-      tkeyStore: {},
-    },
-  },
-  settingsPageData: {
-    deviceShare: {
-      available: true,
-      share: {
-        share: {
-          share: '9a307fe9153cc8cfe484d31a6a8150dd481183879c9cd3b9719444c951945234',
-          shareIndex: 'b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2',
-        },
-        polynomialID:
-          '034505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c|039381067019534cc7a69f117cae7afbf559845299242a3148ef7f99422c87259b',
-      },
-    },
-    allDeviceShares: {
-      b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2: {
-        index: 'b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2',
-        osName: 'macOS (b2606)',
-        icon: 'desktop',
-        groupTitle: 'Web Storage - macOS Chrome',
-        dateAdded: 1601888926595,
-        browsers: [
-          {
-            module: 'webStorage',
-            userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36',
-            dateAdded: 1601888926595,
-            shareIndex: 'b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2',
-            title: 'Chrome 10/5/2020, 5:08:46 PM',
-            browserName: 'Chrome',
-          },
-        ],
-      },
-    },
-    passwordShare: { available: true },
-    threshold: '2/3',
-  },
-  parsedShareDescriptions: [
-    {
-      module: 'webStorage',
-      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36',
-      dateAdded: 1601888926595,
-      shareIndex: 'b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2',
-      title: 'Chrome 10/5/2020, 5:08:46 PM',
-      browserName: 'Chrome',
-    },
-    {
-      module: 'securityQuestions',
-      questions: 'what is your password?',
-      dateAdded: 1601888928747,
-      shareIndex: '7f824fa4e20d310224b67727e6eb2a5e14048ccdc4c012e2be53d1cdb4be4154',
-    },
-  ],
-  keyDetails: {
-    pubKey: {
-      x: '4505b3e2e18779f9e870aa5fd0cbc19dbad6016d49a406a72bf9e8f2664dd92c',
-      y: '63f0537e07be6fd652a8f84f7f7442eab0e8923ced7950462f023d12bcd11b5f',
-    },
-    requiredShares: -1,
-    threshold: 2,
-    totalShares: 3,
-    shareDescriptions: {
-      '7f824fa4e20d310224b67727e6eb2a5e14048ccdc4c012e2be53d1cdb4be4154': [
-        '{"module":"securityQuestions","questions":"what is your password?","dateAdded":1601888928747}',
-      ],
-      b26065242571c9d5816ef0c10916a766cb935c9b3b1e5384872859142f59cdb2: [
-        '{"module":"webStorage","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36","dateAdded":1601888926595}',
-      ],
-    },
-    modules: {
-      securityQuestions: { moduleName: 'securityQuestions', tbSDK: { storageLayer: { enableLogging: false, hostUrl: 'https://metadata.tor.us' } } },
-      webStorage: {
-        moduleName: 'webStorage',
-        canUseChromeStorage: true,
-        tbSDK: { storageLayer: { enableLogging: false, hostUrl: 'https://metadata.tor.us' } },
-      },
-    },
-  },
-}
-
 export default {
   components: { NewDeviceFooter },
+  props: {
+    allDeviceShares: {
+      type: Object,
+      default() {
+        return {}
+      },
+    },
+    threshold: {
+      type: Number,
+      default: 0,
+    },
+    securityQuestions: {
+      type: Object,
+      default() {
+        return {}
+      },
+    },
+    incorrectPassword: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
-      tKeyStore: TKEY_STORE,
       validVerifyPasswordForm: true,
       verifyPassword: '',
       showVerifyPassword: false,
-      recoveryPasswordSucess: false,
+      passwordEntered: false,
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
         minLength: (v) => passwordValidation(v) || this.t('tkeyCreateSetup.passwordRules'),
@@ -320,13 +183,10 @@ export default {
     }
   },
   computed: {
-    // ...mapState(['tKeyStore']),
     devices() {
-      if (!this.tKeyStore.settingsPageData) return []
-      const { allDeviceShares } = this.tKeyStore.settingsPageData
-      return Object.keys(allDeviceShares)
+      return Object.keys(this.allDeviceShares)
         .map((x) => {
-          const share = allDeviceShares[x]
+          const share = this.allDeviceShares[x]
           const dateFormated = new Date(share.dateAdded).toLocaleString()
           share.browserList = share.browsers.map((browser) => browser.browserName).join(', ')
           share.dateFormated = dateFormated
@@ -334,15 +194,20 @@ export default {
         })
         .sort((a, b) => b.dateAdded - a.dateAdded)
     },
-    hasPasswordSetUp() {
-      // Check if user has a password
-      return true
+    passwordError() {
+      if (!this.passwordEntered) return true
+      return this.incorrectPassword && 'Incorrect password'
+    },
+    panels() {
+      const panels = []
+      for (let i = 0; i < this.devices.length + 1; i += 1) panels.push(i)
+      return panels
     },
   },
   methods: {
     onVerifyPassword() {
-      // verify password
-      this.recoveryPasswordSucess = true
+      this.passwordEntered = true
+      this.$emit('setPasswordInput', this.verifyPassword)
     },
     verifiedWithDevice() {
       return false
