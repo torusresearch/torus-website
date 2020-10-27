@@ -18,7 +18,7 @@ import log from 'loglevel'
 
 import createTKeyInstance from '../../../handlers/Tkey/TkeyFactory'
 import { calculateSettingsPageData } from '../../../handlers/Tkey/TkeyUtils'
-import { SECURITY_QUESTIONS_MODULE_KEY, WEB_STORAGE_MODULE_KEY } from '../../../utils/enums'
+import { SECURITY_QUESTIONS_MODULE_KEY, SHARE_TRANSFER_MODULE_KEY, WEB_STORAGE_MODULE_KEY } from '../../../utils/enums'
 import TkeyDeviceDetected from '../TkeyDeviceDetected'
 import TkeyInputView from '../TkeyInputView'
 
@@ -45,10 +45,7 @@ export default {
         show: false,
         finished: false,
       },
-      shareTransfer: {
-        show: false,
-        finished: false,
-      },
+      shareTransfer: {},
       incorrectPassword: false,
       userInputCompleted: false,
     }
@@ -75,15 +72,50 @@ export default {
           if (element.module === SECURITY_QUESTIONS_MODULE_KEY) {
             this.securityQuestions.show = true
           } else {
-            this.shareTransfer.show = true
+            this.shareTransfer[element.shareIndex] = {
+              show: true,
+              finished: false,
+            }
           }
+        }
+        // check for ondevice share and set it to true
+        const { onDeviceShare } = this.settingsData
+        if (onDeviceShare?.share?.share?.shareIndex) {
+          this.shareTransfer[onDeviceShare.share.share.shareIndex].finished = true
+        }
+        if (Object.keys(this.shareTransfer).length > 0) {
+          // start share transfer listener
+          this.listenForShareTransfer()
         }
       }
     },
-    setInput(details) {
+    listenForShareTransfer() {
+      this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].setRequestStatusCheckInterval(3000)
+      this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].requestNewShare(
+        window.navigator.userAgent,
+        this.tKey.getCurrentShareIndexes(),
+        async (shareStore) => {
+          log.info(shareStore, 'received transferred Share')
+          if (this.shareTransfer[shareStore.share.shareIndex]) {
+            this.shareTransfer[shareStore.share.shareIndex].finished = true
+          }
+          await this.tryFinish()
+          const {
+            keyDetails: { requiredShares },
+          } = this.settingsData
+
+          if (requiredShares > 0 && Object.keys(this.shareTransfer).some((x) => this.shareTransfer[x].finished === false)) {
+            this.listenForShareTransfer()
+          }
+        }
+      )
+    },
+    async setInput(details) {
       const { rejected } = details
-      if (rejected) this.$emit('triggerDeny')
-      else this.$emit('triggerSign', details)
+      if (rejected) {
+        await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].cancelRequestStatusCheck()
+        this.$emit('triggerDeny')
+      } else this.$emit('triggerSign', details)
     },
     async enterPassword(password) {
       this.incorrectPassword = false
@@ -112,7 +144,7 @@ export default {
       } catch (error) {
         log.error(error)
       } finally {
-        this.setInput({ response: this.tKey })
+        await this.setInput({ response: this.tKey })
       }
 
       // call trigger success
@@ -125,6 +157,7 @@ export default {
 
       if (requiredShares === 0) {
         this.userInputCompleted = true
+        await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].cancelRequestStatusCheck()
         // finish fn
       }
     },
