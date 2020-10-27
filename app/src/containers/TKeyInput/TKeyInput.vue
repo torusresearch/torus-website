@@ -17,10 +17,18 @@ export default {
     ...mapState({
       tKeyJson: (state) => state.tKeyStore.tKey,
       wallet: 'wallet',
+      selectedAddress: 'selectedAddress',
     }),
     postboxKey() {
       const postboxWallet = Object.keys(this.wallet).find((x) => this.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
       return this.wallet[postboxWallet]?.privateKey
+    },
+  },
+  watch: {
+    selectedAddress(newValue, oldValue) {
+      if (newValue && newValue !== oldValue) {
+        this.$router.push({ name: 'walletHome' }).catch(() => {})
+      }
     },
   },
   methods: {

@@ -6,14 +6,15 @@
       @setPasswordInput="enterPassword"
     /> -->
     <TkeyInputShareTransfer
-      v-if="shareTransfer.show && !shareTransfer.finished"
+      v-if="!userInputCompleted"
       :security-questions="securityQuestions"
       :incorrect-password="incorrectPassword"
-      :threshold="settingsData && settingsData.keyDetails.threshold"
+      :required-shares="settingsData && settingsData.keyDetails && settingsData.keyDetails.requiredShares"
       :all-device-shares="settingsData && settingsData.allDeviceShares"
       @setPasswordInput="enterPassword"
+      @skipLogin="setInput"
     />
-    <TkeyDeviceDetected v-if="userInputCompleted" :all-device-shares="settingsData && settingsData.allDeviceShares" @setStoreDeviceFlow="setInput" />
+    <TkeyDeviceDetected v-if="userInputCompleted" :all-device-shares="settingsData && settingsData.allDeviceShares" @storeDevice="storeDevice" />
   </div>
 </template>
 
@@ -80,8 +81,7 @@ export default {
       else this.$emit('triggerSign', details)
     },
     async enterPassword(password) {
-      // eslint-disable-next-line no-console
-      console.log('enterPassword -> password', password)
+      this.incorrectPassword = false
       try {
         await this.tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].inputShareFromSecurityQuestions(password)
         this.securityQuestions.finished = true
@@ -92,6 +92,10 @@ export default {
         this.incorrectPassword = true
       }
     },
+    async storeDevice(details) {
+      // eslint-disable-next-line no-console
+      console.log('storeDevice -> details', details)
+    },
     async tryFinish() {
       this.settingsData = await calculateSettingsPageData(this.tKey)
       const {
@@ -99,8 +103,6 @@ export default {
       } = this.settingsData
 
       if (requiredShares === 0) {
-        this.securityQuestions.show = false
-        this.shareTransfer.show = false
         this.userInputCompleted = true
         // finish fn
       }

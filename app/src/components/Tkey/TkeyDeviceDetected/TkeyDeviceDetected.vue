@@ -211,7 +211,7 @@ export default {
           },
         })
         bc.close()
-      } else this.$emit('setStoreDeviceFlow', details)
+      } else this.$emit('storeDevice', details)
       // this.setStoreDeviceFlow(details)
     },
   },

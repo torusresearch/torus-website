@@ -11,10 +11,9 @@ import {
 export function parseShares(parsedShareDescriptions) {
   return parsedShareDescriptions.reduce((acc, x) => {
     const browserInfo = bowser.parse(x.userAgent)
-    const dateFormated = new Date(x.dateAdded).toLocaleString()
 
-    x.title = `${browserInfo.browser.name} ${dateFormated}`
     x.browserName = x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? 'Chrome Extension' : `${browserInfo.browser.name}`
+    x.title = `${x.browserName}${x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? '' : ` ${`V${browserInfo.browser.version}`}`}`
 
     if (acc[x.shareIndex]) {
       acc[x.shareIndex].browsers = [...acc[x.shareIndex].browsers, x]
