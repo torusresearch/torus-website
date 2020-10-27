@@ -74,13 +74,13 @@ export default {
       }
       const handleSuccess = (successData) => {
         log.info('tkey input success', successData)
-        dispatch('setTkeyInputFlow', { response: successData })
+        dispatch('setTkeyInputFlow', { response: JSON.parse(successData) })
       }
       try {
         const postboxWallet = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
         const popupPayload = {
           whiteLabel: state.whiteLabel,
-          data,
+          data: JSON.stringify(data),
           postboxKey: state.wallet[postboxWallet]?.privateKey,
         }
         const finalUrl = `${baseRoute}wallet/tkey/dapp-input?integrity=true&instanceId=${windowId}`

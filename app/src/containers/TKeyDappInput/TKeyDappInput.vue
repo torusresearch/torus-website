@@ -28,7 +28,7 @@ export default {
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
       const { whiteLabel, data, postboxKey } = ev.data || {}
-      this.currentFormData = data
+      this.currentFormData = JSON.parse(data)
       this.postboxKey = postboxKey
       this.$store.commit('setWhiteLabel', whiteLabel)
 
@@ -40,7 +40,7 @@ export default {
     async triggerSign(data) {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({
-        data: { type: POPUP_RESULT, data, approve: true },
+        data: { type: POPUP_RESULT, data: JSON.stringify(data.response), approve: true },
       })
       bc.close()
     },

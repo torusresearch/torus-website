@@ -53,23 +53,33 @@ export default {
       userInputCompleted: false,
     }
   },
+  watch: {
+    tKeyJson(newValue, oldValue) {
+      if (newValue && newValue !== oldValue && !this.tKey) {
+        this.initTkey(newValue)
+      }
+    },
+  },
   async mounted() {
     // Create tkey instance here
-    this.tKey = await createTKeyInstance(this.postboxKey, this.tKeyJson)
-    this.settingsData = await calculateSettingsPageData(this.tKey)
-    const { keyDetails, parsedShareDescriptions } = this.settingsData
-    const { requiredShares } = keyDetails
-    if (requiredShares > 0) {
-      for (const element of parsedShareDescriptions) {
-        if (element.module === SECURITY_QUESTIONS_MODULE_KEY) {
-          this.securityQuestions.show = true
-        } else {
-          this.shareTransfer.show = true
-        }
-      }
-    }
+    if (this.tKeyJson && Object.keys(this.tKeyJson).length > 0) await this.initTkey(this.tKeyJson)
   },
   methods: {
+    async initTkey(json) {
+      this.tKey = await createTKeyInstance(this.postboxKey, json)
+      this.settingsData = await calculateSettingsPageData(this.tKey)
+      const { keyDetails, parsedShareDescriptions } = this.settingsData
+      const { requiredShares } = keyDetails
+      if (requiredShares > 0) {
+        for (const element of parsedShareDescriptions) {
+          if (element.module === SECURITY_QUESTIONS_MODULE_KEY) {
+            this.securityQuestions.show = true
+          } else {
+            this.shareTransfer.show = true
+          }
+        }
+      }
+    },
     setInput(details) {
       const { rejected } = details
       if (rejected) this.$emit('triggerDeny')
@@ -87,8 +97,6 @@ export default {
       }
     },
     async storeDevice(details) {
-      // eslint-disable-next-line no-console
-      console.log('storeDevice -> details', details)
       try {
         const { isOld, oldIndex, rejected } = details
         if (rejected) throw new Error('User rejected to store device')
