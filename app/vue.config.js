@@ -21,7 +21,7 @@ module.exports = {
         { from: /./, to: '/index.html' },
       ],
     },
-    // quiet: true,
+    // quiet: true
   },
   css: {
     extract: false,
