@@ -76,7 +76,7 @@ class ThresholdKeyController extends EventEmitter {
       // Need input from UI
       if (requiredShares > 0 && descriptionBuffer.length > 0) {
         const tkeyJsonReturned = await this.tkeyInputFlow()
-        await this.rehydrate(postboxKey, tkeyJsonReturned)
+        await this._rehydrate(postboxKey, tkeyJsonReturned)
       } else {
         await this.setSettingsPageData()
       }
@@ -227,6 +227,7 @@ class ThresholdKeyController extends EventEmitter {
 
     log.info('privKey', privKey.toString('hex', 64))
     await this.setSettingsPageData()
+    this.startShareTransferRequestListener()
     return {
       ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
       privKey: privKey.toString('hex', 64),
@@ -234,6 +235,11 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async rehydrate(postboxKey, tKeyJson) {
+    await this._rehydrate(postboxKey, tKeyJson)
+    this.startShareTransferRequestListener()
+  }
+
+  async _rehydrate(postboxKey, tKeyJson) {
     await this._init(postboxKey, tKeyJson)
     await this.setSettingsPageData()
   }
