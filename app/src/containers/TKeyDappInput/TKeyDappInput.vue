@@ -37,7 +37,7 @@ export default {
     bc.postMessage({ data: { type: POPUP_LOADED, id: instanceId } })
   },
   methods: {
-    async triggerSign({ data }) {
+    async triggerSign(data) {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({
         data: { type: POPUP_RESULT, data, approve: true },

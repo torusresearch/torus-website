@@ -95,6 +95,8 @@ class ThresholdKeyController extends EventEmitter {
       if (requiredShares > 0 && descriptionBuffer.length > 0) {
         const tkeyJsonReturned = await this.tkeyInputFlow()
         await this.rehydrate(postboxKey, tkeyJsonReturned)
+      } else {
+        await this.setSettingsPageData()
       }
 
       // while (requiredShares > 0 && descriptionBuffer.length > 0) {

@@ -27,14 +27,17 @@ export default {
   watch: {
     selectedAddress(newValue, oldValue) {
       if (newValue && newValue !== oldValue) {
-        this.$router.push({ name: 'walletHome' }).catch(() => {})
+        let redirectPath = this.$route.query.redirect
+        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
+
+        this.$router.push(redirectPath).catch((_) => {})
       }
     },
   },
   methods: {
     ...mapActions(['setTkeyInputFlow']),
     triggerSign(data) {
-      this.setTkeyInputFlow({ response: data })
+      this.setTkeyInputFlow(data)
     },
     triggerDeny() {
       this.setTkeyInputFlow({ rejected: true })

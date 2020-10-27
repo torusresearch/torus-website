@@ -18,7 +18,7 @@ import log from 'loglevel'
 
 import createTKeyInstance from '../../../handlers/Tkey/TkeyFactory'
 import { calculateSettingsPageData } from '../../../handlers/Tkey/TkeyUtils'
-import { SECURITY_QUESTIONS_MODULE_KEY } from '../../../utils/enums'
+import { SECURITY_QUESTIONS_MODULE_KEY, WEB_STORAGE_MODULE_KEY } from '../../../utils/enums'
 import TkeyDeviceDetected from '../TkeyDeviceDetected'
 import TkeyInputView from '../TkeyInputView'
 
@@ -82,7 +82,6 @@ export default {
         this.securityQuestions.finished = true
         await this.tryFinish()
       } catch (error) {
-        // TODO: show incorrect password
         log.error(error, 'incorrect password entered')
         this.incorrectPassword = true
       }
@@ -90,6 +89,25 @@ export default {
     async storeDevice(details) {
       // eslint-disable-next-line no-console
       console.log('storeDevice -> details', details)
+      try {
+        const { isOld, oldIndex, rejected } = details
+        if (rejected) throw new Error('User rejected to store device')
+        if (!isOld) {
+          const newShare = await this.tKey.generateNewShare()
+          log.info(newShare, 'new Share')
+          await this.tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShare(newShare.newShareStores[newShare.newShareIndex.toString('hex')])
+        } else {
+          const outputShareStore = await this.tKey.outputShareStore(oldIndex)
+          log.info(outputShareStore, 'old Share')
+          await this.tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShare(outputShareStore)
+        }
+      } catch (error) {
+        log.error(error)
+      } finally {
+        this.setInput({ response: this.tKey })
+      }
+
+      // call trigger success
     },
     async tryFinish() {
       this.settingsData = await calculateSettingsPageData(this.tKey)

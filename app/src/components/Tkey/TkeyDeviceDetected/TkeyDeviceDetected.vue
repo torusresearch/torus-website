@@ -124,10 +124,7 @@
 
 <script>
 import bowser from 'bowser'
-import { BroadcastChannel } from 'broadcast-channel'
-import { mapActions } from 'vuex'
 
-import { broadcastChannelOptions } from '../../../utils/utils'
 import NewDeviceFooter from '../NewDeviceFooter'
 
 export default {
@@ -138,10 +135,6 @@ export default {
       default() {
         return {}
       },
-    },
-    selectedAddress: {
-      type: String,
-      default: '',
     },
   },
   data() {
@@ -170,16 +163,6 @@ export default {
       return this.devices.find((x) => x.index === this.selectedDevice) || {}
     },
   },
-  watch: {
-    selectedAddress(newAddress, oldAddress) {
-      if (newAddress !== oldAddress && newAddress !== '') {
-        let redirectPath = this.$route.query.redirect
-        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
-
-        this.$router.push(redirectPath).catch((_) => {})
-      }
-    },
-  },
   beforeDestroy() {
     this.isConfirming = false
   },
@@ -187,32 +170,19 @@ export default {
     this.selectedDevice = this.devices[0].index
   },
   methods: {
-    ...mapActions(['setStoreDeviceFlow']),
     selectBrowser(index) {
       this.selectedDevice = index
     },
     confirm() {
-      this.triggerSetDeviceFlow({ id: this.$route.query.id, response: { isOld: !!this.activeTab, oldIndex: this.selectedDevice } })
+      this.triggerSetDeviceFlow({ isOld: !!this.activeTab, oldIndex: this.selectedDevice })
     },
     doNotSaveDevice() {
-      this.triggerSetDeviceFlow({ id: this.$route.query.id, rejected: true })
+      this.triggerSetDeviceFlow({ rejected: true })
     },
     async triggerSetDeviceFlow(details) {
       if (this.isConfirming) return
       this.isConfirming = true
-
-      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
-      if (urlInstance && urlInstance !== '') {
-        const bc = new BroadcastChannel(`tkey_channel_${urlInstance}`, broadcastChannelOptions)
-        await bc.postMessage({
-          data: {
-            eventType: 'set_store_device_flow',
-            details,
-          },
-        })
-        bc.close()
-      } else this.$emit('storeDevice', details)
-      // this.setStoreDeviceFlow(details)
+      this.$emit('storeDevice', details)
     },
   },
 }
