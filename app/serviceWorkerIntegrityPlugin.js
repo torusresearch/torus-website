@@ -39,7 +39,7 @@ module.exports = class ServiceWorkerIntegrityPlugin {
             const modifiedFile = appHTMLFile
               .toString()
               .replace(/app\.[\da-z]*\.js/, 'app.js')
-              .replace(/(\/js\/app.js.*)(integrity=sha384-[\d+/=A-Za-z]*)( *><\/script>)/, `$1integrity="${appIntegrity}"$3`)
+              .replace(/(\/js\/app.js.*)(integrity=["]?sha384-[\d+\/=A-Za-z]*["]?)( *><\/script>)/, `$1integrity="${appIntegrity}"$3`)
             fs.writeFileSync(appHTMLPath, modifiedFile)
           } catch (error) {
             console.error('Could not run service worker integrity plugin on compilation', error)
