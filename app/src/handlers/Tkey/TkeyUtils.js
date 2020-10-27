@@ -26,6 +26,7 @@ export function parseShares(parsedShareDescriptions) {
         icon: browserInfo.platform.type,
         groupTitle: deviceInfo,
         dateAdded: x.dateAdded,
+        module: x.module,
         browsers: [x],
       }
     }

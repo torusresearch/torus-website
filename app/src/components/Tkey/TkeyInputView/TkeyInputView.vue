@@ -119,7 +119,12 @@
                   </v-expansion-panel-header>
                   <v-expansion-panel-content class="pa-5">
                     <div class="body-2 text_2--text mb-4">
-                      {{ t('tkeyNew.loginToTorus') }}
+                      {{
+                        t('tkeyNew.loginToTorus').replace(
+                          '{deviceLink}',
+                          device.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? STORAGE_MAP[CHROME_EXTENSION_STORAGE_MODULE_KEY] : 'app.tor.us'
+                        )
+                      }}
                     </div>
 
                     <div v-for="browser in device.browsers" :key="browser.dateAdded" class="d-flex info-box py-3 px-6 mb-2 align-center">
@@ -145,6 +150,7 @@
 </template>
 
 <script>
+import { CHROME_EXTENSION_STORAGE_MODULE_KEY, STORAGE_MAP } from '../../../utils/enums'
 import { passwordValidation } from '../../../utils/utils'
 import NewDeviceFooter from '../NewDeviceFooter'
 
@@ -182,6 +188,8 @@ export default {
         required: (value) => !!value || this.t('tkeyNew.required'),
         minLength: (v) => passwordValidation(v) || this.t('tkeyCreateSetup.passwordRules'),
       },
+      CHROME_EXTENSION_STORAGE_MODULE_KEY,
+      STORAGE_MAP,
     }
   },
   computed: {
