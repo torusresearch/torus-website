@@ -13,6 +13,7 @@ import {
   ERROR_TIME,
   PASSWORD_QUESTION,
   SECURITY_QUESTIONS_MODULE_KEY,
+  SHARE_TRANSFER_MODULE_KEY,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
 import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey } from '../utils/utils'
@@ -99,8 +100,8 @@ class ThresholdKeyController extends EventEmitter {
       } else {
         const { tKey: newTKey } = this.state
         const { privKey } = await newTKey.reconstructKey()
-        // todo: start share transfer listener
         await this.setSettingsPageData()
+        this.startShareTransferRequestListener()
         log.info(privKey.toString('hex', 64), 'privKey')
         return {
           ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
@@ -173,6 +174,38 @@ class ThresholdKeyController extends EventEmitter {
     const { response, rejected } = payload
     if (rejected) this.emit('input:finished', { status: 'rejected' })
     if (response) this.emit('input:finished', { status: 'approved', response })
+  }
+
+  startShareTransferRequestListener() {
+    const requestStatusCheckId = Number(
+      setInterval(async () => {
+        try {
+          const { tKey } = this.state
+          const latestShareTransferStore = await tKey.modules[SHARE_TRANSFER_MODULE_KEY].getShareTransferStore()
+          const pendingRequests = Object.keys(latestShareTransferStore).reduce((acc, x) => {
+            if (!latestShareTransferStore[x].encShareInTransit) acc[x] = latestShareTransferStore[x]
+            return acc
+          }, {})
+          log.info(latestShareTransferStore, 'current share transfer store')
+          log.info(pendingRequests, 'pending requests')
+          this.store.updateState({
+            shareTransferRequests: pendingRequests,
+          })
+          if (Object.keys(pendingRequests).length > 0) {
+            clearInterval(requestStatusCheckId)
+          }
+        } catch (error) {
+          clearInterval(requestStatusCheckId)
+          log.error(error)
+        }
+      }, 3000)
+    )
+  }
+
+  async approveShareTransferRequest(encPubKeyX) {
+    const { tKey } = this.state
+    await tKey.modules[SHARE_TRANSFER_MODULE_KEY].approveRequest(encPubKeyX)
+    this.startShareTransferRequestListener()
   }
 
   async createNewTKey({ postboxKey, password, backup }) {

@@ -30,5 +30,6 @@ export default async function createTKeyInstance(postboxKey, tKeyJson) {
       serviceProvider,
       storageLayer,
     })
+  tKey.modules[SHARE_TRANSFER_MODULE_KEY].setRequestStatusCheckInterval(3000)
   return tKey
 }

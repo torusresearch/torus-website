@@ -89,26 +89,24 @@ export default {
         }
       }
     },
-    listenForShareTransfer() {
-      this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].setRequestStatusCheckInterval(3000)
-      this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].requestNewShare(
+    async listenForShareTransfer() {
+      const encPubKey = await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].requestNewShare(
         window.navigator.userAgent,
-        this.tKey.getCurrentShareIndexes(),
-        async (shareStore) => {
-          log.info(shareStore, 'received transferred Share')
-          if (this.shareTransfer[shareStore.share.shareIndex]) {
-            this.shareTransfer[shareStore.share.shareIndex].finished = true
-          }
-          await this.tryFinish()
-          const {
-            keyDetails: { requiredShares },
-          } = this.settingsData
-
-          if (requiredShares > 0 && Object.keys(this.shareTransfer).some((x) => this.shareTransfer[x].finished === false)) {
-            this.listenForShareTransfer()
-          }
-        }
+        this.tKey.getCurrentShareIndexes()
       )
+      const shareStore = await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].startRequestStatusCheck(encPubKey, true)
+      log.info(shareStore, 'received transferred Share')
+      if (this.shareTransfer[shareStore.share.shareIndex]) {
+        this.shareTransfer[shareStore.share.shareIndex].finished = true
+      }
+      await this.tryFinish()
+      const {
+        keyDetails: { requiredShares },
+      } = this.settingsData
+
+      if (requiredShares > 0 && Object.keys(this.shareTransfer).some((x) => this.shareTransfer[x].finished === false)) {
+        this.listenForShareTransfer()
+      }
     },
     async setInput(details) {
       const { rejected } = details
