@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import TorusStorageLayer from '@tkey/storage-layer-torus'
+import bowser from 'bowser'
 import { ethErrors } from 'eth-rpc-errors'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
@@ -184,7 +185,8 @@ class ThresholdKeyController extends EventEmitter {
           const { tKey } = this.state
           const latestShareTransferStore = await tKey.modules[SHARE_TRANSFER_MODULE_KEY].getShareTransferStore()
           const pendingRequests = Object.keys(latestShareTransferStore).reduce((acc, x) => {
-            if (!latestShareTransferStore[x].encShareInTransit) acc.push({ ...latestShareTransferStore[x], encPubKeyX: x })
+            const browserDetail = bowser.parse(latestShareTransferStore[x].userAgent)
+            if (!latestShareTransferStore[x].encShareInTransit) acc.push({ ...latestShareTransferStore[x], browserDetail, encPubKeyX: x })
             return acc
           }, [])
           log.info(latestShareTransferStore, 'current share transfer store')

@@ -27,6 +27,7 @@
     <TkeyConfirmLogin
       :show-tkey-confirm-dialog="showTkeyConfirmDialog"
       :current-tkey-confirm-dialog="currentTkeyConfirmDialog"
+      :device-share-index="deviceShareIndex"
       @confirmShareTransfer="confirmShareTransfer"
       @denyShareTransfer="denyShareTransfer"
     />
@@ -70,6 +71,7 @@ export default {
       wallet: 'wallet',
       confirmModals: 'confirmModals',
       shareTransferRequests: (state) => state.tKeyStore.shareTransferRequests,
+      deviceShare: (state) => state.tKeyStore.settingsPageData && state.tKeyStore.settingsPageData.deviceShare,
     }),
     ...mapGetters(['collectibleBalances']),
     showConfirmDialog() {
@@ -159,6 +161,9 @@ export default {
     },
     showTkeyConfirmDialog() {
       return !!this.currentTkeyConfirmDialog
+    },
+    deviceShareIndex() {
+      return this.deviceShare && this.deviceShare.share ? this.deviceShare.share.share.shareIndex.toString() : ''
     },
   },
   mounted() {

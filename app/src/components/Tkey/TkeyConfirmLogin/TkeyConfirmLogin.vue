@@ -33,21 +33,23 @@
 
       <div class="d-flex info-box mb-2 align-center">
         <div class="grow text_2--text d-flex align-center">
-          <v-icon :size="$vuetify.breakpoint.xsOnly ? '16' : ''" class="mr-1">$vuetify.icons.browser</v-icon>
-          <span class="font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">Chrome V82.04103.61</span>
+          <v-icon :size="$vuetify.breakpoint.xsOnly ? '16' : ''" class="mr-1">$vuetify.icons.device_{{ platformType }}</v-icon>
+          <span class="font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ browserName }}</span>
         </div>
-        <div class="ml-auto text-right text_2--text caption">Reference ID: 1323</div>
+        <div class="ml-auto text-right text_2--text caption">{{ t('tkeyNew.refId') }}: {{ shortIndex }}</div>
       </div>
       <div class="text-right caption mb-6 text_2--text">
-        This is not me,
-        <a>report it</a>
+        {{ t('tkeyNew.reportNotMe1') }},
+        <a>{{ t('tkeyNew.reportNotMe2') }}</a>
       </div>
       <v-layout class="mx-n2 mb-12 align-center">
         <v-flex class="px-2 text-center xs6">
-          <a class="caption text-decoration-none" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'" @click="cancel">Cancel</a>
+          <a class="caption text-decoration-none" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'" @click="cancel">
+            {{ t('tkeyNew.cancel') }}
+          </a>
         </v-flex>
         <v-flex class="px-2 xs6">
-          <v-btn block large color="torusBrand1" class="caption font-weight-bold white--text" @click="confirm">Confirm</v-btn>
+          <v-btn block large color="torusBrand1" class="caption font-weight-bold white--text" @click="confirm">{{ t('tkeyNew.confirm') }}</v-btn>
         </v-flex>
       </v-layout>
       <NewDeviceFooter />
@@ -70,6 +72,23 @@ export default {
       default() {
         return {}
       },
+    },
+    deviceShareIndex: {
+      type: String,
+      default: '',
+    },
+  },
+  computed: {
+    browserName() {
+      return this.currentTkeyConfirmDialog.browserDetail
+        ? `${this.currentTkeyConfirmDialog.browserDetail.browser.name} V${this.currentTkeyConfirmDialog.browserDetail.browser.version}`
+        : ''
+    },
+    platformType() {
+      return this.currentTkeyConfirmDialog.browserDetail ? this.currentTkeyConfirmDialog.browserDetail.platform.type : 'desktop'
+    },
+    shortIndex() {
+      return this.deviceShareIndex.slice(0, 5)
     },
   },
   methods: {
