@@ -52,7 +52,7 @@ if (storageAvailable(isPwa ? 'localStorage' : 'sessionStorage')) {
       etherscanTx: state.etherscanTx,
       tKeyOnboardingComplete: state.tKeyOnboardingComplete,
       defaultPublicAddress: state.defaultPublicAddress,
-      tKeyStore: state.tKeyStore,
+      tKeyStore: { ...state.tKeyStore, shareTransferRequests: [] },
       tKeyExists: state.tKeyExists,
       wcConnectorSession: state.wcConnectorSession,
     }),

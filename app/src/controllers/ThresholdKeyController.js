@@ -14,6 +14,7 @@ import {
   PASSWORD_QUESTION,
   SECURITY_QUESTIONS_MODULE_KEY,
   SHARE_TRANSFER_MODULE_KEY,
+  TKEY_SHARE_TRANSFER_INTERVAL,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
 import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey } from '../utils/utils'
@@ -198,18 +199,20 @@ class ThresholdKeyController extends EventEmitter {
           clearInterval(requestStatusCheckId)
           log.error(error)
         }
-      }, 3000)
+      }, TKEY_SHARE_TRANSFER_INTERVAL)
     )
   }
 
   async approveShareTransferRequest(encPubKeyX) {
     const { tKey } = this.state
+    log.info(encPubKeyX, 'approving')
     await tKey.modules[SHARE_TRANSFER_MODULE_KEY].approveRequest(encPubKeyX)
     this.startShareTransferRequestListener()
   }
 
   async denyShareTransferRequest(encPubKeyX) {
     const { tKey } = this.state
+    log.info(encPubKeyX, 'deleting')
     await tKey.modules[SHARE_TRANSFER_MODULE_KEY].deleteShareTransferStore(encPubKeyX)
     this.startShareTransferRequestListener()
   }

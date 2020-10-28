@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="showTkeyConfirmDialog" width="635">
+  <v-dialog :value="showTkeyConfirmDialog" width="635" persistent>
     <v-card class="tkey-confirm-dialog" :class="[$vuetify.breakpoint.xsOnly ? 'is-mobile' : '', { 'is-dark': $vuetify.theme.dark }]">
       <!-- IMAGE -->
       <div
@@ -65,7 +65,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    confirmTkeyConfirmDialog: {
+    currentTkeyConfirmDialog: {
       type: Object,
       default() {
         return {}
@@ -74,10 +74,10 @@ export default {
   },
   methods: {
     cancel() {
-      this.$emit('denyShareTransfer')
+      this.$emit('denyShareTransfer', this.currentTkeyConfirmDialog.encPubKeyX)
     },
     confirm() {
-      this.$emit('confirmShareTransfer', this.confirmTkeyConfirmDialog.encPubKeyX)
+      this.$emit('confirmShareTransfer', this.currentTkeyConfirmDialog.encPubKeyX)
     },
   },
 }

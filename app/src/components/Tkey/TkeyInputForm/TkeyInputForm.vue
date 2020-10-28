@@ -48,6 +48,7 @@ export default {
       shareTransfer: {},
       incorrectPassword: false,
       userInputCompleted: false,
+      currentEncPubKeyX: '',
     }
   },
   watch: {
@@ -90,12 +91,13 @@ export default {
       }
     },
     async listenForShareTransfer() {
-      const encPubKey = await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].requestNewShare(
+      this.currentEncPubKeyX = await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].requestNewShare(
         window.navigator.userAgent,
         this.tKey.getCurrentShareIndexes()
       )
-      const shareStore = await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].startRequestStatusCheck(encPubKey, true)
+      const shareStore = await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].startRequestStatusCheck(this.currentEncPubKeyX, true)
       log.info(shareStore, 'received transferred Share')
+      this.currentEncPubKeyX = ''
       if (this.shareTransfer[shareStore.share.shareIndex]) {
         this.shareTransfer[shareStore.share.shareIndex].finished = true
       }
@@ -108,10 +110,14 @@ export default {
         this.listenForShareTransfer()
       }
     },
+    async cleanUpShareTransfer() {
+      await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].cancelRequestStatusCheck()
+      if (this.currentEncPubKeyX) await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].deleteShareTransferStore(this.currentEncPubKeyX)
+    },
     async setInput(details) {
       const { rejected } = details
       if (rejected) {
-        await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].cancelRequestStatusCheck()
+        this.cleanUpShareTransfer()
         this.$emit('triggerDeny')
       } else this.$emit('triggerSign', details)
     },
@@ -155,7 +161,7 @@ export default {
 
       if (requiredShares === 0) {
         this.userInputCompleted = true
-        await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].cancelRequestStatusCheck()
+        await this.cleanUpShareTransfer()
         // finish fn
       }
     },

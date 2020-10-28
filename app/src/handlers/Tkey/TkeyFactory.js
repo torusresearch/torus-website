@@ -6,7 +6,7 @@ import TorusStorageLayer from '@tkey/storage-layer-torus'
 import WebStorageModule from '@tkey/web-storage'
 
 import config from '../../config'
-import { SECURITY_QUESTIONS_MODULE_KEY, SHARE_TRANSFER_MODULE_KEY, WEB_STORAGE_MODULE_KEY } from '../../utils/enums'
+import { SECURITY_QUESTIONS_MODULE_KEY, SHARE_TRANSFER_MODULE_KEY, TKEY_SHARE_TRANSFER_INTERVAL, WEB_STORAGE_MODULE_KEY } from '../../utils/enums'
 
 export default async function createTKeyInstance(postboxKey, tKeyJson) {
   const modules = {
@@ -30,6 +30,6 @@ export default async function createTKeyInstance(postboxKey, tKeyJson) {
       serviceProvider,
       storageLayer,
     })
-  tKey.modules[SHARE_TRANSFER_MODULE_KEY].setRequestStatusCheckInterval(3000)
+  tKey.modules[SHARE_TRANSFER_MODULE_KEY].setRequestStatusCheckInterval(TKEY_SHARE_TRANSFER_INTERVAL)
   return tKey
 }
