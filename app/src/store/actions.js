@@ -121,6 +121,7 @@ export default {
     resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
     resetStore(thresholdKeyController.store, tKeyHandler, {})
+    clearInterval(thresholdKeyController.requestStatusCheckId)
     assetDetectionController.stopAssetDetection()
     torus.updateStaticData({ isUnlocked: false })
   },

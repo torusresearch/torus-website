@@ -179,7 +179,6 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   startShareTransferRequestListener() {
-    let requestStatusCheckId
     const checkFn = async () => {
       try {
         const { tKey } = this.state
@@ -194,15 +193,15 @@ class ThresholdKeyController extends EventEmitter {
           shareTransferRequests: pendingRequests,
         })
         if (Object.keys(pendingRequests).length > 0) {
-          clearInterval(requestStatusCheckId)
+          clearInterval(this.requestStatusCheckId)
         }
       } catch (error) {
-        clearInterval(requestStatusCheckId)
+        clearInterval(this.requestStatusCheckId)
         log.error(error)
       }
     }
     checkFn()
-    requestStatusCheckId = Number(setInterval(checkFn, TKEY_SHARE_TRANSFER_INTERVAL))
+    this.requestStatusCheckId = Number(setInterval(checkFn, TKEY_SHARE_TRANSFER_INTERVAL))
   }
 
   async approveShareTransferRequest(encPubKeyX) {
