@@ -44,10 +44,10 @@
       </div>
       <v-layout class="mx-n2 mb-12 align-center">
         <v-flex class="px-2 text-center xs6">
-          <a class="caption text-decoration-none" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'">Cancel</a>
+          <a class="caption text-decoration-none" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'torusBrand1--text'" @click="cancel">Cancel</a>
         </v-flex>
         <v-flex class="px-2 xs6">
-          <v-btn block large color="torusBrand1" class="caption font-weight-bold white--text">Confirm</v-btn>
+          <v-btn block large color="torusBrand1" class="caption font-weight-bold white--text" @click="confirm">Confirm</v-btn>
         </v-flex>
       </v-layout>
       <NewDeviceFooter />
@@ -64,6 +64,20 @@ export default {
     showTkeyConfirmDialog: {
       type: Boolean,
       default: false,
+    },
+    confirmTkeyConfirmDialog: {
+      type: Object,
+      default() {
+        return {}
+      },
+    },
+  },
+  methods: {
+    cancel() {
+      this.$emit('denyShareTransfer')
+    },
+    confirm() {
+      this.$emit('confirmShareTransfer', this.confirmTkeyConfirmDialog.encPubKeyX)
     },
   },
 }

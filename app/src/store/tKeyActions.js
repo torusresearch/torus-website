@@ -127,4 +127,10 @@ export default {
     const thresholdWallet = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.THRESHOLD)
     return dispatch('updateSelectedAddress', { selectedAddress: thresholdWallet })
   },
+  approveShareTransferRequest(_, payload) {
+    thresholdKeyController.approveShareTransferRequest(payload)
+  },
+  denyShareTransferRequest(_, payload) {
+    thresholdKeyController.denyShareTransferRequest(payload)
+  },
 }

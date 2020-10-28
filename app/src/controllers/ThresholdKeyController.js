@@ -183,9 +183,9 @@ class ThresholdKeyController extends EventEmitter {
           const { tKey } = this.state
           const latestShareTransferStore = await tKey.modules[SHARE_TRANSFER_MODULE_KEY].getShareTransferStore()
           const pendingRequests = Object.keys(latestShareTransferStore).reduce((acc, x) => {
-            if (!latestShareTransferStore[x].encShareInTransit) acc[x] = latestShareTransferStore[x]
+            if (!latestShareTransferStore[x].encShareInTransit) acc.push({ ...latestShareTransferStore[x], encPubKeyX: x })
             return acc
-          }, {})
+          }, [])
           log.info(latestShareTransferStore, 'current share transfer store')
           log.info(pendingRequests, 'pending requests')
           this.store.updateState({
@@ -205,6 +205,12 @@ class ThresholdKeyController extends EventEmitter {
   async approveShareTransferRequest(encPubKeyX) {
     const { tKey } = this.state
     await tKey.modules[SHARE_TRANSFER_MODULE_KEY].approveRequest(encPubKeyX)
+    this.startShareTransferRequestListener()
+  }
+
+  async denyShareTransferRequest(encPubKeyX) {
+    const { tKey } = this.state
+    await tKey.modules[SHARE_TRANSFER_MODULE_KEY].deleteShareTransferStore(encPubKeyX)
     this.startShareTransferRequestListener()
   }
 

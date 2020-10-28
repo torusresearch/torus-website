@@ -24,7 +24,12 @@
         />
       </v-card>
     </v-dialog>
-    <TkeyConfirmLogin :show-tkey-confirm-dialog="showTkeyConfirmDialog" />
+    <TkeyConfirmLogin
+      :show-tkey-confirm-dialog="showTkeyConfirmDialog"
+      :current-tkey-confirm-dialog="currentTkeyConfirmDialog"
+      @confirmShareTransfer="confirmShareTransfer"
+      @denyShareTransfer="denyShareTransfer"
+    />
   </div>
 </template>
 
@@ -64,6 +69,7 @@ export default {
       paymentTxStore: 'paymentTx',
       wallet: 'wallet',
       confirmModals: 'confirmModals',
+      shareTransferRequests: (state) => state.tKeyStore.shareTransferRequests,
     }),
     ...mapGetters(['collectibleBalances']),
     showConfirmDialog() {
@@ -145,10 +151,14 @@ export default {
     isTkeyScreen() {
       return ['tkeyCreate', 'tkeyDappInput', 'tKeyInput'].includes(this.$route.name)
     },
+    currentTkeyConfirmDialog() {
+      if (this.shareTransferRequests?.length > 0) {
+        return this.shareTransferRequests[0]
+      }
+      return undefined
+    },
     showTkeyConfirmDialog() {
-      // Check from state
-      return false
-      // return !this.isTkeyScreen
+      return !!this.currentTkeyConfirmDialog
     },
   },
   mounted() {
@@ -157,10 +167,16 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setUserBadge', 'handleConfirmModal']),
+    ...mapActions(['setUserBadge', 'handleConfirmModal', 'approveShareTransferRequest', 'denyShareTransferRequest']),
     closeBadge(data) {
       this.setUserBadge(data.type)
       if (data.returnHome && !['walletHomeMain', 'walletHome'].includes(this.$route.name)) this.$router.push({ name: 'walletHome' })
+    },
+    confirmShareTransfer(encPubKeyX) {
+      this.approveShareTransferRequest(encPubKeyX)
+    },
+    denyShareTransfer(encPubKeyX) {
+      this.denyShareTransferRequest(encPubKeyX)
     },
   },
 }
