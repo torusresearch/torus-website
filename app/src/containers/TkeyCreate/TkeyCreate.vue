@@ -47,7 +47,7 @@
         <v-flex class="xs12 sm10 md8 lg7">
           <v-tabs-items v-model="tab" touchless>
             <v-tab-item>
-              <AddWallet @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
+              <AddWallet :type-of-login="userInfo.typeOfLogin" @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
             </v-tab-item>
             <v-tab-item>
               <SetupWallet

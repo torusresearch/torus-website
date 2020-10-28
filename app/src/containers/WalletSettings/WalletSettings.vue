@@ -15,7 +15,7 @@
         <v-expansion-panels v-model="leftPanel" multiple>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="privacy-panel-header">
-              <v-icon size="20" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
+              <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
               <div class="grow font-weight-bold title text_1--text">
                 {{ t('walletSettings.privacySecurity') }}
               </div>
@@ -26,7 +26,7 @@
           </v-expansion-panel>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="contact-list-panel-header">
-              <v-icon size="12" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.list'" />
+              <v-icon size="16" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.list'" />
               <div class="grow font-weight-bold title text_1--text">
                 {{ t('walletSettings.addressBook') }}
               </div>
@@ -37,7 +37,7 @@
           </v-expansion-panel>
           <v-expansion-panel v-show="isThreshold" class="my-2">
             <v-expansion-panel-header id="contact-list-panel-header">
-              <v-icon size="12" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.two_factor'" />
+              <v-icon size="16" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.wallet'" />
               <div class="grow font-weight-bold title text_1--text">{{ t('tkeySettings.twoFaSettings') }}</div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>

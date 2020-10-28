@@ -40,7 +40,9 @@
       </div>
       <div class="text-right caption mb-6 text_2--text">
         {{ t('tkeyNew.reportNotMe1') }},
-        <a>{{ t('tkeyNew.reportNotMe2') }}</a>
+        <a href="mailto:hello@tor.us" class="text-decoration-none" target="_blank" rel="noreferrer noopener">
+          {{ t('tkeyNew.reportNotMe2') }}
+        </a>
       </div>
       <v-layout class="mx-n2 mb-12 align-center">
         <v-flex class="px-2 text-center xs6">

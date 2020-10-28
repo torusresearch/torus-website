@@ -11,7 +11,7 @@
     .v-avatar {
       border-radius: 0;
       align-self: start;
-      svg {
+      & > svg, & > .v-icon {
         margin: auto;
       }
     }
