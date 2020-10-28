@@ -179,6 +179,7 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   startShareTransferRequestListener() {
+    if (this.requestStatusCheckId) clearInterval(this.requestStatusCheckId)
     if (isMain && !isPopup()) {
       const checkFn = async () => {
         try {
