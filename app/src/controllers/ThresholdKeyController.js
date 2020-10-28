@@ -18,7 +18,7 @@ import {
   TKEY_SHARE_TRANSFER_INTERVAL,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
-import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey } from '../utils/utils'
+import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey, isMain } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 function beforeUnloadHandler(e) {
@@ -179,29 +179,31 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   startShareTransferRequestListener() {
-    const checkFn = async () => {
-      try {
-        const { tKey } = this.state
-        const latestShareTransferStore = await tKey.modules[SHARE_TRANSFER_MODULE_KEY].getShareTransferStore()
-        const pendingRequests = Object.keys(latestShareTransferStore).reduce((acc, x) => {
-          const browserDetail = bowser.parse(latestShareTransferStore[x].userAgent)
-          if (!latestShareTransferStore[x].encShareInTransit) acc.push({ ...latestShareTransferStore[x], browserDetail, encPubKeyX: x })
-          return acc
-        }, [])
-        log.info(pendingRequests, 'pending requests')
-        this.store.updateState({
-          shareTransferRequests: pendingRequests,
-        })
-        if (Object.keys(pendingRequests).length > 0) {
+    if (isMain) {
+      const checkFn = async () => {
+        try {
+          const { tKey } = this.state
+          const latestShareTransferStore = await tKey.modules[SHARE_TRANSFER_MODULE_KEY].getShareTransferStore()
+          const pendingRequests = Object.keys(latestShareTransferStore).reduce((acc, x) => {
+            const browserDetail = bowser.parse(latestShareTransferStore[x].userAgent)
+            if (!latestShareTransferStore[x].encShareInTransit) acc.push({ ...latestShareTransferStore[x], browserDetail, encPubKeyX: x })
+            return acc
+          }, [])
+          log.info(pendingRequests, 'pending requests')
+          this.store.updateState({
+            shareTransferRequests: pendingRequests,
+          })
+          if (Object.keys(pendingRequests).length > 0) {
+            clearInterval(this.requestStatusCheckId)
+          }
+        } catch (error) {
           clearInterval(this.requestStatusCheckId)
+          log.error(error)
         }
-      } catch (error) {
-        clearInterval(this.requestStatusCheckId)
-        log.error(error)
       }
+      checkFn()
+      this.requestStatusCheckId = Number(setInterval(checkFn, TKEY_SHARE_TRANSFER_INTERVAL))
     }
-    checkFn()
-    this.requestStatusCheckId = Number(setInterval(checkFn, TKEY_SHARE_TRANSFER_INTERVAL))
   }
 
   async approveShareTransferRequest(encPubKeyX) {
