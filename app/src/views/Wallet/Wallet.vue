@@ -14,16 +14,7 @@
       <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
       <router-view></router-view>
     </v-main>
-    <!-- <v-dialog v-if="!isTkeyScreen && badgesTopupDialog" v-model="badgesTopupDialog" persistent width="375">
-      <BadgesAlert :badge="badges[BADGES_TOPUP]" @closeBadge="closeBadge" />
-    </v-dialog>
-    <v-dialog v-else-if="!isTkeyScreen && badgesTransactionDialog" v-model="badgesTransactionDialog" persistent width="375">
-      <BadgesAlert :badge="badges[BADGES_TRANSACTION]" @closeBadge="closeBadge" />
-    </v-dialog>
-    <v-dialog v-else-if="!isTkeyScreen && badgesCollectibleDialog" v-model="badgesCollectibleDialog" persistent width="375">
-      <BadgesAlert :badge="badges[BADGES_COLLECTIBLE]" @closeBadge="closeBadge" />
-    </v-dialog> -->
-    <v-dialog v-model="showDialog" persistent width="500">
+    <v-dialog v-model="showConfirmDialog" persistent width="500">
       <v-card>
         <ConfirmForm
           :current-confirm-modal="currentConfirmModal"
@@ -32,15 +23,8 @@
           @triggerDeny="handleConfirmModal"
         />
       </v-card>
-      <!-- <v-card>
-        <v-card-title>Confirm</v-card-title>
-        <v-card-text>Confirm or deny this tx {{ currentConfirmModal && currentConfirmModal.id }}</v-card-text>
-        <v-card-actions>
-          <v-btn text color="deep-purple accent-4" @click="handleConfirmModal({ ...currentConfirmModal, approve: true })">Confirm</v-btn>
-          <v-btn text color="deep-purple accent-4" @click="handleConfirmModal({ ...currentConfirmModal, approve: false })">Deny</v-btn>
-        </v-card-actions>
-      </v-card> -->
     </v-dialog>
+    <TkeyConfirmLogin :show-tkey-confirm-dialog="showTkeyConfirmDialog" />
   </div>
 </template>
 
@@ -49,6 +33,7 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ConfirmForm from '../../components/Confirm/ConfirmForm'
 import Navbar from '../../components/helpers/Navbar'
+import TkeyConfirmLogin from '../../components/Tkey/TkeyConfirmLogin'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
 // import BadgesAlert from '../../components/WalletHome/BadgesAlert'
 import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION } from '../../utils/enums'
@@ -58,6 +43,7 @@ export default {
     Navbar,
     AccountMenu,
     ConfirmForm,
+    TkeyConfirmLogin,
     // BadgesAlert,
   },
   data() {
@@ -80,7 +66,7 @@ export default {
       confirmModals: 'confirmModals',
     }),
     ...mapGetters(['collectibleBalances']),
-    showDialog() {
+    showConfirmDialog() {
       return !!this.currentConfirmModal
     },
     currentConfirmModal() {
@@ -158,6 +144,11 @@ export default {
     },
     isTkeyScreen() {
       return ['tkeyCreate', 'tkeyDappInput', 'tKeyInput'].includes(this.$route.name)
+    },
+    showTkeyConfirmDialog() {
+      // Check from state
+      return false
+      // return !this.isTkeyScreen
     },
   },
   mounted() {
