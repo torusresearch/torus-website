@@ -18,7 +18,7 @@ import {
   TKEY_SHARE_TRANSFER_INTERVAL,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
-import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey, isMain } from '../utils/utils'
+import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey, isMain, isPopup } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 function beforeUnloadHandler(e) {
@@ -179,7 +179,7 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   startShareTransferRequestListener() {
-    if (isMain) {
+    if (isMain && !isPopup()) {
       const checkFn = async () => {
         try {
           const { tKey } = this.state

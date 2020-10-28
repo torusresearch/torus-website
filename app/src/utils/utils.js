@@ -692,3 +692,9 @@ export function getUserEmail(userInfo, walletDisplay) {
 }
 
 export const isPwa = navigator.standalone || matchMedia('(display-mode: standalone)').matches || document.referrer.includes('android-app://')
+
+export const isPopup = () => {
+  const queryParameters = new URLSearchParams(window.location.search)
+  const instanceId = queryParameters.get('instanceId')
+  return !!instanceId
+}
