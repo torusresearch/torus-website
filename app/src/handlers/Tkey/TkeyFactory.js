@@ -24,12 +24,16 @@ export default async function createTKeyInstance(postboxKey, tKeyJson) {
       modules,
     })
     await tKey.initialize()
-  } else
+  } else {
     tKey = await ThresholdKey.fromJSON(tKeyJson, {
       modules,
       serviceProvider,
       storageLayer,
     })
+    if (tKeyJson.modules && tKeyJson.modules[WEB_STORAGE_MODULE_KEY]) {
+      tKey.modules[WEB_STORAGE_MODULE_KEY].canUseFileStorage = tKeyJson.modules[WEB_STORAGE_MODULE_KEY].canUseFileStorage
+    }
+  }
   tKey.modules[SHARE_TRANSFER_MODULE_KEY].setRequestStatusCheckInterval(TKEY_SHARE_TRANSFER_INTERVAL)
   return tKey
 }

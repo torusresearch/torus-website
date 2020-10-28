@@ -189,7 +189,6 @@ class ThresholdKeyController extends EventEmitter {
           if (!latestShareTransferStore[x].encShareInTransit) acc.push({ ...latestShareTransferStore[x], browserDetail, encPubKeyX: x })
           return acc
         }, [])
-        log.info(latestShareTransferStore, 'current share transfer store')
         log.info(pendingRequests, 'pending requests')
         this.store.updateState({
           shareTransferRequests: pendingRequests,
