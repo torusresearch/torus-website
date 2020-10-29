@@ -160,6 +160,7 @@ export default {
       } = this.settingsData
 
       if (requiredShares === 0) {
+        await this.tKey.reconstructKey()
         this.userInputCompleted = true
         await this.cleanUpShareTransfer()
         // finish fn
