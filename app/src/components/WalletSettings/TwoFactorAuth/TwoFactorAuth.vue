@@ -112,6 +112,7 @@
             :rules="[rules.required, equalToPassword]"
             outlined
             :placeholder="t('tkeyCreateSetup.confirmPassword')"
+            autocomplete="new-password"
             @click:append="showRecoveryPasswordConfirm = !showRecoveryPasswordConfirm"
           />
           <v-layout wrap>
