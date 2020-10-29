@@ -229,8 +229,9 @@ class ThresholdKeyController extends EventEmitter {
     if (backup) {
       try {
         const { deviceShare } = settingsPageData
-        if (deviceShare) {
-          await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage(deviceShare.share.shareIndex)
+        log.info(deviceShare, 'deviceShare')
+        if (deviceShare.share) {
+          await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage(deviceShare.share.share.shareIndex)
         }
       } catch (error) {
         log.error(error)

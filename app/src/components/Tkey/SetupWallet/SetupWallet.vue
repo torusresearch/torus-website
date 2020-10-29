@@ -124,6 +124,7 @@
                 :rules="[rules.required, equalToPassword]"
                 outlined
                 :placeholder="t('tkeyCreateSetup.confirmPassword')"
+                autocomplete="new-password"
                 @click:append="showRecoveryPasswordConfirm = !showRecoveryPasswordConfirm"
               />
               <div class="text-right">
