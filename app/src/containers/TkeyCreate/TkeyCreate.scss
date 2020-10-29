@@ -13,6 +13,11 @@
     }
   }
 
+  &.mobile {
+    border: 1px solid #F5F5F5;
+    margin-top: 8px;
+  }
+
   &.is-dark {
     background: var(--v-torusBlack2-base);
     border: 1px solid #343539;

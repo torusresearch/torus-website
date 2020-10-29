@@ -41,33 +41,8 @@
                 <v-expansion-panel v-if="securityQuestions.show" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2">
-                      <v-icon
-                        class="mr-3"
-                        :class="
-                          $vuetify.theme.dark
-                            ? securityQuestions.finished
-                              ? 'text_2--text'
-                              : 'torusFont1--text'
-                            : securityQuestions.finished
-                            ? 'text_2--text'
-                            : 'text_1--text'
-                        "
-                      >
-                        $vuetify.icons.shield_lock
-                      </v-icon>
-                      <span
-                        :class="
-                          $vuetify.theme.dark
-                            ? securityQuestions.finished
-                              ? 'text_2--text'
-                              : 'torusFont1--text'
-                            : securityQuestions.finished
-                            ? 'text_2--text'
-                            : 'text_1--text'
-                        "
-                      >
-                        {{ t('tkeyNew.recoveryPass') }}
-                      </span>
+                      <v-icon class="mr-2" :class="panelHeaderClass()">$vuetify.icons.shield_lock</v-icon>
+                      <span :class="panelHeaderClass()">{{ t('tkeyNew.recoveryPass') }}</span>
                     </div>
                     <v-icon
                       v-if="securityQuestions.finished"
@@ -106,7 +81,7 @@
                 <v-expansion-panel v-for="device in devices" :key="device.index" :disabled="verifiedWithDevice(device.index)" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2">
-                      <v-icon class="mr-4 text_2--text">$vuetify.icons.device_{{ device.icon }}</v-icon>
+                      <v-icon class="mr-2 text_2--text">$vuetify.icons.device_{{ device.icon }}</v-icon>
                       <span class="text_2--text text-capitalize">{{ t('tkeyNew.device') }} - {{ device.icon }}</span>
                     </div>
                     <v-icon
@@ -128,11 +103,18 @@
                     </div>
 
                     <div v-for="browser in device.browsers" :key="browser.dateAdded" class="d-flex info-box py-3 px-6 mb-2 align-center">
-                      <div class="grow text_2--text font-weight-bold body-2">
-                        <v-icon class="mr-1">$vuetify.icons.browser</v-icon>
-                        {{ browser.title }}
+                      <div class="grow d-flex align-center">
+                        <v-icon :size="$vuetify.breakpoint.xsOnly ? '16' : ''" class="text_2--text mr-2">$vuetify.icons.browser</v-icon>
+                        <div>
+                          <div class="font-weight-bold text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">
+                            {{ browser.title }}
+                          </div>
+                          <div v-if="$vuetify.breakpoint.xsOnly" class="text_2--text caption">{{ t('tkeyNew.refId') }}: {{ device.indexShort }}</div>
+                        </div>
                       </div>
-                      <div class="ml-auto text-right text_2--text caption">{{ t('tkeyNew.refId') }}: {{ browser.dateAdded }}</div>
+                      <div v-if="!$vuetify.breakpoint.xsOnly" class="ml-auto text-right text_2--text caption">
+                        {{ t('tkeyNew.refId') }}: {{ device.indexShort }}
+                      </div>
                     </div>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
@@ -224,6 +206,10 @@ export default {
     },
     skipLogin() {
       this.$emit('skipLogin', { rejected: true })
+    },
+    panelHeaderClass(finished) {
+      if (this.$vuetify.theme.dark) return finished ? 'text_2--text' : 'torusFont1--text'
+      return finished ? 'text_2--text' : 'text_1--text'
     },
   },
 }

@@ -22,7 +22,7 @@ export function parseShares(parsedShareDescriptions) {
       acc[x.shareIndex] = {
         index: x.shareIndex,
         osName: browserInfo.os.name,
-        indexShort: x.shareIndex.slice(0, 5),
+        indexShort: x.shareIndex.slice(0, 4),
         icon: browserInfo.platform.type,
         groupTitle: deviceInfo,
         dateAdded: x.dateAdded,

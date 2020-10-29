@@ -1,5 +1,8 @@
 <template>
-  <div class="add-wallet-container" :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark }]">
+  <div
+    class="add-wallet-container"
+    :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark, mobile: $vuetify.breakpoint.xsOnly }]"
+  >
     <div
       class="text-center mb-9"
       :class="[$vuetify.breakpoint.xsOnly ? 'headline' : 'display-1', $vuetify.theme.dark ? 'torusFont2--text' : 'text_1--text']"
@@ -20,13 +23,13 @@
             {{ t('tkeyCreateAdd.access').replace(/\{verifier\}/gi, verifierName) }}
           </div>
         </div>
-        <div class="d-flex align-center mb-7">
+        <div class="d-flex align-center mb-6">
           <img src="../../../assets/images/ob-secure.svg" alt="Self Custodial" class="mr-2" />
           <div class="font-weight-bold body-2 text_2--text">
             {{ t('tkeyCreateAdd.secureAssets') }}
           </div>
         </div>
-        <div class="d-flex align-center">
+        <div class="d-flex align-center" :class="{ 'ml-13': $vuetify.breakpoint.xsOnly }">
           <a
             class="body-2 text-decoration-none"
             :class="$vuetify.theme.dark ? 'text_2--text' : 'torusFont2--text'"
@@ -42,7 +45,7 @@
         <img :src="require(`../../../assets/images/ob-add-2fa${$vuetify.theme.dark ? '-dark' : ''}.svg`)" alt="Add 2-FA" />
       </div>
     </div>
-    <v-layout class="mx-n2 mt-9 mb-6">
+    <v-layout class="mx-n2 mb-6" :class="[$vuetify.breakpoint.xsOnly ? 'mt-12' : 'mt-9']">
       <v-flex class="xs6 px-2">
         <v-btn
           block

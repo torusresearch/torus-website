@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="header-container" :class="{ 'is-dark': $vuetify.theme.dark }">
+    <div class="header-container" :class="{ 'is-dark': $vuetify.theme.dark, mobile: $vuetify.breakpoint.xsOnly }">
       <v-container v-if="tab === 0" class="pt-6 pb-5">
         <div class="text-center headline mb-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">
           {{ t('tkeyCreate.yourSignedIn') }}

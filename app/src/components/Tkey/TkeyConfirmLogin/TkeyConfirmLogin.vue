@@ -32,11 +32,14 @@
       </div>
 
       <div class="d-flex info-box mb-2 align-center">
-        <div class="grow text_2--text d-flex align-center">
-          <v-icon :size="$vuetify.breakpoint.xsOnly ? '16' : ''" class="mr-1">$vuetify.icons.device_{{ platformType }}</v-icon>
-          <span class="font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ browserName }}</span>
+        <div class="grow d-flex align-center">
+          <v-icon :size="$vuetify.breakpoint.xsOnly ? '16' : ''" class="text_2--text mr-2">$vuetify.icons.device_{{ platformType }}</v-icon>
+          <div>
+            <div class="font-weight-bold text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ browserName }}</div>
+            <div v-if="$vuetify.breakpoint.xsOnly" class="text_2--text caption">{{ t('tkeyNew.refId') }}: {{ shortIndex }}</div>
+          </div>
         </div>
-        <div class="ml-auto text-right text_2--text caption">{{ t('tkeyNew.refId') }}: {{ shortIndex }}</div>
+        <div v-if="!$vuetify.breakpoint.xsOnly" class="ml-auto text-right text_2--text caption">{{ t('tkeyNew.refId') }}: {{ shortIndex }}</div>
       </div>
       <div class="text-right caption mb-6 text_2--text">
         {{ t('tkeyNew.reportNotMe1') }},
@@ -90,7 +93,7 @@ export default {
       return this.currentTkeyConfirmDialog.browserDetail ? this.currentTkeyConfirmDialog.browserDetail.platform.type : 'desktop'
     },
     shortIndex() {
-      return this.deviceShareIndex.slice(0, 5)
+      return this.deviceShareIndex.toString().slice(0, 4)
     },
   },
   methods: {

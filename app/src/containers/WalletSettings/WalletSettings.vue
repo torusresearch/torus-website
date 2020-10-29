@@ -11,7 +11,7 @@
       </v-flex>
     </v-layout>
     <v-layout wrap mx-n4 mt-7>
-      <v-flex px-4 xs12 sm6>
+      <v-flex px-4 xs12 md6>
         <v-expansion-panels v-model="leftPanel" multiple>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="privacy-panel-header">

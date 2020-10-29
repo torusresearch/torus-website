@@ -4,6 +4,9 @@
   box-sizing: border-box;
   box-shadow: 0px 14px 28px rgba(211, 221, 255, 0.06);
   border-radius: 6px;
+  &.mobile {
+    border-radius: 0;
+  }
   &.is-dark {
     background: var(--v-torusBlack2-base);
     border: 1px solid #343539;
@@ -13,7 +16,7 @@
 
 .add-wallet-info {
   .add-wallet-info__list {
-    width: 200px;
+    width: 260px;
   }
   .add-wallet-info__image {
     width: 235px;
@@ -23,9 +26,11 @@
       margin-top: -20px;
     }
   }
+
   &.is-mobile {
     .add-wallet-info__list {
-      width: unset;
+      width: 260px;
+      margin: auto;
       img {
         height: 32px;
       }

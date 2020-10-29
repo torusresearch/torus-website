@@ -163,7 +163,7 @@ export default {
       return !!this.currentTkeyConfirmDialog
     },
     deviceShareIndex() {
-      return this.deviceShare && this.deviceShare.share ? this.deviceShare.share.share.shareIndex.toString() : ''
+      return this.deviceShare && this.deviceShare.share ? this.deviceShare.share.share.shareIndex.toString('hex') : ''
     },
   },
   mounted() {
