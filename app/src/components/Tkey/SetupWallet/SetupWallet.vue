@@ -26,9 +26,9 @@
       >
         <v-expansion-panel class="mb-4" disabled>
           <v-expansion-panel-header class="py-2">
-            <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.{{ userInfo.typeOfLogin.toLowerCase() }}</v-icon>
+            <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.{{ typeOfLogin.toLowerCase() }}</v-icon>
             <div class="grow text-capitalize font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-              {{ userInfo.typeOfLogin }} Login
+              {{ verifierName }} Login
             </div>
             <div class="ml-auto justify-end d-flex align-center">
               <div class="caption more-details text_2--text">
@@ -181,14 +181,13 @@ import { passwordValidation } from '../../../utils/utils'
 
 export default {
   props: {
-    userInfo: {
-      type: Object,
-      default() {
-        return {
-          typeOfLogin: '',
-          verifierId: '',
-        }
-      },
+    verifierName: {
+      type: String,
+      default: '',
+    },
+    typeOfLogin: {
+      type: String,
+      default: '',
     },
     creatingTkey: {
       type: Boolean,

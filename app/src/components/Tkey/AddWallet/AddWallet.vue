@@ -17,7 +17,7 @@
         <div class="d-flex align-center mb-6">
           <img src="../../../assets/images/ob-access.svg" alt="Self Custodial" class="mr-2" />
           <div class="font-weight-bold body-2 text_2--text">
-            {{ t('tkeyCreateAdd.access').replace(/\{verifier\}/gi, typeOfLoginFormated) }}
+            {{ t('tkeyCreateAdd.access').replace(/\{verifier\}/gi, verifierName) }}
           </div>
         </div>
         <div class="d-flex align-center mb-7">
@@ -74,14 +74,9 @@
 <script>
 export default {
   props: {
-    typeOfLogin: {
+    verifierName: {
       type: String,
       default: '',
-    },
-  },
-  computed: {
-    typeOfLoginFormated() {
-      return this.typeOfLogin.charAt(0).toUpperCase() + this.typeOfLogin.slice(1)
     },
   },
   methods: {

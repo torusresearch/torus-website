@@ -227,6 +227,7 @@ export default {
       wallets: 'wallet',
       userInfo: 'userInfo',
       tKeyStore: 'tKeyStore',
+      loginConfig: (state) => state.embedState.loginConfig,
     }),
     torusShareAccounts() {
       return [
@@ -249,7 +250,7 @@ export default {
       return this.tKeyStore.settingsPageData.threshold
     },
     userEmail() {
-      return getUserEmail(this.userInfo)
+      return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
     },
     equalToPassword() {
       return this.recoveryPasswordConfirm === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch')

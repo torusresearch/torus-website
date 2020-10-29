@@ -104,6 +104,7 @@ export default {
       wallets: 'wallet',
       userInfo: 'userInfo',
       defaultPublicAddress: 'defaultPublicAddress',
+      loginConfig: (state) => state.embedState.loginConfig,
     }),
     computedWallets() {
       return Object.keys(this.wallets).reduce((acc, key) => {
@@ -120,7 +121,7 @@ export default {
       }, [])
     },
     userEmail() {
-      return getUserEmail(this.userInfo)
+      return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
     },
   },
   methods: {

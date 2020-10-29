@@ -246,7 +246,7 @@ export default {
           .indexOf(this.fullAddress)
         return `${this.t('accountMenu.importedAccount')} ${index + 1}`
       }
-      return getUserEmail(this.userInfo, this.t('accountMenu.wallet'))
+      return getUserEmail(this.userInfo, this.embedState.loginConfig, this.t('accountMenu.wallet'))
     },
     userIcon() {
       if (this.accountType === ACCOUNT_TYPE.THRESHOLD) {

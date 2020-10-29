@@ -166,7 +166,15 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userInfo', 'selectedAddress', 'selectedCurrency', 'currencyData', 'networkType', 'wallet']),
+    ...mapState({
+      userInfo: 'userInfo',
+      selectedAddress: 'selectedAddress',
+      selectedCurrency: 'selectedCurrency',
+      currencyData: 'currencyData',
+      networkType: 'networkType',
+      wallet: 'wallet',
+      loginConfig: (state) => state.embedState.loginConfig,
+    }),
     ...mapGetters({
       wallets: 'walletBalances',
     }),
@@ -249,7 +257,7 @@ export default {
           .indexOf(account.address)
         return `${this.t('accountMenu.importedAccount')} ${index + 1}`
       }
-      return getUserEmail(this.userInfo, this.t('accountMenu.wallet'))
+      return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
     },
   },
 }

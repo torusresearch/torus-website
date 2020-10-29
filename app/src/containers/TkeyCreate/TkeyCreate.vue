@@ -47,12 +47,13 @@
         <v-flex class="xs12 sm10 md8 lg7">
           <v-tabs-items v-model="tab" touchless>
             <v-tab-item>
-              <AddWallet :type-of-login="userInfo.typeOfLogin" @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
+              <AddWallet :verifier-name="verifierName" @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
             </v-tab-item>
             <v-tab-item>
               <SetupWallet
                 :creating-tkey="creatingTkey"
-                :user-info="userInfo"
+                :verifier-name="verifierName"
+                :type-of-login="userInfo.typeOfLogin"
                 :user-email="userEmail"
                 @tKeyOnboardingCancel="tKeyOnboardingCancel"
                 @next="tab = 2"
@@ -100,9 +101,10 @@ export default {
       selectedAddress: 'selectedAddress',
       defaultPublicAddress: 'defaultPublicAddress',
       tKeyExists: 'tKeyExists',
+      loginConfig: (state) => state.embedState.loginConfig,
     }),
     userEmail() {
-      return getUserEmail(this.userInfo)
+      return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
     },
     slicedAddress() {
       return this.$vuetify.breakpoint.xsOnly
@@ -125,6 +127,10 @@ export default {
     },
     selectedPublicAddress() {
       return this.defaultPublicAddress || Object.keys(this.wallets).find((x) => this.wallets[x].accountType === ACCOUNT_TYPE.THRESHOLD)
+    },
+    verifierName() {
+      const verifierName = this.loginConfig[this.userInfo.verifier].name
+      return verifierName.charAt(0).toUpperCase() + verifierName.slice(1)
     },
   },
   mounted() {
