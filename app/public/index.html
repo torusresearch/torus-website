@@ -4,24 +4,42 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <meta name="description" content="A simple and secure gateway to the decentralized ecosystem via Google or Facebook OAuth logins" />
+    <meta
+      name="description"
+      content="Torus Wallet is the easiest blockchain digital wallet available on the web.
+    Take advantage of social logins like Google, Facebook, Twitter, Discord, Reddit and Email to instantly and securely manage your private keys, cryptocurrencies, digital tokens and DeFi transactions."
+    />
     <meta name="keywords" content="crypto, wallet, oauth, login, best, ethereum, torus" />
     <meta name="author" content="Torus Labs" />
     <link rel="shortcut icon" href="<%= BASE_URL %>favicon.png" />
     <title>Torus</title>
-    
+
     <!-- #OG Tags for facebook, linkedin -->
     <meta property="og:title" content="Torus" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="<%= BASE_URL %>" />
+    <meta property="og:url" content="<%= VUE_APP_BASE_ROUTE %>" />
     <meta property="og:image" content="<%= BASE_URL %>images/torus_logo.png" />
-    <meta property="og:description" content="Torus Makes logins easier" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="de_DE" />
+    <meta property="og:locale:alternate" content="es_ES" />
+    <meta property="og:locale:alternate" content="zh_CN" />
+    <meta property="og:locale:alternate" content="ko_KR" />
+    <meta property="og:locale:alternate" content="ja_JP" />
+    <meta
+      property="og:description"
+      content="Torus Wallet is the easiest blockchain digital wallet available on the web.
+    Take advantage of social logins like Google, Facebook, Twitter, Discord, Reddit and Email to instantly and securely manage your private keys, cryptocurrencies, digital tokens and DeFi transaction"
+    />
     <!-- #Tags for twitter -->
     <meta property="twitter:title" content="Torus" />
     <meta property="twitter:card" content="summary" />
-    <meta property="twitter:url" content="<%= BASE_URL %>" />
+    <meta property="twitter:url" content="<%= VUE_APP_BASE_ROUTE %>" />
     <meta property="twitter:image" content="<%= BASE_URL %>images/torus_logo.png" />
-    <meta property="twitter:description" content="Torus Makes logins easier" />
+    <meta
+      property="twitter:description"
+      content="Torus Wallet is the easiest blockchain digital wallet available on the web.
+      Take advantage of social logins like Google, Facebook, Twitter, Discord, Reddit and Email to instantly and securely manage your private keys, cryptocurrencies, digital tokens and DeFi transactions."
+    />
 
     <link rel="preconnect" href="https://www.google-analytics.com" />
     <link rel="dns-prefetch" href="https://www.google-analytics.com" />
@@ -65,175 +83,175 @@
       </div>
 
       <!-- LOGIN LOADER -->
-      <div id="skeleton-login" class="skeleton-holder sk-grid" style="margin-top: 20px;">
+      <div id="skeleton-login" class="skeleton-holder sk-grid" style="margin-top: 20px">
         <div class="sk-grid__col-desk-6 sk-grid">
-          <div class="sk-grid__col-desk-12" style="height: 150px;"></div>
-          <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 30px; margin-bottom: 30px;"></div></div>
+          <div class="sk-grid__col-desk-12" style="height: 150px"></div>
+          <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 30px; margin-bottom: 30px"></div></div>
           <div class="sk-grid__col-desk-9"></div>
 
-          <div class="sk-grid__col-desk-9"><div class="sk-loader" style="height: 40px; margin-bottom: 20px;"></div></div>
-          <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 15px; margin-bottom: 30px;"></div></div>
-          <div class="sk-grid__col-desk-8"><div class="sk-loader" style="height: 50px; margin-bottom: 15px;"></div></div>
-          <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 15px; margin-bottom: 15px;"></div></div>
+          <div class="sk-grid__col-desk-9"><div class="sk-loader" style="height: 40px; margin-bottom: 20px"></div></div>
+          <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 15px; margin-bottom: 30px"></div></div>
+          <div class="sk-grid__col-desk-8"><div class="sk-loader" style="height: 50px; margin-bottom: 15px"></div></div>
+          <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 15px; margin-bottom: 15px"></div></div>
           <div class="sk-grid__col-desk-6"></div>
 
-          <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
-          <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
-          <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
-          <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+          <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
+          <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
+          <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
+          <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
 
-          <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 15px; margin-bottom: 15px;"></div></div>
+          <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 15px; margin-bottom: 15px"></div></div>
 
-          <div class="sk-grid__col-desk-12" style="height: 150px;"></div>
+          <div class="sk-grid__col-desk-12" style="height: 150px"></div>
         </div>
-        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 100%; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 100%; margin-bottom: 30px"></div></div>
       </div>
 
       <!-- MOBILE LOGIN LOADER -->
-      <div id="skeleton-login-mobile" class="skeleton-holder sk-grid" style="width: 75%;">
-        <div class="sk-grid__col-mob-4" style="height: 150px;"></div>
+      <div id="skeleton-login-mobile" class="skeleton-holder sk-grid" style="width: 75%">
+        <div class="sk-grid__col-mob-4" style="height: 150px"></div>
 
-        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 30px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 30px; margin-bottom: 30px"></div></div>
         <div class="sk-grid__col-mob-2"></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 35px; margin-bottom: 3px;"></div></div>
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 35px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 15px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 35px; margin-bottom: 3px"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 35px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 15px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 15px; margin-bottom: 15px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 15px; margin-bottom: 15px"></div></div>
 
-        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 10px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 15px; margin-bottom: 5px;"></div></div>
+        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 10px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 15px; margin-bottom: 5px"></div></div>
       </div>
 
       <!-- HOME LOADER -->
       <div id="skeleton-wallet-home" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-desk-2"><div class="sk-loader" style="height: 25px;"></div></div>
+        <div class="sk-grid__col-desk-2"><div class="sk-loader" style="height: 25px"></div></div>
         <div class="sk-grid__col-desk-4 sk-grid__col-desk-shift-6 sk-grid">
-          <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 15px;"></div></div>
-          <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 15px;"></div></div>
+          <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 15px"></div></div>
+          <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 15px"></div></div>
         </div>
 
-        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 140px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 140px; margin-bottom: 15px;"></div></div>
+        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 140px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 140px; margin-bottom: 15px"></div></div>
 
-        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 15px; margin-bottom: 15px;"></div></div>
+        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 15px; margin-bottom: 15px"></div></div>
         <div class="sk-grid__col-desk-6"></div>
 
         <div class="sk-grid__col-desk-3">
-          <div class="sk-grid" style="margin-left: 0;">
-            <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 2px;"></div></div>
-            <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 2px;"></div></div>
+          <div class="sk-grid" style="margin-left: 0">
+            <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 2px"></div></div>
+            <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 2px"></div></div>
           </div>
         </div>
         <div class="sk-grid__col-desk-6"></div>
-        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 140px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 140px; margin-bottom: 15px;"></div></div>
+        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 140px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 140px; margin-bottom: 15px"></div></div>
       </div>
 
       <!-- MOBILE HOME LOADER -->
       <div id="skeleton-wallet-home-mobile" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-mob-2"></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 130px; margin-bottom: 30px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 130px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 130px; margin-bottom: 30px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 130px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 5px;"></div></div>
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 5px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 5px"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 5px"></div></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 15px; margin-bottom: 15px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 15px; margin-bottom: 15px"></div></div>
 
-        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 2px;"></div></div>
-        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 2px"></div></div>
+        <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 2px"></div></div>
         <div class="sk-grid__col-mob-2"></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 150px; margin-bottom: 5px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 150px; margin-bottom: 5px"></div></div>
       </div>
 
       <!-- HOME COLLECTIBLES LOADER -->
       <div id="skeleton-wallet-home-collectibles" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 25px; margin-bottom: 25px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 25px; margin-bottom: 25px"></div></div>
         <div class="sk-grid__col-desk-9"></div>
 
-        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 35px;"></div></div>
-        <div class="sk-grid__col-desk-2" style="align-self: flex-end;"><div class="sk-loader" style="height: 15px; margin-bottom: 35px;"></div></div>
+        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 35px"></div></div>
+        <div class="sk-grid__col-desk-2" style="align-self: flex-end"><div class="sk-loader" style="height: 15px; margin-bottom: 35px"></div></div>
         <div class="sk-grid__col-desk-4"></div>
 
-        <div class="sk-grid__col-desk-2"><div class="sk-loader" style="height: 180px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-desk-2"><div class="sk-loader" style="height: 180px; margin-bottom: 15px;"></div></div>
+        <div class="sk-grid__col-desk-2"><div class="sk-loader" style="height: 180px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-desk-2"><div class="sk-loader" style="height: 180px; margin-bottom: 15px"></div></div>
       </div>
 
       <!-- HOME COLLECTIBLES MOBILE LOADER -->
       <div id="skeleton-wallet-home-collectibles-mobile" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px"></div></div>
 
-        <div class="sk-grid__col-mob-3"><div class="sk-loader" style="height: 15px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-3"><div class="sk-loader" style="height: 15px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-mob-1"></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 5px;"></div></div>
-        <div class="sk-grid__col-mob-2 sk-grid__col-mob-shift-2"><div class="sk-loader" style="height: 15px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 5px"></div></div>
+        <div class="sk-grid__col-mob-2 sk-grid__col-mob-shift-2"><div class="sk-loader" style="height: 15px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 130px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 130px; margin-bottom: 30px"></div></div>
       </div>
 
       <!-- TRANSFER LOADER -->
       <div id="skeleton-wallet-transfer" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 25px; margin-bottom: 25px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 25px; margin-bottom: 25px"></div></div>
         <div class="sk-grid__col-desk-9"></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
         <div class="sk-grid__col-desk-3"></div>
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
         <div class="sk-grid__col-desk-3"></div>
 
-        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 25px;"></div></div>
-        <div class="sk-grid__col-desk-4"><div class="sk-loader" style="height: 50px; margin-bottom: 25px;"></div></div>
+        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 25px"></div></div>
+        <div class="sk-grid__col-desk-4"><div class="sk-loader" style="height: 50px; margin-bottom: 25px"></div></div>
         <div class="sk-grid__col-desk-2"></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
         <div class="sk-grid__col-desk-9"></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 25px;"></div></div>
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 25px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 25px"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 25px"></div></div>
         <div class="sk-grid__col-desk-6"></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
-        <div class="sk-grid__col-desk-2 sk-grid__col-desk-shift-1"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
+        <div class="sk-grid__col-desk-2 sk-grid__col-desk-shift-1"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
         <div class="sk-grid__col-desk-6"></div>
 
-        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 25px;"></div></div>
+        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 25px"></div></div>
         <div class="sk-grid__col-desk-6"></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
-        <div class="sk-grid__col-desk-2 sk-grid__col-desk-shift-1"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
+        <div class="sk-grid__col-desk-2 sk-grid__col-desk-shift-1"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
         <div class="sk-grid__col-desk-6"></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 25px;"></div></div>
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 25px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 25px"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 50px; margin-bottom: 25px"></div></div>
         <div class="sk-grid__col-desk-6"></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
         <div class="sk-grid__col-desk-9"></div>
 
-        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 25px;"></div></div>
+        <div class="sk-grid__col-desk-6"><div class="sk-loader" style="height: 50px; margin-bottom: 25px"></div></div>
         <div class="sk-grid__col-desk-6"></div>
 
         <div class="sk-grid__col-desk-6">
-          <div class="sk-grid__col-desk-4 sk-grid__col-desk-shift-8" style="padding-right: 0;">
-            <div class="sk-loader" style="height: 50px; margin-bottom: 25px;"></div>
+          <div class="sk-grid__col-desk-4 sk-grid__col-desk-shift-8" style="padding-right: 0">
+            <div class="sk-loader" style="height: 50px; margin-bottom: 25px"></div>
           </div>
         </div>
         <div class="sk-grid__col-desk-6"></div>
@@ -241,163 +259,163 @@
 
       <!-- MOBILE TRANSFER LOADER -->
       <div id="skeleton-wallet-transfer-mobile" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-mob-2"></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
-        <div class="sk-grid__col-mob-3"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
+        <div class="sk-grid__col-mob-3"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 2px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 2px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
         <div class="sk-grid__col-mob-2"></div>
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 2px;"></div></div>
-        <div class="sk-grid__col-mob-2 sk-grid__col-mob-shift-2"><div class="sk-loader" style="height: 15px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 2px"></div></div>
+        <div class="sk-grid__col-mob-2 sk-grid__col-mob-shift-2"><div class="sk-loader" style="height: 15px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-mob-2 sk-grid__col-mob-shift-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-2 sk-grid__col-mob-shift-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
       </div>
 
       <!-- TOPUP LOADER -->
       <div id="skeleton-wallet-topup" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 25px; margin-bottom: 25px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 25px; margin-bottom: 25px"></div></div>
         <div class="sk-grid__col-desk-9"></div>
 
-        <div class="sk-grid__col-desk-5"><div class="sk-loader" style="height: 90px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-desk-5"><div class="sk-loader" style="height: 90px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-desk-7"></div>
-        <div class="sk-grid__col-desk-5"><div class="sk-loader" style="height: 90px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-desk-5"><div class="sk-loader" style="height: 90px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-desk-7"></div>
-        <div class="sk-grid__col-desk-5"><div class="sk-loader" style="height: 90px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-desk-5"><div class="sk-loader" style="height: 90px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-desk-7"></div>
-        <div class="sk-grid__col-desk-5"><div class="sk-loader" style="height: 90px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-desk-5"><div class="sk-loader" style="height: 90px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-desk-7"></div>
-        <div class="sk-grid__col-desk-5"><div class="sk-loader" style="height: 90px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-desk-5"><div class="sk-loader" style="height: 90px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-desk-7"></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
         <div class="sk-grid__col-desk-9"></div>
-        <div class="sk-grid__col-desk-4"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-desk-4"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
       </div>
 
       <!-- MOBILE TOPUP LOADER -->
       <div id="skeleton-wallet-topup-mobile" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-mob-2"></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 15px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 15px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
         <div class="sk-grid__col-mob-2"></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
       </div>
 
       <!-- HISTORY LOADER -->
       <div id="skeleton-wallet-history" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 25px; margin-bottom: 25px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 25px; margin-bottom: 25px"></div></div>
         <div class="sk-grid__col-desk-6"></div>
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 20px; margin-bottom: 25px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 20px; margin-bottom: 25px"></div></div>
 
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 75px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 75px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 75px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 75px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 75px; margin-bottom: 40px;"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 75px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 75px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 75px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 75px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 75px; margin-bottom: 40px"></div></div>
 
         <div class="sk-grid__col-desk-4"></div>
-        <div class="sk-grid__col-desk-4"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-desk-4"><div class="sk-loader" style="height: 15px; margin-bottom: 2px"></div></div>
         <div class="sk-grid__col-desk-4"></div>
       </div>
 
       <!-- MOBILE HISTORY LOADER -->
       <div id="skeleton-wallet-history-mobile" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-mob-2"></div>
 
-        <div class="sk-grid__col-mob-3 sk-grid__col-mob-shift-1"><div class="sk-loader" style="height: 20px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-3 sk-grid__col-mob-shift-1"><div class="sk-loader" style="height: 20px; margin-bottom: 20px"></div></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 15px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 15px"></div></div>
       </div>
 
       <!-- SETTINGS LOADER -->
       <div id="skeleton-wallet-settings" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
 
-        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 25px; margin-bottom: 25px;"></div></div>
+        <div class="sk-grid__col-desk-3"><div class="sk-loader" style="height: 25px; margin-bottom: 25px"></div></div>
         <div class="sk-grid__col-desk-9"></div>
 
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 190px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 190px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 250px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 190px; margin-bottom: 15px;"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 190px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 190px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 250px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-desk-12"><div class="sk-loader" style="height: 190px; margin-bottom: 15px"></div></div>
       </div>
 
       <!-- MOBILE SETTINGS LOADER -->
       <div id="skeleton-wallet-settings-mobile" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-mob-2"></div>
 
-        <div class="sk-grid__col-mob-3 sk-grid__col-mob-shift-1"><div class="sk-loader" style="height: 20px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-3 sk-grid__col-mob-shift-1"><div class="sk-loader" style="height: 20px; margin-bottom: 20px"></div></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 160px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 160px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 250px; margin-bottom: 15px;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 160px; margin-bottom: 15px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 160px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 160px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 250px; margin-bottom: 15px"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 160px; margin-bottom: 15px"></div></div>
       </div>
 
       <!-- POPUP / CONFIRM LOADER -->
       <div id="skeleton-confirm" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-top: 30px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-top: 30px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-mob-2"></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 20px"></div></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 80px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 80px; margin-bottom: 20px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
       </div>
 
       <!-- POPUP / USER INFO / CHANGE PROVIDER LOADER -->
       <div id="skeleton-user-info-and-provider" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-top: 30px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-top: 30px; margin-bottom: 20px"></div></div>
         <div class="sk-grid__col-mob-2"></div>
 
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 20px"></div></div>
 
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px"></div></div>
       </div>
     </div>
     <script>
