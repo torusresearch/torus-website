@@ -63,10 +63,13 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title class="font-weight-regular caption">
-                <span class="text_1--text">
-                  <span class="font-weight-bold">{{ browser.title }}</span>
-                  <span v-if="browser.isCurrent" class="font-italic">({{ t('tkeySettings.current') }})</span>
-                </span>
+                <div>
+                  <div class="text_1--text">
+                    <span class="font-weight-bold">{{ browser.title }}</span>
+                    <span v-if="browser.isCurrent" class="font-italic">({{ t('tkeySettings.current') }})</span>
+                  </div>
+                  <div :style="{ fontSize: '10px' }">{{ browser.dateFormatted }}</div>
+                </div>
               </v-list-item-title>
             </v-list-item-content>
             <v-list-item-action class="ma-0">

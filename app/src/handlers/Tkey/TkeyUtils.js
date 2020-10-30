@@ -3,10 +3,10 @@ import bowser from 'bowser'
 import {
   CHROME_EXTENSION_STORAGE_MODULE_KEY,
   SECURITY_QUESTIONS_MODULE_KEY,
-  STORAGE_MAP,
   THRESHOLD_KEY_PRIORITY_ORDER,
   WEB_STORAGE_MODULE_KEY,
 } from '../../utils/enums'
+import { capitalizeFirstLetter } from '../../utils/utils'
 
 export function parseShares(parsedShareDescriptions) {
   return parsedShareDescriptions.reduce((acc, x) => {
@@ -14,11 +14,13 @@ export function parseShares(parsedShareDescriptions) {
 
     x.browserName = x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? 'Chrome Extension' : `${browserInfo.browser.name}`
     x.title = `${x.browserName}${x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? '' : ` ${`V${browserInfo.browser.version}`}`}`
+    x.dateFormatted = new Date(x.dateAdded).toLocaleString()
 
     if (acc[x.shareIndex]) {
       acc[x.shareIndex].browsers = [...acc[x.shareIndex].browsers, x]
     } else {
-      const deviceInfo = `${STORAGE_MAP[x.module]} - ${browserInfo.os.name} ${browserInfo.browser.name}`
+      const deviceType = x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? 'Chrome Extension' : capitalizeFirstLetter(browserInfo.platform.type)
+      const deviceInfo = `${deviceType} - ${browserInfo.os.name}`
       acc[x.shareIndex] = {
         index: x.shareIndex,
         osName: browserInfo.os.name,

@@ -102,14 +102,27 @@
                       }}
                     </div>
 
-                    <div v-for="browser in device.browsers" :key="browser.dateAdded" class="d-flex info-box py-3 px-6 mb-2 align-center">
+                    <div
+                      v-for="browser in device.browsers"
+                      :key="browser.dateAdded"
+                      class="d-flex info-box px-6 mb-2 align-center"
+                      :class="[$vuetify.breakpoint.xsOnly ? 'py-4' : 'py-3']"
+                    >
                       <div class="grow d-flex align-center">
                         <v-icon :size="$vuetify.breakpoint.xsOnly ? '16' : ''" class="text_2--text mr-2">$vuetify.icons.browser</v-icon>
                         <div>
                           <div class="font-weight-bold text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">
-                            {{ browser.title }}
+                            <div>{{ browser.title }}</div>
+                            <div class="font-weight-regular" :style="{ fontSize: '10px', lineHeight: '1em' }">{{ browser.dateFormatted }}</div>
                           </div>
-                          <div v-if="$vuetify.breakpoint.xsOnly" class="text_2--text caption">{{ t('tkeyNew.refId') }}: {{ device.indexShort }}</div>
+                          <div
+                            v-if="$vuetify.breakpoint.xsOnly"
+                            class="text_2--text"
+                            :class="{ caption: !$vuetify.breakpoint.xsOnly }"
+                            :style="[{ fontSize: '10px', lineHeight: '1em' }]"
+                          >
+                            {{ t('tkeyNew.refId') }}: {{ device.indexShort }}
+                          </div>
                         </div>
                       </div>
                       <div v-if="!$vuetify.breakpoint.xsOnly" class="ml-auto text-right text_2--text caption">
