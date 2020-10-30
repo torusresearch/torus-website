@@ -144,8 +144,8 @@ class ThresholdKeyController extends EventEmitter {
 
   async copyShareUsingIndexAndStoreLocally(index) {
     const { tKey } = this.state
-    const outputshare = tKey.outputShare(index)
-    await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShare(outputshare)
+    const outputshareStore = await tKey.outputShareStore(index)
+    await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShare(outputshareStore)
     await this.setSettingsPageData()
   }
 
@@ -258,9 +258,9 @@ class ThresholdKeyController extends EventEmitter {
     await this.setSettingsPageData()
   }
 
-  downloadShare(shareIndex) {
+  async downloadShare(shareIndex) {
     const { tKey } = this.state
-    const shareStore = tKey.outputShare(shareIndex)
+    const shareStore = await tKey.outputShareStore(shareIndex)
     const fileName = `${derivePubKeyXFromPolyID(shareStore.polynomialID)}.json`
     const text = JSON.stringify(shareStore, null, 2)
     downloadItem(fileName, text)
