@@ -78,7 +78,10 @@ export default {
       }
       try {
         const postboxWallet = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
+        const { loginConfig } = state.embedState
+        const verifierName = loginConfig[state.userInfo.verifier].name
         const popupPayload = {
+          verifierName,
           whiteLabel: state.whiteLabel,
           data: JSON.stringify(data),
           postboxKey: state.wallet[postboxWallet]?.privateKey,

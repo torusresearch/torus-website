@@ -1,6 +1,12 @@
 <template>
   <div>
-    <TkeyInputForm :t-key-json="currentFormData" :postbox-key="postboxKey" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
+    <TkeyInputForm
+      :verifier-name="verifierName"
+      :t-key-json="currentFormData"
+      :postbox-key="postboxKey"
+      @triggerSign="triggerSign"
+      @triggerDeny="triggerDeny"
+    />
   </div>
 </template>
 
@@ -27,10 +33,11 @@ export default {
     this.channel = `tkey_channel_${instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
-      const { whiteLabel, data, postboxKey } = ev.data || {}
+      const { whiteLabel, data, postboxKey, verifierName } = ev.data || {}
       this.currentFormData = JSON.parse(data)
       this.postboxKey = postboxKey
       this.$store.commit('setWhiteLabel', whiteLabel)
+      this.verifierName = verifierName.charAt(0).toUpperCase() + verifierName.slice(1)
 
       bc.close()
     })

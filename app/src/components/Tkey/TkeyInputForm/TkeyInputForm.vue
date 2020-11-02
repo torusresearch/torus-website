@@ -6,6 +6,7 @@
       :incorrect-password="incorrectPassword"
       :required-shares="settingsData && settingsData.keyDetails && settingsData.keyDetails.requiredShares"
       :all-device-shares="settingsData && settingsData.allDeviceShares"
+      :verifier-name="verifierName"
       @setPasswordInput="enterPassword"
       @skipLogin="setInput"
     />
@@ -33,6 +34,10 @@ export default {
       },
     },
     postboxKey: {
+      type: String,
+      default: '',
+    },
+    verifierName: {
       type: String,
       default: '',
     },

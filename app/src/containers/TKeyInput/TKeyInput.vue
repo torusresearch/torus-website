@@ -1,6 +1,12 @@
 <template>
   <div>
-    <TkeyInputForm :t-key-json="tKeyJson" :postbox-key="postboxKey" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
+    <TkeyInputForm
+      :verifier-name="verifierName"
+      :t-key-json="tKeyJson"
+      :postbox-key="postboxKey"
+      @triggerSign="triggerSign"
+      @triggerDeny="triggerDeny"
+    />
   </div>
 </template>
 
@@ -18,10 +24,16 @@ export default {
       tKeyJson: (state) => state.tKeyStore.tKey,
       wallet: 'wallet',
       selectedAddress: 'selectedAddress',
+      loginConfig: (state) => state.embedState.loginConfig,
+      userInfo: 'userInfo',
     }),
     postboxKey() {
       const postboxWallet = Object.keys(this.wallet).find((x) => this.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
       return this.wallet[postboxWallet]?.privateKey
+    },
+    verifierName() {
+      const verifierName = this.loginConfig[this.userInfo.verifier].name
+      return verifierName.charAt(0).toUpperCase() + verifierName.slice(1)
     },
   },
   watch: {

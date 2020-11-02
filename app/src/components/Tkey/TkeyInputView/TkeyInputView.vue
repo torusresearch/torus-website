@@ -133,7 +133,7 @@
                 </v-expansion-panel>
               </v-expansion-panels>
               <div class="text-right">
-                <a class="caption text_2--text" @click="skipLogin">{{ t('tkeyNew.skip') }}</a>
+                <a class="caption text_2--text" @click="skipLogin">{{ t('tkeyNew.skip').replace(/\{verifier\}/gi, verifierName) }}</a>
               </div>
             </div>
             <NewDeviceFooter />
@@ -171,6 +171,10 @@ export default {
     incorrectPassword: {
       type: Boolean,
       default: false,
+    },
+    verifierName: {
+      type: String,
+      default: '',
     },
   },
   data() {
