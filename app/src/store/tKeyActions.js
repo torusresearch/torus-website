@@ -86,7 +86,7 @@ export default {
           data: JSON.stringify(data),
           postboxKey: state.wallet[postboxWallet]?.privateKey,
         }
-        const finalUrl = `${baseRoute}wallet/tkey/dapp-input?integrity=true&instanceId=${windowId}`
+        const finalUrl = `${baseRoute}tkey/dapp-input?integrity=true&instanceId=${windowId}`
         const tKeyInputWindow = new PopupWithBcHandler({
           url: finalUrl,
           target: '_blank',
