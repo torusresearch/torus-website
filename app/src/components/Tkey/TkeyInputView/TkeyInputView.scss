@@ -105,6 +105,8 @@
 .new-device-container.is-mobile {
   padding: 80px 24px 120px;
   min-height: unset;
+  margin-top: 12px;
+  border-radius: 0;
   .new-device-header {
     margin-bottom: 16px;
     &__title {
