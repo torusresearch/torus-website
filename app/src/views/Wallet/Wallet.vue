@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :show-nav="!isTkeyScreen" :show-language-selector="!isTkeyScreen" :header-items="headerItems">
+    <Navbar :show-nav="true" :show-language-selector="true" :header-items="headerItems">
       <template v-slot:drawer>
         <v-btn v-if="$vuetify.breakpoint.smAndDown" id="menu-dropdown-mobile-btn" icon aria-label="Open Account Menu" @click="drawer = !drawer">
           <v-icon class="torusBrand1--text">$vuetify.icons.menu</v-icon>
@@ -8,7 +8,7 @@
       </template>
     </Navbar>
     <v-navigation-drawer v-model="drawer" disable-resize-watcher app right :width="$vuetify.breakpoint.xsOnly ? '80%' : ''">
-      <AccountMenu :show-nav="!isTkeyScreen" :show-language-selector="!isTkeyScreen" :header-items="headerItems"></AccountMenu>
+      <AccountMenu :show-nav="true" :show-language-selector="true" :header-items="headerItems"></AccountMenu>
     </v-navigation-drawer>
     <v-main>
       <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
@@ -149,9 +149,6 @@ export default {
     },
     badgesTransactionDialog() {
       return this.pastTransactions && this.pastTransactions.length > 0 && this.badgesCompletion[BADGES_TRANSACTION] === false
-    },
-    isTkeyScreen() {
-      return ['tkeyCreate', 'tkeyDappInput', 'tKeyInput'].includes(this.$route.name)
     },
     currentTkeyConfirmDialog() {
       if (this.shareTransferRequests?.length > 0) {

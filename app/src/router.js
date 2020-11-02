@@ -154,35 +154,35 @@ const router = new Router({
             },
           ],
         },
+      ],
+    },
+    {
+      path: '/tkey',
+      component: Tkey,
+      children: [
         {
-          path: 'tkey',
-          component: Tkey,
-          children: [
-            {
-              path: '/',
-              name: 'tkeyCreate',
-              component: TkeyCreate,
-              meta: {
-                requiresAuth: false,
-              },
-            },
-            {
-              path: 'dapp-input',
-              name: 'tkeyDappInput',
-              component: TKeyDappInput,
-              meta: {
-                requiresAuth: false,
-              },
-            },
-            {
-              path: 'input',
-              name: 'tKeyInput',
-              component: TKeyInput,
-              meta: {
-                requiresAuth: false,
-              },
-            },
-          ],
+          path: '/',
+          name: 'tkeyCreate',
+          component: TkeyCreate,
+          meta: {
+            requiresAuth: false,
+          },
+        },
+        {
+          path: 'dapp-input',
+          name: 'tkeyDappInput',
+          component: TKeyDappInput,
+          meta: {
+            requiresAuth: false,
+          },
+        },
+        {
+          path: 'input',
+          name: 'tKeyInput',
+          component: TKeyInput,
+          meta: {
+            requiresAuth: false,
+          },
         },
       ],
     },
