@@ -111,6 +111,7 @@
                 :append-icon="showRecoveryPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                 :type="showRecoveryPassword ? 'text' : 'password'"
                 :rules="[rules.required, rules.minLength]"
+                minlength="10"
                 outlined
                 :placeholder="t('tkeyCreateSetup.minAlphaNumeric')"
                 autocomplete="new-password"

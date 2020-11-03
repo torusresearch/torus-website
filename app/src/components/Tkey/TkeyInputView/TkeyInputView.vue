@@ -58,9 +58,11 @@
                         v-model="verifyPassword"
                         :append-icon="showVerifyPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                         :type="showVerifyPassword ? 'text' : 'password'"
-                        :rules="[rules.required, passwordError]"
+                        :rules="[rules.required, passwordError, rules.minLength]"
                         outlined
+                        minlength="10"
                         :readonly="securityQuestions.finished"
+                        autocomplete="current-password"
                         :placeholder="t('tkeyNew.enterPassword')"
                         @click:append="showVerifyPassword = !showVerifyPassword"
                         @keydown="passwordEntered = false"
