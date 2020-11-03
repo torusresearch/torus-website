@@ -113,8 +113,9 @@
             v-model="recoveryPasswordConfirm"
             :append-icon="showRecoveryPasswordConfirm ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
             :type="showRecoveryPasswordConfirm ? 'text' : 'password'"
-            :rules="[rules.required, equalToPassword]"
+            :rules="[rules.required, rules.minLength, equalToPassword]"
             outlined
+            minlength="10"
             :placeholder="t('tkeyCreateSetup.confirmPassword')"
             autocomplete="new-password"
             @click:append="showRecoveryPasswordConfirm = !showRecoveryPasswordConfirm"
