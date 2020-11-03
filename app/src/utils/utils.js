@@ -679,7 +679,7 @@ export function derivePubKeyXFromPolyID(polyID) {
 }
 
 export function passwordValidation(v) {
-  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[\dA-Za-z]{10,}$/.test(v)
+  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,}$/.test(v)
 }
 
 export function padPrivateKey(privKey) {
