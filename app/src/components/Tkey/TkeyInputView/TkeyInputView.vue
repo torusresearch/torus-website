@@ -58,9 +58,8 @@
                         v-model="verifyPassword"
                         :append-icon="showVerifyPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                         :type="showVerifyPassword ? 'text' : 'password'"
-                        :rules="[rules.required, passwordError, rules.minLength]"
+                        :rules="[rules.required, passwordError]"
                         outlined
-                        minlength="10"
                         :readonly="securityQuestions.finished"
                         autocomplete="current-password"
                         :placeholder="t('tkeyNew.enterPassword')"
@@ -148,7 +147,6 @@
 
 <script>
 import { CHROME_EXTENSION_STORAGE_MODULE_KEY, STORAGE_MAP } from '../../../utils/enums'
-import { passwordValidation } from '../../../utils/utils'
 import NewDeviceFooter from '../NewDeviceFooter'
 
 export default {
@@ -187,7 +185,6 @@ export default {
       passwordEntered: false,
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
-        minLength: (v) => passwordValidation(v) || this.t('tkeyCreateSetup.passwordRules'),
       },
       CHROME_EXTENSION_STORAGE_MODULE_KEY,
       STORAGE_MAP,
