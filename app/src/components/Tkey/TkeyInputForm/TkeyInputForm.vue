@@ -96,25 +96,45 @@ export default {
       }
     },
     async listenForShareTransfer() {
-      this.currentEncPubKeyX = await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].requestNewShare(
-        window.navigator.userAgent,
-        this.tKey.getCurrentShareIndexes()
-      )
-      const shareStore = await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].startRequestStatusCheck(this.currentEncPubKeyX, true)
-      log.info(shareStore, 'received transferred Share')
-      this.currentEncPubKeyX = ''
-      if (this.shareTransfer[shareStore.share.shareIndex]) {
-        this.shareTransfer[shareStore.share.shareIndex].finished = true
-      }
-      await this.tryFinish()
-      const {
-        keyDetails: { requiredShares },
-      } = this.settingsData
+      try {
+        await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].resetShareTransferStore()
+        this.currentEncPubKeyX = await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].requestNewShare(
+          window.navigator.userAgent,
+          this.tKey.getCurrentShareIndexes()
+        )
+        const shareStore = await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].startRequestStatusCheck(this.currentEncPubKeyX, true)
+        log.info(shareStore, 'received transferred Share')
+        this.currentEncPubKeyX = ''
+        if (this.shareTransfer[shareStore.share.shareIndex]) {
+          this.shareTransfer[shareStore.share.shareIndex].finished = true
+        }
+        await this.tryFinish()
+        const {
+          keyDetails: { requiredShares },
+        } = this.settingsData
 
-      if (requiredShares > 0 && Object.keys(this.shareTransfer).some((x) => this.shareTransfer[x].finished === false)) {
-        this.listenForShareTransfer()
+        if (requiredShares > 0 && Object.keys(this.shareTransfer).some((x) => this.shareTransfer[x].finished === false)) {
+          this.listenForShareTransfer()
+        }
+      } catch (error) {
+        log.error(error)
+        // show user error if share transfer is rejected
       }
     },
+    // async checkForPendingRequests() {
+    // log.info(latestShareTransferStore, 'current requests')
+    // if i find pending requests before requesting share, i should handle them
+    // for (const request in latestShareTransferStore) {
+    //   if (Object.prototype.hasOwnProperty.call(latestShareTransferStore, request)) {
+    //     const { encShareInTransit, userAgent } = latestShareTransferStore[request]
+    //     if (userAgent === window.navigator.userAgent) {
+    //       if (encShareInTransit) {
+    //         // request already approved
+    //       }
+    //     }
+    //   }
+    // }
+    // },
     async cleanUpShareTransfer() {
       await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].cancelRequestStatusCheck()
       if (this.currentEncPubKeyX) await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].deleteShareTransferStore(this.currentEncPubKeyX)

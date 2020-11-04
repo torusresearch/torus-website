@@ -3,6 +3,7 @@ import bowser from 'bowser'
 import {
   CHROME_EXTENSION_STORAGE_MODULE_KEY,
   SECURITY_QUESTIONS_MODULE_KEY,
+  SHARE_TRANSFER_MODULE_KEY,
   THRESHOLD_KEY_PRIORITY_ORDER,
   WEB_STORAGE_MODULE_KEY,
 } from '../../utils/enums'
@@ -77,4 +78,14 @@ export async function calculateSettingsPageData(tKey) {
   // Current threshold
   const threshold = `${thresholdShares}/${totalShares}`
   return { onDeviceShare, allDeviceShares, passwordShare, threshold, parsedShareDescriptions, keyDetails }
+}
+
+export async function getPendingShareTransferRequests(tKey) {
+  const latestShareTransferStore = await tKey.modules[SHARE_TRANSFER_MODULE_KEY].getShareTransferStore()
+  const pendingRequests = Object.keys(latestShareTransferStore).reduce((acc, x) => {
+    const browserDetail = bowser.parse(latestShareTransferStore[x].userAgent)
+    if (!latestShareTransferStore[x].encShareInTransit) acc.push({ ...latestShareTransferStore[x], browserDetail, encPubKeyX: x })
+    return acc
+  }, [])
+  return pendingRequests
 }

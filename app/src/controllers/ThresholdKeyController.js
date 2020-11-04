@@ -1,6 +1,5 @@
 /* eslint-disable no-await-in-loop */
 import TorusStorageLayer from '@tkey/storage-layer-torus'
-import bowser from 'bowser'
 import { ethErrors } from 'eth-rpc-errors'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
@@ -8,7 +7,7 @@ import EventEmitter from 'safe-event-emitter'
 
 import config from '../config'
 import createTKeyInstance from '../handlers/Tkey/TkeyFactory'
-import { calculateSettingsPageData } from '../handlers/Tkey/TkeyUtils'
+import { calculateSettingsPageData, getPendingShareTransferRequests } from '../handlers/Tkey/TkeyUtils'
 import {
   CHROME_EXTENSION_STORAGE_MODULE_KEY,
   ERROR_TIME,
@@ -184,12 +183,7 @@ class ThresholdKeyController extends EventEmitter {
       const checkFn = async () => {
         try {
           const { tKey } = this.state
-          const latestShareTransferStore = await tKey.modules[SHARE_TRANSFER_MODULE_KEY].getShareTransferStore()
-          const pendingRequests = Object.keys(latestShareTransferStore).reduce((acc, x) => {
-            const browserDetail = bowser.parse(latestShareTransferStore[x].userAgent)
-            if (!latestShareTransferStore[x].encShareInTransit) acc.push({ ...latestShareTransferStore[x], browserDetail, encPubKeyX: x })
-            return acc
-          }, [])
+          const pendingRequests = await getPendingShareTransferRequests(tKey)
           log.info(pendingRequests, 'pending requests')
           this.store.updateState({
             shareTransferRequests: pendingRequests,
