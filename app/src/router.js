@@ -14,6 +14,7 @@ import {
 } from './containers/WalletTopup'
 import WalletTransfer from './containers/WalletTransfer'
 import store from './store'
+import { isExtension } from './utils/utils'
 import Confirm from './views/Confirm'
 import Login from './views/Login'
 import Popup from './views/Popup'
@@ -161,6 +162,15 @@ function hasQueryParameters(route) {
   return Object.prototype.hasOwnProperty.call(route.query, 'instanceId')
 }
 
+function paramsToObject(entries) {
+  const result = {}
+  for (const [key, value] of entries) {
+    // each 'entry' is a [key, value] tupple
+    result[key] = value
+  }
+  return result
+}
+
 router.beforeResolve((to, from, next) => {
   if (
     Object.prototype.hasOwnProperty.call(to, 'meta') &&
@@ -176,12 +186,17 @@ router.beforeResolve((to, from, next) => {
     return next()
   }
   if (store.state.selectedAddress === '') {
-    const isPopupURL = to.fullPath.includes('index.html')
-    const query = {}
-    if (!isPopupURL) {
+    const currentURL = new URL(window.location)
+    let query = {}
+    let hash = ''
+    if (isExtension && currentURL.pathname === '/index.html') {
+      query = paramsToObject(currentURL.searchParams)
+      hash = currentURL.hash
+      query.redirect = '/wallet/home?loginAndClose=true'
+    } else {
       query.redirect = to.fullPath
     }
-    return next({ name: 'login', query })
+    return next({ name: 'login', query, hash })
   }
   if (!hasQueryParameters(to) && hasQueryParameters(from)) {
     if (!to.name.includes('Topup') && to.name !== 'walletTransfer') {

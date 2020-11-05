@@ -292,6 +292,10 @@ export default {
     },
   },
   mounted() {
+    const { loginAndClose } = this.$route.query
+    if (loginAndClose) {
+      window.close()
+    }
     this.setDateUpdated()
 
     this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0

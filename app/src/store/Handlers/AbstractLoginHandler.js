@@ -4,7 +4,7 @@ import log from 'loglevel'
 
 import { FEATURES_DEFAULT_POPUP_WINDOW } from '../../utils/enums'
 import PopupHandler from '../../utils/PopupHandler'
-import { broadcastChannelOptions } from '../../utils/utils'
+import { broadcastChannelOptions, isExtension } from '../../utils/utils'
 
 class AbstractLoginHandler {
   nonce = randomId()
@@ -34,39 +34,9 @@ class AbstractLoginHandler {
 
   handleLoginWindow() {
     return new Promise((resolve, reject) => {
-      if (this.redirectToOpener) {
-        const handleData = async (ev) => {
-          try {
-            const { error, data } = ev.data
-            log.info(ev.data, 'event')
-            const {
-              instanceParams: { verifier: returnedVerifier },
-              hashParams: { access_token: accessToken, id_token: idToken },
-            } = data || {}
-            if (error) {
-              log.error(ev.error)
-              reject(new Error(error))
-              return
-            }
-            if (ev.data && returnedVerifier === this.verifier) {
-              this.recipientWindow.postMessage({ success: true })
-              resolve({ accessToken, idToken: idToken || '' })
-            }
-          } catch (error) {
-            log.error(error)
-            reject(error)
-          }
-        }
-        this.recipientWindow = window.open(this.finalURL, '_blank', FEATURES_DEFAULT_POPUP_WINDOW)
-        window.console.log('WHATTTTTTTT', process.env.VUE_APP_REDIRECT_ROUTE)
-        window.addEventListener('message', async (ev) => {
-          if (ev.origin === new URL(process.env.VUE_APP_REDIRECT_ROUTE).origin) {
-            await handleData(ev)
-            this.recipientWindow.close()
-          } else {
-            log.error('WHATTT', ev)
-          }
-        })
+      if (isExtension) {
+        window.open(this.finalURL, '_blank', FEATURES_DEFAULT_POPUP_WINDOW)
+        window.close()
       } else {
         const bc = new BroadcastChannel(`redirect_channel_${this.nonce}`, broadcastChannelOptions)
         const handleData = async (ev) => {

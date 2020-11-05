@@ -22,7 +22,7 @@ module.exports = class ExtensionPlugin {
           default_src: 'index.html',
         }
         manifest.permissions = ['activeTab', 'storage']
-
+        manifest.web_accessible_resources = ['index.html']
         // inline scripts in Chrome extensions need SRI in the CSP
         const inlineScriptSHA256Integrities = `'sha256-O1sOOlFv4s/n2Ua1NIIC5/IpFKNPfBU53voHvgjtAJ0=' 'sha256-iPUHWPCQMD2MARNLfjdsfC9KdbMv98FCVtbaZRs0gSs='`
 
@@ -36,7 +36,7 @@ module.exports = class ExtensionPlugin {
         if (popupPage) {
           const popupPageSource = popupPage.source()
           const root = parse(popupPageSource)
-          root.querySelector('html').setAttribute('style', 'width: 500px;')
+          root.querySelector('html').setAttribute('style', 'min-width: 500px;')
           const rootSource = root.toString()
           compilation.assets[popupPageName] = {
             source: () => rootSource,
