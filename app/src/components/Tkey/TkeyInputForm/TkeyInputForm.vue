@@ -69,6 +69,7 @@ export default {
   },
   methods: {
     async initTkey(json) {
+      log.info('creating tkey using json ', json)
       this.tKey = await createTKeyInstance(this.postboxKey, json)
       this.settingsData = await calculateSettingsPageData(this.tKey)
       const { keyDetails, parsedShareDescriptions } = this.settingsData
@@ -97,7 +98,8 @@ export default {
     },
     async listenForShareTransfer() {
       try {
-        await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].resetShareTransferStore()
+        log.info('listening for share transfer')
+        await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].setShareTransferStore({})
         this.currentEncPubKeyX = await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].requestNewShare(
           window.navigator.userAgent,
           this.tKey.getCurrentShareIndexes()
