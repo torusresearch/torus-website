@@ -176,7 +176,12 @@ router.beforeResolve((to, from, next) => {
     return next()
   }
   if (store.state.selectedAddress === '') {
-    return next({ name: 'login', query: { redirect: to.fullPath } })
+    const isPopupURL = to.fullPath.includes('index.html')
+    const query = {}
+    if (!isPopupURL) {
+      query.redirect = to.fullPath
+    }
+    return next({ name: 'login', query })
   }
   if (!hasQueryParameters(to) && hasQueryParameters(from)) {
     if (!to.name.includes('Topup') && to.name !== 'walletTransfer') {
