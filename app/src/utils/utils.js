@@ -646,3 +646,4 @@ export function getUserEmail(userInfo, walletDisplay) {
 }
 
 export const isPwa = navigator.standalone || matchMedia('(display-mode: standalone)').matches || document.referrer.includes('android-app://')
+export const isExtension = process.env.VUE_APP_TORUS_BUILD_ENV === 'extension'

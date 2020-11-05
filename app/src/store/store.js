@@ -9,7 +9,7 @@ import config from '../config'
 import torus from '../torus'
 import ConfirmHandler from '../utils/ConfirmHandler'
 import { TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
-import { isPwa, storageAvailable } from '../utils/utils'
+import { isExtension, isPwa, storageAvailable } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
 import mutations from './mutations'
@@ -19,11 +19,12 @@ import defaultState from './state'
 Vue.use(Vuex)
 
 let vuexPersist
+// eslint-disable-next-line no-alert
 
-if (storageAvailable(isPwa ? 'localStorage' : 'sessionStorage')) {
+if (storageAvailable(isPwa || isExtension ? 'localStorage' : 'sessionStorage')) {
   vuexPersist = new VuexPersistence({
     key: 'torus-app',
-    storage: isPwa ? window.localStorage : window.sessionStorage,
+    storage: isPwa || isExtension ? window.localStorage : window.sessionStorage,
     reducer: (state) => ({
       userInfo: state.userInfo,
       userInfoAccess: state.userInfoAccess,

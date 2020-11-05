@@ -317,7 +317,7 @@ export default {
     }
     return networkController.setProviderType(networkType.host)
   },
-  async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId }) {
+  async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, redirectToOpener }) {
     try {
       // This is to maintain backward compatibility
       const currentVeriferConfig = state.embedState.loginConfig[verifier]
@@ -330,6 +330,7 @@ export default {
         verifier,
         redirect_uri: config.redirect_uri,
         preopenInstanceId,
+        redirectToOpener,
         jwtParameters: deepmerge(
           {
             ui_locales: locale,

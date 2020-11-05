@@ -518,7 +518,11 @@ export default {
     async startLogin(verifier) {
       try {
         this.loginInProgress = true
-        await this.triggerLogin({ verifier, calledFromEmbed: false })
+        let redirectToOpener = false
+        if (process.env.VUE_APP_TORUS_BUILD_ENV === 'extension') {
+          redirectToOpener = true
+        }
+        await this.triggerLogin({ verifier, calledFromEmbed: false, redirectToOpener })
       } catch (error) {
         log.error(error)
         this.snackbar = true

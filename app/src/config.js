@@ -32,6 +32,8 @@ import {
 } from './utils/enums'
 
 const {
+  VUE_APP_TORUS_BUILD_ENV,
+  VUE_APP_REDIRECT_ROUTE,
   VUE_APP_BASE_ROUTE,
   VUE_APP_GOOGLE_CLIENT_ID,
   VUE_APP_APPLE_CLIENT_ID,
@@ -53,7 +55,7 @@ const baseUrl = VUE_APP_BASE_ROUTE || 'https://localhost:3000'
 
 const baseRoute = baseUrl + process.env.BASE_URL
 
-const redirectURI = `${baseUrl}/redirect`
+const redirectURI = VUE_APP_TORUS_BUILD_ENV === 'extension' ? VUE_APP_REDIRECT_ROUTE : `${baseUrl}/redirect`
 
 const LOGIN_DOMAIN = VUE_APP_LOGIN_DOMAIN
 

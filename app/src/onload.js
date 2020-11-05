@@ -97,8 +97,11 @@ function onloadTorus(torus) {
   torus.communicationMux.setMaxListeners(50)
 
   const providerOutStream = torus.metamaskMux.getStream('provider')
-
-  torusController.setupUntrustedCommunication(providerOutStream, getIFrameOrigin())
+  if (process.env.VUE_APP_TORUS_BUILD_ENV === 'extension') {
+    // TODO set up listener to extension to setup untrusted communication
+  } else {
+    torusController.setupUntrustedCommunication(providerOutStream, getIFrameOrigin())
+  }
 
   return torus
 }
