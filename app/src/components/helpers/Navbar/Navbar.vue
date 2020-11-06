@@ -47,6 +47,7 @@
 
       <AccountMenu></AccountMenu>
     </v-menu>
+    <!-- Wallet System Bar -->
     <v-system-bar
       v-show="successMsg"
       fixed
@@ -83,6 +84,25 @@
         </v-icon>
       </div>
     </v-system-bar>
+    <!-- TKey System Bar -->
+    <v-system-bar
+      v-show="tkeySuccess"
+      fixed
+      :color="`success ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
+      :class="[`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`, lrcMsg ? 'is-lrc' : '']"
+    >
+      <div class="container d-flex align-center">
+        <v-spacer />
+        <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`">$vuetify.icons.check_circle</v-icon>
+        <span class="caption">
+          {{ tkeySuccess }}
+        </span>
+        <v-spacer />
+        <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`" @click="clearTkeySuccess">
+          $vuetify.icons.close
+        </v-icon>
+      </div>
+    </v-system-bar>
     <v-system-bar
       v-show="tkeyError"
       fixed
@@ -93,7 +113,7 @@
         <v-spacer />
         <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`">$vuetify.icons.info</v-icon>
         <span class="caption">
-          {{ capitalizeFirstLetter(t(tkeyError)) }}
+          {{ tkeyError }}
         </span>
         <v-spacer />
         <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`" @click="clearTkeyError">$vuetify.icons.close</v-icon>
@@ -163,9 +183,12 @@ export default {
     tkeyError() {
       return this.tKeyStore.error || ''
     },
+    tkeySuccess() {
+      return this.tKeyStore.success || ''
+    },
   },
   methods: {
-    ...mapActions(['clearTkeyError']),
+    ...mapActions(['clearTkeyError', 'clearTkeySuccess']),
     capitalizeFirstLetter,
     clearMsg(statusMessage) {
       this.$store.commit(`set${statusMessage}`, '')

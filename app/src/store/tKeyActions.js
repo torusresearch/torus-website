@@ -125,6 +125,9 @@ export default {
   clearTkeyError() {
     return thresholdKeyController.clearTkeyError()
   },
+  clearTkeySuccess() {
+    return thresholdKeyController.clearTkeySuccess()
+  },
   async manualAddTKey({ dispatch, state }, payload) {
     await dispatch('addTKey', payload)
     const thresholdWallet = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.THRESHOLD)
@@ -135,5 +138,11 @@ export default {
   },
   denyShareTransferRequest(_, payload) {
     thresholdKeyController.denyShareTransferRequest(payload)
+  },
+  setTkeySuccess(_, payload) {
+    thresholdKeyController.setTkeySuccess(payload)
+  },
+  setTkeyError(_, payload) {
+    thresholdKeyController.setTkeyError(payload)
   },
 }

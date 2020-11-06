@@ -68,7 +68,7 @@
                     <span class="font-weight-bold">{{ browser.title }}</span>
                     <span v-if="browser.isCurrent" class="font-italic">({{ t('tkeySettings.current') }})</span>
                   </div>
-                  <div :style="{ fontSize: '10px' }">{{ browser.dateFormatted }}</div>
+                  <div class="caption-3">{{ browser.dateFormatted }}</div>
                 </div>
               </v-list-item-title>
             </v-list-item-content>

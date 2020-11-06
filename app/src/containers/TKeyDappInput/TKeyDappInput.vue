@@ -6,6 +6,10 @@
       :postbox-key="postboxKey"
       @triggerSign="triggerSign"
       @triggerDeny="triggerDeny"
+      @postErrorMessage="setTkeyError"
+      @clearErrorMessage="clearTkeyError"
+      @postSuccessMessage="setTkeySuccess"
+      @clearSuccessMessage="clearTkeySuccess"
     />
   </div>
 </template>
@@ -55,6 +59,18 @@ export default {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({ data: { type: POPUP_RESULT, approve: false } })
       bc.close()
+    },
+    setTkeyError(message) {
+      this.$store.commit('setErrorMsg', message)
+    },
+    clearTkeyError() {
+      this.$store.commit('setErrorMsg')
+    },
+    setTkeySuccess(message) {
+      this.$store.commit('setSuccessMsg', message)
+    },
+    clearTkeySuccess() {
+      this.$store.commit('setSuccessMsg', '')
     },
   },
 }

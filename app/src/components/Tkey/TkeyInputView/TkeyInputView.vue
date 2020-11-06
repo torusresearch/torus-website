@@ -41,8 +41,8 @@
                 <v-expansion-panel v-if="securityQuestions.show" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2">
-                      <v-icon class="mr-2" :class="panelHeaderClass()">$vuetify.icons.shield_lock</v-icon>
-                      <span :class="panelHeaderClass()">{{ t('tkeyNew.recoveryPass') }}</span>
+                      <v-icon class="mr-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">$vuetify.icons.shield_lock</v-icon>
+                      <span :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">{{ t('tkeyNew.recoveryPass') }}</span>
                     </div>
                     <v-icon
                       v-if="securityQuestions.finished"
@@ -82,8 +82,12 @@
                 <v-expansion-panel v-for="device in devices" :key="device.index" :disabled="verifiedWithDevice(device.index)" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2">
-                      <v-icon class="mr-2 text_2--text">$vuetify.icons.device_{{ device.icon }}</v-icon>
-                      <span class="text_2--text text-capitalize">{{ t('tkeyNew.device') }} - {{ device.icon }}</span>
+                      <v-icon class="mr-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">
+                        $vuetify.icons.device_{{ device.icon }}
+                      </v-icon>
+                      <span class="text-capitalize" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">
+                        {{ t('tkeyNew.device') }} - {{ device.icon }}
+                      </span>
                     </div>
                     <v-icon
                       v-if="verifiedWithDevice(device.index)"
@@ -114,14 +118,9 @@
                         <div>
                           <div class="font-weight-bold text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">
                             <div>{{ browser.title }}</div>
-                            <div class="font-weight-regular" :style="{ fontSize: '10px', lineHeight: '1em' }">{{ browser.dateFormatted }}</div>
+                            <div class="font-weight-regular caption-3">{{ browser.dateFormatted }}</div>
                           </div>
-                          <div
-                            v-if="$vuetify.breakpoint.xsOnly"
-                            class="text_2--text"
-                            :class="{ caption: !$vuetify.breakpoint.xsOnly }"
-                            :style="[{ fontSize: '10px', lineHeight: '1em' }]"
-                          >
+                          <div v-if="$vuetify.breakpoint.xsOnly" class="text_2--text caption-3">
                             {{ t('tkeyNew.refId') }}: {{ device.indexShort }}
                           </div>
                         </div>
@@ -222,10 +221,6 @@ export default {
     },
     skipLogin() {
       this.$emit('skipLogin', { rejected: true })
-    },
-    panelHeaderClass(finished) {
-      if (this.$vuetify.theme.dark) return finished ? 'text_2--text' : 'torusFont1--text'
-      return finished ? 'text_2--text' : 'text_1--text'
     },
   },
 }

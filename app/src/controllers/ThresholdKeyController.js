@@ -116,12 +116,12 @@ class ThresholdKeyController extends EventEmitter {
 
   handleError(error) {
     if (isErrorObject(error)) {
-      this.store.updateState({ error: `Oops, That didn't work. Pls reload and try again. \n${error.message}` })
+      this.store.updateState({ error: `${this.t('tkeyNew.oopsDidntWork')} \n${error.message}` })
     } else if (error && typeof error === 'string') {
       this.store.updateState({ error })
     } else if (error && typeof error === 'object') {
       const prettyError = prettyPrintData(error)
-      const payloadError = prettyError !== '' ? `Error: ${prettyError}` : 'Something went wrong. Pls try again'
+      const payloadError = prettyError !== '' ? `${this.t('tkeyNew.error')}: ${prettyError}` : this.t('tkeyNew.oopsDidntWork')
       this.store.updateState({ error: payloadError })
     } else {
       this.store.updateState({ error: error || '' })
@@ -287,6 +287,18 @@ class ThresholdKeyController extends EventEmitter {
 
   clearTkeyError() {
     this.store.updateState({ error: '' })
+  }
+
+  clearTkeySuccess() {
+    this.store.updateState({ success: '' })
+  }
+
+  setTkeySuccess(message) {
+    this.store.updateState({ success: message })
+  }
+
+  setTkeyError(message) {
+    this.store.updateState({ error: message })
   }
 }
 
