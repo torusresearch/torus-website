@@ -3,7 +3,7 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 
 import config from '../../config'
-import { getQuote, getSignature } from '../../plugins/mercuryo'
+import { getQuote } from '../../plugins/mercuryo'
 import torus from '../../torus'
 import { MERCURYO } from '../../utils/enums'
 import PopupHandler from '../../utils/PopupHandler'
@@ -23,17 +23,17 @@ export default {
   },
   fetchMercuryoOrder({ state, dispatch }, { currentOrder, preopenInstanceId: preopenInstanceIdPayload, selectedAddress }) {
     return new Promise((resolve, reject) => {
-      let preopenInstanceId = preopenInstanceIdPayload
-      if (!preopenInstanceId) {
-        preopenInstanceId = randomId()
-        const finalUrl = `${config.baseUrl}/redirect?preopenInstanceId=${preopenInstanceId}`
-        const handledWindow = new PopupHandler({ url: finalUrl })
-        handledWindow.open()
+      const preopenInstanceId = preopenInstanceIdPayload
+      // if (!preopenInstanceId) {
+      //   preopenInstanceId = randomId()
+      //   const finalUrl = `${config.baseUrl}/redirect?preopenInstanceId=${preopenInstanceId}`
+      //   const handledWindow = new PopupHandler({ url: finalUrl })
+      //   handledWindow.open()
 
-        handledWindow.once('close', () => {
-          reject(new Error('user closed mercuryo popup'))
-        })
-      }
+      //   handledWindow.once('close', () => {
+      //     reject(new Error('user closed mercuryo popup'))
+      //   })
+      // }
       const instanceState = encodeURIComponent(
         window.btoa(
           JSON.stringify({
@@ -58,18 +58,18 @@ export default {
       const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(parameters)))
       const url = `${config.mercuryoHost}?${parameterString.toString()}`
 
-      if (selectedAddress) {
-        getSignature({ address: selectedAddress })
-          .then(({ signature }) =>
-            dispatch('postMercuryoOrder', { finalUrl: `${url}&signature=${encodeURIComponent(signature)}`, preopenInstanceId })
-          )
-          .then(resolve)
-          .catch(reject)
-      } else {
-        dispatch('postMercuryoOrder', { finalUrl: `${url}`, preopenInstanceId })
-          .then(resolve)
-          .catch(reject)
-      }
+      // if (selectedAddress) {
+      //   getSignature({ address: selectedAddress })
+      //     .then(({ signature }) =>
+      //       dispatch('postMercuryoOrder', { finalUrl: `${url}&signature=${encodeURIComponent(signature)}`, preopenInstanceId })
+      //     )
+      //     .then(resolve)
+      //     .catch(reject)
+      // } else {
+      dispatch('postMercuryoOrder', { finalUrl: `${url}`, preopenInstanceId })
+        .then(resolve)
+        .catch(reject)
+      // }
     })
   },
   postMercuryoOrder(context, { finalUrl, preopenInstanceId }) {
