@@ -6,6 +6,10 @@
       :postbox-key="postboxKey"
       @triggerSign="triggerSign"
       @triggerDeny="triggerDeny"
+      @postErrorMessage="setTkeyError"
+      @clearErrorMessage="clearTkeyError"
+      @postSuccessMessage="setTkeySuccess"
+      @clearSuccessMessage="clearTkeySuccess"
     />
   </div>
 </template>
@@ -47,7 +51,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setTkeyInputFlow']),
+    ...mapActions(['setTkeyInputFlow', 'setTkeySuccess', 'clearTkeySuccess', 'setTkeyError', 'clearTkeyError']),
     triggerSign(data) {
       this.setTkeyInputFlow(data)
     },

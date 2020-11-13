@@ -97,7 +97,7 @@
     font-weight: normal;
   }
 
-  /* Header 6 10px*/
+  /* Header 6 12px*/
   .caption {
     font-size: 0.75rem !important;
     line-height: 0.875rem;
@@ -105,13 +105,20 @@
     font-weight: normal;
   }
 
-  /* Header 6 10px*/
+  /* Header 6 11px*/
   .caption-2 {
     font-size: 0.7rem;
     line-height: 0.75rem;
     letter-spacing: 0;
     font-weight: normal;
     color: var(--v-torusGray3-base);
+  }
+
+  /* Header 6 10px*/
+  .caption-3 {
+    font-size: 0.625rem;
+    line-height: 0.65rem;
+    letter-spacing: 0;
   }
 
   .v-menu__content {

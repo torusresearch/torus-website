@@ -120,7 +120,17 @@ export default {
         }
       } catch (error) {
         log.error(error)
-        // show user error if share transfer is rejected
+        let timeleft = 5
+        const downloadTimer = setInterval(() => {
+          if (timeleft <= 0) {
+            this.$emit('clearErrorMessage')
+            clearInterval(downloadTimer)
+            this.setInput({ rejected: true })
+          } else {
+            this.$emit('postErrorMessage', this.t('tkeyNew.verifyFail').replace('{verifier}', this.verifierName).replace('{countdown}', timeleft))
+          }
+          timeleft -= 1
+        }, 1000)
       }
     },
     // async checkForPendingRequests() {
@@ -187,10 +197,15 @@ export default {
       } = this.settingsData
 
       if (requiredShares === 0) {
+        this.$emit('postSuccessMessage', this.t('tkeyNew.verifySuccess'))
         await this.tKey.reconstructKey()
         this.userInputCompleted = true
         await this.cleanUpShareTransfer()
         // finish fn
+
+        setTimeout(() => {
+          this.$emit('clearSuccessMessage')
+        }, 2000)
       }
     },
   },

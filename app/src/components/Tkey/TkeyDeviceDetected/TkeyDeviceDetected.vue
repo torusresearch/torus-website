@@ -66,7 +66,7 @@
                             <span class="device-details--name mr-1">{{ selectedDeviceDetails.osName }}</span>
                             <span class="device-details--index">({{ selectedDeviceDetails.indexShort }})</span>
                           </div>
-                          <div class="grow device-details--name font-weight-regular">{{ selectedDeviceDetails.browserList }}</div>
+                          <div class="grow device-details--index font-weight-regular">{{ selectedDeviceDetails.browserList }}</div>
                           <div class="grow device-details--index">{{ selectedDeviceDetails.dateFormated }}</div>
                         </div>
                         <div class="ml-auto">

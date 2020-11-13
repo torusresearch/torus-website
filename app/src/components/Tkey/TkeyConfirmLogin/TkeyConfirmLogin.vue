@@ -33,13 +33,20 @@
 
       <div class="d-flex info-box mb-2 align-center">
         <div class="grow d-flex align-center">
-          <v-icon :size="$vuetify.breakpoint.xsOnly ? '16' : ''" class="text_2--text mr-2">$vuetify.icons.device_{{ platformType }}</v-icon>
+          <v-icon :size="$vuetify.breakpoint.xsOnly ? '16' : ''" class="text_2--text mr-2">
+            $vuetify.icons.device_{{ confirmDetails.platformType }}
+          </v-icon>
           <div>
-            <div class="font-weight-bold text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ browserName }}</div>
-            <div v-if="$vuetify.breakpoint.xsOnly" class="text_2--text caption">{{ t('tkeyNew.refId') }}: {{ shortIndex }}</div>
+            <div class="font-weight-bold text_2--text">
+              <div :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ confirmDetails.browserName }}</div>
+              <div class="font-weight-regular caption-3">{{ confirmDetails.timestamp }}</div>
+            </div>
+            <div v-if="$vuetify.breakpoint.xsOnly" class="text_2--text caption-3">{{ t('tkeyNew.refId') }}: {{ confirmDetails.shortIndex }}</div>
           </div>
         </div>
-        <div v-if="!$vuetify.breakpoint.xsOnly" class="ml-auto text-right text_2--text caption">{{ t('tkeyNew.refId') }}: {{ shortIndex }}</div>
+        <div v-if="!$vuetify.breakpoint.xsOnly" class="ml-auto text-right text_2--text caption">
+          {{ t('tkeyNew.refId') }}: {{ confirmDetails.shortIndex }}
+        </div>
       </div>
       <div class="text-right caption mb-6 text_2--text">
         {{ t('tkeyNew.reportNotMe1') }},
@@ -84,16 +91,16 @@ export default {
     },
   },
   computed: {
-    browserName() {
-      return this.currentTkeyConfirmDialog.browserDetail
-        ? `${this.currentTkeyConfirmDialog.browserDetail.browser.name} V${this.currentTkeyConfirmDialog.browserDetail.browser.version}`
-        : ''
-    },
-    platformType() {
-      return this.currentTkeyConfirmDialog.browserDetail ? this.currentTkeyConfirmDialog.browserDetail.platform.type : 'desktop'
-    },
-    shortIndex() {
-      return this.deviceShareIndex.toString().slice(0, 4)
+    confirmDetails() {
+      const shortIndex = this.deviceShareIndex.toString().slice(0, 4)
+      return {
+        shortIndex,
+        timestamp: new Date(this.currentTkeyConfirmDialog.timestamp).toLocaleString(),
+        browserName: this.currentTkeyConfirmDialog.browserDetail
+          ? `${this.currentTkeyConfirmDialog.browserDetail.browser.name} V${this.currentTkeyConfirmDialog.browserDetail.browser.version}`
+          : '',
+        platformType: this.currentTkeyConfirmDialog.browserDetail ? this.currentTkeyConfirmDialog.browserDetail.platform.type : 'desktop',
+      }
     },
   },
   methods: {
