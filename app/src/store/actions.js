@@ -380,18 +380,15 @@ export default {
     const {
       userInfo: { verifierId, verifier, verifierParams },
     } = state
-    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await torus.nodeDetailManager.getNodeDetails()
-    const publicAddress = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
-    log.info('New private key assigned to user at address ', publicAddress)
-    const postboxKey = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
-    if (publicAddress.toLowerCase() !== postboxKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
-    log.info('key 1', postboxKey)
+    const torusKey = await dispatch('getTorusKey', { verifier, verifierId, verifierParams, oAuthToken })
+    log.info('key 1', torusKey)
     dispatch('subscribeToControllers')
     const defaultAddresses = await dispatch('initTorusKeyring', {
-      keys: [{ ...postboxKey, accountType: ACCOUNT_TYPE.NORMAL }],
+      keys: [{ ...torusKey, accountType: ACCOUNT_TYPE.NORMAL }],
       calledFromEmbed,
       rehydrate: false,
     })
+    const postboxKey = await dispatch('getPostboxKey')
     // Threshold Bak region
     // Check if tkey exists
     const keyExists = await thresholdKeyController.checkIfTKeyExists(postboxKey.privKey)
@@ -401,8 +398,9 @@ export default {
     commit('setTkeyExists', keyExists)
     if (keyExists) {
       if (!isMain) {
-        if (defaultAddresses[0] && defaultAddresses[0] !== postboxKey.ethAddress) {
+        if (defaultAddresses[0] && defaultAddresses[0] !== torusKey.ethAddress) {
           // Do tkey
+
           defaultAddresses.push(...(await dispatch('addTKey', { postboxKey, calledFromEmbed })))
         }
       } else {
@@ -412,7 +410,7 @@ export default {
     }
 
     const selectedDefaultAddress = defaultAddresses[0] || defaultAddresses[1]
-    const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : postboxKey.ethAddress
+    const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : torusKey.ethAddress
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
     prefsController.getBillboardContents()
     // continue enable function
@@ -517,5 +515,13 @@ export default {
   },
   disconnectWalletConnect(_, __) {
     return walletConnectController.disconnect()
+  },
+  async getTorusKey(_, { verifier, verifierId, verifierParams, oAuthToken }) {
+    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await torus.nodeDetailManager.getNodeDetails()
+    const publicAddress = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
+    log.info('New private key assigned to user at address ', publicAddress)
+    const torusKey = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
+    if (publicAddress.toLowerCase() !== torusKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
+    return torusKey
   },
 }
