@@ -1,5 +1,5 @@
 <template>
-  <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu">
+  <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu" :class="{ 'is-mobile': $vuetify.breakpoint.smAndDown }">
     <v-list class="pb-0 mb-2">
       <v-list-item>
         <v-list-item-avatar class="ml-2 mr-3">
@@ -18,9 +18,6 @@
             <div>{{ t('accountMenu.account') }}</div>
           </div>
         </v-list-item-title>
-        <v-list-item-icon v-if="$vuetify.breakpoint.xsOnly">
-          <WalletConnect class="mr-5" />
-        </v-list-item-icon>
       </v-list-item>
     </v-list>
 
@@ -129,7 +126,6 @@ import { addressSlicer, broadcastChannelOptions, getEtherScanAddressLink, getUse
 import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import ShowToolTip from '../../helpers/ShowToolTip'
-import WalletConnect from '../../helpers/WalletConnect'
 import AccountImport from '../AccountImport'
 
 export default {
@@ -138,7 +134,6 @@ export default {
     ExportQrCode,
     AccountImport,
     LanguageSelector,
-    WalletConnect,
   },
   props: {
     headerItems: {
