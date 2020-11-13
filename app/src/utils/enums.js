@@ -251,11 +251,13 @@ export const LOCALE_DE = 'de'
 export const LOCALE_JA = 'ja'
 export const LOCALE_KO = 'ko'
 export const LOCALE_ZH = 'zh'
+export const LOCALE_ES = 'es'
 export const LOCALE_EN_LABEL = 'English'
 export const LOCALE_DE_LABEL = 'German (Deutsch)'
 export const LOCALE_JA_LABEL = 'Japanese (日本語)'
 export const LOCALE_KO_LABEL = 'Korean (한국어)'
 export const LOCALE_ZH_LABEL = 'Mandarin (中文)'
+export const LOCALE_ES_LABEL = 'Spanish (Español)'
 
 export const LOCALES = [
   {
@@ -277,6 +279,10 @@ export const LOCALES = [
   {
     name: LOCALE_ZH_LABEL,
     value: LOCALE_ZH,
+  },
+  {
+    name: LOCALE_ES_LABEL,
+    value: LOCALE_ES,
   },
 ]
 
