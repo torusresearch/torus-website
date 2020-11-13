@@ -32,7 +32,7 @@
         <v-expand-transition>
           <v-card v-if="!$vuetify.breakpoint.xsOnly" class="mx-auto asset elevation-1" max-width="344" :ripple="false" @click="toggleDetails($event)">
             <div class="text-center">
-              <img :src="asset.image" style="width: auto; height: 140px;" :alt="asset.name || `${selectedContract.name} #${asset.tokenId}`" />
+              <img :src="asset.image" style="width: auto; height: 140px" :alt="asset.name || `${selectedContract.name} #${asset.tokenId}`" />
             </div>
             <v-card-text class="asset-text py-1 px-3">
               <div class="body-2" :class="assetActive ? '' : 'text-clamp-two'" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">

@@ -68,6 +68,8 @@ export default {
   wyreApiHost: 'https://wyre-api.tor.us',
   rampApiHost: 'https://ramp-network-api.tor.us',
   xanpoolApiHost: 'https://xanpool-api.tor.us',
+  mercuryoApiHost: 'https://mercuryo-api.tor.us',
+  // mercuryoApiHost: 'http://localhost:2010',
 
   moonpayHost: 'https://buy.moonpay.io',
   moonpayApiQuoteHost: 'https://api.moonpay.io',
@@ -87,6 +89,11 @@ export default {
   xanpoolTestHost: 'https://checkout.sandbox.xanpool.com',
   xanpoolTestAPIKEY: 'sandbox_778522fccc19a010f100f437c4aca60j',
   xanpoolApiQuoteHost: 'https://xanpool.com/api/transactions/estimate',
+
+  mercuryoHost: 'https://exchange.mercuryo.io',
+  mercuryoLiveAPIKEY: '8e531c49-2f64-4e7e-b1d4-16aa4958c291',
+  mercuryoTestHost: 'https://sandbox-exchange.mrcr.io',
+  mercuryoTestAPIKEY: '45fb9cb6-608e-44fe-a1cf-9c59de4a9e8d',
 
   // key is the verifier
   loginConfig: {
@@ -323,7 +330,7 @@ export default {
       },
       // For torus only
       hasLightLogo: true,
-      torusDescription: '',
+      torusDescription: 'login.signUpEmail',
     },
     // [WEIBO_VERIFIER]: {
     //   description: '',

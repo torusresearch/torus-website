@@ -126,9 +126,7 @@ export default {
     const { enabledVerifiers, loginConfig } = payload
     const finalLoginConfig = merge(config.loginConfig, loginConfig)
     Object.keys(enabledVerifiers).forEach((x) => {
-      if (finalLoginConfig[x]) {
-        finalLoginConfig[x].showOnModal = enabledVerifiers[x]
-      }
+      finalLoginConfig[x].showOnModal = !enabledVerifiers[x] ? false : finalLoginConfig[x].showOnModal
     })
     state.embedState = {
       ...state.embedState,

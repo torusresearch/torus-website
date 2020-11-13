@@ -17,7 +17,12 @@
             <v-icon v-else :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBlack--text'">$vuetify.icons.radioOff</v-icon>
           </v-list-item-icon>
           <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 100 : 130" height="100%" tile class="align-self-center mr-2">
-            <img :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
+            <v-img
+              contain
+              :lazy-src="require(`../../../assets/images/${targetProvider.logo}`)"
+              :src="require(`../../../assets/images/${targetProvider.logo}`)"
+              :alt="targetProvider.name"
+            ></v-img>
           </v-list-item-avatar>
           <v-list-item-content class="align-self-center text-right text_1--text caption">
             <div v-html="`${t('walletTopUp.paywith')} ${targetProvider.line1}`" />
@@ -118,7 +123,7 @@ export default {
   },
   methods: {
     scrollToPosition() {
-      if (!this.$vuetify.breakpoint.width > 800) return
+      if (this.$vuetify.breakpoint.width > 800) return
       const element = document.querySelector('#write-to-us')
       setTimeout(() => {
         if (element) {

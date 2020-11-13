@@ -6,7 +6,7 @@ import Web3 from 'web3'
 import TorusController from './controllers/TorusController'
 import { MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME } from './utils/enums'
 import setupMultiplex from './utils/setupMultiplex'
-import { getIFrameOrigin, isMain, storageAvailable } from './utils/utils'
+import { getIFrameOrigin, isMain, isPwa, storageAvailable } from './utils/utils'
 // import store from './store'
 let storeReference
 let deferredDispatch = []
@@ -36,8 +36,9 @@ function triggerUi(type, payload, request) {
 function onloadTorus(torus) {
   let sessionData
 
-  if (storageAvailable('sessionStorage')) {
-    sessionData = sessionStorage.getItem('torus-app')
+  if (storageAvailable(!isPwa ? 'sessionStorage' : 'localStorage')) {
+    const storage = isPwa ? localStorage : sessionStorage
+    sessionData = storage.getItem('torus-app')
   }
 
   const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || {
