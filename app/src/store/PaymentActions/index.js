@@ -129,7 +129,7 @@ export default {
         } else if (provider === MERCURYO) {
           // mercuryo
           const currentOrder = {
-            currency: selectedParameters.selectedCryptoCurrency || '',
+            currency: selectedParameters.selectedCryptoCurrency || 'ETH',
             fiat_amount: selectedParameters.fiatValue || '',
             fiat_currency: selectedParameters.selectedCurrency || '',
           }
