@@ -663,3 +663,7 @@ export function getUserEmail(userInfo, walletDisplay) {
 }
 
 export const isPwa = navigator.standalone || matchMedia('(display-mode: standalone)').matches || document.referrer.includes('android-app://')
+
+export function apiStreamSupported() {
+  return navigator?.mediaDevices?.getUserMedia !== undefined
+}
