@@ -193,7 +193,7 @@
                   <div class="headline font-weight-regular" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
                 </v-flex>
                 <v-flex xs10 sm8 mx-auto mt-4>
-                  <div :style="{ maxWidth: '400px' }">
+                  <div :style="{ maxWidth: '380px' }">
                     <v-btn
                       v-for="verifier in loginButtons"
                       :key="verifier.verifier"
@@ -223,14 +223,14 @@
                   </div>
                 </v-flex>
                 <v-flex v-if="loginButtonsLong.length > 0" xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
-                  <div class="d-flex align-center mb-4">
+                  <div class="d-flex align-center mb-4" :style="{ maxWidth: '372px' }">
                     <v-divider></v-divider>
                     <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
                       <div class="body-2 text_2--text">{{ t('login.or') }}</div>
                     </div>
                     <v-divider></v-divider>
                   </div>
-                  <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="mt-2">
+                  <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="mt-2" :style="{ maxWidth: '372px' }">
                     <v-btn
                       id="emailLoginBtn"
                       :color="$vuetify.theme.dark ? '' : 'white'"
