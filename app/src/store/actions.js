@@ -388,7 +388,7 @@ export default {
       calledFromEmbed,
       rehydrate: false,
     })
-    const postboxKey = await dispatch('getPostboxKey')
+    const postboxKey = await dispatch('getPostboxKey', { oAuthToken })
     // Threshold Bak region
     // Check if tkey exists
     const keyExists = await thresholdKeyController.checkIfTKeyExists(postboxKey.privKey)

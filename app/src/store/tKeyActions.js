@@ -52,14 +52,14 @@ export default {
     commit('setTkeyExists', true)
     dispatch('updateSelectedAddress', { selectedAddress: thresholdKey.ethAddress }) // synchronous
   },
-  async getPostboxKey({ state, commit, dispatch }) {
+  async getPostboxKey({ state, commit, dispatch }, payload) {
     const { userInfo } = state
-    const { idToken } = userInfo
+    const { oAuthToken: idToken } = payload
     const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: '' }
     const aggregateIdTokenSeeds = []
     let aggregateVerifierId = ''
 
-    aggregateVerifierParams.verify_params.push({ verifier_id: userInfo.verifierId, idtoken: userInfo.idToken })
+    aggregateVerifierParams.verify_params.push({ verifier_id: userInfo.verifierId, idtoken: idToken })
     aggregateVerifierParams.sub_verifier_ids.push('torus')
     aggregateIdTokenSeeds.push(idToken)
     aggregateVerifierId = userInfo.verifierId // using last because idk
