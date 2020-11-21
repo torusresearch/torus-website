@@ -92,6 +92,8 @@
                   </v-flex>
                   <v-flex xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes">
                     <div class="text_3--text mb-4">
+                      <div class="text_2--text mb-2 font-weight-bold">{{ t('login.note') }}:</div>
+                      <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
                       <span>{{ t('dappLogin.termsAuth01') }}</span>
                       <br />
                       <span>{{ t('dappLogin.termsAuth02') }}</span>
@@ -104,7 +106,7 @@
                         {{ t('dappLogin.termsLearnMore') }}
                       </a>
                     </div>
-                    <v-divider class="mb-4"></v-divider>
+                    <v-divider class="mb-2"></v-divider>
                     <div class="d-flex justify-center footer-links">
                       <div class="mx-2">
                         <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
@@ -159,7 +161,7 @@
                 <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
                   <img width="180" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                 </v-flex>
-                <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
+                <v-flex xs10 sm8 ml-auto mr-auto>
                   <div class="verifier-title font-weight-bold" :class="[$vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2']">
                     <span class="text_2--text">
                       {{ t('login.your') }}
@@ -187,11 +189,11 @@
                     {{ t('login.digitalWallet') }}
                   </div>
                 </v-flex>
-                <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-11']">
-                  <div class="headline font-weight-light" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
+                <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-10']">
+                  <div class="headline font-weight-regular" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
                 </v-flex>
                 <v-flex xs10 sm8 mx-auto mt-4>
-                  <div :style="{ maxWidth: '400px' }">
+                  <div :style="{ maxWidth: '380px' }">
                     <v-btn
                       v-for="verifier in loginButtons"
                       :key="verifier.verifier"
@@ -221,14 +223,14 @@
                   </div>
                 </v-flex>
                 <v-flex v-if="loginButtonsLong.length > 0" xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
-                  <div class="d-flex align-center mb-4">
+                  <div class="d-flex align-center mb-4" :style="{ maxWidth: '372px' }">
                     <v-divider></v-divider>
                     <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
                       <div class="body-2 text_2--text">{{ t('login.or') }}</div>
                     </div>
                     <v-divider></v-divider>
                   </div>
-                  <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="mt-2">
+                  <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="mt-2" :style="{ maxWidth: '372px' }">
                     <v-btn
                       id="emailLoginBtn"
                       :color="$vuetify.theme.dark ? '' : 'white'"
@@ -251,7 +253,9 @@
                   </div>
                 </v-flex>
                 <v-flex xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes" :class="{ 'not-sm': !$vuetify.breakpoint.xsOnly }">
-                  <div class="text_3--text mb-4">
+                  <div class="text_3--text mb-6">
+                    <div class="text_2--text mb-2 font-weight-bold">{{ t('login.note') }}:</div>
+                    <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
                     <span>{{ t('dappLogin.termsAuth01') }}</span>
                     <br />
                     <span>{{ t('dappLogin.termsAuth02') }}</span>
@@ -264,7 +268,7 @@
                       {{ t('dappLogin.termsLearnMore') }}
                     </a>
                   </div>
-                  <v-divider class="mb-4"></v-divider>
+                  <v-divider class="mb-2"></v-divider>
                   <div class="d-flex footer-links">
                     <div class="mr-4">
                       <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">

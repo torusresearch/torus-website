@@ -699,3 +699,7 @@ export const isPopup = () => {
   const instanceId = queryParameters.get('instanceId')
   return !!instanceId
 }
+
+export function apiStreamSupported() {
+  return navigator?.mediaDevices?.getUserMedia !== undefined
+}

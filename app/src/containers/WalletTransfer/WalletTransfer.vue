@@ -132,7 +132,7 @@
                       :return-object="false"
                       @input="contactChanged"
                     >
-                      <template v-slot:append>
+                      <template v-if="apiStreamSupported" v-slot:append>
                         <v-btn icon small color="torusBrand1" title="Capture QR" tabindex="-1" aria-label="Capture QR" @click="startQrScanning">
                           <v-icon small>$vuetify.icons.scan</v-icon>
                         </v-btn>
@@ -417,7 +417,7 @@ import {
   TWITTER,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
-import { getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
+import { apiStreamSupported, getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
 
 export default {
   name: 'WalletTransfer',
@@ -607,6 +607,9 @@ export default {
     },
     isThreshold() {
       return this.wallet[this.selectedAddress]?.accountType === ACCOUNT_TYPE.THRESHOLD
+    },
+    apiStreamSupported() {
+      return apiStreamSupported()
     },
   },
   watch: {

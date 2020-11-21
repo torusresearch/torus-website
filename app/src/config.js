@@ -359,7 +359,7 @@ export default {
       },
       // For torus only
       hasLightLogo: true,
-      torusDescription: '',
+      torusDescription: 'login.signUpEmail',
     },
     // [WEIBO_VERIFIER]: {
     //   description: '',
