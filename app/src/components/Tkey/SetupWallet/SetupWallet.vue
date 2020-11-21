@@ -145,6 +145,12 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
+      <div class="d-flex align-center mt-1">
+        <v-icon class="backup-device-checkbox mr-4" :class="{ isDark: $vuetify.theme.dark }" @click="userUnderstands = !userUnderstands">
+          $vuetify.icon.checkbox{{ $vuetify.theme.dark ? '_dark' : '' }}_{{ userUnderstands ? 'checked' : 'unchecked' }}
+        </v-icon>
+        <div class="body-2 text_2--text">{{ t('tkeyCreateSetup.iUnderstand') }}</div>
+      </div>
     </div>
     <v-layout class="mx-n2 mt-9 mb-12">
       <v-flex class="xs6 px-2">
@@ -162,7 +168,7 @@
       <v-flex class="xs6 px-2">
         <v-btn
           block
-          :disabled="!finalRecoveryPassword && !backupDeviceShare"
+          :disabled="(!finalRecoveryPassword && !backupDeviceShare) || !userUnderstands"
           :x-large="!$vuetify.breakpoint.xsOnly"
           color="torusBrand1"
           class="white--text body-2 font-weight-bold"
@@ -215,6 +221,7 @@ export default {
       panels: [1, 2],
       progressValue: 200,
       backupDeviceShare: false,
+      userUnderstands: false,
     }
   },
   computed: {

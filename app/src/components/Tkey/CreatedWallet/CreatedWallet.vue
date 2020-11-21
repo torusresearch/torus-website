@@ -1,7 +1,19 @@
 <template>
   <div class="created-wallet-container" :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark }]">
-    <div class="text-center mb-6">
-      <img :src="require(`../../../assets/images/ob-add-2fa-created${$vuetify.theme.dark ? '-dark' : ''}.svg`)" alt="2-FA Created" />
+    <div class="text-center" :class="$vuetify.breakpoint.xsOnly ? 'mb-6' : 'mb-12'">
+      <div :style="{ height: $vuetify.breakpoint.xsOnly ? '85px' : '160px' }">
+        <img
+          :src="require(`../../../assets/images/ob-add-2fa-created${$vuetify.theme.dark ? '-dark' : ''}.svg`)"
+          alt="tKey Created"
+          :style="{ height: $vuetify.breakpoint.xsOnly ? '100px' : '190px' }"
+        />
+      </div>
+      <div
+        class="font-weight-bold"
+        :class="[$vuetify.theme.dark ? 'torusFont2--text' : 'text_1--text', $vuetify.breakpoint.xsOnly ? 'body-1' : 'headline']"
+      >
+        {{ t('tkeyCreateDone.success') }}
+      </div>
     </div>
 
     <div class="text-center mb-6">

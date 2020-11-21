@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="header-container" :class="{ 'is-dark': $vuetify.theme.dark, mobile: $vuetify.breakpoint.xsOnly }">
-      <v-container v-if="tab === 0" class="pt-6 pb-5">
+      <v-container v-if="tab <= 1" class="pt-6 pb-5">
         <div class="text-center headline mb-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">
           {{ t('tkeyCreate.yourSignedIn') }}
         </div>
@@ -38,7 +38,7 @@
       </v-container>
       <v-container v-else class="pt-6 pb-5">
         <div class="text-center display-1 mb-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">
-          {{ tab === 1 ? t('tkeyCreate.setUpWallet') : t('tkeyCreate.greatCreated') }}
+          {{ tab === 2 ? t('tkeyCreate.setUpWallet') : t('tkeyCreate.greatCreated') }}
         </div>
       </v-container>
     </div>
@@ -47,7 +47,10 @@
         <v-flex class="xs12 sm10 md8 lg7">
           <v-tabs-items v-model="tab" touchless>
             <v-tab-item>
-              <AddWallet :verifier-name="verifierName" @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
+              <TkeyOnboardingTry @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
+            </v-tab-item>
+            <v-tab-item>
+              <TkeyOnboardingSetup @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 2" />
             </v-tab-item>
             <v-tab-item>
               <SetupWallet
@@ -56,7 +59,6 @@
                 :type-of-login="userInfo.typeOfLogin"
                 :user-email="userEmail"
                 @tKeyOnboardingCancel="tKeyOnboardingCancel"
-                @next="tab = 2"
                 @createNewTKey="createTKey"
               />
             </v-tab-item>
@@ -79,15 +81,16 @@ import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
 import HelpTooltip from '../../components/helpers/HelpTooltip'
-import AddWallet from '../../components/Tkey/AddWallet'
 import CreatedWallet from '../../components/Tkey/CreatedWallet'
 import SetupWallet from '../../components/Tkey/SetupWallet'
+import TkeyOnboardingSetup from '../../components/Tkey/TkeyOnboardingSetup'
+import TkeyOnboardingTry from '../../components/Tkey/TkeyOnboardingTry'
 import { ACCOUNT_TYPE } from '../../utils/enums'
 import { addressSlicer, getUserEmail } from '../../utils/utils'
 
 export default {
   name: 'TkeyCreate',
-  components: { AddWallet, SetupWallet, CreatedWallet, HelpTooltip },
+  components: { TkeyOnboardingSetup, TkeyOnboardingTry, SetupWallet, CreatedWallet, HelpTooltip },
   data() {
     return {
       tab: 0,
@@ -161,7 +164,7 @@ export default {
       try {
         this.creatingTkey = true
         await this.createNewTKey(payload)
-        this.tab = 2
+        this.tab = 3
       } catch (error) {
         log.error(error)
       } finally {
