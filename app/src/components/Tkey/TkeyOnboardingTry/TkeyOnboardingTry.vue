@@ -18,7 +18,7 @@
         {{ t('tkeyCreateAdd.tkeyUseful') }}
       </div>
       <div>
-        <a class="body-2 font-weight-bold torusBrand1--text text-decoration-none" href="https://hackmd.io/Tej2tf83SZOxZmz70ObEpg" target="_blank">
+        <a class="body-2 font-weight-bold torusBrand1--text text-decoration-none" href="https://hackmd.io/keVuRfrwSxygfyCfzsrQfw" target="_blank">
           {{ t('tkeyCreateAdd.learnMore') }}
           <v-icon class="torusBrand1--text" small>$vuetify.icons.page_next</v-icon>
         </a>
