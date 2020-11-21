@@ -380,39 +380,37 @@ export default {
     const {
       userInfo: { verifierId, verifier, verifierParams },
     } = state
-    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await torus.nodeDetailManager.getNodeDetails()
-    const publicAddress = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
-    log.info('New private key assigned to user at address ', publicAddress)
-    const postboxKey = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
-    if (publicAddress.toLowerCase() !== postboxKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
-    log.info('key 1', postboxKey)
+    const oAuthKey = await dispatch('getTorusKey', { verifier, verifierId, verifierParams, oAuthToken })
+    log.info('key 1', oAuthKey)
     dispatch('subscribeToControllers')
     const defaultAddresses = await dispatch('initTorusKeyring', {
-      keys: [{ ...postboxKey, accountType: ACCOUNT_TYPE.NORMAL }],
+      keys: [{ ...oAuthKey, accountType: ACCOUNT_TYPE.NORMAL }],
       calledFromEmbed,
       rehydrate: false,
     })
+
+    await dispatch('calculatePostboxKey', { oAuthToken })
     // Threshold Bak region
     // Check if tkey exists
-    const keyExists = await thresholdKeyController.checkIfTKeyExists(postboxKey.privKey)
+    const keyExists = await thresholdKeyController.checkIfTKeyExists(state.postboxKey.privateKey)
     // if in iframe && keyExists, initialize tkey only if it's set as default address
     // if not in iframe && keyExists, initialize tkey always
     // inside an iframe
     commit('setTkeyExists', keyExists)
     if (keyExists) {
       if (!isMain) {
-        if (defaultAddresses[0] && defaultAddresses[0] !== postboxKey.ethAddress) {
+        if (defaultAddresses[0] && defaultAddresses[0] !== oAuthKey.ethAddress) {
           // Do tkey
-          defaultAddresses.push(...(await dispatch('addTKey', { postboxKey, calledFromEmbed })))
+          defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
         }
       } else {
         // In app.tor.us
-        defaultAddresses.push(...(await dispatch('addTKey', { postboxKey, calledFromEmbed })))
+        defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
       }
     }
 
     const selectedDefaultAddress = defaultAddresses[0] || defaultAddresses[1]
-    const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : postboxKey.ethAddress
+    const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : oAuthKey.ethAddress
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
     prefsController.getBillboardContents()
     // continue enable function
@@ -426,6 +424,15 @@ export default {
     statusStream.write({ loggedIn: true, rehydrate: false, verifier })
     torus.updateStaticData({ isUnlocked: true })
     dispatch('cleanupOAuth', { oAuthToken })
+  },
+  async getTorusKey(_, { verifier, verifierId, verifierParams, oAuthToken }) {
+    if (!verifier) throw new Error('Verifier is required')
+    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await torus.nodeDetailManager.getNodeDetails()
+    const publicAddress = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
+    log.info('New private key assigned to user at address ', publicAddress)
+    const torusKey = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
+    if (publicAddress.toLowerCase() !== torusKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
+    return torusKey
   },
   cleanupOAuth({ state }, payload) {
     const {
@@ -481,8 +488,8 @@ export default {
         rehydrate: true,
       })
       if (Object.keys(tKeyStore).length > 0) {
-        const postboxWallet = walletKeys.find((x) => wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-        if (postboxWallet && tKeyStore.tKey) await thresholdKeyController.rehydrate(wallet[postboxWallet]?.privateKey, tKeyStore.tKey)
+        const postboxWallet = state.postboxKey
+        if (postboxWallet && tKeyStore.tKey) await thresholdKeyController.rehydrate(postboxWallet?.privateKey, tKeyStore.tKey)
       }
       if (selectedAddress && wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress }) // synchronous

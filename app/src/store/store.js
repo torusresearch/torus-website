@@ -55,6 +55,7 @@ if (storageAvailable(isPwa ? 'localStorage' : 'sessionStorage')) {
       tKeyStore: { ...state.tKeyStore, shareTransferRequests: [] },
       tKeyExists: state.tKeyExists,
       wcConnectorSession: state.wcConnectorSession,
+      postboxKey: state.postboxKey,
     }),
   })
 }

@@ -78,6 +78,7 @@ const initialState = {
   tKeyStore: {},
   wcConnectorSession: {},
   confirmModals: [],
+  postboxKey: {},
 }
 
 export default initialState

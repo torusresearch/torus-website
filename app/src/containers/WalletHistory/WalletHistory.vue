@@ -113,7 +113,6 @@ export default {
       pastTx: 'pastTransactions',
       etherscanTx: (state) => (state.networkType.host === MAINNET ? state.etherscanTx : []),
       paymentTx: (state) => (state.networkType.host === MAINNET ? state.paymentTx : []),
-      wallets: (state) => Object.keys(state.wallet),
     }),
     actionTypes() {
       return [

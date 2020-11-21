@@ -18,7 +18,6 @@
 import { mapActions, mapState } from 'vuex'
 
 import TkeyInputForm from '../../components/Tkey/TkeyInputForm'
-import { ACCOUNT_TYPE } from '../../utils/enums'
 
 export default {
   name: 'TkeyInput',
@@ -30,11 +29,8 @@ export default {
       selectedAddress: 'selectedAddress',
       loginConfig: (state) => state.embedState.loginConfig,
       userInfo: 'userInfo',
+      postboxKey: (state) => state.postboxKey.privateKey,
     }),
-    postboxKey() {
-      const postboxWallet = Object.keys(this.wallet).find((x) => this.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-      return this.wallet[postboxWallet]?.privateKey
-    },
     verifierName() {
       const verifierName = this.loginConfig[this.userInfo.verifier].name
       return verifierName.charAt(0).toUpperCase() + verifierName.slice(1)

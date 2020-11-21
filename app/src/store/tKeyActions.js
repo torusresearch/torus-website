@@ -1,11 +1,12 @@
 import randomId from '@chaitanyapotti/random-id'
 import log from 'loglevel'
+import { keccak256 } from 'web3-utils'
 
 import config from '../config'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import router from '../router'
 import torus from '../torus'
-import { ACCOUNT_TYPE, FEATURES_DEFAULT_POPUP_WINDOW } from '../utils/enums'
+import { ACCOUNT_TYPE, FEATURES_DEFAULT_POPUP_WINDOW, LINKED_VERIFIER_SUBIDENTIFIER } from '../utils/enums'
 import { isMain } from '../utils/utils'
 
 const { baseRoute } = config
@@ -14,19 +15,10 @@ const { torusController } = torus || {}
 const { thresholdKeyController } = torusController || {}
 
 export default {
-  async addTKey({ dispatch, state }, { postboxKey, calledFromEmbed }) {
+  async addTKey({ dispatch, state }, { calledFromEmbed }) {
     try {
-      let finalKey = postboxKey
-      if (!finalKey) {
-        const postboxWallet = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-        const { privateKey, accountType } = state.wallet[postboxWallet]
-        finalKey = {
-          ethAddress: postboxWallet,
-          privKey: privateKey,
-          accountType,
-        }
-      }
-      const thresholdKey = await thresholdKeyController.login(finalKey.privKey)
+      const finalKey = state.postboxKey
+      const thresholdKey = await thresholdKeyController.login(finalKey.privateKey)
       log.info('tkey 2', thresholdKey)
       return dispatch('initTorusKeyring', {
         keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
@@ -41,8 +33,8 @@ export default {
     }
   },
   async createNewTKey({ state, dispatch, commit }, payload) {
-    const normalAccount = Object.values(state.wallet).find((x) => x.accountType === ACCOUNT_TYPE.NORMAL)
-    const thresholdKey = await thresholdKeyController.createNewTKey({ postboxKey: normalAccount.privateKey, ...payload })
+    const { postboxKey } = state
+    const thresholdKey = await thresholdKeyController.createNewTKey({ postboxKey: postboxKey.privateKey, ...payload })
     log.info('tkey 2', thresholdKey)
     await dispatch('initTorusKeyring', {
       keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
@@ -77,14 +69,13 @@ export default {
         dispatch('setTkeyInputFlow', { response: JSON.parse(successData) })
       }
       try {
-        const postboxWallet = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
         const { loginConfig } = state.embedState
         const verifierName = loginConfig[state.userInfo.verifier].name
         const popupPayload = {
           verifierName,
           whiteLabel: state.whiteLabel,
           data: JSON.stringify(data),
-          postboxKey: state.wallet[postboxWallet]?.privateKey,
+          postboxKey: state.postboxKey?.privateKey,
         }
         const finalUrl = `${baseRoute}tkey/dapp-input?integrity=true&instanceId=${windowId}`
         const tKeyInputWindow = new PopupWithBcHandler({
@@ -144,5 +135,32 @@ export default {
   },
   setTkeyError(_, payload) {
     thresholdKeyController.setTkeyError(payload)
+  },
+  async calculatePostboxKey({ state, commit, dispatch }, payload) {
+    try {
+      const { userInfo, embedState } = state
+      const { oAuthToken: idToken } = payload
+      const aggregateVerifierParams = { verify_params: [], sub_verifier_ids: [], verifier_id: '' }
+      const aggregateIdTokenSeeds = []
+      let aggregateVerifierId = ''
+
+      aggregateVerifierParams.verify_params.push({ verifier_id: userInfo.verifierId, idtoken: idToken })
+      aggregateVerifierParams.sub_verifier_ids.push(LINKED_VERIFIER_SUBIDENTIFIER)
+      aggregateIdTokenSeeds.push(idToken)
+      aggregateVerifierId = userInfo.verifierId // using last because idk
+      aggregateIdTokenSeeds.sort()
+      const aggregateIdToken = keccak256(aggregateIdTokenSeeds.join(String.fromCharCode(29))).slice(2)
+      aggregateVerifierParams.verifier_id = aggregateVerifierId
+      const currentVeriferConfig = embedState.loginConfig[userInfo.verifier]
+      const postboxKey = await dispatch('getTorusKey', {
+        verifier: currentVeriferConfig.linkedVerifier,
+        verifierId: aggregateVerifierId,
+        verifierParams: aggregateVerifierParams,
+        oAuthToken: aggregateIdToken,
+      })
+      commit('setPostboxKey', { privateKey: postboxKey.privKey, ethAddress: postboxKey.ethAddress })
+    } catch (error) {
+      log.error(error, 'unable to get postbox key')
+    }
   },
 }
