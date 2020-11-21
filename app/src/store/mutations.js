@@ -204,6 +204,9 @@ export default {
   deleteConfirmModal(state, payload) {
     state.confirmModals = state.confirmModals.filter((x) => x.id !== payload)
   },
+  setPostboxKey(state, payload) {
+    state.postboxKey = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]

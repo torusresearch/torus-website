@@ -131,7 +131,7 @@ export default {
     },
     async loginWithTKey() {
       this.loggingWithTKey = true
-      await this.manualAddTKey({})
+      await this.manualAddTKey({ calledFromEmbed: false })
       this.loggingWithTKey = false
     },
   },
