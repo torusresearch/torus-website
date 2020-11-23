@@ -115,7 +115,7 @@ export default {
             accountType,
             isDefault: this.defaultPublicAddress && this.hasThreshold ? key === this.defaultPublicAddress : accountType === ACCOUNT_TYPE.NORMAL,
             icon: accountType === ACCOUNT_TYPE.THRESHOLD ? 'wallet' : this.userInfo.typeOfLogin.toLowerCase(),
-            title: accountType === ACCOUNT_TYPE.THRESHOLD ? '2FA' : this.userEmail,
+            title: accountType === ACCOUNT_TYPE.THRESHOLD ? 'tKey' : this.userEmail,
           })
         return acc
       }, [])

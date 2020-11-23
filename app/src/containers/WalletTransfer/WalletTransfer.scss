@@ -9,11 +9,11 @@
   .select-coin {
     background: rgba(255, 255, 255, 0.3);
     box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
-    border-color: var(--v-text_2-base);
     color: var(--v-torusFont1-base);
-    border-radius: 6px;
+    border-radius: 6px !important;
     font-size: 16px;
     display: flex;
+    border: 1px solid var(--v-torusGray1-base);
     ::v-deep .v-chip__content {
       width: 100%;
     }
@@ -23,7 +23,7 @@
     &.theme--dark {
       background-color: var(--v-torusBlack-base) !important;
       box-shadow: none;
-      border: 0;
+      border: 1px solid var(--v-torusGray3-base);
     }
   }
   ::v-deep .v-messages {
@@ -55,7 +55,7 @@
     }
   }
   &.mobile-view {
-    .select-coin {
+    .select-coin.theme--dark {
       background: var(--v-torusBlack2-base) !important;
     }
     .form-container {

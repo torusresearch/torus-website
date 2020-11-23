@@ -6,7 +6,7 @@
           <div class="avatar-container">
             <v-avatar size="32">
               <div v-if="accountType === ACCOUNT_TYPE.THRESHOLD" class="avatar-two-factor">
-                <span class="caption font-weight-bold">2FA</span>
+                <span class="caption font-weight-bold">tKey</span>
               </div>
               <div v-else-if="accountType === ACCOUNT_TYPE.IMPORTED" class="avatar-import">
                 <v-icon>$vuetify.icons.person</v-icon>

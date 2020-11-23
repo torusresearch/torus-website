@@ -109,6 +109,7 @@ const VuexStore = new Vuex.Store({
         network: state.networkType,
         whiteLabel: state.whiteLabel,
         selectedAddress: state.selectedAddress,
+        tKeyExists: state.tKeyExists,
       }
       if (isTx) {
         const txParameters = payload
