@@ -186,7 +186,8 @@ class ThresholdKeyController extends EventEmitter {
 
   startShareTransferRequestListener() {
     if (this.requestStatusCheckId) clearInterval(this.requestStatusCheckId)
-    if (isMain && !isPopup()) {
+    const { tKey: initialTkey } = this.state
+    if (isMain && !isPopup() && initialTkey.privKey) {
       const checkFn = async () => {
         try {
           const { tKey } = this.state

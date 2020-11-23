@@ -584,9 +584,9 @@ class PreferencesController extends EventEmitter {
   }
 
   setSelectedAddress(address) {
-    if (this.store.getState().selectedAddress === address) return
-    if (!Object.keys(this.store.getState()).includes(address)) return
+    // if (this.store.getState().selectedAddress === address) return
     this.store.updateState({ selectedAddress: address })
+    if (!Object.keys(this.store.getState()).includes(address)) return
     this.recalculatePastTx(address)
     this.fetchEtherscanTx(address)
     // this.sync()

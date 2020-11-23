@@ -703,3 +703,9 @@ export const isPopup = () => {
 export function apiStreamSupported() {
   return navigator?.mediaDevices?.getUserMedia !== undefined
 }
+
+export async function requestQuota() {
+  return new Promise((resolve, reject) => {
+    navigator.webkitPersistentStorage.requestQuota(1024 * 1024 * 10, resolve, reject)
+  })
+}

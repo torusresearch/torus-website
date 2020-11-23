@@ -120,9 +120,15 @@ export default {
     return thresholdKeyController.clearTkeySuccess()
   },
   async manualAddTKey({ dispatch, state }, payload) {
-    await dispatch('addTKey', payload)
-    const thresholdWallet = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.THRESHOLD)
-    return dispatch('updateSelectedAddress', { selectedAddress: thresholdWallet })
+    dispatch('updateSelectedAddress', { selectedAddress: '' })
+    const defaultAddresses = await dispatch('addTKey', payload)
+    let finalWallet
+    if (Object.keys(defaultAddresses).length > 0) {
+      finalWallet = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.THRESHOLD)
+    } else {
+      finalWallet = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
+    }
+    return dispatch('updateSelectedAddress', { selectedAddress: finalWallet })
   },
   approveShareTransferRequest(_, payload) {
     thresholdKeyController.approveShareTransferRequest(payload)

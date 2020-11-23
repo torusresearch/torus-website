@@ -184,8 +184,9 @@
 
 <script>
 import bowser from 'bowser'
+import log from 'loglevel'
 
-import { passwordValidation } from '../../../utils/utils'
+import { passwordValidation, requestQuota } from '../../../utils/utils'
 
 export default {
   props: {
@@ -264,9 +265,14 @@ export default {
       this.finalRecoveryPassword = this.recoveryPassword
       this.progressValue += 60
     },
-    onBackupDeviceShare() {
-      this.backupDeviceShare = !this.backupDeviceShare
-      this.progressValue += this.backupDeviceShare ? 40 : -40
+    async onBackupDeviceShare() {
+      try {
+        await requestQuota()
+        this.backupDeviceShare = !this.backupDeviceShare
+        this.progressValue += this.backupDeviceShare ? 40 : -40
+      } catch (error) {
+        log.error(error)
+      }
     },
   },
 }

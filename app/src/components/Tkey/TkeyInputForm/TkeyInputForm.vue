@@ -185,6 +185,7 @@ export default {
       } catch (error) {
         log.error(error)
       } finally {
+        log.info('finishing up storing device')
         await this.setInput({ response: this.tKey })
       }
 

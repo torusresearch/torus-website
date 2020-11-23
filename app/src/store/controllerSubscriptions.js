@@ -93,9 +93,9 @@ export function tokenRatesControllerHandler({ contractExchangeRates }) {
 
 export function prefsControllerHandler(state) {
   const { selectedAddress } = state
+  getStore().commit('setSelectedAddress', selectedAddress)
   if (selectedAddress === '') return
   const addressState = state[selectedAddress]
-  getStore().commit('setSelectedAddress', selectedAddress)
   Object.keys(addressState).forEach((x) => {
     if (x === 'jwtToken') getStore().commit('setJwtToken', { [selectedAddress]: addressState[x] })
     else if (x !== 'fetchedPastTx' && x !== 'accountType') getStore().commit(`set${capitalizeFirstLetter(x)}`, addressState[x])
