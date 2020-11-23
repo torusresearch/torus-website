@@ -209,17 +209,27 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async approveShareTransferRequest(encPubKeyX) {
-    const { tKey } = this.state
-    log.info(encPubKeyX, 'approving')
-    await tKey.modules[SHARE_TRANSFER_MODULE_KEY].approveRequest(encPubKeyX)
-    this.startShareTransferRequestListener()
+    try {
+      const { tKey } = this.state
+      log.info(encPubKeyX, 'approving')
+      await tKey.modules[SHARE_TRANSFER_MODULE_KEY].approveRequest(encPubKeyX)
+    } catch (error) {
+      log.error(error)
+    } finally {
+      this.startShareTransferRequestListener()
+    }
   }
 
   async denyShareTransferRequest(encPubKeyX) {
-    const { tKey } = this.state
-    log.info(encPubKeyX, 'deleting')
-    await tKey.modules[SHARE_TRANSFER_MODULE_KEY].deleteShareTransferStore(encPubKeyX)
-    this.startShareTransferRequestListener()
+    try {
+      const { tKey } = this.state
+      log.info(encPubKeyX, 'deleting')
+      await tKey.modules[SHARE_TRANSFER_MODULE_KEY].deleteShareTransferStore(encPubKeyX)
+    } catch (error) {
+      log.error(error)
+    } finally {
+      this.startShareTransferRequestListener()
+    }
   }
 
   async createNewTKey({ postboxKey, password, backup }) {
