@@ -40,12 +40,17 @@
         <v-icon small class="mr-3">$vuetify.icons.{{ wallet.icon }}</v-icon>
         <div>
           <div class="caption wallet-item__id">{{ wallet.title }}</div>
-          <div class="wallet-item__address caption">{{ t('tkeyCreateDone.walletAddress') }}: {{ wallet.keySliced }}</div>
+          <div class="wallet-item__address caption d-flex align-center">
+            <span class="mr-2">{{ t('tkeyCreateDone.walletAddress') }}: {{ wallet.keySliced }}</span>
+            <ShowToolTip :address="wallet.key">
+              <v-icon size="12" class="torusFont2--text" :style="{ marginTop: '-2px' }" v-text="'$vuetify.icons.copy'" />
+            </ShowToolTip>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="mt-9" :class="$vuetify.breakpoint.xsOnly ? 'text-right' : 'text-center'">
+    <div class="mt-9 text-center">
       <v-btn :x-large="!$vuetify.breakpoint.xsOnly" color="torusBrand1" class="body-2 font-weight-bold white--text px-16" @click="goToWallet">
         {{ t('tkeyCreateDone.letsExplore') }}
       </v-btn>
@@ -54,7 +59,10 @@
 </template>
 
 <script>
+import ShowToolTip from '../../helpers/ShowToolTip'
+
 export default {
+  components: { ShowToolTip },
   props: {
     wallets: {
       type: Array,

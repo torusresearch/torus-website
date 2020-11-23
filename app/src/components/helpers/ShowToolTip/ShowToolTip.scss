@@ -1,5 +1,6 @@
 .selected-account {
   cursor: pointer;
+  line-height: 0;
 
   &.v-btn {
     background-color: var(--v-torusGray4-base);
