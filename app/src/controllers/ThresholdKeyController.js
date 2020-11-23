@@ -102,6 +102,7 @@ class ThresholdKeyController extends EventEmitter {
       const { keyDetails: newDetails } = this.state
 
       if (newDetails.requiredShares > 0) {
+        log.error('cannot recover key')
         this.handleError('tkeyNew.errorCannotRecover')
         throw new Error('Cannot recover key')
       } else {
@@ -122,12 +123,12 @@ class ThresholdKeyController extends EventEmitter {
 
   handleError(error) {
     if (isErrorObject(error)) {
-      this.store.updateState({ error: `${this.t('tkeyNew.oopsDidntWork')} \n${error.message}` })
+      this.store.updateState({ error: 'tkeyNew.oopsDidntWork' })
     } else if (error && typeof error === 'string') {
       this.store.updateState({ error })
     } else if (error && typeof error === 'object') {
       const prettyError = prettyPrintData(error)
-      const payloadError = prettyError !== '' ? `${this.t('tkeyNew.error')}: ${prettyError}` : this.t('tkeyNew.oopsDidntWork')
+      const payloadError = prettyError !== '' ? 'tkeyNew.error' : 'tkeyNew.oopsDidntWork'
       this.store.updateState({ error: payloadError })
     } else {
       this.store.updateState({ error: error || '' })
@@ -235,7 +236,6 @@ class ThresholdKeyController extends EventEmitter {
         }
       } catch (error) {
         log.error(error)
-        this.handleError(error)
       }
     }
 

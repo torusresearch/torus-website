@@ -181,7 +181,7 @@ export default {
       return ''
     },
     tkeyError() {
-      return this.tKeyStore.error || ''
+      return this.t(this.tKeyStore.error || '')
     },
     tkeySuccess() {
       return this.tKeyStore.success || ''
