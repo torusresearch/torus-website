@@ -88,7 +88,7 @@ export default {
         // check for ondevice share and set it to true
         const { onDeviceShare } = this.settingsData
         if (onDeviceShare?.share?.share?.shareIndex) {
-          this.shareTransfer[onDeviceShare.share.share.shareIndex].finished = true
+          this.shareTransfer[onDeviceShare.share.share.shareIndex.toString('hex')].finished = true
         }
         if (Object.keys(this.shareTransfer).length > 0) {
           // start share transfer listener
