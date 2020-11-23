@@ -706,6 +706,7 @@ export function apiStreamSupported() {
 
 export async function requestQuota() {
   return new Promise((resolve, reject) => {
-    navigator.webkitPersistentStorage.requestQuota(1024 * 1024 * 10, resolve, reject)
+    if (navigator.webkitPersistentStorage?.requestQuota) navigator.webkitPersistentStorage.requestQuota(1024 * 1024 * 10, resolve, reject)
+    else resolve()
   })
 }
