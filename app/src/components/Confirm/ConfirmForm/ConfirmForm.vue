@@ -660,7 +660,7 @@ export default {
       }
     },
     topUp() {
-      this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
+      this.$store.dispatch('showWalletPopup', { path: '/topup' })
     },
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected

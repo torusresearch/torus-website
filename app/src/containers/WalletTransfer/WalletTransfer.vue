@@ -603,10 +603,15 @@ export default {
       return (this.selectedItem && this.selectedItem.computedBalance) || new BigNumber(0)
     },
     fromVerifier() {
-      return this.isThreshold ? 'wallet' : this.userInfo.typeOfLogin
-    },
-    isThreshold() {
-      return this.wallet[this.selectedAddress]?.accountType === ACCOUNT_TYPE.THRESHOLD
+      const accountType = this.wallet[this.selectedAddress]?.accountType || ''
+
+      if (accountType === ACCOUNT_TYPE.THRESHOLD) {
+        return 'wallet'
+      }
+      if (accountType === ACCOUNT_TYPE.IMPORTED) {
+        return 'person_circle'
+      }
+      return this.userInfo.typeOfLogin.toLowerCase()
     },
     apiStreamSupported() {
       return apiStreamSupported()
