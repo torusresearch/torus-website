@@ -28,6 +28,7 @@ import {
   accountTrackerHandler,
   assetControllerHandler,
   detectTokensControllerHandler,
+  encryptionPublicKeyHandler,
   errorMsgHandler as errorMessageHandler,
   etherscanTxHandler,
   messageManagerHandler,
@@ -40,6 +41,7 @@ import {
   tokenRatesControllerHandler,
   transactionControllerHandler,
   typedMessageManagerHandler,
+  unapprovedDecryptMsgsHandler,
   walletConnectHandler,
 } from './controllerSubscriptions'
 import { HandlerFactory as createHandler } from './Handlers'
@@ -60,6 +62,8 @@ const {
   networkController,
   assetDetectionController,
   walletConnectController,
+  encryptionPublicKeyManager,
+  decryptMessageManager,
 } = torusController || {}
 
 // stream to send logged in status
@@ -121,6 +125,8 @@ export default {
     resetStore(prefsController.paymentTxStore, paymentTxHandler, [])
     resetStore(prefsController.pastTransactionsStore, pastTransactionsHandler, [])
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
+    resetStore(encryptionPublicKeyManager.store, encryptionPublicKeyHandler)
+    resetStore(decryptMessageManager.store, unapprovedDecryptMsgsHandler)
     torus.updateStaticData({ isUnlocked: false })
   },
   setSelectedCurrency({ commit }, payload) {
@@ -382,6 +388,8 @@ export default {
     prefsController.pastTransactionsStore.subscribe(pastTransactionsHandler)
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
     walletConnectController.store.subscribe(walletConnectHandler)
+    encryptionPublicKeyManager.store.subscribe(encryptionPublicKeyHandler)
+    decryptMessageManager.store.subscribe(unapprovedDecryptMsgsHandler)
   },
   initTorusKeyring(_, payload) {
     return torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])

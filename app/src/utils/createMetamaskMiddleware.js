@@ -16,6 +16,8 @@ export default function createMetamaskMiddleware({
   processPersonalMessage,
   getPendingNonce,
   getPendingTransactionByHash,
+  processEncryptionPublicKey,
+  processDecryptMessage,
 }) {
   const metamaskMiddleware = mergeMiddleware([
     createScaffoldMiddleware({
@@ -31,6 +33,8 @@ export default function createMetamaskMiddleware({
       processTypedMessageV3,
       processTypedMessageV4,
       processPersonalMessage,
+      processEncryptionPublicKey,
+      processDecryptMessage,
     }),
     createRequestAccountsMiddleware({ getAccounts }),
     createPendingNonceMiddleware({ getPendingNonce }),

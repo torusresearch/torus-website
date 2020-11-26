@@ -39,6 +39,8 @@ const initialState = {
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},
+  unapprovedEncryptionPublicKeyMsgs: {},
+  unapprovedDecryptMsgs: {},
   // preferences
   selectedAddress: '',
   jwtToken: '',

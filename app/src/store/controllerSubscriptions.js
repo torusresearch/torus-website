@@ -129,3 +129,11 @@ export function etherscanTxHandler(state) {
 export function walletConnectHandler(state) {
   getStore().commit('setWCConnectorSession', state)
 }
+
+export function encryptionPublicKeyHandler({ unapprovedEncryptionPublicKeyMsgs }) {
+  getStore().commit('setUnapprovedEncryptionPublicKeyMsgs', unapprovedEncryptionPublicKeyMsgs)
+}
+
+export function unapprovedDecryptMsgsHandler({ unapprovedDecryptMsgs }) {
+  getStore().commit('setUnapprovedDecryptMsgs', unapprovedDecryptMsgs)
+}

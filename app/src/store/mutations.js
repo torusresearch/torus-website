@@ -192,6 +192,12 @@ export default {
   deleteConfirmModal(state, payload) {
     state.confirmModals = state.confirmModals.filter((x) => x.id !== payload)
   },
+  setUnapprovedEncryptionPublicKeyMsgs(state, unapprovedEncryptionPublicKeyMsgs) {
+    state.unapprovedEncryptionPublicKeyMsgs = unapprovedEncryptionPublicKeyMsgs
+  },
+  setUnapprovedDecryptMsgs(state, unapprovedDecryptMsgs) {
+    state.unapprovedDecryptMsgs = unapprovedDecryptMsgs
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]

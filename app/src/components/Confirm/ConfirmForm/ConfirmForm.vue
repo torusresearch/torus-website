@@ -165,7 +165,11 @@
       </v-layout>
     </template>
 
-    <template v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE">
+    <template
+      v-if="
+        type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE || type === TX_GET_ENCRYPTION_KEY || type === TX_ETH_DECRYPT
+      "
+    >
       <v-layout py-6 class="elevation-1">
         <v-flex xs12 text-center>
           <img class="home-link mr-1" alt="Torus Logo" width="70" :height="getLogo.isExternal ? 'inherit' : '17'" :src="getLogo.logo" />
@@ -198,7 +202,9 @@
           </v-card>
         </v-flex>
       </v-layout>
-      <v-layout wrap>
+      <v-layout v-if="type === TX_GET_ENCRYPTION_KEY" wrap>ENCRYPT</v-layout>
+      <v-layout v-else-if="type === TX_ETH_DECRYPT" wrap>DECRYPT</v-layout>
+      <v-layout v-else wrap>
         <v-flex xs12 mt-0 mb-2 mx-6>
           <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
@@ -239,6 +245,8 @@
             </v-list-item>
           </v-list>
         </v-flex>
+      </v-layout>
+      <v-layout wrap>
         <v-flex xs12 mt-8 mx-6>
           <v-layout mx-n2>
             <v-flex xs6 px-2>
@@ -277,6 +285,8 @@ import {
   TOKEN_METHOD_APPROVE,
   TOKEN_METHOD_TRANSFER,
   TOKEN_METHOD_TRANSFER_FROM,
+  TX_ETH_DECRYPT,
+  TX_GET_ENCRYPTION_KEY,
   TX_MESSAGE,
   TX_PERSONAL_MESSAGE,
   TX_TRANSACTION,
@@ -365,6 +375,8 @@ export default {
       TX_TYPED_MESSAGE,
       TX_PERSONAL_MESSAGE,
       TX_MESSAGE,
+      TX_GET_ENCRYPTION_KEY,
+      TX_ETH_DECRYPT,
       userInfo: {},
       contractType: CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
