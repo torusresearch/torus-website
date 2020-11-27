@@ -3,10 +3,8 @@ import Torus from '@toruslabs/torus.js'
 import { hashPersonalMessage } from 'ethereumjs-util'
 import log from 'loglevel'
 
-import config from './config'
+import setupMultiplex from './controllers/utils/setupMultiplex'
 import onloadTorus from './onload'
-import { post } from './utils/httpHelpers'
-import setupMultiplex from './utils/setupMultiplex'
 import { fakeStream, selectChainId } from './utils/utils'
 
 // Make this a class. Use ES6
@@ -35,27 +33,6 @@ class TorusExtended extends Torus {
     } else if (payload.isUnlocked) {
       publicConfigOutStream.write(JSON.stringify({ isUnlocked: payload.isUnlocked }))
     }
-  }
-
-  getMessageForSigning(publicAddress) {
-    return new Promise((resolve, reject) => {
-      post(
-        `${config.api}/auth/message`,
-        {
-          public_address: publicAddress,
-        },
-        {},
-        { useAPIKey: true }
-      )
-        .then((response) => {
-          const { message } = response || {}
-          resolve(message)
-        })
-        .catch((error) => {
-          log.error(error)
-          reject(error)
-        })
-    })
   }
 
   hashMessage(message) {

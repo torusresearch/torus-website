@@ -52,7 +52,7 @@ describe('Tests Wallet Settings Page', () => {
     const networkSelected = await page.$eval('.select-network-container .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
-    assert.equal(textToSelect, networkSelected)
+    assert.strictEqual(textToSelect, networkSelected)
   })
 
   it('Should show private key popup', async () => {
@@ -102,7 +102,7 @@ describe('Tests Wallet Settings Page', () => {
     const verifierSelected = await page.$eval('.select-verifier-container .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
-    assert.equal(textToSelect, verifierSelected)
+    assert.strictEqual(textToSelect, verifierSelected)
 
     await typeText(page, 'Contact Name', '#contact-name')
     await typeText(page, 'lionell', '#contact-value')

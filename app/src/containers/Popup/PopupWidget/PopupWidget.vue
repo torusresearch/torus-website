@@ -5,30 +5,35 @@
         <div class="d-flex torus-widget__user-details">
           <div class="avatar-container">
             <v-avatar size="32">
+              <div v-if="accountType === ACCOUNT_TYPE.THRESHOLD" class="avatar-two-factor">
+                <span class="caption font-weight-bold">tKey</span>
+              </div>
+              <div v-else-if="accountType === ACCOUNT_TYPE.IMPORTED" class="avatar-import">
+                <v-icon>$vuetify.icons.person</v-icon>
+              </div>
               <img
+                v-else
                 :src="userInfo.profileImage"
                 :alt="`${userInfo.verifierId} Avatar`"
                 onerror="if (!this.src.includes('/images/person.jpeg')) this.src = '/images/person.jpeg';"
               />
             </v-avatar>
           </div>
-          <div class="details-container d-flex flex-column ml-2 pr-2">
+          <div class="details-container d-flex flex-column pr-2 ml-2">
             <div class="d-flex align-center">
-              <v-icon size="12" class="details-container__icon torusGray1--text">{{ `$vuetify.icons.${userInfo.typeOfLogin.toLowerCase()}` }}</v-icon>
-              <div class="details-container__text ml-2" :title="userEmail">{{ userEmail }}</div>
+              <v-icon size="12" class="details-container__icon text_2--text">{{ `$vuetify.icons.${userIcon}` }}</v-icon>
+              <div class="details-container__text ml-2 font-weight-bold" :title="userEmail">{{ userEmail }}</div>
               <!-- Will add when dropdown available -->
               <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->
             </div>
             <div class="d-flex align-center">
-              <img class="details-container__icon" src="../../../assets/img/icons/address-wallet.svg" alt="Address Icon" />
-              <div class="details-container__text ml-2">
+              <v-icon size="12" class="details-container__icon text_2--text">{{ `$vuetify.icons.address` }}</v-icon>
+              <div class="details-container__text caption ml-2">
                 <ShowToolTip :address="fullAddress">
-                  {{ address }}
-                </ShowToolTip>
-              </div>
-              <div class="ml-auto mr-1 mt-n1">
-                <ShowToolTip :address="fullAddress">
-                  <v-icon size="12" class="text_2--text">$vuetify.icons.copy</v-icon>
+                  <div class="d-flex align-center">
+                    {{ address }}
+                    <v-icon size="12" class="ml-4 text_2--text">$vuetify.icons.copy_outline</v-icon>
+                  </div>
                 </ShowToolTip>
               </div>
             </div>
@@ -159,6 +164,7 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 import ShowToolTip from '../../../components/helpers/ShowToolTip'
 import config from '../../../config'
 import {
+  ACCOUNT_TYPE,
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_TOPUP,
@@ -194,15 +200,16 @@ export default {
       ACTIVITY_ACTION_SEND,
       CONTRACT_TYPE_ERC721,
       logosUrl: config.logosUrl,
+      ACCOUNT_TYPE,
     }
   },
   computed: {
     ...mapState({
-      address: (state) => `${state.selectedAddress.slice(0, 12)}...${state.selectedAddress.slice(-12)}`,
+      address: (state) => `${state.selectedAddress.slice(0, 10)}...${state.selectedAddress.slice(-10)}`,
       fullAddress: (state) => state.selectedAddress,
       userInfo: 'userInfo',
       selectedCurrency: 'selectedCurrency',
-      wallets: (state) => Object.keys(state.wallet).filter((x) => x !== state.selectedAddress),
+      wallet: 'wallet',
       embedState: 'embedState',
       pastTransactions: 'pastTransactions',
       whiteLabel: 'whiteLabel',
@@ -230,7 +237,28 @@ export default {
       }
     },
     userEmail() {
-      return getUserEmail(this.userInfo, this.t('accountMenu.wallet'))
+      if (this.accountType === ACCOUNT_TYPE.THRESHOLD) {
+        return this.t('tkeySettings.twoFaWallet')
+      }
+      if (this.accountType === ACCOUNT_TYPE.IMPORTED) {
+        const index = Object.keys(this.wallet)
+          .filter((x) => this.wallet[x].accountType === ACCOUNT_TYPE.IMPORTED)
+          .indexOf(this.fullAddress)
+        return `${this.t('accountMenu.importedAccount')} ${index + 1}`
+      }
+      return getUserEmail(this.userInfo, this.embedState.loginConfig, this.t('accountMenu.wallet'))
+    },
+    userIcon() {
+      if (this.accountType === ACCOUNT_TYPE.THRESHOLD) {
+        return 'wallet'
+      }
+      if (this.accountType === ACCOUNT_TYPE.IMPORTED) {
+        return 'person_circle'
+      }
+      return this.userInfo.typeOfLogin.toLowerCase()
+    },
+    accountType() {
+      return this.wallet[this.fullAddress]?.accountType
     },
   },
   methods: {
@@ -256,7 +284,7 @@ export default {
           return transaction.type_image_link
         }
         const action = transaction.action.split('.')
-        return action.length >= 1 ? `$vuetify.icons.coins_${transaction.action.split('.')[1].toLowerCase()}` : ''
+        return action.length > 0 ? `$vuetify.icons.coins_${transaction.action.split('.')[1].toLowerCase()}` : ''
       }
       return ''
     },

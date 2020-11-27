@@ -2,13 +2,16 @@ import AccountIcon from './AccountIcon.vue'
 import ActivitiesIcon from './ActivitiesIcon.vue'
 import AddIcon from './AddIcon.vue'
 import AddressIcon from './AddressIcon.vue'
+import AlertCircleFilledIcon from './AlertCircleFilledIcon.vue'
 import AlertIcon from './AlertIcon.vue'
-import ArrowDownCircleIcon from './ArrowDownCircleIcon.vue'
-import ArrowLeftCircleIcon from './ArrowLeftCircleIcon.vue'
-import ArrowRightCircleIcon from './ArrowRightCircleIcon.vue'
-import ArrowUpCircleIcon from './ArrowUpCircleIcon.vue'
 import BalanceIcon from './BalanceIcon.vue'
+import BrowserIcon from './BrowserIcon.vue'
 import CalendarIcon from './CalendarIcon.vue'
+import CheckboxCheckedIcon from './CheckboxCheckedIcon.vue'
+import CheckboxDarkCheckedIcon from './CheckboxDarkCheckedIcon.vue'
+import CheckboxDarkUncheckedIcon from './CheckboxDarkUncheckedIcon.vue'
+import CheckboxUncheckedIcon from './CheckboxUncheckedIcon.vue'
+import CheckCircleFilledIcon from './CheckCircleFilledIcon.vue'
 import CheckCircleIcon from './CheckCircleIcon.vue'
 import ChevronDoubleRightIcon from './ChevronDoubleRightIcon.vue'
 import ChevronLeftIcon from './ChevronLeftIcon.vue'
@@ -21,6 +24,12 @@ import CoinsSendIcon from './CoinsSendIcon.vue'
 import CoinsTopupIcon from './CoinsTopupIcon.vue'
 import CollectibleIcon from './CollectibleIcon.vue'
 import CopyIcon from './CopyIcon.vue'
+import CopyOutlineIcon from './CopyOutlineIcon.vue'
+import DeviceDesktopIcon from './DeviceDesktopIcon.vue'
+import DeviceDetailedIcon from './DeviceDetailedIcon.vue'
+import DeviceIcon from './DeviceIcon.vue'
+import DeviceMobileIcon from './DeviceMobileIcon.vue'
+import DeviceTabletIcon from './DeviceTabletIcon.vue'
 import DisconnectIcon from './DisconnectIcon.vue'
 import DownloadIcon from './DownloadIcon.vue'
 import EthIcon from './EthIcon.vue'
@@ -29,6 +38,7 @@ import InfoIcon from './InfoIcon.vue'
 import KeyIcon from './KeyIcon.vue'
 import LinkIcon from './LinkIcon.vue'
 import ListIcon from './ListIcon.vue'
+import LockFilledIcon from './LockFilledIcon.vue'
 import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
 import MenuIcon from './MenuIcon.vue'
@@ -36,6 +46,7 @@ import NetworkIcon from './NetworkIcon.vue'
 import PersonCircleIcon from './PersonCircleIcon.vue'
 import PersonIcon from './PersonIcon.vue'
 import QrIcon from './QrIcon.vue'
+import QuestionFilledIcon from './QuestionFilledIcon.vue'
 import QuestionIcon from './QuestionIcon.vue'
 import RadioCheckedIcon from './RadioCheckedIcon.vue'
 import RadioUncheckedIcon from './RadioUncheckedIcon.vue'
@@ -46,11 +57,14 @@ import SelectIcon from './SelectIcon.vue'
 import SendIcon from './SendIcon.vue'
 import ServerIcon from './ServerIcon.vue'
 import SettingsIcon from './SettingsIcon.vue'
+import ShieldLockIcon from './ShieldLockIcon.vue'
 import TimeIcon from './TimeIcon.vue'
 import TokenIcon from './TokenIcon.vue'
 import TopupIcon from './TopupIcon.vue'
 import TransactionIcon from './TransactionIcon.vue'
 import TrashIcon from './TrashIcon.vue'
+import TwoFactorIcon from './TwoFactorIcon.vue'
+import UploadIcon from './UploadIcon.vue'
 import VerifierAppleIcon from './VerifierAppleIcon.vue'
 import VerifierDiscordIcon from './VerifierDiscordIcon.vue'
 import VerifierEmailIcon from './VerifierEmailIcon.vue'
@@ -71,6 +85,8 @@ import VerifierWeiboIcon from './VerifierWeiboIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
 import WalletConnectIcon from './WalletConnectIcon.vue'
+import WalletFillIcon from './WalletFillIcon.vue'
+import WalletIcon from './WalletIcon.vue'
 
 export default {
   select: {
@@ -105,18 +121,6 @@ export default {
   },
   visibility_off: {
     component: VisibilityOffIcon,
-  },
-  arrow_up_circle: {
-    component: ArrowUpCircleIcon,
-  },
-  arrow_down_circle: {
-    component: ArrowDownCircleIcon,
-  },
-  arrow_left_circle: {
-    component: ArrowLeftCircleIcon,
-  },
-  arrow_right_circle: {
-    component: ArrowRightCircleIcon,
   },
   check_circle: {
     component: CheckCircleIcon,
@@ -277,8 +281,71 @@ export default {
   coins_approve: {
     component: CoinsApproveIcon,
   },
+  check_circle_filled: {
+    component: CheckCircleFilledIcon,
+  },
+  person_circle: {
+    component: PersonCircleIcon,
+  },
+  device: {
+    component: DeviceIcon,
+  },
+  two_factor: {
+    component: TwoFactorIcon,
+  },
+  wallet: {
+    component: WalletIcon,
+  },
+  wallet_fill: {
+    component: WalletFillIcon,
+  },
+  device_detailed: {
+    component: DeviceDetailedIcon,
+  },
+  lock_filled: {
+    component: LockFilledIcon,
+  },
+  upload: {
+    component: UploadIcon,
+  },
+  question_filled: {
+    component: QuestionFilledIcon,
+  },
+  browser: {
+    component: BrowserIcon,
+  },
+  shield_lock: {
+    component: ShieldLockIcon,
+  },
+  alert_circle_filled: {
+    component: AlertCircleFilledIcon,
+  },
+  device_desktop: {
+    component: DeviceDesktopIcon,
+  },
+  device_mobile: {
+    component: DeviceMobileIcon,
+  },
+  device_tablet: {
+    component: DeviceTabletIcon,
+  },
+  checkbox_checked: {
+    component: CheckboxCheckedIcon,
+  },
+  checkbox_unchecked: {
+    component: CheckboxUncheckedIcon,
+  },
+  checkbox_dark_checked: {
+    component: CheckboxDarkCheckedIcon,
+  },
+  checkbox_dark_unchecked: {
+    component: CheckboxDarkUncheckedIcon,
+  },
   alert: {
     component: AlertIcon,
+  },
+  copy_outline: {
+    component: CopyOutlineIcon,
   },
   walletconnect: {
     component: WalletConnectIcon,
@@ -288,8 +355,5 @@ export default {
   },
   link: {
     component: LinkIcon,
-  },
-  person_circle: {
-    component: PersonCircleIcon,
   },
 }

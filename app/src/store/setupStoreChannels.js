@@ -17,7 +17,6 @@ if (!isMain) {
   // setup handlers for communicationStream
   const passthroughStream = new stream.PassThrough({ objectMode: true })
   passthroughStream.on('data', (...arguments_) => {
-    // eslint-disable-next-line no-undef
     log.info('p data:', arguments_)
   })
 
@@ -138,7 +137,11 @@ if (!isMain) {
   accountImportChannel.addEventListener('message', (ev) => {
     if (ev.data && ev.data.name === 'imported_account' && ev.data.payload) {
       log.info('importing user account')
-      if (!Object.values(VuexStore.state.wallet).includes(ev.data.payload.privKey)) {
+      if (
+        !Object.values(VuexStore.state.wallet)
+          .map((x) => x.privateKey)
+          .includes(ev.data.payload.privKey)
+      ) {
         VuexStore.dispatch('finishImportAccount', ev.data.payload)
       }
     }

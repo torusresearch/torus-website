@@ -1,4 +1,4 @@
-import { ethErrors } from 'eth-json-rpc-errors'
+import { ethErrors } from 'eth-rpc-errors'
 import JsonRpcEngine from 'json-rpc-engine'
 import asMiddleware from 'json-rpc-engine/src/asMiddleware'
 import log from 'loglevel'
@@ -11,8 +11,8 @@ import {
   // SAFE_METHODS, // methods that do not require any permissions to use
   WALLET_PREFIX,
 } from '../utils/enums'
-import createMethodMiddleware from '../utils/methodMiddleware'
-import getRestrictedMethods from '../utils/restrictedMethods'
+import createMethodMiddleware from './utils/methodMiddleware'
+import getRestrictedMethods from './utils/restrictedMethods'
 
 export default class PermissionsController {
   constructor({ getKeyringAccounts, setSiteMetadata } = {}) {

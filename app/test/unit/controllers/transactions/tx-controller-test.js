@@ -71,7 +71,7 @@ describe('Transaction Controller', function () {
         { id: 3, status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] },
       ])
       const unapprovedTxCount = txController.getUnapprovedTxCount()
-      assert.equal(unapprovedTxCount, 3, 'should be 3')
+      assert.strictEqual(unapprovedTxCount, 3, 'should be 3')
     })
   })
 
@@ -83,7 +83,7 @@ describe('Transaction Controller', function () {
         { id: 3, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] },
       ])
       const pendingTxCount = txController.getPendingTxCount()
-      assert.equal(pendingTxCount, 3, 'should be 3')
+      assert.strictEqual(pendingTxCount, 3, 'should be 3')
     })
   })
 
@@ -105,7 +105,7 @@ describe('Transaction Controller', function () {
         { id: 7, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] },
         { id: 8, status: 'failed', metamaskNetworkId: currentNetworkId, txParams, history: [{}] },
       ])
-      assert.equal(txController.nonceTracker.getConfirmedTransactions(address).length, 3)
+      assert.strictEqual(txController.nonceTracker.getConfirmedTransactions(address).length, 3)
     })
   })
 
@@ -192,7 +192,11 @@ describe('Transaction Controller', function () {
           assert('history' in txMeta, 'should have a history')
 
           const memTxMeta = txController.txStateManager.getTx(txMeta.id)
-          assert.deepEqual(txMeta, memTxMeta, `txMeta should be stored in txController after adding it\n  expected: ${txMeta} \n  got: ${memTxMeta}`)
+          assert.deepStrictEqual(
+            txMeta,
+            memTxMeta,
+            `txMeta should be stored in txController after adding it\n  expected: ${txMeta} \n  got: ${memTxMeta}`
+          )
           done()
         })
         .catch(done)
@@ -282,7 +286,7 @@ describe('Transaction Controller', function () {
       })
       Promise.all(listeners)
         .then((returnValues) => {
-          assert.deepEqual(returnValues.pop(), txMeta, 'last event 1:unapproved should return txMeta')
+          assert.deepStrictEqual(returnValues.pop(), txMeta, 'last event 1:unapproved should return txMeta')
           done()
         })
         .catch(done)
@@ -323,10 +327,10 @@ describe('Transaction Controller', function () {
           const result = txController.txStateManager.getTx(txMeta.id)
           const params = result.txParams
 
-          assert.equal(params.gas, originalValue, 'gas unmodified')
-          assert.equal(params.gasPrice, originalValue, 'gas price unmodified')
-          assert.equal(result.hash, originalValue, `hash was set \n got: ${result.hash} \n expected: ${originalValue}`)
-          assert.equal(result.status, 'submitted', 'Should have reached the submitted status.')
+          assert.strictEqual(params.gas, originalValue, 'gas unmodified')
+          assert.strictEqual(params.gasPrice, originalValue, 'gas price unmodified')
+          assert.strictEqual(result.hash, originalValue, `hash was set \n got: ${result.hash} \n expected: ${originalValue}`)
+          assert.strictEqual(result.status, 'submitted', 'Should have reached the submitted status.')
           signStub.restore()
           pubStub.restore()
           done()
@@ -368,7 +372,7 @@ describe('Transaction Controller', function () {
           const result = txController.txStateManager.getTx(txMeta.id)
           const params = result.txParams
 
-          assert.equal(parseInt(params.nonce), parseInt(originalNonceValue), 'nonce should change to customNonceValue')
+          assert.strictEqual(parseInt(params.nonce), parseInt(originalNonceValue), 'nonce should change to customNonceValue')
           signStub.restore()
           pubStub.restore()
           done()
@@ -384,7 +388,7 @@ describe('Transaction Controller', function () {
         .signTransaction('1')
         .then((rawTx) => {
           const ethTx = new EthTx(toBuffer(rawTx), { chain: currentNetworkId })
-          assert.equal(ethTx.getChainId(), currentNetworkId)
+          assert.strictEqual(ethTx.getChainId(), currentNetworkId)
           done()
         })
         .catch(done)
@@ -405,7 +409,7 @@ describe('Transaction Controller', function () {
             'istanbul'
           )
           const ethTx = new EthTx(toBuffer(rawTx), { common: chain })
-          assert.equal(ethTx.getChainId(), 100)
+          assert.strictEqual(ethTx.getChainId(), 100)
           done()
         })
         .catch(done)
@@ -429,7 +433,7 @@ describe('Transaction Controller', function () {
       txController.txStateManager.addTx(txMeta)
       const approvalPromise = txController.updateAndApproveTransaction(txMeta)
       const tx = txController.txStateManager.getTx(1)
-      assert.equal(tx.status, 'approved')
+      assert.strictEqual(tx.status, 'approved')
       await approvalPromise
     })
   })
@@ -437,7 +441,7 @@ describe('Transaction Controller', function () {
   describe('#getChainId', function () {
     it('returns 0 when the chainId is NaN', function () {
       txController.networkStore = new ObservableStore(NaN)
-      assert.equal(txController.getChainId(), 0)
+      assert.strictEqual(txController.getChainId(), 0)
     })
   })
 
@@ -455,8 +459,8 @@ describe('Transaction Controller', function () {
 
       txController.once('tx:status-update', (txId, status) => {
         try {
-          assert.equal(status, 'rejected', 'status should e rejected')
-          assert.equal(txId, 0, 'id should e 0')
+          assert.strictEqual(status, 'rejected', 'status should e rejected')
+          assert.strictEqual(txId, 0, 'id should e 0')
           done()
         } catch (e) {
           done(e)
@@ -496,13 +500,13 @@ describe('Transaction Controller', function () {
 
     it('should call this.addTx and this.approveTransaction with the expected args', async function () {
       await txController.createSpeedUpTransaction(1)
-      assert.equal(addTxSpy.callCount, 1)
+      assert.strictEqual(addTxSpy.callCount, 1)
 
       const addTxArgs = addTxSpy.getCall(0).args[0]
-      assert.deepEqual(addTxArgs.txParams, expectedTxParams)
+      assert.deepStrictEqual(addTxArgs.txParams, expectedTxParams)
 
       const { lastGasPrice, type } = addTxArgs
-      assert.deepEqual(
+      assert.deepStrictEqual(
         { lastGasPrice, type },
         {
           lastGasPrice: '0xa',
@@ -513,19 +517,19 @@ describe('Transaction Controller', function () {
 
     it('should call this.approveTransaction with the id of the returned tx', async function () {
       const result = await txController.createSpeedUpTransaction(1)
-      assert.equal(approveTransactionSpy.callCount, 1)
+      assert.strictEqual(approveTransactionSpy.callCount, 1)
 
       const approveTransactionArg = approveTransactionSpy.getCall(0).args[0]
-      assert.equal(result.id, approveTransactionArg)
+      assert.strictEqual(result.id, approveTransactionArg)
     })
 
     it('should return the expected txMeta', async function () {
       const result = await txController.createSpeedUpTransaction(1)
 
-      assert.deepEqual(result.txParams, expectedTxParams)
+      assert.deepStrictEqual(result.txParams, expectedTxParams)
 
       const { lastGasPrice, type } = result
-      assert.deepEqual(
+      assert.deepStrictEqual(
         { lastGasPrice, type },
         {
           lastGasPrice: '0xa',
@@ -553,8 +557,8 @@ describe('Transaction Controller', function () {
       txController.txStateManager.addTx(txMeta)
       await txController.publishTransaction(txMeta.id, rawTx)
       const publishedTx = txController.txStateManager.getTx(1)
-      assert.equal(publishedTx.hash, hash)
-      assert.equal(publishedTx.status, 'submitted')
+      assert.strictEqual(publishedTx.hash, hash)
+      assert.strictEqual(publishedTx.status, 'submitted')
     })
 
     it('should ignore the error "Transaction Failed: known transaction" and be as usual', async function () {
@@ -566,8 +570,8 @@ describe('Transaction Controller', function () {
       txController.txStateManager.addTx(txMeta)
       await txController.publishTransaction(txMeta.id, rawTx)
       const publishedTx = txController.txStateManager.getTx(1)
-      assert.equal(publishedTx.hash, '0x2cc5a25744486f7383edebbf32003e5a66e18135799593d6b5cdd2bb43674f09')
-      assert.equal(publishedTx.status, 'submitted')
+      assert.strictEqual(publishedTx.hash, '0x2cc5a25744486f7383edebbf32003e5a66e18135799593d6b5cdd2bb43674f09')
+      assert.strictEqual(publishedTx.status, 'submitted')
     })
   })
 
@@ -584,13 +588,13 @@ describe('Transaction Controller', function () {
       txController
         .retryTransaction(1)
         .then((txMeta) => {
-          assert.equal(txMeta.txParams.gasPrice, '0x10642ac00', 'gasPrice should have a %10 gasPrice bump')
-          assert.equal(txMeta.txParams.nonce, txParams.nonce, 'nonce should be the same')
-          assert.equal(txMeta.txParams.from, txParams.from, 'from should be the same')
-          assert.equal(txMeta.txParams.to, txParams.to, 'to should be the same')
-          assert.equal(txMeta.txParams.data, txParams.data, 'data should be the same')
+          assert.strictEqual(txMeta.txParams.gasPrice, '0x10642ac00', 'gasPrice should have a %10 gasPrice bump')
+          assert.strictEqual(txMeta.txParams.nonce, txParams.nonce, 'nonce should be the same')
+          assert.strictEqual(txMeta.txParams.from, txParams.from, 'from should be the same')
+          assert.strictEqual(txMeta.txParams.to, txParams.to, 'to should be the same')
+          assert.strictEqual(txMeta.txParams.data, txParams.data, 'data should be the same')
           assert.ok('lastGasPrice' in txMeta, 'should have the key `lastGasPrice`')
-          assert.equal(txController.txStateManager.getTxList().length, 2)
+          assert.strictEqual(txController.txStateManager.getTxList().length, 2)
           done()
         })
         .catch(done)
@@ -611,8 +615,8 @@ describe('Transaction Controller', function () {
       txController._markNonceDuplicatesDropped(1)
       const confirmedTx = txController.txStateManager.getTx(1)
       const droppedTxs = txController.txStateManager.getFilteredTxList({ nonce: '0x01', status: 'dropped' })
-      assert.equal(confirmedTx.status, 'confirmed', 'the confirmedTx should remain confirmed')
-      assert.equal(droppedTxs.length, 6, 'their should be 6 dropped txs')
+      assert.strictEqual(confirmedTx.status, 'confirmed', 'the confirmedTx should remain confirmed')
+      assert.strictEqual(droppedTxs.length, 6, 'their should be 6 dropped txs')
     })
   })
 
@@ -622,7 +626,7 @@ describe('Transaction Controller', function () {
         to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
         data: '',
       })
-      assert.deepEqual(result, { transactionCategory: SEND_ETHER_ACTION_KEY, getCodeResponse: '0x', methodParams: {}, contractParams: {} })
+      assert.deepStrictEqual(result, { transactionCategory: SEND_ETHER_ACTION_KEY, getCodeResponse: '0x', methodParams: {}, contractParams: {} })
     })
 
     it('should return a token transfer transactionCategory when data is for the respective method call', async function () {
@@ -631,7 +635,7 @@ describe('Transaction Controller', function () {
         data:
           '0xa9059cbb0000000000000000000000002f318C334780961FB129D2a6c30D0763d9a5C970000000000000000000000000000000000000000000000000000000000000000a',
       })
-      assert.deepEqual(result, {
+      assert.deepStrictEqual(result, {
         transactionCategory: TOKEN_METHOD_TRANSFER,
         getCodeResponse: undefined,
         methodParams: [
@@ -648,7 +652,7 @@ describe('Transaction Controller', function () {
         data:
           '0x095ea7b30000000000000000000000002f318C334780961FB129D2a6c30D0763d9a5C9700000000000000000000000000000000000000000000000000000000000000005',
       })
-      assert.deepEqual(result, {
+      assert.deepStrictEqual(result, {
         transactionCategory: TOKEN_METHOD_APPROVE,
         getCodeResponse: undefined,
         methodParams: [
@@ -664,7 +668,12 @@ describe('Transaction Controller', function () {
         to: '',
         data: '0xabd',
       })
-      assert.deepEqual(result, { transactionCategory: DEPLOY_CONTRACT_ACTION_KEY, getCodeResponse: undefined, contractParams: {}, methodParams: {} })
+      assert.deepStrictEqual(result, {
+        transactionCategory: DEPLOY_CONTRACT_ACTION_KEY,
+        getCodeResponse: undefined,
+        contractParams: {},
+        methodParams: {},
+      })
     })
 
     it('should return a simple send transactionCategory with a 0x getCodeResponse when there is data and but the to address is not a contract address', async function () {
@@ -672,7 +681,7 @@ describe('Transaction Controller', function () {
         to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
         data: '0xabd',
       })
-      assert.deepEqual(result, { transactionCategory: SEND_ETHER_ACTION_KEY, getCodeResponse: '0x', contractParams: {}, methodParams: {} })
+      assert.deepStrictEqual(result, { transactionCategory: SEND_ETHER_ACTION_KEY, getCodeResponse: '0x', contractParams: {}, methodParams: {} })
     })
 
     it('should return a simple send transactionCategory with a null getCodeResponse when to is truthy and there is data and but getCode returns an error', async function () {
@@ -680,7 +689,7 @@ describe('Transaction Controller', function () {
         to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
         data: '0xabd',
       })
-      assert.deepEqual(result, { transactionCategory: SEND_ETHER_ACTION_KEY, getCodeResponse: '0x', contractParams: {}, methodParams: {} })
+      assert.deepStrictEqual(result, { transactionCategory: SEND_ETHER_ACTION_KEY, getCodeResponse: '0x', contractParams: {}, methodParams: {} })
     })
 
     it('should return a contract interaction transactionCategory with the correct getCodeResponse when to is truthy and there is data and it is not a token transaction', async function () {
@@ -713,7 +722,7 @@ describe('Transaction Controller', function () {
         to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
         data: 'abd',
       })
-      assert.deepEqual(result, { transactionCategory: CONTRACT_INTERACTION_KEY, getCodeResponse: '0x0a', contractParams: {}, methodParams: {} })
+      assert.deepStrictEqual(result, { transactionCategory: CONTRACT_INTERACTION_KEY, getCodeResponse: '0x0a', contractParams: {}, methodParams: {} })
     })
 
     it('should return a contract interaction transactionCategory with the correct getCodeResponse when to is a contract address and data is falsey', async function () {
@@ -746,7 +755,7 @@ describe('Transaction Controller', function () {
         to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
         data: '',
       })
-      assert.deepEqual(result, { transactionCategory: CONTRACT_INTERACTION_KEY, getCodeResponse: '0x0a', contractParams: {}, methodParams: {} })
+      assert.deepStrictEqual(result, { transactionCategory: CONTRACT_INTERACTION_KEY, getCodeResponse: '0x0a', contractParams: {}, methodParams: {} })
     })
   })
 

@@ -83,7 +83,7 @@ describe('PendingTransactionTracker', function () {
 
       const spy = sinon.spy()
       pendingTxTracker.on('tx:dropped', (txId) => {
-        assert.equal(txId, pending.id, 'should fail the pending tx')
+        assert.strictEqual(txId, pending.id, 'should fail the pending tx')
         spy(txId)
       })
 
@@ -258,11 +258,11 @@ describe('PendingTransactionTracker', function () {
 
     beforeEach(function () {
       pendingTxTracker.getBalance = (address) => {
-        assert.equal(address, txMeta.txParams.from, 'Should pass the address')
+        assert.strictEqual(address, txMeta.txParams.from, 'Should pass the address')
         return enoughBalance
       }
       pendingTxTracker.publishTransaction = async (rawTx) => {
-        assert.equal(rawTx, txMeta.rawTx, 'Should pass the rawTx')
+        assert.strictEqual(rawTx, txMeta.rawTx, 'Should pass the rawTx')
       }
       pendingTxTracker.approveTransaction = async () => {}
       sinon.spy(pendingTxTracker, 'publishTransaction')
@@ -290,7 +290,7 @@ describe('PendingTransactionTracker', function () {
           done(err)
         })
 
-      assert.equal(pendingTxTracker.publishTransaction.callCount, 1, 'Should call publish transaction')
+      assert.strictEqual(pendingTxTracker.publishTransaction.callCount, 1, 'Should call publish transaction')
     })
 
     it('should not publish the transaction if the limit of retries has been exceeded', function (done) {
@@ -305,7 +305,7 @@ describe('PendingTransactionTracker', function () {
           done(err)
         })
 
-      assert.equal(pendingTxTracker.publishTransaction.callCount, 0, 'Should NOT call publish transaction')
+      assert.strictEqual(pendingTxTracker.publishTransaction.callCount, 0, 'Should NOT call publish transaction')
     })
 
     it('should publish the transaction if the number of blocks since last retry exceeds the last set limit', function (done) {
@@ -320,7 +320,7 @@ describe('PendingTransactionTracker', function () {
           done(err)
         })
 
-      assert.equal(pendingTxTracker.publishTransaction.callCount, 1, 'Should call publish transaction')
+      assert.strictEqual(pendingTxTracker.publishTransaction.callCount, 1, 'Should call publish transaction')
     })
 
     it('should call opts.approveTransaction with the id if the tx is not signed', async function () {

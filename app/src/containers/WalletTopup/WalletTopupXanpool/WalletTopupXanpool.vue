@@ -41,7 +41,6 @@ export default {
           })
           .catch((error) => {
             log.error(error)
-            // eslint-disable-next-line no-param-reassign
             const result = {
               crypto: 0.201,
               fiat: 50,

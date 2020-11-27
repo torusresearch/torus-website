@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :header-items="headerItems">
+    <Navbar :show-nav="true" :show-language-selector="true" :header-items="headerItems">
       <template v-slot:drawer>
         <v-btn v-if="$vuetify.breakpoint.smAndDown" id="menu-dropdown-mobile-btn" icon aria-label="Open Account Menu" @click="drawer = !drawer">
           <v-icon class="torusBrand1--text">$vuetify.icons.menu</v-icon>
@@ -8,22 +8,13 @@
       </template>
     </Navbar>
     <v-navigation-drawer v-model="drawer" disable-resize-watcher app right :width="$vuetify.breakpoint.xsOnly ? '80%' : ''">
-      <AccountMenu :header-items="headerItems"></AccountMenu>
+      <AccountMenu :show-nav="true" :show-language-selector="true" :header-items="headerItems"></AccountMenu>
     </v-navigation-drawer>
     <v-main>
       <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
       <router-view></router-view>
     </v-main>
-    <!-- <v-dialog v-if="badgesTopupDialog" v-model="badgesTopupDialog" persistent width="375">
-      <BadgesAlert :badge="badges[BADGES_TOPUP]" @closeBadge="closeBadge" />
-    </v-dialog>
-    <v-dialog v-else-if="badgesTransactionDialog" v-model="badgesTransactionDialog" persistent width="375">
-      <BadgesAlert :badge="badges[BADGES_TRANSACTION]" @closeBadge="closeBadge" />
-    </v-dialog>
-    <v-dialog v-else-if="badgesCollectibleDialog" v-model="badgesCollectibleDialog" persistent width="375">
-      <BadgesAlert :badge="badges[BADGES_COLLECTIBLE]" @closeBadge="closeBadge" />
-    </v-dialog> -->
-    <v-dialog v-model="showDialog" persistent width="500">
+    <v-dialog v-model="showConfirmDialog" persistent width="500">
       <v-card>
         <ConfirmForm
           :current-confirm-modal="currentConfirmModal"
@@ -32,15 +23,14 @@
           @triggerDeny="handleConfirmModal"
         />
       </v-card>
-      <!-- <v-card>
-        <v-card-title>Confirm</v-card-title>
-        <v-card-text>Confirm or deny this tx {{ currentConfirmModal && currentConfirmModal.id }}</v-card-text>
-        <v-card-actions>
-          <v-btn text color="deep-purple accent-4" @click="handleConfirmModal({ ...currentConfirmModal, approve: true })">Confirm</v-btn>
-          <v-btn text color="deep-purple accent-4" @click="handleConfirmModal({ ...currentConfirmModal, approve: false })">Deny</v-btn>
-        </v-card-actions>
-      </v-card> -->
     </v-dialog>
+    <TkeyConfirmLogin
+      :show-tkey-confirm-dialog="showTkeyConfirmDialog"
+      :current-tkey-confirm-dialog="currentTkeyConfirmDialog"
+      :device-share-index="deviceShareIndex"
+      @confirmShareTransfer="confirmShareTransfer"
+      @denyShareTransfer="denyShareTransfer"
+    />
   </div>
 </template>
 
@@ -49,6 +39,7 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ConfirmForm from '../../components/Confirm/ConfirmForm'
 import Navbar from '../../components/helpers/Navbar'
+import TkeyConfirmLogin from '../../components/Tkey/TkeyConfirmLogin'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
 // import BadgesAlert from '../../components/WalletHome/BadgesAlert'
 import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION } from '../../utils/enums'
@@ -58,6 +49,7 @@ export default {
     Navbar,
     AccountMenu,
     ConfirmForm,
+    TkeyConfirmLogin,
     // BadgesAlert,
   },
   data() {
@@ -76,10 +68,13 @@ export default {
       badgesCompletion: 'badgesCompletion',
       pastTransactions: 'pastTransactions',
       paymentTxStore: 'paymentTx',
+      wallet: 'wallet',
       confirmModals: 'confirmModals',
+      shareTransferRequests: (state) => state.tKeyStore.shareTransferRequests,
+      deviceShare: (state) => state.tKeyStore.settingsPageData && state.tKeyStore.settingsPageData.deviceShare,
     }),
     ...mapGetters(['collectibleBalances']),
-    showDialog() {
+    showConfirmDialog() {
       return !!this.currentConfirmModal
     },
     currentConfirmModal() {
@@ -155,12 +150,35 @@ export default {
     badgesTransactionDialog() {
       return this.pastTransactions && this.pastTransactions.length > 0 && this.badgesCompletion[BADGES_TRANSACTION] === false
     },
+    currentTkeyConfirmDialog() {
+      if (this.shareTransferRequests?.length > 0) {
+        return this.shareTransferRequests[0]
+      }
+      return undefined
+    },
+    showTkeyConfirmDialog() {
+      return !!this.currentTkeyConfirmDialog
+    },
+    deviceShareIndex() {
+      return this.deviceShare && this.deviceShare.share ? this.deviceShare.share.share.shareIndex.toString('hex') : ''
+    },
+  },
+  mounted() {
+    if (Object.keys(this.wallet).length === 0) {
+      this.$router.push({ name: 'login' })
+    }
   },
   methods: {
-    ...mapActions(['setUserBadge', 'handleConfirmModal']),
+    ...mapActions(['setUserBadge', 'handleConfirmModal', 'approveShareTransferRequest', 'denyShareTransferRequest']),
     closeBadge(data) {
       this.setUserBadge(data.type)
       if (data.returnHome && !['walletHomeMain', 'walletHome'].includes(this.$route.name)) this.$router.push({ name: 'walletHome' })
+    },
+    confirmShareTransfer(encPubKeyX) {
+      this.approveShareTransferRequest(encPubKeyX)
+    },
+    denyShareTransfer(encPubKeyX) {
+      this.denyShareTransferRequest(encPubKeyX)
     },
   },
 }

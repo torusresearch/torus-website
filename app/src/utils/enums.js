@@ -1,3 +1,7 @@
+import { SECURITY_QUESTIONS_MODULE_NAME } from '@tkey/security-questions'
+import { SHARE_TRANSFER_MODULE_NAME } from '@tkey/share-transfer'
+import { WEB_STORAGE_MODULE_NAME } from '@tkey/web-storage'
+
 export const ETH = 'eth'
 
 export const PLATFORM_BRAVE = 'Brave'
@@ -157,6 +161,23 @@ export const LINE_VERIFIER = process.env.VUE_APP_LINE_VERIFIER
 export const APPLE_VERIFIER = process.env.VUE_APP_APPLE_VERIFIER
 export const HOSTED_EMAIL_PASSWORDLESS_VERIFIER = process.env.VUE_APP_HOSTED_EMAIL_PASSWORDLESS_VERIFIER
 
+export const GOOGLE_LINKED_VERIFIER = process.env.VUE_APP_GOOGLE_LINKED_VERIFIER
+export const FACEBOOK_LINKED_VERIFIER = process.env.VUE_APP_FACEBOOK_LINKED_VERIFIER
+export const REDDIT_LINKED_VERIFIER = process.env.VUE_APP_REDDIT_LINKED_VERIFIER
+export const DISCORD_LINKED_VERIFIER = process.env.VUE_APP_DISCORD_LINKED_VERIFIER
+export const TWITCH_LINKED_VERIFIER = process.env.VUE_APP_TWITCH_LINKED_VERIFIER
+export const GITHUB_LINKED_VERIFIER = process.env.VUE_APP_GITHUB_LINKED_VERIFIER
+export const KAKAO_LINKED_VERIFIER = process.env.VUE_APP_KAKAO_LINKED_VERIFIER
+export const LINKEDIN_LINKED_VERIFIER = process.env.VUE_APP_LINKEDIN_LINKED_VERIFIER
+export const TWITTER_LINKED_VERIFIER = process.env.VUE_APP_TWITTER_LINKED_VERIFIER
+export const WEIBO_LINKED_VERIFIER = process.env.VUE_APP_WEIBO_LINKED_VERIFIER
+export const WECHAT_LINKED_VERIFIER = process.env.VUE_APP_WECHAT_LINKED_VERIFIER
+export const LINE_LINKED_VERIFIER = process.env.VUE_APP_LINE_LINKED_VERIFIER
+export const APPLE_LINKED_VERIFIER = process.env.VUE_APP_APPLE_LINKED_VERIFIER
+export const HOSTED_EMAIL_PASSWORDLESS_LINKED_VERIFIER = process.env.VUE_APP_HOSTED_EMAIL_PASSWORDLESS_LINKED_VERIFIER
+
+export const LINKED_VERIFIER_SUBIDENTIFIER = process.env.VUE_APP_LINKED_VERIFIER_SUBIDENTIFIER
+
 export const ENS = 'ENS'
 export const ETH_LABEL = 'walletSettings.ethAddress'
 export const GOOGLE_LABEL = 'walletSettings.googleId'
@@ -171,6 +192,25 @@ export const GITHUB_LABEL = 'walletSettings.githubId'
 // Format: [dark/light]-[colorName]
 export const THEME_DARK_BLACK_NAME = 'dark-black'
 export const THEME_LIGHT_BLUE_NAME = 'light-blue'
+
+export const ACCOUNT_TYPE = {
+  NORMAL: 'normal',
+  THRESHOLD: 'threshold',
+  IMPORTED: 'imported',
+}
+
+export const WEB_STORAGE_MODULE_KEY = WEB_STORAGE_MODULE_NAME
+export const SECURITY_QUESTIONS_MODULE_KEY = SECURITY_QUESTIONS_MODULE_NAME
+export const CHROME_EXTENSION_STORAGE_MODULE_KEY = 'chromeExtensionStorage'
+export const SHARE_TRANSFER_MODULE_KEY = SHARE_TRANSFER_MODULE_NAME
+export const PASSWORD_QUESTION = 'what is your password?'
+export const THRESHOLD_KEY_PRIORITY_ORDER = [WEB_STORAGE_MODULE_KEY, SECURITY_QUESTIONS_MODULE_KEY, CHROME_EXTENSION_STORAGE_MODULE_KEY]
+export const TKEY_SHARE_TRANSFER_INTERVAL = 5000
+
+export const STORAGE_MAP = {
+  [WEB_STORAGE_MODULE_KEY]: 'Web Storage',
+  [CHROME_EXTENSION_STORAGE_MODULE_KEY]: 'Chrome Extension',
+}
 
 export const OLD_ERC721_LIST = {
   '0x06012c8cf97bead5deae237070f9587f8e7a266d': {
@@ -349,6 +389,8 @@ export const BADGES_TOPUP = 'topUp'
 export const BADGES_TRANSACTION = 'transaction'
 export const BADGES_COLLECTIBLE = 'collectible'
 
+export const POPUP_LOADED = 'popup-loaded'
+export const POPUP_RESULT = 'popup_result'
 export const FEATURES_PROVIDER_CHANGE_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375'
 export const FEATURES_DEFAULT_WALLET_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=740,width=1315'
 export const FEATURES_DEFAULT_POPUP_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200'

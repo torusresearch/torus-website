@@ -1,8 +1,8 @@
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
-import { addHexPrefix, BN, stripHexPrefix } from 'ethereumjs-util'
+import { addHexPrefix, BN, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
-import { isAddress } from 'web3-utils'
+import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import languages from '../plugins/locales'
@@ -347,7 +347,6 @@ export function validateVerifierId(selectedTypeOfLogin, value) {
   }
   if (selectedTypeOfLogin === GOOGLE) {
     return (
-      // eslint-disable-next-line max-len
       /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
       'walletSettings.invalidEmail'
     )
@@ -657,13 +656,57 @@ export const handleRedirectParameters = (hash, queryParameters) => {
   return { error, instanceParameters, hashParameters }
 }
 
-export function getUserEmail(userInfo, walletDisplay) {
-  const typeOfLoginDisplay = userInfo.typeOfLogin.charAt(0).toUpperCase() + userInfo.typeOfLogin.slice(1)
+export function generateAddressFromPubKey(point) {
+  return pubToAddress(point.encode('arr'))
+}
+
+export function generateAddressFromPrivateKey(privKey) {
+  return toChecksumAddress(privateToAddress(Buffer.from(privKey, 'hex')).toString('hex'))
+}
+
+export function downloadItem(filename, text) {
+  const element = document.createElement('a')
+  element.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(text)}`)
+  element.setAttribute('download', filename)
+  element.style.display = 'none'
+  document.body.append(element)
+  element.click()
+  element.remove()
+}
+
+export function derivePubKeyXFromPolyID(polyID) {
+  return polyID.split('|')[0]
+}
+
+export function passwordValidation(v) {
+  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,}$/.test(v)
+}
+
+export function padPrivateKey(privKey) {
+  return privKey.padStart(64, 0)
+}
+
+export function getUserEmail(userInfo, loginConfig, walletDisplay) {
+  const verifierName = loginConfig[userInfo.verifier].name
+  const typeOfLoginDisplay = verifierName.charAt(0).toUpperCase() + verifierName.slice(1)
   return (userInfo.typeOfLogin !== APPLE && userInfo.email) || userInfo.name || `${typeOfLoginDisplay} ${walletDisplay}`
 }
 
 export const isPwa = navigator.standalone || matchMedia('(display-mode: standalone)').matches || document.referrer.includes('android-app://')
 
+export const isPopup = () => {
+  const queryParameters = new URLSearchParams(window.location.search)
+  const instanceId = queryParameters.get('instanceId')
+  return !!instanceId
+}
+
 export function apiStreamSupported() {
   return navigator?.mediaDevices?.getUserMedia !== undefined
+}
+
+export async function requestQuota() {
+  return new Promise((resolve, reject) => {
+    if (navigator.webkitPersistentStorage?.requestQuota) navigator.webkitPersistentStorage.requestQuota(1024 * 1024 * 10, resolve, reject)
+    else resolve()
+  })
 }

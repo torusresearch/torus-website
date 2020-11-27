@@ -113,7 +113,6 @@ export default {
       pastTx: 'pastTransactions',
       etherscanTx: (state) => (state.networkType.host === MAINNET ? state.etherscanTx : []),
       paymentTx: (state) => (state.networkType.host === MAINNET ? state.paymentTx : []),
-      wallets: (state) => Object.keys(state.wallet),
     }),
     actionTypes() {
       return [
@@ -233,7 +232,7 @@ export default {
           return 'eth.svg'
         }
         const action = activity.action.split('.')
-        return action.length >= 1 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''
+        return action.length > 0 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''
       }
       return ''
     },

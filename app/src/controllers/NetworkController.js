@@ -20,7 +20,6 @@ import ObservableStore from 'obs-store'
 import ComposedStore from 'obs-store/lib/composed'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 
-import createMetamaskMiddleware from '../utils/createMetamaskMiddleware'
 import {
   GOERLI,
   KOVAN,
@@ -37,6 +36,7 @@ import {
   RPC,
   SUPPORTED_NETWORK_TYPES,
 } from '../utils/enums'
+import createMetamaskMiddleware from './utils/createMetamaskMiddleware'
 
 // defaults and constants
 const defaultProviderConfig = { type: 'mainnet' }

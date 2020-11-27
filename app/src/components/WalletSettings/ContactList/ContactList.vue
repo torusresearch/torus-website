@@ -123,14 +123,13 @@
             </v-flex>
 
             <v-layout wrap>
-              <v-flex class="ml-auto xs6 sm4" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : ''">
+              <v-flex class="ml-auto xs12 sm6 text-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : ''">
                 <v-btn
                   id="contact-submit-btn"
                   large
                   class="torus-btn1 py-1 gmt-add-address"
                   :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
                   :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
-                  block
                   type="submit"
                   :disabled="!contactFormValid"
                 >
@@ -211,8 +210,8 @@ export default {
   },
   methods: {
     checkDuplicates(value) {
-      if (!this.contacts) return ''
-      return this.contacts.findIndex((x) => x.contact.toLowerCase() === value.toLowerCase()) < 0 || this.t('walletSettings.duplicateContact')
+      if (!this.contacts || !value) return ''
+      return this.contacts.findIndex((x) => x.contact.toLowerCase() === value.toLowerCase()) < 0 || 'walletSettings.duplicateContact'
     },
     async addContact() {
       if (!this.$refs.addContactForm.validate()) return

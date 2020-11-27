@@ -1,48 +1,47 @@
-import { BroadcastChannel } from 'broadcast-channel'
+import randomId from '@chaitanyapotti/random-id'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
-import jwtDecode from 'jwt-decode'
+// import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
-import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
+import { HandlerFactory as createHandler } from '../handlers/Auth'
+import PopupHandler from '../handlers/Popup/PopupHandler'
+import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../plugins/vuetify'
 import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
 import {
-  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
+  ACCOUNT_TYPE,
   DISCORD,
   FACEBOOK,
   FEATURES_DEFAULT_WALLET_WINDOW,
   FEATURES_PROVIDER_CHANGE_WINDOW,
   RPC,
   SUPPORTED_NETWORK_TYPES,
-  TOKEN_METHOD_TRANSFER_FROM,
   USER_INFO_REQUEST_APPROVED,
   USER_INFO_REQUEST_REJECTED,
 } from '../utils/enums'
-import { post, remove } from '../utils/httpHelpers'
-import PopupHandler from '../utils/PopupHandler'
-import { broadcastChannelOptions, fakeStream, getIFrameOriginObject } from '../utils/utils'
+import { remove } from '../utils/httpHelpers'
+import { fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
 import {
   accountTrackerHandler,
   assetControllerHandler,
+  billboardHandler,
   detectTokensControllerHandler,
   errorMsgHandler as errorMessageHandler,
   etherscanTxHandler,
   messageManagerHandler,
   metadataHandler,
-  pastTransactionsHandler,
-  paymentTxHandler,
   personalMessageManagerHandler,
   prefsControllerHandler,
   successMsgHandler as successMessageHandler,
+  tKeyHandler,
   tokenRatesControllerHandler,
   transactionControllerHandler,
   typedMessageManagerHandler,
   walletConnectHandler,
 } from './controllerSubscriptions'
-import { HandlerFactory as createHandler } from './Handlers'
 import initialState from './state'
 
 const { baseRoute } = config
@@ -59,6 +58,7 @@ const {
   prefsController,
   networkController,
   assetDetectionController,
+  thresholdKeyController,
   walletConnectController,
 } = torusController || {}
 
@@ -113,14 +113,16 @@ export default {
     resetStore(messageManager.store, messageManagerHandler)
     resetStore(detectTokensController.detectedTokensStore, detectTokensControllerHandler, detectTokensController.initState)
     resetStore(tokenRatesController.store, tokenRatesControllerHandler)
-    resetStore(prefsController.store, prefsControllerHandler, prefsController.initState)
+    resetStore(prefsController.billboardStore, billboardHandler)
+    resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
     await walletConnectController.disconnect()
     resetStore(walletConnectController.store, walletConnectHandler, {})
-    resetStore(prefsController.paymentTxStore, paymentTxHandler, [])
-    resetStore(prefsController.pastTransactionsStore, pastTransactionsHandler, [])
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
+    resetStore(thresholdKeyController.store, tKeyHandler, {})
+    clearInterval(thresholdKeyController.requestStatusCheckId)
+    assetDetectionController.stopAssetDetection()
     torus.updateStaticData({ isUnlocked: false })
   },
   setSelectedCurrency({ commit }, payload) {
@@ -129,28 +131,19 @@ export default {
       else commit('setCurrencyData', data)
     })
   },
-  async forceFetchTokens() {
+  async forceFetchTokens({ state }) {
     detectTokensController.refreshTokenBalances()
     assetDetectionController.restartAssetDetection()
+    const { selectedAddress } = state
     try {
-      const response = await prefsController.getEtherScanTokenBalances()
+      const response = await prefsController.getEtherScanTokenBalances(selectedAddress)
       const { data } = response
-      data.forEach((object) => {
-        detectTokensController.detectEtherscanTokenBalance(toChecksumAddress(object.contractAddress), {
-          decimals: object.tokenDecimal,
-          erc20: true,
-          logo: 'eth.svg',
-          name: object.name,
-          balance: object.balance,
-          symbol: object.ticker,
-          isEtherscan: true,
-        })
-      })
+      detectTokensController.detectEtherscanTokenBalance(data, selectedAddress)
     } catch {
       log.error('etherscan balance fetch failed')
     }
   },
-  showProviderChangePopup({ dispatch, state }, payload) {
+  async showProviderChangePopup({ dispatch, state }, payload) {
     const { override, preopenInstanceId } = payload
 
     if (override) {
@@ -159,61 +152,41 @@ export default {
       }, 500)
       return
     }
-    const bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
-    const finalUrl = `${baseRoute}providerchange?integrity=true&instanceId=${torus.instanceId}`
-    const providerChangeWindow = new PopupHandler({
-      url: finalUrl,
-      preopenInstanceId,
-      target: '_blank',
-      features: FEATURES_PROVIDER_CHANGE_WINDOW,
-    })
-    bc.addEventListener('message', async (ev) => {
-      const { type = '', approve = false } = ev.data
-      if (type === 'popup-loaded') {
-        await bc.postMessage({
-          data: {
-            origin: getIFrameOriginObject(),
-            payload,
-            currentNetwork: state.networkType,
-            whiteLabel: state.whiteLabel,
-          },
-        })
-      } else if (type === 'provider-change-result') {
-        try {
-          log.info('Provider change', approve)
-          if (approve) {
-            await dispatch('setProviderType', payload)
-            handleProviderChangeSuccess()
-          } else {
-            handleProviderChangeDeny('user denied provider change request')
-          }
-        } catch {
-          handleProviderChangeDeny('Internal error occured')
-        } finally {
-          bc.close()
-          providerChangeWindow.close()
-        }
+    try {
+      const windowId = randomId()
+      const channelName = `torus_provider_change_channel_${windowId}`
+      const finalUrl = `${baseRoute}providerchange?integrity=true&instanceId=${windowId}`
+      const providerChangeWindow = new PopupWithBcHandler({
+        url: finalUrl,
+        preopenInstanceId,
+        target: '_blank',
+        features: FEATURES_PROVIDER_CHANGE_WINDOW,
+        channelName,
+      })
+      const result = await providerChangeWindow.handleWithHandshake({
+        payload: {
+          origin: getIFrameOriginObject(),
+          payload,
+          currentNetwork: state.networkType,
+          whiteLabel: state.whiteLabel,
+          tKeyExists: state.tKeyExists,
+        },
+      })
+      const { approve = false } = result
+      if (approve) {
+        await dispatch('setProviderType', payload)
+        handleProviderChangeSuccess()
+      } else {
+        handleProviderChangeDeny('user denied provider change request')
       }
-    })
-
-    providerChangeWindow.open()
-    providerChangeWindow.once('close', () => {
-      bc.close()
+    } catch (error) {
+      log.error(error)
       handleProviderChangeDeny('user denied provider change request')
-    })
+    }
   },
-  showUserInfoRequestPopup({ dispatch, state }, payload) {
+  async showUserInfoRequestPopup({ dispatch, state }, payload) {
     const { preopenInstanceId } = payload
     log.info(preopenInstanceId, 'userinfo')
-    const bc = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`, broadcastChannelOptions)
-    const finalUrl = `${baseRoute}userinforequest?integrity=true&instanceId=${torus.instanceId}`
-    const userInfoRequestWindow = new PopupHandler({
-      url: finalUrl,
-      preopenInstanceId,
-      target: '_blank',
-      features: FEATURES_PROVIDER_CHANGE_WINDOW,
-    })
-
     const handleDeny = () => {
       log.info('User Info Request denied')
       dispatch('updateUserInfoAccess', { approved: false })
@@ -226,35 +199,34 @@ export default {
       delete returnObject.verifierParams
       userInfoStream.write({ name: 'user_info_response', data: { payload: returnObject, approved: true } })
     }
-
-    bc.addEventListener('message', async (ev) => {
-      const { type = '', approve = false } = ev.data
-      if (type === 'popup-loaded') {
-        await bc.postMessage({
-          data: {
-            origin: getIFrameOriginObject(),
-            payload: { ...payload, typeOfLogin: state.userInfo.typeOfLogin },
-            whiteLabel: state.whiteLabel,
-          },
-        })
-      } else if (type === 'user-info-request-result') {
-        try {
-          if (approve) handleSuccess()
-          else handleDeny()
-        } catch (error) {
-          log.error(error)
-          handleDeny()
-        } finally {
-          bc.close()
-          userInfoRequestWindow.close()
-        }
+    try {
+      const windowId = randomId()
+      const channelName = `user_info_request_channel_${windowId}`
+      const finalUrl = `${baseRoute}userinforequest?integrity=true&instanceId=${windowId}`
+      const userInfoRequestWindow = new PopupWithBcHandler({
+        url: finalUrl,
+        preopenInstanceId,
+        target: '_blank',
+        features: FEATURES_PROVIDER_CHANGE_WINDOW,
+        channelName,
+      })
+      const result = await userInfoRequestWindow.handleWithHandshake({
+        payload: {
+          origin: getIFrameOriginObject(),
+          payload: { ...payload, typeOfLogin: state.userInfo.typeOfLogin },
+          whiteLabel: state.whiteLabel,
+        },
+      })
+      const { approve = false } = result
+      if (approve) {
+        handleSuccess()
+      } else {
+        handleDeny()
       }
-    })
-
-    userInfoRequestWindow.open()
-    userInfoRequestWindow.once('close', () => {
+    } catch (error) {
+      log.error(error)
       handleDeny()
-    })
+    }
   },
   showWalletPopup(context, payload) {
     const finalUrl = `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`
@@ -274,31 +246,32 @@ export default {
         })
     })
   },
-  finishImportAccount({ dispatch, state }, payload) {
-    return new Promise((resolve, reject) => {
-      const { privKey } = payload
-      const address = torus.generateAddressFromPrivKey(privKey)
-      torusController.setSelectedAccount(address, { jwtToken: state.jwtToken })
-      dispatch('addWallet', { ethAddress: address, privKey })
-      dispatch('updateSelectedAddress', { selectedAddress: address })
-      torusController
-        .addAccount(privKey, address)
-        .then(() => resolve(privKey))
-        .catch((error) => reject(error))
+  async finishImportAccount({ dispatch }, payload) {
+    const { privKey } = payload
+    const address = torus.generateAddressFromPrivKey(privKey)
+    await dispatch('initTorusKeyring', {
+      keys: [{ ethAddress: address, privKey, accountType: ACCOUNT_TYPE.IMPORTED }],
+      calledFromEmbed: false,
+      rehydrate: false,
     })
+    dispatch('updateSelectedAddress', { selectedAddress: address })
+    return privKey
   },
   addWallet(context, payload) {
     if (payload.ethAddress) {
-      context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
+      context.commit('setWallet', {
+        ...context.state.wallet,
+        [payload.ethAddress]: { privateKey: payload.privKey, accountType: payload.accountType || ACCOUNT_TYPE.NORMAL },
+      })
     }
   },
   updateUserInfoAccess({ commit }, payload) {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
     else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
-  updateSelectedAddress({ state }, payload) {
+  updateSelectedAddress(_, payload) {
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
-    torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
+    torusController.setSelectedAccount(payload.selectedAddress)
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)
@@ -375,53 +348,97 @@ export default {
     messageManager.store.subscribe(messageManagerHandler)
     detectTokensController.detectedTokensStore.subscribe(detectTokensControllerHandler)
     tokenRatesController.store.subscribe(tokenRatesControllerHandler)
-    prefsController.store.subscribe(prefsControllerHandler)
+
     prefsController.successStore.subscribe(successMessageHandler)
     prefsController.errorStore.subscribe(errorMessageHandler)
-    prefsController.paymentTxStore.subscribe(paymentTxHandler)
-    prefsController.pastTransactionsStore.subscribe(pastTransactionsHandler)
+    prefsController.billboardStore.subscribe(billboardHandler)
+    prefsController.store.subscribe(prefsControllerHandler)
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
+    thresholdKeyController.store.subscribe(tKeyHandler)
     walletConnectController.store.subscribe(walletConnectHandler)
   },
-  initTorusKeyring(_, payload) {
-    return torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
-  },
-  addContact(_, payload) {
-    return prefsController.addContact(payload)
-  },
-  deleteContact(_, payload) {
-    return prefsController.deleteContact(payload)
+  async initTorusKeyring({ dispatch, commit, state }, payload) {
+    const { keys, calledFromEmbed, rehydrate, postboxAddress } = payload
+    await torusController.initTorusKeyring(
+      keys.map((x) => x.privKey),
+      keys.map((x) => x.ethAddress)
+    )
+
+    return Promise.all(
+      keys.map((x) => {
+        dispatch('addWallet', x) // synchronous
+        return prefsController.init({
+          address: x.ethAddress,
+          calledFromEmbed,
+          userInfo: state.userInfo,
+          rehydrate,
+          dispatch,
+          commit,
+          jwtToken: x.jwtToken,
+          accountType: x.accountType,
+          postboxAddress,
+        })
+      })
+    )
   },
   async handleLogin({ state, dispatch, commit }, { calledFromEmbed, oAuthToken }) {
     // The error in this is caught above
     const {
       userInfo: { verifierId, verifier, verifierParams },
     } = state
-    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await torus.nodeDetailManager.getNodeDetails()
-    const publicAddress = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
-    log.info('New private key assigned to user at address ', publicAddress)
-    const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
-    const p2 = torus.getMessageForSigning(publicAddress)
-    const response = await Promise.all([p1, p2])
-    const data = response[0]
-    const message = response[1]
-    if (publicAddress.toLowerCase() !== data.ethAddress.toLowerCase()) throw new Error('Invalid Key')
-    dispatch('addWallet', data) // synchronous
+    const oAuthKey = await dispatch('getTorusKey', { verifier, verifierId, verifierParams, oAuthToken })
+    log.info('key 1', oAuthKey)
     dispatch('subscribeToControllers')
-    await dispatch('initTorusKeyring', data)
-    await dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed })
+    const defaultAddresses = await dispatch('initTorusKeyring', {
+      keys: [{ ...oAuthKey, accountType: ACCOUNT_TYPE.NORMAL }],
+      calledFromEmbed,
+      rehydrate: false,
+    })
+
+    await dispatch('calculatePostboxKey', { oAuthToken })
+    // Threshold Bak region
+    // Check if tkey exists
+    const keyExists = await thresholdKeyController.checkIfTKeyExists(state.postboxKey.privateKey)
+    // if in iframe && keyExists, initialize tkey only if it's set as default address
+    // if not in iframe && keyExists, initialize tkey always
+    // inside an iframe
+    commit('setTkeyExists', keyExists)
+    if (keyExists) {
+      if (!isMain) {
+        if (defaultAddresses[0] && defaultAddresses[0] !== oAuthKey.ethAddress) {
+          // Do tkey
+          defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
+        }
+      } else {
+        // In app.tor.us
+        defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
+      }
+    }
+
+    const selectedDefaultAddress = defaultAddresses[0] || defaultAddresses[1]
+    const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : oAuthKey.ethAddress
+    dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+    prefsController.getBillboardContents()
     // continue enable function
-    const { ethAddress } = data
     if (calledFromEmbed) {
       setTimeout(() => {
-        oauthStream.write({ selectedAddress: ethAddress })
+        oauthStream.write({ selectedAddress })
         commit('setOAuthModalStatus', false)
       }, 50)
     }
-    // TODO: deprercate rehydrate false for the next major version bump
+    // TODO: deprecate rehydrate false for the next major version bump
     statusStream.write({ loggedIn: true, rehydrate: false, verifier })
     torus.updateStaticData({ isUnlocked: true })
     dispatch('cleanupOAuth', { oAuthToken })
+  },
+  async getTorusKey(_, { verifier, verifierId, verifierParams, oAuthToken }) {
+    if (!verifier) throw new Error('Verifier is required')
+    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await torus.nodeDetailManager.getNodeDetails()
+    const publicAddress = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
+    log.info('New private key assigned to user at address ', publicAddress)
+    const torusKey = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
+    if (publicAddress.toLowerCase() !== torusKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
+    return torusKey
   },
   cleanupOAuth({ state }, payload) {
     const {
@@ -436,75 +453,6 @@ export default {
       prefsController.revokeDiscord(oAuthToken)
     }
   },
-  async processAuthMessage({ commit, dispatch }, payload) {
-    try {
-      const { message, selectedAddress, calledFromEmbed } = payload
-      const hashedMessage = torus.hashMessage(message)
-      const signedMessage = await torus.torusController.keyringController.signMessage(selectedAddress, hashedMessage)
-      const response = await post(
-        `${config.api}/auth/verify`,
-        {
-          public_address: selectedAddress,
-          signed_message: signedMessage,
-        },
-        {},
-        { useAPIKey: true }
-      )
-      commit('setJwtToken', response.token)
-      // prefsController.jwtToken = response.token
-      if (response.token) {
-        const decoded = jwtDecode(response.token)
-        setTimeout(() => {
-          dispatch('logOut')
-        }, decoded.exp * 1000 - Date.now())
-      }
-      await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed, rehydrate: false, selectedAddress })
-      return Promise.resolve()
-    } catch (error) {
-      log.error('Failed Communication with backend', error)
-      return Promise.reject(error)
-    }
-  },
-  setUserTheme(context, payload) {
-    return prefsController.setUserTheme(payload)
-  },
-  setUserLocale(context, payload) {
-    prefsController.setUserLocale(payload)
-  },
-  setUserInfoAction({ commit, dispatch, state }, payload) {
-    // eslint-disable-next-line no-unused-vars
-    return new Promise((resolve, reject) => {
-      // Fixes loading theme for too long
-      commit('setTheme', state.theme)
-
-      const { calledFromEmbed, rehydrate, token } = payload
-      const { userInfo, selectedCurrency, theme } = state
-      log.info(selectedCurrency)
-      const { verifier, verifierId } = userInfo
-
-      prefsController.jwtToken = token
-      prefsController.sync(
-        (user) => {
-          if (user.data) {
-            const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId } = user.data || {}
-            dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
-            prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
-            if (!storedVerifier || !storedVerifierId) prefsController.setVerifier(verifier, verifierId)
-            dispatch('updateSelectedAddress', { selectedAddress: payload.selectedAddress }) // synchronous
-            resolve()
-          }
-        },
-        async () => {
-          await prefsController.createUser(selectedCurrency, theme, verifier, verifierId)
-          commit('setNewUser', true)
-          dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
-          prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
-          dispatch('updateSelectedAddress', { selectedAddress: payload.selectedAddress }) // synchronous
-          resolve()
-        }
-      )
-    })
-  },
   async rehydrate({ state, dispatch, commit }) {
     const {
       selectedAddress,
@@ -513,26 +461,44 @@ export default {
       networkId,
       jwtToken,
       userInfo: { verifier },
+      tKeyStore,
       wcConnectorSession,
     } = state
     try {
       // if jwtToken expires, logout
-      if (jwtToken) {
-        const decoded = jwtDecode(jwtToken)
-        if (Date.now() / 1000 > decoded.exp) {
-          dispatch('logOut')
-          return
-        }
-        setTimeout(() => {
-          dispatch('logOut')
-        }, decoded.exp * 1000 - Date.now())
-      }
+      // if (jwtToken) {
+      //   const decoded = jwtDecode(jwtToken)
+      //   if (Date.now() / 1000 > decoded.exp) {
+      //     dispatch('logOut')
+      //     return
+      //   }
+      //   setTimeout(() => {
+      //     dispatch('logOut')
+      //   }, decoded.exp * 1000 - Date.now())
+      // }
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
+      const walletKeys = Object.keys(wallet)
+      dispatch('subscribeToControllers')
+      await dispatch('initTorusKeyring', {
+        keys: walletKeys.map((x) => {
+          const { privateKey, accountType } = wallet[x]
+          return {
+            ethAddress: x,
+            privKey: privateKey,
+            accountType,
+            jwtToken: jwtToken[x],
+          }
+        }),
+        calledFromEmbed: false,
+        rehydrate: true,
+      })
+      if (Object.keys(tKeyStore).length > 0) {
+        const postboxWallet = state.postboxKey
+        if (postboxWallet && tKeyStore.tKey) await thresholdKeyController.rehydrate(postboxWallet?.privateKey, tKeyStore.tKey)
+      }
       if (selectedAddress && wallet[selectedAddress]) {
-        setTimeout(() => dispatch('subscribeToControllers'), 50)
-        await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
-        await dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true, selectedAddress })
+        dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
@@ -544,12 +510,6 @@ export default {
     } catch (error) {
       log.error('Failed to rehydrate', error)
     }
-  },
-  setSuccessMessage(context, payload) {
-    prefsController.handleSuccess(payload)
-  },
-  setErrorMessage(context, payload) {
-    prefsController.handleError(payload)
   },
   cancelLogin({ commit, dispatch }) {
     oauthStream.write({ err: { message: 'User cancelled login' } })
@@ -564,108 +524,6 @@ export default {
     widgetStream.write({
       data: payload,
     })
-  },
-  updateCalculatedTx({ state, getters }, payload) {
-    for (const id in payload) {
-      const txOld = payload[id]
-      if (txOld.metamaskNetworkId.toString() === state.networkId.toString() && id >= 0) {
-        const { methodParams, contractParams, txParams, transactionCategory, time, hash, status } = txOld
-        let amountTo
-        let amountValue
-        let assetName
-        let totalAmount
-        let finalTo
-        let tokenRate = 1
-        let type
-        let typeName
-        let typeImageLink
-        let symbol
-
-        if (contractParams.erc721) {
-          // Handling cryptokitties
-          if (contractParams.isSpecial) {
-            ;[amountTo, amountValue] = methodParams || []
-          } else {
-            // Rest of the 721s
-            ;[, amountTo, amountValue] = methodParams || []
-          }
-          const { name = '', logo } = contractParams
-          // Get asset name of the 721
-          const selectedAddressAssets = state.assets[state.selectedAddress]
-          if (selectedAddressAssets) {
-            const contract = selectedAddressAssets.find((x) => x.address.toLowerCase() === txParams.to.toLowerCase()) || {}
-            log.info(contract, amountValue)
-            if (contract) {
-              const { name: foundAssetName } = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
-              assetName = foundAssetName || ''
-              symbol = assetName
-              type = 'erc721'
-              typeName = contract.name || name
-              typeImageLink = contract.logo || logo
-              totalAmount = fromWei(toBN(txParams.value || 0))
-              finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
-            }
-          } else {
-            tokenRate = 1
-            symbol = 'ETH'
-            type = 'eth'
-            typeName = 'eth'
-            typeImageLink = 'n/a'
-            totalAmount = fromWei(toBN(txParams.value || 0))
-            finalTo = toChecksumAddress(txParams.to)
-          }
-        } else if (contractParams.erc20) {
-          // ERC20 transfer
-          tokenRate = state.tokenRates[txParams.to]
-          if (methodParams && Array.isArray(methodParams)) {
-            if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
-              ;[, amountTo, amountValue] = methodParams || []
-            } else {
-              ;[amountTo, amountValue] = methodParams || []
-            }
-          }
-          const { symbol: contractSymbol, name, logo } = contractParams
-          symbol = contractSymbol
-          type = 'erc20'
-          typeName = name || 'ERC20'
-          typeImageLink = logo
-          totalAmount = fromWei(toBN(amountValue && amountValue.value ? amountValue.value : txParams.value || 0))
-          finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
-        } else {
-          tokenRate = 1
-          symbol = 'ETH'
-          type = 'eth'
-          typeName = 'eth'
-          typeImageLink = 'n/a'
-          totalAmount = fromWei(toBN(txParams.value || 0))
-          finalTo = toChecksumAddress(txParams.to)
-        }
-        // Goes to db
-        const txObject = {
-          created_at: new Date(time),
-          from: toChecksumAddress(txParams.from),
-          to: finalTo,
-          total_amount: totalAmount,
-          gas: txParams.gas,
-          gasPrice: txParams.gasPrice,
-          symbol,
-          nonce: txParams.nonce,
-          type,
-          type_name: typeName,
-          type_image_link: typeImageLink,
-          currency_amount: (getters.currencyMultiplier * Number.parseFloat(totalAmount) * tokenRate).toString(),
-          selected_currency: state.selectedCurrency,
-          status,
-          network: state.networkType.host,
-          transaction_hash: hash,
-          transaction_category: transactionCategory,
-        }
-        prefsController.patchNewTx(txObject)
-      }
-    }
-  },
-  setUserBadge(context, payload) {
-    prefsController.setUserBadge(payload)
   },
   initWalletConnect(_, payload) {
     return walletConnectController.init(payload)

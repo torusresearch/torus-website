@@ -12,7 +12,7 @@ describe('Account Import Strategies', () => {
   describe('private key import', () => {
     it('imports a private key and strips 0x prefix', async () => {
       const importPrivKey = await accountImporter.importAccount('Private Key', [privkey])
-      assert.equal(importPrivKey, stripHexPrefix(privkey))
+      assert.strictEqual(importPrivKey, stripHexPrefix(privkey))
     })
 
     it('throws an error for empty string private key', async () => {
@@ -49,14 +49,14 @@ describe('Account Import Strategies', () => {
       try {
         await accountImporter.importAccount('JSON File', [json, wrongPassword])
       } catch (error) {
-        assert.equal(error.message, 'Key derivation failed - possibly wrong passphrase')
+        assert.strictEqual(error.message, 'Key derivation failed - possibly wrong passphrase')
       }
     })
 
     it('imports json string and password to return a private key', async () => {
       const fileContentsPassword = 'password1'
       const importJson = await accountImporter.importAccount('JSON File', [json, fileContentsPassword])
-      assert.equal(importJson, '5733876abe94146069ce8bcbabbde2677f2e35fa33e875e92041ed2ac87e5bc7')
+      assert.strictEqual(importJson, '5733876abe94146069ce8bcbabbde2677f2e35fa33e875e92041ed2ac87e5bc7')
     })
   })
 })

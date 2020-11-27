@@ -1,6 +1,6 @@
 /* eslint-disable */
 import assert from 'assert'
-import txStateHistoryHelper from '../../../../src/utils/tx-state-history-helper'
+import txStateHistoryHelper from '../../../../src/controllers/utils/tx-state-history-helper'
 import testVault from '../../../data/v17-long-history.json'
 
 describe('Transaction state history helper', () => {

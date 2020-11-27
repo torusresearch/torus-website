@@ -157,13 +157,16 @@
 </template>
 
 <script>
+/* eslint-disable import/default */
+/* eslint-disable import/no-webpack-loader-syntax */
+/* eslint-disable import/extensions */
 import { stripHexPrefix } from 'ethereumjs-util'
-import { fromPrivateKey } from 'ethereumjs-wallet'
+import Wallet from 'ethereumjs-wallet'
+import log from 'loglevel'
 import { mapState } from 'vuex'
+import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
 
 import ShowToolTip from '../../helpers/ShowToolTip'
-// eslint-disable-next-line import/no-webpack-loader-syntax
-const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 
 export default {
   components: { ShowToolTip },
@@ -185,7 +188,7 @@ export default {
   computed: {
     ...mapState(['selectedAddress', 'wallet']),
     selectedKey() {
-      return this.wallet[this.selectedAddress]
+      return this.wallet[this.selectedAddress]?.privateKey
     },
   },
   methods: {
@@ -199,22 +202,27 @@ export default {
       this.name = ''
       this.$emit('onClose')
     },
-    downloadWallet() {
+    async downloadWallet() {
       if (this.$refs.downloadForm.validate()) {
         this.isLoadingDownloadWallet = true
 
         if (!window.Worker) {
-          const finishedWallet = this.createWallet(this.keyStorePassword)
+          const finishedWallet = await this.createWallet(this.keyStorePassword)
           this.exportKeyStoreFile(finishedWallet)
           this.isLoadingDownloadWallet = false
         } else {
           const worker = new WalletWorker()
-          worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
           worker.addEventListener('message', (ev) => {
             const finishedWallet = ev.data
             this.exportKeyStoreFile(finishedWallet)
             this.isLoadingDownloadWallet = false
           })
+          worker.addEventListener('error', (error) => {
+            log.error(error)
+            this.isLoadingDownloadWallet = false
+          })
+          log.info(this.keyStorePassword, this.selectedKey)
+          worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
         }
       }
     },
@@ -222,17 +230,17 @@ export default {
       this.walletJson = this.createBlob('mime', _wallet.walletJson)
       this.name = _wallet.name.toString()
     },
-    createWallet(password) {
+    async createWallet(password) {
       const createdWallet = {}
       const wallet = this.generateWallet(this.selectedKey)
-      createdWallet.walletJson = wallet.toV3(password)
+      createdWallet.walletJson = await wallet.toV3(password)
       createdWallet.name = wallet.getV3Filename()
       return createdWallet
     },
     generateWallet(privateKey) {
       const stripped = stripHexPrefix(privateKey)
       const buffer = Buffer.from(stripped, 'hex')
-      const wallet = fromPrivateKey(buffer)
+      const wallet = Wallet.fromPrivateKey(buffer)
       return wallet
     },
     createBlob(mime, string_) {

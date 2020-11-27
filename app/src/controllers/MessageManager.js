@@ -1,11 +1,11 @@
-import { ethErrors } from 'eth-json-rpc-errors'
+import { ethErrors } from 'eth-rpc-errors'
 import { bufferToHex, keccak256 } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import ObservableStore from 'obs-store'
 
 /**
  * Represents, and contains data about, an 'eth_sign' type signature request. These are created when a signature for
- * an eth_sign call is requested.
+ * an eth_sign call is requestednode .
  *
  * @see {@link https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign}
  *

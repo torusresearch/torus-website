@@ -1,4 +1,6 @@
 import clone from 'clone'
+import deepmerge from 'deepmerge'
+import { hashPersonalMessage } from 'ethereumjs-util'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import EventEmitter from 'safe-event-emitter'
@@ -6,6 +8,7 @@ import Web3 from 'web3'
 
 import config from '../config'
 import {
+  ACCOUNT_TYPE,
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_TOPUP,
@@ -18,8 +21,8 @@ import {
 } from '../utils/enums'
 import { get, getEtherscanTransactions, getPastOrders, getWalletOrders, patch, post, remove } from '../utils/httpHelpers'
 import { notifyUser } from '../utils/notifications'
-import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
+import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
@@ -27,6 +30,32 @@ const DEFAULT_BADGES_COMPLETION = {
   [BADGES_COLLECTIBLE]: false,
   [BADGES_TOPUP]: false,
   [BADGES_TRANSACTION]: false,
+}
+
+let themeGlobal = THEME_LIGHT_BLUE_NAME
+if (storageAvailable('localStorage')) {
+  const torusTheme = localStorage.getItem('torus-theme')
+  if (torusTheme) {
+    themeGlobal = torusTheme
+  }
+}
+
+const overwriteMerge = (destinationArray, sourceArray, _) => sourceArray
+
+const DEFAULT_ACCOUNT_STATE = {
+  selectedCurrency: 'USD',
+  theme: themeGlobal,
+  locale: getUserLanguage(),
+  contacts: [],
+  permissions: [],
+  badgesCompletion: {},
+  jwtToken: '',
+  fetchedPastTx: [],
+  pastTransactions: [],
+  paymentTx: [],
+  tKeyOnboardingComplete: true,
+  defaultPublicAddress: '',
+  accountType: ACCOUNT_TYPE.NORMAL,
 }
 
 class PreferencesController extends EventEmitter {
@@ -39,68 +68,93 @@ class PreferencesController extends EventEmitter {
    * @property {string} store.selectedCurrency A string showing the user selected currency
    * @property {string} store.theme the user selected theme
    * @property {string} store.locale the user selected locale
-   * @property {Array} store.billboard the contents of torus-billboard (depends on the locale)
    * @property {Array} store.contacts the contacts of the user
    * @property {object} store.permissions the stored permissions of the user for different domains
    * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
   constructor(options = {}) {
     super()
-    let theme = THEME_LIGHT_BLUE_NAME
-    if (storageAvailable('localStorage')) {
-      const torusTheme = localStorage.getItem('torus-theme')
-      if (torusTheme) {
-        theme = torusTheme
-      }
-    }
-    const { initialState = {}, network, provider } = options
 
-    const initState = {
-      selectedAddress: '',
-      selectedCurrency: 'USD',
-      theme,
-      locale: getUserLanguage(),
-      billboard: {},
-      contacts: [],
-      permissions: [],
-      badgesCompletion: {},
-      ...initialState,
-    }
-
-    this.initState = clone(initState)
+    const { network, provider, signMessage } = options
 
     this.network = network
     this.web3 = new Web3(provider)
-
-    this.fetchedPastTx = []
+    this.signMessage = signMessage
 
     this.interval = options.interval || DEFAULT_INTERVAL
-    this.jwtToken = ''
-    this._jwtToken = ''
-    this.store = new ObservableStore(initState)
+    this.store = new ObservableStore({ selectedAddress: '' }) // Account specific object
     this.metadataStore = new ObservableStore({})
     this.errorStore = new ObservableStore('')
     this.successStore = new ObservableStore('')
-    this.pastTransactionsStore = new ObservableStore([])
-    this.paymentTxStore = new ObservableStore([])
+    this.billboardStore = new ObservableStore({})
   }
 
-  set jwtToken(token) {
-    this._jwtToken = token
-    if (token) this.getBillboardContents()
-  }
-
-  get headers() {
+  headers(address) {
+    const selectedAddress = address || this.store.getState().selectedAddress
     return {
       headers: {
-        Authorization: `Bearer ${this._jwtToken}`,
+        Authorization: `Bearer ${this.state(selectedAddress)?.jwtToken}`,
         'Content-Type': 'application/json; charset=utf-8',
       },
     }
   }
 
-  get state() {
-    return this.store.getState()
+  state(address) {
+    const selectedAddress = address || this.store.getState().selectedAddress
+    return this.store.getState()[selectedAddress]
+  }
+
+  /**
+   * Initializes address in preferences controller
+   *
+   * @param   {[String]}  address  Ethereum address
+   *
+   * @return  {[void]}           void
+   */
+  async init({
+    address,
+    jwtToken,
+    calledFromEmbed = false,
+    userInfo = {},
+    rehydrate = false,
+    accountType = ACCOUNT_TYPE.NORMAL,
+    postboxAddress,
+    dispatch,
+    commit,
+  }) {
+    let response = { token: jwtToken }
+    if (!jwtToken) {
+      const messageToSign = await this.getMessageForSigning(address)
+      const bufferedMessage = Buffer.from(messageToSign, 'utf-8')
+      const hashedMessage = hashPersonalMessage(bufferedMessage).toString('hex')
+      const signedMessage = await this.signMessage(address, hashedMessage)
+      response = await post(
+        `${config.api}/auth/verify`,
+        {
+          public_address: address,
+          signed_message: signedMessage,
+        },
+        {},
+        { useAPIKey: true }
+      )
+    }
+    const currentState = this.updateStore({ jwtToken: response.token }, address)
+    const { verifier, verifierId } = userInfo
+    const user = await this.sync(address)
+    let defaultPublicAddress = address
+    if (user?.data) {
+      const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId, default_public_address } = user.data || {}
+      dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
+      if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
+      defaultPublicAddress = default_public_address
+    } else {
+      const accountState = this.store.getState()[postboxAddress] || currentState
+      await this.createUser(accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
+      commit('setNewUser', true)
+      dispatch('setSelectedCurrency', { selectedCurrency: accountState.selectedCurrency, origin: 'store' })
+    }
+    if (!rehydrate) this.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate }, address)
+    return defaultPublicAddress
   }
 
   handleError(error) {
@@ -131,11 +185,22 @@ class PreferencesController extends EventEmitter {
     setTimeout(() => this.successStore.putState(''), SUCCESS_TIME)
   }
 
-  async sync(callback, errorCallback) {
+  async sync(address) {
     try {
-      const user = await get(`${config.api}/user?fetchTx=false`, this.headers, { useAPIKey: true })
+      const user = await get(`${config.api}/user?fetchTx=false`, this.headers(address), { useAPIKey: true })
       if (user?.data) {
-        const { badge: userBadges, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
+        const {
+          badge: userBadges,
+          default_currency: defaultCurrency,
+          contacts,
+          theme,
+          locale,
+          permissions,
+          public_address,
+          tkey_onboarding_complete,
+          account_type,
+          default_public_address,
+        } = user.data || {}
         let whiteLabelLocale
         let badgesCompletion = DEFAULT_BADGES_COMPLETION
 
@@ -160,43 +225,48 @@ class PreferencesController extends EventEmitter {
           }
         }
 
-        this.store.updateState({
-          contacts,
-          theme,
-          selectedCurrency: defaultCurrency,
-          locale: whiteLabelLocale || locale || getUserLanguage(),
-          permissions,
-          badgesCompletion,
-        })
-        if (callback) return callback(user)
+        this.updateStore(
+          {
+            contacts,
+            theme,
+            selectedCurrency: defaultCurrency,
+            locale: whiteLabelLocale || locale || getUserLanguage(),
+            permissions,
+            badgesCompletion,
+            tKeyOnboardingComplete: account_type !== ACCOUNT_TYPE.NORMAL ? true : !!tkey_onboarding_complete,
+            accountType: account_type || ACCOUNT_TYPE.NORMAL,
+            defaultPublicAddress: default_public_address || public_address,
+          },
+          public_address
+        )
+        return user
       }
       return undefined
     } catch (error) {
       log.error(error)
-      if (errorCallback) errorCallback()
       return undefined
     } finally {
       Promise.all([
-        getWalletOrders({}, this.headers.headers).catch((error) => {
+        getWalletOrders({}, this.headers(address).headers).catch((error) => {
           log.error('unable to fetch wallet orders', error)
         }),
-        getPastOrders({}, this.headers.headers).catch((error) => {
+        getPastOrders({}, this.headers(address).headers).catch((error) => {
           log.error('unable to fetch past orders', error)
         }),
       ])
         .then((data) => {
           const [walletTx, paymentTx] = data
           if (paymentTx?.data) {
-            this.calculatePaymentTx(paymentTx.data)
+            this.calculatePaymentTx(paymentTx.data, address)
           }
-          this.fetchedPastTx = walletTx.data
-          this.calculatePastTx(walletTx.data)
+          this.updateStore({ fetchedPastTx: walletTx.data }, address)
+          this.calculatePastTx(walletTx.data, address)
         })
         .catch((error) => log.error(error))
     }
   }
 
-  calculatePaymentTx(txs) {
+  calculatePaymentTx(txs, address) {
     const accumulator = []
     for (const x of txs) {
       let action = ''
@@ -224,13 +294,23 @@ class PreferencesController extends EventEmitter {
         currencyUsed: x.currencyUsed,
       })
     }
-    this.paymentTxStore.putState(accumulator)
+    this.updateStore({ paymentTx: accumulator }, address)
   }
 
-  async calculatePastTx(txs) {
+  updateStore(newPartialState, address) {
+    const selectedAddress = address || this.store.getState().selectedAddress
+    const currentState = this.state(selectedAddress) || clone(DEFAULT_ACCOUNT_STATE)
+    const mergedState = deepmerge(currentState, newPartialState, { arrayMerge: overwriteMerge })
+    this.store.updateState({
+      [selectedAddress]: mergedState,
+    })
+    return mergedState
+  }
+
+  async calculatePastTx(txs, address) {
     const pastTx = []
     const pendingTx = []
-    const lowerCaseSelectedAddress = this.state.selectedAddress.toLowerCase()
+    const lowerCaseSelectedAddress = address.toLowerCase()
     for (const x of txs) {
       if (
         x.network === this.network.getNetworkNameFromNetworkCode() &&
@@ -251,15 +331,14 @@ class PreferencesController extends EventEmitter {
       finalObject.status = resolvedTxStatuses[index]
       pastTx.push(finalObject)
       if (lowerCaseSelectedAddress === element.from.toLowerCase() && finalObject.status && finalObject.status !== element.status)
-        this.patchPastTx(element.id, finalObject.status)
+        this.patchPastTx({ id: element.id, status: finalObject.status }, address)
     }
-    this.pastTransactionsStore.putState(pastTx)
+    this.updateStore({ pastTransactions: pastTx }, address)
   }
 
-  async fetchEtherscanTx() {
+  async fetchEtherscanTx(address) {
     try {
-      const { selectedAddress } = this.state
-      const tx = await getEtherscanTransactions({ selectedAddress }, this.headers.headers)
+      const tx = await getEtherscanTransactions({ selectedAddress: address }, this.headers(address).headers)
       if (tx?.data) {
         this.emit('addEtherscanTransactions', tx.data)
       }
@@ -268,15 +347,15 @@ class PreferencesController extends EventEmitter {
     }
   }
 
-  async patchNewTx(tx) {
+  async patchNewTx(tx, address) {
     const formattedTx = formatPastTx(tx)
-    const storePastTx = this.pastTransactionsStore.getState()
+    const storePastTx = this.state(address).pastTransactions
     const duplicateIndex = storePastTx.findIndex((x) => x.transaction_hash === tx.transaction_hash && x.networkType === tx.network)
     if (tx.status === 'submitted' || tx.status === 'confirmed') {
       if (duplicateIndex === -1 && tx.status === 'submitted') {
         // No duplicate found
-        this.pastTransactionsStore.putState(storePastTx.concat([formattedTx]))
-        this.postPastTx(tx)
+        this.updateStore({ pastTransactions: storePastTx.concat([formattedTx]) }, address)
+        this.postPastTx(tx, address)
         try {
           notifyUser(formattedTx.etherscanLink)
         } catch (error) {
@@ -284,14 +363,15 @@ class PreferencesController extends EventEmitter {
         }
       } else {
         storePastTx[duplicateIndex] = formattedTx
-        this.pastTransactionsStore.putState([...storePastTx])
+        this.updateStore({ pastTransactions: [...storePastTx] }, address)
       }
     }
   }
 
-  async postPastTx(tx) {
+  /* istanbul ignore next */
+  async postPastTx(tx, address) {
     try {
-      const response = await post(`${config.api}/transaction`, tx, this.headers, { useAPIKey: true })
+      const response = await post(`${config.api}/transaction`, tx, this.headers(address), { useAPIKey: true })
       log.info('successfully added', response)
     } catch (error) {
       log.error(error, 'unable to insert transaction')
@@ -299,28 +379,41 @@ class PreferencesController extends EventEmitter {
   }
 
   /* istanbul ignore next */
-  recalculatePastTx() {
+  recalculatePastTx(address) {
     // This triggers store update which calculates past Tx status for that network
-    this.calculatePastTx(this.fetchedPastTx)
+    const selectedAddress = address || this.store.getState().selectedAddress
+    const state = this.state(selectedAddress)
+    if (!state?.fetchedPastTx) return
+    this.calculatePastTx(state.fetchedPastTx, selectedAddress)
   }
 
   /* istanbul ignore next */
-  createUser(selectedCurrency, theme, verifier, verifierId) {
-    return post(
+  async createUser(selectedCurrency, theme, verifier, verifierId, accountType, address) {
+    await post(
       `${config.api}/user`,
       {
         default_currency: selectedCurrency,
         theme,
         verifier,
         verifierId,
+        account_type: accountType,
       },
-      this.headers,
+      this.headers(address),
       { useAPIKey: true }
+    )
+    this.updateStore(
+      {
+        theme,
+        tKeyOnboardingComplete: false,
+        accountType: ACCOUNT_TYPE.NORMAL,
+        defaultPublicAddress: address,
+      },
+      address
     )
   }
 
   /* istanbul ignore next */
-  storeUserLogin(verifier, verifierId, payload) {
+  storeUserLogin(verifier, verifierId, payload, address) {
     let userOrigin = ''
     if (payload && payload.calledFromEmbed) {
       userOrigin = getIFrameOrigin()
@@ -338,7 +431,7 @@ class PreferencesController extends EventEmitter {
             verifierId,
             metadata: `referrer:${referrer}`,
           },
-          this.headers,
+          this.headers(address),
           { useAPIKey: true }
         )
         clearInterval(interval)
@@ -347,11 +440,11 @@ class PreferencesController extends EventEmitter {
   }
 
   async setUserTheme(payload) {
-    if (payload === this.state.theme) return
+    if (payload === this.state().theme) return
     try {
-      await patch(`${config.api}/user/theme`, { theme: payload }, this.headers, { useAPIKey: true })
+      await patch(`${config.api}/user/theme`, { theme: payload }, this.headers(), { useAPIKey: true })
       this.handleSuccess('navBar.snackSuccessTheme')
-      this.store.updateState({ theme: payload })
+      this.updateStore({ theme: payload })
     } catch (error) {
       log.error(error)
       this.handleError('navBar.snackFailTheme')
@@ -361,7 +454,7 @@ class PreferencesController extends EventEmitter {
   /* istanbul ignore next */
   async setPermissions(payload) {
     try {
-      const response = await post(`${config.api}/permissions`, payload, this.headers, { useAPIKey: true })
+      const response = await post(`${config.api}/permissions`, payload, this.headers(), { useAPIKey: true })
       log.info('successfully set permissions', response)
     } catch (error) {
       log.error('unable to set permissions', error)
@@ -369,10 +462,10 @@ class PreferencesController extends EventEmitter {
   }
 
   async setUserLocale(payload) {
-    if (payload === this.state.locale) return
+    if (payload === this.state().locale) return
     try {
-      await patch(`${config.api}/user/locale`, { locale: payload }, this.headers, { useAPIKey: true })
-      this.store.updateState({ locale: payload })
+      await patch(`${config.api}/user/locale`, { locale: payload }, this.headers(), { useAPIKey: true })
+      this.updateStore({ locale: payload })
       // this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {
       // this.handleError('navBar.snackFailLocale')
@@ -381,10 +474,10 @@ class PreferencesController extends EventEmitter {
   }
 
   async setSelectedCurrency(payload) {
-    if (payload.selectedCurrency === this.state.selectedCurrency) return
+    if (payload.selectedCurrency === this.state().selectedCurrency) return
     try {
-      await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers, { useAPIKey: true })
-      this.store.updateState({ selectedCurrency: payload.selectedCurrency })
+      await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers(), { useAPIKey: true })
+      this.updateStore({ selectedCurrency: payload.selectedCurrency })
       this.handleSuccess('navBar.snackSuccessCurrency')
     } catch (error) {
       log.error(error)
@@ -392,31 +485,54 @@ class PreferencesController extends EventEmitter {
     }
   }
 
-  /* istanbul ignore next */
-  async setVerifier(verifier, verifierId) {
+  async setTKeyOnboardingStatus(payload, address) {
+    // This is called before set selected address is assigned
     try {
-      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers, { useAPIKey: true })
+      await patch(`${config.api}/user`, { tkey_onboarding_complete: payload }, this.headers(address), { useAPIKey: true })
+      this.updateStore({ tKeyOnboardingComplete: payload }, address)
+      log.info('successfully updated onboarding status')
+    } catch (error) {
+      log.error(error, 'unable to set onboarding status')
+    }
+  }
+
+  /* istanbul ignore next */
+  async setVerifier(verifier, verifierId, address) {
+    try {
+      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers(address), { useAPIKey: true })
       log.info('successfully updated verifier info', response)
     } catch (error) {
       log.error('unable to update verifier info', error)
     }
   }
 
+  async setDefaultPublicAddress(ofAddress, address) {
+    try {
+      const response = await patch(`${config.api}/user`, { default_public_address: address }, this.headers(ofAddress), { useAPIKey: true })
+      this.updateStore({ defaultPublicAddress: address }, ofAddress)
+      log.info('successfully updated default public address', response)
+    } catch (error) {
+      log.error('unable to update default public address', error)
+    }
+  }
+
   /* istanbul ignore next */
-  getEtherScanTokenBalances() {
-    return get(`${config.api}/tokenbalances`, this.headers, { useAPIKey: true })
+  getEtherScanTokenBalances(address) {
+    return get(`${config.api}/tokenbalances`, this.headers(address), { useAPIKey: true })
   }
 
   async getBillboardContents() {
     try {
-      const resp = await get(`${config.api}/billboard`, this.headers, { useAPIKey: true })
+      const { selectedAddress } = this.store.getState()
+      if (!selectedAddress) return
+      const resp = await get(`${config.api}/billboard`, this.headers(), { useAPIKey: true })
       const events = resp.data.reduce((accumulator, event) => {
         if (!accumulator[event.callToActionLink]) accumulator[event.callToActionLink] = {}
         accumulator[event.callToActionLink][event.locale] = event
         return accumulator
       }, {})
 
-      if (events) this.store.updateState({ billboard: events })
+      if (events) this.billboardStore.putState(events)
     } catch (error) {
       log.error(error)
     }
@@ -424,8 +540,8 @@ class PreferencesController extends EventEmitter {
 
   async addContact(payload) {
     try {
-      const response = await post(`${config.api}/contact`, payload, this.headers, { useAPIKey: true })
-      this.store.updateState({ contacts: [...this.state.contacts, response.data] })
+      const response = await post(`${config.api}/contact`, payload, this.headers(), { useAPIKey: true })
+      this.updateStore({ contacts: [...this.state().contacts, response.data] })
       this.handleSuccess('navBar.snackSuccessContactAdd')
     } catch {
       this.handleError('navBar.snackFailContactAdd')
@@ -434,9 +550,9 @@ class PreferencesController extends EventEmitter {
 
   async deleteContact(payload) {
     try {
-      const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers, { useAPIKey: true })
-      const finalContacts = this.state.contacts.filter((contact) => contact.id !== response.data.id)
-      this.store.updateState({ contacts: finalContacts })
+      const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers(), { useAPIKey: true })
+      const finalContacts = this.state().contacts.filter((contact) => contact.id !== response.data.id)
+      this.updateStore({ contacts: finalContacts })
       this.handleSuccess('navBar.snackSuccessContactDelete')
     } catch {
       this.handleError('navBar.snackFailContactDelete')
@@ -446,7 +562,7 @@ class PreferencesController extends EventEmitter {
   /* istanbul ignore next */
   async revokeDiscord(idToken) {
     try {
-      const resp = await post(`${config.api}/revoke/discord`, { token: idToken }, this.headers, { useAPIKey: true })
+      const resp = await post(`${config.api}/revoke/discord`, { token: idToken }, this.headers(), { useAPIKey: true })
       log.info(resp)
     } catch (error) {
       log.error(error)
@@ -454,17 +570,9 @@ class PreferencesController extends EventEmitter {
   }
 
   /* istanbul ignore next */
-  async patchPastTx(txId, status) {
+  async patchPastTx(body, address) {
     try {
-      const response = await patch(
-        `${config.api}/transaction`,
-        {
-          id: txId,
-          status,
-        },
-        this.headers,
-        { useAPIKey: true }
-      )
+      const response = await patch(`${config.api}/transaction`, body, this.headers(address), { useAPIKey: true })
       log.info('successfully patched', response)
     } catch (error) {
       log.error('unable to patch tx', error)
@@ -476,10 +584,11 @@ class PreferencesController extends EventEmitter {
   }
 
   setSelectedAddress(address) {
-    if (this.state.selectedAddress === address) return
+    // if (this.store.getState().selectedAddress === address) return
     this.store.updateState({ selectedAddress: address })
-    this.recalculatePastTx()
-    this.fetchEtherscanTx()
+    if (!Object.keys(this.store.getState()).includes(address)) return
+    this.recalculatePastTx(address)
+    this.fetchEtherscanTx(address)
     // this.sync()
   }
 
@@ -493,19 +602,54 @@ class PreferencesController extends EventEmitter {
     }
     this._handle = setInterval(() => {
       // call here
-      if (!this._jwtToken) return
-      this.sync()
+      const storeSelectedAddress = this.store.getState().selectedAddress
+      if (!storeSelectedAddress) return
+      if (!this.state(storeSelectedAddress)?.jwtToken) return
+      this.sync(storeSelectedAddress)
     }, interval)
   }
 
   async setUserBadge(payload) {
-    const newBadgeCompletion = { ...this.state.badgesCompletion, ...{ [payload]: true } }
-    this.store.updateState({ badgesCompletion: newBadgeCompletion })
+    const newBadgeCompletion = { ...this.state().badgesCompletion, ...{ [payload]: true } }
+    this.updateStore({ badgesCompletion: newBadgeCompletion })
     try {
-      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers, { useAPIKey: true })
+      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers(), { useAPIKey: true })
     } catch (error) {
       log.error('unable to set badge', error)
     }
+  }
+
+  async getMessageForSigning(publicAddress) {
+    try {
+      const response = await post(
+        `${config.api}/auth/message`,
+        {
+          public_address: publicAddress,
+        },
+        {},
+        { useAPIKey: true }
+      )
+      return response.message
+    } catch (error) {
+      log.error(error)
+      return undefined
+    }
+  }
+
+  /* istanbul ignore next */
+  async getOpenSeaCollectibles(api) {
+    return get(`${config.api}/opensea?url=${api}`, this.headers(), { useAPIKey: true })
+  }
+
+  /* istanbul ignore next */
+  async getTwitterId(payload) {
+    const userId = await get(`${config.api}/twitter?screen_name=${payload.nick}`, this.headers(), { useAPIKey: true })
+    return `${payload.typeOfLogin.toLowerCase()}|${userId.data.toString()}`
+  }
+
+  /* istanbul ignore next */
+  async sendEmail(payload) {
+    return post(`${config.api}/transaction/sendemail`, payload.emailObject, this.headers(), { useAPIKey: true })
   }
 }
 

@@ -20,14 +20,14 @@ describe('Nonce Tracker', function () {
       it('should return 4', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '4', `nonce should be 4 got ${nonceLock.nextNonce}`)
+        assert.strictEqual(nonceLock.nextNonce.toString(), '4', `nonce should be 4 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
 
       it('should use localNonce if network returns a nonce lower then a confirmed tx in state', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '4', 'nonce should be 4')
+        assert.strictEqual(nonceLock.nextNonce.toString(), '4', 'nonce should be 4')
         await nonceLock.releaseLock()
       })
     })
@@ -48,7 +48,7 @@ describe('Nonce Tracker', function () {
       it('should return 9', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '32', `nonce should be 32 got ${nonceLock.nextNonce}`)
+        assert.strictEqual(nonceLock.nextNonce.toString(), '32', `nonce should be 32 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
@@ -69,7 +69,7 @@ describe('Nonce Tracker', function () {
       it('should return 9', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '9', `nonce should be 9 got ${nonceLock.nextNonce}`)
+        assert.strictEqual(nonceLock.nextNonce.toString(), '9', `nonce should be 9 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
@@ -82,7 +82,7 @@ describe('Nonce Tracker', function () {
       it('should return 0', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '0', `nonce should be 0 returned ${nonceLock.nextNonce}`)
+        assert.strictEqual(nonceLock.nextNonce.toString(), '0', `nonce should be 0 returned ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
@@ -105,7 +105,7 @@ describe('Nonce Tracker', function () {
       it('should return nonce after those', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '2', `nonce should be 2 got ${nonceLock.nextNonce}`)
+        assert.strictEqual(nonceLock.nextNonce.toString(), '2', `nonce should be 2 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
@@ -120,7 +120,7 @@ describe('Nonce Tracker', function () {
       it('should return nonce after those', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '3', `nonce should be 3 got ${nonceLock.nextNonce}`)
+        assert.strictEqual(nonceLock.nextNonce.toString(), '3', `nonce should be 3 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
@@ -135,7 +135,7 @@ describe('Nonce Tracker', function () {
       it('should return nonce after those', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '2', `nonce should be 2 got ${nonceLock.nextNonce}`)
+        assert.strictEqual(nonceLock.nextNonce.toString(), '2', `nonce should be 2 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
@@ -150,7 +150,7 @@ describe('Nonce Tracker', function () {
       it('should return nonce after those', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '5', `nonce should be 5 got ${nonceLock.nextNonce}`)
+        assert.strictEqual(nonceLock.nextNonce.toString(), '5', `nonce should be 5 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
@@ -165,7 +165,7 @@ describe('Nonce Tracker', function () {
       it('should return nonce after those', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '5', `nonce should be 5 got ${nonceLock.nextNonce}`)
+        assert.strictEqual(nonceLock.nextNonce.toString(), '5', `nonce should be 5 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
@@ -182,7 +182,7 @@ describe('Nonce Tracker', function () {
       it('should return nonce after network nonce', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '0', `nonce should be 0 got ${nonceLock.nextNonce}`)
+        assert.strictEqual(nonceLock.nextNonce.toString(), '0', `nonce should be 0 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
@@ -205,7 +205,7 @@ describe('Nonce Tracker', function () {
       it('should return nonce after network nonce', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '50', `nonce should be 50 got ${nonceLock.nextNonce}`)
+        assert.strictEqual(nonceLock.nextNonce.toString(), '50', `nonce should be 50 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
@@ -227,7 +227,7 @@ describe('Nonce Tracker', function () {
       it('should return nonce after network nonce', async function () {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.equal(nonceLock.nextNonce, '74', `nonce should be 74 got ${nonceLock.nextNonce}`)
+        assert.strictEqual(nonceLock.nextNonce.toString(), '74', `nonce should be 74 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
