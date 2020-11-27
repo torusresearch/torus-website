@@ -1,6 +1,6 @@
 <template>
   <v-container px-0 py-0>
-    <DappCreateTkey />
+    <DappCreateTkey v-if="!tKeyExists" />
     <template v-if="type === 'none'">
       <ChangeProviderScreenLoader />
     </template>
@@ -98,6 +98,7 @@ export default {
       network: {},
       currentNetwork: {},
       channel: '',
+      tKeyExists: true,
     }
   },
   computed: {
@@ -122,11 +123,13 @@ export default {
         origin,
         currentNetwork,
         whiteLabel,
+        tKeyExists,
       } = ev.data || {}
       this.origin = origin // origin of tx: website url
       this.network = network
       this.type = type
       this.currentNetwork = currentNetwork
+      this.tKeyExists = tKeyExists
 
       this.$store.commit('setWhiteLabel', whiteLabel)
 

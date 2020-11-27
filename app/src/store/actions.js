@@ -164,7 +164,13 @@ export default {
         channelName,
       })
       const result = await providerChangeWindow.handleWithHandshake({
-        payload: { origin: getIFrameOriginObject(), payload, currentNetwork: state.networkType, whiteLabel: state.whiteLabel },
+        payload: {
+          origin: getIFrameOriginObject(),
+          payload,
+          currentNetwork: state.networkType,
+          whiteLabel: state.whiteLabel,
+          tKeyExists: state.tKeyExists,
+        },
       })
       const { approve = false } = result
       if (approve) {
