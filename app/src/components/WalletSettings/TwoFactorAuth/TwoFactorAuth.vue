@@ -122,7 +122,7 @@
           />
           <v-layout wrap>
             <v-flex class="ml-auto xs12 text-right">
-              <v-btn :disabled="!validPasswordForm" large class="torus-btn1 py-1 torusBrand1--text" type="submit">
+              <v-btn :disabled="!validPasswordForm" large class="torus-btn1 py-1 torusBrand1--text" :loading="settingPassword" type="submit">
                 {{ t('tkeyNew.setPassword') }}
               </v-btn>
             </v-flex>
@@ -225,6 +225,7 @@ export default {
         required: (value) => !!value || this.t('tkeyNew.required'),
         minLength: (v) => passwordValidation(v) || this.t('tkeyCreateSetup.passwordRules'),
       },
+      settingPassword: false,
     }
   },
   computed: {
@@ -277,9 +278,13 @@ export default {
         .replace(/{maxfactor}/gi, this.authTreshholds.length)
     },
     async setPassword() {
+      this.settingPassword = true
       if (this.hasPassword) await this.changePassword(this.recoveryPassword)
       else await this.addPassword(this.recoveryPassword)
       this.isChangePassword = false
+      this.settingPassword = false
+      this.recoveryPassword = ''
+      this.recoveryPasswordConfirm = ''
     },
   },
 }
