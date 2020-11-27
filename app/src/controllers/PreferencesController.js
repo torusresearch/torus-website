@@ -93,7 +93,7 @@ class PreferencesController extends EventEmitter {
     const selectedAddress = address || this.store.getState().selectedAddress
     return {
       headers: {
-        Authorization: `Bearer ${this.state(selectedAddress).jwtToken}`,
+        Authorization: `Bearer ${this.state(selectedAddress)?.jwtToken}`,
         'Content-Type': 'application/json; charset=utf-8',
       },
     }
@@ -604,7 +604,7 @@ class PreferencesController extends EventEmitter {
       // call here
       const storeSelectedAddress = this.store.getState().selectedAddress
       if (!storeSelectedAddress) return
-      if (!this.state(storeSelectedAddress).jwtToken) return
+      if (!this.state(storeSelectedAddress)?.jwtToken) return
       this.sync(storeSelectedAddress)
     }, interval)
   }
