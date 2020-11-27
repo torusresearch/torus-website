@@ -1,21 +1,26 @@
 <template>
   <v-app-bar app flat class="header-container" :color="$vuetify.theme.dark ? '' : 'white'">
-    <div class="d-flex align-end">
+    <div v-if="!showNav" class="d-flex align-end">
+      <img
+        v-if="!$vuetify.breakpoint.xsOnly"
+        class="home-link mr-1"
+        alt="Torus Logo"
+        :width="$store.state.whiteLabel.isActive ? '' : '135'"
+        height="30"
+        :src="getLogo.logo"
+      />
+      <img v-else src="../../../assets/img/icons/t-fill.svg" width="35" height="30" alt="Torus Logo" />
+    </div>
+    <div v-else class="d-flex align-end">
       <router-link v-if="!$vuetify.breakpoint.xsOnly" :to="{ name: 'walletHome' }">
-        <img
-          class="home-link mr-1"
-          alt="Torus Logo"
-          :width="$store.state.whiteLabel.isActive ? '' : '135'"
-          :height="$store.state.whiteLabel.isActive ? '50' : '30'"
-          :src="getLogo.logo"
-        />
+        <img class="home-link mr-1" alt="Torus Logo" :width="$store.state.whiteLabel.isActive ? '' : '135'" height="30" :src="getLogo.logo" />
       </router-link>
       <router-link v-if="$vuetify.breakpoint.xsOnly" id="logo-home-lnk" :to="{ name: 'walletHome' }">
         <img src="../../../assets/img/icons/t-fill.svg" width="35" height="30" alt="Torus Logo" />
       </router-link>
     </div>
     <v-spacer></v-spacer>
-    <v-tabs v-if="!$vuetify.breakpoint.smAndDown" centered>
+    <v-tabs v-if="!$vuetify.breakpoint.smAndDown && showNav" centered>
       <v-tab
         v-for="headerItem in headerItems"
         :id="`${headerItem.name}-link`"
@@ -31,7 +36,7 @@
 
     <slot name="drawer"></slot>
 
-    <LanguageSelector v-if="!$vuetify.breakpoint.smAndDown"></LanguageSelector>
+    <LanguageSelector v-if="!$vuetify.breakpoint.smAndDown && showLanguageSelector"></LanguageSelector>
     <v-menu v-if="!$vuetify.breakpoint.smAndDown" offset-y bottom left z-index="20" :close-on-content-click="false">
       <template v-slot:activator="{ on }">
         <v-btn id="menu-dropdown-btn" small text aria-label="View Account Menu" v-on="on">
@@ -42,6 +47,7 @@
 
       <AccountMenu></AccountMenu>
     </v-menu>
+    <!-- Wallet System Bar -->
     <v-system-bar
       v-show="successMsg"
       fixed
@@ -78,6 +84,41 @@
         </v-icon>
       </div>
     </v-system-bar>
+    <!-- TKey System Bar -->
+    <v-system-bar
+      v-show="tkeySuccess"
+      fixed
+      :color="`success ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
+      :class="[`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`, lrcMsg ? 'is-lrc' : '']"
+    >
+      <div class="container d-flex align-center">
+        <v-spacer />
+        <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`">$vuetify.icons.check_circle</v-icon>
+        <span class="caption">
+          {{ tkeySuccess }}
+        </span>
+        <v-spacer />
+        <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`" @click="clearTkeySuccess">
+          $vuetify.icons.close
+        </v-icon>
+      </div>
+    </v-system-bar>
+    <v-system-bar
+      v-show="tkeyError"
+      fixed
+      :color="`error ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
+      :class="[`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`, lrcMsg ? 'is-lrc' : '']"
+    >
+      <div class="container d-flex align-center">
+        <v-spacer />
+        <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`">$vuetify.icons.info</v-icon>
+        <span class="caption">
+          {{ tkeyError }}
+        </span>
+        <v-spacer />
+        <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`" @click="clearTkeyError">$vuetify.icons.close</v-icon>
+      </div>
+    </v-system-bar>
     <v-system-bar
       v-show="lrcMsg"
       fixed
@@ -97,7 +138,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { capitalizeFirstLetter } from '../../../utils/utils'
 import AccountMenu from '../../WalletAccount/AccountMenu'
@@ -113,6 +154,14 @@ export default {
       type: Array,
       default: () => [],
     },
+    showNav: {
+      type: Boolean,
+      default: true,
+    },
+    showLanguageSelector: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -120,7 +169,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userInfo', 'successMsg', 'errorMsg']),
+    ...mapState(['userInfo', 'successMsg', 'errorMsg', 'tKeyStore']),
     ...mapGetters(['getLogo']),
     bannerColor() {
       return this.$vuetify.theme.isDark ? this.$vuetify.theme.themes.dark.infoBanner : this.$vuetify.theme.themes.light.infoBanner
@@ -131,8 +180,15 @@ export default {
       }
       return ''
     },
+    tkeyError() {
+      return this.t(this.tKeyStore.error || '')
+    },
+    tkeySuccess() {
+      return this.tKeyStore.success || ''
+    },
   },
   methods: {
+    ...mapActions(['clearTkeyError', 'clearTkeySuccess']),
     capitalizeFirstLetter,
     clearMsg(statusMessage) {
       this.$store.commit(`set${statusMessage}`, '')

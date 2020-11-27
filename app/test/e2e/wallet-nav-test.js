@@ -46,7 +46,7 @@ describe('Tests Account Menu', () => {
 
     // // Check if google info is showing
     // const accountName = await page.$eval('#account-name', el => el.textContent)
-    // assert.equal(accountName, '')
+    // assert.strictEqual(accountName, '')
   })
 
   it('Should be able to show public address', async () => {

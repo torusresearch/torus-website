@@ -1,6 +1,6 @@
 /* eslint-disable */
 import assert from 'assert'
-import * as txUtils from '../../../../src/utils/txUtils'
+import * as txUtils from '../../../../src/controllers/utils/txUtils'
 
 describe('txUtils', function () {
   describe('#validateTxParams', function () {
@@ -39,13 +39,13 @@ describe('txUtils', function () {
 
       assert(!normalizedTxParams.chainId, 'their should be no chainId')
       assert(!normalizedTxParams.to, 'their should be no to address if null')
-      assert.equal(normalizedTxParams.from.slice(0, 2), '0x', 'from should be hexPrefixd')
-      assert.equal(normalizedTxParams.data.slice(0, 2), '0x', 'data should be hexPrefixd')
+      assert.strictEqual(normalizedTxParams.from.slice(0, 2), '0x', 'from should be hexPrefixd')
+      assert.strictEqual(normalizedTxParams.data.slice(0, 2), '0x', 'data should be hexPrefixd')
       assert(!('random' in normalizedTxParams), 'their should be no random key in normalizedTxParams')
 
       txParams.to = 'a7df1beDBF813f57096dF77FCd515f0B3900e402'
       normalizedTxParams = txUtils.normalizeTxParams(txParams)
-      assert.equal(normalizedTxParams.to.slice(0, 2), '0x', 'to should be hexPrefixd')
+      assert.strictEqual(normalizedTxParams.to.slice(0, 2), '0x', 'to should be hexPrefixd')
     })
   })
 
@@ -57,7 +57,7 @@ describe('txUtils', function () {
         data: 'bytecode',
       }
       const sanitizedTxParams = txUtils.validateRecipient(zeroRecipientandDataTxParams)
-      assert.deepEqual(sanitizedTxParams, { from: '0x1678a085c290ebd122dc42cba69373b5953b831d', data: 'bytecode' }, 'no recipient with 0x')
+      assert.deepStrictEqual(sanitizedTxParams, { from: '0x1678a085c290ebd122dc42cba69373b5953b831d', data: 'bytecode' }, 'no recipient with 0x')
     })
 
     it('should error when recipient is 0x', function () {

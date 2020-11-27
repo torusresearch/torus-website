@@ -1,5 +1,6 @@
 <template>
   <v-container px-0 py-0 class="confirm-container">
+    <DappCreateTkey v-if="!tKeyExists" />
     <template v-if="type === 'none'">
       <PopupScreenLoader />
     </template>
@@ -11,7 +12,9 @@
 import { BroadcastChannel } from 'broadcast-channel'
 
 import ConfirmForm from '../../components/Confirm/ConfirmForm'
+import DappCreateTkey from '../../components/helpers/DappCreateTkey'
 import { PopupScreenLoader } from '../../content-loader'
+import { POPUP_LOADED, POPUP_RESULT } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
@@ -19,12 +22,15 @@ export default {
   components: {
     PopupScreenLoader,
     ConfirmForm,
+    DappCreateTkey,
   },
   data() {
     return {
       id: 0,
       type: 'none',
       currentConfirmModal: undefined,
+      channel: '',
+      tKeyExists: true,
     }
   },
   mounted() {
@@ -34,8 +40,8 @@ export default {
     this.channel = `torus_channel_${instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
-      if (ev.name !== 'send-params') return
-      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, whiteLabel, currencyData, network } = ev.data || {}
+      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, whiteLabel, currencyData, network, tKeyExists } =
+        ev.data || {}
       if (txParams && txParams.id.toString() !== queryParameterId) return
       this.type = type
       this.currentConfirmModal = {
@@ -51,27 +57,24 @@ export default {
         currencyData,
         network,
       }
-
+      this.tKeyExists = tKeyExists
       this.$store.commit('setWhiteLabel', whiteLabel)
-
-      if (txParams && txParams.id.toString() !== queryParameterId) return
       bc.close()
     })
-    bc.postMessage({ name: 'popup-loaded', data: { id: queryParameterId } })
+    bc.postMessage({ data: { type: POPUP_LOADED, id: queryParameterId } })
   },
   methods: {
     async triggerSign({ gasPrice, gas, customNonceValue, id }) {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
 
       await bc.postMessage({
-        name: 'tx-result',
-        data: { type: 'confirm-transaction', gasPrice, gas, id, txType: this.type, customNonceValue },
+        data: { type: POPUP_RESULT, gasPrice, gas, id, txType: this.type, customNonceValue, approve: true },
       })
       bc.close()
     },
     async triggerDeny({ id }) {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-      await bc.postMessage({ name: 'tx-result', data: { type: 'deny-transaction', id, txType: this.type } })
+      await bc.postMessage({ data: { type: POPUP_RESULT, id, txType: this.type, approve: false } })
       bc.close()
     },
   },

@@ -1,5 +1,6 @@
+/* eslint-disable require-atomic-updates */
 import erc20Contracts from 'eth-contract-metadata'
-import { ethErrors } from 'eth-json-rpc-errors'
+import { ethErrors } from 'eth-rpc-errors'
 import Common from 'ethereumjs-common'
 import { Transaction } from 'ethereumjs-tx'
 import { addHexPrefix, BN, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
@@ -13,7 +14,6 @@ import { fromWei, isAddress, sha3, toBN, toChecksumAddress } from 'web3-utils'
 
 import erc721Contracts from '../assets/assets-map.json'
 import AbiDecoder from '../utils/abiDecoder'
-import cleanErrorStack from '../utils/cleanErrorStack'
 import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   CONTRACT_INTERACTION_KEY,
@@ -37,12 +37,13 @@ import {
   TRANSACTION_TYPE_RETRY,
   TRANSACTION_TYPE_STANDARD,
 } from '../utils/enums'
-import TxGasUtil from '../utils/TxGasUtil'
-import * as txUtils from '../utils/txUtils'
 import { BnMultiplyByFraction, bnToHex, formatPastTx, hexToBn } from '../utils/utils'
 import NonceTracker from './NonceTracker'
 import PendingTransactionTracker from './PendingTransactionTracker'
 import TransactionStateManager from './TransactionStateManager'
+import cleanErrorStack from './utils/cleanErrorStack'
+import TxGasUtil from './utils/TxGasUtil'
+import * as txUtils from './utils/txUtils'
 
 const tokenABIDecoder = new AbiDecoder(tokenAbi)
 const collectibleABIDecoder = new AbiDecoder(collectibleAbi)

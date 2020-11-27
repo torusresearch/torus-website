@@ -14,6 +14,7 @@ export default {
   torusFontLink1: '#0364FF',
   torusFontLink2: '#5495F7',
   torusBlack: '#252529',
+  torusBlack2: '#2F3136',
   torusLight: '#FCFCFC',
 
   // Fixed Colors
@@ -29,7 +30,7 @@ export default {
   infoBannerText: '#FC902D',
   // Rarely changed
   success: {
-    base: '#00D065',
+    base: '#2DCC70',
     lighten5: '#C6E7D6',
     darken1: '#4CAD74',
   },

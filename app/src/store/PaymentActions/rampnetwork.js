@@ -1,11 +1,11 @@
 import config from '../../config'
+import PopupHandler from '../../handlers/Popup/PopupHandler'
 import getQuote from '../../plugins/rampnetwork'
 import { ETH } from '../../utils/enums'
-import PopupHandler from '../../utils/PopupHandler'
 import { paymentProviders } from '../../utils/utils'
 
 export default {
-  fetchRampNetworkQuote(context, payload) {
+  fetchRampNetworkQuote(_, payload) {
     // returns a promise
     return getQuote({
       digital_currency: (payload.selectedCryptoCurrency || ETH).toLowerCase(),

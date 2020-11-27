@@ -1,13 +1,10 @@
 import randomId from '@chaitanyapotti/random-id'
-import { BroadcastChannel } from 'broadcast-channel'
-import log from 'loglevel'
 
 import config from '../../config'
+import PopupHandler from '../../handlers/Popup/PopupHandler'
+import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import { getQuote, getSignature } from '../../plugins/moonpay'
-import torus from '../../torus'
 import { MOONPAY } from '../../utils/enums'
-import PopupHandler from '../../utils/PopupHandler'
-import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   fetchMoonpayQuote(context, payload) {
@@ -26,15 +23,15 @@ export default {
         const finalUrl = `${config.baseUrl}/redirect?preopenInstanceId=${preopenInstanceId}`
         const handledWindow = new PopupHandler({ url: finalUrl })
         handledWindow.open()
-
         handledWindow.once('close', () => {
           reject(new Error('user closed moonpay popup'))
         })
       }
+      const orderInstanceId = randomId()
       const instanceState = encodeURIComponent(
         window.btoa(
           JSON.stringify({
-            instanceId: torus.instanceId,
+            instanceId: orderInstanceId,
             provider: MOONPAY,
           })
         )
@@ -57,44 +54,18 @@ export default {
       const url = `${config.moonpayHost}?${parameterString.toString()}`
 
       getSignature({ url: encodeURIComponent(url) })
-        .then(({ signature }) => dispatch('postMoonpayOrder', { finalUrl: `${url}&signature=${encodeURIComponent(signature)}`, preopenInstanceId }))
+        .then(({ signature }) =>
+          dispatch('postMoonpayOrder', { finalUrl: `${url}&signature=${encodeURIComponent(signature)}`, preopenInstanceId, orderInstanceId })
+        )
         .then((response) => resolve(response))
         .catch((error) => reject(error))
     })
   },
-  postMoonpayOrder(context, { finalUrl, preopenInstanceId }) {
-    return new Promise((resolve, reject) => {
-      const moonpayWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
-
-      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-      bc.addEventListener('message', (ev) => {
-        try {
-          const {
-            instanceParams: { provider },
-            queryParams: { transactionStatus = '' } = {},
-          } = ev.data || {}
-          if (ev.error && ev.error !== '') {
-            log.error(ev.error)
-            reject(new Error(ev.error))
-          } else if (provider === MOONPAY && transactionStatus !== 'failed') {
-            resolve({ success: true })
-          } else if (provider === MOONPAY && transactionStatus === 'failed') {
-            reject(new Error('Payment Failed'))
-          }
-        } catch (error) {
-          reject(error)
-        } finally {
-          bc.close()
-          moonpayWindow.close()
-        }
-      })
-
-      // Handle communication with moonpay window here
-      moonpayWindow.open()
-      moonpayWindow.once('close', () => {
-        bc.close()
-        reject(new Error('user closed moonpay popup'))
-      })
-    })
+  async postMoonpayOrder(_, { finalUrl, preopenInstanceId, orderInstanceId }) {
+    const moonpayWindow = new PopupWithBcHandler({ url: finalUrl, preopenInstanceId, channelName: `redirect_channel_${orderInstanceId}` })
+    const result = await moonpayWindow.handle()
+    const { queryParams: { transactionStatus = '' } = {} } = result
+    if (transactionStatus !== 'failed') return { success: true }
+    throw new Error('Payment Failed')
   },
 }

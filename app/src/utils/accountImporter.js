@@ -1,22 +1,16 @@
 import { addHexPrefix, isValidPrivate, stripHexPrefix, toBuffer } from 'ethereumjs-util'
-import { fromV3 } from 'ethereumjs-wallet'
-import { fromEtherWallet } from 'ethereumjs-wallet/thirdparty'
+import Wallet, { thirdparty as ThirdParty } from 'ethereumjs-wallet'
 import log from 'loglevel'
 
 const accountImporter = {
-  importAccount(strategy, arguments_) {
-    try {
-      const importer = this.strategies[strategy]
-      // eslint-disable-next-line prefer-spread
-      const privateKeyHex = importer.apply(null, arguments_)
-      return Promise.resolve(privateKeyHex)
-    } catch (error) {
-      return Promise.reject(error)
-    }
+  async importAccount(strategy, arguments_) {
+    const importer = this.strategies[strategy]
+    const privateKeyHex = await importer(...arguments_)
+    return privateKeyHex
   },
 
   strategies: {
-    'Private Key': (privateKey) => {
+    'Private Key': async (privateKey) => {
       if (!privateKey) {
         throw new Error('Cannot import an empty key.')
       }
@@ -31,16 +25,16 @@ const accountImporter = {
       const stripped = stripHexPrefix(prefixed)
       return stripped
     },
-    'JSON File': (input, password) => {
+    'JSON File': async (input, password) => {
       let wallet
       try {
-        wallet = fromEtherWallet(input, password)
+        wallet = ThirdParty.fromEtherWallet(input, password)
       } catch (error) {
         log.info('Attempt to import as EtherWallet format failed, trying V3...', error)
       }
 
       if (!wallet) {
-        wallet = fromV3(input, password, true)
+        wallet = await Wallet.fromV3(input, password, true)
       }
 
       return walletToPrivateKey(wallet)

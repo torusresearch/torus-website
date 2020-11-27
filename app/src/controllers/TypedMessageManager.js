@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 import assert from 'assert'
-import { ethErrors } from 'eth-json-rpc-errors'
+import { ethErrors } from 'eth-rpc-errors'
 import { TYPED_MESSAGE_SCHEMA, typedSignatureHash } from 'eth-sig-util'
 import EventEmitter from 'events'
 import jsonschema from 'jsonschema'

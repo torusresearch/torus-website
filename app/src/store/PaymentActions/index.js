@@ -1,12 +1,12 @@
-import { BroadcastChannel } from 'broadcast-channel'
+import randomId from '@chaitanyapotti/random-id'
 import log from 'loglevel'
 
 import config from '../../config'
+import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
 import { MERCURYO, MOONPAY, RAMPNETWORK, WYRE, XANPOOL } from '../../utils/enums'
-import PopupHandler from '../../utils/PopupHandler'
-import { broadcastChannelOptions, fakeStream, paymentProviders } from '../../utils/utils'
+import { fakeStream, paymentProviders } from '../../utils/utils'
 import mercuryo from './mercuryo'
 import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
@@ -146,38 +146,21 @@ export default {
     } else {
       try {
         const finalUrl = new URL(`${config.baseUrl}/wallet/topup`)
-        finalUrl.searchParams.append('instanceId', torus.instanceId)
+        const channelId = randomId()
+        finalUrl.searchParams.append('instanceId', channelId)
         if (params)
           Object.keys(params).forEach((key) => {
             if (params[key]) finalUrl.searchParams.append(key, params[key])
           })
-        const handledWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
-
-        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-        bc.addEventListener('message', (ev) => {
-          try {
-            const { queryParams: { transactionStatus = '' } = {} } = ev.data || {}
-            if (ev.error && ev.error !== '') {
-              log.error(ev.error)
-              throw new Error(ev.error)
-            } else if (transactionStatus === 'success') {
-              handleSuccess(true)
-            } else if (transactionStatus === 'failed') {
-              throw new Error('Payment Failed')
-            }
-          } catch (error) {
-            handleFailure(error)
-          } finally {
-            bc.close()
-            handledWindow.close()
-          }
-        })
-        // Handle communication with window here
-        handledWindow.open()
-        handledWindow.once('close', () => {
-          bc.close()
-          handleFailure(new Error('user closed popup'))
-        })
+        const handledWindow = new PopupWithBcHandler({ url: finalUrl, preopenInstanceId, channelName: `redirect_channel_${channelId}` })
+        const result = await handledWindow.handle()
+        const { queryParams: { transactionStatus = '' } = {} } = result
+        log.info(result)
+        if (transactionStatus === 'success') {
+          handleSuccess(true)
+        } else if (transactionStatus === 'failed') {
+          throw new Error('Payment Failed')
+        }
       } catch (error) {
         handleFailure(error)
       }

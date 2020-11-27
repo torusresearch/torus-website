@@ -52,7 +52,7 @@ describe('Tests Wallet Home', () => {
     const networkSelected = await page.$eval('.select-network-container .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
-    assert.equal(textToSelect, networkSelected)
+    assert.strictEqual(textToSelect, networkSelected)
   })
 
   it('Should go to wallet home page', async () => {

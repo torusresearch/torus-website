@@ -20,13 +20,13 @@
                     {{ t('walletTransfer.gasPrice') }} (GWEI)
                     <HelpTooltip :title="t('walletTransfer.gasPrice')">
                       <template v-slot:description>
-                        <div class="body-2 text-justify">
+                        <div class="body-2 text_3--text text-justify">
                           <span class="font-weight-medium">{{ t('walletTransfer.gasPriceDesc1') }}</span>
                           {{ t('walletTransfer.gasPriceDesc2') }}
                           <span class="font-weight-medium">{{ t('walletTransfer.gasPriceDesc3') }}</span>
                           {{ t('walletTransfer.gasPriceDesc4') }}
                         </div>
-                        <div class="caption mt-1">
+                        <div class="caption mt-1 text_3--text">
                           1 Gwei=10
                           <sup>-9</sup>
                           ETH

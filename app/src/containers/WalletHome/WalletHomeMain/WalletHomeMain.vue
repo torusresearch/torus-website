@@ -209,7 +209,7 @@
             @click="refreshBalances"
           >
             <v-icon left color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
-            <span class="caption text_2--text">Show all Tokens</span>
+            <span class="caption text_2--text">{{ t('walletHome.showAllTokens') }}</span>
           </v-btn>
         </div>
         <div class="text_3--text refresh-text" small>{{ t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>

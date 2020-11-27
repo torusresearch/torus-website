@@ -6,27 +6,38 @@ import AssetsContractController from '../../../src/controllers/AssetsContractCon
 import AssetsController from '../../../src/controllers/AssetsController'
 import AssetsDetectionController from '../../../src/controllers/AssetsDetectionController'
 import NetworkController from '../../../src/controllers/NetworkController'
+import PreferencesController from '../../../src/controllers/PreferencesController'
 
 const MAINNET = 'mainnet'
 const ROPSTEN = 'ropsten'
 const noop = () => {}
 const TEST_ADDRESS = '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'
 const OPEN_SEA_API = 'https://api.tor.us'
-
+const testAccount = {
+  key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
+  address: '0xa12164FeD66719297D2cF407bb314D07FEb12C02',
+}
 describe('AssetsDetectionController', () => {
   let assetsDetection
   let network
   let assets
   let assetsContract
+  let prefsController
   const sandbox = createSandbox()
 
-  beforeEach(() => {
+  beforeEach(async () => {
     network = new NetworkController()
     const networkControllerProviderConfig = {
       getAccounts: noop,
     }
     network.initializeProvider(networkControllerProviderConfig)
     network.setProviderType(MAINNET)
+
+    prefsController = new PreferencesController()
+    sandbox.stub(prefsController, 'sync')
+    sandbox.stub(prefsController, 'createUser')
+    await prefsController.init({ address: testAccount.address, rehydrate: true, jwtToken: 'hello', dispatch: noop, commit: noop })
+    prefsController.setSelectedAddress(testAccount.address)
 
     assetsContract = new AssetsContractController({
       provider: network._providerProxy,
@@ -35,13 +46,14 @@ describe('AssetsDetectionController', () => {
       selectedAddress: TEST_ADDRESS,
       assetContractController: assetsContract,
       network,
+      getOpenSeaCollectibles: prefsController.getOpenSeaCollectibles.bind(prefsController),
     })
-    assets.setJwtToken('hello')
 
     assetsDetection = new AssetsDetectionController({
       network,
       assetContractController: assetsContract,
       assetController: assets,
+      getOpenSeaCollectibles: prefsController.getOpenSeaCollectibles.bind(prefsController),
     })
 
     nock(OPEN_SEA_API)
@@ -286,7 +298,6 @@ describe('AssetsDetectionController', () => {
   it('should detect and add collectibles correctly', async () => {
     network.setProviderType(MAINNET)
     assetsDetection.selectedAddress = TEST_ADDRESS
-    assetsDetection.setJwtToken('hello')
     await assetsDetection.detectCollectibles()
     assert.deepStrictEqual(assets.state.collectibles, [
       {

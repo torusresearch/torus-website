@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 /**
  * Assets Detection
  * Controller that passively polls on a set interval for assets auto detection
@@ -6,9 +5,7 @@
 
 import log from 'loglevel'
 
-import config from '../config'
 import { MAINNET } from '../utils/enums'
-import { get } from '../utils/httpHelpers'
 
 const DEFAULT_INTERVAL = 60000
 
@@ -19,11 +16,7 @@ export default class AssetsDetectionController {
     this.network = options.network
     this.assetController = options.assetController
     this.assetContractController = options.assetContractController
-    this.jwtToken = ''
-  }
-
-  setJwtToken(jwtToken) {
-    this.jwtToken = jwtToken
+    this.getOpenSeaCollectibles = options.getOpenSeaCollectibles
   }
 
   restartAssetDetection() {
@@ -41,6 +34,10 @@ export default class AssetsDetectionController {
   startAssetDetection(selectedAddress) {
     this.selectedAddress = selectedAddress
     this.restartAssetDetection()
+  }
+
+  stopAssetDetection() {
+    this.selectedAddress = ''
   }
 
   /**
@@ -65,15 +62,7 @@ export default class AssetsDetectionController {
     const api = this.getOwnerCollectiblesApi(selectedAddress)
     let response
     try {
-      response = await get(
-        `${config.api}/opensea?url=${api}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.jwtToken}`,
-          },
-        },
-        { useAPIKey: true }
-      )
+      response = await this.getOpenSeaCollectibles(api)
       const collectibles = response.data.assets
       return collectibles
     } catch (error) {

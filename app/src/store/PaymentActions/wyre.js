@@ -1,13 +1,10 @@
 import randomId from '@chaitanyapotti/random-id'
-import { BroadcastChannel } from 'broadcast-channel'
-import log from 'loglevel'
 
 import config from '../../config'
+import PopupHandler from '../../handlers/Popup/PopupHandler'
+import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import { getQuote, getWalletOrder } from '../../plugins/wyre'
-import torus from '../../torus'
 import { WYRE } from '../../utils/enums'
-import PopupHandler from '../../utils/PopupHandler'
-import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   fetchWyreQuote({ state }, payload) {
@@ -18,11 +15,12 @@ export default {
         source_amount: +Number.parseFloat(payload.fiatValue),
         source_currency: payload.selectedCurrency,
       },
-      { Authorization: `Bearer ${state.jwtToken}` }
+      { Authorization: `Bearer ${state.jwtToken[state.selectedAddress]}` }
     )
   },
   fetchWyreOrder({ state, dispatch }, { currentOrder, preopenInstanceId: preopenInstanceIdPayload, selectedAddress }) {
     return new Promise((resolve, reject) => {
+      const orderInstanceId = randomId()
       let preopenInstanceId = preopenInstanceIdPayload
       if (!preopenInstanceId) {
         preopenInstanceId = randomId()
@@ -37,7 +35,7 @@ export default {
       const instanceState = encodeURIComponent(
         window.btoa(
           JSON.stringify({
-            instanceId: torus.instanceId,
+            instanceId: orderInstanceId,
             provider: WYRE,
           })
         )
@@ -55,40 +53,14 @@ export default {
       }
 
       getWalletOrder(parameters, {})
-        .then(({ data }) => dispatch('postWyreOrder', { finalUrl: data.url, preopenInstanceId }))
-        .then((response) => resolve(response))
-        .catch((error) => reject(error))
+        .then(({ data }) => dispatch('postWyreOrder', { finalUrl: data.url, preopenInstanceId, orderInstanceId }))
+        .then(resolve)
+        .catch(reject)
     })
   },
-  postWyreOrder(context, { finalUrl, preopenInstanceId }) {
-    return new Promise((resolve, reject) => {
-      const wyreWindow = new PopupHandler({ preopenInstanceId, url: finalUrl })
-
-      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-      bc.addEventListener('message', (ev) => {
-        try {
-          const {
-            instanceParams: { provider },
-          } = ev.data || {}
-          if (ev.error && ev.error !== '') {
-            log.error(ev.error)
-            reject(new Error(ev.error))
-          } else if (provider === WYRE) {
-            resolve({ success: true })
-          }
-        } catch (error) {
-          reject(error)
-        } finally {
-          bc.close()
-          wyreWindow.close()
-        }
-      })
-
-      wyreWindow.open()
-      wyreWindow.once('close', () => {
-        bc.close()
-        reject(new Error('user closed wyre popup'))
-      })
-    })
+  async postWyreOrder(context, { finalUrl, preopenInstanceId, orderInstanceId }) {
+    const wyreWindow = new PopupWithBcHandler({ preopenInstanceId, url: finalUrl, channelName: `redirect_channel_${orderInstanceId}` })
+    await wyreWindow.handle()
+    return { success: true }
   },
 }

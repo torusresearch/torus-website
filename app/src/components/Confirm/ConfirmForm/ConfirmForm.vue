@@ -283,7 +283,7 @@ import {
   TX_TYPED_MESSAGE,
 } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
-import { addressSlicer, significantDigits } from '../../../utils/utils'
+import { addressSlicer, isMain, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import TransactionSpeedSelect from '../../helpers/TransactionSpeedSelect'
@@ -660,7 +660,11 @@ export default {
       }
     },
     topUp() {
-      this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
+      if (isMain) {
+        this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
+      } else {
+        this.$store.dispatch('showWalletPopup', { path: '/topup' })
+      }
     },
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected
