@@ -52,9 +52,14 @@
       <div v-for="device in deviceShares" :key="device.index" class="settings-container pa-4 mb-10">
         <div class="text_1--text d-flex align-center body-2 mb-4">
           <div>{{ device.groupTitle }}</div>
-          <v-btn class="download-btn ml-auto" color="torusBrand1" icon small :aria-label="`Download`" @click="downloadShare(device.index)">
-            <v-icon x-small>$vuetify.icons.download</v-icon>
-          </v-btn>
+          <div class="ml-auto">
+            <v-btn class="download-btn" color="torusBrand1" icon small :aria-label="`Download`" @click="downloadShare(device.index)">
+              <v-icon x-small>$vuetify.icons.download</v-icon>
+            </v-btn>
+            <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete`" @click="deleteShare(device.index)">
+              <v-icon x-small>$vuetify.icons.trash</v-icon>
+            </v-btn>
+          </div>
         </div>
         <v-list dense outlined class="pa-0 factor-list mb-2">
           <v-list-item v-for="browser in device.browsers" :key="browser.dateAdded" class="pl-0 pr-1">
@@ -285,6 +290,10 @@ export default {
       this.settingPassword = false
       this.recoveryPassword = ''
       this.recoveryPasswordConfirm = ''
+    },
+    deleteShare(index) {
+      // eslint-disable-next-line no-console
+      console.log('🚀 ~ deleteShare ~ index', index)
     },
   },
 }
