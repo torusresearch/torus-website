@@ -317,6 +317,15 @@ class ThresholdKeyController extends EventEmitter {
   setTkeyError(message) {
     this.store.updateState({ error: message })
   }
+
+  async deleteShare(shareIndex) {
+    // eslint-disable-next-line no-console
+    console.log('🚀 ~ ThresholdKeyController ~ deleteShare ~ shareIndex', shareIndex)
+
+    const { tKey } = this.state
+    await tKey.deleteShare(shareIndex)
+    await this.setSettingsPageData()
+  }
 }
 
 export default ThresholdKeyController

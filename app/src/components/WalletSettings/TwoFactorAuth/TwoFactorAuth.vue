@@ -271,7 +271,7 @@ export default {
     log.info('this.tKeyStore', this.tKeyStore)
   },
   methods: {
-    ...mapActions(['addPassword', 'changePassword', 'downloadShare']),
+    ...mapActions(['addPassword', 'changePassword', 'downloadShare', 'deleteShare']),
     accountLinked() {
       // TODO check linking successfull
       this.linkingDialog = true
@@ -290,10 +290,6 @@ export default {
       this.settingPassword = false
       this.recoveryPassword = ''
       this.recoveryPasswordConfirm = ''
-    },
-    deleteShare(index) {
-      // eslint-disable-next-line no-console
-      console.log('🚀 ~ deleteShare ~ index', index)
     },
   },
 }
