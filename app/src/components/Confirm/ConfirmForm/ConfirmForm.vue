@@ -218,7 +218,11 @@
                   </v-expansion-panels>
 
                   <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && !Array.isArray(typedMessages)">
-                    <v-expansion-panel v-for="(typedMessage, index) in typedMessages" :key="index">
+                    <v-expansion-panel
+                      v-for="(typedMessage, index) in typedMessages"
+                      :key="index"
+                      :class="$vuetify.theme.isDark ? 'dark--theme' : ''"
+                    >
                       <v-expansion-panel-header>{{ index }}</v-expansion-panel-header>
                       <v-expansion-panel-content>
                         <VueJsonPretty :path="'res'" :data="typedMessage" :showline="true" :deep="5"></VueJsonPretty>
