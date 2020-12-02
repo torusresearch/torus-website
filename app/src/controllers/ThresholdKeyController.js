@@ -319,9 +319,6 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async deleteShare(shareIndex) {
-    // eslint-disable-next-line no-console
-    console.log('🚀 ~ ThresholdKeyController ~ deleteShare ~ shareIndex', shareIndex)
-
     const { tKey } = this.state
     await tKey.deleteShare(shareIndex)
     await this.setSettingsPageData()
