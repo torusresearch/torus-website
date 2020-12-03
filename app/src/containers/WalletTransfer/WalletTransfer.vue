@@ -124,7 +124,7 @@
                       :items="contactList"
                       :placeholder="verifierPlaceholder"
                       required
-                      :rules="[contactRule, rules.contactRequired]"
+                      :rules="[contactRule, rules.contactRequired, ensRule]"
                       outlined
                       item-text="name"
                       item-value="value"
@@ -759,6 +759,9 @@ export default {
       else if (contact && contact.value) value = contact.value
       return validateVerifierId(this.selectedVerifier, value)
     },
+    ensRule() {
+      return this.selectedVerifier === ENS && this.ensError ? this.ensError : true
+    },
     async verifierChangedManual() {
       this.setRandomId()
       this.autoSelectVerifier = false
@@ -894,7 +897,8 @@ export default {
           toAddress = ethAddr
         } catch (error) {
           log.error(error)
-          this.ensError = 'Invalid ENS address'
+          this.ensError = 'walletSettings.invalidEns'
+          this.$refs.form.validate()
         }
       } else {
         try {
