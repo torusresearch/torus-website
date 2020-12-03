@@ -1,5 +1,5 @@
+import contracts from '@metamask/contract-metadata'
 import BigNumber from 'bignumber.js'
-import contracts from 'eth-contract-metadata'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
@@ -49,7 +49,7 @@ class DetectTokensController {
   }
 
   /**
-   * For each token in eth-contract-metadata, find check selectedAddress balance.
+   * For each token in @metamask/contract-metadata, find check selectedAddress balance.
    *
    */
   async detectNewTokens() {
