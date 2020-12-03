@@ -421,8 +421,6 @@ import {
 import { get } from '../../utils/httpHelpers'
 import { apiStreamSupported, getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
 
-const resolution = new Resolution()
-
 export default {
   name: 'WalletTransfer',
   components: {
@@ -888,7 +886,9 @@ export default {
       }
     },
     getUnstoppableDomains(domain) {
-      return resolution.addr(domain, 'ETH')
+      return new Resolution({
+        blockchain: { ens: 'https://api.infura.io/v1/jsonrpc/mainnet', cns: 'https://api.infura.io/v1/jsonrpc/mainnet' },
+      }).addr(domain, 'ETH')
     },
     getEnsAddress(ens) {
       return torus.web3.eth.ens.getAddress(ens)
