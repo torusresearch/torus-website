@@ -384,6 +384,7 @@
 
 <script>
 import randomId from '@chaitanyapotti/random-id'
+import Resolution from '@unstoppabledomains/resolution'
 import BigNumber from 'bignumber.js'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
@@ -415,9 +416,12 @@ import {
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
   TWITTER,
+  UNSTOPPABLE_DOMAINS,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
 import { apiStreamSupported, getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
+
+const resolution = new Resolution()
 
 export default {
   name: 'WalletTransfer',
@@ -447,6 +451,7 @@ export default {
       toAddress: '',
       formValid: false,
       ensError: '',
+      unstoppableDomainsError: '',
       toggle_exclusive: 0,
       gas: new BigNumber('21000'),
       activeGasPrice: new BigNumber('0'),
@@ -672,8 +677,10 @@ export default {
         this.selectedVerifier = TWITTER
       } else if (/@/.test(toAddress)) {
         this.selectedVerifier = GOOGLE
-      } else if (/.eth$/.test(toAddress) || /.xyz$/.test(toAddress) || /.crypto$/.test(toAddress) || /.kred$/i.test(toAddress)) {
+      } else if (/.eth$/.test(toAddress) || /.xyz$/.test(toAddress) || /.kred$/i.test(toAddress)) {
         this.selectedVerifier = ENS
+      } else if (/.crypto$/.test(toAddress)) {
+        this.selectedVerifier = UNSTOPPABLE_DOMAINS
       }
     },
     async getIdFromNick(nick, typeOfLogin) {
@@ -782,6 +789,7 @@ export default {
         }
       }
       this.ensError = ''
+      this.unstoppableDomainsError = ''
 
       if (this.selectedVerifier && this.toAddress) {
         this.toEthAddress = await this.calculateEthAddress()
@@ -879,6 +887,9 @@ export default {
         this.updateTotalCost()
       }
     },
+    getUnstoppableDomains(domain) {
+      return resolution.addr(domain, 'ETH')
+    },
     getEnsAddress(ens) {
       return torus.web3.eth.ens.getAddress(ens)
     },
@@ -895,6 +906,15 @@ export default {
         } catch (error) {
           log.error(error)
           this.ensError = 'Invalid ENS address'
+        }
+      } else if (this.selectedVerifier === UNSTOPPABLE_DOMAINS) {
+        try {
+          const ethAddr = await this.getUnstoppableDomains(this.toAddress)
+          log.info(ethAddr)
+          toAddress = toChecksumAddress(ethAddr)
+        } catch (error) {
+          log.error(error)
+          this.unstoppableDomainsError = 'Invalid Unstoppable Domain'
         }
       } else {
         try {
