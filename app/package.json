@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@chaitanyapotti/random-id": "^1.0.3",
-    "@metamask/contract-metadata": "^1.18.0",
+    "@metamask/contract-metadata": "^1.19.0",
     "@tkey/core": "^3.2.2",
     "@tkey/security-questions": "^3.2.2",
     "@tkey/service-provider-base": "^3.2.2",
@@ -51,7 +51,6 @@
     "create-hash": "^1.2.0",
     "deepmerge": "^4.2.2",
     "eth-block-tracker": "^4.4.3",
-    "eth-contract-metadata": "^1.17.0",
     "eth-json-rpc-filters": "^4.2.1",
     "eth-json-rpc-infura": "^4.1.0",
     "eth-json-rpc-middleware": "^6.0.0",
