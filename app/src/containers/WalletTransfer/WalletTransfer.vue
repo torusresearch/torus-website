@@ -921,7 +921,7 @@ export default {
           toAddress = toChecksumAddress(ethAddr)
         } catch (error) {
           log.error(error)
-          this.unstoppableDomainsError = 'Invalid Unstoppable Domain'
+          this.unstoppableDomainsError = 'walletSettings.invalidUnstoppable'
           this.$refs.form.validate()
         }
       } else {
