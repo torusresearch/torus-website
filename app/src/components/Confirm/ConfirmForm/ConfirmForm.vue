@@ -173,7 +173,25 @@
       <v-layout py-6 class="elevation-1">
         <v-flex xs12 text-center>
           <img class="home-link mr-1" alt="Torus Logo" width="70" :height="getLogo.isExternal ? 'inherit' : '17'" :src="getLogo.logo" />
-          <div class="display-1 text_2--text">{{ t('dappTransfer.permission') }}</div>
+          <div class="display-1 text_2--text">
+            {{
+              type === TX_GET_ENCRYPTION_KEY
+                ? t('dappProvider.encryptionRequest')
+                : type === TX_ETH_DECRYPT
+                ? t('dappProvider.decryptionRequest')
+                : t('dappTransfer.permission')
+            }}
+          </div>
+        </v-flex>
+      </v-layout>
+      <v-layout v-if="type === TX_GET_ENCRYPTION_KEY" wrap my-10>
+        <v-flex xs12 mx-6>
+          <div class="text_2--text headline">{{ t('dappProvider.allowCompose').replace(/\{dappname\}/gi, origin.hostname) }}</div>
+        </v-flex>
+      </v-layout>
+      <v-layout v-if="type === TX_ETH_DECRYPT" wrap my-10>
+        <v-flex xs12 mx-6>
+          <div class="text_2--text headline">{{ t('dappProvider.allowRead').replace(/\{dappname\}/gi, origin.hostname) }}</div>
         </v-flex>
       </v-layout>
       <v-layout wrap align-center mx-6 my-6>
@@ -202,9 +220,34 @@
           </v-card>
         </v-flex>
       </v-layout>
-      <v-layout v-if="type === TX_GET_ENCRYPTION_KEY" wrap>ENCRYPT</v-layout>
-      <v-layout v-else-if="type === TX_ETH_DECRYPT" wrap>DECRYPT</v-layout>
-      <v-layout v-else wrap>
+      <v-layout v-if="type === TX_ETH_DECRYPT" mx-6 my-6 wrap>
+        <v-flex xs12 mb-2>
+          <v-card v-if="showEncrypted" flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
+            <v-card-text>
+              <div class="caption text_2--text" :style="{ height: '100px' }">{{ encryptedMessage }}</div>
+            </v-card-text>
+          </v-card>
+          <v-card v-else flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
+            <div class="message_cover" :class="$vuetify.theme.isDark ? 'is-dark' : ''"></div>
+            <div class="message_cover-lock" :class="$vuetify.theme.isDark ? 'is-dark' : ''" @click="decryptInline">
+              <v-icon size="16" class="text_2--text mr-1">$vuetify.icons.lock_filled</v-icon>
+              <div class="message-lock-text">{{ t('dappProvider.decryptMessage') }}</div>
+            </div>
+            <v-card-text>
+              <div class="caption text_2--text" :style="{ height: '100px' }">{{ message }}</div>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+        <v-flex v-if="showEncrypted" xs12 mb-2 class="text-right">
+          <ShowToolTip :address="encryptedMessage">
+            <v-btn small class="copy-encrypted-btn" aria-label="Copy encrypted message">
+              <v-icon class="caption text_2--text" left size="12" v-text="'$vuetify.icons.copy'" />
+              <span class="caption text_2--text">{{ t('dappProvider.copyEncrypted') }}</span>
+            </v-btn>
+          </ShowToolTip>
+        </v-flex>
+      </v-layout>
+      <v-layout v-if="type !== TX_GET_ENCRYPTION_KEY && type !== TX_ETH_DECRYPT" wrap>
         <v-flex xs12 mt-0 mb-2 mx-6>
           <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
@@ -254,11 +297,13 @@
         <v-flex xs12 mt-8 mx-6>
           <v-layout mx-n2>
             <v-flex xs6 px-2>
-              <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
+              <v-btn block text large class="text_2--text" @click="triggerDeny">
+                {{ type === TX_ETH_DECRYPT || type === TX_ETH_DECRYPT ? t('dappProvider.deny') : t('dappProvider.cancel') }}
+              </v-btn>
             </v-flex>
             <v-flex xs6 px-2>
               <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
-                {{ t('dappProvider.confirm') }}
+                {{ type === TX_ETH_DECRYPT || type === TX_ETH_DECRYPT ? t('dappProvider.allow') : t('dappProvider.confirm') }}
               </v-btn>
             </v-flex>
           </v-layout>
@@ -270,11 +315,12 @@
 
 <script>
 import BigNumber from 'bignumber.js'
+import { ethers } from 'ethers'
 import collectibleABI from 'human-standard-collectible-abi'
 import tokenABI from 'human-standard-token-abi'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
 import config from '../../../config'
@@ -385,6 +431,9 @@ export default {
       contractType: CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
       nonce: -1,
+      decryptedData: {},
+      encryptedMessage: '',
+      showEncrypted: false,
     }
   },
   computed: {
@@ -509,6 +558,7 @@ export default {
     this.updateConfirmModal()
   },
   methods: {
+    ...mapActions(['decryptMessage']),
     async updateConfirmModal() {
       if (!this.currentConfirmModal) return
       const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, currencyData, network } =
@@ -518,7 +568,13 @@ export default {
       this.balance = new BigNumber(balance)
       log.info({ msgParams, txParams })
       this.origin = origin || this.origin
-      if (type !== TX_TRANSACTION) {
+      if (type === TX_ETH_DECRYPT) {
+        const { msgParams: { data, from } = {}, id = '' } = msgParams || {}
+        this.id = id
+        this.message = this.stringifiableToHex(data)
+        this.decryptedData = data
+        this.sender = from
+      } else if (type !== TX_TRANSACTION) {
         const { msgParams: { message, typedMessages } = {}, id = '' } = msgParams || {}
         let finalTypedMessages = typedMessages
         try {
@@ -725,6 +781,21 @@ export default {
       if (this.balance.lt(ethCost) && !this.canShowError) {
         this.errorMsg = 'dappTransfer.insufficientFunds'
         this.topUpErrorShow = true
+      }
+    },
+    stringifiableToHex(value) {
+      return ethers.utils.hexlify(Buffer.from(JSON.stringify(value)))
+    },
+    async decryptInline() {
+      try {
+        this.encryptedMessage = await this.decryptMessage({
+          id: this.id,
+          data: this.decryptedData,
+          from: this.sender,
+        })
+        this.showEncrypted = true
+      } catch (error) {
+        log.error(error)
       }
     },
   },

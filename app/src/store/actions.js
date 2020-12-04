@@ -539,4 +539,7 @@ export default {
   disconnectWalletConnect(_, __) {
     return walletConnectController.disconnect()
   },
+  decryptMessage(_, payload) {
+    return torusController.decryptMessageInline(payload)
+  },
 }

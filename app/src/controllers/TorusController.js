@@ -869,8 +869,9 @@ export default class TorusController extends EventEmitter {
   /**
    * Called when a dapp uses the eth_getEncryptionPublicKey method.
    *
-   * @param {Object} msgParams - The params passed to eth_signTypedData.
-   * @param {Function} cb - The callback function, called with the signature.
+   * @param {Object} messageParameters - The params of the message to sign & return to the Dapp.
+   * @param {Object} request - (optional) the original request, containing the origin
+   * Passed back to the requesting Dapp.
    */
   newUnsignedEncryptionPublicKey(messageParameters, request) {
     const messageId = createRandomId()
@@ -881,11 +882,11 @@ export default class TorusController extends EventEmitter {
   }
 
   /**
-   * The method for a user approving a call to eth_getEncryptionPublicKey.
-   * Triggers the callback in newUnsignedEncryptionPublicKey.
+   * Signifies a user's approval to receiving encryption public key in queue.
+   * Triggers receiving, and the callback function from newUnsignedEncryptionPublicKey.
    *
-   * @param  {Object} msgParams - The params passed to eth_signTypedData.
-   * @returns {Object} Full state update.
+   * @param {Object} messageParameters - The params of the message to receive & return to the Dapp.
+   * @returns {Promise<Object>} - A full state update.
    */
   async signEncryptionPublicKey(messageParameters) {
     log.info('MetaMaskController - eth_getEncryptionPublicKey')
@@ -904,10 +905,11 @@ export default class TorusController extends EventEmitter {
   }
 
   /**
-   * Called when a dapp uses the eth_getEncryptionPublicKey method.
+   * Called when a dapp uses the eth_decrypt method.
    *
-   * @param {Object} msgParams - The params passed to eth_signTypedData.
-   * @param {Function} cb - The callback function, called with the signature.
+   * @param {Object} messageParameters - The params of the message to sign & return to the Dapp.
+   * @param {Object} request = (optional) the original request, containing the origin.
+   * Passed back to the requesting Dapp.
    */
   newUnsignedDecryptMessage(messageParameters, request) {
     const messageId = createRandomId()
@@ -918,11 +920,11 @@ export default class TorusController extends EventEmitter {
   }
 
   /**
-   * The method for a user approving a call to eth_decrypt.
-   * Triggers the callback in signEthDecrypt.
+   * Signifies a user's approval to decrypt a message in queue.
+   * Triggers decrypt, and the callback function from newUnsignedDecryptMessage.
    *
-   * @param  {Object} msgParams - The params passed to eth_signTypedData.
-   * @returns {Object} Full state update.
+   * @param {Object} msgParams - The params of the message to decrypt & return to the Dapp.
+   * @returns {Promise<Object>} - A full state update.
    */
   async signEthDecrypt(messageParameters) {
     log.info('MetaMaskController - eth_decrypt')
@@ -938,5 +940,17 @@ export default class TorusController extends EventEmitter {
       log.info('TorusController - eth_getEncryptionPublicKey failed.', error)
       this.encryptionPublicKeyManager.errorMessage(messageId, error)
     }
+  }
+
+  /**
+   * Only decypt message and don't touch transaction state
+   *
+   * @param {Object} msgParams - The params of the message to decrypt.
+   * @returns {Promise<Object>} - A full state update.
+   */
+  async decryptMessageInline(msgParams) {
+    log.info('MetaMaskController - eth_decrypt inline')
+    const address = toChecksumAddress(normalize(msgParams.from))
+    return this.keyringController.decryptMessage(msgParams, address)
   }
 }
