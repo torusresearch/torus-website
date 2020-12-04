@@ -145,8 +145,12 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
-      <div class="d-flex align-center mt-1">
-        <v-icon class="backup-device-checkbox mr-4" :class="{ isDark: $vuetify.theme.dark }" @click="userUnderstands = !userUnderstands">
+      <div class="d-flex mt-1" :class="$vuetify.breakpoint.xsOnly ? 'align-start' : 'align-center'">
+        <v-icon
+          class="backup-device-checkbox mr-4"
+          :class="[{ isDark: $vuetify.theme.dark }, $vuetify.breakpoint.xsOnly ? 'mt-1' : '']"
+          @click="userUnderstands = !userUnderstands"
+        >
           $vuetify.icon.checkbox{{ $vuetify.theme.dark ? '_dark' : '' }}_{{ userUnderstands ? 'checked' : 'unchecked' }}
         </v-icon>
         <div class="body-2 text_2--text">{{ t('tkeyCreateSetup.iUnderstand') }}</div>
