@@ -9,7 +9,7 @@ import { obj as createThoughStream } from 'through2'
 import MetaMaskController from '../../../src/controllers/TorusController'
 import firstTimeState from '../../localhostState'
 // import createTxMeta from '../lib/createTxMeta'
-import setupMultiplex from '../../../src/utils/setupMultiplex'
+import setupMultiplex from '../../../src/controllers/utils/setupMultiplex'
 
 const TEST_ADDRESS = '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'
 const CUSTOM_RPC_URL = 'http://localhost:8545'
@@ -24,7 +24,7 @@ describe('MetaMaskController', () => {
   const sandbox = sinon.createSandbox()
   const noop = () => {}
 
-  beforeEach(() => {
+  beforeEach(async () => {
     nock.cleanAll()
     nock.enableNetConnect()
 
@@ -67,12 +67,15 @@ describe('MetaMaskController', () => {
       },
       initState: clone(firstTimeState),
       platform: { showTransactionNotification: () => {} },
+      requestTkeyInput: noop,
     })
     // disable diagnostics
     metamaskController.diagnostics = null
-    // add sinon method spies
-    // sandbox.spy(metamaskController.keyringController, 'createNewVaultAndKeychain')
-    // sandbox.spy(metamaskController.keyringController, 'createNewVaultAndRestore')
+    // add sinon method stubs & spies
+    sandbox.stub(metamaskController.prefsController, 'sync')
+    sandbox.stub(metamaskController.prefsController, 'createUser')
+    await metamaskController.prefsController.init({ address: testAccount.address, rehydrate: true, jwtToken: 'hello', dispatch: noop, commit: noop })
+    metamaskController.prefsController.setSelectedAddress(testAccount.address)
     sandbox.spy(metamaskController.txController, 'newUnapprovedTransaction')
   })
 
@@ -86,8 +89,8 @@ describe('MetaMaskController', () => {
       await metamaskController.addAccount(testAccount.key, testAccount.address)
       await metamaskController.setSelectedAccount(testAccount.address)
       const res = await metamaskController.networkController._baseProviderParams.getAccounts()
-      assert.equal(res.length, 1)
-      assert.equal(res[0], testAccount.address)
+      assert.strictEqual(res.length, 1)
+      assert.strictEqual(res[0], testAccount.address)
     })
   })
 
@@ -139,7 +142,7 @@ describe('MetaMaskController', () => {
 
       const gotten = await metamaskController.getBalance(TEST_ADDRESS, ethQuery)
 
-      assert.equal(balance, gotten)
+      assert.strictEqual(balance, gotten)
     })
   })
 
@@ -356,7 +359,8 @@ describe('MetaMaskController', () => {
   })
 
   describe('#setupUntrustedCommunication', function () {
-    it('adds a origin to requests with untrusted communication', function (done) {
+    it('adds an origin to requests with untrusted communication', function (done) {
+      // debugger
       const messageSender = {
         url: 'https://mycrypto.com',
       }
@@ -373,7 +377,7 @@ describe('MetaMaskController', () => {
       const message = {
         id: 1999133338649204,
         jsonrpc: '2.0',
-        params: ['mock tx params'],
+        params: [{ from: testAccount.address }],
         method: 'eth_sendTransaction',
       }
       streamTest.write(
@@ -382,10 +386,11 @@ describe('MetaMaskController', () => {
           data: message,
         },
         null,
-        () => {
+        (err) => {
+          if (err) done(err)
           setTimeout(() => {
             assert.deepStrictEqual(metamaskController.txController.newUnapprovedTransaction.getCall(0).args, [
-              'mock tx params',
+              { from: testAccount.address },
               {
                 ...message,
                 origin: 'mycrypto.com',
@@ -405,7 +410,7 @@ describe('MetaMaskController', () => {
   //     }
   //     const { promise, resolve } = deferredPromise()
   //     const streamTest = createThoughStream((chunk, _, cb) => {
-  //       assert.equal(chunk.name, 'controller')
+  //       assert.strictEqual(chunk.name, 'controller')
   //       resolve()
   //       cb()
   //     })

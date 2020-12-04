@@ -1,4 +1,4 @@
-import { ethErrors } from 'eth-json-rpc-errors'
+import { ethErrors } from 'eth-rpc-errors'
 import { addHexPrefix, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import log from 'loglevel'

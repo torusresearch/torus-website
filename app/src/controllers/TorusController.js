@@ -15,11 +15,6 @@ import pump from 'pump'
 import { toChecksumAddress } from 'web3-utils'
 
 import { version } from '../../package.json'
-import ComposableObservableStore from '../utils/ComposableObservableStore'
-import createLoggerMiddleware from '../utils/createLoggerMiddleware'
-// import setupMultiplex from '../utils/setupMultiplex'
-import createOriginMiddleware from '../utils/createOriginMiddleware'
-import nodeify from '../utils/nodeify'
 import createRandomId from '../utils/random-id'
 import AccountTracker from './AccountTracker'
 import AssetContractController from './AssetsContractController'
@@ -35,10 +30,16 @@ import PermissionsController from './PermissionsController'
 import PersonalMessageManager from './PersonalMessageManager'
 import PreferencesController from './PreferencesController'
 import RecentBlocksController from './RecentBlocksController'
+import ThresholdKeyController from './ThresholdKeyController'
 import TokenRatesController from './TokenRatesController'
 import KeyringController from './TorusKeyring'
 import TransactionController from './TransactionController'
 import TypedMessageManager from './TypedMessageManager'
+import ComposableObservableStore from './utils/ComposableObservableStore'
+import createLoggerMiddleware from './utils/createLoggerMiddleware'
+// import setupMultiplex from '../utils/setupMultiplex'
+import createOriginMiddleware from './utils/createOriginMiddleware'
+import nodeify from './utils/nodeify'
 import WalletConnectController from './WalletConnectController'
 // defaults and constants
 const GWEI_BN = new BN('1000000000')
@@ -104,9 +105,13 @@ export default class TorusController extends EventEmitter {
       tokensStore: this.detectTokensController.detectedTokensStore,
     })
 
+    // key mgmt
+    this.keyringController = new KeyringController()
+
     this.prefsController = new PreferencesController({
       network: this.networkController,
       provider: this.provider,
+      signMessage: this.keyringController.signMessage.bind(this.keyringController),
     })
 
     // start and stop polling for balances based on activeControllerConnections
@@ -127,8 +132,6 @@ export default class TorusController extends EventEmitter {
       this.walletConnectController.updateSession()
     })
 
-    // key mgmt
-    this.keyringController = new KeyringController()
     this.publicConfigStore = this.initPublicConfigStore()
 
     this.permissionsController = new PermissionsController({
@@ -164,6 +167,7 @@ export default class TorusController extends EventEmitter {
     this.assetController = new AssetController({
       network: this.networkController,
       provider: this.provider,
+      getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
     })
 
     this.assetContractController = new AssetContractController({
@@ -175,6 +179,11 @@ export default class TorusController extends EventEmitter {
       provider: this.provider,
       assetController: this.assetController,
       assetContractController: this.assetContractController,
+      getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
+    })
+
+    this.thresholdKeyController = new ThresholdKeyController({
+      requestTkeyInput: this.opts.requestTkeyInput.bind(this.thresholdKeyController),
     })
 
     this.networkController.lookupNetwork()
@@ -229,8 +238,8 @@ export default class TorusController extends EventEmitter {
         // Expose no accounts if this origin has not been approved, preventing
         // account-requiring RPC methods from completing successfully
         // only show address if account is unlocked
-        log.info(this.prefsController.state.selectedAddress, 'accounts')
-        return this.prefsController.state.selectedAddress ? [this.prefsController.state.selectedAddress] : []
+        log.info(this.prefsController.store.getState().selectedAddress, 'accounts')
+        return this.prefsController.store.getState().selectedAddress ? [this.prefsController.store.getState().selectedAddress] : []
       },
       // tx signing
       processTransaction: this.newUnapprovedTransaction.bind(this),
@@ -346,16 +355,10 @@ export default class TorusController extends EventEmitter {
     this.accountTracker.addAccounts([address])
   }
 
-  setSelectedAccount(address, options) {
-    const { jwtToken = '' } = options || {}
-    if (jwtToken) {
-      this.assetDetectionController.jwtToken = options.jwtToken
-      this.assetController.jwtToken = options.jwtToken
-      // this.prefsController.jwtToken = options.jwtToken
-    }
+  setSelectedAccount(address) {
+    this.prefsController.setSelectedAddress(address)
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
-    this.prefsController.setSelectedAddress(address)
     this.walletConnectController.setSelectedAddress(address)
   }
 

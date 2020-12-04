@@ -224,7 +224,11 @@
                   </v-expansion-panels>
 
                   <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && !Array.isArray(typedMessages)">
-                    <v-expansion-panel v-for="(typedMessage, index) in typedMessages" :key="index">
+                    <v-expansion-panel
+                      v-for="(typedMessage, index) in typedMessages"
+                      :key="index"
+                      :class="$vuetify.theme.isDark ? 'dark--theme' : ''"
+                    >
                       <v-expansion-panel-header>{{ index }}</v-expansion-panel-header>
                       <v-expansion-panel-content>
                         <VueJsonPretty :path="'res'" :data="typedMessage" :showline="true" :deep="5"></VueJsonPretty>
@@ -293,7 +297,7 @@ import {
   TX_TYPED_MESSAGE,
 } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
-import { addressSlicer, significantDigits } from '../../../utils/utils'
+import { addressSlicer, isMain, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import TransactionSpeedSelect from '../../helpers/TransactionSpeedSelect'
@@ -672,7 +676,11 @@ export default {
       }
     },
     topUp() {
-      this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
+      if (isMain) {
+        this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
+      } else {
+        this.$store.dispatch('showWalletPopup', { path: '/topup' })
+      }
     },
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected

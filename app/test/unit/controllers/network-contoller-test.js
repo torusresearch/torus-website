@@ -27,15 +27,15 @@ describe('NetworkController', function () {
       it('provider should be updatable without reassignment', function () {
         networkController.initializeProvider(networkControllerProviderConfig)
         const providerProxy = networkController.getProviderAndBlockTracker().provider
-        assert.equal(providerProxy.test, undefined)
+        assert.strictEqual(providerProxy.test, undefined)
         providerProxy.setTarget({ test: true })
-        assert.equal(providerProxy.test, true)
+        assert.strictEqual(providerProxy.test, true)
       })
     })
     describe('#getNetworkState', function () {
       it('should return loading when new', function () {
         const networkState = networkController.getNetworkState()
-        assert.equal(networkState, 'loading', 'network is loading')
+        assert.strictEqual(networkState, 'loading', 'network is loading')
       })
     })
 
@@ -43,7 +43,7 @@ describe('NetworkController', function () {
       it('should update the network', function () {
         networkController.setNetworkState(1, 'rpc')
         const networkState = networkController.getNetworkState()
-        assert.equal(networkState, 1, 'network is 1')
+        assert.strictEqual(networkState, 1, 'network is 1')
       })
     })
 
@@ -51,7 +51,7 @@ describe('NetworkController', function () {
       it('should update provider.type', function () {
         networkController.setProviderType('mainnet')
         const type = networkController.getProviderConfig().type
-        assert.equal(type, 'mainnet', 'provider type is updated')
+        assert.strictEqual(type, 'mainnet', 'provider type is updated')
       })
       it('should set the network to loading', function () {
         networkController.setProviderType('mainnet')
@@ -98,7 +98,7 @@ describe('NetworkController', function () {
         },
       ]
 
-      tests.forEach(({ input, expected }) => assert.equal(getNetworkDisplayName(input), expected))
+      tests.forEach(({ input, expected }) => assert.strictEqual(getNetworkDisplayName(input), expected))
     })
   })
 })

@@ -13,7 +13,7 @@ describe('Message Manager', () => {
     it('when new should return empty array', () => {
       const result = messageManager.messages
       assert.ok(Array.isArray(result))
-      assert.equal(result.length, 0)
+      assert.strictEqual(result.length, 0)
     })
     it('should also return transactions from local storage if any', () => {})
   })
@@ -24,8 +24,8 @@ describe('Message Manager', () => {
       messageManager.addMsg(Message)
       const result = messageManager.messages
       assert.ok(Array.isArray(result))
-      assert.equal(result.length, 1)
-      assert.equal(result[0].id, 1)
+      assert.strictEqual(result.length, 1)
+      assert.strictEqual(result[0].id, 1)
     })
   })
 
@@ -36,8 +36,8 @@ describe('Message Manager', () => {
       messageManager.setMsgStatusApproved(1)
       const result = messageManager.messages
       assert.ok(Array.isArray(result))
-      assert.equal(result.length, 1)
-      assert.equal(result[0].status, 'approved')
+      assert.strictEqual(result.length, 1)
+      assert.strictEqual(result[0].status, 'approved')
     })
   })
 
@@ -48,8 +48,8 @@ describe('Message Manager', () => {
       messageManager.rejectMsg(1)
       const result = messageManager.messages
       assert.ok(Array.isArray(result))
-      assert.equal(result.length, 1)
-      assert.equal(result[0].status, 'rejected')
+      assert.strictEqual(result.length, 1)
+      assert.strictEqual(result[0].status, 'rejected')
     })
   })
 
@@ -59,7 +59,7 @@ describe('Message Manager', () => {
       messageManager.addMsg({ id: '2', status: 'approved', metamaskNetworkId: 'unit test' })
       messageManager._updateMsg({ id: '1', status: 'blah', hash: 'foo', metamaskNetworkId: 'unit test' })
       const result = messageManager.getMsg('1')
-      assert.equal(result.hash, 'foo')
+      assert.strictEqual(result.hash, 'foo')
     })
   })
 
@@ -68,9 +68,9 @@ describe('Message Manager', () => {
       messageManager.addMsg({ id: '1', status: 'unapproved', metamaskNetworkId: 'unit test' })
       messageManager.addMsg({ id: '2', status: 'approved', metamaskNetworkId: 'unit test' })
       const result = messageManager.getUnapprovedMsgs()
-      assert.equal(typeof result, 'object')
-      assert.equal(result['1'].status, 'unapproved')
-      assert.equal(result['2'], undefined)
+      assert.strictEqual(typeof result, 'object')
+      assert.strictEqual(result['1'].status, 'unapproved')
+      assert.strictEqual(result['2'], undefined)
     })
   })
 
@@ -78,8 +78,8 @@ describe('Message Manager', () => {
     it('returns a Msg with the requested id', () => {
       messageManager.addMsg({ id: '1', status: 'unapproved', metamaskNetworkId: 'unit test' })
       messageManager.addMsg({ id: '2', status: 'approved', metamaskNetworkId: 'unit test' })
-      assert.equal(messageManager.getMsg('1').status, 'unapproved')
-      assert.equal(messageManager.getMsg('2').status, 'approved')
+      assert.strictEqual(messageManager.getMsg('1').status, 'unapproved')
+      assert.strictEqual(messageManager.getMsg('2').status, 'approved')
     })
   })
 })

@@ -1,7 +1,6 @@
-/* eslint-disable unicorn/prevent-abbreviations */
 import torus from '../torus'
 import { capitalizeFirstLetter } from '../utils/utils'
-// import store from './store'
+
 let storeReference
 let deferredDispatch = []
 function getStore() {
@@ -81,12 +80,8 @@ export function messageManagerHandler({ unapprovedMsgs }) {
   getStore().commit('setMessages', unapprovedMsgs)
 }
 
-export function detectTokensControllerHandler({ tokens }) {
-  if (tokens.length > 0) {
-    getStore().commit('setTokenData', {
-      [torus.torusController.detectTokensController.selectedAddress]: tokens,
-    })
-  }
+export function detectTokensControllerHandler(state) {
+  getStore().commit('setTokenData', state)
   getStore().commit('setTokenDataLoaded')
 }
 
@@ -97,8 +92,13 @@ export function tokenRatesControllerHandler({ contractExchangeRates }) {
 }
 
 export function prefsControllerHandler(state) {
-  Object.keys(state).forEach((x) => {
-    getStore().commit(`set${capitalizeFirstLetter(x)}`, state[x])
+  const { selectedAddress } = state
+  getStore().commit('setSelectedAddress', selectedAddress)
+  if (selectedAddress === '') return
+  const addressState = state[selectedAddress]
+  Object.keys(addressState).forEach((x) => {
+    if (x === 'jwtToken') getStore().commit('setJwtToken', { [selectedAddress]: addressState[x] })
+    else if (x !== 'fetchedPastTx' && x !== 'accountType') getStore().commit(`set${capitalizeFirstLetter(x)}`, addressState[x])
   })
 }
 
@@ -114,16 +114,16 @@ export function metadataHandler(state) {
   getStore().commit('setMetaData', state)
 }
 
-export function pastTransactionsHandler(state) {
-  getStore().commit('setPastTransactions', state)
-}
-
-export function paymentTxHandler(state) {
-  getStore().commit('setPaymentTx', state)
-}
-
 export function etherscanTxHandler(state) {
   getStore().commit('setEtherscanTx', state)
+}
+
+export function billboardHandler(state) {
+  getStore().commit('setBillboard', state)
+}
+
+export function tKeyHandler(state) {
+  getStore().commit('setTKey', state)
 }
 
 export function walletConnectHandler(state) {

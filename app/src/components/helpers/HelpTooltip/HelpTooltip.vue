@@ -1,13 +1,12 @@
 <template>
   <v-tooltip top>
     <template v-slot:activator="{ on }">
-      <v-icon small class="torusBrand1--text" v-on="on" v-text="'$vuetify.icons.question'"></v-icon>
+      <v-icon size="14" class="ml-1 text_3--text" :style="{ marginTop: '-2px' }" v-on="on">$vuetify.icons.question_filled</v-icon>
     </template>
     <span>
-      <div class="torusBrand1--text text-subtitle-2">{{ title }}</div>
-      <v-divider class="my-2"></v-divider>
+      <div class="body-2 text_2--text font-weight-bold mb-2">{{ title }}</div>
       <slot name="description">
-        <div class="body-2 text-justify">{{ description }}</div>
+        <div class="caption text_3--text text-justify">{{ description }}</div>
       </slot>
     </span>
   </v-tooltip>

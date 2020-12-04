@@ -386,7 +386,7 @@ import {
   WalletTransferLoader,
   WalletTransferLoaderMobile,
 } from '../../content-loader'
-import createHandler from '../../store/Handlers/HandlerFactory'
+import { HandlerFactory as createHandler } from '../../handlers/Auth'
 import { GOOGLE, GOOGLE_VERIFIER } from '../../utils/enums'
 import { handleRedirectParameters } from '../../utils/utils'
 
@@ -409,7 +409,9 @@ export default {
   computed: {
     ...mapState({
       selectedAddress: 'selectedAddress',
+      tKeyOnboardingComplete: 'tKeyOnboardingComplete',
       loginConfig: (state) => state.embedState.loginConfig,
+      tKeyExists: 'tKeyExists',
     }),
     ...mapGetters(['loginButtonsArray']),
     loggedIn() {
@@ -458,7 +460,9 @@ export default {
     selectedAddress(newAddress, oldAddress) {
       if (newAddress !== oldAddress && newAddress !== '') {
         let redirectPath = this.$route.query.redirect
-        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
+        if (!this.tKeyOnboardingComplete && !this.tKeyExists) redirectPath = `/tkey?redirect=${redirectPath || '/wallet/home'}`
+        else if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
+
         this.$router.push(redirectPath).catch((_) => {})
       }
     },

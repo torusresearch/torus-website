@@ -146,16 +146,17 @@
 </template>
 
 <script>
+/* eslint-disable import/default */
+/* eslint-disable import/no-webpack-loader-syntax */
+/* eslint-disable import/extensions */
 import randomId from '@chaitanyapotti/random-id'
 import { BroadcastChannel } from 'broadcast-channel'
 import { bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
+import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
 
 import { broadcastChannelOptions } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
-
-// eslint-disable-next-line import/no-webpack-loader-syntax
-const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 
 export default {
   components: {
@@ -253,10 +254,9 @@ export default {
             })
         } else {
           const worker = new WalletWorker()
-          worker.postMessage({ type: 'unlockWallet', data: [keyData, this.jsonPassword] })
           worker.addEventListener('message', (event) => {
-            const { _privKey: stringPrivateKey } = event.data
-            const privKey = stripHexPrefix(bufferToHex(Buffer.from(stringPrivateKey)))
+            const { privateKey: bufferPrivateKey } = event.data
+            const privKey = stripHexPrefix(bufferToHex(bufferPrivateKey))
             this.$store
               .dispatch('finishImportAccount', { privKey })
               .then((privateKey) => {
@@ -267,16 +267,18 @@ export default {
               })
               .catch((error) => {
                 this.setErrorState(error)
+                this.isLoadingKeystore = false
               })
           })
           worker.addEventListener('error', (error) => {
             this.setErrorState(error)
+            this.isLoadingKeystore = false
           })
+          worker.postMessage({ type: 'unlockWallet', data: [keyData, this.jsonPassword] })
         }
       }
     },
     setErrorState(error) {
-      log.info(error)
       this.error = error && error.message && error.message.includes('wrong passphrase') ? this.t('accountMenu.incorrectPassword') : error
       this.canShowError = true
       log.error(error)

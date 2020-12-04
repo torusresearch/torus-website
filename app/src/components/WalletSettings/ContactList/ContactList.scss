@@ -3,6 +3,13 @@
     .contact-list__id {
       color: var(--v-text_2-base);
     }
+    .v-avatar {
+      border-radius: 0;
+      align-self: start;
+      & > svg, & > .v-icon, & > img {
+        margin: auto;
+      }
+    }
     &.theme--dark {
       border: 1px solid #202125;
       .contact-list__id {

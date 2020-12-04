@@ -83,7 +83,7 @@
     border-left: 1px solid #bfcbd9;
   }
 
-  &.theme--dark {
+  &.theme--dark, &.dark--theme {
     ::v-deep .vjs-tree .vjs-value {
       color: #eef2f4 !important;
     }

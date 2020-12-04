@@ -66,6 +66,7 @@ import { BroadcastChannel } from 'broadcast-channel'
 import { mapGetters } from 'vuex'
 
 import { UserInfoScreenLoader } from '../../content-loader'
+import { POPUP_LOADED, POPUP_RESULT } from '../../utils/enums'
 // import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
 import { broadcastChannelOptions, capitalizeFirstLetter } from '../../utils/utils'
 
@@ -106,17 +107,17 @@ export default {
       this.$store.commit('setWhiteLabel', whiteLabel)
       bc.close()
     })
-    bc.postMessage({ data: { type: 'popup-loaded' } })
+    bc.postMessage({ data: { type: POPUP_LOADED } })
   },
   methods: {
     async triggerSign() {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-      await bc.postMessage({ data: { type: 'user-info-request-result', approve: true } })
+      await bc.postMessage({ data: { type: POPUP_RESULT, approve: true } })
       bc.close()
     },
     async triggerDeny() {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-      await bc.postMessage({ data: { type: 'user-info-request-result', approve: false } })
+      await bc.postMessage({ data: { type: POPUP_RESULT, approve: false } })
       bc.close()
     },
     editPermissions() {

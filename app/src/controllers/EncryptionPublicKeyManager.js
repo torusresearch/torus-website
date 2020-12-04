@@ -1,4 +1,4 @@
-import { ethErrors } from 'eth-json-rpc-errors'
+import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'

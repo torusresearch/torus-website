@@ -8,8 +8,13 @@
         <QuickAddress />
       </div>
     </div>
-    <v-layout wrap mx-n4 :class="contractType === CONTRACT_TYPE_ERC721 && $vuetify.breakpoint.xsOnly ? 'mt-0' : 'mt-7'">
-      <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721 && $vuetify.breakpoint.xsOnly" px-4 xs12>
+    <v-layout wrap mx-n4 :class="[contractType === CONTRACT_TYPE_ERC721 && $vuetify.breakpoint.xsOnly ? 'mt-0' : 'mt-7']">
+      <v-flex
+        v-if="contractType !== CONTRACT_TYPE_ERC721 && $vuetify.breakpoint.smAndDown"
+        :class="[{ 'mb-4': $vuetify.breakpoint.smOnly }]"
+        px-4
+        xs12
+      >
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
             <span class="body-2 text_1--text">{{ t('walletTransfer.accountBalance') }}</span>
@@ -31,7 +36,7 @@
           </div>
         </v-card>
       </v-flex>
-      <v-flex xs12 sm6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+      <v-flex xs12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
         <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="off" autocomplete="off" @submit.prevent="sendCoin">
           <v-card
             :flat="$vuetify.breakpoint.xsOnly"
@@ -137,7 +142,7 @@
                       </template>
                     </v-combobox>
                     <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
-                      <div class="qr-scan-container">
+                      <div v-if="showQrScanner" class="qr-scan-container">
                         <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
                         <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
                           <v-icon>$vuetify.icons.close</v-icon>
@@ -298,7 +303,7 @@
                     :to-verifier="selectedVerifier"
                     :from-address="selectedAddress"
                     :from-verifier-id="userInfo.verifierId"
-                    :from-verifier="userInfo.typeOfLogin"
+                    :from-verifier="fromVerifier"
                     :network-type="networkType"
                     :converted-amount="
                       convertedAmount
@@ -332,7 +337,7 @@
           </v-card>
         </v-form>
       </v-flex>
-      <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721 && !$vuetify.breakpoint.xsOnly" px-4 xs6>
+      <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721 && !$vuetify.breakpoint.smAndDown" px-4 xs6>
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
             <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
@@ -379,6 +384,7 @@
 
 <script>
 import randomId from '@chaitanyapotti/random-id'
+import Resolution from '@unstoppabledomains/resolution'
 import BigNumber from 'bignumber.js'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
@@ -397,6 +403,7 @@ import MessageModal from '../../components/WalletTransfer/MessageModal'
 import config from '../../config'
 import torus from '../../torus'
 import {
+  ACCOUNT_TYPE,
   ALLOWED_VERIFIERS,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
@@ -409,8 +416,9 @@ import {
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
   TWITTER,
+  UNSTOPPABLE_DOMAINS,
 } from '../../utils/enums'
-import { get, post } from '../../utils/httpHelpers'
+import { get } from '../../utils/httpHelpers'
 import { apiStreamSupported, getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
 
 export default {
@@ -441,6 +449,7 @@ export default {
       toAddress: '',
       formValid: false,
       ensError: '',
+      unstoppableDomainsError: '',
       toggle_exclusive: 0,
       gas: new BigNumber('21000'),
       activeGasPrice: new BigNumber('0'),
@@ -497,8 +506,8 @@ export default {
       'contacts',
       'selectedAddress',
       'userInfo',
-      'jwtToken',
       'networkType',
+      'wallet',
     ]),
     verifierOptions() {
       try {
@@ -596,6 +605,17 @@ export default {
     selectedItemBalance() {
       return (this.selectedItem && this.selectedItem.computedBalance) || new BigNumber(0)
     },
+    fromVerifier() {
+      const accountType = this.wallet[this.selectedAddress]?.accountType || ''
+
+      if (accountType === ACCOUNT_TYPE.THRESHOLD) {
+        return 'wallet'
+      }
+      if (accountType === ACCOUNT_TYPE.IMPORTED) {
+        return 'person_circle'
+      }
+      return this.userInfo.typeOfLogin.toLowerCase()
+    },
     apiStreamSupported() {
       return apiStreamSupported()
     },
@@ -655,8 +675,10 @@ export default {
         this.selectedVerifier = TWITTER
       } else if (/@/.test(toAddress)) {
         this.selectedVerifier = GOOGLE
-      } else if (/.eth$/.test(toAddress) || /.xyz$/.test(toAddress) || /.crypto$/.test(toAddress) || /.kred$/i.test(toAddress)) {
+      } else if (/.eth$/.test(toAddress) || /.xyz$/.test(toAddress) || /.kred$/i.test(toAddress)) {
         this.selectedVerifier = ENS
+      } else if (/.crypto$/.test(toAddress)) {
+        this.selectedVerifier = UNSTOPPABLE_DOMAINS
       }
     },
     async getIdFromNick(nick, typeOfLogin) {
@@ -665,8 +687,7 @@ export default {
         return `${typeOfLogin.toLowerCase()}|${userData.id.toString()}`
       }
       if (typeOfLogin === TWITTER) {
-        const userId = await get(`${config.api}/twitter?screen_name=${nick}`, { headers: { Authorization: `Bearer ${this.jwtToken}` } })
-        return `${typeOfLogin.toLowerCase()}|${userId.data.toString()}`
+        return this.$store.dispatch('getTwitterId', { nick, typeOfLogin })
       }
       return nick
     },
@@ -715,18 +736,8 @@ export default {
           tokenImageUrl:
             this.contractType !== CONTRACT_TYPE_ERC721 ? `${this.logosUrl}/${this.selectedItemDisplay.logo}` : this.selectedItemDisplay.logo,
         }
-        post(
-          `${config.api}/transaction/sendemail`,
-          emailObject,
-          {
-            headers: {
-              Authorization: `Bearer ${this.jwtToken}`,
-              'Content-Type': 'application/json; charset=utf-8',
-            },
-          },
-          {},
-          { useAPIKey: true }
-        )
+        this.$store
+          .dispatch('sendEmail', { emailObject })
           .then((response) => log.info('email response', response))
           .catch((error) => log.error(error))
       }
@@ -776,6 +787,7 @@ export default {
         }
       }
       this.ensError = ''
+      this.unstoppableDomainsError = ''
 
       if (this.selectedVerifier && this.toAddress) {
         this.toEthAddress = await this.calculateEthAddress()
@@ -873,6 +885,11 @@ export default {
         this.updateTotalCost()
       }
     },
+    getUnstoppableDomains(domain) {
+      return new Resolution({
+        blockchain: { ens: 'https://api.infura.io/v1/jsonrpc/mainnet', cns: 'https://api.infura.io/v1/jsonrpc/mainnet' },
+      }).addr(domain, 'ETH')
+    },
     getEnsAddress(ens) {
       return torus.web3.eth.ens.getAddress(ens)
     },
@@ -889,6 +906,15 @@ export default {
         } catch (error) {
           log.error(error)
           this.ensError = 'Invalid ENS address'
+        }
+      } else if (this.selectedVerifier === UNSTOPPABLE_DOMAINS) {
+        try {
+          const ethAddr = await this.getUnstoppableDomains(this.toAddress)
+          log.info(ethAddr)
+          toAddress = toChecksumAddress(ethAddr)
+        } catch (error) {
+          log.error(error)
+          this.unstoppableDomainsError = 'Invalid Unstoppable Domain'
         }
       } else {
         try {
@@ -984,7 +1010,7 @@ export default {
           },
           (error, transactionHash) => {
             if (error) {
-              const regEx = new RegExp('User denied transaction signature', 'i')
+              const regEx = /user denied transaction signature/i
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
@@ -1018,7 +1044,7 @@ export default {
           },
           (error, transactionHash) => {
             if (error) {
-              const regEx = new RegExp('User denied transaction signature', 'i')
+              const regEx = /user denied transaction signature/i
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
@@ -1048,7 +1074,7 @@ export default {
           },
           (error, transactionHash) => {
             if (error) {
-              const regEx = new RegExp('User denied transaction signature', 'i')
+              const regEx = /user denied transaction signature/i
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL

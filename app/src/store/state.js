@@ -27,6 +27,7 @@ const initialState = {
   isNewUser: false,
   isRehydrationComplete: false,
   // account handled
+  jwtToken: {},
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
   networkId: 0,
@@ -42,16 +43,17 @@ const initialState = {
   unapprovedEncryptionPublicKeyMsgs: {},
   unapprovedDecryptMsgs: {},
   // preferences
+  tKeyOnboardingComplete: true,
+  tKeyExists: false,
+  defaultPublicAddress: '',
   selectedAddress: '',
-  jwtToken: '',
   supportedNetworks: { ...SUPPORTED_NETWORK_TYPES },
-
   selectedCurrency: 'USD',
   pastTransactions: [],
   paymentTx: [],
   theme: THEME_LIGHT_BLUE_NAME,
   locale: LOCALE_EN,
-  billboard: [],
+  billboard: {},
   contacts: [],
   permissions: [],
   userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
@@ -75,8 +77,10 @@ const initialState = {
   },
   etherscanTx: [],
   badgesCompletion: {},
+  tKeyStore: {},
   wcConnectorSession: {},
   confirmModals: [],
+  postboxKey: {},
 }
 
 export default initialState

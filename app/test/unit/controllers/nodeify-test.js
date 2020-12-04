@@ -1,7 +1,7 @@
 /* eslint-disable */
 import assert from 'assert'
 
-import nodeify from '../../../src/utils/nodeify'
+import nodeify from '../../../src/controllers/utils/nodeify'
 
 describe('nodeify', function () {
   const obj = {
@@ -16,7 +16,7 @@ describe('nodeify', function () {
     const nodified = nodeify(obj.promiseFunc, obj)
     nodified('baz', (err, res) => {
       if (!err) {
-        assert.equal(res, 'barbaz')
+        assert.strictEqual(res, 'barbaz')
         done()
       } else {
         done(new Error(err.toString()))
@@ -41,7 +41,7 @@ describe('nodeify', function () {
         if (err) {
           return done(new Error(`should not have thrown any error: ${err.message}`))
         }
-        assert.equal(42, result, 'got expected result')
+        assert.strictEqual(42, result, 'got expected result')
       })
       done()
     } catch (err) {

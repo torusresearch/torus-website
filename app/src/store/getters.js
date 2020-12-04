@@ -65,7 +65,8 @@ const collectibleBalances = (state) => {
 const walletBalances = (state) => {
   const walletsFinal = Object.keys(state.wallet).reduce((accts, y) => {
     const { finalBalancesArray, totalPortfolioValueReturn } = calculateBalances(state, y)
-    accts.push({ address: y, finalBalancesArray, totalPortfolioValue: totalPortfolioValueReturn })
+    const { accountType } = state.wallet[y]
+    accts.push({ address: y, accountType, finalBalancesArray, totalPortfolioValue: totalPortfolioValueReturn })
     return accts
   }, [])
 

@@ -3,10 +3,10 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 
 import config from '../../config'
+import PopupHandler from '../../handlers/Popup/PopupHandler'
 import { getQuote } from '../../plugins/mercuryo'
 import torus from '../../torus'
 import { MERCURYO } from '../../utils/enums'
-import PopupHandler from '../../utils/PopupHandler'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {

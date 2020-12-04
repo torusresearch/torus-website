@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+import TkeyCreate from './containers/TkeyCreate'
+import TKeyDappInput from './containers/TKeyDappInput'
+import TKeyInput from './containers/TKeyInput'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
@@ -14,12 +17,12 @@ import {
   WalletTopupXanpool,
 } from './containers/WalletTopup'
 import WalletTransfer from './containers/WalletTransfer'
-import store from './store'
 import Confirm from './views/Confirm'
 import Login from './views/Login'
 import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import RedirectCatch from './views/RedirectCatch'
+import Tkey from './views/Tkey'
 import UserInfoRequest from './views/UserInfoRequest'
 import Wallet from './views/Wallet'
 
@@ -150,11 +153,35 @@ const router = new Router({
               component: WalletTopupMercuryo,
             },
           ],
-          beforeEnter(to, from, next) {
-            if (store.state.whiteLabel.topupHide) {
-              return next({ name: 'walletHome' })
-            }
-            return next()
+        },
+      ],
+    },
+    {
+      path: '/tkey',
+      component: Tkey,
+      children: [
+        {
+          path: '/',
+          name: 'tkeyCreate',
+          component: TkeyCreate,
+          meta: {
+            requiresAuth: false,
+          },
+        },
+        {
+          path: 'dapp-input',
+          name: 'tkeyDappInput',
+          component: TKeyDappInput,
+          meta: {
+            requiresAuth: false,
+          },
+        },
+        {
+          path: 'input',
+          name: 'tKeyInput',
+          component: TKeyInput,
+          meta: {
+            requiresAuth: false,
           },
         },
       ],
@@ -180,9 +207,6 @@ router.beforeResolve((to, from, next) => {
       return next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
     }
     return next()
-  }
-  if (store.state.selectedAddress === '') {
-    return next({ name: 'login', query: { redirect: to.fullPath } })
   }
   if (!hasQueryParameters(to) && hasQueryParameters(from)) {
     if (!to.name.includes('Topup') && to.name !== 'walletTransfer') {

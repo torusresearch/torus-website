@@ -8,7 +8,6 @@ import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
-import config from '../config'
 import { get } from '../utils/httpHelpers'
 
 const initStateObject = { allCollectibleContracts: {}, allCollectibles: {}, allTokens: {}, collectibleContracts: [], collectibles: [], tokens: [] }
@@ -20,7 +19,7 @@ export default class AssetController {
     this.network = options.network
     this.assetContractController = options.assetContractController
     this.selectedAddress = options.selectedAddress
-    this.jwtToken = ''
+    this.getOpenSeaCollectibles = options.getOpenSeaCollectibles
     this.initializeNetworkSubscription()
   }
 
@@ -50,10 +49,6 @@ export default class AssetController {
       collectibles: (allCollectibles[address] && allCollectibles[address][networkType]) || [],
       tokens: (allTokens[address] && allTokens[address][networkType]) || [],
     })
-  }
-
-  setJwtToken(jwtToken) {
-    this.jwtToken = jwtToken
   }
 
   getCollectibleApi(contractAddress, tokenId) {
@@ -94,15 +89,7 @@ export default class AssetController {
    */
   async getCollectibleInformationFromApi(contractAddress, tokenId) {
     const tokenURI = this.getCollectibleApi(contractAddress, tokenId)
-    const collectibleInformation = await get(
-      `${config.api}/opensea?url=${tokenURI}`,
-      {
-        headers: {
-          Authorization: `Bearer ${this.jwtToken}`,
-        },
-      },
-      { useAPIKey: true }
-    )
+    const collectibleInformation = await this.getOpenSeaCollectibles(tokenURI)
 
     const { name, description, image_original_url: image } = collectibleInformation.data
     return { image, name, description }
@@ -162,11 +149,7 @@ export default class AssetController {
     const api = this.getCollectibleContractInformationApi(contractAddress)
     /* istanbul ignore if */
 
-    const collectibleContractObject = await get(`${config.api}/opensea?url=${api}`, {
-      headers: {
-        Authorization: `Bearer ${this.jwtToken}`,
-      },
-    })
+    const collectibleContractObject = await this.getOpenSeaCollectibles(api)
 
     const { name, symbol, image_url: imageURL, description, total_supply: totalSupply } = collectibleContractObject.data
     return { name, symbol, image_url: imageURL, description, total_supply: totalSupply }

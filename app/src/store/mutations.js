@@ -65,7 +65,7 @@ export default {
     state.unapprovedMsgs = unapprovedMsgs
   },
   setJwtToken(state, payload) {
-    state.jwtToken = payload
+    state.jwtToken = { ...state.jwtToken, ...payload }
   },
   setUserInfoAccess(state, payload) {
     state.userInfoAccess = payload
@@ -126,7 +126,7 @@ export default {
     const { enabledVerifiers, loginConfig } = payload
     const finalLoginConfig = merge(config.loginConfig, loginConfig)
     Object.keys(enabledVerifiers).forEach((x) => {
-      finalLoginConfig[x].showOnModal = !enabledVerifiers[x] ? false : finalLoginConfig[x].showOnModal
+      if (finalLoginConfig[x]) finalLoginConfig[x].showOnModal = !enabledVerifiers[x] ? false : finalLoginConfig[x].showOnModal
     })
     state.embedState = {
       ...state.embedState,
@@ -186,6 +186,18 @@ export default {
   setRehydrationStatus(state, payload) {
     state.isRehydrationComplete = payload
   },
+  setTKeyOnboardingComplete(state, payload) {
+    state.tKeyOnboardingComplete = payload
+  },
+  setDefaultPublicAddress(state, payload) {
+    state.defaultPublicAddress = payload
+  },
+  setTKey(state, payload) {
+    state.tKeyStore = payload
+  },
+  setTkeyExists(state, payload) {
+    state.tKeyExists = payload
+  },
   addConfirmModal(state, payload) {
     state.confirmModals = [...state.confirmModals, payload]
   },
@@ -197,6 +209,9 @@ export default {
   },
   setUnapprovedDecryptMsgs(state, unapprovedDecryptMsgs) {
     state.unapprovedDecryptMsgs = unapprovedDecryptMsgs
+  },
+  setPostboxKey(state, payload) {
+    state.postboxKey = payload
   },
 }
 function localThemeSet(payload, state) {

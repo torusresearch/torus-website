@@ -37,7 +37,6 @@ class RecentBlocksController {
     }
     this.store = new ObservableStore(initState)
 
-    // eslint-disable-next-line unicorn/consistent-function-scoping
     const blockListner = async (newBlockNumberHex) => {
       try {
         await this.processBlock(newBlockNumberHex)

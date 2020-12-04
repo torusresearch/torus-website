@@ -1,15 +1,18 @@
 .v-tooltip__content {
   background: var(--v-torusLight-base);
-  box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.5);
-  border-radius: 3px;
-  padding: 20px 30px;
+  border: 1px solid #F1F2F6;
+  box-sizing: border-box;
+  box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+  border-radius: 6px;
+  padding: 18px;
   max-width: 300px;
   opacity: 1 !important;
-  color: var(--v-torusFont1-base);
 }
 .theme--dark {
   .v-tooltip__content {
-    background: var(--v-torusBlack-base);
+    background: var(--v-torusBlack2-base);
+    border: 1px solid #404145;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
   }
 }
 .v-icon {

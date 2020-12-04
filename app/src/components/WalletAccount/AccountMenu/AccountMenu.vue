@@ -32,11 +32,13 @@
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
             <v-icon :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
-              {{ `$vuetify.icons.${index === 0 ? userInfo.typeOfLogin.toLowerCase() : 'person_circle'}` }}
+              $vuetify.icons.{{ userIcon(acc.accountType) }}
             </v-icon>
           </div>
           <div class="caption text_1--text font-weight-bold account-list__user-email" :style="{ paddingLeft: '2px' }">
-            <span>{{ index === 0 ? userEmail : `${t('accountMenu.account')} #${index + 1}` }}</span>
+            <span>
+              {{ userEmail(acc) }}
+            </span>
           </div>
           <div class="caption ml-auto text_2--text text-right">
             <span>{{ acc.totalPortfolioValue }} {{ selectedCurrency }}</span>
@@ -82,7 +84,7 @@
 
     <v-divider></v-divider>
 
-    <v-list v-if="$vuetify.breakpoint.smAndDown" class="py-1" :style="{ marginLeft: '6px' }">
+    <v-list v-if="$vuetify.breakpoint.smAndDown && showNav" class="py-1" :style="{ marginLeft: '6px' }">
       <v-list-item
         v-for="headerItem in filteredMenu"
         :id="`${headerItem.name}-link-mobile`"
@@ -107,7 +109,7 @@
         </v-list-item-action>
         <v-list-item-content class="caption font-weight-bold">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
       </v-list-item>
-      <LanguageSelector v-if="$vuetify.breakpoint.smAndDown"></LanguageSelector>
+      <LanguageSelector v-if="$vuetify.breakpoint.smAndDown && showLanguageSelector"></LanguageSelector>
     </v-list>
 
     <v-divider></v-divider>
@@ -121,7 +123,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
-import { DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
+import { ACCOUNT_TYPE, DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
 import { addressSlicer, broadcastChannelOptions, getEtherScanAddressLink, getUserEmail } from '../../../utils/utils'
 import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
@@ -140,23 +142,37 @@ export default {
       type: [Array, undefined],
       default: undefined,
     },
+    showNav: {
+      type: Boolean,
+      default: true,
+    },
+    showLanguageSelector: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
       accountImportDialog: false,
       DISCORD,
+      ACCOUNT_TYPE,
       camera: 'off',
       hasStreamApiSupport: true,
     }
   },
   computed: {
-    ...mapState(['userInfo', 'selectedAddress', 'selectedCurrency', 'currencyData', 'networkType']),
+    ...mapState({
+      userInfo: 'userInfo',
+      selectedAddress: 'selectedAddress',
+      selectedCurrency: 'selectedCurrency',
+      currencyData: 'currencyData',
+      networkType: 'networkType',
+      wallet: 'wallet',
+      loginConfig: (state) => state.embedState.loginConfig,
+    }),
     ...mapGetters({
       wallets: 'walletBalances',
     }),
-    userEmail() {
-      return getUserEmail(this.userInfo, this.t('accountMenu.wallet'))
-    },
     userId() {
       if (this.userInfo.typeOfLogin === DISCORD) {
         return `Discord ID: ${this.userInfo.verifierId.toString()}`
@@ -216,6 +232,27 @@ export default {
         })
         selectedAddressChannel.close()
       }
+    },
+    userIcon(accountType) {
+      if (accountType === ACCOUNT_TYPE.THRESHOLD) {
+        return 'wallet'
+      }
+      if (accountType === ACCOUNT_TYPE.IMPORTED) {
+        return 'person_circle'
+      }
+      return this.userInfo.typeOfLogin.toLowerCase()
+    },
+    userEmail(account) {
+      if (account.accountType === ACCOUNT_TYPE.THRESHOLD) {
+        return this.t('tkeySettings.twoFaWallet')
+      }
+      if (account.accountType === ACCOUNT_TYPE.IMPORTED) {
+        const index = Object.keys(this.wallet)
+          .filter((x) => this.wallet[x].accountType === ACCOUNT_TYPE.IMPORTED)
+          .indexOf(account.address)
+        return `${this.t('accountMenu.importedAccount')} ${index + 1}`
+      }
+      return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
     },
   },
 }
