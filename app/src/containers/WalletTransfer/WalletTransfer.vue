@@ -804,7 +804,7 @@ export default {
               .dp(0, BigNumber.ROUND_DOWN)
               .toString(16)}`
             torus.web3.eth
-              .estimateGas({ to: toAddress, value })
+              .estimateGas({ to: toAddress, value, from: this.selectedAddress })
               .then((response) => {
                 let resolved = new BigNumber(response || '0')
                 if (!resolved.eq(new BigNumber('21000'))) {

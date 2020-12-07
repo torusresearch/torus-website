@@ -65,6 +65,7 @@ import {
   ROPSTEN_CODE,
   ROPSTEN_DISPLAY_NAME,
   SIMPLEX,
+  SUPPORTED_NETWORK_TYPES,
   SVG,
   THEME_DARK_BLACK_NAME,
   TWITTER,
@@ -85,8 +86,6 @@ const networkToNameMap = {
   [KOVAN_CODE]: KOVAN_DISPLAY_NAME,
   [GOERLI_CODE]: GOERLI_DISPLAY_NAME,
 }
-
-const ETHERSCAN_SUPPORTED_NETWORKS = new Set([MAINNET, RINKEBY, ROPSTEN, GOERLI, KOVAN])
 
 export const getNetworkDisplayName = (key) => networkToNameMap[key]
 
@@ -308,13 +307,13 @@ export async function isSmartContractAddress(address, web3) {
 }
 
 export function getEtherScanHashLink(txHash, network) {
-  if (!ETHERSCAN_SUPPORTED_NETWORKS.has(network)) return ''
-  return network === MAINNET ? `https://etherscan.io/tx/${txHash}` : `https://${network}.etherscan.io/tx/${txHash}`
+  if (!SUPPORTED_NETWORK_TYPES[network]) return ''
+  return `${SUPPORTED_NETWORK_TYPES[network].blockExplorer}/tx/${txHash}`
 }
 
 export function getEtherScanAddressLink(address, network) {
-  if (!ETHERSCAN_SUPPORTED_NETWORKS.has(network)) return ''
-  return network === MAINNET ? `https://etherscan.io/address/${address}` : `https://${network}.etherscan.io/address/${address}`
+  if (!SUPPORTED_NETWORK_TYPES[network]) return ''
+  return `${SUPPORTED_NETWORK_TYPES[network].blockExplorer}/address/${address}`
 }
 
 export const statusObject = {
