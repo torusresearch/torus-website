@@ -263,8 +263,9 @@
               </v-flex>
               <TransactionSpeedSelect
                 :reset-speed="resetSpeed"
-                :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : 'ETH'"
+                :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : networkType.ticker"
                 :contract-type="contractType"
+                :network-ticker="networkType.ticker"
                 :gas="gas"
                 :display-amount="displayAmount"
                 :selected-currency="selectedCurrency"

@@ -65,6 +65,7 @@
           :currency-multiplier="currencyMultiplier"
           :currency-multiplier-eth="currencyMultiplierEth"
           :contract-type="contractType"
+          :network-ticker="networkTicker"
           :nonce="nonce"
           @onSave="onSaveAdvanceOptions"
         />
@@ -86,6 +87,7 @@
           :currency-multiplier="currencyMultiplier"
           :currency-multiplier-eth="currencyMultiplierEth"
           :contract-type="contractType"
+          :network-ticker="networkTicker"
           :nonce="nonce"
           @onSave="onSaveAdvanceOptions"
         />
@@ -195,6 +197,10 @@ export default {
       type: Number,
       default: 0,
     },
+    networkTicker: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -293,7 +299,7 @@ export default {
       return gas.times(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
     },
     getEthAmountDisplay(gas, gasPrice) {
-      return `${significantDigits(this.getEthAmount(gas, gasPrice).toString())} ETH`
+      return `${significantDigits(this.getEthAmount(gas, gasPrice).toString())} ${this.networkTicker}`
     },
     updateCosts(isReset, details) {
       const { advancedGas, nonce } = details || {}
