@@ -573,7 +573,7 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
   let totalAmountString = ''
   if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
   else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol, true)
-  else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH', true)
+  else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.type_name, true)
   const currencyAmountString =
     x.type === CONTRACT_TYPE_ERC721 || x.isEtherscan ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
   const finalObject = {

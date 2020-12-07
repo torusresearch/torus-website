@@ -88,9 +88,9 @@ export default {
             }
           } else {
             tokenRate = 1
-            symbol = 'ETH'
+            symbol = state.networkType.ticker
             type = 'eth'
-            typeName = 'eth'
+            typeName = state.networkType.ticker
             typeImageLink = 'n/a'
             totalAmount = fromWei(toBN(txParams.value || 0))
             finalTo = toChecksumAddress(txParams.to)
@@ -114,9 +114,9 @@ export default {
           finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
         } else {
           tokenRate = 1
-          symbol = 'ETH'
+          symbol = state.networkType.ticker
           type = 'eth'
-          typeName = 'eth'
+          typeName = state.networkType.ticker
           typeImageLink = 'n/a'
           totalAmount = fromWei(toBN(txParams.value || 0))
           finalTo = toChecksumAddress(txParams.to)
