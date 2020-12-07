@@ -90,7 +90,7 @@ export default {
   data() {
     return {
       selectedNetwork: {},
-      rpc: { chainId: '', networkName: '', host: '' },
+      rpc: { chainId: '', networkName: '', host: '', blockExplorer: '', ticker: '' },
       formValid: true,
       rules: {
         required: (value) => !!value || 'Required',
@@ -106,6 +106,8 @@ export default {
           networkName: RPC_DISPLAY_NAME,
           host: RPC,
           chainId: '',
+          blockExplorer: '',
+          ticker: '',
         },
       ]
     },

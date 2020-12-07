@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 
+import config from '../config'
 import { MAINNET, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { significantDigits } from '../utils/utils'
 
@@ -45,7 +46,8 @@ const unApprovedTransactions = (state) => {
 }
 
 const currencyMultiplier = (state) => {
-  const currencyMultiplierNumber = state.selectedCurrency !== 'ETH' ? state.currencyData[state.selectedCurrency.toLowerCase()] || 1 : 1
+  const currencyMultiplierNumber =
+    state.selectedCurrency !== state.networkType.ticker ? state.currencyData[state.selectedCurrency.toLowerCase()] || 1 : 1
   return new BigNumber(currencyMultiplierNumber)
 }
 
@@ -90,6 +92,12 @@ const loginButtonsArray = (state) => {
   return loginButtons
 }
 
+const supportedCurrencies = (state) => {
+  const returnArr = ['ETH', ...config.supportedCurrencies]
+  if (state.networkType.ticker !== 'ETH') returnArr.unshift(state.networkType.ticker)
+  return returnArr
+}
+
 function calculateBalances(state, y) {
   const { weiBalance, tokenData: tokenDataState, tokenRates: tokenRatesState, selectedCurrency, networkType } = state || {}
   let tokenData = tokenDataState
@@ -98,15 +106,15 @@ function calculateBalances(state, y) {
     tokenData = {}
     tokenRates = {}
   }
-  const formatter = selectedCurrency !== 'ETH' ? 2 : 3
+  const formatter = selectedCurrency !== networkType.ticker ? 2 : 3
   let full = [
     {
       balance: weiBalance[y] || '0',
       decimals: 18,
       erc20: false,
-      logo: 'eth.svg',
-      name: 'Ethereum',
-      symbol: 'ETH',
+      logo: networkType.logo,
+      name: networkType.tickerName,
+      symbol: networkType.ticker,
       tokenAddress: '0x',
     },
   ]
@@ -146,4 +154,5 @@ export default {
   loginButtonsArray,
   getLogo,
   getIcon,
+  supportedCurrencies,
 }

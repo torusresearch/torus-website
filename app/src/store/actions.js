@@ -277,18 +277,25 @@ export default {
     context.commit('setNetworkId', payload.networkId)
     torus.updateStaticData({ networkId: payload.networkId })
   },
-  setProviderType({ commit }, payload) {
+  async setProviderType({ commit, dispatch, state }, payload) {
     let networkType = payload.network
     let isSupportedNetwork = false
     if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
       networkType = SUPPORTED_NETWORK_TYPES[networkType.host]
       isSupportedNetwork = true
     }
+    const currentTicker = networkType.ticker || 'ETH'
     commit('setNetworkType', networkType)
     if ((payload.type && payload.type === RPC) || !isSupportedNetwork) {
-      return torusController.setCustomRpc(networkType.host, networkType.chainId || 1, networkType.ticker || 'ETH', networkType.networkName || '')
+      return torusController.setCustomRpc(networkType.host, networkType.chainId || 1, currentTicker, networkType.networkName || '', {
+        blockExplorerUrl: networkType.blockExplorer,
+      })
     }
-    return networkController.setProviderType(networkType.host)
+    await networkController.setProviderType(networkType.host)
+    if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency)
+      await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home' })
+    else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'home' })
+    return undefined
   },
   async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId }) {
     try {

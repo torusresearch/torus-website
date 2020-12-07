@@ -21,15 +21,27 @@ import ComposedStore from 'obs-store/lib/composed'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 
 import {
+  BSC_MAINNET,
+  BSC_MAINNET_CODE,
+  BSC_MAINNET_DISPLAY_NAME,
+  BSC_MAINNET_URL,
+  BSC_TESTNET,
+  BSC_TESTNET_CODE,
+  BSC_TESTNET_DISPLAY_NAME,
+  BSC_TESTNET_URL,
+  BSC_TICKER,
   GOERLI,
   KOVAN,
   LOCALHOST,
   MAINNET,
   MATIC,
   MATIC_CODE,
+  MATIC_DISPLAY_NAME,
+  MATIC_TICKER,
   MATIC_URL,
   MUMBAI,
   MUMBAI_CODE,
+  MUMBAI_DISPLAY_NAME,
   MUMBAI_URL,
   RINKEBY,
   ROPSTEN,
@@ -43,6 +55,7 @@ const defaultProviderConfig = { type: 'mainnet' }
 const defaultNetworkConfig = { ticker: 'ETH' }
 const networks = { networkList: {} }
 const INFURA_PROVIDER_TYPES = new Set([ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI])
+const TORUS_PROVIDER_TYPES = new Set([MATIC, MUMBAI, BSC_MAINNET, BSC_TESTNET])
 
 export default class NetworkController extends EventEmitter {
   /**
@@ -194,10 +207,7 @@ export default class NetworkController extends EventEmitter {
    */
   async setProviderType(type, rpcTarget = '', ticker = 'ETH', nickname = '') {
     assert.notStrictEqual(type, 'rpc', 'NetworkController - cannot call "setProviderType" with type \'rpc\'. use "setRpcTarget"')
-    assert(
-      INFURA_PROVIDER_TYPES.has(type) || type === LOCALHOST || type === MATIC || type === MUMBAI,
-      `NetworkController - Unknown rpc type "${type}"`
-    )
+    assert(INFURA_PROVIDER_TYPES.has(type) || type === LOCALHOST || TORUS_PROVIDER_TYPES.has(type), `NetworkController - Unknown rpc type "${type}"`)
     const providerConfig = { type, rpcTarget, ticker, nickname }
     this.providerConfig = providerConfig
   }
@@ -240,9 +250,13 @@ export default class NetworkController extends EventEmitter {
       this._configureLocalhostProvider()
       // url-based rpc endpoints
     } else if (type === MATIC) {
-      this._configureStandardProvider({ rpcUrl: MATIC_URL, chainId: MATIC_CODE, ticker: MATIC, nickname: MATIC })
+      this._configureStandardProvider({ rpcUrl: MATIC_URL, chainId: MATIC_CODE, ticker: MATIC_TICKER, nickname: MATIC_DISPLAY_NAME })
     } else if (type === MUMBAI) {
-      this._configureStandardProvider({ rpcUrl: MUMBAI_URL, chainId: MUMBAI_CODE, ticker: MUMBAI, nickname: MUMBAI })
+      this._configureStandardProvider({ rpcUrl: MUMBAI_URL, chainId: MUMBAI_CODE, ticker: MATIC_TICKER, nickname: MUMBAI_DISPLAY_NAME })
+    } else if (type === BSC_MAINNET) {
+      this._configureStandardProvider({ rpcUrl: BSC_MAINNET_URL, chainId: BSC_MAINNET_CODE, ticker: BSC_TICKER, nickname: BSC_MAINNET_DISPLAY_NAME })
+    } else if (type === BSC_TESTNET) {
+      this._configureStandardProvider({ rpcUrl: BSC_TESTNET_URL, chainId: BSC_TESTNET_CODE, ticker: BSC_TICKER, nickname: BSC_TESTNET_DISPLAY_NAME })
     } else if (type === 'rpc') {
       this._configureStandardProvider({ rpcUrl: rpcTarget, chainId, ticker, nickname })
     } else {

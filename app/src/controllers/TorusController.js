@@ -824,11 +824,11 @@ export default class TorusController extends EventEmitter {
   async setCurrentCurrency(payload, callback) {
     const { ticker } = this.networkController.getNetworkConfig()
     try {
-      if (payload.selectedCurrency !== 'ETH') {
-        this.currencyController.setNativeCurrency(ticker)
-        this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
-        await this.currencyController.updateConversionRate()
-      }
+      // if (payload.selectedCurrency !== 'ETH') {
+      this.currencyController.setNativeCurrency(ticker)
+      this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
+      await this.currencyController.updateConversionRate()
+      // }
       const data = {
         nativeCurrency: ticker || 'ETH',
         conversionRate: this.currencyController.getConversionRate(),

@@ -229,7 +229,6 @@ import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 import Onboarding from '../../../components/WalletHome/Onboarding'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
-import config from '../../../config'
 import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 
 export default {
@@ -237,7 +236,6 @@ export default {
   components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, Onboarding, ComponentLoader, NetworkDisplay },
   data() {
     return {
-      supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       selected: [],
       search: '',
       lastUpdated: '',
@@ -246,7 +244,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tokenBalances']),
+    ...mapGetters(['tokenBalances', 'supportedCurrencies']),
     ...mapState({
       whiteLabel: 'whiteLabel',
       weiBalanceLoaded: 'weiBalanceLoaded',
