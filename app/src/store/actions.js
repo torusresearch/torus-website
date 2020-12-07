@@ -286,7 +286,7 @@ export default {
     }
     commit('setNetworkType', networkType)
     if ((payload.type && payload.type === RPC) || !isSupportedNetwork) {
-      return torusController.setCustomRpc(networkType.host, networkType.chainId || 1, 'ETH', networkType.networkName || '')
+      return torusController.setCustomRpc(networkType.host, networkType.chainId || 1, networkType.ticker || 'ETH', networkType.networkName || '')
     }
     return networkController.setProviderType(networkType.host)
   },

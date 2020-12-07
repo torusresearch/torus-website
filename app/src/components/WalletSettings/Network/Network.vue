@@ -38,6 +38,14 @@
           <v-text-field v-model="rpc.chainId" :placeholder="t('walletSettings.enterChainId')" outlined></v-text-field>
         </v-flex>
 
+        <v-flex xs12>
+          <v-text-field v-model="rpc.ticker" :placeholder="t('walletSettings.enterSymbol')" outlined></v-text-field>
+        </v-flex>
+
+        <v-flex xs12>
+          <v-text-field v-model="rpc.blockExplorer" :placeholder="t('walletSettings.enterBlockExplorer')" outlined></v-text-field>
+        </v-flex>
+
         <v-flex xs12 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
           <v-layout>
             <v-spacer></v-spacer>
