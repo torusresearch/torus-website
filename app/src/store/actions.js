@@ -294,7 +294,7 @@ export default {
     await networkController.setProviderType(networkType.host)
     if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency)
       await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home' })
-    else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'home' })
+    else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
     return undefined
   },
   async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId }) {
