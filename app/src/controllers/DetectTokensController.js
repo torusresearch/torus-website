@@ -6,6 +6,7 @@ import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 import Web3 from 'web3'
 import { toChecksumAddress, toHex } from 'web3-utils'
 
+import TokenHandler from '../handlers/Token/TokenHandler'
 import { MAINNET } from '../utils/enums'
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
@@ -39,13 +40,14 @@ class DetectTokensController {
    *
    * @param {Object} [config] - Options to configure controller
    */
-  constructor({ interval = DEFAULT_INTERVAL, network, provider } = {}) {
+  constructor({ interval = DEFAULT_INTERVAL, network, provider, preferencesStore } = {}) {
     this.interval = interval
     this.network = network
     this.detectedTokensStore = new ObservableStore({})
     this._provider = provider
     this.web3 = new Web3(this._provider)
     this.selectedAddress = ''
+    this.preferencesStore = preferencesStore
   }
 
   /**
@@ -124,7 +126,7 @@ class DetectTokensController {
   async refreshTokenBalances() {
     const userAddress = this.selectedAddress
     if (userAddress === '') return
-    if (this.network.store.getState().provider.type !== MAINNET) {
+    if (this.network.getNetworkNameFromNetworkCode() !== MAINNET) {
       this.detectedTokensStore.updateState({ [userAddress]: [] })
       return
     }
@@ -151,6 +153,40 @@ class DetectTokensController {
     }
   }
 
+  async getCustomTokenBalances(customTokens) {
+    const userAddress = this.selectedAddress
+    if (userAddress === '') return
+    const localNetwork = this.network.getNetworkNameFromNetworkCode()
+    const tokenAddresses = customTokens.reduce((acc, x) => {
+      if (x.network === localNetwork) acc.push(x.token_address)
+      return acc
+    }, [])
+    const nonZeroTokens = await Promise.all(
+      tokenAddresses.map(async (x) => {
+        const tokenInstance = new TokenHandler({
+          address: x.token_address,
+          decimals: x.decimals,
+          name: x.token_name,
+          symbol: x.token_symbol,
+          web3: this.web3,
+        })
+        const balance = await tokenInstance.getUserBalance(userAddress)
+        return {
+          decimals: tokenInstance.decimals,
+          erc20: true,
+          logo: 'eth.svg',
+          name: tokenInstance.name,
+          symbol: tokenInstance.symbol,
+          tokenAddress: toChecksumAddress(tokenInstance.address),
+          balance,
+          isCustomToken: true,
+        }
+      })
+    )
+    const currentTokens = this.detectedTokensStore.getState()[userAddress] || []
+    this.detectedTokensStore.updateState({ [userAddress]: mergeTokenArrays(currentTokens, nonZeroTokens) })
+  }
+
   /**
    * Restart token detection polling period and call detectNewTokens
    * in case of address change or user session initialization.
@@ -161,6 +197,11 @@ class DetectTokensController {
       return
     }
     this.detectNewTokens()
+    if (this._preferencesStore) {
+      const userState = this._preferencesStore.getState()[this.selectedAddress]
+      const { customTokens } = userState || {}
+      this.getCustomTokenBalances(customTokens)
+    }
     this.interval = DEFAULT_INTERVAL
   }
 
@@ -175,6 +216,11 @@ class DetectTokensController {
     this._handle = setInterval(() => {
       this.detectNewTokens()
       this.refreshTokenBalances()
+      if (this._preferencesStore) {
+        const userState = this._preferencesStore.getState()[this.selectedAddress]
+        const { customTokens } = userState || {}
+        this.getCustomTokenBalances(customTokens)
+      }
     }, interval)
   }
 
@@ -185,6 +231,21 @@ class DetectTokensController {
   startTokenDetection(selectedAddress) {
     this.selectedAddress = selectedAddress
     this.restartTokenDetection()
+  }
+
+  set preferencesStore(preferencesStore) {
+    if (this._preferencesStore) this._preferencesStore.unsubscribe()
+    if (!preferencesStore) {
+      return
+    }
+    this._preferencesStore = preferencesStore
+    // set default maybe
+    // preferencesStore.subscribe((state) => {
+    //   const { selectedAddress } = state
+    //   if (!selectedAddress) return
+    //   const { customTokens } = state[selectedAddress]
+    //   this.getCustomTokenBalances(customTokens)
+    // })
   }
 }
 

@@ -565,7 +565,7 @@ class PreferencesController extends EventEmitter {
 
   async addCustomToken(payload) {
     try {
-      // payload is { token_address, network, token_symbol, decimals }
+      // payload is { token_address, network, token_symbol, decimals, token_name }
       const response = await post(`${config.api}/customtoken`, payload, this.headers(), { useAPIKey: true })
       this.updateStore({ customTokens: [...this.state().customTokens, response.data] })
       this.handleSuccess('navBar.snackSuccessCustomTokenAdd')

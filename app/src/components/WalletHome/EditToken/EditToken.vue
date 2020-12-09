@@ -120,6 +120,7 @@ import { isAddress } from 'web3-utils'
 
 import config from '../../../config'
 import TokenHandler from '../../../handlers/Token/TokenHandler'
+import torus from '../../../torus'
 
 export default {
   props: {
@@ -163,7 +164,7 @@ export default {
       this.customAddress = value
       if (isAddress(value)) {
         try {
-          this.currentToken = new TokenHandler(value)
+          this.currentToken = new TokenHandler({ address: value, web3: torus.web3 })
           const [symbol, decimals] = await Promise.all([this.currentToken.getSymbol(), this.currentToken.getDecimals()])
           this.customSymbol = symbol
           this.customDecimals = decimals

@@ -2,14 +2,13 @@ import BigNumber from 'bignumber.js'
 import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
 
-import torus from '../../torus'
-
 class TokenHandler {
-  constructor(address) {
+  constructor({ address, symbol, decimals, name, web3 }) {
     this.address = address
-    this.contract = new torus.web3.eth.Contract(tokenAbi, address)
-    this.symbol = undefined
-    this.decimals = undefined
+    this.contract = new web3.eth.Contract(tokenAbi, address)
+    this.symbol = symbol
+    this.decimals = decimals
+    this.name = name
   }
 
   async getSymbol() {
@@ -31,7 +30,7 @@ class TokenHandler {
     if (!this.decimals) await this.getDecimals()
     const balance = await this.contract.methods.balanceOf(userAddress).call()
     log.info(balance)
-    return new BigNumber(balance).div(new BigNumber(10).pow(new BigNumber(this.decimals))).toString()
+    return `0x${new BigNumber(balance).times(new BigNumber(10).pow(new BigNumber(this.decimals))).toString(16)}`
   }
 }
 
