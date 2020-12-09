@@ -100,12 +100,8 @@ const supportedCurrencies = (state) => {
 
 function calculateBalances(state, y) {
   const { weiBalance, tokenData: tokenDataState, tokenRates: tokenRatesState, selectedCurrency, networkType } = state || {}
-  let tokenData = tokenDataState
-  let tokenRates = tokenRatesState
-  if (networkType.host !== MAINNET) {
-    tokenData = {}
-    tokenRates = {}
-  }
+  const tokenData = tokenDataState
+  const tokenRates = tokenRatesState
   const formatter = selectedCurrency !== networkType.ticker ? 2 : 3
   let full = [
     {
@@ -119,7 +115,7 @@ function calculateBalances(state, y) {
     },
   ]
   if (tokenData && tokenData[y] && Object.keys(tokenData[y]).length > 0) {
-    full = [...full, ...tokenData[y]]
+    full = [...full, ...tokenData[y].filter((x) => x.network === networkType.host)]
   }
   let totalPortfolioValue = new BigNumber(0)
   const finalBalancesArray = full.map((x) => {

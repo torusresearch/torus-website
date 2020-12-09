@@ -1,7 +1,7 @@
 <template>
   <v-layout class="home-cards token-balance-tab-container mx-n4" wrap align-center :justify-center="tokenBalances.length < 4">
     <v-flex v-for="(balance, index) in tokenBalances" :key="index" class="xs12 sm6 md4 lg3 mb-4 px-4">
-      <v-badge :value="hideTokenMode && tokenBalances.isCustomToken" bordered overlap>
+      <v-badge :value="hideTokenMode && !!balance.customTokenId" bordered overlap>
         <template v-slot:badge>
           <EditToken :is-hide-mode="true" :delete-token="balance" />
         </template>
@@ -107,10 +107,6 @@ export default {
     formatSmallNumbers,
     topup() {
       this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
-    },
-    hideToken() {
-      // eslint-disable-next-line no-console
-      console.log('🚀 ~ hideToken ~ hideToken')
     },
   },
 }

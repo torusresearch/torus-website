@@ -159,8 +159,12 @@ export default {
   mounted() {
     if (this.isHideMode) {
       this.tab = 1
-      // eslint-disable-next-line no-console
-      console.log('🚀 ~ mounted ~ this.deleteToken', this.deleteToken)
+      // // eslint-disable-next-line no-console
+      // console.log('🚀 ~ mounted ~ this.deleteToken', this.deleteToken)
+      this.customSymbol = this.deleteToken.symbol
+      this.customDecimals = this.deleteToken.decimals
+      this.customName = this.deleteToken.name
+      this.customBalance = this.deleteToken.formattedBalance
     }
   },
   methods: {
@@ -210,7 +214,8 @@ export default {
       this.addTokenDialog = false
     },
     callDeleteToken() {
-      this.deleteCustomToken()
+      this.deleteCustomToken(this.deleteToken.customTokenId)
+      this.closeForm()
     },
   },
 }

@@ -578,7 +578,7 @@ class PreferencesController extends EventEmitter {
     try {
       // payload is id
       const response = await remove(`${config.api}/customtoken/${payload}`, {}, this.headers(), { useAPIKey: true })
-      const customTokens = this.state().customTokens.filter((x) => x.id !== response.data.id)
+      const customTokens = this.state().customTokens.filter((x) => x.id.toString() !== response.data.id.toString())
       this.updateStore({ customTokens })
       this.handleSuccess('navBar.snackSuccessCustomTokenDelete')
     } catch {
