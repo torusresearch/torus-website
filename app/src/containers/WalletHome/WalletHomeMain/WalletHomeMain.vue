@@ -163,7 +163,7 @@
         </v-tabs>
       </v-flex>
       <v-flex v-if="$vuetify.breakpoint.mdAndUp" xs12 md3 class="refresh text-right">
-        <div class="mb-1">
+        <div class="mb-1 d-flex align-center">
           <v-btn
             class="gmt-refresh-tokens refresh-btn"
             :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
@@ -174,6 +174,7 @@
             <v-icon left color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
             <span class="caption text_2--text">Show all Tokens</span>
           </v-btn>
+          <v-switch v-model="hideTokenMode" dense inset label="Hide Tokens"></v-switch>
         </div>
         <div class="text_3--text refresh-text" small>{{ t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
       </v-flex>
@@ -191,7 +192,7 @@
 
     <v-tabs-items v-model="activeTab" class="token-tab-content mt-8">
       <v-tab-item>
-        <TokenBalancesTable :token-balances="filteredBalancesArray" :selected="selected" @update:select="select" />
+        <TokenBalancesTable :hide-token-mode="hideTokenMode" :token-balances="filteredBalancesArray" :selected="selected" @update:select="select" />
       </v-tab-item>
       <v-tab-item>
         <CollectiblesList></CollectiblesList>
@@ -241,6 +242,7 @@ export default {
       lastUpdated: '',
       dialogOnboarding: false,
       activeTab: 0,
+      hideTokenMode: false,
     }
   },
   computed: {

@@ -10,3 +10,13 @@
     border: 0;
   }
 }
+
+.v-badge {
+  width: 100%;
+  ::v-deep .v-badge__badge {
+    padding: 0;
+  }
+  ::v-deep .v-badge__badge::after {
+    display: none;
+  }
+}

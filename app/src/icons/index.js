@@ -42,6 +42,7 @@ import LockFilledIcon from './LockFilledIcon.vue'
 import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
 import MenuIcon from './MenuIcon.vue'
+import MinusIcon from './MinusIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
 import PersonCircleIcon from './PersonCircleIcon.vue'
 import PersonIcon from './PersonIcon.vue'
@@ -359,5 +360,8 @@ export default {
   },
   link: {
     component: LinkIcon,
+  },
+  minus: {
+    component: MinusIcon,
   },
 }
