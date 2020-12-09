@@ -17,8 +17,8 @@
               </v-btn>
             </v-flex>
           </v-layout>
-          <v-form ref="addTokenForm" v-model="addTokenFormValid" lazy-validation @submit.prevent="nextTab">
-            <v-layout mx-6 py-6 wrap>
+          <v-form ref="addTokenForm" v-model="addTokenFormValid" class="fill-height" lazy-validation @submit.prevent="nextTab">
+            <v-layout mx-6 pt-6 pb-10 wrap>
               <v-flex xs12>
                 <div class="body-2 mb-2">{{ t('homeToken.contract') }}</div>
                 <v-text-field v-model="customAddress" :rules="[rules.required]" outlined></v-text-field>
@@ -31,9 +31,8 @@
                 <div class="body-2 mb-2">{{ t('homeToken.decimal') }}</div>
                 <v-text-field v-model="customDecimals" :rules="[rules.required]" type="number" outlined></v-text-field>
               </v-flex>
-            </v-layout>
-            <v-layout wrap mx-6>
-              <v-flex xs12 my-10>
+
+              <v-flex xs12 mt-15>
                 <v-layout mx-n2>
                   <v-flex xs6 px-2>
                     <v-btn block large text @click="closeForm">{{ t('homeToken.cancel') }}</v-btn>
@@ -91,8 +90,8 @@
               <div class="body-2 text_2--text">{{ t('homeToken.hideTokenDesc') }}</div>
             </v-flex>
           </v-layout>
-          <v-layout wrap mx-6 :class="isHideMode ? '' : 'pt-15'">
-            <v-flex xs12 my-10>
+          <v-layout mx-6 pt-6 pb-10 wrap :class="isHideMode ? '' : 'pt-15'">
+            <v-flex xs12>
               <v-layout mx-n2>
                 <v-flex xs6 px-2>
                   <v-btn v-if="isHideMode" block large text @click="closeForm">{{ t('homeToken.cancel') }}</v-btn>

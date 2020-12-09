@@ -162,7 +162,7 @@
           </v-tab>
         </v-tabs>
       </v-flex>
-      <v-flex v-if="$vuetify.breakpoint.mdAndUp" xs12 md3 class="refresh text-right">
+      <v-flex v-if="$vuetify.breakpoint.mdAndUp && activeTab === 0" xs12 md3 class="refresh text-right">
         <div class="mb-1">
           <v-btn
             class="gmt-refresh-tokens refresh-btn"
@@ -192,7 +192,7 @@
     <v-tabs-items v-model="activeTab" class="token-tab-content mt-8">
       <v-tab-item>
         <TokenBalancesTable :hide-token-mode="hideTokenMode" :token-balances="filteredBalancesArray" :selected="selected" @update:select="select" />
-        <div class="text-right">
+        <div v-if="$vuetify.breakpoint.mdAndUp" class="text-right">
           <v-btn
             class="gmt-edit-tokens refresh-btn"
             :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
@@ -222,6 +222,16 @@
           >
             <v-icon left color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
             <span class="caption text_2--text">{{ t('walletHome.showAllTokens') }}</span>
+          </v-btn>
+          <v-btn
+            class="gmt-edit-tokens refresh-btn ml-2"
+            :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
+            height="24"
+            :aria-label="t('homeToken.editTokens')"
+            @click="hideTokenMode = !hideTokenMode"
+          >
+            <v-icon left class="text_2--text" size="14">$vuetify.icons.pencil_edit</v-icon>
+            <span class="caption text_2--text">{{ t('homeToken.editTokens') }}</span>
           </v-btn>
         </div>
         <div class="text_3--text refresh-text" small>{{ t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
