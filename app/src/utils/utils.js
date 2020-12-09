@@ -556,10 +556,11 @@ export const fakeStream = {
 }
 
 export function formatSmallNumbers(number, currency = 'usd', noTilde = false) {
-  if (!Number.isFinite(number)) return ''
-  const finalNumber = currency.toLowerCase() === 'usd' ? Number(number).toFixed(2) : Number(number).toFixed(5)
-
-  return `${currency.toLowerCase() === 'usd' || noTilde ? '' : '~ '}${Number(finalNumber)} ${currency.toUpperCase()}`
+  const finalNumber = BigNumber.isBigNumber(number) ? number.toNumber() : number
+  if (!Number.isFinite(finalNumber)) return ''
+  const value = currency.toLowerCase() === 'usd' ? Number(finalNumber).toFixed(2) : Number(finalNumber).toFixed(5)
+  const tilde = value > 0 ? '~ ' : ''
+  return `${currency.toLowerCase() === 'usd' || noTilde ? '' : tilde}${Number(value)} ${currency.toUpperCase()}`
 }
 
 export const getUserLanguage = () => {

@@ -192,7 +192,7 @@
     <v-tabs-items v-model="activeTab" class="token-tab-content mt-8">
       <v-tab-item>
         <TokenBalancesTable :hide-token-mode="hideTokenMode" :token-balances="filteredBalancesArray" :selected="selected" @update:select="select" />
-        <div v-if="$vuetify.breakpoint.mdAndUp" class="text-right">
+        <div v-if="hasCustomToken && $vuetify.breakpoint.mdAndUp" class="text-right">
           <v-btn
             class="gmt-edit-tokens refresh-btn"
             :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
@@ -224,6 +224,7 @@
             <span class="caption text_2--text">{{ t('walletHome.showAllTokens') }}</span>
           </v-btn>
           <v-btn
+            v-if="hasCustomToken"
             class="gmt-edit-tokens refresh-btn ml-2"
             :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
             height="24"
@@ -310,6 +311,9 @@ export default {
       })
 
       return events
+    },
+    hasCustomToken() {
+      return this.filteredBalancesArray.filter((x) => !!x.customTokenId).length > 0
     },
   },
   mounted() {
