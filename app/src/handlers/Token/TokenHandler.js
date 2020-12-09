@@ -30,7 +30,7 @@ class TokenHandler {
     if (!this.decimals) await this.getDecimals()
     const balance = await this.contract.methods.balanceOf(userAddress).call()
     log.info(balance)
-    return `0x${new BigNumber(balance).times(new BigNumber(10).pow(new BigNumber(this.decimals))).toString(16)}`
+    return new BigNumber(balance).toString(16)
   }
 }
 

@@ -28,6 +28,10 @@
                 <v-text-field v-model="customSymbol" :rules="[rules.required]" outlined></v-text-field>
               </v-flex>
               <v-flex xs12>
+                <div class="body-2 mb-2">{{ t('homeToken.name') }}</div>
+                <v-text-field v-model="customName" :rules="[rules.required]" outlined></v-text-field>
+              </v-flex>
+              <v-flex xs12>
                 <div class="body-2 mb-2">{{ t('homeToken.decimal') }}</div>
                 <v-text-field v-model="customDecimals" :rules="[rules.required]" type="number" outlined></v-text-field>
               </v-flex>
@@ -71,18 +75,12 @@
             </v-flex>
             <v-flex xs8>
               <div class="d-flex align-center">
-                <img
-                  :src="`${logosUrl}/${token.logo}`"
-                  class="inline-small d-inline-flex"
-                  onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
-                  :alt="token.logo"
-                  height="36"
-                />
-                <div class="ml-2 body-1">{{ token.name }}</div>
+                <img :src="`${logosUrl}/eth.svg`" class="inline-small d-inline-flex" height="36" />
+                <div class="ml-2 body-1">{{ customName }}</div>
               </div>
             </v-flex>
             <v-flex xs4 text-right>
-              <div class="body-2">{{ token.formattedBalance }}</div>
+              <div class="body-2">{{ customBalance }}</div>
             </v-flex>
           </v-layout>
           <v-layout v-if="isHideMode" mb-15 mx-6 wrap>
@@ -98,7 +96,7 @@
                   <v-btn v-else block large text @click="tab = 0">{{ t('homeToken.back') }}</v-btn>
                 </v-flex>
                 <v-flex xs6 px-2>
-                  <v-btn v-if="isHideMode" block large color="torusBrand1" class="white--text" type="button" @click="deleteToken">
+                  <v-btn v-if="isHideMode" block large color="torusBrand1" class="white--text" type="button" @click="callDeleteToken">
                     {{ t('homeToken.hideToken') }}
                   </v-btn>
                   <v-btn v-else block large color="torusBrand1" class="white--text" type="button" @click="addToken">
@@ -115,12 +113,15 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
 import log from 'loglevel'
+import { mapActions, mapState } from 'vuex'
 import { isAddress } from 'web3-utils'
 
 import config from '../../../config'
 import TokenHandler from '../../../handlers/Token/TokenHandler'
 import torus from '../../../torus'
+import { significantDigits } from '../../../utils/utils'
 
 export default {
   props: {
@@ -143,42 +144,60 @@ export default {
       customAddress: '',
       customSymbol: '',
       customDecimals: 0,
+      customName: '',
+      customBalance: '',
       currentToken: undefined,
-      token: {
-        logo: '',
-      },
       rules: {
         required: (value) => !!value || this.t('walletSettings.required'),
       },
       logosUrl: config.logosUrl,
     }
   },
+  computed: {
+    ...mapState(['selectedAddress', 'networkType', 'selectedCurrency', 'tokenRatesState']),
+  },
   mounted() {
     if (this.isHideMode) {
       this.tab = 1
-      this.token = this.deleteToken
+      // eslint-disable-next-line no-console
+      console.log('🚀 ~ mounted ~ this.deleteToken', this.deleteToken)
     }
   },
   methods: {
+    ...mapActions(['addCustomToken', 'deleteCustomToken']),
     async onCustomAddressChange(value) {
       this.customAddress = value
       if (isAddress(value)) {
         try {
           this.currentToken = new TokenHandler({ address: value, web3: torus.web3 })
-          const [symbol, decimals] = await Promise.all([this.currentToken.getSymbol(), this.currentToken.getDecimals()])
+          const [symbol, name, balance, decimals] = await Promise.all([
+            this.currentToken.getSymbol(),
+            this.currentToken.getName(),
+            this.currentToken.getUserBalance(this.selectedAddress),
+            this.currentToken.getDecimals(),
+          ])
+          const computedBalance = new BigNumber(`0x${balance}`).dividedBy(new BigNumber(10).pow(new BigNumber(decimals))) || new BigNumber(0)
+
           this.customSymbol = symbol
           this.customDecimals = decimals
+          this.customName = name
+          this.customBalance = `${significantDigits(computedBalance, false, 3)} ${this.customSymbol}`
         } catch (error) {
           log.error(error)
         }
       }
     },
     addToken() {
-      // eslint-disable-next-line no-console
-      console.log('🚀 ~ addToken ~ trigger add token action')
+      this.addCustomToken({
+        token_address: this.customAddress,
+        network: this.networkType.host,
+        token_symbol: this.customSymbol,
+        token_name: this.customName,
+        decimals: this.customDecimals,
+      })
       this.closeForm()
     },
-    nextTab() {
+    async nextTab() {
       if (this.$refs.addTokenForm.validate()) {
         this.tab = 1
       }
@@ -189,6 +208,9 @@ export default {
         this.tab = 0
       }
       this.addTokenDialog = false
+    },
+    callDeleteToken() {
+      this.deleteCustomToken()
     },
   },
 }
