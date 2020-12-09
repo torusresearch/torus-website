@@ -21,7 +21,7 @@
             <v-layout mx-6 pt-6 pb-10 wrap>
               <v-flex xs12>
                 <div class="body-2 mb-2">{{ t('homeToken.contract') }}</div>
-                <v-text-field v-model="customAddress" :rules="[rules.required]" outlined></v-text-field>
+                <v-text-field :value="customAddress" :rules="[rules.required]" outlined @change="onCustomAddressChange"></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <div class="body-2 mb-2">{{ t('homeToken.symbol') }}</div>
@@ -115,7 +115,11 @@
 </template>
 
 <script>
+import log from 'loglevel'
+import { isAddress } from 'web3-utils'
+
 import config from '../../../config'
+import TokenHandler from '../../../handlers/Token/TokenHandler'
 
 export default {
   props: {
@@ -138,6 +142,7 @@ export default {
       customAddress: '',
       customSymbol: '',
       customDecimals: 0,
+      currentToken: undefined,
       token: {
         logo: '',
       },
@@ -154,6 +159,19 @@ export default {
     }
   },
   methods: {
+    async onCustomAddressChange(value) {
+      this.customAddress = value
+      if (isAddress(value)) {
+        try {
+          this.currentToken = new TokenHandler(value)
+          const [symbol, decimals] = await Promise.all([this.currentToken.getSymbol(), this.currentToken.getDecimals()])
+          this.customSymbol = symbol
+          this.customDecimals = decimals
+        } catch (error) {
+          log.error(error)
+        }
+      }
+    },
     addToken() {
       // eslint-disable-next-line no-console
       console.log('🚀 ~ addToken ~ trigger add token action')
