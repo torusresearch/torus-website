@@ -1,6 +1,6 @@
 /* eslint-disable */
 import assert from 'assert'
-import { recoverPersonalSignature, recoverTypedSignatureLegacy, recoverTypedSignature_v4, recoverTypedSignature } from 'eth-sig-util'
+import { recoverPersonalSignature, recoverTypedSignatureLegacy, recoverTypedSignature_v4, recoverTypedSignature, encrypt } from 'eth-sig-util'
 import { Transaction as EthereumTx } from 'ethereumjs-tx'
 import { bufferToHex, bufferToInt, ecrecover, pubToAddress, rlphash, toBuffer, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
@@ -12,6 +12,7 @@ const TYPE_STR = 'Torus Keyring'
 // Sample account:
 const testAccount = {
   key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
+  encryptionKey: 'Qc/2mEvflhT8Rs7RRrlyOiSBLsgkK+XveqmnVuZ5OCc=',
   address: '0xa12164fed66719297d2cf407bb314d07feb12c02',
 }
 
@@ -365,5 +366,20 @@ describe('torus-keyring', () => {
     const ethTransaction = new EthereumTx(transaction, { chain: 'ropsten' })
     const signature = await keyringController.signTransaction(ethTransaction, testAccount.address)
     assert(signature !== '')
+  })
+
+  it('should get correct encryption key', async () => {
+    const keyringController = new TorusKeyring([testAccount.key])
+    const encryptionKey = keyringController.signEncryptionPublicKey(testAccount.address)
+    assert.strictEqual(encryptionKey, testAccount.encryptionKey)
+  })
+
+  it.only('should decrypt correctly', async () => {
+    const keyringController = new TorusKeyring([testAccount.key])
+    const msg = 'Encryption works!!!'
+    const encryptionKey = keyringController.signEncryptionPublicKey(testAccount.address)
+    const messageEncrypted = encrypt(encryptionKey, { data: msg }, 'x25519-xsalsa20-poly1305')
+    const decrypted = keyringController.decryptMessage({ data: messageEncrypted }, testAccount.address)
+    assert.strictEqual(msg, decrypted)
   })
 })

@@ -204,6 +204,12 @@ export default {
   deleteConfirmModal(state, payload) {
     state.confirmModals = state.confirmModals.filter((x) => x.id !== payload)
   },
+  setUnapprovedEncryptionPublicKeyMsgs(state, unapprovedEncryptionPublicKeyMsgs) {
+    state.unapprovedEncryptionPublicKeyMsgs = unapprovedEncryptionPublicKeyMsgs
+  },
+  setUnapprovedDecryptMsgs(state, unapprovedDecryptMsgs) {
+    state.unapprovedDecryptMsgs = unapprovedDecryptMsgs
+  },
   setPostboxKey(state, payload) {
     state.postboxKey = payload
   },

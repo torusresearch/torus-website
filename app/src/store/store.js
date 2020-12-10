@@ -8,7 +8,15 @@ import { fromWei, hexToUtf8 } from 'web3-utils'
 import config from '../config'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import torus from '../torus'
-import { FEATURES_CONFIRM_WINDOW, TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
+import {
+  FEATURES_CONFIRM_WINDOW,
+  TX_ETH_DECRYPT,
+  TX_GET_ENCRYPTION_KEY,
+  TX_MESSAGE,
+  TX_PERSONAL_MESSAGE,
+  TX_TRANSACTION,
+  TX_TYPED_MESSAGE,
+} from '../utils/enums'
 import { getIFrameOriginObject, isPwa, storageAvailable } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
@@ -209,6 +217,16 @@ function handleConfirm(ev) {
     log.info('TYPED MSG PARAMS:', msgParams)
     msgParams.metamaskId = Number.parseInt(ev.data.id, 10)
     torusController.signTypedMessage(msgParams)
+  } else if (ev.data.txType === TX_GET_ENCRYPTION_KEY) {
+    const msgParams = state.unapprovedEncryptionPublicKeyMsgs[ev.data.id]
+    log.info('TYPED MSG PARAMS:', msgParams)
+    msgParams.metamaskId = Number.parseInt(ev.data.id, 10)
+    torusController.signEncryptionPublicKey(msgParams)
+  } else if (ev.data.txType === TX_ETH_DECRYPT) {
+    const { msgParams } = state.unapprovedDecryptMsgs[ev.data.id]
+    log.info('TYPED MSG PARAMS:', msgParams)
+    msgParams.metamaskId = Number.parseInt(ev.data.id, 10)
+    torusController.signEthDecrypt(msgParams)
   } else if (ev.data.txType === TX_TRANSACTION) {
     const { unApprovedTransactions } = VuexStore.getters
     let txMeta = unApprovedTransactions.find((x) => x.id === ev.data.id)
@@ -248,6 +266,10 @@ function handleDeny(id, txType) {
     torusController.cancelTypedMessage(Number.parseInt(id, 10))
   } else if (txType === TX_TRANSACTION) {
     torusController.cancelTransaction(Number.parseInt(id, 10))
+  } else if (txType === TX_GET_ENCRYPTION_KEY) {
+    torusController.cancelEncryptionPublicKey(Number.parseInt(id, 10))
+  } else if (txType === TX_ETH_DECRYPT) {
+    torusController.cancelDecryptMessage(Number.parseInt(id, 10))
   }
 }
 
@@ -277,6 +299,16 @@ function getLatestMessageParameters(id) {
     message = VuexStore.state.unapprovedTypedMessages[id]
     message.msgParams.typedMessages = message.msgParams.data // TODO: use for differentiating msgs later on
     type = TX_TYPED_MESSAGE
+  }
+
+  if (VuexStore.state.unapprovedEncryptionPublicKeyMsgs[id]) {
+    message = VuexStore.state.unapprovedEncryptionPublicKeyMsgs[id]
+    type = TX_GET_ENCRYPTION_KEY
+  }
+
+  if (VuexStore.state.unapprovedDecryptMsgs[id]) {
+    message = VuexStore.state.unapprovedDecryptMsgs[id]
+    type = TX_ETH_DECRYPT
   }
 
   return message ? { msgParams: message.msgParams, id, type } : {}
