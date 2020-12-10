@@ -896,8 +896,6 @@ export default class TorusController extends EventEmitter {
       const address = toChecksumAddress(normalize(cleanMessageParameters.msgParams))
       const publicKey = this.keyringController.signEncryptionPublicKey(address)
       this.encryptionPublicKeyManager.setMsgStatusReceived(messageId, publicKey)
-      this.getState()
-      return
     } catch (error) {
       log.info('TorusController - eth_getEncryptionPublicKey failed.', error)
       this.encryptionPublicKeyManager.errorMessage(messageId, error)
