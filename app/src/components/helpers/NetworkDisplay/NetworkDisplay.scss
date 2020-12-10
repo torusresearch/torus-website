@@ -63,6 +63,14 @@
     background: #efe2ff;
   }
 
+  &.network-chip--bsc_testnet {
+    background: #F0B90B;
+  }
+
+  &.network-chip--bsc_mainnet {
+    background: #F0B90B;
+  }
+
   &.is-plain {
     background: none;
     margin: 0 -10px;

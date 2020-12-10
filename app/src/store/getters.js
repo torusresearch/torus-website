@@ -3,10 +3,10 @@ import BigNumber from 'bignumber.js'
 import { MAINNET, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { significantDigits } from '../utils/utils'
 
-const fallBackLogoDark = require('#/assets/images/torus-logo-blue.svg')
-const fallBackLogoLight = require('#/assets/images/torus-logo-white.svg')
+const fallBackLogoDark = require('#/assets/images/binance-chain-logo.svg')
+const fallBackLogoLight = require('#/assets/images/binance-chain-logo.svg')
 
-const fallBackIconDark = require('#/assets/img/icons/torus-icon-light.svg')
+const fallBackIconDark = require('#/assets/img/icons/binance-chain-logo.svg')
 
 const getLogo = (state) => {
   const { whiteLabel, theme } = state

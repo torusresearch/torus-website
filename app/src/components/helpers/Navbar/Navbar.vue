@@ -5,18 +5,18 @@
         v-if="!$vuetify.breakpoint.xsOnly"
         class="home-link mr-1"
         alt="Torus Logo"
-        :width="$store.state.whiteLabel.isActive ? '' : '135'"
+        :width="$store.state.whiteLabel.isActive ? '' : '184'"
         height="30"
         :src="getLogo.logo"
       />
-      <img v-else src="../../../assets/img/icons/t-fill.svg" width="35" height="30" alt="Torus Logo" />
+      <img v-else src="../../../assets/img/icons/binance-chain-logo.svg" width="35" height="30" alt="Torus Logo" />
     </div>
     <div v-else class="d-flex align-end">
       <router-link v-if="!$vuetify.breakpoint.xsOnly" :to="{ name: 'walletHome' }">
-        <img class="home-link mr-1" alt="Torus Logo" :width="$store.state.whiteLabel.isActive ? '' : '135'" height="30" :src="getLogo.logo" />
+        <img class="home-link mr-1" alt="Torus Logo" :width="$store.state.whiteLabel.isActive ? '' : '184'" height="30" :src="getLogo.logo" />
       </router-link>
       <router-link v-if="$vuetify.breakpoint.xsOnly" id="logo-home-lnk" :to="{ name: 'walletHome' }">
-        <img src="../../../assets/img/icons/t-fill.svg" width="35" height="30" alt="Torus Logo" />
+        <img src="../../../assets/img/icons/binance-chain-logo.svg" height="30" alt="Torus Logo" />
       </router-link>
     </div>
     <v-spacer></v-spacer>

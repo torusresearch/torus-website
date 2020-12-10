@@ -1,8 +1,8 @@
 export default {
   // V8
-  torusBrand1: '#0364FF',
-  torusBrand2: '#5495F7',
-  torusBrand3: '#CDE0FF',
+  torusBrand1: '#F0B90B',
+  torusBrand2: '#EEC549',
+  torusBrand3: '#F3D355',
   torusBrand4: '#E9EEFE',
   torusBrandHover: '#075DE5',
   torusGray1: '#D3D5E2',
