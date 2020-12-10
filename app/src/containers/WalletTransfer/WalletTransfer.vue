@@ -124,7 +124,7 @@
                       :items="contactList"
                       :placeholder="verifierPlaceholder"
                       required
-                      :rules="[contactRule, rules.contactRequired]"
+                      :rules="[contactRule, rules.contactRequired, ensRule, unstoppableDomainsRule]"
                       outlined
                       item-text="name"
                       item-value="value"
@@ -764,6 +764,12 @@ export default {
       else if (contact && contact.value) value = contact.value
       return validateVerifierId(this.selectedVerifier, value)
     },
+    ensRule() {
+      return this.selectedVerifier === ENS && this.ensError ? this.ensError : true
+    },
+    unstoppableDomainsRule() {
+      return this.selectedVerifier === UNSTOPPABLE_DOMAINS && this.unstoppableDomainsError ? this.unstoppableDomainsError : true
+    },
     async verifierChangedManual() {
       this.setRandomId()
       this.autoSelectVerifier = false
@@ -905,7 +911,8 @@ export default {
           toAddress = ethAddr
         } catch (error) {
           log.error(error)
-          this.ensError = 'Invalid ENS address'
+          this.ensError = 'walletSettings.invalidEns'
+          this.$refs.form.validate()
         }
       } else if (this.selectedVerifier === UNSTOPPABLE_DOMAINS) {
         try {
@@ -914,7 +921,8 @@ export default {
           toAddress = toChecksumAddress(ethAddr)
         } catch (error) {
           log.error(error)
-          this.unstoppableDomainsError = 'Invalid Unstoppable Domain'
+          this.unstoppableDomainsError = 'walletSettings.invalidUnstoppable'
+          this.$refs.form.validate()
         }
       } else {
         try {
