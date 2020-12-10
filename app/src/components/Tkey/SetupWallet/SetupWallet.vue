@@ -134,7 +134,7 @@
                   v-if="!finalRecoveryPassword"
                   type="submit"
                   :disabled="!validPasswordForm"
-                  class="caption white--text font-weight-bold"
+                  class="caption button_text--text font-weight-bold"
                   color="torusBrand1"
                   @click="setFinalPassword"
                 >
@@ -175,7 +175,7 @@
           :disabled="(!finalRecoveryPassword && !backupDeviceShare) || !userUnderstands"
           :x-large="!$vuetify.breakpoint.xsOnly"
           color="torusBrand1"
-          class="white--text body-2 font-weight-bold"
+          class="button_text--text body-2 font-weight-bold"
           :loading="creatingTkey"
           @click="createWallet"
         >

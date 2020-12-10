@@ -106,7 +106,7 @@
               <template v-slot:activator="{ on }">
                 <span v-on="on">
                   <v-btn
-                    class="px-8 white--text gmt-topup"
+                    class="px-8 button_text--text gmt-topup"
                     :disabled="!formValid || !isQuoteFetched"
                     large
                     depressed

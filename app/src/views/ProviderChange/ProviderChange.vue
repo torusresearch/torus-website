@@ -65,7 +65,7 @@
               <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
             </v-flex>
             <v-flex xs6 px-2>
-              <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
+              <v-btn block depressed large class="torus-btn1 button_text--text" color="torusBrand1" @click="triggerSign">
                 {{ t('dappProvider.confirm') }}
               </v-btn>
             </v-flex>

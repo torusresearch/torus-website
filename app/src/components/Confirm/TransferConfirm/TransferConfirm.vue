@@ -2,7 +2,7 @@
   <v-card class="confirm-transaction">
     <v-layout py-6 class="elevation-1">
       <v-flex xs12 text-center>
-        <img class="home-link mr-1" alt="Torus Logo" width="70" :height="getLogo.isExternal ? 'inherit' : '17'" :src="getLogo.logo" />
+        <img class="home-link mb2" alt="Torus Logo" :height="30" :src="getLogo.logo" />
         <div class="headline">{{ t('walletTransfer.confirmTransaction') }}</div>
       </v-flex>
     </v-layout>
@@ -127,7 +127,7 @@
               block
               large
               color="torusBrand1"
-              class="white--text"
+              class="button_text--text"
               type="button"
               :disabled="insufficientFunds"
               @click="onConfirm"

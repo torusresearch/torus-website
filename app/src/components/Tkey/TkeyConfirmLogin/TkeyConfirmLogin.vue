@@ -61,7 +61,9 @@
           </a>
         </v-flex>
         <v-flex class="px-2 xs6">
-          <v-btn block large color="torusBrand1" class="caption font-weight-bold white--text" @click="confirm">{{ t('tkeyNew.confirm') }}</v-btn>
+          <v-btn block large color="torusBrand1" class="caption font-weight-bold button_text--text" @click="confirm">
+            {{ t('tkeyNew.confirm') }}
+          </v-btn>
         </v-flex>
       </v-layout>
       <NewDeviceFooter />

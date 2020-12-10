@@ -130,7 +130,7 @@
                     color="torusBrand1 ml-2"
                     :loading="isLoadingKeystore"
                     :disabled="!jsonFileFormValid || isLoadingKeystore"
-                    class="px-8 white--text gmt-import-account"
+                    class="px-8 button_text--text gmt-import-account"
                     type="submit"
                   >
                     {{ t('accountMenu.import') }}

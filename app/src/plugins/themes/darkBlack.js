@@ -22,6 +22,7 @@ export default {
   text_1: '#D3D3D4',
   text_2: '#D3D3D4',
   text_3: '#B3C0CE',
+  button_text: '#0F1222',
   primary: {
     base: '#0364FF',
     lighten5: '#3F4147',

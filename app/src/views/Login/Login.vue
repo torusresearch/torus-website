@@ -5,10 +5,10 @@
         <v-flex xs12 sm8 md6>
           <v-layout v-if="!isLogout" wrap>
             <v-flex v-if="$vuetify.breakpoint.xsOnly" class="mobile-login-container" xs12>
-              <section class="py-12">
+              <section class="py-10">
                 <v-layout wrap>
-                  <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
-                    <img height="35" :src="require(`../../assets/images/binance-chain-logo.svg`)" alt="Torus Logo" />
+                  <v-flex class="mb-8" xs10 sm8 ml-auto mr-auto :style="{ lineHeight: '0' }">
+                    <img height="30" :src="require(`../../assets/images/binance-chain-logo.svg`)" alt="Torus Logo" />
                   </v-flex>
                   <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
                     <div class="verifier-title font-weight-bold display-1">
@@ -105,17 +105,17 @@
                     <v-divider class="mb-2"></v-divider>
                     <div class="d-flex justify-center footer-links">
                       <div class="mx-2">
-                        <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
+                        <a class="torusBrand1--text" href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
                           {{ t('dappLogin.termsConditions') }}
                         </a>
                       </div>
                       <div class="mx-2">
-                        <a href="https://docs.tor.us/legal/privacy-policy" target="_blank" rel="noreferrer noopener">
+                        <a class="torusBrand1--text" href="https://docs.tor.us/legal/privacy-policy" target="_blank" rel="noreferrer noopener">
                           {{ t('dappLogin.privacyPolicy') }}
                         </a>
                       </div>
                       <div class="mx-2">
-                        <a href="https://t.me/TorusLabs" target="_blank" rel="noreferrer noopener">
+                        <a class="torusBrand1--text" href="https://t.me/TorusLabs" target="_blank" rel="noreferrer noopener">
                           {{ t('dappLogin.contactUs') }}
                         </a>
                       </div>

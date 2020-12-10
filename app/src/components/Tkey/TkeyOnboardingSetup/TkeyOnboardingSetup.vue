@@ -48,7 +48,14 @@
             </v-btn>
           </v-flex>
           <v-flex class="xs6 px-2">
-            <v-btn block large color="torusBrand1" class="white--text caption font-weight-bold" :title="t('tkeyCreateAdd.sureLetsAdd')" @click="next">
+            <v-btn
+              block
+              large
+              color="torusBrand1"
+              class="button_text--text caption font-weight-bold"
+              :title="t('tkeyCreateAdd.sureLetsAdd')"
+              @click="next"
+            >
               {{ t('tkeyCreateAdd.continue') }}
             </v-btn>
             <div class="caption-3 text_2--text text-center mt-1">{{ t('tkeyCreateAdd.noWorry') }}</div>

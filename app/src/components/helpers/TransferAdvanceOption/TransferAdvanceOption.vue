@@ -138,7 +138,7 @@
               id="adv-opt-submit-btn"
               large
               color="torusBrand1"
-              class="white--text ml-4 gmt-advance-option"
+              class="button_text--text ml-4 gmt-advance-option"
               type="submit"
               :disabled="!advanceOptionFormValid"
             >

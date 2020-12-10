@@ -70,7 +70,7 @@
                         <v-btn
                           type="submit"
                           :disabled="!validVerifyPasswordForm"
-                          class="caption white--text font-weight-bold px-10"
+                          class="caption button_text--text font-weight-bold px-10"
                           color="torusBrand1"
                         >
                           {{ t('tkeyNew.confirm') }}

@@ -40,7 +40,7 @@
                 </div>
               </div>
               <div class="text-center mb-6">
-                <v-btn large color="torusBrand1" class="white--text" :style="{ width: '254px' }" @click="closeDialog">
+                <v-btn large color="torusBrand1" class="button_text--text" :style="{ width: '254px' }" @click="closeDialog">
                   {{ isSuccessfull ? 'Return Home' : 'Return to Settings' }}
                 </v-btn>
               </div>

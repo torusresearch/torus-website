@@ -51,7 +51,7 @@
     </div>
 
     <div class="mt-9 text-center">
-      <v-btn :x-large="!$vuetify.breakpoint.xsOnly" color="torusBrand1" class="body-2 font-weight-bold white--text px-16" @click="goToWallet">
+      <v-btn :x-large="!$vuetify.breakpoint.xsOnly" color="torusBrand1" class="body-2 font-weight-bold button_text--text px-16" @click="goToWallet">
         {{ t('tkeyCreateDone.letsExplore') }}
       </v-btn>
     </div>

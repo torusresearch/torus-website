@@ -109,7 +109,7 @@
                 </a>
               </v-flex>
               <v-flex class="px-2 xs7 sm6 lg4">
-                <v-btn :loading="isConfirming" block large color="torusBrand1" class="caption font-weight-bold white--text" @click="confirm">
+                <v-btn :loading="isConfirming" block large color="torusBrand1" class="caption font-weight-bold button_text--text" @click="confirm">
                   {{ t('tkeyNew.confirmAndSave') }}
                 </v-btn>
               </v-flex>

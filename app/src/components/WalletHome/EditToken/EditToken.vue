@@ -47,7 +47,7 @@
                     <v-btn block large text @click="closeForm">{{ t('homeToken.cancel') }}</v-btn>
                   </v-flex>
                   <v-flex xs6 px-2>
-                    <v-btn block large color="torusBrand1" class="white--text" type="submit" :disabled="!addTokenFormValid">
+                    <v-btn block large color="torusBrand1" class="button_text--text" type="submit" :disabled="!addTokenFormValid">
                       {{ t('homeToken.next') }}
                     </v-btn>
                   </v-flex>
@@ -101,10 +101,10 @@
                   <v-btn v-else block large text @click="tab = 0">{{ t('homeToken.back') }}</v-btn>
                 </v-flex>
                 <v-flex xs6 px-2>
-                  <v-btn v-if="isHideMode" block large color="torusBrand1" class="white--text" type="button" @click="callDeleteToken">
+                  <v-btn v-if="isHideMode" block large color="torusBrand1" class="button_text--text" type="button" @click="callDeleteToken">
                     {{ t('homeToken.hideToken') }}
                   </v-btn>
-                  <v-btn v-else block large color="torusBrand1" class="white--text" type="button" @click="addToken">
+                  <v-btn v-else block large color="torusBrand1" class="button_text--text" type="button" @click="addToken">
                     {{ t('homeToken.addToken') }}
                   </v-btn>
                 </v-flex>
@@ -161,9 +161,9 @@ export default {
   computed: {
     ...mapState(['selectedAddress', 'networkType', 'tokenData']),
     duplicateTokenRule() {
-      const found = this.tokenData[this.selectedAddress].find(
-        (token) => token.tokenAddress.toLocaleLowerCase() === this.customAddress.toLocaleLowerCase()
-      )
+      const found =
+        this.tokenData[this.selectedAddress] &&
+        this.tokenData[this.selectedAddress].find((token) => token.tokenAddress.toLocaleLowerCase() === this.customAddress.toLocaleLowerCase())
       return found ? this.t('homeToken.duplicateToken') : true
     },
   },

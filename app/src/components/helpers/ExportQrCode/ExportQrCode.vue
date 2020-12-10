@@ -44,7 +44,7 @@
             ></VueQr>
           </div>
           <div>
-            <v-btn large depressed color="torusBrand1 white--text caption font-weight-bold" class="px-10" @click="downloadQr">
+            <v-btn large depressed color="torusBrand1 button_text--text caption font-weight-bold" class="px-10" @click="downloadQr">
               {{ t('walletHome.downloadQR') }}
             </v-btn>
           </div>

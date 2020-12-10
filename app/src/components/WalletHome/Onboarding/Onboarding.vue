@@ -60,7 +60,7 @@
               <v-flex xs6 px-1 class="align-self-end">
                 <v-layout mx-n1>
                   <v-flex xs12 px-1 class="text-right">
-                    <v-btn large color="torusBrand1" class="return-btn torus-btn1" @click="closeDialog">
+                    <v-btn large color="torusBrand1" class="return-btn button_text--text torus-btn1" @click="closeDialog">
                       {{ t('walletHome.obYesOk') }}
                     </v-btn>
                   </v-flex>
@@ -133,7 +133,7 @@
               <v-flex xs6 px-1 class="align-self-end">
                 <v-layout mx-n1>
                   <v-flex xs12 px-1 class="text-right">
-                    <v-btn large color="torusBrand1" class="return-btn torus-btn1" @click="closeDialog">
+                    <v-btn large color="torusBrand1" class="return-btn button_text--text torus-btn1" @click="closeDialog">
                       {{ t('walletHome.obNoReturnHome') }}
                     </v-btn>
                   </v-flex>
