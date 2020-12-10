@@ -8,13 +8,7 @@
     <v-card>
       <v-layout wrap>
         <v-flex class="card-header text-center" xs12 py-10 px-6>
-          <img
-            class="home-link mx-auto"
-            alt="Torus Logo"
-            width="104"
-            height="24"
-            :src="require(`../../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
-          />
+          <img class="home-link mx-auto" alt="Torus Logo" height="24" :src="require(`../../../assets/images/binance-chain-logo.svg`)" />
           <v-btn class="close-btn" icon aria-label="Close Export QR" title="Close Export QR" @click="qrDialoag = false">
             <v-icon>$vuetify.icons.close</v-icon>
           </v-btn>
@@ -33,9 +27,6 @@
               :color-dark="'#252529'"
               :color-light="'#FCFCFC'"
               :background-color="'#2F3136'"
-              :logo-background-color="'#2F3136'"
-              :logo-src="require('../../../assets/img/icons/t-fill.svg')"
-              :logo-scale="0.28"
               :margin="1"
               :text="selectedAddress"
               :size="800"
@@ -45,9 +36,7 @@
             <VueQr
               v-show="!$vuetify.theme.dark"
               ref="address-qr"
-              :logo-src="require('../../../assets/img/icons/t-fill.svg')"
               :margin="20"
-              :logo-scale="0.28"
               :text="selectedAddress"
               :size="800"
               :dot-scale="0.6"

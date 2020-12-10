@@ -8,11 +8,7 @@
               <section class="py-12">
                 <v-layout wrap>
                   <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
-                    <img
-                      width="180"
-                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
-                      alt="Torus Logo"
-                    />
+                    <img height="35" :src="require(`../../assets/images/binance-chain-logo.svg`)" alt="Torus Logo" />
                   </v-flex>
                   <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
                     <div class="verifier-title font-weight-bold display-1">
@@ -159,7 +155,7 @@
             <v-flex v-else xs12>
               <v-layout wrap>
                 <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
-                  <img width="180" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
+                  <img height="40" :src="require(`../../assets/images/binance-chain-logo.svg`)" alt="Torus Logo" />
                 </v-flex>
                 <v-flex xs10 sm8 ml-auto mr-auto>
                   <div class="verifier-title font-weight-bold" :class="[$vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2']">
@@ -271,17 +267,17 @@
                   <v-divider class="mb-2"></v-divider>
                   <div class="d-flex footer-links">
                     <div class="mr-4">
-                      <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
+                      <a class="torusBrand1--text" href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
                         {{ t('dappLogin.termsConditions') }}
                       </a>
                     </div>
                     <div class="mr-4">
-                      <a href="https://docs.tor.us/legal/privacy-policy" target="_blank" rel="noreferrer noopener">
+                      <a class="torusBrand1--text" href="https://docs.tor.us/legal/privacy-policy" target="_blank" rel="noreferrer noopener">
                         {{ t('dappLogin.privacyPolicy') }}
                       </a>
                     </div>
                     <div class="mr-4">
-                      <a href="https://t.me/TorusLabs" target="_blank" rel="noreferrer noopener">
+                      <a class="torusBrand1--text" href="https://t.me/TorusLabs" target="_blank" rel="noreferrer noopener">
                         {{ t('dappLogin.contactUs') }}
                       </a>
                     </div>
@@ -292,7 +288,7 @@
           </v-layout>
           <v-layout v-else wrap align-center justify-center align-content-center>
             <v-flex xs12 text-center mb-12>
-              <img width="180" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
+              <img height="40" :src="require(`../../assets/images/binance-chain-logo.svg`)" alt="Torus Logo" />
             </v-flex>
             <v-flex xs12 text-center>
               <img
