@@ -7,7 +7,7 @@ import {
   BSC_MAINNET_DISPLAY_NAME,
   LOCALE_EN,
   SUPPORTED_NETWORK_TYPES,
-  THEME_LIGHT_BLUE_NAME,
+  THEME_DARK_BLACK_NAME,
   USER_INFO_REQUEST_NEW,
 } from '../utils/enums'
 
@@ -51,7 +51,7 @@ const initialState = {
   selectedCurrency: 'USD',
   pastTransactions: [],
   paymentTx: [],
-  theme: THEME_LIGHT_BLUE_NAME,
+  theme: THEME_DARK_BLACK_NAME,
   locale: LOCALE_EN,
   billboard: {},
   contacts: [],

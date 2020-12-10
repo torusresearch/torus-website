@@ -11,7 +11,7 @@ Vue.use(Vuetify)
 
 export default new Vuetify({
   theme: {
-    dark: false,
+    dark: true,
     themes: {
       light: { ...themes[THEME_LIGHT_BLUE_NAME].theme },
       dark: { ...themes[THEME_DARK_BLACK_NAME].theme },

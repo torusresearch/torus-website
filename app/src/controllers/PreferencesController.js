@@ -17,7 +17,7 @@ import {
   BADGES_TRANSACTION,
   ERROR_TIME,
   SUCCESS_TIME,
-  THEME_LIGHT_BLUE_NAME,
+  THEME_DARK_BLACK_NAME,
 } from '../utils/enums'
 import { get, getEtherscanTransactions, getPastOrders, getWalletOrders, patch, post, remove } from '../utils/httpHelpers'
 import { notifyUser } from '../utils/notifications'
@@ -32,7 +32,7 @@ const DEFAULT_BADGES_COMPLETION = {
   [BADGES_TRANSACTION]: false,
 }
 
-let themeGlobal = THEME_LIGHT_BLUE_NAME
+let themeGlobal = THEME_DARK_BLACK_NAME
 if (storageAvailable('localStorage')) {
   const torusTheme = localStorage.getItem('torus-theme')
   if (torusTheme) {
