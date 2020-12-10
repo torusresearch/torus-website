@@ -159,7 +159,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['selectedAddress', 'networkType', 'selectedCurrency', 'tokenData']),
+    ...mapState(['selectedAddress', 'networkType', 'tokenData']),
     duplicateTokenRule() {
       const found = this.tokenData[this.selectedAddress].find(
         (token) => token.tokenAddress.toLocaleLowerCase() === this.customAddress.toLocaleLowerCase()
