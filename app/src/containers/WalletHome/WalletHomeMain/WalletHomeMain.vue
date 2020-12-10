@@ -162,7 +162,7 @@
           </v-tab>
         </v-tabs>
       </v-flex>
-      <v-flex v-if="$vuetify.breakpoint.mdAndUp" xs12 md3 class="refresh text-right">
+      <v-flex v-if="$vuetify.breakpoint.mdAndUp && activeTab === 0" xs12 md3 class="refresh text-right">
         <div class="mb-1">
           <v-btn
             class="gmt-refresh-tokens refresh-btn"
@@ -172,7 +172,7 @@
             @click="refreshBalances"
           >
             <v-icon left color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
-            <span class="caption text_2--text">Show all Tokens</span>
+            <span class="caption text_2--text">{{ t('walletHome.showAllTokens') }}</span>
           </v-btn>
         </div>
         <div class="text_3--text refresh-text" small>{{ t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
@@ -191,7 +191,19 @@
 
     <v-tabs-items v-model="activeTab" class="token-tab-content mt-8">
       <v-tab-item>
-        <TokenBalancesTable :token-balances="filteredBalancesArray" :selected="selected" @update:select="select" />
+        <TokenBalancesTable :hide-token-mode="hideTokenMode" :token-balances="filteredBalancesArray" :selected="selected" @update:select="select" />
+        <div v-if="hasCustomToken && $vuetify.breakpoint.mdAndUp" class="text-right">
+          <v-btn
+            class="gmt-edit-tokens refresh-btn"
+            :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
+            height="24"
+            :aria-label="t('homeToken.editTokens')"
+            @click="hideTokenMode = !hideTokenMode"
+          >
+            <v-icon left class="text_2--text" size="14">$vuetify.icons.pencil_edit</v-icon>
+            <span class="caption text_2--text">{{ t('homeToken.editTokens') }}</span>
+          </v-btn>
+        </div>
       </v-tab-item>
       <v-tab-item>
         <CollectiblesList></CollectiblesList>
@@ -211,6 +223,17 @@
             <v-icon left color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
             <span class="caption text_2--text">{{ t('walletHome.showAllTokens') }}</span>
           </v-btn>
+          <v-btn
+            v-if="hasCustomToken"
+            class="gmt-edit-tokens refresh-btn ml-2"
+            :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
+            height="24"
+            :aria-label="t('homeToken.editTokens')"
+            @click="hideTokenMode = !hideTokenMode"
+          >
+            <v-icon left class="text_2--text" size="14">$vuetify.icons.pencil_edit</v-icon>
+            <span class="caption text_2--text">{{ t('homeToken.editTokens') }}</span>
+          </v-btn>
         </div>
         <div class="text_3--text refresh-text" small>{{ t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
       </v-flex>
@@ -229,7 +252,6 @@ import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 import Onboarding from '../../../components/WalletHome/Onboarding'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
-import config from '../../../config'
 import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 
 export default {
@@ -237,16 +259,16 @@ export default {
   components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, Onboarding, ComponentLoader, NetworkDisplay },
   data() {
     return {
-      supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       selected: [],
       search: '',
       lastUpdated: '',
       dialogOnboarding: false,
       activeTab: 0,
+      hideTokenMode: false,
     }
   },
   computed: {
-    ...mapGetters(['tokenBalances']),
+    ...mapGetters(['tokenBalances', 'supportedCurrencies']),
     ...mapState({
       whiteLabel: 'whiteLabel',
       weiBalanceLoaded: 'weiBalanceLoaded',
@@ -289,6 +311,9 @@ export default {
       })
 
       return events
+    },
+    hasCustomToken() {
+      return this.filteredBalancesArray.filter((x) => !!x.customTokenId).length > 0
     },
   },
   mounted() {

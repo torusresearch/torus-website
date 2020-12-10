@@ -10,3 +10,14 @@
     border: 0;
   }
 }
+
+.v-badge {
+  width: 100%;
+  ::v-deep .v-badge__badge {
+    padding: 0;
+    background-color: #D3D3D4 !important;
+  }
+  ::v-deep .v-badge__badge::after {
+    display: none;
+  }
+}

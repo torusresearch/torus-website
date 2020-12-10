@@ -263,8 +263,9 @@
               </v-flex>
               <TransactionSpeedSelect
                 :reset-speed="resetSpeed"
-                :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : 'ETH'"
+                :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : networkType.ticker"
                 :contract-type="contractType"
+                :network-ticker="networkType.ticker"
                 :gas="gas"
                 :display-amount="displayAmount"
                 :selected-currency="selectedCurrency"
@@ -810,7 +811,7 @@ export default {
               .dp(0, BigNumber.ROUND_DOWN)
               .toString(16)}`
             torus.web3.eth
-              .estimateGas({ to: toAddress, value })
+              .estimateGas({ to: toAddress, value, from: this.selectedAddress })
               .then((response) => {
                 let resolved = new BigNumber(response || '0')
                 if (!resolved.eq(new BigNumber('21000'))) {
@@ -967,7 +968,7 @@ export default {
       this.toggle_exclusive = value
       const currencyRate = this.getCurrencyTokenRate
       if (value === 0) {
-        this.onChangeDisplayAmount(this.displayAmount.div(currencyRate))
+        this.onChangeDisplayAmount(!currencyRate.eq(new BigNumber('0')) ? this.displayAmount.div(currencyRate) : this.displayAmount)
       } else if (value === 1) {
         this.onChangeDisplayAmount(this.displayAmount.times(currencyRate))
       }

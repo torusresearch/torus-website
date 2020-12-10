@@ -75,7 +75,6 @@
 import { mapState } from 'vuex'
 
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
-import config from '../../config'
 import {
   ACTIVITY_ACTION_ALL,
   ACTIVITY_ACTION_RECEIVE,
@@ -103,7 +102,6 @@ export default {
   components: { TxHistoryTable },
   data() {
     return {
-      supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       selectedAction: ACTIVITY_ACTION_ALL,
       selectedPeriod: ACTIVITY_PERIOD_ALL,
     }
@@ -113,6 +111,7 @@ export default {
       pastTx: 'pastTransactions',
       etherscanTx: (state) => (state.networkType.host === MAINNET ? state.etherscanTx : []),
       paymentTx: (state) => (state.networkType.host === MAINNET ? state.paymentTx : []),
+      networkType: 'networkType',
     }),
     actionTypes() {
       return [
@@ -229,7 +228,7 @@ export default {
           return activity.type_image_link
         }
         if (activity.type === CONTRACT_TYPE_ETH) {
-          return 'eth.svg'
+          return this.networkType.logo
         }
         const action = activity.action.split('.')
         return action.length > 0 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''

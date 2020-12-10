@@ -29,7 +29,7 @@
                         <div class="caption mt-1 text_3--text">
                           1 Gwei=10
                           <sup>-9</sup>
-                          ETH
+                          {{ networkTicker }}
                           <small>({{ t('walletTransfer.gasPriceDesc5') }})</small>
                         </div>
                       </template>
@@ -75,14 +75,14 @@
                   <template v-if="$vuetify.breakpoint.xsOnly">
                     <span class="float-right">
                       <span id="transaction-fee-mobile">{{ gasAmountDisplay }}</span>
-                      ETH
+                      {{ networkTicker }}
                     </span>
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>
                   <v-text-field
                     v-else
                     id="transaction-fee"
-                    suffix="ETH"
+                    :suffix="networkTicker"
                     outlined
                     readonly
                     :value="gasAmountDisplay"
@@ -95,14 +95,14 @@
                   <template v-if="$vuetify.breakpoint.xsOnly">
                     <span class="float-right">
                       <span id="transaction-fee-mobile">{{ gasAmountDisplay }}</span>
-                      ETH
+                      {{ networkTicker }}
                     </span>
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>
                   <v-text-field
                     v-else
                     id="transaction-fee"
-                    suffix="ETH"
+                    :suffix="networkTicker"
                     outlined
                     readonly
                     :value="gasAmountDisplay"
@@ -191,6 +191,10 @@ export default {
       type: Number,
       default: 0,
     },
+    networkTicker: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -226,7 +230,7 @@ export default {
       if (this.contractType === CONTRACT_TYPE_ETH) {
         totalCost = new BigNumber(this.displayAmount).plus(this.gasAmount).toString()
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
-        totalCost = `${this.displayAmount} ${this.symbol} + ${this.gasAmount.toString()} ETH`
+        totalCost = `${this.displayAmount} ${this.symbol} + ${this.gasAmount.toString()} ${this.networkTicker}`
       } else {
         totalCost = this.gasAmount.toString()
       }

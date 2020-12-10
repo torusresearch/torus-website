@@ -477,7 +477,7 @@ class TransactionController extends EventEmitter {
         ),
       }
     }
-    log.info('params', chainParameters, chainId)
+    log.info('params', txParameters, chainParameters, chainId)
     const ethTx = new Transaction(txParameters, chainParameters)
     await this.signEthTx(ethTx, fromAddress)
 

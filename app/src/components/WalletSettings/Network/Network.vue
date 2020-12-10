@@ -38,6 +38,14 @@
           <v-text-field v-model="rpc.chainId" :placeholder="t('walletSettings.enterChainId')" outlined></v-text-field>
         </v-flex>
 
+        <v-flex xs12>
+          <v-text-field v-model="rpc.ticker" :placeholder="t('walletSettings.enterSymbol')" outlined></v-text-field>
+        </v-flex>
+
+        <v-flex xs12>
+          <v-text-field v-model="rpc.blockExplorer" :placeholder="t('walletSettings.enterBlockExplorer')" outlined></v-text-field>
+        </v-flex>
+
         <v-flex xs12 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
           <v-layout>
             <v-spacer></v-spacer>
@@ -82,7 +90,7 @@ export default {
   data() {
     return {
       selectedNetwork: {},
-      rpc: { chainId: '', networkName: '', host: '' },
+      rpc: { chainId: '', networkName: '', host: '', blockExplorer: '', ticker: '' },
       formValid: true,
       rules: {
         required: (value) => !!value || 'Required',
@@ -98,6 +106,8 @@ export default {
           networkName: RPC_DISPLAY_NAME,
           host: RPC,
           chainId: '',
+          blockExplorer: '',
+          ticker: '',
         },
       ]
     },

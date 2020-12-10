@@ -56,6 +56,7 @@ const DEFAULT_ACCOUNT_STATE = {
   tKeyOnboardingComplete: true,
   defaultPublicAddress: '',
   accountType: ACCOUNT_TYPE.NORMAL,
+  customTokens: [],
 }
 
 class PreferencesController extends EventEmitter {
@@ -69,6 +70,7 @@ class PreferencesController extends EventEmitter {
    * @property {string} store.theme the user selected theme
    * @property {string} store.locale the user selected locale
    * @property {Array} store.contacts the contacts of the user
+   * @property {Array} store.customTokens the custom tokens of the user
    * @property {object} store.permissions the stored permissions of the user for different domains
    * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
@@ -200,6 +202,7 @@ class PreferencesController extends EventEmitter {
           tkey_onboarding_complete,
           account_type,
           default_public_address,
+          customTokens,
         } = user.data || {}
         let whiteLabelLocale
         let badgesCompletion = DEFAULT_BADGES_COMPLETION
@@ -236,6 +239,7 @@ class PreferencesController extends EventEmitter {
             tKeyOnboardingComplete: account_type !== ACCOUNT_TYPE.NORMAL ? true : !!tkey_onboarding_complete,
             accountType: account_type || ACCOUNT_TYPE.NORMAL,
             defaultPublicAddress: default_public_address || public_address,
+            customTokens,
           },
           public_address
         )
@@ -440,7 +444,7 @@ class PreferencesController extends EventEmitter {
   }
 
   async setUserTheme(payload) {
-    if (payload === this.state().theme) return
+    if (payload === this.state()?.theme) return
     try {
       await patch(`${config.api}/user/theme`, { theme: payload }, this.headers(), { useAPIKey: true })
       this.handleSuccess('navBar.snackSuccessTheme')
@@ -462,7 +466,7 @@ class PreferencesController extends EventEmitter {
   }
 
   async setUserLocale(payload) {
-    if (payload === this.state().locale) return
+    if (payload === this.state()?.locale) return
     try {
       await patch(`${config.api}/user/locale`, { locale: payload }, this.headers(), { useAPIKey: true })
       this.updateStore({ locale: payload })
@@ -474,7 +478,7 @@ class PreferencesController extends EventEmitter {
   }
 
   async setSelectedCurrency(payload) {
-    if (payload.selectedCurrency === this.state().selectedCurrency) return
+    if (payload.selectedCurrency === this.state()?.selectedCurrency) return
     try {
       await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers(), { useAPIKey: true })
       this.updateStore({ selectedCurrency: payload.selectedCurrency })
@@ -556,6 +560,29 @@ class PreferencesController extends EventEmitter {
       this.handleSuccess('navBar.snackSuccessContactDelete')
     } catch {
       this.handleError('navBar.snackFailContactDelete')
+    }
+  }
+
+  async addCustomToken(payload) {
+    try {
+      // payload is { token_address, network, token_symbol, decimals, token_name }
+      const response = await post(`${config.api}/customtoken`, payload, this.headers(), { useAPIKey: true })
+      this.updateStore({ customTokens: [...this.state().customTokens, response.data] })
+      this.handleSuccess('navBar.snackSuccessCustomTokenAdd')
+    } catch {
+      this.handleError('navBar.snackFailCustomTokenAdd')
+    }
+  }
+
+  async deleteCustomToken(payload) {
+    try {
+      // payload is id
+      const response = await remove(`${config.api}/customtoken/${payload}`, {}, this.headers(), { useAPIKey: true })
+      const customTokens = this.state().customTokens.filter((x) => x.id.toString() !== response.data.id.toString())
+      this.updateStore({ customTokens })
+      this.handleSuccess('navBar.snackSuccessCustomTokenDelete')
+    } catch {
+      this.handleError('navBar.snackFailCustomTokenDelete')
     }
   }
 
