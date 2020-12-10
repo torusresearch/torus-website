@@ -82,6 +82,7 @@ describe('Preferences Controller', () => {
       tKeyOnboardingComplete: false,
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount.address,
+      customTokens: [],
       selectedCurrency: 'USD',
       locale: 'en',
       contacts: [],
@@ -112,6 +113,7 @@ describe('Preferences Controller', () => {
       tKeyOnboardingComplete: false,
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount.address,
+      customTokens: [],
       selectedCurrency: 'USD',
       locale: 'en',
       contacts: [],
@@ -127,6 +129,7 @@ describe('Preferences Controller', () => {
       tKeyOnboardingComplete: false,
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount2.address,
+      customTokens: [],
       selectedCurrency: 'USD',
       locale: 'en',
       contacts: [],
@@ -160,6 +163,7 @@ describe('Preferences Controller', () => {
       tKeyOnboardingComplete: false,
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount.address,
+      customTokens: [],
       selectedCurrency: 'USD',
       locale: 'en',
       contacts: [],
@@ -355,6 +359,29 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
+      nock('https://api.tor.us')
+        .post('/customtoken')
+        .reply(201, {
+          data: {
+            token_address: '0x',
+            network: 'mainnet',
+            token_symbol: 'KNC',
+            decimals: 18,
+            token_name: 'Kyber network token',
+            id: 1,
+          },
+          success: true,
+        })
+
+      nock('https://api.tor.us')
+        .delete('/customtoken/1')
+        .reply(200, {
+          data: {
+            id: 1,
+          },
+          success: true,
+        })
+
       nock('https://api.tor.us').patch('/user/badge').reply(200, { success: true })
 
       handleSuccessStub = sandbox.stub(preferencesController, 'handleSuccess')
@@ -421,6 +448,26 @@ describe('Preferences Controller', () => {
       await preferencesController.deleteContact(1)
       assert(handleSuccessStub.calledOnce)
       assert.deepStrictEqual(preferencesController.state().contacts, [])
+    })
+
+    it('add custom token', async () => {
+      await preferencesController.addCustomToken({
+        token_address: '0x',
+        network: 'mainnet',
+        token_symbol: 'KNC',
+        decimals: 18,
+        token_name: 'Kyber network token',
+      })
+      assert(handleSuccessStub.calledOnce)
+      assert.deepStrictEqual(preferencesController.state().customTokens, [
+        { token_address: '0x', network: 'mainnet', token_symbol: 'KNC', decimals: 18, token_name: 'Kyber network token', id: 1 },
+      ])
+    })
+
+    it('delete custom token', async () => {
+      await preferencesController.deleteCustomToken(1)
+      assert(handleSuccessStub.calledOnce)
+      assert.deepStrictEqual(preferencesController.state().customTokens, [])
     })
 
     it('sets default address correctly', async () => {

@@ -71,6 +71,7 @@
     "jwt-decode": "^3.1.2",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
+    "lodash.isequal": "^4.5.0",
     "loglevel": "^1.7.1",
     "obj-multiplex": "^1.0.0",
     "obs-store": "^4.0.3",

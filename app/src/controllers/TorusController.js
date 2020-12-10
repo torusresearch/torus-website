@@ -92,17 +92,6 @@ export default class TorusController extends EventEmitter {
       network: this.networkController,
     })
 
-    // detect tokens controller
-    this.detectTokensController = new DetectTokensController({
-      network: this.networkController,
-      provider: this.provider,
-    })
-
-    this.tokenRatesController = new TokenRatesController({
-      currency: this.currencyController.store,
-      tokensStore: this.detectTokensController.detectedTokensStore,
-    })
-
     // key mgmt
     this.keyringController = new KeyringController()
 
@@ -110,6 +99,18 @@ export default class TorusController extends EventEmitter {
       network: this.networkController,
       provider: this.provider,
       signMessage: this.keyringController.signMessage.bind(this.keyringController),
+    })
+
+    // detect tokens controller
+    this.detectTokensController = new DetectTokensController({
+      network: this.networkController,
+      provider: this.provider,
+      preferencesStore: this.prefsController.store,
+    })
+
+    this.tokenRatesController = new TokenRatesController({
+      currency: this.currencyController.store,
+      tokensStore: this.detectTokensController.detectedTokensStore,
     })
 
     // start and stop polling for balances based on activeControllerConnections
@@ -824,11 +825,11 @@ export default class TorusController extends EventEmitter {
   async setCurrentCurrency(payload, callback) {
     const { ticker } = this.networkController.getNetworkConfig()
     try {
-      if (payload.selectedCurrency !== 'ETH') {
-        this.currencyController.setNativeCurrency(ticker)
-        this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
-        await this.currencyController.updateConversionRate()
-      }
+      // if (payload.selectedCurrency !== 'ETH') {
+      this.currencyController.setNativeCurrency(ticker)
+      this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
+      await this.currencyController.updateConversionRate()
+      // }
       const data = {
         nativeCurrency: ticker || 'ETH',
         conversionRate: this.currencyController.getConversionRate(),
