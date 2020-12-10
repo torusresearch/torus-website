@@ -374,7 +374,7 @@ describe('torus-keyring', () => {
     assert.strictEqual(encryptionKey, testAccount.encryptionKey)
   })
 
-  it.only('should decrypt correctly', async () => {
+  it('should decrypt correctly', async () => {
     const keyringController = new TorusKeyring([testAccount.key])
     const msg = 'Encryption works!!!'
     const encryptionKey = keyringController.signEncryptionPublicKey(testAccount.address)
