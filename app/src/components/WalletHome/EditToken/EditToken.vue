@@ -21,7 +21,12 @@
             <v-layout mx-6 pt-6 pb-10 wrap>
               <v-flex xs12>
                 <div class="body-2 mb-2">{{ t('homeToken.contract') }}</div>
-                <v-text-field :value="customAddress" :rules="[rules.required]" outlined @change="onCustomAddressChange"></v-text-field>
+                <v-text-field
+                  :value="customAddress"
+                  :rules="[rules.required, duplicateTokenRule]"
+                  outlined
+                  @change="onCustomAddressChange"
+                ></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <div class="body-2 mb-2">{{ t('homeToken.symbol') }}</div>
@@ -154,7 +159,13 @@ export default {
     }
   },
   computed: {
-    ...mapState(['selectedAddress', 'networkType', 'selectedCurrency', 'tokenRatesState']),
+    ...mapState(['selectedAddress', 'networkType', 'tokenData']),
+    duplicateTokenRule() {
+      const found = this.tokenData[this.selectedAddress].find(
+        (token) => token.tokenAddress.toLocaleLowerCase() === this.customAddress.toLocaleLowerCase()
+      )
+      return found ? this.t('homeToken.duplicateToken') : true
+    },
   },
   mounted() {
     if (this.isHideMode) {
@@ -201,7 +212,7 @@ export default {
       })
       this.closeForm()
     },
-    async nextTab() {
+    nextTab() {
       if (this.$refs.addTokenForm.validate()) {
         this.tab = 1
       }

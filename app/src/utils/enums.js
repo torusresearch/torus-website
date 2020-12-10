@@ -79,6 +79,8 @@ export const TX_MESSAGE = 'message'
 export const TX_PERSONAL_MESSAGE = 'personal_message'
 export const TX_TYPED_MESSAGE = 'typed_message'
 export const TX_TRANSACTION = 'transaction'
+export const TX_GET_ENCRYPTION_KEY = 'get_encryption'
+export const TX_ETH_DECRYPT = 'eth_decrypt'
 
 export const TRANSACTION_TYPE_CANCEL = 'cancel'
 export const TRANSACTION_TYPE_RETRY = 'retry'

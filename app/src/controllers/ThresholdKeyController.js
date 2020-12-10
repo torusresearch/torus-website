@@ -317,6 +317,12 @@ class ThresholdKeyController extends EventEmitter {
   setTkeyError(message) {
     this.store.updateState({ error: message })
   }
+
+  async deleteShare(shareIndex) {
+    const { tKey } = this.state
+    await tKey.deleteShare(shareIndex)
+    await this.setSettingsPageData()
+  }
 }
 
 export default ThresholdKeyController

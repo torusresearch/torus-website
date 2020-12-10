@@ -40,6 +40,8 @@ const initialState = {
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},
+  unapprovedEncryptionPublicKeyMsgs: {},
+  unapprovedDecryptMsgs: {},
   // preferences
   tKeyOnboardingComplete: true,
   tKeyExists: false,

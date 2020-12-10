@@ -169,4 +169,7 @@ export default {
       log.error(error, 'unable to get postbox key')
     }
   },
+  deleteShare(_, payload) {
+    thresholdKeyController.deleteShare(payload)
+  },
 }

@@ -29,6 +29,7 @@ import {
   assetControllerHandler,
   billboardHandler,
   detectTokensControllerHandler,
+  encryptionPublicKeyHandler,
   errorMsgHandler as errorMessageHandler,
   etherscanTxHandler,
   messageManagerHandler,
@@ -40,6 +41,7 @@ import {
   tokenRatesControllerHandler,
   transactionControllerHandler,
   typedMessageManagerHandler,
+  unapprovedDecryptMsgsHandler,
   walletConnectHandler,
 } from './controllerSubscriptions'
 import initialState from './state'
@@ -60,6 +62,8 @@ const {
   assetDetectionController,
   thresholdKeyController,
   walletConnectController,
+  encryptionPublicKeyManager,
+  decryptMessageManager,
 } = torusController || {}
 
 // stream to send logged in status
@@ -120,6 +124,8 @@ export default {
     await walletConnectController.disconnect()
     resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
+    resetStore(encryptionPublicKeyManager.store, encryptionPublicKeyHandler)
+    resetStore(decryptMessageManager.store, unapprovedDecryptMsgsHandler)
     resetStore(thresholdKeyController.store, tKeyHandler, {})
     clearInterval(thresholdKeyController.requestStatusCheckId)
     assetDetectionController.stopAssetDetection()
@@ -363,6 +369,8 @@ export default {
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
     thresholdKeyController.store.subscribe(tKeyHandler)
     walletConnectController.store.subscribe(walletConnectHandler)
+    encryptionPublicKeyManager.store.subscribe(encryptionPublicKeyHandler)
+    decryptMessageManager.store.subscribe(unapprovedDecryptMsgsHandler)
   },
   async initTorusKeyring({ dispatch, commit, state }, payload) {
     const { keys, calledFromEmbed, rehydrate, postboxAddress } = payload
@@ -537,5 +545,8 @@ export default {
   },
   disconnectWalletConnect(_, __) {
     return walletConnectController.disconnect()
+  },
+  decryptMessage(_, payload) {
+    return torusController.decryptMessageInline(payload)
   },
 }
