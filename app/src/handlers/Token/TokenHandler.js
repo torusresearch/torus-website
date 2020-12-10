@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js'
 import tokenAbi from 'human-standard-token-abi'
-import log from 'loglevel'
 
 class TokenHandler {
   constructor({ address, symbol, decimals, name, web3 }) {
@@ -29,7 +28,6 @@ class TokenHandler {
   async getUserBalance(userAddress) {
     if (!this.decimals) await this.getDecimals()
     const balance = await this.contract.methods.balanceOf(userAddress).call()
-    log.info(balance)
     return new BigNumber(balance).toString(16)
   }
 }

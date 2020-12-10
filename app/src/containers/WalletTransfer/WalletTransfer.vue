@@ -960,7 +960,7 @@ export default {
       this.toggle_exclusive = value
       const currencyRate = this.getCurrencyTokenRate
       if (value === 0) {
-        this.onChangeDisplayAmount(this.displayAmount.div(currencyRate))
+        this.onChangeDisplayAmount(!currencyRate.eq(new BigNumber('0')) ? this.displayAmount.div(currencyRate) : this.displayAmount)
       } else if (value === 1) {
         this.onChangeDisplayAmount(this.displayAmount.times(currencyRate))
       }
