@@ -43,6 +43,7 @@ import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
 import MenuIcon from './MenuIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
+import PencilEditIcon from './PencilEditIcon.vue'
 import PersonCircleIcon from './PersonCircleIcon.vue'
 import PersonIcon from './PersonIcon.vue'
 import QrIcon from './QrIcon.vue'
@@ -80,6 +81,7 @@ import VerifierPasswordlessIcon from './VerifierPasswordlessIcon.vue'
 import VerifierRedditIcon from './VerifierRedditIcon.vue'
 import VerifierTwitchIcon from './VerifierTwitchIcon.vue'
 import VerifierTwitterIcon from './VerifierTwitterIcon.vue'
+import VerifierUnstoppableDomainsIcon from './VerifierUnstoppableDomainsIcon.vue'
 import VerifierWechatIcon from './VerifierWechatIcon.vue'
 import VerifierWeiboIcon from './VerifierWeiboIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
@@ -224,6 +226,9 @@ export default {
   ens: {
     component: VerifierEnsIcon,
   },
+  unstoppable_domains: {
+    component: VerifierUnstoppableDomainsIcon,
+  },
   discord: {
     component: VerifierDiscordIcon,
   },
@@ -355,5 +360,8 @@ export default {
   },
   link: {
     component: LinkIcon,
+  },
+  pencil_edit: {
+    component: PencilEditIcon,
   },
 }

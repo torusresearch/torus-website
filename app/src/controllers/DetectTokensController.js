@@ -1,11 +1,13 @@
+import contracts from '@metamask/contract-metadata'
 import BigNumber from 'bignumber.js'
-import contracts from 'eth-contract-metadata'
+import isEqual from 'lodash.isequal'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 import Web3 from 'web3'
 import { toChecksumAddress, toHex } from 'web3-utils'
 
+import TokenHandler from '../handlers/Token/TokenHandler'
 import { MAINNET } from '../utils/enums'
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
@@ -24,8 +26,19 @@ const mergeTokenArrays = (oldArray, newArray) => {
   const newMap = getObjectFromArrayBasedonKey(newArray || [], 'tokenAddress')
   const finalArr = newArray
   Object.keys(oldMap).forEach((x) => {
-    if (!newMap[x] && oldMap[x].isEtherscan) finalArr.push(oldMap[x])
+    if (!newMap[x] && (oldMap[x].isEtherscan || !!oldMap[x].customTokenId)) finalArr.push(oldMap[x])
   })
+  return finalArr
+}
+
+const mergeCustomTokenArrays = (oldArray, newArray) => {
+  const oldMap = getObjectFromArrayBasedonKey(oldArray || [], 'tokenAddress')
+  const finalArr = []
+  // if customtokenid is present and oldarray customtokenid is not present, add it
+  Object.keys(oldMap).forEach((x) => {
+    if (!oldMap[x].customTokenId) finalArr.push(oldMap[x])
+  })
+  finalArr.push(...newArray)
   return finalArr
 }
 
@@ -39,17 +52,19 @@ class DetectTokensController {
    *
    * @param {Object} [config] - Options to configure controller
    */
-  constructor({ interval = DEFAULT_INTERVAL, network, provider } = {}) {
+  constructor({ interval = DEFAULT_INTERVAL, network, provider, preferencesStore } = {}) {
     this.interval = interval
     this.network = network
     this.detectedTokensStore = new ObservableStore({})
     this._provider = provider
     this.web3 = new Web3(this._provider)
     this.selectedAddress = ''
+    this.preferencesStore = preferencesStore
+    this.selectedCustomTokens = []
   }
 
   /**
-   * For each token in eth-contract-metadata, find check selectedAddress balance.
+   * For each token in @metamask/contract-metadata, find check selectedAddress balance.
    *
    */
   async detectNewTokens() {
@@ -78,7 +93,7 @@ class DetectTokensController {
           const balance = toHex(result[index])
           if (balance && balance !== '0x0') {
             // do sth else here
-            nonZeroTokens.push({ ...contracts[tokenAddress], tokenAddress, balance })
+            nonZeroTokens.push({ ...contracts[tokenAddress], tokenAddress, balance, network: MAINNET })
             // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
           }
         })
@@ -110,6 +125,7 @@ class DetectTokensController {
           tokenAddress: toChecksumAddress(x.contractAddress),
           balance: `0x${new BigNumber(x.balance).times(new BigNumber(10).pow(new BigNumber(x.tokenDecimal))).toString(16)}`,
           isEtherscan: true,
+          network: MAINNET,
         })
       } else if (nonZeroTokens[index].isEtherscan) {
         nonZeroTokens[index] = {
@@ -124,7 +140,7 @@ class DetectTokensController {
   async refreshTokenBalances() {
     const userAddress = this.selectedAddress
     if (userAddress === '') return
-    if (this.network.store.getState().provider.type !== MAINNET) {
+    if (this.network.getNetworkNameFromNetworkCode() !== MAINNET) {
       this.detectedTokensStore.updateState({ [userAddress]: [] })
       return
     }
@@ -142,13 +158,49 @@ class DetectTokensController {
         tokenAddresses.forEach((_, index) => {
           const balance = toHex(result[index])
           if (balance && balance !== '0x0') {
-            nonZeroTokens.push({ ...oldTokens[index], balance })
+            nonZeroTokens.push({ ...oldTokens[index], balance, network: MAINNET })
           }
         })
         const currentTokens = this.detectedTokensStore.getState()[userAddress] || []
         this.detectedTokensStore.updateState({ [userAddress]: mergeTokenArrays(currentTokens, nonZeroTokens) })
       })
     }
+  }
+
+  async getCustomTokenBalances(customTokens) {
+    const userAddress = this.selectedAddress
+    if (userAddress === '') return
+    this.selectedCustomTokens = customTokens.map((x) => x.token_address)
+    const localNetwork = this.network.getNetworkNameFromNetworkCode()
+    const currentNetworkTokens = customTokens.reduce((acc, x) => {
+      if (x.network === localNetwork) acc.push(x)
+      return acc
+    }, [])
+    const nonZeroTokens = await Promise.all(
+      currentNetworkTokens.map(async (x) => {
+        const tokenInstance = new TokenHandler({
+          address: x.token_address,
+          decimals: x.decimals,
+          name: x.token_name,
+          symbol: x.token_symbol,
+          web3: this.web3,
+        })
+        const balance = await tokenInstance.getUserBalance(userAddress)
+        return {
+          decimals: tokenInstance.decimals,
+          erc20: true,
+          logo: 'eth.svg',
+          name: tokenInstance.name,
+          symbol: tokenInstance.symbol,
+          tokenAddress: toChecksumAddress(tokenInstance.address),
+          balance: `0x${balance}`,
+          customTokenId: x.id,
+          network: localNetwork,
+        }
+      })
+    )
+    const currentTokens = this.detectedTokensStore.getState()[userAddress] || []
+    this.detectedTokensStore.updateState({ [userAddress]: mergeCustomTokenArrays(currentTokens, nonZeroTokens) })
   }
 
   /**
@@ -161,6 +213,11 @@ class DetectTokensController {
       return
     }
     this.detectNewTokens()
+    if (this._preferencesStore) {
+      const userState = this._preferencesStore.getState()[this.selectedAddress]
+      const { customTokens } = userState || {}
+      this.getCustomTokenBalances(customTokens)
+    }
     this.interval = DEFAULT_INTERVAL
   }
 
@@ -175,6 +232,11 @@ class DetectTokensController {
     this._handle = setInterval(() => {
       this.detectNewTokens()
       this.refreshTokenBalances()
+      if (this._preferencesStore) {
+        const userState = this._preferencesStore.getState()[this.selectedAddress]
+        const { customTokens } = userState || {}
+        this.getCustomTokenBalances(customTokens)
+      }
     }, interval)
   }
 
@@ -185,6 +247,28 @@ class DetectTokensController {
   startTokenDetection(selectedAddress) {
     this.selectedAddress = selectedAddress
     this.restartTokenDetection()
+  }
+
+  set preferencesStore(preferencesStore) {
+    if (this._preferencesStore) this._preferencesStore.unsubscribe()
+    if (!preferencesStore) {
+      return
+    }
+    this._preferencesStore = preferencesStore
+    // set default maybe
+    preferencesStore.subscribe((state) => {
+      const { selectedAddress } = state
+      if (!selectedAddress) return
+      const { customTokens } = state[selectedAddress]
+      if (
+        !isEqual(
+          this.selectedCustomTokens,
+          customTokens.map((x) => x.token_address)
+        )
+      ) {
+        this.getCustomTokenBalances(customTokens)
+      }
+    })
   }
 }
 

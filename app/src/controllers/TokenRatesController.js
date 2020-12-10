@@ -59,9 +59,6 @@ class TokenRatesController {
     }, interval)
   }
 
-  /**
-   * @type {Array}
-   */
   set tokensStore(tokensStore) {
     if (this._tokensStore) this._tokensStore.unsubscribe()
     if (!tokensStore) {
