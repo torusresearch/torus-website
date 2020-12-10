@@ -266,6 +266,10 @@ function handleDeny(id, txType) {
     torusController.cancelTypedMessage(Number.parseInt(id, 10))
   } else if (txType === TX_TRANSACTION) {
     torusController.cancelTransaction(Number.parseInt(id, 10))
+  } else if (txType === TX_GET_ENCRYPTION_KEY) {
+    torusController.cancelEncryptionPublicKey(Number.parseInt(id, 10))
+  } else if (txType === TX_ETH_DECRYPT) {
+    torusController.cancelDecryptMessage(Number.parseInt(id, 10))
   }
 }
 

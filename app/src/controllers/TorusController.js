@@ -339,6 +339,15 @@ export default class TorusController extends EventEmitter {
       // personalMessageManager
       signTypedMessage: nodeify(this.signTypedMessage, this),
       cancelTypedMessage: this.cancelTypedMessage.bind(this),
+
+      // decryptMessageManager
+      decryptMessage: nodeify(this.decryptMessage, this),
+      decryptMessageInline: nodeify(this.decryptMessageInline, this),
+      cancelDecryptMessage: this.cancelDecryptMessage.bind(this),
+
+      // EncryptionPublicKeyManager
+      encryptionPublicKey: nodeify(this.signEncryptionPublicKey, this),
+      cancelEncryptionPublicKey: this.cancelEncryptionPublicKey.bind(this),
     }
   }
 
@@ -903,6 +912,19 @@ export default class TorusController extends EventEmitter {
   }
 
   /**
+   * Used to cancel a eth_getEncryptionPublicKey type message.
+   * @param {string} msgId - The ID of the message to cancel.
+   * @param {Function} cb - The callback function called with a full state update.
+   */
+  cancelEncryptionPublicKey(msgId, cb) {
+    const messageManager = this.encryptionPublicKeyManager
+    messageManager.rejectMsg(msgId)
+    if (cb && typeof cb === 'function') {
+      cb(null, this.getState())
+    }
+  }
+
+  /**
    * Called when a dapp uses the eth_decrypt method.
    *
    * @param {Object} messageParameters - The params of the message to sign & return to the Dapp.
@@ -959,5 +981,48 @@ export default class TorusController extends EventEmitter {
     msgParams.data = JSON.parse(buff.toString('utf8'))
 
     return this.keyringController.decryptMessage(msgParams, address)
+  }
+
+  /**
+   * Signifies a user's approval to decrypt a message in queue.
+   * Triggers decrypt, and the callback function from newUnsignedDecryptMessage.
+   *
+   * @param {Object} msgParams - The params of the message to decrypt & return to the Dapp.
+   * @returns {Promise<Object>} - A full state update.
+   */
+  async decryptMessage(msgParams) {
+    log.info('MetaMaskController - decryptMessage')
+    const msgId = msgParams.metamaskId
+    // sets the status op the message to 'approved'
+    // and removes the metamaskId for decryption
+    try {
+      const cleanMsgParams = await this.decryptMessageManager.approveMessage(msgParams)
+
+      const stripped = stripHexPrefix(cleanMsgParams.data)
+      const buff = Buffer.from(stripped, 'hex')
+      cleanMsgParams.data = JSON.parse(buff.toString('utf8'))
+
+      // decrypt the message
+      const rawMess = this.keyringController.decryptMessage(cleanMsgParams)
+      // tells the listener that the message has been decrypted and can be returned to the dapp
+      this.decryptMessageManager.setMsgStatusDecrypted(msgId, rawMess)
+    } catch (error) {
+      log.info('MetaMaskController - eth_decrypt failed.', error)
+      this.decryptMessageManager.errorMessage(msgId, error)
+    }
+    return this.getState()
+  }
+
+  /**
+   * Used to cancel a eth_decrypt type message.
+   * @param {string} msgId - The ID of the message to cancel.
+   * @param {Function} cb - The callback function called with a full state update.
+   */
+  cancelDecryptMessage(msgId, cb) {
+    const messageManager = this.decryptMessageManager
+    messageManager.rejectMsg(msgId)
+    if (cb && typeof cb === 'function') {
+      cb(null, this.getState())
+    }
   }
 }
