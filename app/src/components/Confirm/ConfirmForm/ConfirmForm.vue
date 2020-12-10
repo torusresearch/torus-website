@@ -315,7 +315,6 @@
 
 <script>
 import BigNumber from 'bignumber.js'
-import { ethers } from 'ethers'
 import collectibleABI from 'human-standard-collectible-abi'
 import tokenABI from 'human-standard-token-abi'
 import log from 'loglevel'
@@ -571,8 +570,7 @@ export default {
       if (type === TX_ETH_DECRYPT) {
         const { msgParams: { data, from } = {}, id = '' } = msgParams || {}
         this.id = id
-        this.message = this.stringifiableToHex(data)
-        this.decryptedData = data
+        this.message = data
         this.sender = from
       } else if (type !== TX_TRANSACTION) {
         const { msgParams: { message, typedMessages } = {}, id = '' } = msgParams || {}
@@ -783,14 +781,11 @@ export default {
         this.topUpErrorShow = true
       }
     },
-    stringifiableToHex(value) {
-      return ethers.utils.hexlify(Buffer.from(JSON.stringify(value)))
-    },
     async decryptInline() {
       try {
         this.encryptedMessage = await this.decryptMessage({
           id: this.id,
-          data: this.decryptedData,
+          data: this.message,
           from: this.sender,
         })
         this.showEncrypted = true

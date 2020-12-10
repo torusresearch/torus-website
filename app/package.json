@@ -61,7 +61,6 @@
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^7.0.7",
     "ethereumjs-wallet": "^1.0.1",
-    "ethers": "^5.0.23",
     "ethjs-query": "^0.3.8",
     "fast-json-patch": "^2.2.1",
     "human-standard-collectible-abi": "^1.0.2",

@@ -2,7 +2,7 @@ import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
 import { normalize } from 'eth-sig-util'
-import { BN } from 'ethereumjs-util'
+import { BN, stripHexPrefix } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import RpcEngine from 'json-rpc-engine'
 import createEngineStream from 'json-rpc-middleware-stream/engineStream'
@@ -932,6 +932,11 @@ export default class TorusController extends EventEmitter {
     try {
       const cleanMessageParameters = await this.decryptMessageManager.approveMessage(messageParameters)
       const address = toChecksumAddress(normalize(cleanMessageParameters.from))
+
+      const stripped = stripHexPrefix(cleanMessageParameters.data)
+      const buff = Buffer.from(stripped, 'hex')
+      cleanMessageParameters.data = JSON.parse(buff.toString('utf8'))
+
       const rawMess = await this.keyringController.decryptMessage(cleanMessageParameters, address)
       this.decryptMessageManager.setMsgStatusDecrypted(messageId, rawMess)
       this.getState()
@@ -951,6 +956,10 @@ export default class TorusController extends EventEmitter {
   async decryptMessageInline(msgParams) {
     log.info('MetaMaskController - eth_decrypt inline')
     const address = toChecksumAddress(normalize(msgParams.from))
+    const stripped = stripHexPrefix(msgParams.data)
+    const buff = Buffer.from(stripped, 'hex')
+    msgParams.data = JSON.parse(buff.toString('utf8'))
+
     return this.keyringController.decryptMessage(msgParams, address)
   }
 }
