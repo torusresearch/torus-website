@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { MAINNET, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
+import { BSC_MAINNET, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
 
 export default {
   props: {
@@ -19,7 +19,7 @@ export default {
     storeNetworkType: {
       type: Object,
       default() {
-        return { host: MAINNET, networkName: '', chainId: '' }
+        return { host: BSC_MAINNET, networkName: '', chainId: '' }
       },
     },
     isPlain: {

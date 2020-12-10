@@ -145,7 +145,7 @@
 import BigNumber from 'bignumber.js'
 import { mapGetters } from 'vuex'
 
-import { CONTRACT_TYPE_ETH, ETH, GITHUB, MAINNET, REDDIT, TWITTER } from '../../../utils/enums'
+import { BSC_MAINNET, CONTRACT_TYPE_ETH, ETH, GITHUB, REDDIT, TWITTER } from '../../../utils/enums'
 import { addressSlicer, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
@@ -227,7 +227,7 @@ export default {
     networkType: {
       type: Object,
       default() {
-        return { host: MAINNET, networkName: '', chainId: '' }
+        return { host: BSC_MAINNET, networkName: '', chainId: '' }
       },
     },
     dappName: {

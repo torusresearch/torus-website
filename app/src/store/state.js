@@ -2,10 +2,10 @@ import clone from 'clone'
 
 import config from '../config'
 import {
+  BSC_MAINNET,
+  BSC_MAINNET_CODE,
+  BSC_MAINNET_DISPLAY_NAME,
   LOCALE_EN,
-  MAINNET,
-  MAINNET_CODE,
-  MAINNET_DISPLAY_NAME,
   SUPPORTED_NETWORK_TYPES,
   THEME_LIGHT_BLUE_NAME,
   USER_INFO_REQUEST_NEW,
@@ -31,7 +31,7 @@ const initialState = {
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
   networkId: 0,
-  networkType: { host: MAINNET, chainId: MAINNET_CODE, networkName: MAINNET_DISPLAY_NAME },
+  networkType: { host: BSC_MAINNET, chainId: BSC_MAINNET_CODE, networkName: BSC_MAINNET_DISPLAY_NAME },
   currencyData: {},
   tokenData: {}, // Account specific object
   assets: {}, // Account specific object

@@ -5,7 +5,7 @@ import Web3 from 'web3'
 
 import TorusController from './controllers/TorusController'
 import setupMultiplex from './controllers/utils/setupMultiplex'
-import { MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME } from './utils/enums'
+import { BSC_MAINNET, BSC_MAINNET_CODE, BSC_MAINNET_DISPLAY_NAME } from './utils/enums'
 import { getIFrameOrigin, isMain, isPwa, storageAvailable } from './utils/utils'
 // import store from './store'
 let storeReference
@@ -47,9 +47,9 @@ function onloadTorus(torus) {
   }
 
   const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || {
-    host: MAINNET,
-    chainId: MAINNET_CODE,
-    networkName: MAINNET_DISPLAY_NAME,
+    host: BSC_MAINNET,
+    chainId: BSC_MAINNET_CODE,
+    networkName: BSC_MAINNET_DISPLAY_NAME,
   }
 
   const torusController = new TorusController({
