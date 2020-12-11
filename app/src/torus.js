@@ -7,7 +7,7 @@ import setupMultiplex from './controllers/utils/setupMultiplex'
 import onloadTorus from './onload'
 import { fakeStream, selectChainId } from './utils/utils'
 
-// Make this a class. Use ES6
+// Make this a class. Use ES6 class
 class TorusExtended extends Torus {
   constructor() {
     super()
