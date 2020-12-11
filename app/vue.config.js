@@ -60,7 +60,7 @@ module.exports = {
     }
   },
 
-  publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',
+  publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'binance' ? `/${version}/` : '/',
   integrity: true,
   crossorigin: 'anonymous',
   productionSourceMap: false,
@@ -117,7 +117,7 @@ function getAndroidIcon(size) {
 }
 
 function getValueForCurrentEnvironment(value) {
-  return process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
+  return process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'binance'
     ? `/${version}/${value}`
     : `/${value}`
 }

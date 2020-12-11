@@ -588,7 +588,7 @@ self.__precacheManifest = [
 
 try {
   const { pathname, hostname } = new URL(self.getScope())
-  if (hostname === 'app.tor.us' || hostname === 'staging.tor.us') {
+  if (hostname === 'app.tor.us' || hostname === 'binance.tor.us') {
     if (pathname !== '/') precacheAndRoute(self.__precacheManifest, {})
   } else {
     precacheAndRoute(self.__precacheManifest, {})

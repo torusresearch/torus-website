@@ -18,7 +18,7 @@ Vue.config.productionTip = false
 const buildEnvironment = process.env.VUE_APP_TORUS_BUILD_ENV
 let logLevel
 switch (buildEnvironment) {
-  case 'staging':
+  case 'binance':
     logLevel = 'info'
     log.setDefaultLevel(logLevel)
     break
