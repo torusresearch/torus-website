@@ -5,7 +5,7 @@ import sinon from 'sinon'
 
 import PreferencesController from '../../../src/controllers/PreferencesController'
 import NetworkController from '../../../src/controllers/NetworkController'
-import { ACCOUNT_TYPE, THEME_LIGHT_BLUE_NAME } from '../../../src/utils/enums'
+import { ACCOUNT_TYPE, THEME_DARK_BLACK_NAME } from '../../../src/utils/enums'
 
 const TORUS_API = `https://api.tor.us`
 const noop = () => {}
@@ -78,7 +78,7 @@ describe('Preferences Controller', () => {
     sandbox.assert.calledOnce(syncStub)
     assert.strictEqual(defaultAddress, testAccount.address, 'Wrong default address')
     assert.deepStrictEqual(state, {
-      theme: THEME_LIGHT_BLUE_NAME,
+      theme: THEME_DARK_BLACK_NAME,
       tKeyOnboardingComplete: false,
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount.address,
@@ -109,7 +109,7 @@ describe('Preferences Controller', () => {
     assert.strictEqual(defaultAddresses[0], testAccount.address, 'Wrong default address')
     assert.strictEqual(defaultAddresses[1], testAccount2.address, 'Wrong default address 2')
     assert.deepStrictEqual(state1, {
-      theme: THEME_LIGHT_BLUE_NAME,
+      theme: THEME_DARK_BLACK_NAME,
       tKeyOnboardingComplete: false,
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount.address,
@@ -125,7 +125,7 @@ describe('Preferences Controller', () => {
       paymentTx: [],
     })
     assert.deepStrictEqual(state2, {
-      theme: THEME_LIGHT_BLUE_NAME,
+      theme: THEME_DARK_BLACK_NAME,
       tKeyOnboardingComplete: false,
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount2.address,
@@ -159,7 +159,7 @@ describe('Preferences Controller', () => {
     sandbox.assert.notCalled(storeUserLoginStub)
     assert.strictEqual(defaultAddress, testAccount.address, 'Wrong default address')
     assert.deepStrictEqual(state, {
-      theme: THEME_LIGHT_BLUE_NAME,
+      theme: THEME_DARK_BLACK_NAME,
       tKeyOnboardingComplete: false,
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount.address,
