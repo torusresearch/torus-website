@@ -29,6 +29,7 @@ import {
   assetControllerHandler,
   billboardHandler,
   detectTokensControllerHandler,
+  encryptionPublicKeyHandler,
   errorMsgHandler as errorMessageHandler,
   etherscanTxHandler,
   messageManagerHandler,
@@ -40,6 +41,7 @@ import {
   tokenRatesControllerHandler,
   transactionControllerHandler,
   typedMessageManagerHandler,
+  unapprovedDecryptMsgsHandler,
   walletConnectHandler,
 } from './controllerSubscriptions'
 import initialState from './state'
@@ -60,6 +62,8 @@ const {
   assetDetectionController,
   thresholdKeyController,
   walletConnectController,
+  encryptionPublicKeyManager,
+  decryptMessageManager,
 } = torusController || {}
 
 // stream to send logged in status
@@ -120,6 +124,8 @@ export default {
     await walletConnectController.disconnect()
     resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
+    resetStore(encryptionPublicKeyManager.store, encryptionPublicKeyHandler)
+    resetStore(decryptMessageManager.store, unapprovedDecryptMsgsHandler)
     resetStore(thresholdKeyController.store, tKeyHandler, {})
     clearInterval(thresholdKeyController.requestStatusCheckId)
     assetDetectionController.stopAssetDetection()
@@ -277,18 +283,25 @@ export default {
     context.commit('setNetworkId', payload.networkId)
     torus.updateStaticData({ networkId: payload.networkId })
   },
-  setProviderType({ commit }, payload) {
+  async setProviderType({ commit, dispatch, state }, payload) {
     let networkType = payload.network
     let isSupportedNetwork = false
     if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
       networkType = SUPPORTED_NETWORK_TYPES[networkType.host]
       isSupportedNetwork = true
     }
+    const currentTicker = networkType.ticker || 'ETH'
     commit('setNetworkType', networkType)
     if ((payload.type && payload.type === RPC) || !isSupportedNetwork) {
-      return torusController.setCustomRpc(networkType.host, networkType.chainId || 1, 'ETH', networkType.networkName || '')
+      return torusController.setCustomRpc(networkType.host, networkType.chainId || 1, currentTicker, networkType.networkName || '', {
+        blockExplorerUrl: networkType.blockExplorer,
+      })
     }
-    return networkController.setProviderType(networkType.host)
+    await networkController.setProviderType(networkType.host)
+    if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency)
+      await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home' })
+    else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
+    return undefined
   },
   async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId }) {
     try {
@@ -356,6 +369,8 @@ export default {
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
     thresholdKeyController.store.subscribe(tKeyHandler)
     walletConnectController.store.subscribe(walletConnectHandler)
+    encryptionPublicKeyManager.store.subscribe(encryptionPublicKeyHandler)
+    decryptMessageManager.store.subscribe(unapprovedDecryptMsgsHandler)
   },
   async initTorusKeyring({ dispatch, commit, state }, payload) {
     const { keys, calledFromEmbed, rehydrate, postboxAddress } = payload
@@ -530,5 +545,8 @@ export default {
   },
   disconnectWalletConnect(_, __) {
     return walletConnectController.disconnect()
+  },
+  decryptMessage(_, payload) {
+    return torusController.decryptMessageInline(payload)
   },
 }

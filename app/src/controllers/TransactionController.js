@@ -1,5 +1,5 @@
 /* eslint-disable require-atomic-updates */
-import erc20Contracts from 'eth-contract-metadata'
+import erc20Contracts from '@metamask/contract-metadata'
 import { ethErrors } from 'eth-rpc-errors'
 import Common from 'ethereumjs-common'
 import { Transaction } from 'ethereumjs-tx'
@@ -477,7 +477,7 @@ class TransactionController extends EventEmitter {
         ),
       }
     }
-    log.info('params', chainParameters, chainId)
+    log.info('params', txParameters, chainParameters, chainId)
     const ethTx = new Transaction(txParameters, chainParameters)
     await this.signEthTx(ethTx, fromAddress)
 

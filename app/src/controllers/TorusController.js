@@ -2,7 +2,7 @@ import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
 import { normalize } from 'eth-sig-util'
-import { BN } from 'ethereumjs-util'
+import { BN, stripHexPrefix } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import RpcEngine from 'json-rpc-engine'
 import createEngineStream from 'json-rpc-middleware-stream/engineStream'
@@ -21,7 +21,9 @@ import AssetContractController from './AssetsContractController'
 import AssetController from './AssetsController'
 import AssetDetectionController from './AssetsDetectionController'
 import CurrencyController from './CurrencyController'
+import DecryptMessageManager from './DecryptMessageManager'
 import DetectTokensController from './DetectTokensController'
+import EncryptionPublicKeyManager from './EncryptionPublicKeyManager'
 import MessageManager from './MessageManager'
 import NetworkController from './NetworkController'
 import PermissionsController from './PermissionsController'
@@ -92,17 +94,6 @@ export default class TorusController extends EventEmitter {
       network: this.networkController,
     })
 
-    // detect tokens controller
-    this.detectTokensController = new DetectTokensController({
-      network: this.networkController,
-      provider: this.provider,
-    })
-
-    this.tokenRatesController = new TokenRatesController({
-      currency: this.currencyController.store,
-      tokensStore: this.detectTokensController.detectedTokensStore,
-    })
-
     // key mgmt
     this.keyringController = new KeyringController()
 
@@ -110,6 +101,18 @@ export default class TorusController extends EventEmitter {
       network: this.networkController,
       provider: this.provider,
       signMessage: this.keyringController.signMessage.bind(this.keyringController),
+    })
+
+    // detect tokens controller
+    this.detectTokensController = new DetectTokensController({
+      network: this.networkController,
+      provider: this.provider,
+      preferencesStore: this.prefsController.store,
+    })
+
+    this.tokenRatesController = new TokenRatesController({
+      currency: this.currencyController.store,
+      tokensStore: this.detectTokensController.detectedTokensStore,
     })
 
     // start and stop polling for balances based on activeControllerConnections
@@ -188,6 +191,8 @@ export default class TorusController extends EventEmitter {
     this.messageManager = new MessageManager()
     this.personalMessageManager = new PersonalMessageManager()
     this.typedMessageManager = new TypedMessageManager({ networkController: this.networkController })
+    this.encryptionPublicKeyManager = new EncryptionPublicKeyManager()
+    this.decryptMessageManager = new DecryptMessageManager()
     this.store.updateStructure({
       AssetController: this.assetController.store,
       // PermissionsController: this.permissionsController.permissions,
@@ -197,6 +202,8 @@ export default class TorusController extends EventEmitter {
       CurrencyController: this.currencyController.store,
       PersonalMessageManager: this.personalMessageManager.store,
       TypedMessageManager: this.typedMessageManager.store,
+      EncryptionPublicKeyManager: this.encryptionPublicKeyManager.store,
+      DecryptMessageManager: this.decryptMessageManager.store,
     })
     this.updateAndApproveTransaction = nodeify(this.txController.updateAndApproveTransaction, this.txController)
     this.cancelTransaction = nodeify(this.txController.cancelTransaction, this.txController)
@@ -245,6 +252,8 @@ export default class TorusController extends EventEmitter {
       processPersonalMessage: this.newUnsignedPersonalMessage.bind(this),
       getPendingNonce: this.getPendingNonce.bind(this),
       getPendingTransactionByHash: (hash) => this.txController.getFilteredTxList({ hash, status: 'submitted' })[0],
+      processEncryptionPublicKey: this.newUnsignedEncryptionPublicKey.bind(this),
+      processDecryptMessage: this.newUnsignedDecryptMessage.bind(this),
     }
     const providerProxy = this.networkController.initializeProvider(providerOptions)
     return providerProxy
@@ -331,6 +340,15 @@ export default class TorusController extends EventEmitter {
       // personalMessageManager
       signTypedMessage: nodeify(this.signTypedMessage, this),
       cancelTypedMessage: this.cancelTypedMessage.bind(this),
+
+      // decryptMessageManager
+      decryptMessage: nodeify(this.decryptMessage, this),
+      decryptMessageInline: nodeify(this.decryptMessageInline, this),
+      cancelDecryptMessage: this.cancelDecryptMessage.bind(this),
+
+      // EncryptionPublicKeyManager
+      encryptionPublicKey: nodeify(this.signEncryptionPublicKey, this),
+      cancelEncryptionPublicKey: this.cancelEncryptionPublicKey.bind(this),
     }
   }
 
@@ -824,11 +842,11 @@ export default class TorusController extends EventEmitter {
   async setCurrentCurrency(payload, callback) {
     const { ticker } = this.networkController.getNetworkConfig()
     try {
-      if (payload.selectedCurrency !== 'ETH') {
-        this.currencyController.setNativeCurrency(ticker)
-        this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
-        await this.currencyController.updateConversionRate()
-      }
+      // if (payload.selectedCurrency !== 'ETH') {
+      this.currencyController.setNativeCurrency(ticker)
+      this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
+      await this.currencyController.updateConversionRate()
+      // }
       const data = {
         nativeCurrency: ticker || 'ETH',
         conversionRate: this.currencyController.getConversionRate(),
@@ -856,5 +874,126 @@ export default class TorusController extends EventEmitter {
   async setCustomRpc(rpcTarget, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {
     this.networkController.setRpcTarget(rpcTarget, chainId, ticker, nickname, rpcPrefs)
     return rpcTarget
+  }
+
+  /**
+   * Called when a dapp uses the eth_getEncryptionPublicKey method.
+   *
+   * @param {Object} messageParameters - The params of the message to sign & return to the Dapp.
+   * @param {Object} request - (optional) the original request, containing the origin
+   * Passed back to the requesting Dapp.
+   */
+  newUnsignedEncryptionPublicKey(messageParameters, request) {
+    const messageId = createRandomId()
+    const promise = this.encryptionPublicKeyManager.addUnapprovedMessageAsync(messageParameters, request, messageId)
+    this.sendUpdate()
+    this.opts.showUnconfirmedMessage(messageId, request)
+    return promise
+  }
+
+  /**
+   * Signifies a user's approval to receiving encryption public key in queue.
+   * Triggers receiving, and the callback function from newUnsignedEncryptionPublicKey.
+   *
+   * @param {Object} messageParameters - The params of the message to receive & return to the Dapp.
+   * @returns {Promise<Object>} - A full state update.
+   */
+  async signEncryptionPublicKey(messageParameters) {
+    log.info('MetaMaskController - eth_getEncryptionPublicKey')
+    const messageId = messageParameters.metamaskId
+    try {
+      const cleanMessageParameters = await this.encryptionPublicKeyManager.approveMessage(messageParameters)
+      const address = toChecksumAddress(normalize(cleanMessageParameters.msgParams))
+      const publicKey = this.keyringController.signEncryptionPublicKey(address)
+      this.encryptionPublicKeyManager.setMsgStatusReceived(messageId, publicKey)
+    } catch (error) {
+      log.info('TorusController - eth_getEncryptionPublicKey failed.', error)
+      this.encryptionPublicKeyManager.errorMessage(messageId, error)
+    }
+  }
+
+  /**
+   * Used to cancel a eth_getEncryptionPublicKey type message.
+   * @param {string} msgId - The ID of the message to cancel.
+   * @param {Function} cb - The callback function called with a full state update.
+   */
+  cancelEncryptionPublicKey(msgId, cb) {
+    const messageManager = this.encryptionPublicKeyManager
+    messageManager.rejectMsg(msgId)
+    if (cb && typeof cb === 'function') {
+      cb(null, this.getState())
+    }
+  }
+
+  /**
+   * Called when a dapp uses the eth_decrypt method.
+   *
+   * @param {Object} messageParameters - The params of the message to sign & return to the Dapp.
+   * @param {Object} request = (optional) the original request, containing the origin.
+   * Passed back to the requesting Dapp.
+   */
+  newUnsignedDecryptMessage(messageParameters, request) {
+    const messageId = createRandomId()
+    const promise = this.decryptMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageId)
+    this.sendUpdate()
+    this.opts.showUnconfirmedMessage(messageId, request)
+    return promise
+  }
+
+  /**
+   * Signifies a user's approval to decrypt a message in queue.
+   * Triggers decrypt, and the callback function from newUnsignedDecryptMessage.
+   *
+   * @param {Object} msgParams - The params of the message to decrypt & return to the Dapp.
+   * @returns {Promise<Object>} - A full state update.
+   */
+  async signEthDecrypt(messageParameters) {
+    log.info('MetaMaskController - eth_decrypt')
+    const messageId = messageParameters.metamaskId
+    try {
+      const cleanMessageParameters = await this.decryptMessageManager.approveMessage(messageParameters)
+      const address = toChecksumAddress(normalize(cleanMessageParameters.from))
+
+      const stripped = stripHexPrefix(cleanMessageParameters.data)
+      const buff = Buffer.from(stripped, 'hex')
+      cleanMessageParameters.data = JSON.parse(buff.toString('utf8'))
+
+      const rawMess = this.keyringController.decryptMessage(cleanMessageParameters, address)
+      this.decryptMessageManager.setMsgStatusDecrypted(messageId, rawMess)
+      this.getState()
+      return
+    } catch (error) {
+      log.info('TorusController - eth_getEncryptionPublicKey failed.', error)
+      this.encryptionPublicKeyManager.errorMessage(messageId, error)
+    }
+  }
+
+  /**
+   * Only decypt message and don't touch transaction state
+   *
+   * @param {Object} msgParams - The params of the message to decrypt.
+   * @returns {Promise<Object>} - A full state update.
+   */
+  async decryptMessageInline(msgParams) {
+    log.info('MetaMaskController - eth_decrypt inline')
+    const address = toChecksumAddress(normalize(msgParams.from))
+    const stripped = stripHexPrefix(msgParams.data)
+    const buff = Buffer.from(stripped, 'hex')
+    msgParams.data = JSON.parse(buff.toString('utf8'))
+
+    return this.keyringController.decryptMessage(msgParams, address)
+  }
+
+  /**
+   * Used to cancel a eth_decrypt type message.
+   * @param {string} msgId - The ID of the message to cancel.
+   * @param {Function} cb - The callback function called with a full state update.
+   */
+  cancelDecryptMessage(msgId, cb) {
+    const messageManager = this.decryptMessageManager
+    messageManager.rejectMsg(msgId)
+    if (cb && typeof cb === 'function') {
+      cb(null, this.getState())
+    }
   }
 }

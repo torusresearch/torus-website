@@ -41,6 +41,12 @@ export default {
   deleteContact(_, payload) {
     return prefsController.deleteContact(payload)
   },
+  addCustomToken(_, payload) {
+    return prefsController.addCustomToken(payload)
+  },
+  deleteCustomToken(_, payload) {
+    return prefsController.deleteCustomToken(payload)
+  },
   async setDefaultPublicAddress({ state, dispatch }, payload) {
     const { wallet } = state
     await Promise.all(Object.keys(wallet).map((x) => prefsController.setDefaultPublicAddress(x, payload)))
@@ -88,9 +94,9 @@ export default {
             }
           } else {
             tokenRate = 1
-            symbol = 'ETH'
+            symbol = state.networkType.ticker
             type = 'eth'
-            typeName = 'eth'
+            typeName = state.networkType.ticker
             typeImageLink = 'n/a'
             totalAmount = fromWei(toBN(txParams.value || 0))
             finalTo = toChecksumAddress(txParams.to)
@@ -114,9 +120,9 @@ export default {
           finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
         } else {
           tokenRate = 1
-          symbol = 'ETH'
+          symbol = state.networkType.ticker
           type = 'eth'
-          typeName = 'eth'
+          typeName = state.networkType.ticker
           typeImageLink = 'n/a'
           totalAmount = fromWei(toBN(txParams.value || 0))
           finalTo = toChecksumAddress(txParams.to)

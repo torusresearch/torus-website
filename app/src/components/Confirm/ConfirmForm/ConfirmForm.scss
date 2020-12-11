@@ -83,7 +83,8 @@
     border-left: 1px solid #bfcbd9;
   }
 
-  &.theme--dark {
+  &.theme--dark,
+  &.dark--theme {
     ::v-deep .vjs-tree .vjs-value {
       color: #eef2f4 !important;
     }
@@ -122,6 +123,57 @@
 
 .asset-name {
   line-height: 35px;
+}
+
+.message_cover {
+  background-color: white;
+  opacity: 0.8;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0px;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  &.is-dark {
+    background-color: var(--v-torusBlack-base);
+  }
+}
+
+.message_cover-lock {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0px;
+  cursor: pointer;
+  .v-icon {
+    background-color: #f1f2f6;
+    left: calc(50% - 8px);
+    position: absolute;
+    top: calc(50% - 24px);
+    border-radius: 50%;
+  }
+  .message-lock-text {
+    width: 120px;
+    position: absolute;
+    top: calc(50% - 5px);
+    left: calc(50% - 60px);
+    background-color: #f1f2f6;
+    border-radius: 12px;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 24px;
+    text-align: center;
+    color: #5c6c7f;
+  }
+  &.is-dark {
+    .v-icon {
+      background-color: transparent;
+    }
+  }
+}
+
+.copy-encrypted-btn {
+  border-radius: 14px !important;
 }
 
 ::v-deep .v-input.v-text-field--outlined {

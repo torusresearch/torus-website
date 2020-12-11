@@ -11,6 +11,10 @@ import {
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
   APPLE,
+  BSC_MAINNET_CHAIN_ID,
+  BSC_MAINNET_CODE,
+  BSC_TESTNET_CHAIN_ID,
+  BSC_TESTNET_CODE,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   DISCORD,
@@ -61,6 +65,7 @@ import {
   ROPSTEN_CODE,
   ROPSTEN_DISPLAY_NAME,
   SIMPLEX,
+  SUPPORTED_NETWORK_TYPES,
   SVG,
   THEME_DARK_BLACK_NAME,
   TWITTER,
@@ -81,8 +86,6 @@ const networkToNameMap = {
   [KOVAN_CODE]: KOVAN_DISPLAY_NAME,
   [GOERLI_CODE]: GOERLI_DISPLAY_NAME,
 }
-
-const ETHERSCAN_SUPPORTED_NETWORKS = new Set([MAINNET, RINKEBY, ROPSTEN, GOERLI, KOVAN])
 
 export const getNetworkDisplayName = (key) => networkToNameMap[key]
 
@@ -304,13 +307,13 @@ export async function isSmartContractAddress(address, web3) {
 }
 
 export function getEtherScanHashLink(txHash, network) {
-  if (!ETHERSCAN_SUPPORTED_NETWORKS.has(network)) return ''
-  return network === MAINNET ? `https://etherscan.io/tx/${txHash}` : `https://${network}.etherscan.io/tx/${txHash}`
+  if (!SUPPORTED_NETWORK_TYPES[network]) return ''
+  return `${SUPPORTED_NETWORK_TYPES[network].blockExplorer}/tx/${txHash}`
 }
 
 export function getEtherScanAddressLink(address, network) {
-  if (!ETHERSCAN_SUPPORTED_NETWORKS.has(network)) return ''
-  return network === MAINNET ? `https://etherscan.io/address/${address}` : `https://${network}.etherscan.io/address/${address}`
+  if (!SUPPORTED_NETWORK_TYPES[network]) return ''
+  return `${SUPPORTED_NETWORK_TYPES[network].blockExplorer}/address/${address}`
 }
 
 export const statusObject = {
@@ -522,6 +525,8 @@ export const standardNetworkId = {
   [GOERLI_CODE.toString()]: GOERLI_CHAIN_ID,
   [MATIC_CODE.toString()]: MATIC_CHAIN_ID,
   [MUMBAI_CODE.toString()]: MUMBAI_CHAIN_ID,
+  [BSC_MAINNET_CODE.toString()]: BSC_MAINNET_CHAIN_ID,
+  [BSC_TESTNET_CODE.toString()]: BSC_TESTNET_CHAIN_ID,
 }
 
 export function selectChainId(network, store) {
@@ -551,10 +556,11 @@ export const fakeStream = {
 }
 
 export function formatSmallNumbers(number, currency = 'usd', noTilde = false) {
-  if (!Number.isFinite(number)) return ''
-  const finalNumber = currency.toLowerCase() === 'usd' ? Number(number).toFixed(2) : Number(number).toFixed(5)
-
-  return `${currency.toLowerCase() === 'usd' || noTilde ? '' : '~ '}${Number(finalNumber)} ${currency.toUpperCase()}`
+  const finalNumber = BigNumber.isBigNumber(number) ? number.toNumber() : number
+  if (!Number.isFinite(finalNumber)) return ''
+  const value = currency.toLowerCase() === 'usd' ? Number(finalNumber).toFixed(2) : Number(finalNumber).toFixed(5)
+  const tilde = value > 0 ? '~ ' : ''
+  return `${currency.toLowerCase() === 'usd' || noTilde ? '' : tilde}${Number(value)} ${currency.toUpperCase()}`
 }
 
 export const getUserLanguage = () => {
@@ -568,7 +574,7 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
   let totalAmountString = ''
   if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
   else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol, true)
-  else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH', true)
+  else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.type_name, true)
   const currencyAmountString =
     x.type === CONTRACT_TYPE_ERC721 || x.isEtherscan ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
   const finalObject = {

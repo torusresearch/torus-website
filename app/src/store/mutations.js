@@ -126,7 +126,7 @@ export default {
     const { enabledVerifiers, loginConfig } = payload
     const finalLoginConfig = merge(config.loginConfig, loginConfig)
     Object.keys(enabledVerifiers).forEach((x) => {
-      finalLoginConfig[x].showOnModal = !enabledVerifiers[x] ? false : finalLoginConfig[x].showOnModal
+      if (finalLoginConfig[x]) finalLoginConfig[x].showOnModal = !enabledVerifiers[x] ? false : finalLoginConfig[x].showOnModal
     })
     state.embedState = {
       ...state.embedState,
@@ -203,6 +203,12 @@ export default {
   },
   deleteConfirmModal(state, payload) {
     state.confirmModals = state.confirmModals.filter((x) => x.id !== payload)
+  },
+  setUnapprovedEncryptionPublicKeyMsgs(state, unapprovedEncryptionPublicKeyMsgs) {
+    state.unapprovedEncryptionPublicKeyMsgs = unapprovedEncryptionPublicKeyMsgs
+  },
+  setUnapprovedDecryptMsgs(state, unapprovedDecryptMsgs) {
+    state.unapprovedDecryptMsgs = unapprovedDecryptMsgs
   },
   setPostboxKey(state, payload) {
     state.postboxKey = payload

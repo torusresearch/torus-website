@@ -98,7 +98,8 @@ export function prefsControllerHandler(state) {
   const addressState = state[selectedAddress]
   Object.keys(addressState).forEach((x) => {
     if (x === 'jwtToken') getStore().commit('setJwtToken', { [selectedAddress]: addressState[x] })
-    else if (x !== 'fetchedPastTx' && x !== 'accountType') getStore().commit(`set${capitalizeFirstLetter(x)}`, addressState[x])
+    else if (x !== 'fetchedPastTx' && x !== 'accountType' && x !== 'customTokens')
+      getStore().commit(`set${capitalizeFirstLetter(x)}`, addressState[x])
   })
 }
 
@@ -128,4 +129,12 @@ export function tKeyHandler(state) {
 
 export function walletConnectHandler(state) {
   getStore().commit('setWCConnectorSession', state)
+}
+
+export function encryptionPublicKeyHandler({ unapprovedEncryptionPublicKeyMsgs }) {
+  getStore().commit('setUnapprovedEncryptionPublicKeyMsgs', unapprovedEncryptionPublicKeyMsgs)
+}
+
+export function unapprovedDecryptMsgsHandler({ unapprovedDecryptMsgs }) {
+  getStore().commit('setUnapprovedDecryptMsgs', unapprovedDecryptMsgs)
 }

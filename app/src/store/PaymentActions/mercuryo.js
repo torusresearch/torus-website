@@ -18,7 +18,7 @@ export default {
         fiat_currency: payload.selectedCurrency && payload.selectedCurrency.toUpperCase(),
         requested_amount: +Number.parseFloat(payload.fiatValue),
       },
-      { Authorization: `Bearer ${state.jwtToken}` }
+      { Authorization: `Bearer ${state.jwtToken[state.selectedAddress]}` }
     )
   },
   fetchMercuryoOrder({ state, dispatch }, { currentOrder, preopenInstanceId: preopenInstanceIdPayload, selectedAddress }) {

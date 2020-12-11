@@ -1,4 +1,13 @@
-import { concatSig, normalize, personalSign, signTypedData, signTypedData_v4 as signTypedDataV4, signTypedDataLegacy } from 'eth-sig-util'
+import {
+  concatSig,
+  decrypt,
+  getEncryptionPublicKey,
+  normalize,
+  personalSign,
+  signTypedData,
+  signTypedData_v4 as signTypedDataV4,
+  signTypedDataLegacy,
+} from 'eth-sig-util'
 import { bufferToHex, ecsign, stripHexPrefix } from 'ethereumjs-util'
 import Wallet from 'ethereumjs-wallet'
 import { EventEmitter } from 'events'
@@ -175,6 +184,18 @@ export default class TorusKeyring extends EventEmitter {
       throw new Error(`Address ${address} not found in this keyring`)
     }
     this.wallets = this.wallets.filter((w) => w.getAddressString().toLowerCase() !== address.toLowerCase())
+  }
+
+  signEncryptionPublicKey(address) {
+    const wallet = this._getWalletForAccount(address)
+    const privKey = wallet.getPrivateKey()
+    return getEncryptionPublicKey(privKey)
+  }
+
+  decryptMessage(msgParams, address) {
+    const wallet = this._getWalletForAccount(address)
+    const privKey = wallet.getPrivateKey()
+    return decrypt(msgParams.data, privKey)
   }
 
   /* PRIVATE METHODS */

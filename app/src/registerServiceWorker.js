@@ -10,7 +10,7 @@ const expectedCacheControlHeader = 'max-age=3600'
 if (
   'serviceWorker' in navigator &&
   (process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
-    process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ||
+    process.env.VUE_APP_TORUS_BUILD_ENV === 'binance' ||
     process.env.VUE_APP_TORUS_BUILD_ENV === 'testing' ||
     process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc')
 ) {

@@ -104,7 +104,7 @@ const timeout = 180000(async () => {
     await sleep(1000)
     browserPages = await browser.pages()
     const torusPopup = browserPages.reduce((accumulator, current) => {
-      if (current.url().includes('staging')) {
+      if (current.url().includes('binance')) {
         return current
       }
       return accumulator

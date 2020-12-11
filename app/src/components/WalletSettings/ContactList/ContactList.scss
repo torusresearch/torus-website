@@ -7,7 +7,7 @@
       border-radius: 0;
       align-self: start;
       & > svg, & > .v-icon, & > img {
-        margin: auto;
+        margin: auto !important;
       }
     }
     &.theme--dark {

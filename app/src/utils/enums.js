@@ -24,6 +24,8 @@ export const GOERLI = 'goerli'
 export const RPC = 'rpc'
 export const MATIC = 'matic'
 export const MUMBAI = 'mumbai'
+export const BSC_MAINNET = 'bsc_mainnet'
+export const BSC_TESTNET = 'bsc_testnet'
 
 export const MAINNET_CODE = 1
 export const ROPSTEN_CODE = 3
@@ -33,6 +35,8 @@ export const GOERLI_CODE = 5
 export const MATIC_CODE = 137
 export const MUMBAI_CODE = 80001
 export const LOCALHOST_CODE = 5777
+export const BSC_MAINNET_CODE = 56
+export const BSC_TESTNET_CODE = 97
 
 export const MAINNET_CHAIN_ID = '0x1'
 export const ROPSTEN_CHAIN_ID = '0x3'
@@ -41,6 +45,8 @@ export const KOVAN_CHAIN_ID = '0x2a'
 export const GOERLI_CHAIN_ID = '0x5'
 export const MATIC_CHAIN_ID = '0x89'
 export const MUMBAI_CHAIN_ID = '0x13881'
+export const BSC_MAINNET_CHAIN_ID = '0X38'
+export const BSC_TESTNET_CHAIN_ID = '0X61'
 
 export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
 export const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
@@ -51,14 +57,30 @@ export const RPC_DISPLAY_NAME = 'RPC'
 export const LOCALHOST_DISPLAY_NAME = 'https://localhost:8545'
 export const MATIC_DISPLAY_NAME = 'Matic Network'
 export const MUMBAI_DISPLAY_NAME = 'Mumbai Matic-Testnet'
+export const BSC_MAINNET_DISPLAY_NAME = 'Binance Smart Chain Mainnet'
+export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
 
 export const MATIC_URL = 'https://rpc-mainnet.matic.network'
+export const MATIC_BLOCK_EXPLORER = 'https://explorer.matic.network'
+
 export const MUMBAI_URL = 'https://rpc-mumbai.matic.today'
+export const MUMBAI_BLOCK_EXPLORER = 'https://mumbai-explorer.matic.today'
+
+export const BSC_MAINNET_URL = 'https://bsc-dataseed.binance.org'
+export const BSC_MAINNET_BLOCK_EXPLORER = 'https://bscscan.com'
+
+export const BSC_TESTNET_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545'
+export const BSC_TESTNET_BLOCK_EXPLORER = 'https://testnet.bscscan.com'
+
+export const MATIC_TICKER = 'MATIC'
+export const BSC_TICKER = 'BNB'
 
 export const TX_MESSAGE = 'message'
 export const TX_PERSONAL_MESSAGE = 'personal_message'
 export const TX_TYPED_MESSAGE = 'typed_message'
 export const TX_TRANSACTION = 'transaction'
+export const TX_GET_ENCRYPTION_KEY = 'get_encryption'
+export const TX_ETH_DECRYPT = 'eth_decrypt'
 
 export const TRANSACTION_TYPE_CANCEL = 'cancel'
 export const TRANSACTION_TYPE_RETRY = 'retry'
@@ -93,21 +115,56 @@ export const CONTRACT_TYPE_ETH = 'eth'
 export const CONTRACT_TYPE_ERC20 = 'erc20'
 export const CONTRACT_TYPE_ERC721 = 'erc721'
 
-export const createNetwork = (host, networkName, chainId) => ({
+export const getInfuraBlockExplorerUrl = (network) => {
+  if (network === MAINNET) return 'https://etherscan.io'
+  return `https://${network}.etherscan.io`
+}
+
+export const createNetwork = (host, networkName, chainId, blockExplorer, ticker, tickerName, logo) => ({
   host,
   networkName,
   chainId,
+  blockExplorer,
+  ticker,
+  logo,
+  tickerName,
 })
 
 export const SUPPORTED_NETWORK_TYPES = {
-  [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE),
-  [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE),
-  [KOVAN]: createNetwork(KOVAN, KOVAN_DISPLAY_NAME, KOVAN_CODE),
-  [ROPSTEN]: createNetwork(ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE),
-  [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE),
-  [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE),
-  [MATIC]: createNetwork(MATIC, MATIC_DISPLAY_NAME, MATIC_CODE),
-  [MUMBAI]: createNetwork(MUMBAI, MUMBAI_DISPLAY_NAME, MUMBAI_CODE),
+  [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, getInfuraBlockExplorerUrl(MAINNET), 'ETH', 'Ethereum', 'eth.svg'),
+  [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE, getInfuraBlockExplorerUrl(RINKEBY), 'ETH', 'Ethereum', 'eth.svg'),
+  [KOVAN]: createNetwork(KOVAN, KOVAN_DISPLAY_NAME, KOVAN_CODE, getInfuraBlockExplorerUrl(KOVAN), 'ETH', 'Ethereum', 'eth.svg'),
+  [ROPSTEN]: createNetwork(ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE, getInfuraBlockExplorerUrl(ROPSTEN), 'ETH', 'Ethereum', 'eth.svg'),
+  [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE, getInfuraBlockExplorerUrl(GOERLI), 'ETH', 'Ethereum', 'eth.svg'),
+  [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE, '', 'ETH', 'Ethereum', 'eth.svg'),
+  [MATIC]: createNetwork(MATIC, MATIC_DISPLAY_NAME, MATIC_CODE, MATIC_BLOCK_EXPLORER, MATIC_TICKER, 'Matic Network Token', 'matic-network-logo.svg'),
+  [MUMBAI]: createNetwork(
+    MUMBAI,
+    MUMBAI_DISPLAY_NAME,
+    MUMBAI_CODE,
+    MUMBAI_BLOCK_EXPLORER,
+    MATIC_TICKER,
+    'Matic Network Token',
+    'matic-network-logo.svg'
+  ),
+  [BSC_MAINNET]: createNetwork(
+    BSC_MAINNET,
+    BSC_MAINNET_DISPLAY_NAME,
+    BSC_MAINNET_CODE,
+    BSC_MAINNET_BLOCK_EXPLORER,
+    BSC_TICKER,
+    'Binance Coin',
+    'bnb.png'
+  ),
+  [BSC_TESTNET]: createNetwork(
+    BSC_TESTNET,
+    BSC_TESTNET_DISPLAY_NAME,
+    BSC_TESTNET_CODE,
+    BSC_TESTNET_BLOCK_EXPLORER,
+    BSC_TICKER,
+    'Binance Coin',
+    'bnb.png'
+  ),
 }
 
 export const WALLET_HEADERS_HOME = 'My Wallet'
@@ -179,6 +236,7 @@ export const HOSTED_EMAIL_PASSWORDLESS_LINKED_VERIFIER = process.env.VUE_APP_HOS
 export const LINKED_VERIFIER_SUBIDENTIFIER = process.env.VUE_APP_LINKED_VERIFIER_SUBIDENTIFIER
 
 export const ENS = 'ENS'
+export const UNSTOPPABLE_DOMAINS = 'Unstoppable_Domains'
 export const ETH_LABEL = 'walletSettings.ethAddress'
 export const GOOGLE_LABEL = 'walletSettings.googleId'
 export const FACEBOOK_LABEL = 'walletSettings.facebookId'
@@ -186,6 +244,7 @@ export const REDDIT_LABEL = 'walletSettings.redditId'
 export const DISCORD_LABEL = 'walletSettings.discordId'
 export const TWITCH_LABEL = 'walletSettings.twitchId'
 export const ENS_LABEL = 'walletSettings.ensId'
+export const UNSTOPPABLE_DOMAINS_LABEL = 'walletSettings.unstoppableDomainsId'
 export const TWITTER_LABEL = 'walletSettings.twitterId'
 export const GITHUB_LABEL = 'walletSettings.githubId'
 
@@ -250,6 +309,10 @@ export const ALLOWED_VERIFIERS = [
   {
     name: GITHUB_LABEL,
     value: GITHUB,
+  },
+  {
+    name: UNSTOPPABLE_DOMAINS_LABEL,
+    value: UNSTOPPABLE_DOMAINS,
   },
 ]
 

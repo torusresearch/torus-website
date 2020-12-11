@@ -39,6 +39,10 @@
   }
 }
 
+.token-tab-content {
+  overflow: visible;
+}
+
 .home-tab {
   ::v-deep .v-tabs-slider-wrapper {
     display: none;
