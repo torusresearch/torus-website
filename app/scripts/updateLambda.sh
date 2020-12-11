@@ -7,10 +7,10 @@ if [[ "$CIRCLE_BRANCH" = 'master' ]]; then
   FOLDER='cloudfront-redirect'
   FUNCTION_NAME='torus-routing'
   CLOUDFRONTID=$CLOUDFRONT_DISTRIBUTION_ID
-elif [[ "$CIRCLE_BRANCH" = 'staging' ]]; then
-  FOLDER='cloudfront-staging-redirect'
-  FUNCTION_NAME='torus-staging-routing'
-  CLOUDFRONTID=$CLOUDFRONT_STAGING_DISTRIBUTION_ID
+elif [[ "$CIRCLE_BRANCH" = 'binance' ]]; then
+  FOLDER='cloudfront-binance-redirect'
+  FUNCTION_NAME='torus-binance-routing'
+  CLOUDFRONTID=$CLOUDFRONT_BINANCE_DISTRIBUTION_ID
 fi
 cd ~/torus-serverless/$FOLDER
 sed -i -e "s|const GLOBAL_VERSION.*|const GLOBAL_VERSION = \"v$PACKAGE_VERSION\";|g" index.js

@@ -90,7 +90,7 @@ jobs:
           paths:
             - torus-website
       - <<: *step_save_cache
-  build-staging:
+  build-binance:
     <<: *job_common
     resource_class: large
     steps:
@@ -99,9 +99,9 @@ jobs:
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
-          name: "Build code for torus staging website"
+          name: "Build code for torus binance website"
           command: |
-            npm version patch -m 'Updating version to %s [skip ci]' && npm run build:staging && . ./scripts/gitPush.sh
+            npm version patch -m 'Updating version to %s [skip ci]' && npm run build:binance && . ./scripts/gitPush.sh
       - persist_to_workspace:
           root: ~/
           paths:
@@ -109,15 +109,15 @@ jobs:
       - <<: *step_save_cache
   deploy:
     <<: *deploy_function
-  deploy-staging:
+  deploy-binance:
     <<: *deploy_function
   update-lambda:
     <<: *update_lambda_job
-  update-lambda-staging:
+  update-lambda-binance:
     <<: *update_lambda_job
   update-iframeIntegrity:
     <<: *update_iframeIntegrity
-  update-iframeIntegrity-staging:
+  update-iframeIntegrity-binance:
     <<: *update_iframeIntegrity
   build-testing:
     <<: *job_common
@@ -208,33 +208,33 @@ workflows:
             branches:
               only:
                 - master
-      - build-staging:
+      - build-binance:
           filters:
             branches:
               only:
-                - staging
-      - deploy-staging:
+                - binance
+      - deploy-binance:
           requires:
-            - build-staging
+            - build-binance
             - test-coverage
           filters:
             branches:
               only:
-                - staging
-      - update-lambda-staging:
+                - binance
+      - update-lambda-binance:
           requires:
-            - deploy-staging
+            - deploy-binance
           filters:
             branches:
               only:
-                - staging
-      - update-iframeIntegrity-staging:
+                - binance
+      - update-iframeIntegrity-binance:
           requires:
-            - deploy-staging
+            - deploy-binance
           filters:
             branches:
               only:
-                - staging
+                - binance
       - build-testing:
           filters:
             branches:
