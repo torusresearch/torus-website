@@ -161,6 +161,7 @@ export default {
   computed: {
     ...mapState(['selectedAddress', 'networkType', 'tokenData']),
     duplicateTokenRule() {
+      if (!this.tokenData[this.selectedAddress]) return true
       const found = this.tokenData[this.selectedAddress].find(
         (token) => token.tokenAddress.toLocaleLowerCase() === this.customAddress.toLocaleLowerCase()
       )
