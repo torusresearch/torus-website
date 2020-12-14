@@ -259,7 +259,7 @@ class DetectTokensController {
     preferencesStore.subscribe((state) => {
       const { selectedAddress } = state
       if (!selectedAddress) return
-      const { customTokens } = state[selectedAddress]
+      const { customTokens = [] } = state[selectedAddress]
       if (
         !isEqual(
           this.selectedCustomTokens,

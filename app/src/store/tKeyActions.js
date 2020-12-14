@@ -18,13 +18,14 @@ export default {
   async addTKey({ dispatch, state }, { calledFromEmbed }) {
     try {
       const finalKey = state.postboxKey
+      const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
       const thresholdKey = await thresholdKeyController.login(finalKey.privateKey)
       log.info('tkey 2', thresholdKey)
       return dispatch('initTorusKeyring', {
         keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
         calledFromEmbed,
         rehydrate: false,
-        postboxAddress: finalKey.ethAddress,
+        postboxAddress: normalAccountAddress || finalKey.ethAddress,
       })
     } catch (error) {
       // tkey login failed. Allow normal google one to proceed through
@@ -34,12 +35,14 @@ export default {
   },
   async createNewTKey({ state, dispatch, commit }, payload) {
     const { postboxKey } = state
+    const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
     const thresholdKey = await thresholdKeyController.createNewTKey({ postboxKey: postboxKey.privateKey, ...payload })
     log.info('tkey 2', thresholdKey)
     await dispatch('initTorusKeyring', {
       keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
       calledFromEmbed: false,
       rehydrate: false,
+      postboxAddress: normalAccountAddress || postboxKey.ethAddress,
     })
     commit('setTkeyExists', true)
     dispatch('updateSelectedAddress', { selectedAddress: thresholdKey.ethAddress }) // synchronous
