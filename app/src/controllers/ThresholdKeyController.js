@@ -259,7 +259,7 @@ class ThresholdKeyController extends EventEmitter {
         const requiredShareStore = shareCreated.newShareStores[shareCreated.newShareIndex.toString('hex')]
         const serializedShare = await tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].serialize(requiredShareStore.share.share, 'mnemonic')
         log.info(requiredShareStore.share, serializedShare)
-        post(config.tkeyEmailHost, {
+        await post(config.tkeyEmailHost, {
           data: serializedShare,
           name: 'TORUS',
           email: recoveryEmail,
