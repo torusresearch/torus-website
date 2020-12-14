@@ -214,6 +214,7 @@ class ThresholdKeyController extends EventEmitter {
       const { tKey } = this.state
       log.info(encPubKeyX, 'approving')
       await tKey.modules[SHARE_TRANSFER_MODULE_KEY].approveRequest(encPubKeyX)
+      await tKey.syncShareMetadata()
     } catch (error) {
       log.error(error)
     } finally {
