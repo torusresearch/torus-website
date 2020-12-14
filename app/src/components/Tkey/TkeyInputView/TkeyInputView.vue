@@ -195,7 +195,6 @@ export default {
         .map((x) => {
           const share = this.allDeviceShares[x]
           const dateFormated = new Date(share.dateAdded).toLocaleString()
-          share.browserList = share.browsers.map((browser) => browser.browserName).join(', ')
           share.dateFormated = dateFormated
           return share
         })
