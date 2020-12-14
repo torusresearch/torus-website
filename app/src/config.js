@@ -75,6 +75,7 @@ const LOGIN_DOMAIN = VUE_APP_LOGIN_DOMAIN
 export default {
   baseUrl,
   baseRoute,
+  tkeyEmailHost: 'https://email.tkey.io/send_mail',
   commonApiHost: 'https://common-api.tor.us',
   metadataHost: 'https://metadata.tor.us',
   api: 'https://api.tor.us',

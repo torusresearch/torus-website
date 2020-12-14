@@ -18,6 +18,7 @@ import {
   TKEY_SHARE_TRANSFER_INTERVAL,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
+import { post } from '../utils/httpHelpers'
 import { generateAddressFromPrivateKey, isMain, isPopup } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
@@ -235,7 +236,7 @@ class ThresholdKeyController extends EventEmitter {
     }
   }
 
-  async createNewTKey({ postboxKey, password, backup }) {
+  async createNewTKey({ postboxKey, password, backup, recoveryEmail }) {
     await this._init(postboxKey)
     const { tKey, settingsPageData = {} } = this.state
     if (password) await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
@@ -247,6 +248,22 @@ class ThresholdKeyController extends EventEmitter {
         if (deviceShare.share) {
           await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage(deviceShare.share.share.shareIndex)
         }
+      } catch (error) {
+        log.error(error)
+      }
+    }
+
+    if (recoveryEmail) {
+      try {
+        const shareCreated = await tKey.generateNewShare()
+        const requiredShareStore = shareCreated.newShareStores[shareCreated.newShareIndex.toString('hex')]
+        const serializedShare = await tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].serialize(requiredShareStore.share.share, 'mnemonic')
+        log.info(requiredShareStore.share, serializedShare)
+        post(config.tkeyEmailHost, {
+          data: serializedShare,
+          name: 'TORUS',
+          email: recoveryEmail,
+        })
       } catch (error) {
         log.error(error)
       }
