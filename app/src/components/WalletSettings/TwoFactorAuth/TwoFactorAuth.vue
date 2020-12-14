@@ -231,6 +231,7 @@ export default {
         minLength: (v) => passwordValidation(v) || this.t('tkeyCreateSetup.passwordRules'),
       },
       settingPassword: false,
+      shareToExport: '',
     }
   },
   computed: {
@@ -271,7 +272,7 @@ export default {
     log.info('this.tKeyStore', this.tKeyStore)
   },
   methods: {
-    ...mapActions(['addPassword', 'changePassword', 'downloadShare', 'deleteShare']),
+    ...mapActions(['addPassword', 'changePassword', 'exportShare', 'deleteShare']),
     accountLinked() {
       // TODO check linking successfull
       this.linkingDialog = true
@@ -290,6 +291,13 @@ export default {
       this.settingPassword = false
       this.recoveryPassword = ''
       this.recoveryPasswordConfirm = ''
+    },
+    async downloadShare(shareIndex) {
+      const serializedShare = await this.exportShare(shareIndex)
+      this.shareToExport = serializedShare
+    },
+    closeShareExportModal() {
+      this.shareToExport = ''
     },
   },
 }

@@ -13,11 +13,12 @@ import {
   ERROR_TIME,
   PASSWORD_QUESTION,
   SECURITY_QUESTIONS_MODULE_KEY,
+  SHARE_SERIALIZATION_MODULE_KEY,
   SHARE_TRANSFER_MODULE_KEY,
   TKEY_SHARE_TRANSFER_INTERVAL,
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
-import { derivePubKeyXFromPolyID, downloadItem, generateAddressFromPrivateKey, isMain, isPopup } from '../utils/utils'
+import { generateAddressFromPrivateKey, isMain, isPopup } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 function beforeUnloadHandler(e) {
@@ -270,12 +271,11 @@ class ThresholdKeyController extends EventEmitter {
     await this.setSettingsPageData()
   }
 
-  async downloadShare(shareIndex) {
+  async exportShare(shareIndex) {
     const { tKey } = this.state
     const shareStore = await tKey.outputShareStore(shareIndex)
-    const fileName = `${derivePubKeyXFromPolyID(shareStore.polynomialID)}.json`
-    const text = JSON.stringify(shareStore, null, 2)
-    downloadItem(fileName, text)
+    const serializedShare = await tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].serialize(shareStore.share.share, 'mnemonic')
+    return serializedShare
   }
 
   async setSettingsPageData() {

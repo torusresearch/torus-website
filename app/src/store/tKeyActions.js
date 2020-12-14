@@ -53,8 +53,8 @@ export default {
   changePassword(_, payload) {
     return thresholdKeyController.changePassword(payload)
   },
-  downloadShare(_, payload) {
-    return thresholdKeyController.downloadShare(payload)
+  exportShare(_, payload) {
+    return thresholdKeyController.exportShare(payload)
   },
   async showThresholdKeyUi({ state, dispatch }, payload) {
     const { type, data } = payload
