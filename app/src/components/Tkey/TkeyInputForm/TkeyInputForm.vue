@@ -19,7 +19,12 @@ import log from 'loglevel'
 
 import createTKeyInstance from '../../../handlers/Tkey/TkeyFactory'
 import { calculateSettingsPageData } from '../../../handlers/Tkey/TkeyUtils'
-import { SECURITY_QUESTIONS_MODULE_KEY, SHARE_TRANSFER_MODULE_KEY, WEB_STORAGE_MODULE_KEY } from '../../../utils/enums'
+import {
+  SECURITY_QUESTIONS_MODULE_KEY,
+  SHARE_SERIALIZATION_MODULE_KEY,
+  SHARE_TRANSFER_MODULE_KEY,
+  WEB_STORAGE_MODULE_KEY,
+} from '../../../utils/enums'
 import TkeyDeviceDetected from '../TkeyDeviceDetected'
 import TkeyInputView from '../TkeyInputView'
 
@@ -94,6 +99,16 @@ export default {
           // start share transfer listener
           this.listenForShareTransfer()
         }
+      }
+    },
+    async inputShareMnemonic(shareMnemonic) {
+      try {
+        const deserializedShare = await this.tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].deserialize(shareMnemonic, 'mnemonic')
+        await this.tKey.inputShare(deserializedShare)
+        await this.tryFinish()
+      } catch (error) {
+        log.error(error)
+        // TODO: show the user that invalid share has been entered and to input the one from backup email
       }
     },
     async listenForShareTransfer() {
