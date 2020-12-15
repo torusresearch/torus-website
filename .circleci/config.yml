@@ -136,23 +136,6 @@ jobs:
           paths:
             - torus-website/app/dist
       - <<: *step_save_cache
-  build-lrc:
-        <<: *job_common
-        resource_class: large
-        steps:
-          - checkout:
-              path: ~/torus-website
-          - <<: *step_restore_cache
-          - <<: *step_setup_global_packages
-          - run:
-              name: "Build code for torus lrc website"
-              command: |
-                npm run build:lrc
-          - persist_to_workspace:
-              root: ~/
-              paths:
-                - torus-website/app/dist
-          - <<: *step_save_cache
   deploy-testing:
     <<: *job_common_base
     steps:
@@ -164,7 +147,26 @@ jobs:
           command: |
             ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
             tar czf - dist/ | ssh ubuntu@testing.tor.us "rm -rf ~/testing-torus-website/* && tar -zxf - -C ~/testing-torus-website/"
-  deploy-lrc:
+# ------------------------
+# alpha configurations
+# ------------------------
+  build-alpha:
+        <<: *job_common
+        steps:
+          - checkout:
+              path: ~/torus-website
+          - <<: *step_restore_cache
+          - <<: *step_setup_global_packages
+          - run:
+              name: "Build code for torus alpha website"
+              command: |
+                npm run build:alpha-branches
+          - persist_to_workspace:
+              root: ~/
+              paths:
+                - torus-website/app/dist
+          - <<: *step_save_cache
+  deploy-alpha:
     <<: *job_common_base
     steps:
       - attach_workspace:
@@ -173,8 +175,11 @@ jobs:
       - run:
           name: "Deploy Over SSH"
           command: |
-            ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh ubuntu@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
+            ssh-keyscan -H "$CIRCLE_BRANCH".tor.us >> ~/.ssh/known_hosts
+            tar czf - dist/ | ssh ubuntu@"$CIRCLE_BRANCH".tor.us "rm -rf ~/"$CIRCLE_BRANCH"-torus-website/* && tar -zxf - -C ~/"$CIRCLE_BRANCH"-torus-website/"
+# ------------------------
+# alpha configurations
+# ------------------------
 
 workflows:
   version: 2
@@ -248,16 +253,21 @@ workflows:
             branches:
               only:
                 - develop
-      - build-lrc:
+# ------------------------
+# alpha configurations
+# ------------------------
+      - build-alpha:
           filters:
             branches:
               only:
-                - develop
-      - deploy-lrc:
+                - /^alpha.*/
+                - lrc
+      - deploy-alpha:
           requires:
-            - build-lrc
+            - build-alpha
             - test-coverage
           filters:
             branches:
               only:
-                - develop
+                - /^alpha.*/
+                - lrc

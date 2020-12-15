@@ -10,7 +10,7 @@
     "build:dev": "cross-env VUE_APP_TORUS_BUILD_ENV=development npm run pre-build && vue-cli-service build --mode development",
     "build:binance": "cross-env VUE_APP_TORUS_BUILD_ENV=binance npm run pre-build && vue-cli-service build --mode binance && npm run post-build",
     "build:testing": "cross-env VUE_APP_TORUS_BUILD_ENV=testing npm run pre-build && vue-cli-service build --mode testing",
-    "build:lrc": "cross-env VUE_APP_TORUS_BUILD_ENV=lrc npm run pre-build && vue-cli-service build --mode lrc",
+    "build:alpha-branches": ". ./scripts/buildAlpha.sh",
     "dev": "cross-env NODE_ENV=development VUE_APP_TORUS_BUILD_ENV=development node server.js",
     "locale": "node ./scripts/importLocales.js",
     "lint:js": "eslint --fix 'src/**/*.js'",
