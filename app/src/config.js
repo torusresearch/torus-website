@@ -1,3 +1,5 @@
+import log from 'loglevel'
+
 import {
   APPLE,
   APPLE_LINKED_VERIFIER,
@@ -62,6 +64,8 @@ const {
   VUE_APP_WECHAT_CLIENT_ID,
   VUE_APP_KAKAO_CLIENT_ID,
 } = process.env
+
+log.info('baseurl', VUE_APP_BASE_ROUTE)
 
 const baseUrl = VUE_APP_BASE_ROUTE || 'https://localhost:3000'
 

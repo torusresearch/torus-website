@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
@@ -111,12 +112,13 @@ export default {
               ;[amountTo, amountValue] = methodParams || []
             }
           }
-          const { symbol: contractSymbol, name, logo } = contractParams
+          const { symbol: contractSymbol, name, logo, decimals } = contractParams
           symbol = contractSymbol
           type = 'erc20'
           typeName = name || 'ERC20'
           typeImageLink = logo
-          totalAmount = fromWei(toBN(amountValue && amountValue.value ? amountValue.value : txParams.value || 0))
+          const bnAmount = new BigNumber(amountValue && amountValue.value ? amountValue.value : txParams.value || 0)
+          totalAmount = decimals ? bnAmount.div(new BigNumber(10).pow(new BigNumber(decimals))).toString() : fromWei(bnAmount)
           finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
         } else {
           tokenRate = 1
