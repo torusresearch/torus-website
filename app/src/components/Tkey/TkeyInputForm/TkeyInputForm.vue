@@ -4,10 +4,12 @@
       v-if="!userInputCompleted"
       :security-questions="securityQuestions"
       :incorrect-password="incorrectPassword"
+      :incorrect-share-mnemonic="incorrectShareMnemonic"
       :required-shares="settingsData && settingsData.keyDetails && settingsData.keyDetails.requiredShares"
       :all-device-shares="settingsData && settingsData.allDeviceShares"
       :verifier-name="verifierName"
       @setPasswordInput="enterPassword"
+      @onShareMnemonicInput="inputShareMnemonic"
       @skipLogin="setInput"
     />
     <TkeyDeviceDetected v-if="userInputCompleted" :all-device-shares="settingsData && settingsData.allDeviceShares" @storeDevice="storeDevice" />
@@ -59,6 +61,7 @@ export default {
       incorrectPassword: false,
       userInputCompleted: false,
       currentEncPubKeyX: '',
+      incorrectShareMnemonic: false,
     }
   },
   watch: {
@@ -102,12 +105,14 @@ export default {
       }
     },
     async inputShareMnemonic(shareMnemonic) {
+      this.incorrectShareMnemonic = false
       try {
         const deserializedShare = await this.tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].deserialize(shareMnemonic, 'mnemonic')
         await this.tKey.inputShare(deserializedShare)
         await this.tryFinish()
       } catch (error) {
         log.error(error)
+        this.incorrectShareMnemonic = true
         // TODO: show the user that invalid share has been entered and to input the one from backup email
       }
     },

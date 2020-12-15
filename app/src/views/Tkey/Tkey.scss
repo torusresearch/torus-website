@@ -15,6 +15,16 @@
         font-size: 14px;
     }
   }
+  .v-input.v-text-field--outlined.v-textarea > .v-input__control > .v-input__slot {
+    min-height: unset;
+    height: unset;
+    textarea {
+      line-height: 1.5em;
+    }
+    .v-text-field__slot {
+      margin-right: -24px;
+    }
+  }
 
   .v-btn:not(.v-btn--round).v-size--large {
     height: 40px;

@@ -49,6 +49,13 @@
         </v-layout> -->
       </div>
 
+      <div v-if="showBackupPhrase" class="settings-container pa-4 mb-10">
+        <div class="text_1--text d-flex align-center body-2">
+          <v-icon size="16" class="torusGray1--text mr-2">$vuetify.icons.mnemonic</v-icon>
+          <div>tKey Backup Phrase</div>
+        </div>
+      </div>
+
       <div v-for="device in deviceShares" :key="device.index" class="settings-container pa-4 mb-10">
         <div class="text_1--text d-flex align-center body-2 mb-4">
           <div>{{ device.groupTitle }}</div>
@@ -182,6 +189,7 @@
     </div>
     <PopupLogin :login-dialog="loginDialog" :is-link-account="true" @closeDialog="loginDialog = false" @accountLinked="accountLinked" />
     <LinkingCompleted :linking-dialog="linkingDialog" :is-successfull="isLinkingSuccessfull" @closeDialog="linkingDialog = false" />
+    <ExportShare :share-to-export="shareToExport" @close="closeShareExportModal" />
   </div>
 </template>
 
@@ -191,6 +199,7 @@ import { mapActions, mapState } from 'vuex'
 
 import PopupLogin from '../../../containers/Popup/PopupLogin'
 import { getUserEmail, passwordValidation } from '../../../utils/utils'
+import ExportShare from '../ExportShare'
 import LinkingCompleted from '../LinkingCompleted'
 
 const AUTH_FACTORS = [
@@ -209,7 +218,7 @@ const AUTH_FACTORS = [
 ]
 export default {
   name: 'TwoFactorAuthSettings',
-  components: { PopupLogin, LinkingCompleted },
+  components: { PopupLogin, LinkingCompleted, ExportShare },
   data() {
     return {
       authTreshholdSelected: 2,
@@ -266,6 +275,12 @@ export default {
     },
     equalToPassword() {
       return this.recoveryPasswordConfirm === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch')
+    },
+    showBackupPhrase() {
+      if (!this.tKeyStore.keyDetails) return false
+      // device shares + password share + torus network share
+      const visibleSharesTotal = Object.keys(this.deviceShares).length + (this.hasPassword ? 1 : 0) + 1
+      return visibleSharesTotal < this.tKeyStore.keyDetails.totalShares
     },
   },
   mounted() {

@@ -42,6 +42,7 @@ import LockFilledIcon from './LockFilledIcon.vue'
 import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
 import MenuIcon from './MenuIcon.vue'
+import MnemonicIcon from './MnemonicIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
 import PencilEditIcon from './PencilEditIcon.vue'
 import PersonCircleIcon from './PersonCircleIcon.vue'
@@ -363,5 +364,8 @@ export default {
   },
   pencil_edit: {
     component: PencilEditIcon,
+  },
+  mnemonic: {
+    component: MnemonicIcon,
   },
 }
