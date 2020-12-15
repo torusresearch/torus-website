@@ -4,7 +4,7 @@ if [ "$CIRCLE_BRANCH" = "lrc" ]
 then
     export BUILD_MODE="$CIRCLE_BRANCH"
 else
-    export BUILD_MODE="baselrc"
+    export BUILD_MODE="basealpha"
 fi
 
 echo $VUE_APP_TORUS_BUILD_ENV
