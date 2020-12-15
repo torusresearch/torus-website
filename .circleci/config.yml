@@ -136,23 +136,6 @@ jobs:
           paths:
             - torus-website/app/dist
       - <<: *step_save_cache
-  build-lrc:
-        <<: *job_common
-        resource_class: large
-        steps:
-          - checkout:
-              path: ~/torus-website
-          - <<: *step_restore_cache
-          - <<: *step_setup_global_packages
-          - run:
-              name: "Build code for torus lrc website"
-              command: |
-                npm run build:lrc
-          - persist_to_workspace:
-              root: ~/
-              paths:
-                - torus-website/app/dist
-          - <<: *step_save_cache
   deploy-testing:
     <<: *job_common_base
     steps:
@@ -164,17 +147,6 @@ jobs:
           command: |
             ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
             tar czf - dist/ | ssh ubuntu@testing.tor.us "rm -rf ~/testing-torus-website/* && tar -zxf - -C ~/testing-torus-website/"
-  deploy-lrc:
-    <<: *job_common_base
-    steps:
-      - attach_workspace:
-          at: ~/
-      - add_ssh_keys
-      - run:
-          name: "Deploy Over SSH"
-          command: |
-            ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh ubuntu@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
 # ------------------------
 # alpha configurations
 # ------------------------
@@ -188,92 +160,23 @@ jobs:
           - run:
               name: "Build code for torus alpha website"
               command: |
-                npm run build:alpha
+                npm run build:alpha-branches
           - persist_to_workspace:
               root: ~/
               paths:
                 - torus-website/app/dist
           - <<: *step_save_cache
-  build-alpha1:
-        <<: *job_common
-        steps:
-          - checkout:
-              path: ~/torus-website
-          - <<: *step_restore_cache
-          - <<: *step_setup_global_packages
-          - run:
-              name: "Build code for torus alpha1 website"
-              command: |
-                npm run build:alpha1
-          - persist_to_workspace:
-              root: ~/
-              paths:
-                - torus-website/app/dist
-          - <<: *step_save_cache
-  build-alpha2:
-        <<: *job_common
-        steps:
-          - checkout:
-              path: ~/torus-website
-          - <<: *step_restore_cache
-          - <<: *step_setup_global_packages
-          - run:
-              name: "Build code for torus alpha2 website"
-              command: |
-                npm run build:alpha2
-          - persist_to_workspace:
-              root: ~/
-              paths:
-                - torus-website/app/dist
-          - <<: *step_save_cache
-  build-alpha3:
-        <<: *job_common
-        steps:
-          - checkout:
-              path: ~/torus-website
-          - <<: *step_restore_cache
-          - <<: *step_setup_global_packages
-          - run:
-              name: "Build code for torus alpha3 website"
-              command: |
-                npm run build:alpha3
-          - persist_to_workspace:
-              root: ~/
-              paths:
-                - torus-website/app/dist
-          - <<: *step_save_cache
-  build-alpha4:
-        <<: *job_common
-        steps:
-          - checkout:
-              path: ~/torus-website
-          - <<: *step_restore_cache
-          - <<: *step_setup_global_packages
-          - run:
-              name: "Build code for torus alpha4 website"
-              command: |
-                npm run build:alpha4
-          - persist_to_workspace:
-              root: ~/
-              paths:
-                - torus-website/app/dist
-          - <<: *step_save_cache
-  build-alpha5:
-        <<: *job_common
-        steps:
-          - checkout:
-              path: ~/torus-website
-          - <<: *step_restore_cache
-          - <<: *step_setup_global_packages
-          - run:
-              name: "Build code for torus alpha5 website"
-              command: |
-                npm run build:alpha5
-          - persist_to_workspace:
-              root: ~/
-              paths:
-                - torus-website/app/dist
-          - <<: *step_save_cache
+  deploy-alpha:
+    <<: *job_common_base
+    steps:
+      - attach_workspace:
+          at: ~/
+      - add_ssh_keys
+      - run:
+          name: "Deploy Over SSH"
+          command: |
+            ssh-keyscan -H "$CIRCLE_BRANCH".tor.us >> ~/.ssh/known_hosts
+            tar czf - dist/ | ssh ubuntu@"$CIRCLE_BRANCH".tor.us "rm -rf ~/"$CIRCLE_BRANCH"-torus-website/* && tar -zxf - -C ~/"$CIRCLE_BRANCH"-torus-website/"
 # ------------------------
 # alpha configurations
 # ------------------------
@@ -350,19 +253,6 @@ workflows:
             branches:
               only:
                 - develop
-      - build-lrc:
-          filters:
-            branches:
-              only:
-                - develop
-      - deploy-lrc:
-          requires:
-            - build-lrc
-            - test-coverage
-          filters:
-            branches:
-              only:
-                - develop
 # ------------------------
 # alpha configurations
 # ------------------------
@@ -370,7 +260,8 @@ workflows:
           filters:
             branches:
               only:
-                - alpha
+                - /^alpha.*/
+                - lrc
       - deploy-alpha:
           requires:
             - build-alpha
@@ -378,72 +269,5 @@ workflows:
           filters:
             branches:
               only:
-                - alpha
-      - build-alpha1:
-          filters:
-            branches:
-              only:
-                - alpha1
-      - deploy-alpha1:
-          requires:
-            - build-alpha1
-            - test-coverage
-          filters:
-            branches:
-              only:
-                - alpha1
-      - build-alpha2:
-          filters:
-            branches:
-              only:
-                - alpha2
-      - deploy-alpha2:
-          requires:
-            - build-alpha2
-            - test-coverage
-          filters:
-            branches:
-              only:
-                - alpha2
-      - build-alpha3:
-          filters:
-            branches:
-              only:
-                - alpha3
-      - deploy-alpha3:
-          requires:
-            - build-alpha3
-            - test-coverage
-          filters:
-            branches:
-              only:
-                - alpha3
-      - build-alpha4:
-          filters:
-            branches:
-              only:
-                - alpha4
-      - deploy-alpha4:
-          requires:
-            - build-alpha4
-            - test-coverage
-          filters:
-            branches:
-              only:
-                - alpha4
-      - build-alpha5:
-          filters:
-            branches:
-              only:
-                - alpha5
-      - deploy-alpha5:
-          requires:
-            - build-alpha5
-            - test-coverage
-          filters:
-            branches:
-              only:
-                - alpha5
-# ------------------------
-# alpha configurations
-# ------------------------
+                - /^alpha.*/
+                - lrc
