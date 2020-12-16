@@ -117,7 +117,6 @@ export default {
       } catch (error) {
         log.error(error)
         this.incorrectShareMnemonic = true
-        // TODO: show the user that invalid share has been entered and to input the one from backup email
       }
     },
     async listenForShareTransfer() {
