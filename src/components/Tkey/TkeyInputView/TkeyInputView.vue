@@ -37,7 +37,55 @@
 
             <div>
               <v-expansion-panels :value="panels" multiple>
-                <!-- If user has password setup -->
+                <!-- Share Mnemonic -->
+                <v-expansion-panel class="mb-2">
+                  <v-expansion-panel-header class="py-2">
+                    <div class="grow font-weight-bold body-2">
+                      <v-icon class="mr-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">$vuetify.icons.mnemonic</v-icon>
+                      <span :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_1--text'">{{ t('tkeyBackup.tkeyBackupPhrase') }}</span>
+                    </div>
+                    <v-icon small class="d-inline-flex ml-auto shrink" v-text="'$vuetify.icons.select'" />
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content class="pa-5">
+                    <v-form v-model="validShareMnemonicForm" @submit.prevent="onShareMnemonicInput">
+                      <div class="body-2 text_2--text mb-4">{{ t('tkeyBackup.thisIsSentToEmail') }}</div>
+                      <div
+                        v-for="(addedMnemonic, index) in shareMnemonicArr"
+                        :key="addedMnemonic"
+                        class="d-flex info-box px-6 mb-2 align-center"
+                        :class="[$vuetify.breakpoint.xsOnly ? 'py-4' : 'py-3']"
+                      >
+                        <div class="grow d-flex align-center">
+                          <v-icon :size="$vuetify.breakpoint.xsOnly ? '16' : ''" class="text_2--text mr-2">$vuetify.icons.mnemonic</v-icon>
+                          <div class="font-weight-bold text_2--text caption">
+                            <div>{{ t('tkeyBackup.backupPhrase') }} {{ index + 1 }}</div>
+                          </div>
+                          <v-icon small class="d-inline-flex ml-2 success--text shrink" v-text="'$vuetify.icons.check_circle_filled'" />
+                        </div>
+                      </div>
+                      <div v-if="shareMnemonicArr.length > 0" class="body-2 text_2--text mt-8 mb-2">{{ t('tkeyBackup.authenticateWith') }}</div>
+                      <v-textarea
+                        v-model="shareMnemonic"
+                        :rules="[rules.required, shareMnemonicError]"
+                        outlined
+                        rows="3"
+                        :placeholder="shareMnemonicArr.length > 0 ? t('tkeyBackup.enterBackupPhrase2') : t('tkeyBackup.enterBackupPhrase1')"
+                        @keydown="shareMnemonicEntered = false"
+                      />
+                      <div class="text-right">
+                        <v-btn
+                          type="submit"
+                          :disabled="!validShareMnemonicForm"
+                          class="caption white--text font-weight-bold px-10"
+                          color="torusBrand1"
+                        >
+                          {{ t('tkeyNew.confirm') }}
+                        </v-btn>
+                      </div>
+                    </v-form>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+                <!-- Security Question -->
                 <v-expansion-panel v-if="securityQuestions.show" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2">
@@ -79,6 +127,7 @@
                     </v-form>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
+                <!-- Devices -->
                 <v-expansion-panel v-for="device in devices" :key="device.index" :disabled="verifiedWithDevice(device.index)" class="mb-2">
                   <v-expansion-panel-header class="py-2">
                     <div class="grow font-weight-bold body-2">
@@ -175,6 +224,16 @@ export default {
       type: String,
       default: '',
     },
+    incorrectShareMnemonic: {
+      type: Boolean,
+      default: false,
+    },
+    shareMnemonicArr: {
+      type: Array,
+      default() {
+        return []
+      },
+    },
   },
   data() {
     return {
@@ -187,6 +246,9 @@ export default {
       },
       CHROME_EXTENSION_STORAGE_MODULE_KEY,
       STORAGE_MAP,
+      validShareMnemonicForm: true,
+      shareMnemonic: '',
+      shareMnemonicEntered: false,
     }
   },
   computed: {
@@ -204,9 +266,13 @@ export default {
       if (!this.passwordEntered || !this.incorrectPassword) return true
       return this.t('tkeyNew.errorIncorrectPass')
     },
+    shareMnemonicError() {
+      if (!this.shareMnemonicEntered || !this.incorrectShareMnemonic) return true
+      return 'Incorrect share mnemonic'
+    },
     panels() {
       const panels = []
-      for (let i = 0; i < this.devices.length + 1; i += 1) panels.push(i)
+      for (let i = 0; i < this.devices.length + 2; i += 1) panels.push(i)
       return panels
     },
   },
@@ -220,6 +286,10 @@ export default {
     },
     skipLogin() {
       this.$emit('skipLogin', { rejected: true })
+    },
+    onShareMnemonicInput() {
+      this.shareMnemonicEntered = true
+      this.$emit('onShareMnemonicInput', this.shareMnemonic)
     },
   },
 }

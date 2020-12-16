@@ -4,10 +4,13 @@
       v-if="!userInputCompleted"
       :security-questions="securityQuestions"
       :incorrect-password="incorrectPassword"
+      :incorrect-share-mnemonic="incorrectShareMnemonic"
       :required-shares="settingsData && settingsData.keyDetails && settingsData.keyDetails.requiredShares"
       :all-device-shares="settingsData && settingsData.allDeviceShares"
       :verifier-name="verifierName"
+      :share-mnemonic-arr="shareMnemonicArr"
       @setPasswordInput="enterPassword"
+      @onShareMnemonicInput="inputShareMnemonic"
       @skipLogin="setInput"
     />
     <TkeyDeviceDetected v-if="userInputCompleted" :all-device-shares="settingsData && settingsData.allDeviceShares" @storeDevice="storeDevice" />
@@ -19,7 +22,12 @@ import log from 'loglevel'
 
 import createTKeyInstance from '../../../handlers/Tkey/TkeyFactory'
 import { calculateSettingsPageData } from '../../../handlers/Tkey/TkeyUtils'
-import { SECURITY_QUESTIONS_MODULE_KEY, SHARE_TRANSFER_MODULE_KEY, WEB_STORAGE_MODULE_KEY } from '../../../utils/enums'
+import {
+  SECURITY_QUESTIONS_MODULE_KEY,
+  SHARE_SERIALIZATION_MODULE_KEY,
+  SHARE_TRANSFER_MODULE_KEY,
+  WEB_STORAGE_MODULE_KEY,
+} from '../../../utils/enums'
 import TkeyDeviceDetected from '../TkeyDeviceDetected'
 import TkeyInputView from '../TkeyInputView'
 
@@ -54,6 +62,8 @@ export default {
       incorrectPassword: false,
       userInputCompleted: false,
       currentEncPubKeyX: '',
+      incorrectShareMnemonic: false,
+      shareMnemonicArr: [],
     }
   },
   watch: {
@@ -94,6 +104,19 @@ export default {
           // start share transfer listener
           this.listenForShareTransfer()
         }
+      }
+    },
+    async inputShareMnemonic(shareMnemonic) {
+      this.incorrectShareMnemonic = false
+      try {
+        const deserializedShare = await this.tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].deserialize(shareMnemonic, 'mnemonic')
+        await this.tKey.inputShare(deserializedShare)
+        await this.tryFinish()
+        const deserializedShareHex = deserializedShare.toString('hex')
+        if (!this.shareMnemonicArr.includes(deserializedShareHex)) this.shareMnemonicArr.push(deserializedShareHex)
+      } catch (error) {
+        log.error(error)
+        this.incorrectShareMnemonic = true
       }
     },
     async listenForShareTransfer() {

@@ -1,18 +1,26 @@
 import ThresholdKey from '@tkey/core'
 import SecurityQuestionsModule from '@tkey/security-questions'
 import ServiceProviderBase from '@tkey/service-provider-base'
+import ShareSerialization from '@tkey/share-serialization'
 import ShareTransferModule from '@tkey/share-transfer'
 import TorusStorageLayer from '@tkey/storage-layer-torus'
 import WebStorageModule from '@tkey/web-storage'
 
 import config from '../../config'
-import { SECURITY_QUESTIONS_MODULE_KEY, SHARE_TRANSFER_MODULE_KEY, TKEY_SHARE_TRANSFER_INTERVAL, WEB_STORAGE_MODULE_KEY } from '../../utils/enums'
+import {
+  SECURITY_QUESTIONS_MODULE_KEY,
+  SHARE_SERIALIZATION_MODULE_KEY,
+  SHARE_TRANSFER_MODULE_KEY,
+  TKEY_SHARE_TRANSFER_INTERVAL,
+  WEB_STORAGE_MODULE_KEY,
+} from '../../utils/enums'
 
 export default async function createTKeyInstance(postboxKey, tKeyJson) {
   const modules = {
     [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
     [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),
     [SHARE_TRANSFER_MODULE_KEY]: new ShareTransferModule(),
+    [SHARE_SERIALIZATION_MODULE_KEY]: new ShareSerialization(),
   }
   const serviceProvider = new ServiceProviderBase({ postboxKey })
   const storageLayer = new TorusStorageLayer({ serviceProvider, hostUrl: config.metadataHost })

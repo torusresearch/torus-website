@@ -33,6 +33,7 @@ import DeviceTabletIcon from './DeviceTabletIcon.vue'
 import DisconnectIcon from './DisconnectIcon.vue'
 import DownloadIcon from './DownloadIcon.vue'
 import EthIcon from './EthIcon.vue'
+import ExportIcon from './ExportIcon.vue'
 import GlobeIcon from './GlobeIcon.vue'
 import InfoIcon from './InfoIcon.vue'
 import KeyIcon from './KeyIcon.vue'
@@ -41,7 +42,9 @@ import ListIcon from './ListIcon.vue'
 import LockFilledIcon from './LockFilledIcon.vue'
 import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
+import MailIcon from './MailIcon.vue'
 import MenuIcon from './MenuIcon.vue'
+import MnemonicIcon from './MnemonicIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
 import PencilEditIcon from './PencilEditIcon.vue'
 import PersonCircleIcon from './PersonCircleIcon.vue'
@@ -363,5 +366,14 @@ export default {
   },
   pencil_edit: {
     component: PencilEditIcon,
+  },
+  mnemonic: {
+    component: MnemonicIcon,
+  },
+  mail: {
+    component: MailIcon,
+  },
+  export: {
+    component: ExportIcon,
   },
 }

@@ -49,12 +49,19 @@
         </v-layout> -->
       </div>
 
+      <div v-if="showBackupPhrase" class="settings-container pa-4 mb-10">
+        <div class="text_1--text d-flex align-center body-2">
+          <v-icon size="16" class="torusGray1--text mr-2">$vuetify.icons.mnemonic</v-icon>
+          <div>{{ t('tkeyBackup.tkeyBackupPhrase') }}</div>
+        </div>
+      </div>
+
       <div v-for="device in deviceShares" :key="device.index" class="settings-container pa-4 mb-10">
         <div class="text_1--text d-flex align-center body-2 mb-4">
           <div>{{ device.groupTitle }}</div>
           <div class="ml-auto">
             <v-btn class="download-btn" color="torusBrand1" icon small :aria-label="`Download`" @click="downloadShare(device.index)">
-              <v-icon x-small>$vuetify.icons.download</v-icon>
+              <v-icon x-small>$vuetify.icons.export</v-icon>
             </v-btn>
             <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete`" @click="deleteShare(device.index)">
               <v-icon x-small>$vuetify.icons.trash</v-icon>
@@ -88,7 +95,7 @@
         </v-list>
         <div class="caption text_3--text mb-4">
           {{ t('tkeySettings.note') }}: {{ t('tkeySettings.clearing') }}. {{ t('tkeySettings.clickThe') }} "
-          <v-icon size="10" class="torusBrand1--text">$vuetify.icons.download</v-icon>
+          <v-icon size="10" class="torusBrand1--text">$vuetify.icons.export</v-icon>
           " {{ t('tkeySettings.iconToAllow') }}.
         </div>
         <!-- <v-layout wrap>
@@ -182,6 +189,7 @@
     </div>
     <PopupLogin :login-dialog="loginDialog" :is-link-account="true" @closeDialog="loginDialog = false" @accountLinked="accountLinked" />
     <LinkingCompleted :linking-dialog="linkingDialog" :is-successfull="isLinkingSuccessfull" @closeDialog="linkingDialog = false" />
+    <ExportShare :share-to-export="shareToExport" @close="closeShareExportModal" />
   </div>
 </template>
 
@@ -191,6 +199,7 @@ import { mapActions, mapState } from 'vuex'
 
 import PopupLogin from '../../../containers/Popup/PopupLogin'
 import { getUserEmail, passwordValidation } from '../../../utils/utils'
+import ExportShare from '../ExportShare'
 import LinkingCompleted from '../LinkingCompleted'
 
 const AUTH_FACTORS = [
@@ -209,7 +218,7 @@ const AUTH_FACTORS = [
 ]
 export default {
   name: 'TwoFactorAuthSettings',
-  components: { PopupLogin, LinkingCompleted },
+  components: { PopupLogin, LinkingCompleted, ExportShare },
   data() {
     return {
       authTreshholdSelected: 2,
@@ -231,6 +240,7 @@ export default {
         minLength: (v) => passwordValidation(v) || this.t('tkeyCreateSetup.passwordRules'),
       },
       settingPassword: false,
+      shareToExport: '',
     }
   },
   computed: {
@@ -266,12 +276,18 @@ export default {
     equalToPassword() {
       return this.recoveryPasswordConfirm === this.recoveryPassword || this.t('tkeyCreateSetup.passwordMatch')
     },
+    showBackupPhrase() {
+      if (!this.tKeyStore.keyDetails) return false
+      // device shares + password share + torus network share
+      const visibleSharesTotal = Object.keys(this.deviceShares).length + (this.hasPassword ? 1 : 0) + 1
+      return visibleSharesTotal < this.tKeyStore.keyDetails.totalShares
+    },
   },
   mounted() {
     log.info('this.tKeyStore', this.tKeyStore)
   },
   methods: {
-    ...mapActions(['addPassword', 'changePassword', 'downloadShare', 'deleteShare']),
+    ...mapActions(['addPassword', 'changePassword', 'exportShare', 'deleteShare']),
     accountLinked() {
       // TODO check linking successfull
       this.linkingDialog = true
@@ -290,6 +306,13 @@ export default {
       this.settingPassword = false
       this.recoveryPassword = ''
       this.recoveryPasswordConfirm = ''
+    },
+    async downloadShare(shareIndex) {
+      const serializedShare = await this.exportShare(shareIndex)
+      this.shareToExport = serializedShare
+    },
+    closeShareExportModal() {
+      this.shareToExport = ''
     },
   },
 }
