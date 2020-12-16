@@ -38,50 +38,6 @@
             </div>
           </v-expansion-panel-header>
         </v-expansion-panel>
-        <v-expansion-panel class="mb-4" disabled>
-          <v-expansion-panel-header class="py-2">
-            <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.mnemonic</v-icon>
-            <div class="grow text-capitalize font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-              Recovery Email
-            </div>
-            <div class="ml-auto justify-end d-flex align-center">
-              <v-icon
-                small
-                :class="recoveryEmailFinal ? 'success--text' : 'text_3--text'"
-                class="ml-1"
-                v-text="'$vuetify.icons.check_circle_filled'"
-              />
-            </div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content class="pa-5">
-            <v-form v-model="validRecoveryEmailForm">
-              <div class="body-2 mb-4 text_2--text">
-                Provide a recovery email address. An email will be sent to you containing the backup phrase. It allows you to get back one of your key
-                shares for account recovery.
-              </div>
-              <v-text-field
-                v-model="recoveryEmail"
-                :rules="[rules.email, rules.required]"
-                type="email"
-                outlined
-                :placeholder="'Enter email'"
-                :readonly="!!recoveryEmailFinal"
-              />
-              <div class="text-right">
-                <v-btn
-                  v-if="!recoveryEmailFinal"
-                  type="button"
-                  :disabled="!validRecoveryEmailForm"
-                  class="caption white--text font-weight-bold px-8"
-                  color="torusBrand1"
-                  @click="setRecoveryEmail"
-                >
-                  {{ t('tkeyNew.confirm') }}
-                </v-btn>
-              </div>
-            </v-form>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
         <v-expansion-panel class="mb-4">
           <v-expansion-panel-header class="py-2">
             <v-icon class="d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.browser</v-icon>
@@ -105,6 +61,51 @@
               <v-icon v-if="!backupDeviceShare" size="16" class="mr-1 warning--text">$vuetify.icon.alert_circle_filled</v-icon>
               <div class="body-2 text_2--text">{{ t('tkeyCreateSetup.backupOnDevice') }}</div>
             </div>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <v-expansion-panel class="mb-4" disabled>
+          <v-expansion-panel-header class="py-2">
+            <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.mail</v-icon>
+            <div class="grow text-capitalize font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+              {{ t('tkeyBackup.recoveryEmail') }}
+            </div>
+            <div class="ml-auto justify-end d-flex align-center">
+              <v-icon
+                small
+                :class="recoveryEmailFinal ? 'success--text' : 'text_3--text'"
+                class="ml-1"
+                v-text="'$vuetify.icons.check_circle_filled'"
+              />
+            </div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content class="pa-5">
+            <v-form v-model="validRecoveryEmailForm">
+              <div class="body-2 mb-4 text_2--text">
+                {{ t('tkeyBackup.recoveryEmailDesc1') }}
+                <span class="font-weight-bold">{{ t('tkeyBackup.recoveryEmailDesc2') }}</span>
+                {{ t('tkeyBackup.recoveryEmailDesc3') }}
+              </div>
+              <v-text-field
+                v-model="recoveryEmail"
+                :rules="[rules.email, rules.required]"
+                type="email"
+                outlined
+                :placeholder="t('tkeyBackup.enterEmail')"
+                :readonly="!!recoveryEmailFinal"
+              />
+              <div class="text-right">
+                <v-btn
+                  v-if="!recoveryEmailFinal"
+                  type="button"
+                  :disabled="!validRecoveryEmailForm"
+                  class="caption white--text font-weight-bold px-8"
+                  color="torusBrand1"
+                  @click="setRecoveryEmail"
+                >
+                  {{ t('tkeyNew.confirm') }}
+                </v-btn>
+              </div>
+            </v-form>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel class="mb-4">
@@ -290,9 +291,8 @@ export default {
     },
     progressDescription() {
       if (this.progressValue >= 300) return 'tkeyCreateSetup.youHaveSufficient'
-      if (this.progressValue > 200 && this.backupDeviceShare) return 'tkeyCreateSetup.youNeedPassword'
-      if (this.progressValue > 200 && this.finalRecoveryPassword) return 'tkeyCreateSetup.youNeedBackup'
-      return 'tkeyCreateSetup.youNeedBackupPassword'
+      if (this.progressValue > 200) return 'tkeyCreateSetup.youMayWantTo'
+      return 'tkeyCreateSetup.youNeedOneMore'
     },
     browser() {
       const browser = bowser.getParser(window.navigator.userAgent)

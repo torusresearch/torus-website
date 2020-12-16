@@ -8,6 +8,7 @@
       :required-shares="settingsData && settingsData.keyDetails && settingsData.keyDetails.requiredShares"
       :all-device-shares="settingsData && settingsData.allDeviceShares"
       :verifier-name="verifierName"
+      :share-mnemonic-arr="shareMnemonicArr"
       @setPasswordInput="enterPassword"
       @onShareMnemonicInput="inputShareMnemonic"
       @skipLogin="setInput"
@@ -62,6 +63,7 @@ export default {
       userInputCompleted: false,
       currentEncPubKeyX: '',
       incorrectShareMnemonic: false,
+      shareMnemonicArr: [],
     }
   },
   watch: {
@@ -110,6 +112,8 @@ export default {
         const deserializedShare = await this.tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].deserialize(shareMnemonic, 'mnemonic')
         await this.tKey.inputShare(deserializedShare)
         await this.tryFinish()
+        const deserializedShareHex = deserializedShare.toString('hex')
+        if (!this.shareMnemonicArr.includes(deserializedShareHex)) this.shareMnemonicArr.push(deserializedShareHex)
       } catch (error) {
         log.error(error)
         this.incorrectShareMnemonic = true

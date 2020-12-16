@@ -41,6 +41,7 @@ import ListIcon from './ListIcon.vue'
 import LockFilledIcon from './LockFilledIcon.vue'
 import LockIcon from './LockIcon.vue'
 import LoginMoreIcon from './LoginMoreIcon.vue'
+import MailIcon from './MailIcon.vue'
 import MenuIcon from './MenuIcon.vue'
 import MnemonicIcon from './MnemonicIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
@@ -367,5 +368,8 @@ export default {
   },
   mnemonic: {
     component: MnemonicIcon,
+  },
+  mail: {
+    component: MailIcon,
   },
 }

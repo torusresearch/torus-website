@@ -4,14 +4,14 @@
       <v-card-text class="pt-8 pb-4">
         <v-layout wrap>
           <v-flex xs12 class="mb-2">
-            <div class="text-subtitle-2 mb-2">Share Mnemonic</div>
+            <div class="text-subtitle-2 mb-2">{{ t('tkeyBackup.shareMnemonic') }}</div>
             <v-textarea hide-details :value="shareToExport" outlined readonly></v-textarea>
           </v-flex>
           <v-flex xs12 class="text-right">
             <ShowToolTip :address="shareToExport">
               <v-btn small aria-label="Copy share mnemonic">
                 <v-icon class="caption text_2--text" left size="12" v-text="'$vuetify.icons.copy'" />
-                <span class="caption text_2--text">Copy share mnemonic</span>
+                <span class="caption text_2--text">{{ t('tkeyBackup.copyShareMnemonic') }}</span>
               </v-btn>
             </ShowToolTip>
           </v-flex>
