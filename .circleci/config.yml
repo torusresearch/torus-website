@@ -147,6 +147,34 @@ jobs:
           command: |
             ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
             tar czf - dist/ | ssh ubuntu@testing.tor.us "rm -rf ~/testing-torus-website/* && tar -zxf - -C ~/testing-torus-website/"
+  build-lrc:
+    <<: *job_common
+    resource_class: large
+    steps:
+      - checkout:
+          path: ~/torus-website
+      - <<: *step_restore_cache
+      - <<: *step_setup_global_packages
+      - run:
+          name: 'Build code for torus lrc website'
+          command: |
+            npm run build:lrc
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - torus-website/dist
+      - <<: *step_save_cache
+  deploy-lrc:
+    <<: *job_common_base
+    steps:
+      - attach_workspace:
+          at: ~/
+      - add_ssh_keys
+      - run:
+          name: 'Deploy Over SSH'
+          command: |
+            ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
+            tar czf - dist/ | ssh ubuntu@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
   # ------------------------
   # alpha configurations
   # ------------------------
@@ -253,6 +281,19 @@ workflows:
             branches:
               only:
                 - develop
+      - build-lrc:
+          filters:
+            branches:
+              only:
+                - develop
+      - deploy-lrc:
+          requires:
+            - build-lrc
+            - test-coverage
+          filters:
+            branches:
+              only:
+                - develop
       # ------------------------
       # alpha configurations
       # ------------------------
@@ -261,7 +302,6 @@ workflows:
             branches:
               only:
                 - /^alpha.*/
-                - lrc
       - deploy-alpha:
           requires:
             - build-alpha
@@ -270,4 +310,3 @@ workflows:
             branches:
               only:
                 - /^alpha.*/
-                - lrc
