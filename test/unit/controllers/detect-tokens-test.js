@@ -1,19 +1,18 @@
-/* eslint-disable */
 import assert from 'assert'
 import nock from 'nock'
 import sinon from 'sinon'
+
 import DetectTokensController from '../../../src/controllers/DetectTokensController'
 import NetworkController from '../../../src/controllers/NetworkController'
 
 const TEMP_ADDRESS = '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'
+const noop = () => {}
 
 describe('DetectTokensController', () => {
   const sandbox = sinon.createSandbox()
   let clock
   let network
   let controller
-
-  const noop = () => {}
 
   const networkControllerProviderConfig = {
     getAccounts: noop,
@@ -43,12 +42,12 @@ describe('DetectTokensController', () => {
 
   it('should be called on every polling period', async () => {
     clock = sandbox.useFakeTimers()
-    const network = new NetworkController()
-    network.initializeProvider(networkControllerProviderConfig)
-    network.setProviderType('mainnet')
-    const controller = new DetectTokensController({ network })
+    const localNetworkController = new NetworkController()
+    localNetworkController.initializeProvider(networkControllerProviderConfig)
+    localNetworkController.setProviderType('mainnet')
+    const localController = new DetectTokensController({ network: localNetworkController })
 
-    const stub = sandbox.stub(controller, 'detectNewTokens')
+    const stub = sandbox.stub(localController, 'detectNewTokens')
 
     clock.tick(1)
     sandbox.assert.notCalled(stub)
@@ -115,9 +114,9 @@ describe('DetectTokensController', () => {
   })
 
   it('should not detect same token while in main network', async () => {
-    const controller = new DetectTokensController({ network })
-    await controller.startTokenDetection(TEMP_ADDRESS)
-    controller.detectedTokensStore.putState({
+    const localController = new DetectTokensController({ network })
+    await localController.startTokenDetection(TEMP_ADDRESS)
+    localController.detectedTokensStore.putState({
       tokens: [
         {
           tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
@@ -128,10 +127,10 @@ describe('DetectTokensController', () => {
     })
 
     sandbox
-      .stub(controller, 'detectEtherscanTokenBalance')
+      .stub(localController, 'detectEtherscanTokenBalance')
       .withArgs('0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', { decimals: 8, symbol: 'J8T' })
       .returns(
-        controller.detectedTokensStore.putState({
+        localController.detectedTokensStore.putState({
           tokens: [
             {
               tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
@@ -143,7 +142,7 @@ describe('DetectTokensController', () => {
       )
       .withArgs('0xBC86727E770de68B1060C91f6BB6945c73e10388', { decimals: 18, symbol: 'XNK' })
       .returns(
-        controller.detectedTokensStore.putState({
+        localController.detectedTokensStore.putState({
           tokens: [
             {
               tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
@@ -160,7 +159,7 @@ describe('DetectTokensController', () => {
       )
 
     assert.deepStrictEqual(
-      controller.detectedTokensStore.getState().tokens.map((x) => ({ address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol })),
+      localController.detectedTokensStore.getState().tokens.map((x) => ({ address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol })),
       [
         { address: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', decimals: 8, symbol: 'J8T' },
         { address: '0xBC86727E770de68B1060C91f6BB6945c73e10388', decimals: 18, symbol: 'XNK' },

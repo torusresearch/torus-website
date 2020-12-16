@@ -1,5 +1,4 @@
-/* eslint-disable */
-import { addHexPrefix, BN, isValidAddress as isValidAddressUtil, isValidChecksumAddress, toChecksumAddress, stripHexPrefix } from 'ethereumjs-util'
+import { addHexPrefix, BN, isValidAddress as isValidAddressUtil, isValidChecksumAddress, stripHexPrefix, toChecksumAddress } from 'ethereumjs-util'
 import abi from 'human-standard-token-abi'
 import { DateTime } from 'luxon'
 
@@ -81,13 +80,12 @@ function numericBalance(balance) {
 
 // Takes  hex, returns [beforeDecimal, afterDecimal]
 function parseBalance(balance) {
-  let beforeDecimal
   let afterDecimal
   const wei = numericBalance(balance)
   const weiString = wei.toString()
   const trailingZeros = /0+$/
 
-  beforeDecimal = weiString.length > 18 ? weiString.slice(0, -18) : '0'
+  const beforeDecimal = weiString.length > 18 ? weiString.slice(0, -18) : '0'
   afterDecimal = `000000000000000000${wei}`.slice(-18).replace(trailingZeros, '')
   if (afterDecimal === '') {
     afterDecimal = '0'
@@ -179,7 +177,7 @@ function dataSize(data) {
 function normalizeToWei(amount, currency) {
   try {
     return amount.mul(bnTable.wei).div(bnTable[currency])
-  } catch (error) {}
+  } catch {}
   return amount
 }
 
@@ -231,7 +229,7 @@ function bnMultiplyByFraction(targetBN, numerator, denominator) {
   return targetBN.mul(numberBN).div(denomBN)
 }
 
-function getTxFeeBn(gas, gasPrice = MIN_GAS_PRICE_BN.toString(16), blockGasLimit) {
+function getTxFeeBn(gas, gasPrice = MIN_GAS_PRICE_BN.toString(16)) {
   const gasBn = hexToBn(gas)
   const gasPriceBn = hexToBn(gasPrice)
   const txFeeBn = gasBn.mul(gasPriceBn)
@@ -260,7 +258,7 @@ function exportAsFile(filename, data, type = 'text/csv') {
 }
 
 function allNull(object) {
-  return Object.entries(object).every(([key, value]) => value === null)
+  return Object.entries(object).every(([_, value]) => value === null)
 }
 
 function getTokenAddressFromTokenObject(token) {
