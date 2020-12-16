@@ -33,6 +33,7 @@ import DeviceTabletIcon from './DeviceTabletIcon.vue'
 import DisconnectIcon from './DisconnectIcon.vue'
 import DownloadIcon from './DownloadIcon.vue'
 import EthIcon from './EthIcon.vue'
+import ExportIcon from './ExportIcon.vue'
 import GlobeIcon from './GlobeIcon.vue'
 import InfoIcon from './InfoIcon.vue'
 import KeyIcon from './KeyIcon.vue'
@@ -371,5 +372,8 @@ export default {
   },
   mail: {
     component: MailIcon,
+  },
+  export: {
+    component: ExportIcon,
   },
 }

@@ -52,7 +52,7 @@
       <div v-if="showBackupPhrase" class="settings-container pa-4 mb-10">
         <div class="text_1--text d-flex align-center body-2">
           <v-icon size="16" class="torusGray1--text mr-2">$vuetify.icons.mnemonic</v-icon>
-          <div>tKey Backup Phrase</div>
+          <div>{{ t('tkeyBackup.tkeyBackupPhrase') }}</div>
         </div>
       </div>
 
@@ -61,7 +61,7 @@
           <div>{{ device.groupTitle }}</div>
           <div class="ml-auto">
             <v-btn class="download-btn" color="torusBrand1" icon small :aria-label="`Download`" @click="downloadShare(device.index)">
-              <v-icon x-small>$vuetify.icons.download</v-icon>
+              <v-icon x-small>$vuetify.icons.export</v-icon>
             </v-btn>
             <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete`" @click="deleteShare(device.index)">
               <v-icon x-small>$vuetify.icons.trash</v-icon>
@@ -95,7 +95,7 @@
         </v-list>
         <div class="caption text_3--text mb-4">
           {{ t('tkeySettings.note') }}: {{ t('tkeySettings.clearing') }}. {{ t('tkeySettings.clickThe') }} "
-          <v-icon size="10" class="torusBrand1--text">$vuetify.icons.download</v-icon>
+          <v-icon size="10" class="torusBrand1--text">$vuetify.icons.export</v-icon>
           " {{ t('tkeySettings.iconToAllow') }}.
         </div>
         <!-- <v-layout wrap>

@@ -282,17 +282,17 @@ export default {
   },
   computed: {
     progressColor() {
-      return this.progressValue > 200 ? 'success' : 'warning'
+      return this.progressValue >= 300 ? 'success' : 'warning'
     },
     progressText() {
-      if (this.progressValue > 200 && (!this.backupDeviceShare || !this.finalRecoveryPassword)) return 'tkeyCreateSetup.good'
-      if (this.progressValue <= 200) return 'tkeyCreateSetup.average'
+      if (this.progressValue >= 300) return 'tkeyCreateSetup.good'
+      if (this.progressValue <= 300) return 'tkeyCreateSetup.average'
       return 'tkeyCreateSetup.excellent'
     },
     progressDescription() {
-      if (this.progressValue >= 300) return 'tkeyCreateSetup.youHaveSufficient'
-      if (this.progressValue > 200) return 'tkeyCreateSetup.youMayWantTo'
-      return 'tkeyCreateSetup.youNeedOneMore'
+      if (this.progressValue >= 300) return 'tkeyCreateSetup.youMayWantTo'
+      if (this.progressValue <= 300) return 'tkeyCreateSetup.youNeedOneMore'
+      return 'tkeyCreateSetup.youHaveSufficient'
     },
     browser() {
       const browser = bowser.getParser(window.navigator.userAgent)
