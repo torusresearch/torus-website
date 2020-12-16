@@ -27,6 +27,7 @@ class StreamWindow {
         name: 'create_window',
         data: {
           preopenInstanceId: this.preopenInstanceId,
+          url,
         },
       })
     }

@@ -24,7 +24,7 @@ export default {
   methods: {
     ...mapActions(['showWalletPopup']),
     openOnboarding() {
-      this.showWalletPopup({ path: '/tkey' })
+      this.showWalletPopup({ path: 'tkey' })
       this.showLoginTkey = false
     },
   },
