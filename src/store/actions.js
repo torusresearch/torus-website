@@ -9,6 +9,7 @@ import { HandlerFactory as createHandler } from '../handlers/Auth'
 import PopupHandler from '../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../plugins/vuetify'
+import router from '../router'
 import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
 import {
@@ -401,14 +402,23 @@ export default {
     const {
       userInfo: { verifierId, verifier, verifierParams },
     } = state
-    const oAuthKey = await dispatch('getTorusKey', { verifier, verifierId, verifierParams, oAuthToken })
-    log.info('key 1', oAuthKey)
+
+    const defaultAddresses = []
+    let oAuthKey = {}
     dispatch('subscribeToControllers')
-    const defaultAddresses = await dispatch('initTorusKeyring', {
-      keys: [{ ...oAuthKey, accountType: ACCOUNT_TYPE.NORMAL }],
-      calledFromEmbed,
-      rehydrate: false,
-    })
+
+    if (!config.onlyTkey) {
+      oAuthKey = await dispatch('getTorusKey', { verifier, verifierId, verifierParams, oAuthToken })
+      log.info('key 1', oAuthKey)
+
+      defaultAddresses.push(
+        ...(await dispatch('initTorusKeyring', {
+          keys: [{ ...oAuthKey, accountType: ACCOUNT_TYPE.NORMAL }],
+          calledFromEmbed,
+          rehydrate: false,
+        }))
+      )
+    }
 
     await dispatch('calculatePostboxKey', { oAuthToken })
     // Threshold Bak region
@@ -428,10 +438,18 @@ export default {
         // In app.tor.us
         defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
       }
+    } else if (config.onlyTkey && !keyExists) {
+      if (!isMain) dispatch('showWalletPopup', { path: '/tkey' })
+      else {
+        router.push({ path: 'tkey' })
+      }
+      throw new Error('User has no account')
     }
 
     const selectedDefaultAddress = defaultAddresses[0] || defaultAddresses[1]
-    const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : oAuthKey.ethAddress
+    const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress)
+      ? selectedDefaultAddress
+      : oAuthKey.ethAddress || Object.keys(state.wallet)[0]
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
     prefsController.getBillboardContents()
     // continue enable function
