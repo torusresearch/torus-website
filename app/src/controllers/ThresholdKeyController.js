@@ -264,6 +264,7 @@ class ThresholdKeyController extends EventEmitter {
           logo: 'https://app.tor.us/img/torus-logo-blue.7d2a4a6b.svg',
           name: 'TORUS',
           email: recoveryEmail,
+          baseUrl: config.baseUrl,
         })
       } catch (error) {
         log.error(error)
