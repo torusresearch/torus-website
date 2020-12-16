@@ -236,11 +236,12 @@ export default {
     }
   },
   showWalletPopup(context, payload) {
-    const finalUrl = `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`
+    const url = payload.path.includes('tkey') ? `${baseRoute}${payload.path || ''}` : `${baseRoute}wallet${payload.path || ''}`
+    const finalUrl = `${url}?integrity=true&instanceId=${torus.instanceId}`
     const walletWindow = new PopupHandler({ url: finalUrl, features: FEATURES_DEFAULT_WALLET_WINDOW })
     walletWindow.open()
-    walletWindow.window.blur()
-    setTimeout(walletWindow.window.focus(), 0)
+    walletWindow.window?.blur()
+    setTimeout(walletWindow.window?.focus(), 0)
   },
   importAccount({ dispatch }, payload) {
     return new Promise((resolve, reject) => {
@@ -433,13 +434,15 @@ export default {
         if (defaultAddresses[0] && defaultAddresses[0] !== oAuthKey.ethAddress) {
           // Do tkey
           defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
+        } else if (config.onlyTkey) {
+          defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
         }
       } else {
         // In app.tor.us
         defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
       }
     } else if (config.onlyTkey && !keyExists) {
-      if (!isMain) dispatch('showWalletPopup', { path: '/tkey' })
+      if (!isMain) dispatch('showWalletPopup', { path: 'tkey' })
       else {
         router.push({ path: 'tkey' })
       }
