@@ -20,7 +20,7 @@ const click = async (page, selector) => {
   try {
     await page.waitForSelector(selector, { visible: true, timeout: 120000 })
     await page.click(selector)
-  } catch (error) {
+  } catch {
     throw new Error(`Could not click on selector: ${selector}`)
   }
 }
@@ -57,7 +57,7 @@ const waitForClass = async (page, selector, className) => {
       selector,
       className
     )
-  } catch (error) {
+  } catch {
     throw new Error(`Class ${className} not found for selector: ${selector}`)
   }
 }
@@ -65,7 +65,7 @@ const waitForClass = async (page, selector, className) => {
 const shouldExist = async (page, selector) => {
   try {
     await page.waitForSelector(selector, { visible: true, timeout: 120000 })
-  } catch (error) {
+  } catch {
     throw new Error(`Selector ${selector} does not exist`)
   }
 }
@@ -92,7 +92,7 @@ const typeText = async (page, text, selector) => {
   try {
     await page.waitForSelector(selector, { visible: true, timeout: 120000 })
     await page.type(selector, text)
-  } catch (error) {
+  } catch {
     throw new Error(`Could not text into selector: ${selector}`)
   }
 }
@@ -101,7 +101,7 @@ const shouldTextNotBeEmpty = async (page, selector) => {
   try {
     await page.waitForSelector(selector, { timeout: 120000 })
     await page.waitForFunction((selectorInner) => document.querySelector(selectorInner).textContent !== '', { timeout: 120000 }, selector)
-  } catch (error) {
+  } catch {
     throw new Error(`Inner text empty for selector: ${selector}`)
   }
 }
@@ -110,7 +110,7 @@ const shouldValueNotBeEmpty = async (page, selector) => {
   try {
     await page.waitForSelector(selector, { timeout: 120000 })
     await page.waitForFunction((selectorInner) => document.querySelector(selectorInner).value !== '', { timeout: 120000 }, selector)
-  } catch (error) {
+  } catch {
     throw new Error(`Value text empty for for selector: ${selector}`)
   }
 }
@@ -126,7 +126,7 @@ const selectItem = async (page, selector, selectorContainer, text) => {
     }, text)
 
     await waitForText(page, `${selectorContainer} .v-select__selection`, text)
-  } catch (error) {
+  } catch {
     throw new Error(`Option ${text} not found for selector: ${selector}`)
   }
 }
