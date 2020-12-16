@@ -240,8 +240,8 @@ export default {
     const finalUrl = `${url}?integrity=true&instanceId=${torus.instanceId}`
     const walletWindow = new PopupHandler({ url: finalUrl, features: FEATURES_DEFAULT_WALLET_WINDOW })
     walletWindow.open()
-    walletWindow.window?.blur()
-    setTimeout(walletWindow.window?.focus(), 0)
+    if (walletWindow.window.blur) walletWindow.window.blur()
+    if (walletWindow.window.focus) setTimeout(walletWindow.window.focus(), 0)
   },
   importAccount({ dispatch }, payload) {
     return new Promise((resolve, reject) => {
