@@ -2,15 +2,15 @@ version: 2
 job_common_node: &job_common_node
   docker:
     - image: circleci/node
-  working_directory: ~/torus-website/app
+  working_directory: ~/torus-website
 job_common_base: &job_common_base
   docker:
     - image: skyuppercut/buildpack-deps
-  working_directory: ~/torus-website/app
+  working_directory: ~/torus-website
 job_common: &job_common
   docker:
     - image: skyuppercut/node-puppeteer
-  working_directory: ~/torus-website/app
+  working_directory: ~/torus-website
 step_save_cache: &step_save_cache
   save_cache:
     key: dependency-cache-{{ checksum "package.json" }}
@@ -21,7 +21,7 @@ step_restore_cache: &step_restore_cache
     key: dependency-cache-{{ checksum "package.json" }}
 step_setup_global_packages: &step_setup_global_packages
   run:
-    name: "Set up global packages"
+    name: 'Set up global packages'
     command: |
       [ ! -d "node_modules" ] && rm package-lock.json && npm install && find ./node_modules/ -name ".git" -type d -exec rm -rf {} + || echo "node_modules exist"
 update_lambda_job: &update_lambda_job
@@ -31,7 +31,7 @@ update_lambda_job: &update_lambda_job
         at: ~/
     - add_ssh_keys
     - run:
-        name: "Update lambda version"
+        name: 'Update lambda version'
         command: |
           mkdir -p ~/.ssh 
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
@@ -43,7 +43,7 @@ update_iframeIntegrity: &update_iframeIntegrity
         at: ~/
     - add_ssh_keys
     - run:
-        name: "Update iframe integrity"
+        name: 'Update iframe integrity'
         command: |
           mkdir -p ~/.ssh
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
@@ -55,7 +55,7 @@ deploy_function: &deploy_function
         at: ~/
     - add_ssh_keys
     - run:
-        name: "Deploy Over SSH to AWS"
+        name: 'Deploy Over SSH to AWS'
         command: |
           . ./scripts/uploadToAws.sh
 jobs:
@@ -67,12 +67,12 @@ jobs:
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
-          name: "Running unit tests with coverage"
+          name: 'Running unit tests with coverage'
           command: npm run test:coverage-codecov
       - <<: *step_save_cache
       # Save coverage artifacts
       - store_artifacts:
-          path: ~/torus-website/app/coverage
+          path: ~/torus-website/coverage
   build:
     <<: *job_common
     resource_class: large
@@ -82,7 +82,7 @@ jobs:
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
-          name: "Build code for torus website"
+          name: 'Build code for torus website'
           command: |
             npm version patch -m 'Updating version to %s [skip ci]' && npm run build && . ./scripts/gitPush.sh
       - persist_to_workspace:
@@ -99,7 +99,7 @@ jobs:
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
-          name: "Build code for torus binance website"
+          name: 'Build code for torus binance website'
           command: |
             npm version patch -m 'Updating version to %s [skip ci]' && npm run build:binance && . ./scripts/gitPush.sh
       - persist_to_workspace:
@@ -128,31 +128,14 @@ jobs:
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
-          name: "Build code for torus testing website"
+          name: 'Build code for torus testing website'
           command: |
             npm run build:testing
       - persist_to_workspace:
           root: ~/
           paths:
-            - torus-website/app/dist
+            - torus-website/dist
       - <<: *step_save_cache
-  build-lrc:
-        <<: *job_common
-        resource_class: large
-        steps:
-          - checkout:
-              path: ~/torus-website
-          - <<: *step_restore_cache
-          - <<: *step_setup_global_packages
-          - run:
-              name: "Build code for torus lrc website"
-              command: |
-                npm run build:lrc
-          - persist_to_workspace:
-              root: ~/
-              paths:
-                - torus-website/app/dist
-          - <<: *step_save_cache
   deploy-testing:
     <<: *job_common_base
     steps:
@@ -160,21 +143,43 @@ jobs:
           at: ~/
       - add_ssh_keys
       - run:
-          name: "Deploy Over SSH"
+          name: 'Deploy Over SSH'
           command: |
             ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
             tar czf - dist/ | ssh ubuntu@testing.tor.us "rm -rf ~/testing-torus-website/* && tar -zxf - -C ~/testing-torus-website/"
-  deploy-lrc:
+  # ------------------------
+  # alpha configurations
+  # ------------------------
+  build-alpha:
+    <<: *job_common
+    steps:
+      - checkout:
+          path: ~/torus-website
+      - <<: *step_restore_cache
+      - <<: *step_setup_global_packages
+      - run:
+          name: 'Build code for torus alpha website'
+          command: |
+            npm run build:alpha-branches
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - torus-website/dist
+      - <<: *step_save_cache
+  deploy-alpha:
     <<: *job_common_base
     steps:
       - attach_workspace:
           at: ~/
       - add_ssh_keys
       - run:
-          name: "Deploy Over SSH"
+          name: 'Deploy Over SSH'
           command: |
-            ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh ubuntu@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
+            ssh-keyscan -H "$CIRCLE_BRANCH".tor.us >> ~/.ssh/known_hosts
+            tar czf - dist/ | ssh ubuntu@"$CIRCLE_BRANCH".tor.us "rm -rf ~/"$CIRCLE_BRANCH"-torus-website/* && tar -zxf - -C ~/"$CIRCLE_BRANCH"-torus-website/"
+# ------------------------
+# alpha configurations
+# ------------------------
 
 workflows:
   version: 2
@@ -248,16 +253,21 @@ workflows:
             branches:
               only:
                 - develop
-      - build-lrc:
+      # ------------------------
+      # alpha configurations
+      # ------------------------
+      - build-alpha:
           filters:
             branches:
               only:
-                - develop
-      - deploy-lrc:
+                - /^alpha.*/
+                - lrc
+      - deploy-alpha:
           requires:
-            - build-lrc
+            - build-alpha
             - test-coverage
           filters:
             branches:
               only:
-                - develop
+                - /^alpha.*/
+                - lrc
