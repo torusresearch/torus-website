@@ -14,9 +14,7 @@
         <div class="ml-auto caption" :class="`${progressColor}--text`">{{ t(progressText) }}</div>
       </div>
       <v-progress-linear v-model="progressRate" class="mb-2" :color="progressColor" rounded background-color="torusGray3"></v-progress-linear>
-      <div class="caption text_2--text">
-        {{ t(progressDescription) }}
-      </div>
+      <div class="caption text_2--text">{{ t(progressDescription) }}</div>
     </div>
     <div>
       <v-expansion-panels
@@ -217,7 +215,7 @@
       <v-flex class="xs6 px-2">
         <v-btn
           block
-          :disabled="(!finalRecoveryPassword && !backupDeviceShare) || !userUnderstands"
+          :disabled="progressValue < 300 || !userUnderstands"
           :x-large="!$vuetify.breakpoint.xsOnly"
           color="torusBrand1"
           class="white--text body-2 font-weight-bold"
@@ -274,7 +272,7 @@ export default {
           /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
           this.t('walletSettings.invalidEmail'),
       },
-      panels: [1, 2],
+      panels: [1, 2, 3],
       progressValue: 200,
       backupDeviceShare: false,
       userUnderstands: false,
@@ -285,14 +283,14 @@ export default {
       return this.progressValue >= 300 ? 'success' : 'warning'
     },
     progressText() {
-      if (this.progressValue >= 300) return 'tkeyCreateSetup.good'
-      if (this.progressValue <= 300) return 'tkeyCreateSetup.average'
-      return 'tkeyCreateSetup.excellent'
+      if (this.progressValue >= 400) return 'tkeyCreateSetup.excellent'
+      if (this.progressValue < 300) return 'tkeyCreateSetup.good'
+      return 'tkeyCreateSetup.average'
     },
     progressDescription() {
-      if (this.progressValue >= 300) return 'tkeyCreateSetup.youMayWantTo'
-      if (this.progressValue <= 300) return 'tkeyCreateSetup.youNeedOneMore'
-      return 'tkeyCreateSetup.youHaveSufficient'
+      if (this.progressValue >= 400) return 'tkeyCreateSetup.youHaveSufficient'
+      if (this.progressValue < 300) return 'tkeyCreateSetup.youNeedOneMore'
+      return 'tkeyCreateSetup.youMayWantTo'
     },
     browser() {
       const browser = bowser.getParser(window.navigator.userAgent)
@@ -321,7 +319,7 @@ export default {
     },
     setFinalPassword() {
       this.finalRecoveryPassword = this.recoveryPassword
-      this.progressValue += 60
+      this.progressValue += 100
     },
     async onBackupDeviceShare() {
       try {
