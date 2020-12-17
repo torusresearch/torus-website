@@ -63,7 +63,7 @@
             <v-btn class="download-btn" color="torusBrand1" icon small :aria-label="`Download`" @click="downloadShare(device.index)">
               <v-icon x-small>$vuetify.icons.export</v-icon>
             </v-btn>
-            <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete`" @click="deleteShare(device.index)">
+            <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete`" @click="openDeleteShareModal(device.index)">
               <v-icon x-small>$vuetify.icons.trash</v-icon>
             </v-btn>
           </div>
@@ -190,6 +190,7 @@
     <PopupLogin :login-dialog="loginDialog" :is-link-account="true" @closeDialog="loginDialog = false" @accountLinked="accountLinked" />
     <LinkingCompleted :linking-dialog="linkingDialog" :is-successfull="isLinkingSuccessfull" @closeDialog="linkingDialog = false" />
     <ExportShare :share-to-export="shareToExport" @close="closeShareExportModal" />
+    <DeleteShare :ongoing-delete="ongoingDelete" :share-to-delete="shareToDelete" @close="closeDeleteShareModal" @confirm="triggerDeleteShare" />
   </div>
 </template>
 
@@ -199,6 +200,7 @@ import { mapActions, mapState } from 'vuex'
 
 import PopupLogin from '../../../containers/Popup/PopupLogin'
 import { getUserEmail, passwordValidation } from '../../../utils/utils'
+import DeleteShare from '../DeleteShare'
 import ExportShare from '../ExportShare'
 import LinkingCompleted from '../LinkingCompleted'
 
@@ -218,7 +220,7 @@ const AUTH_FACTORS = [
 ]
 export default {
   name: 'TwoFactorAuthSettings',
-  components: { PopupLogin, LinkingCompleted, ExportShare },
+  components: { DeleteShare, PopupLogin, LinkingCompleted, ExportShare },
   data() {
     return {
       authTreshholdSelected: 2,
@@ -241,6 +243,8 @@ export default {
       },
       settingPassword: false,
       shareToExport: '',
+      shareToDelete: '',
+      ongoingDelete: false,
     }
   },
   computed: {
@@ -313,6 +317,18 @@ export default {
     },
     closeShareExportModal() {
       this.shareToExport = ''
+    },
+    openDeleteShareModal(index) {
+      this.shareToDelete = index
+    },
+    closeDeleteShareModal() {
+      this.shareToDelete = ''
+      this.ongoingDelete = false
+    },
+    async triggerDeleteShare() {
+      this.ongoingDelete = true
+      await this.deleteShare(this.shareToDelete)
+      this.closeDeleteShareModal()
     },
   },
 }
