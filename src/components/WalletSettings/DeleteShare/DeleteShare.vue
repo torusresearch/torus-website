@@ -8,7 +8,7 @@
     <v-card class="delete-share">
       <v-layout class="card-header" wrap>
         <v-flex text-center xs12 py-10 px-6>
-          <div class="delete-headline">Delete Authentication Factor</div>
+          <div class="delete-headline">{{ t('tkeySettings.deleteAuthFactor') }}</div>
           <v-btn class="close-btn" icon aria-label="Close Add Token" title="Close Backup phrase" @click="deleteShareDialog = false">
             <v-icon>$vuetify.icons.close</v-icon>
           </v-btn>
@@ -18,14 +18,14 @@
         <v-flex xs12>
           <div class="title d-flex justify-center">
             <v-icon size="16" class="mr-2 warning--text">$vuetify.icon.alert_circle_filled</v-icon>
-            This action cannot be undone.
+            {{ t('tkeySettings.actionCannotBeUndone') }}
           </div>
         </v-flex>
       </v-layout>
       <v-layout mx-6 pb-10 wrap>
         <v-flex xs12 mb-8>
           <div class="body-2 text-center" :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'">
-            Please be very sure before you click confirm to delete this as an Authentication Factor.
+            {{ t('tkeySettings.pleaseBeSure') }}
           </div>
         </v-flex>
         <v-flex xs12>
