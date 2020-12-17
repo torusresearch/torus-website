@@ -131,12 +131,6 @@
   },
   "eslint.lintTask.enable": true,
   "eslint.format.enable": true,
-  "eslint.workingDirectories": [
-    {
-      "changeProcessCWD": true,
-      "directory": "./app"
-    }
-  ],
   "prettier.jsxBracketSameLine": true,
   "prettier.printWidth": 150
 }

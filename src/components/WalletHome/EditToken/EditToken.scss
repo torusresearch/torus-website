@@ -1,0 +1,32 @@
+.add-token.v-card.theme--dark {
+  background: #242529;
+}
+
+.card-header {
+  background: #ffffff;
+  box-sizing: border-box;
+  border-radius: 6px;
+  line-height: 0;
+  box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+  border: 1px solid #F5F5F5;
+
+  .close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: #D3D3D4;
+  }
+}
+
+.v-divider {
+  border-color: #F5F5F5;
+}
+
+.theme--dark {
+  .card-header {
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+    border: 0;
+    border-bottom: 1px solid #343539;
+    background: #242529;
+  }
+}
