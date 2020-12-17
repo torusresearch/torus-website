@@ -63,7 +63,9 @@
             <v-btn class="download-btn" color="torusBrand1" icon small :aria-label="`Download`" @click="downloadShare(device.index)">
               <v-icon x-small>$vuetify.icons.export</v-icon>
             </v-btn>
-            <DeleteShare :share-to-delete="device.index" @confirm="triggerDeleteShare" />
+            <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete`" @click="openDeleteShareModal(device.index)">
+              <v-icon x-small>$vuetify.icons.trash</v-icon>
+            </v-btn>
           </div>
         </div>
         <v-list dense outlined class="pa-0 factor-list mb-2">
@@ -188,6 +190,7 @@
     <PopupLogin :login-dialog="loginDialog" :is-link-account="true" @closeDialog="loginDialog = false" @accountLinked="accountLinked" />
     <LinkingCompleted :linking-dialog="linkingDialog" :is-successfull="isLinkingSuccessfull" @closeDialog="linkingDialog = false" />
     <ExportShare :share-to-export="shareToExport" @close="closeShareExportModal" />
+    <DeleteShare :ongoing-delete="ongoingDelete" :share-to-delete="shareToDelete" @close="closeDeleteShareModal" @confirm="triggerDeleteShare" />
   </div>
 </template>
 
@@ -240,6 +243,8 @@ export default {
       },
       settingPassword: false,
       shareToExport: '',
+      shareToDelete: '',
+      ongoingDelete: false,
     }
   },
   computed: {
@@ -313,8 +318,17 @@ export default {
     closeShareExportModal() {
       this.shareToExport = ''
     },
-    triggerDeleteShare(shareToDelete) {
-      this.deleteShare(shareToDelete)
+    openDeleteShareModal(index) {
+      this.shareToDelete = index
+    },
+    closeDeleteShareModal() {
+      this.shareToDelete = ''
+      this.ongoingDelete = false
+    },
+    async triggerDeleteShare() {
+      this.ongoingDelete = true
+      await this.deleteShare(this.shareToDelete)
+      this.closeDeleteShareModal()
     },
   },
 }

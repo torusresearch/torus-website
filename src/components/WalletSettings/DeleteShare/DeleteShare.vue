@@ -1,15 +1,10 @@
 <template>
-  <v-dialog v-model="deleteShareDialog" width="375">
-    <template v-slot:activator="{ on }">
-      <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete`" v-on="on">
-        <v-icon x-small>$vuetify.icons.trash</v-icon>
-      </v-btn>
-    </template>
+  <v-dialog :value="!!shareToDelete" width="375">
     <v-card class="delete-share">
       <v-layout class="card-header" wrap>
         <v-flex text-center xs12 py-10 px-6>
           <div class="delete-headline">{{ t('tkeySettings.deleteAuthFactor') }}</div>
-          <v-btn class="close-btn" icon aria-label="Close Add Token" title="Close Backup phrase" @click="deleteShareDialog = false">
+          <v-btn class="close-btn" icon aria-label="Close Add Token" title="Close Backup phrase" @click="closeDialog">
             <v-icon>$vuetify.icons.close</v-icon>
           </v-btn>
         </v-flex>
@@ -31,10 +26,10 @@
         <v-flex xs12>
           <v-layout mx-n2>
             <v-flex xs6 px-2>
-              <v-btn block large text @click="deleteShareDialog = false">{{ t('walletSettings.close') }}</v-btn>
+              <v-btn block large text @click="closeDialog">{{ t('walletSettings.close') }}</v-btn>
             </v-flex>
             <v-flex xs6 px-2>
-              <v-btn block large color="torusBrand1" class="white--text" type="button" @click="confirm">
+              <v-btn block large color="torusBrand1" :loading="ongoingDelete" class="white--text" type="button" @click="confirm">
                 {{ t('walletSettings.confirm') }}
               </v-btn>
             </v-flex>
@@ -52,11 +47,10 @@ export default {
       type: String,
       default: '',
     },
-  },
-  data() {
-    return {
-      deleteShareDialog: false,
-    }
+    ongoingDelete: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     closeDialog() {
@@ -64,7 +58,6 @@ export default {
     },
     confirm() {
       this.$emit('confirm', this.shareToDelete)
-      this.deleteShareDialog = false
     },
   },
 }
