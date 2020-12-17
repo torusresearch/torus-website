@@ -45,15 +45,9 @@ export async function calculateSettingsPageData(tKey) {
   const keyDetails = tKey.getKeyDetails()
   const { shareDescriptions, totalShares, threshold: thresholdShares } = keyDetails
   const parsedShareDescriptions = Object.keys(shareDescriptions)
-    .map((x) => {
-      return shareDescriptions[x].map((y) => {
-        return { ...JSON.parse(y), shareIndex: x }
-      })
-    })
+    .map((x) => shareDescriptions[x].map((y) => ({ ...JSON.parse(y), shareIndex: x })))
     .flatMap((x) => x)
-    .sort((a, b) => {
-      return THRESHOLD_KEY_PRIORITY_ORDER.indexOf(a.module) - THRESHOLD_KEY_PRIORITY_ORDER.indexOf(b.module)
-    })
+    .sort((a, b) => THRESHOLD_KEY_PRIORITY_ORDER.indexOf(a.module) - THRESHOLD_KEY_PRIORITY_ORDER.indexOf(b.module))
 
   // Total device shares
   const allDeviceShares = parseShares(

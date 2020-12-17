@@ -2,7 +2,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-unreachable */
 import { ethErrors } from 'eth-rpc-errors'
-import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'
+import { createAsyncMiddleware } from 'json-rpc-engine'
 
 /**
  * Create middleware for handling certain methods and preprocessing permissions requests.
@@ -10,7 +10,7 @@ import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'
 export default function createMethodMiddleware({ getAccounts, requestAccountsPermission, setSiteMetadata }) {
   return createAsyncMiddleware(async (request, res, next) => {
     if (typeof request.method !== 'string') {
-      res.error = ethErrors.rpc.invalidRequest({ data: request })
+      res.error = ethErrors.rpc.invalidRequest({ data: request, message: 'Invalid rpc request' })
       return
     }
 

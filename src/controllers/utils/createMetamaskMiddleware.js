@@ -1,7 +1,5 @@
 import createWalletSubprovider from 'eth-json-rpc-middleware/wallet'
-import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'
-import createScaffoldMiddleware from 'json-rpc-engine/src/createScaffoldMiddleware'
-import mergeMiddleware from 'json-rpc-engine/src/mergeMiddleware'
+import { createAsyncMiddleware, createScaffoldMiddleware, mergeMiddleware } from 'json-rpc-engine'
 
 import { formatTxMetaForRpcResult } from '../../utils/utils'
 

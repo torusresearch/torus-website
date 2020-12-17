@@ -20,19 +20,17 @@
 
             <!-- TITLE -->
             <div class="text-center new-device-header">
-              <template>
-                <div class="new-device-header__title">
-                  {{ t('tkeyNew.newLoginDetected') }}
-                </div>
-                <div class="new-device-header__description">
-                  {{ t('tkeyNew.itSeems1') }}
-                </div>
-                <div class="new-device-header__description">
-                  {{ t('tkeyNew.itSeems2') }}
-                  <span class="font-weight-bold">{{ t('tkeyNew.itSeems3') }}</span>
-                  {{ t('tkeyNew.itSeems4').replace('{num}', requiredShares) }}:
-                </div>
-              </template>
+              <div class="new-device-header__title">
+                {{ t('tkeyNew.newLoginDetected') }}
+              </div>
+              <div class="new-device-header__description">
+                {{ t('tkeyNew.itSeems1') }}
+              </div>
+              <div class="new-device-header__description">
+                {{ t('tkeyNew.itSeems2') }}
+                <span class="font-weight-bold">{{ t('tkeyNew.itSeems3') }}</span>
+                {{ t('tkeyNew.itSeems4').replace('{num}', requiredShares) }}:
+              </div>
             </div>
 
             <div>
@@ -69,6 +67,9 @@
                         :rules="[rules.required, shareMnemonicError]"
                         outlined
                         rows="3"
+                        autocomplete="off"
+                        spellcheck="false"
+                        data-gramm_editor="false"
                         :placeholder="shareMnemonicArr.length > 0 ? t('tkeyBackup.enterBackupPhrase2') : t('tkeyBackup.enterBackupPhrase1')"
                         @keydown="shareMnemonicEntered = false"
                       />

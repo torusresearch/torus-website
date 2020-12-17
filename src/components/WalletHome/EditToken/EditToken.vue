@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="addTokenDialog" max-width="375" persistent>
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <v-btn v-if="isHideMode" icon x-small v-on="on">
         <v-icon class="white--text" x-small>$vuetify.icons.close</v-icon>
       </v-btn>

@@ -611,9 +611,7 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
   return finalObject
 }
 
-export const padUrlString = (url) => {
-  return url.href.endsWith('/') ? url.href : `${url.href}/`
-}
+export const padUrlString = (url) => (url.href.endsWith('/') ? url.href : `${url.href}/`)
 
 function caseSensitiveField(field, isCaseSensitive) {
   return isCaseSensitive ? field : field.toLowerCase()

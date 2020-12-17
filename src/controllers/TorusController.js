@@ -4,8 +4,8 @@ import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
 import { normalize } from 'eth-sig-util'
 import { BN, stripHexPrefix } from 'ethereumjs-util'
 import EventEmitter from 'events'
-import RpcEngine from 'json-rpc-engine'
-import createEngineStream from 'json-rpc-middleware-stream/engineStream'
+import { JsonRpcEngine } from 'json-rpc-engine'
+import { createEngineStream } from 'json-rpc-middleware-stream'
 import debounce from 'lodash.debounce'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
@@ -751,7 +751,7 @@ export default class TorusController extends EventEmitter {
    * */
   setupProviderEngine({ origin }) {
     // setup json rpc engine stack
-    const engine = new RpcEngine()
+    const engine = new JsonRpcEngine()
     const { provider } = this
     const { blockTracker } = this
 

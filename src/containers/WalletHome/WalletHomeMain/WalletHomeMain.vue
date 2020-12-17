@@ -27,7 +27,7 @@
                   {{ totalPortfolioValue }}
                 </span>
                 <v-menu offset-y max-height="300" z-index="20">
-                  <template v-slot:activator="{ on }">
+                  <template #activator="{ on }">
                     <v-btn
                       x-small
                       text
@@ -101,7 +101,7 @@
               <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
                 <div class="text-body-1 font-weight-bold">{{ t('walletHome.welcome') }} Torus.</div>
                 <v-dialog v-model="dialogOnboarding" persistent max-width="600">
-                  <template v-slot:activator="{ on }">
+                  <template #activator="{ on }">
                     <div class="body-2'">
                       <a id="learn-more-btn" class="torusBrand1--text font-weight-bold" v-on="on">
                         {{ t('walletHome.learnMore') }}

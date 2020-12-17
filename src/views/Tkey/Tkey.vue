@@ -1,7 +1,7 @@
 <template>
   <div class="tkey-container">
     <Navbar :show-nav="false" :show-language-selector="false">
-      <template v-slot:drawer>
+      <template #drawer>
         <v-btn v-if="$vuetify.breakpoint.smAndDown" id="menu-dropdown-mobile-btn" icon aria-label="Open Account Menu" @click="drawer = !drawer">
           <v-icon class="torusBrand1--text">$vuetify.icons.menu</v-icon>
         </v-btn>

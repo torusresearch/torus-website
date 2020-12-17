@@ -43,7 +43,7 @@
                     single-line
                     @input="canShowError = false"
                   >
-                    <template v-slot:append>
+                    <template #append>
                       <v-btn icon aria-label="Show/Hide Private Key" @click="togglePrivShow">
                         <v-icon class="text_3--text">{{ showPrivateKey ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}</v-icon>
                       </v-btn>
@@ -107,7 +107,7 @@
                     autocomplete="current-password"
                     @click:append="toggleJsonPasswordShow"
                   >
-                    <template v-slot:append>
+                    <template #append>
                       <v-btn icon aria-label="Show/Hide JSON Password" @click="toggleJsonPasswordShow">
                         <v-icon class="text_3--text">
                           {{ showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}

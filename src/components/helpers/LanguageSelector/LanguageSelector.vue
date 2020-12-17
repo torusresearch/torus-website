@@ -1,6 +1,6 @@
 <template>
   <v-menu offset-y :bottom="!$vuetify.breakpoint.smAndDown" :top="$vuetify.breakpoint.smAndDown" left z-index="20">
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <v-btn v-if="!$vuetify.breakpoint.smAndDown" id="locale-dropdown-btn" class="locale-selector" small text aria-label="Select Language" v-on="on">
         <img src="../../../assets/img/icons/globe.svg" width="15" height="30" alt="Language Icon" />
         <span class="ml-1" :class="$vuetify.breakpoint.smAndDown">{{ selectedLabel }}</span>

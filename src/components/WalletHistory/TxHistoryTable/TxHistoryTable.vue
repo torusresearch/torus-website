@@ -8,7 +8,7 @@
       :page.sync="page"
       hide-default-footer
     >
-      <template v-slot:default="props">
+      <template #default="props">
         <TransactionDetails v-for="transaction in props.items" :key="transaction.transaction_hash || transaction.id" :transaction="transaction" />
       </template>
     </v-data-iterator>
