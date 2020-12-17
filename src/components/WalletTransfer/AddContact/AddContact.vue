@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="addContactDialog" width="400">
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <v-btn depressed x-small block class="caption torusBrand1 lighten-5 torusBrand1--text add-contact-alert" v-on="on">
         {{ t('walletTransfer.clickToAddContact') }}
       </v-btn>

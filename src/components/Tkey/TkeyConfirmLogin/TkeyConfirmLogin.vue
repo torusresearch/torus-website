@@ -17,18 +17,16 @@
 
       <!-- TITLE -->
       <div class="text-center new-device-header">
-        <template>
-          <div class="new-device-header__title">
-            {{ t('tkeyNew.newLoginDetected') }}
-          </div>
-          <div class="new-device-header__description">
-            {{ t('tkeyNew.newLoginTrying') }}
-          </div>
-          <div class="new-device-header__description">
-            <span class="font-weight-bold">{{ t('tkeyNew.matchRefId1') }}</span>
-            {{ t('tkeyNew.matchRefId2') }}
-          </div>
-        </template>
+        <div class="new-device-header__title">
+          {{ t('tkeyNew.newLoginDetected') }}
+        </div>
+        <div class="new-device-header__description">
+          {{ t('tkeyNew.newLoginTrying') }}
+        </div>
+        <div class="new-device-header__description">
+          <span class="font-weight-bold">{{ t('tkeyNew.matchRefId1') }}</span>
+          {{ t('tkeyNew.matchRefId2') }}
+        </div>
       </div>
 
       <div class="d-flex info-box mb-2 align-center">

@@ -48,7 +48,7 @@
                 <div class="body-2 mb-2">{{ t('walletTransfer.selectItem') }}</div>
                 <div v-if="selectedItemDisplay">
                   <v-menu transition="slide-y-transition" bottom>
-                    <template v-slot:activator="{ on }">
+                    <template #activator="{ on }">
                       <v-chip class="select-coin" label large :outlined="$vuetify.theme.dark" v-on="on">
                         <span class="select-coin-name">{{ selectedItemDisplay.name }}</span>
                         <div class="flex-grow-1 text-right pr-2">
@@ -132,12 +132,12 @@
                       :return-object="false"
                       @input="contactChanged"
                     >
-                      <template v-if="apiStreamSupported" v-slot:append>
+                      <template v-if="apiStreamSupported" #append>
                         <v-btn icon small color="torusBrand1" title="Capture QR" tabindex="-1" aria-label="Capture QR" @click="startQrScanning">
                           <v-icon small>$vuetify.icons.scan</v-icon>
                         </v-btn>
                       </template>
-                      <template v-slot:message="props">
+                      <template #message="props">
                         {{ t(props.message) }}
                       </template>
                     </v-combobox>
@@ -170,7 +170,7 @@
                       aria-label="Recipient Selector"
                       @blur="verifierChangedManual"
                     >
-                      <template v-slot:message="props">
+                      <template #message="props">
                         {{ t(props.message) }}
                       </template>
                     </v-select>
@@ -205,10 +205,10 @@
                   return-object
                   aria-label="Asset selector"
                 >
-                  <template v-slot:prepend-inner>
+                  <template #prepend-inner>
                     <img :src="assetSelected.image" height="24px" :alt="assetSelected.name" />
                   </template>
-                  <template v-slot:item="{ item }">
+                  <template #item="{ item }">
                     <img class="mr-2" :src="item.image" height="24px" :alt="item.name" />
                     {{ item.name }}
                   </template>
@@ -231,7 +231,7 @@
                   :error-messages="sendAmountError"
                   @change="onChangeDisplayAmount"
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <v-btn
                       id="coin-mode-btn"
                       small
@@ -256,7 +256,7 @@
                       {{ selectedCurrency }}
                     </v-btn>
                   </template>
-                  <template v-slot:message="props">
+                  <template #message="props">
                     {{ $refs.youSend && $refs.youSend.errorBucket.length === 0 ? props.message : t(props.message) }}
                   </template>
                 </v-text-field>
@@ -369,7 +369,7 @@
         :title="messageModalTitle"
         @onClose="messageModalShow = false"
       >
-        <template v-if="selectedVerifier === TWITTER && messageModalType === MESSAGE_MODAL_TYPE_SUCCESS" v-slot:link>
+        <template v-if="selectedVerifier === TWITTER && messageModalType === MESSAGE_MODAL_TYPE_SUCCESS" #link>
           <div class="mb-4">
             <div class="mb-4 text_2--text body-2">{{ t('walletTransfer.transferShare') }}</div>
             <v-btn text class="share-btn" :href="tweetData" target="_blank">

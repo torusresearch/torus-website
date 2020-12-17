@@ -116,7 +116,7 @@
                 outlined
                 aria-label="Contact Value"
               >
-                <template v-slot:message="props">
+                <template #message="props">
                   {{ t(props.message) }}
                 </template>
               </v-text-field>

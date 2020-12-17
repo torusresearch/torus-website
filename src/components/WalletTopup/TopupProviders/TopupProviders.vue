@@ -38,38 +38,36 @@
       </router-link>
     </v-card>
 
-    <template>
-      <v-tooltip v-for="targetProvider in inactiveProviders" :key="targetProvider.name" right>
-        <template v-slot:activator="{ on }">
-          <v-card class="topup-provider mb-4 coming-soon" :data-provider="targetProvider.name" v-on="on">
-            <v-list-item three-line>
-              <v-list-item-icon class="mr-2 align-self-center">
-                <v-icon color="grey">$vuetify.icons.radioOff</v-icon>
-              </v-list-item-icon>
-              <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
-                <img :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
-              </v-list-item-avatar>
-              <v-list-item-content class="align-self-center text-right text_1--text caption">
-                <div>{{ targetProvider.line1 }}</div>
-                <div v-html="targetProvider.line2"></div>
-                <div>{{ targetProvider.line3 }}</div>
-                <div>{{ targetProvider.line4 }}</div>
-              </v-list-item-content>
-            </v-list-item>
-          </v-card>
-        </template>
-        <span>Coming Soon</span>
-      </v-tooltip>
+    <v-tooltip v-for="targetProvider in inactiveProviders" :key="targetProvider.name" right>
+      <template #activator="{ on }">
+        <v-card class="topup-provider mb-4 coming-soon" :data-provider="targetProvider.name" v-on="on">
+          <v-list-item three-line>
+            <v-list-item-icon class="mr-2 align-self-center">
+              <v-icon color="grey">$vuetify.icons.radioOff</v-icon>
+            </v-list-item-icon>
+            <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
+              <img :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
+            </v-list-item-avatar>
+            <v-list-item-content class="align-self-center text-right text_1--text caption">
+              <div>{{ targetProvider.line1 }}</div>
+              <div v-html="targetProvider.line2"></div>
+              <div>{{ targetProvider.line3 }}</div>
+              <div>{{ targetProvider.line4 }}</div>
+            </v-list-item-content>
+          </v-list-item>
+        </v-card>
+      </template>
+      <span>Coming Soon</span>
+    </v-tooltip>
 
-      <div id="write-to-us" class="mt-4 py-4 px-1 text-gray caption">
-        <div>
-          {{ t('walletTopUp.otherMode') }}
-          <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank" rel="noreferrer noopener" :style="{ textDecoration: 'none' }">
-            {{ t('walletTopUp.writeToUs') }}
-          </a>
-        </div>
+    <div id="write-to-us" class="mt-4 py-4 px-1 text-gray caption">
+      <div>
+        {{ t('walletTopUp.otherMode') }}
+        <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank" rel="noreferrer noopener" :style="{ textDecoration: 'none' }">
+          {{ t('walletTopUp.writeToUs') }}
+        </a>
       </div>
-    </template>
+    </div>
   </v-flex>
 </template>
 

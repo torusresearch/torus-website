@@ -51,7 +51,7 @@
             <v-spacer></v-spacer>
             <v-flex xs4>
               <v-tooltip bottom :disabled="formValid">
-                <template v-slot:activator="{ on }">
+                <template #activator="{ on }">
                   <span v-on="on">
                     <v-btn
                       large

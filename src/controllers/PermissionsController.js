@@ -1,6 +1,5 @@
 import { ethErrors } from 'eth-rpc-errors'
-import JsonRpcEngine from 'json-rpc-engine'
-import asMiddleware from 'json-rpc-engine/src/asMiddleware'
+import { JsonRpcEngine } from 'json-rpc-engine'
 import log from 'loglevel'
 
 // import ObservableStore from 'obs-store'
@@ -34,7 +33,7 @@ export default class PermissionsController {
     )
 
     // engine.push(this.permissions.providerMiddlewareFunction.bind(this.permissions, { origin }))
-    return asMiddleware(engine)
+    return engine.asMiddleware()
   }
 
   /**
@@ -128,7 +127,7 @@ export default class PermissionsController {
       return
     }
 
-    approval.reject(ethErrors.provider.userRejectedRequest())
+    approval.reject(ethErrors.provider.userRejectedRequest('User rejected permissions request'))
     delete this.pendingApprovals[id]
   }
 

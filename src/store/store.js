@@ -68,8 +68,8 @@ if (storageAvailable(isPwa ? 'localStorage' : 'sessionStorage')) {
   })
 }
 
-const getBalance = async (state, key) => {
-  return new Promise((resolve, reject) => {
+const getBalance = async (state, key) =>
+  new Promise((resolve, reject) => {
     let counter = 0
     const interval = setInterval(() => {
       counter += 1
@@ -83,7 +83,6 @@ const getBalance = async (state, key) => {
       }
     }, 500)
   })
-}
 
 const VuexStore = new Vuex.Store({
   plugins: vuexPersist ? [vuexPersist.plugin] : [],
