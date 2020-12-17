@@ -234,7 +234,7 @@ class DetectTokensController {
       this.refreshTokenBalances()
       if (this._preferencesStore) {
         const userState = this._preferencesStore.getState()[this.selectedAddress]
-        const { customTokens } = userState || {}
+        const { customTokens = [] } = userState || {}
         this.getCustomTokenBalances(customTokens)
       }
     }, interval)
