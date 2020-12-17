@@ -220,6 +220,8 @@ export default {
         keyDetails: { requiredShares },
       } = this.settingsData
 
+      log.info(this.tKey, this.settingsData)
+
       if (requiredShares === 0) {
         this.$emit('postSuccessMessage', this.t('tkeyNew.verifySuccess'))
         await this.tKey.reconstructKey()

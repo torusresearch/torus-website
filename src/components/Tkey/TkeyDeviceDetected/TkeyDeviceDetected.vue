@@ -170,7 +170,7 @@ export default {
     this.isConfirming = false
   },
   mounted() {
-    this.selectedDevice = this.devices[0].index
+    if (this.devices[0]) this.selectedDevice = this.devices[0].index
   },
   methods: {
     selectBrowser(index) {
