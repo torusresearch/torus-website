@@ -66,7 +66,7 @@ const {
   VUE_APP_TKEY_ONLY,
 } = process.env
 
-log.info('baseurl', VUE_APP_BASE_ROUTE, VUE_APP_TKEY_ONLY)
+log.info('baseurl', VUE_APP_BASE_ROUTE, 'is tkey', VUE_APP_TKEY_ONLY)
 
 const baseUrl = VUE_APP_BASE_ROUTE || 'https://localhost:3000'
 
