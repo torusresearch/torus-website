@@ -259,10 +259,7 @@ export default {
     },
     deviceShares() {
       if (!this.tKeyStore.settingsPageData) return []
-      return this.tKeyStore.settingsPageData.allDeviceShares.map((item) => {
-        item.ongoingDelete = true
-        return item
-      })
+      return this.tKeyStore.settingsPageData.allDeviceShares
     },
     hasPassword() {
       if (!this.tKeyStore.settingsPageData) return false

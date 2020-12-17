@@ -56,7 +56,6 @@ export default {
   data() {
     return {
       deleteShareDialog: false,
-      ongoingDelete: false,
     }
   },
   methods: {
