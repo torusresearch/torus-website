@@ -1,6 +1,6 @@
 <template>
   <v-tooltip top>
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <v-icon size="14" class="ml-1 text_3--text" :style="{ marginTop: '-2px' }" v-on="on">$vuetify.icons.question_filled</v-icon>
     </template>
     <span>

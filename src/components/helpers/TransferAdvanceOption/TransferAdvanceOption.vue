@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="dialog" persistent>
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <a v-show="displayAmount" id="advance-option-link" class="float-right torusBrand1--text" :class="isConfirm ? 'caption' : 'body-2'" v-on="on">
         {{ isConfirm ? 'Edit' : t('walletTransfer.advancedOptions') }}
       </a>
@@ -19,7 +19,7 @@
                   <div class="text-subtitle-2 mb-2">
                     {{ t('walletTransfer.gasPrice') }} (GWEI)
                     <HelpTooltip :title="t('walletTransfer.gasPrice')">
-                      <template v-slot:description>
+                      <template #description>
                         <div class="body-2 text_3--text text-justify">
                           <span class="font-weight-medium">{{ t('walletTransfer.gasPriceDesc1') }}</span>
                           {{ t('walletTransfer.gasPriceDesc2') }}
@@ -62,10 +62,10 @@
                 <v-flex xs12 sm6 px-4>
                   <div class="text-subtitle-2 mb-2">Nonce</div>
                   <v-combobox id="nonce" v-model="newNonce" outlined :items="nonceItems" :rules="[rules.validNonce]">
-                    <template v-slot:item="props">
+                    <template #item="props">
                       {{ t(props.item.text) }}
                     </template>
-                    <template v-slot:selection="{ item }">
+                    <template #selection="{ item }">
                       {{ item.text ? t(item.text) : item }}
                     </template>
                   </v-combobox>

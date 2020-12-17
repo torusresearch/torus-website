@@ -26,9 +26,9 @@
               <div v-if="dappName !== ''" class="v-icon dapp-icon torusGray1--text">DApp</div>
 
               <v-tooltip v-else bottom>
-                <template v-slot:activator="{ on }">
+                <template #activator="{ on }">
                   <v-badge color="torusBrand1" offset-x="10" offset-y="20" overlap :value="toVerifier === TWITTER && !checkedTwitter">
-                    <template v-slot:badge>
+                    <template #badge>
                       <span class="font-weight-bold twitter-badge" v-on="on">?</span>
                     </template>
                     <a icon class="link-box torusGray1--text" :href="toVeriferUrl" target="_blank" @click="checkedTwitter = true">

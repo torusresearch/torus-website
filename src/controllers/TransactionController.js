@@ -232,7 +232,7 @@ class TransactionController extends EventEmitter {
       // the specified address
       const permittedAddresses = new Set([await this.getSelectedAddress()])
       if (!permittedAddresses.has(normalizedTxParameters.from)) {
-        throw ethErrors.provider.unauthorized({ data: { origin: request.origin } })
+        throw ethErrors.provider.unauthorized({ data: { origin: request.origin }, message: 'Unauthorized origin' })
       }
     }
 

@@ -153,9 +153,7 @@ export default {
     // Set locale here from defaultLanguage
     if (storageAvailable('sessionStorage') && payload) {
       // Checks if whitelabel defaultLanguage is supported
-      const selectedLocale = LOCALES.find((localeInner) => {
-        return localeInner.value === payload.defaultLanguage
-      })
+      const selectedLocale = LOCALES.find((localeInner) => localeInner.value === payload.defaultLanguage)
       if (selectedLocale) {
         payload.defaultLanguage = selectedLocale.value
         updateDefaultLanguage(state, payload.defaultLanguage)

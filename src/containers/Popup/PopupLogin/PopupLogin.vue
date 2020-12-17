@@ -208,13 +208,12 @@ export default {
       whiteLabel: 'whiteLabel',
     }),
     mainButtonsLong() {
-      return this.loginButtonsArray.filter((button) => {
-        return (
+      return this.loginButtonsArray.filter(
+        (button) =>
           ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
           button.mainOption &&
           button.description !== ''
-        )
-      })
+      )
     },
     mainButtons() {
       return this.loginButtonsArray.filter((button) => {

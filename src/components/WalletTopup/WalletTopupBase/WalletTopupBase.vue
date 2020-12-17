@@ -44,7 +44,7 @@
                 aria-label="Amount to Buy"
                 @input="setFiatValue"
               >
-                <template v-slot:append>
+                <template #append>
                   <v-btn outlined small color="torusBrand1" @click="setFiatValue(100)">100</v-btn>
                   <v-btn outlined small color="torusBrand1" class="ml-2" @click="setFiatValue(200)">200</v-btn>
                   <!-- <div class="torusBrand1--text font-weight-medium body-2 pt-1 ml-2">{{ selectedCurrency }}*</div> -->
@@ -103,7 +103,7 @@
         <v-flex xs12 class="mt-10">
           <div class="text-right">
             <v-tooltip bottom :disabled="formValid">
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <span v-on="on">
                   <v-btn
                     class="px-8 white--text gmt-topup"

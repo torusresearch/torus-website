@@ -10,7 +10,7 @@
         <v-layout mx-n2>
           <v-flex xs6 px-2>
             <v-menu offset-y>
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
                   <v-icon x-small class="text_2--text">$vuetify.icons.activities</v-icon>
                   <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedAction) }}</span>
@@ -37,7 +37,7 @@
           </v-flex>
           <v-flex xs6 px-2>
             <v-menu offset-y>
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on }">
                 <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
                   <v-icon class="text_2--text" small>$vuetify.icons.calendar</v-icon>
                   <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedPeriod) }}</span>

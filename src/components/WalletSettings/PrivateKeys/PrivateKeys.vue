@@ -26,14 +26,14 @@
                           :type="showJsonPassword ? 'text' : 'password'"
                           :placeholder="t('walletSettings.enterPassword')"
                         >
-                          <template v-slot:append>
+                          <template #append>
                             <v-btn icon aria-label="Show/Hide JSON Password" @click="showJsonPassword = !showJsonPassword">
                               <v-icon class="text_3--text">
                                 {{ showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}
                               </v-icon>
                             </v-btn>
                           </template>
-                          <template v-if="!$vuetify.breakpoint.xsOnly" v-slot:append-outer>
+                          <template v-if="!$vuetify.breakpoint.xsOnly" #append-outer>
                             <v-btn
                               v-if="!walletJson"
                               id="json-file-confirm-btn"
@@ -46,7 +46,7 @@
                               @click="downloadWallet"
                             >
                               {{ t('walletSettings.confirm') }}
-                              <template v-slot:loader>
+                              <template #loader>
                                 <span>
                                   Encrypting
                                   <v-progress-circular :indeterminate="true" size="24" value="0" width="4" color="text_2" />
@@ -80,7 +80,7 @@
                         @click="downloadWallet"
                       >
                         {{ t('walletSettings.confirm') }}
-                        <template v-slot:loader>
+                        <template #loader>
                           <span>
                             Encrypting
                             <v-progress-circular :indeterminate="true" size="24" value="0" width="4" color="text_2" />

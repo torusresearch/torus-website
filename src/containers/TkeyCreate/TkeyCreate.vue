@@ -27,7 +27,7 @@
                 <span>{{ t('tkeyCreate.walletAddress') }}: {{ slicedAddress }}</span>
 
                 <HelpTooltip title="Wallet Address">
-                  <template v-slot:description>
+                  <template #description>
                     <div class="caption text_3--text">{{ t('tkeyCreate.walletAddressDesc') }}</div>
                   </template>
                 </HelpTooltip>

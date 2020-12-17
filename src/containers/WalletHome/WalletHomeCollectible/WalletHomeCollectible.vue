@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-breadcrumbs class="px-4 text-subtitle-1 font-weight-bold" :items="breadcrumb">
-      <template v-slot:divider>
+      <template #divider>
         <v-icon small>$vuetify.icons.page_next_double</v-icon>
       </template>
     </v-breadcrumbs>
@@ -19,7 +19,7 @@
           aria-label="Selected contract"
           @change="changeContract"
         >
-          <template v-slot:prepend-inner>
+          <template #prepend-inner>
             <img v-if="selectedContract" class="mr-1" :src="selectedContract.logo" :alt="selectedContract.name" height="24px" />
           </template>
         </v-select>
