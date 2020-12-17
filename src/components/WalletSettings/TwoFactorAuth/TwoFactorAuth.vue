@@ -63,9 +63,7 @@
             <v-btn class="download-btn" color="torusBrand1" icon small :aria-label="`Download`" @click="downloadShare(device.index)">
               <v-icon x-small>$vuetify.icons.export</v-icon>
             </v-btn>
-            <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete`" @click="deleteShare(device.index)">
-              <v-icon x-small>$vuetify.icons.trash</v-icon>
-            </v-btn>
+            <DeleteShare :share-to-delete="device.index" @confirm="triggerDeleteShare" />
           </div>
         </div>
         <v-list dense outlined class="pa-0 factor-list mb-2">
@@ -199,6 +197,7 @@ import { mapActions, mapState } from 'vuex'
 
 import PopupLogin from '../../../containers/Popup/PopupLogin'
 import { getUserEmail, passwordValidation } from '../../../utils/utils'
+import DeleteShare from '../DeleteShare'
 import ExportShare from '../ExportShare'
 import LinkingCompleted from '../LinkingCompleted'
 
@@ -218,7 +217,7 @@ const AUTH_FACTORS = [
 ]
 export default {
   name: 'TwoFactorAuthSettings',
-  components: { PopupLogin, LinkingCompleted, ExportShare },
+  components: { DeleteShare, PopupLogin, LinkingCompleted, ExportShare },
   data() {
     return {
       authTreshholdSelected: 2,
@@ -260,7 +259,10 @@ export default {
     },
     deviceShares() {
       if (!this.tKeyStore.settingsPageData) return []
-      return this.tKeyStore.settingsPageData.allDeviceShares
+      return this.tKeyStore.settingsPageData.allDeviceShares.map((item) => {
+        item.ongoingDelete = true
+        return item
+      })
     },
     hasPassword() {
       if (!this.tKeyStore.settingsPageData) return false
@@ -313,6 +315,9 @@ export default {
     },
     closeShareExportModal() {
       this.shareToExport = ''
+    },
+    triggerDeleteShare(shareToDelete) {
+      this.deleteShare(shareToDelete)
     },
   },
 }

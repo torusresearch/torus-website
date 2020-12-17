@@ -262,7 +262,7 @@ class ThresholdKeyController extends EventEmitter {
         await post(config.tkeyEmailHost, {
           data: serializedShare,
           logo: 'https://app.tor.us/images/torus_logo.png',
-          name: 'TORUS',
+          name: 'Torus Labs',
           email: recoveryEmail,
           baseUrl: config.baseUrl,
         })
