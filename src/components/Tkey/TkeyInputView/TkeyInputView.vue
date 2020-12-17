@@ -69,6 +69,9 @@
                         :rules="[rules.required, shareMnemonicError]"
                         outlined
                         rows="3"
+                        autocomplete="off"
+                        spellcheck="false"
+                        data-gramm_editor="false"
                         :placeholder="shareMnemonicArr.length > 0 ? t('tkeyBackup.enterBackupPhrase2') : t('tkeyBackup.enterBackupPhrase1')"
                         @keydown="shareMnemonicEntered = false"
                       />
