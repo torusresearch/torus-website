@@ -1,7 +1,7 @@
 .network-chip {
   height: 20px;
   background: #ffe9b3;
-  color: #000000;
+  color: #5c6c7f;
   border-radius: 10px;
   padding: 0 12px;
   justify-content: center;
@@ -12,7 +12,7 @@
   }
 
   .v-icon {
-    color: #000000;
+    color: #5c6c7f;
     height: 8px;
     width: 8px;
     margin-right: 8px;
@@ -74,6 +74,10 @@
 
   &.network-chip--xdai {
     background: #62a7a5;
+    .v-icon {
+      color: white;
+    }
+    color: white;
   }
 
   &.is-plain {
