@@ -214,8 +214,8 @@ export default {
       averageGasPrice: new BigNumber('5'),
       fastestGasPrice: new BigNumber('20'),
       activeGasPrice: new BigNumber('5'),
-      averageGasPriceSpeed: '3.7',
-      fastestGasPriceSpeed: '0.5',
+      averageGasPriceSpeed: 3.7,
+      fastestGasPriceSpeed: 0.5,
     }
   },
   watch: {
