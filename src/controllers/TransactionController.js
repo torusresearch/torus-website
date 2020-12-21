@@ -300,7 +300,8 @@ class TransactionController extends EventEmitter {
     const originalTxMeta = this.txStateManager.getTx(originalTxId)
     const { txParams } = originalTxMeta
     const lastGasPrice = gasPrice || originalTxMeta.txParams.gasPrice
-    const suggestedGasPriceBN = new BN(stripHexPrefix(this.getGasPrice()), 16)
+    const suggestGasPrice = this.getGasPrice ? this.getGasPrice() : await this.query.gasPrice()
+    const suggestedGasPriceBN = new BN(stripHexPrefix(suggestGasPrice), 16)
     const lastGasPriceBN = new BN(stripHexPrefix(lastGasPrice), 16)
     // essentially lastGasPrice * 1.1 but
     // dont trust decimals so a round about way of doing that

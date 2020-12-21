@@ -116,7 +116,7 @@ export default class PersonalMessageManager extends EventEmitter {
     if (request) messageParameters.origin = request.origin
     messageParameters.data = this.normalizeMsgData(messageParameters.data)
     // create txData obj with parameters and meta data
-    const time = new Date().getTime()
+    const time = Date.now()
     const messageData = {
       id: messageId,
       msgParams: messageParameters,

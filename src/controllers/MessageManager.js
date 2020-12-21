@@ -107,7 +107,7 @@ export default class MessageManager extends EventEmitter {
     messageParameters.data = normalizeMessageData(messageParameters.data)
 
     // create txData obj with parameters and meta data
-    const time = new Date().getTime()
+    const time = Date.now()
     const messageData = {
       id: messageId,
       msgParams: messageParameters,

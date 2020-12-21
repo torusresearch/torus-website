@@ -94,29 +94,6 @@ describe('MetaMaskController', () => {
     })
   })
 
-  describe('#getGasPrice', () => {
-    it('gives the 50th percentile lowest accepted gas price from recentBlocksController', async () => {
-      const realRecentBlocksController = metamaskController.recentBlocksController
-      metamaskController.recentBlocksController = {
-        store: {
-          getState: () => ({
-            recentBlocks: [
-              { gasPrices: ['0x3b9aca00', '0x174876e800'] },
-              { gasPrices: ['0x3b9aca00', '0x174876e800'] },
-              { gasPrices: ['0x174876e800', '0x174876e800'] },
-              { gasPrices: ['0x174876e800', '0x174876e800'] },
-            ],
-          }),
-        },
-      }
-
-      const gasPrice = metamaskController.getGasPrice()
-      assert.strictEqual(gasPrice, '0x174876e800', 'accurately estimates 65th percentile accepted gas price')
-
-      metamaskController.recentBlocksController = realRecentBlocksController
-    })
-  })
-
   describe('#getBalance', () => {
     it('should return the balance known by accountTracker', async () => {
       const accounts = {}

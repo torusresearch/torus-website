@@ -272,6 +272,7 @@
                 :currency-multiplier="getCurrencyTokenRate"
                 :currency-multiplier-eth="currencyMultiplier"
                 :nonce="nonce"
+                :network-host="networkType.host"
                 @onSelectSpeed="onSelectSpeed"
               />
               <v-flex v-if="contractType === CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
@@ -623,9 +624,7 @@ export default {
   },
   watch: {
     selectedAddress(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        if (this.toEthAddress) this.calculateGas(this.toEthAddress)
-      }
+      if (newValue !== oldValue && this.toEthAddress) this.calculateGas(this.toEthAddress)
     },
   },
   mounted() {
