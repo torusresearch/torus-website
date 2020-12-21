@@ -107,7 +107,7 @@ export default class EncryptionPublicKeyManager extends EventEmitter {
   addUnapprovedMessage(address, request, messageId) {
     log.debug('EncryptionPublicKeyManager addUnapprovedMessage: address')
     // create txData obj with parameters and meta data
-    const time = new Date().getTime()
+    const time = Date.now()
     const msgData = {
       id: messageId,
       msgParams: address,

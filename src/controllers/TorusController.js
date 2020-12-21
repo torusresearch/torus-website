@@ -2,7 +2,7 @@ import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
 import { normalize } from 'eth-sig-util'
-import { BN, stripHexPrefix } from 'ethereumjs-util'
+import { stripHexPrefix } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import { JsonRpcEngine } from 'json-rpc-engine'
 import { createEngineStream } from 'json-rpc-middleware-stream'
@@ -10,7 +10,6 @@ import debounce from 'lodash.debounce'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import asStream from 'obs-store/lib/asStream'
-import percentile from 'percentile'
 import pump from 'pump'
 import { toChecksumAddress } from 'web3-utils'
 
@@ -29,7 +28,6 @@ import NetworkController from './NetworkController'
 import PermissionsController from './PermissionsController'
 import PersonalMessageManager from './PersonalMessageManager'
 import PreferencesController from './PreferencesController'
-import RecentBlocksController from './RecentBlocksController'
 import ThresholdKeyController from './ThresholdKeyController'
 import TokenRatesController from './TokenRatesController'
 import KeyringController from './TorusKeyring'
@@ -37,12 +35,9 @@ import TransactionController from './TransactionController'
 import TypedMessageManager from './TypedMessageManager'
 import ComposableObservableStore from './utils/ComposableObservableStore'
 import createLoggerMiddleware from './utils/createLoggerMiddleware'
-// import setupMultiplex from '../utils/setupMultiplex'
 import createOriginMiddleware from './utils/createOriginMiddleware'
 import nodeify from './utils/nodeify'
 import WalletConnectController from './WalletConnectController'
-// defaults and constants
-const GWEI_BN = new BN('1000000000')
 
 export default class TorusController extends EventEmitter {
   /**
@@ -81,12 +76,6 @@ export default class TorusController extends EventEmitter {
     this.initializeProvider()
     this.provider = this.networkController.getProviderAndBlockTracker().provider
     this.blockTracker = this.networkController.getProviderAndBlockTracker().blockTracker
-
-    this.recentBlocksController = new RecentBlocksController({
-      blockTracker: this.blockTracker,
-      provider: this.provider,
-      networkController: this.networkController,
-    })
 
     this.accountTracker = new AccountTracker({
       provider: this.provider,
@@ -150,7 +139,6 @@ export default class TorusController extends EventEmitter {
       signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
       provider: this.provider,
       blockTracker: this.blockTracker,
-      getGasPrice: this.getGasPrice.bind(this),
       storeProps: this.opts.storeProps,
     })
     this.txController.on('newUnapprovedTx', (txMeta, request) => options.showUnapprovedTx(txMeta, request))
@@ -311,7 +299,6 @@ export default class TorusController extends EventEmitter {
       // etc
       getState: (callback) => callback(null, this.getState()),
       setCurrentCurrency: this.setCurrentCurrency.bind(this),
-      getGasPrice: (callback) => callback(null, this.getGasPrice()),
 
       // network management
       setProviderType: nodeify(networkController.setProviderType, networkController),
@@ -393,39 +380,6 @@ export default class TorusController extends EventEmitter {
         })
       }
     })
-  }
-
-  /**
-   * A method for estimating a good gas price at recent prices.
-   * Returns the lowest price that would have been included in
-   * 50% of recent blocks.
-   *
-   * @returns {string} A hex representation of the suggested wei gas price.
-   */
-  getGasPrice() {
-    const { recentBlocksController } = this
-    const { recentBlocks } = recentBlocksController.store.getState()
-
-    // Return 1 gwei if no blocks have been observed:
-    if (recentBlocks.length === 0) {
-      return `0x${GWEI_BN.toString(16)}`
-    }
-
-    const lowestPrices = recentBlocks
-      .map((block) => {
-        if (!block.gasPrices || block.gasPrices.length === 0) {
-          return GWEI_BN
-        }
-        return block.gasPrices
-          .map((hexPrefix) => hexPrefix.slice(2))
-          .map((hex) => new BN(hex, 16))
-          .sort((a, b) => (a.gt(b) ? 1 : -1))[0]
-      })
-      .map((number) => number.div(GWEI_BN).toNumber())
-
-    const percentileNumber = percentile(65, lowestPrices)
-    const percentileNumberBn = new BN(percentileNumber)
-    return `0x${percentileNumberBn.mul(GWEI_BN).toString(16)}`
   }
 
   /**
