@@ -73,6 +73,8 @@ import {
   WEIBO,
   WYRE,
   XANPOOL,
+  XDAI_CHAIN_ID,
+  XDAI_CODE,
 } from './enums'
 
 const networkToNameMap = {
@@ -527,6 +529,7 @@ export const standardNetworkId = {
   [MUMBAI_CODE.toString()]: MUMBAI_CHAIN_ID,
   [BSC_MAINNET_CODE.toString()]: BSC_MAINNET_CHAIN_ID,
   [BSC_TESTNET_CODE.toString()]: BSC_TESTNET_CHAIN_ID,
+  [XDAI_CODE.toString()]: XDAI_CHAIN_ID,
 }
 
 export function selectChainId(network, store) {
