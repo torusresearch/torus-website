@@ -27,6 +27,7 @@ export const MATIC = 'matic'
 export const MUMBAI = 'mumbai'
 export const BSC_MAINNET = 'bsc_mainnet'
 export const BSC_TESTNET = 'bsc_testnet'
+export const XDAI = 'xdai'
 
 export const MAINNET_CODE = 1
 export const ROPSTEN_CODE = 3
@@ -38,6 +39,7 @@ export const MUMBAI_CODE = 80001
 export const LOCALHOST_CODE = 5777
 export const BSC_MAINNET_CODE = 56
 export const BSC_TESTNET_CODE = 97
+export const XDAI_CODE = 100
 
 export const MAINNET_CHAIN_ID = '0x1'
 export const ROPSTEN_CHAIN_ID = '0x3'
@@ -46,8 +48,9 @@ export const KOVAN_CHAIN_ID = '0x2a'
 export const GOERLI_CHAIN_ID = '0x5'
 export const MATIC_CHAIN_ID = '0x89'
 export const MUMBAI_CHAIN_ID = '0x13881'
-export const BSC_MAINNET_CHAIN_ID = '0X38'
-export const BSC_TESTNET_CHAIN_ID = '0X61'
+export const BSC_MAINNET_CHAIN_ID = '0x38'
+export const BSC_TESTNET_CHAIN_ID = '0x61'
+export const XDAI_CHAIN_ID = '0x64'
 
 export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
 export const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
@@ -60,12 +63,16 @@ export const MATIC_DISPLAY_NAME = 'Matic Network'
 export const MUMBAI_DISPLAY_NAME = 'Mumbai Matic-Testnet'
 export const BSC_MAINNET_DISPLAY_NAME = 'Binance Smart Chain Mainnet'
 export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
+export const XDAI_DISPLAY_NAME = 'xDai'
 
 export const MATIC_URL = 'https://rpc-mainnet.matic.network'
 export const MATIC_BLOCK_EXPLORER = 'https://explorer.matic.network'
 
 export const MUMBAI_URL = 'https://rpc-mumbai.matic.today'
 export const MUMBAI_BLOCK_EXPLORER = 'https://mumbai-explorer.matic.today'
+
+export const XDAI_URL = 'https://rpc.xdaichain.com'
+export const XDAI_BLOCK_EXPLORER = 'https://blockscout.com/poa/xdai'
 
 export const BSC_MAINNET_URL = 'https://bsc-dataseed.binance.org'
 export const BSC_MAINNET_BLOCK_EXPLORER = 'https://bscscan.com'
@@ -75,6 +82,7 @@ export const BSC_TESTNET_BLOCK_EXPLORER = 'https://testnet.bscscan.com'
 
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
+export const XDAI_TICKER = 'DAI'
 
 export const TX_MESSAGE = 'message'
 export const TX_PERSONAL_MESSAGE = 'personal_message'
@@ -166,6 +174,7 @@ export const SUPPORTED_NETWORK_TYPES = {
     'Binance Coin',
     'bnb.png'
   ),
+  [XDAI]: createNetwork(XDAI, XDAI_DISPLAY_NAME, XDAI_CODE, XDAI_BLOCK_EXPLORER, XDAI_TICKER, 'xDai Network Token', 'xdai.svg'),
 }
 
 export const WALLET_HEADERS_HOME = 'My Wallet'

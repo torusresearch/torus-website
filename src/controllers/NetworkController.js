@@ -45,6 +45,11 @@ import {
   ROPSTEN,
   RPC,
   SUPPORTED_NETWORK_TYPES,
+  XDAI,
+  XDAI_CODE,
+  XDAI_DISPLAY_NAME,
+  XDAI_TICKER,
+  XDAI_URL,
 } from '../utils/enums'
 import createMetamaskMiddleware from './utils/createMetamaskMiddleware'
 
@@ -53,7 +58,7 @@ const defaultProviderConfig = { type: 'mainnet' }
 const defaultNetworkConfig = { ticker: 'ETH' }
 const networks = { networkList: {} }
 const INFURA_PROVIDER_TYPES = new Set([ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI])
-const TORUS_PROVIDER_TYPES = new Set([MATIC, MUMBAI, BSC_MAINNET, BSC_TESTNET])
+const TORUS_PROVIDER_TYPES = new Set([MATIC, MUMBAI, BSC_MAINNET, BSC_TESTNET, XDAI])
 
 export default class NetworkController extends EventEmitter {
   /**
@@ -255,6 +260,8 @@ export default class NetworkController extends EventEmitter {
       this._configureStandardProvider({ rpcUrl: BSC_MAINNET_URL, chainId: BSC_MAINNET_CODE, ticker: BSC_TICKER, nickname: BSC_MAINNET_DISPLAY_NAME })
     } else if (type === BSC_TESTNET) {
       this._configureStandardProvider({ rpcUrl: BSC_TESTNET_URL, chainId: BSC_TESTNET_CODE, ticker: BSC_TICKER, nickname: BSC_TESTNET_DISPLAY_NAME })
+    } else if (type === XDAI) {
+      this._configureStandardProvider({ rpcUrl: XDAI_URL, chainId: XDAI_CODE, ticker: XDAI_TICKER, nickname: XDAI_DISPLAY_NAME })
     } else if (type === 'rpc') {
       this._configureStandardProvider({ rpcUrl: rpcTarget, chainId, ticker, nickname })
     } else {
