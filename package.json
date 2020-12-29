@@ -144,8 +144,6 @@
     "luxon": "^1.25.0",
     "mocha": "^8.2.1",
     "mocha-eslint": "^6.0.0",
-    "mocha-jsdom": "^2.0.0",
-    "mocha-sinon": "^2.1.2",
     "nock": "13.0.5",
     "node-fetch": "^2.6.1",
     "nyc": "^15.1.0",
