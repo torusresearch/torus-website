@@ -254,21 +254,7 @@ class ThresholdKeyController extends EventEmitter {
     }
 
     if (recoveryEmail) {
-      try {
-        const shareCreated = await tKey.generateNewShare()
-        const requiredShareStore = shareCreated.newShareStores[shareCreated.newShareIndex.toString('hex')]
-        const serializedShare = await tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].serialize(requiredShareStore.share.share, 'mnemonic')
-        log.info(requiredShareStore.share, serializedShare)
-        await post(config.tkeyEmailHost, {
-          data: serializedShare,
-          logo: 'https://app.tor.us/images/torus_logo.png',
-          name: 'Torus Labs',
-          email: recoveryEmail,
-          baseUrl: config.baseUrl,
-        })
-      } catch (error) {
-        log.error(error)
-      }
+      await this.addRecoveryShare(recoveryEmail, false)
     }
 
     log.info('privKey', privKey.toString('hex', 64))
@@ -277,6 +263,26 @@ class ThresholdKeyController extends EventEmitter {
     return {
       ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
       privKey: privKey.toString('hex', 64),
+    }
+  }
+
+  async addRecoveryShare(recoveryEmail, reCalculate = true) {
+    try {
+      const { tKey } = this.state
+      const shareCreated = await tKey.generateNewShare()
+      const requiredShareStore = shareCreated.newShareStores[shareCreated.newShareIndex.toString('hex')]
+      const serializedShare = await tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].serialize(requiredShareStore.share.share, 'mnemonic')
+      log.info(requiredShareStore.share, serializedShare)
+      await post(config.tkeyEmailHost, {
+        data: serializedShare,
+        logo: 'https://app.tor.us/images/torus_logo.png',
+        name: 'Torus Labs',
+        email: recoveryEmail,
+        baseUrl: config.baseUrl,
+      })
+      if (reCalculate) await this.setSettingsPageData()
+    } catch (error) {
+      log.error(error)
     }
   }
 
