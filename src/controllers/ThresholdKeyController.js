@@ -82,28 +82,19 @@ class ThresholdKeyController extends EventEmitter {
         }
       }
 
-      // Need input from UI
-      if (requiredShares > 0 && descriptionBuffer.length > 0) {
-        const tkeyJsonReturned = await this.tkeyInputFlow()
-        await this._rehydrate(postboxKey, tkeyJsonReturned)
-      } else {
-        await this.setSettingsPageData()
-      }
-
-      // while (requiredShares > 0 && descriptionBuffer.length > 0) {
-      //   try {
-      //     const shareStore = await this.getShareFromAnotherDevice(descriptionBuffer)
-      //     descriptionBuffer = descriptionBuffer.filter((x) => x.shareIndex.toString('hex') !== shareStore.share.shareIndex.toString('hex'))
-      //     requiredShares -= 1
-      //   } catch {
-      //     log.warn('User declined share transfer')
-      //     break
-      //   }
-      // }
+      await this.setSettingsPageData()
 
       const { keyDetails: newDetails } = this.state
 
+      // Need input from UI
       if (newDetails.requiredShares > 0) {
+        const tkeyJsonReturned = await this.tkeyInputFlow()
+        await this._rehydrate(postboxKey, tkeyJsonReturned)
+      }
+
+      const { keyDetails: postInputDetails } = this.state
+
+      if (postInputDetails.requiredShares > 0) {
         log.error('cannot recover key')
         this.handleError('tkeyNew.errorCannotRecover')
         throw new Error('Cannot recover key')
