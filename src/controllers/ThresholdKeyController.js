@@ -227,7 +227,7 @@ class ThresholdKeyController extends EventEmitter {
     }
   }
 
-  async createNewTKey({ postboxKey, password, backup, recoveryEmail, useSeedPhrase }) {
+  async createNewTKey({ postboxKey, password, backup, recoveryEmail, useSeedPhrase, seedPhrase }) {
     await this._init(postboxKey)
     const { tKey, settingsPageData = {} } = this.state
     if (password) await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
@@ -251,7 +251,7 @@ class ThresholdKeyController extends EventEmitter {
 
     let seedPhrases = []
     if (useSeedPhrase) {
-      await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree')
+      await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree', seedPhrase || undefined)
       seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
       log.info(seedPhrases, 'stored seed phrases')
     }
