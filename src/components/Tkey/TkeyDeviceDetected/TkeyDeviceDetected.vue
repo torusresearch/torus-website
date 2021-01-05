@@ -30,7 +30,7 @@
             <div>
               <v-tabs v-model="activeTab" height="30" centered :fixed-tabs="$vuetify.breakpoint.xsOnly" class="device-list-tab">
                 <v-tab>{{ t($vuetify.breakpoint.xsOnly ? 'tkeyNew.newDevice' : 'tkeyNew.newDeviceLong') }}</v-tab>
-                <v-tab>{{ t($vuetify.breakpoint.xsOnly ? 'tkeyNew.oldDevice' : 'tkeyNew.oldDeviceLong') }}</v-tab>
+                <v-tab v-if="devices.length > 0">{{ t($vuetify.breakpoint.xsOnly ? 'tkeyNew.oldDevice' : 'tkeyNew.oldDeviceLong') }}</v-tab>
               </v-tabs>
               <v-tabs-items v-model="activeTab">
                 <v-tab-item class="py-3">
@@ -50,7 +50,7 @@
                     </div>
                   </div>
                 </v-tab-item>
-                <v-tab-item class="py-3">
+                <v-tab-item v-if="devices.length > 0" class="py-3">
                   <v-menu offset-y bottom class="device-menu">
                     <template #activator="{ on }">
                       <div

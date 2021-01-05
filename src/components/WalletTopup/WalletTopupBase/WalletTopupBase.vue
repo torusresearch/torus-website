@@ -210,9 +210,7 @@ export default {
   },
   watch: {
     cryptoCurrencyValue(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        if (Number.parseFloat(newValue) > 0) this.isQuoteFetched = true
-      }
+      if (newValue !== oldValue && Number.parseFloat(newValue) > 0) this.isQuoteFetched = true
     },
   },
   mounted() {

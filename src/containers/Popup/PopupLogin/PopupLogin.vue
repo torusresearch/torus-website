@@ -298,7 +298,7 @@ export default {
       // if present in any visible ones, don't do anything
       // else, set it to first of main buttons long
       // if not present, set it to first of main buttons long
-      if (this.activeButton && this.allActiveButtons.find((x) => x.verifier === this.activeButton)) {
+      if (this.activeButton && this.allActiveButtons.some((x) => x.verifier === this.activeButton)) {
         return
       }
       if (this.mainButtonsLong.length > 0) this.activeButton = this.mainButtonsLong[0].verifier

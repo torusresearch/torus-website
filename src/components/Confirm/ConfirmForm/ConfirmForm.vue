@@ -56,6 +56,7 @@
           :contract-type="contractType"
           :symbol="SEND_ETHER_ACTION_KEY === transactionCategory ? 'ETH' : selectedToken"
           :is-confirm="true"
+          :network-host="network.host"
           @onSelectSpeed="onSelectSpeed"
         />
       </v-layout>

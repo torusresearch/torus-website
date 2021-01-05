@@ -172,7 +172,10 @@ export default {
       log.error(error, 'unable to get postbox key')
     }
   },
-  async deleteShare(_, payload) {
-    await thresholdKeyController.deleteShare(payload)
+  deleteShare(_, payload) {
+    return thresholdKeyController.deleteShare(payload)
+  },
+  addRecoveryShare(_, payload) {
+    return thresholdKeyController.addRecoveryShare(payload)
   },
 }

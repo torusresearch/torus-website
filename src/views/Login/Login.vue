@@ -508,7 +508,7 @@ export default {
       log.error(error)
       this.snackbar = true
       this.snackbarColor = 'error'
-      this.snackbarText = error.message.includes('email_verified') ? this.t('login.errorVerifyEmail') : this.t('login.loginError')
+      this.snackbarText = error.message?.includes('email_verified') ? this.t('login.errorVerifyEmail') : this.t('login.loginError')
     } finally {
       this.loginInProgress = false
     }
@@ -527,7 +527,7 @@ export default {
         log.error(error)
         this.snackbar = true
         this.snackbarColor = 'error'
-        this.snackbarText = error.message.includes('email_verified') ? this.t('login.errorVerifyEmail') : this.t('login.loginError')
+        this.snackbarText = error.message?.includes('email_verified') ? this.t('login.errorVerifyEmail') : this.t('login.loginError')
       } finally {
         this.loginInProgress = false
       }

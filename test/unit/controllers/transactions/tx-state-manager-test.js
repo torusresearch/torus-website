@@ -234,9 +234,9 @@ describe('TransactionStateManager', function () {
       assert.deepStrictEqual(updatedTx.history[0], txStateHistoryHelper.snapshotFromTxMeta(updatedTx), 'first history item is initial state')
       // modify value and updateTx
       updatedTx.txParams.gasPrice = desiredGasPrice
-      const before = new Date().getTime()
+      const before = Date.now()
       txStateManager.updateTx(updatedTx)
-      const after = new Date().getTime()
+      const after = Date.now()
       // check updated value
       const result = txStateManager.getTx('1')
       assert.strictEqual(result.txParams.gasPrice, desiredGasPrice, 'gas price updated')

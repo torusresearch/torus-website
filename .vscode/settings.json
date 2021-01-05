@@ -1,7 +1,7 @@
 {
   "editor.formatOnSave": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll": true
   },
   "vetur.validation.template": false,
   "eslint.options": {
@@ -44,6 +44,7 @@
       "sourceType": "module"
     },
     "rules": {
+      "unicorn/no-array-reduce": 0,
       "unicorn/prefer-ternary": 0,
       "accessor-pairs": 0,
       "unicorn/prevent-abbreviations": 0,

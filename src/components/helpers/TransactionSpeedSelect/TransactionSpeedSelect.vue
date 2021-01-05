@@ -151,7 +151,8 @@
 import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 
-import { CONTRACT_TYPE_ETH } from '../../../utils/enums'
+import torus from '../../../torus'
+import { CONTRACT_TYPE_ETH, MAINNET } from '../../../utils/enums'
 import { significantDigits } from '../../../utils/utils'
 import TransferAdvanceOption from '../TransferAdvanceOption'
 
@@ -201,6 +202,10 @@ export default {
       type: String,
       default: '',
     },
+    networkHost: {
+      type: String,
+      default: MAINNET,
+    },
   },
   data() {
     return {
@@ -209,8 +214,8 @@ export default {
       averageGasPrice: new BigNumber('5'),
       fastestGasPrice: new BigNumber('20'),
       activeGasPrice: new BigNumber('5'),
-      averageGasPriceSpeed: '3.7',
-      fastestGasPriceSpeed: '0.5',
+      averageGasPriceSpeed: 3.7,
+      fastestGasPriceSpeed: 0.5,
     }
   },
   watch: {
@@ -220,49 +225,62 @@ export default {
         this.resetAdvanceOption()
       }
     },
+    networkHost(newValue, oldValue) {
+      if (newValue && newValue !== oldValue) {
+        this.setGasPrices()
+      }
+    },
   },
   mounted() {
-    fetch('https://ethgasstation.info/json/ethgasAPI.json', {
-      headers: {},
-      referrer: 'http://ethgasstation.info/json/',
-      referrerPolicy: 'no-referrer-when-downgrade',
-      body: null,
-      method: 'GET',
-      mode: 'cors',
-    })
-      .then((resp) => resp.json())
-      .then(
-        ({
-          average: averageTimes10,
-          avgWait,
-          // block_time: blockTime,
-          // blockNum,
-          fastest: fastestTimes10,
-          fastestWait,
-          // safeLow: safeLowTimes10,
-          // safeLowWait,
-          // speed
-        }) => {
-          this.averageGasPrice = new BigNumber(averageTimes10).div(new BigNumber('10'))
-          this.fastestGasPrice = new BigNumber(fastestTimes10).div(new BigNumber('10'))
-
-          this.averageGasPriceSpeed = avgWait
-          this.fastestGasPriceSpeed = fastestWait
-
-          // Set selected gas price from confirm
-          if (this.activeGasPriceConfirm) {
-            this.setSelectedSpeed()
-          } else {
-            this.selectSpeed('average', this.averageGasPrice)
-          }
-        }
-      )
-      .catch((error) => {
-        log.error(error)
-        this.selectSpeed('average', this.averageGasPrice)
-      })
+    this.setGasPrices()
   },
   methods: {
+    async setGasPrices() {
+      try {
+        log.info('setting gas prices for ', this.networkHost)
+        if (this.networkHost === MAINNET) {
+          const resp = await fetch('https://ethgasstation.info/json/ethgasAPI.json', {
+            headers: {},
+            referrer: 'http://ethgasstation.info/json/',
+            referrerPolicy: 'no-referrer-when-downgrade',
+            body: null,
+            method: 'GET',
+            mode: 'cors',
+          })
+          const {
+            average: averageTimes10,
+            avgWait,
+            // block_time: blockTime,
+            // blockNum,
+            fastest: fastestTimes10,
+            fastestWait,
+            // safeLow: safeLowTimes10,
+            // safeLowWait,
+            // speed
+          } = await resp.json()
+
+          this.averageGasPrice = new BigNumber(averageTimes10).div(new BigNumber('10'))
+          this.fastestGasPrice = new BigNumber(fastestTimes10).div(new BigNumber('10'))
+          this.averageGasPriceSpeed = avgWait
+          this.fastestGasPriceSpeed = fastestWait
+        } else {
+          const gasPrice = await torus.web3.eth.getGasPrice()
+          log.info(gasPrice)
+          this.averageGasPrice = new BigNumber(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
+          this.fastestGasPrice = this.averageGasPrice.plus(new BigNumber('5'))
+        }
+
+        // Set selected gas price from confirm
+        if (this.activeGasPriceConfirm) {
+          this.setSelectedSpeed()
+        } else {
+          this.selectSpeed('average', this.averageGasPrice)
+        }
+      } catch (error) {
+        log.error(error)
+        this.selectSpeed('average', this.averageGasPrice)
+      }
+    },
     onSaveAdvanceOptions(details) {
       this.activeGasPrice = details.advancedActiveGasPrice
 

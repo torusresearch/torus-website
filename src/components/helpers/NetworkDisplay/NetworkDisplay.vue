@@ -57,7 +57,7 @@ export default {
     chipClass() {
       const classArray = []
       if (!this.isUrlNetwork) {
-        classArray.push(`network-chip--${this.host}`)
+        classArray.push(`network-chip--${this.host.toLowerCase()}`)
         classArray.push('text-capitalize')
       }
       if (this.$vuetify.theme.isDark) classArray.push('theme--dark')
