@@ -64,6 +64,8 @@ const {
   VUE_APP_WECHAT_CLIENT_ID,
   VUE_APP_KAKAO_CLIENT_ID,
   VUE_APP_TKEY_ONLY,
+  VUE_APP_SEED_PHRASE_KEYS_ONLY,
+  VUE_APP_REQUIRE_SEED_PHRASE,
 } = process.env
 
 log.info('baseurl', VUE_APP_BASE_ROUTE, 'is tkey', VUE_APP_TKEY_ONLY)
@@ -87,6 +89,10 @@ export default {
   // api: 'http://localhost:2020',
 
   onlyTkey: VUE_APP_TKEY_ONLY === 'true',
+  // use this flag to force check a flag in frontend while creation of tkey
+  requireSeedPhraseWhileCreation: VUE_APP_REQUIRE_SEED_PHRASE === 'true',
+  // after login, only display seed phrase accounts
+  onlySeedPhraseAccounts: VUE_APP_SEED_PHRASE_KEYS_ONLY === 'true',
   // onlyTkey: true,
 
   simplexApiHost: 'https://simplex-api.tor.us',

@@ -7,7 +7,7 @@ import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import router from '../router'
 import torus from '../torus'
 import { ACCOUNT_TYPE, FEATURES_DEFAULT_POPUP_WINDOW, LINKED_VERIFIER_SUBIDENTIFIER } from '../utils/enums'
-import { isMain } from '../utils/utils'
+import { generateAddressFromPrivateKey, isMain } from '../utils/utils'
 
 const { baseRoute } = config
 
@@ -19,10 +19,19 @@ export default {
     try {
       const finalKey = state.postboxKey
       const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-      const thresholdKey = await thresholdKeyController.login(finalKey.privateKey)
-      log.info('tkey 2', thresholdKey)
+      const allKeys = await thresholdKeyController.login(finalKey.privateKey)
+      if (config.onlySeedPhraseAccounts) {
+        // don't use the first key
+        allKeys.shift()
+      }
+      const thresholdKeys = allKeys.map((x) => ({
+        ethAddress: generateAddressFromPrivateKey(x),
+        privKey: x,
+        accountType: ACCOUNT_TYPE.THRESHOLD,
+      }))
+      log.info('tkey 2', thresholdKeys)
       return dispatch('initTorusKeyring', {
-        keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
+        keys: thresholdKeys,
         calledFromEmbed,
         rehydrate: false,
         postboxAddress: normalAccountAddress || finalKey.ethAddress,
@@ -36,16 +45,25 @@ export default {
   async createNewTKey({ state, dispatch, commit }, payload) {
     const { postboxKey } = state
     const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-    const thresholdKey = await thresholdKeyController.createNewTKey({ postboxKey: postboxKey.privateKey, ...payload })
-    log.info('tkey 2', thresholdKey)
+    const allKeys = await thresholdKeyController.createNewTKey({ postboxKey: postboxKey.privateKey, ...payload })
+    if (config.onlySeedPhraseAccounts) {
+      // don't use the first key
+      allKeys.shift()
+    }
+    const thresholdKeys = allKeys.map((x) => ({
+      ethAddress: generateAddressFromPrivateKey(x),
+      privKey: x,
+      accountType: ACCOUNT_TYPE.THRESHOLD,
+    }))
+    log.info('tkey 2', thresholdKeys)
     await dispatch('initTorusKeyring', {
-      keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
+      keys: thresholdKeys,
       calledFromEmbed: false,
       rehydrate: false,
       postboxAddress: normalAccountAddress || postboxKey.ethAddress,
     })
     commit('setTkeyExists', true)
-    dispatch('updateSelectedAddress', { selectedAddress: thresholdKey.ethAddress }) // synchronous
+    dispatch('updateSelectedAddress', { selectedAddress: thresholdKeys[0].ethAddress }) // synchronous
   },
   addPassword(_, payload) {
     return thresholdKeyController.addPassword(payload)

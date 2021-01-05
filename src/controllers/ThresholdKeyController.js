@@ -20,7 +20,7 @@ import {
   WEB_STORAGE_MODULE_KEY,
 } from '../utils/enums'
 import { post } from '../utils/httpHelpers'
-import { generateAddressFromPrivateKey, isMain, isPopup } from '../utils/utils'
+import { isMain, isPopup } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 function beforeUnloadHandler(e) {
@@ -102,14 +102,12 @@ class ThresholdKeyController extends EventEmitter {
         throw new Error('Cannot recover key')
       } else {
         const { tKey: newTKey } = this.state
-        const { privKey } = await newTKey.reconstructKey()
+        const { allKeys } = await newTKey.reconstructKey()
         await this.setSettingsPageData()
         this.startShareTransferRequestListener()
-        log.info(privKey.toString('hex', 64), 'privKey')
-        return {
-          ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
-          privKey: privKey.toString('hex', 64),
-        }
+        const hexKeys = allKeys.map((x) => x.toString('hex', 64))
+        log.info(hexKeys, 'privKeys')
+        return hexKeys
       }
     } finally {
       window.removeEventListener('beforeunload', beforeUnloadHandler)
@@ -233,7 +231,8 @@ class ThresholdKeyController extends EventEmitter {
     await this._init(postboxKey)
     const { tKey, settingsPageData = {} } = this.state
     if (password) await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
-    const { privKey } = await tKey.reconstructKey()
+    // can't do some operations without key reconstruction
+    await tKey.reconstructKey()
     if (backup) {
       try {
         const { deviceShare } = settingsPageData
@@ -257,14 +256,13 @@ class ThresholdKeyController extends EventEmitter {
       log.info(seedPhrases, 'stored seed phrases')
     }
 
-    log.info('privKey of tkey', privKey.toString('hex', 64))
+    const { allKeys } = await tKey.reconstructKey()
+
     await this.setSettingsPageData()
     this.startShareTransferRequestListener()
-    return {
-      ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
-      privKey: privKey.toString('hex', 64),
-      seedPhrases,
-    }
+    const hexKeys = allKeys.map((x) => x.toString('hex', 64))
+    log.info(hexKeys, 'privKeys')
+    return hexKeys
   }
 
   async addRecoveryShare(recoveryEmail, reCalculate = true) {
