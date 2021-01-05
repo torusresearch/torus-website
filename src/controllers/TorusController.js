@@ -173,6 +173,7 @@ export default class TorusController extends EventEmitter {
 
     this.thresholdKeyController = new ThresholdKeyController({
       requestTkeyInput: this.opts.requestTkeyInput.bind(this.thresholdKeyController),
+      provider: this.provider,
     })
 
     this.networkController.lookupNetwork()

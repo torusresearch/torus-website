@@ -13,6 +13,7 @@ import {
   ERROR_TIME,
   PASSWORD_QUESTION,
   SECURITY_QUESTIONS_MODULE_KEY,
+  SEED_PHRASE_MODULE_KEY,
   SHARE_SERIALIZATION_MODULE_KEY,
   SHARE_TRANSFER_MODULE_KEY,
   TKEY_SHARE_TRANSFER_INTERVAL,
@@ -34,6 +35,7 @@ class ThresholdKeyController extends EventEmitter {
     super()
     this.store = new ObservableStore({})
     this.requestTkeyInput = opts.requestTkeyInput
+    this.provider = opts.provider
   }
 
   async checkIfTKeyExists(postboxKey) {
@@ -227,7 +229,7 @@ class ThresholdKeyController extends EventEmitter {
     }
   }
 
-  async createNewTKey({ postboxKey, password, backup, recoveryEmail }) {
+  async createNewTKey({ postboxKey, password, backup, recoveryEmail, useSeedPhrase }) {
     await this._init(postboxKey)
     const { tKey, settingsPageData = {} } = this.state
     if (password) await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
@@ -248,12 +250,20 @@ class ThresholdKeyController extends EventEmitter {
       await this.addRecoveryShare(recoveryEmail, false)
     }
 
+    let seedPhrases = []
+    if (useSeedPhrase) {
+      await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree')
+      seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
+      log.info(seedPhrases, 'stored seed phrases')
+    }
+
     log.info('privKey', privKey.toString('hex', 64))
     await this.setSettingsPageData()
     this.startShareTransferRequestListener()
     return {
       ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
       privKey: privKey.toString('hex', 64),
+      seedPhrases,
     }
   }
 
@@ -313,7 +323,7 @@ class ThresholdKeyController extends EventEmitter {
   async _init(postboxKey, tKeyJson) {
     // const { tKey: stateTKey } = this.state
     // if (stateTKey && stateTKey.privKey) throw new Error('TKey already initialized')
-    const tKey = await createTKeyInstance(postboxKey, tKeyJson)
+    const tKey = await createTKeyInstance(postboxKey, tKeyJson, this.provider)
 
     this.store.updateState({ tKey })
     await this.setSettingsPageData()

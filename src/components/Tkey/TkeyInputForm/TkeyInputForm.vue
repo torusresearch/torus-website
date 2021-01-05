@@ -22,6 +22,7 @@ import log from 'loglevel'
 
 import createTKeyInstance from '../../../handlers/Tkey/TkeyFactory'
 import { calculateSettingsPageData } from '../../../handlers/Tkey/TkeyUtils'
+import torus from '../../../torus'
 import {
   SECURITY_QUESTIONS_MODULE_KEY,
   SHARE_SERIALIZATION_MODULE_KEY,
@@ -80,7 +81,7 @@ export default {
   methods: {
     async initTkey(json) {
       log.info('creating tkey using json ', json)
-      this.tKey = await createTKeyInstance(this.postboxKey, json)
+      this.tKey = await createTKeyInstance(this.postboxKey, json, torus.web3.eth.currentProvider)
       this.settingsData = await calculateSettingsPageData(this.tKey)
       const { keyDetails, parsedShareDescriptions } = this.settingsData
       const { requiredShares } = keyDetails
