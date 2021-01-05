@@ -57,6 +57,7 @@ import RadioUncheckedIcon from './RadioUncheckedIcon.vue'
 import RefreshIcon from './RefreshIcon.vue'
 import ScanIcon from './ScanIcon.vue'
 import SearchIcon from './SearchIcon.vue'
+import SeedPhraseIcon from './SeedPhraseIcon.vue'
 import SelectIcon from './SelectIcon.vue'
 import SendIcon from './SendIcon.vue'
 import ServerIcon from './ServerIcon.vue'
@@ -375,5 +376,8 @@ export default {
   },
   export: {
     component: ExportIcon,
+  },
+  seed_phrase: {
+    component: SeedPhraseIcon,
   },
 }
