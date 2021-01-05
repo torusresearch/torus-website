@@ -49,10 +49,35 @@
         </v-layout> -->
       </div>
 
-      <div v-if="showBackupPhrase" class="settings-container pa-4 mb-10">
-        <div class="text_1--text d-flex align-center body-2">
-          <v-icon size="16" class="torusGray1--text mr-2">$vuetify.icons.mnemonic</v-icon>
+      <div class="settings-container pa-4 mb-10">
+        <div class="d-flex text_1--text body-2" :class="{ 'mb-4': !showBackupPhrase }">
           <div>{{ t('tkeyBackup.tkeyBackupPhrase') }}</div>
+          <div v-if="showBackupPhrase" class="ml-auto">{{ t('tkeySettings.sent') }}</div>
+        </div>
+        <div v-if="!showBackupPhrase" class="text_1--text body-2">
+          <v-form v-model="validBackupPhraseForm" @submit.prevent="sendBackupPhrase">
+            <v-text-field
+              v-model="recoveryEmail"
+              class="body-2"
+              :rules="[rules.email, rules.required]"
+              type="email"
+              outlined
+              :placeholder="t('tkeySettings.enterRecovery')"
+            />
+            <v-layout wrap>
+              <v-flex class="ml-auto xs12 text-right">
+                <v-btn
+                  :disabled="!validBackupPhraseForm"
+                  large
+                  class="torus-btn1 py-1 torusBrand1--text"
+                  :loading="sendingBackupPhrase"
+                  type="submit"
+                >
+                  {{ t('tkeySettings.sendBackupPhrase') }}
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-form>
         </div>
       </div>
 
@@ -240,11 +265,17 @@ export default {
       rules: {
         required: (value) => !!value || this.t('tkeyNew.required'),
         minLength: (v) => passwordValidation(v) || this.t('tkeyCreateSetup.passwordRules'),
+        email: (value) =>
+          /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
+          this.t('walletSettings.invalidEmail'),
       },
       settingPassword: false,
       shareToExport: '',
       shareToDelete: '',
       ongoingDelete: false,
+      validBackupPhraseForm: true,
+      recoveryEmail: '',
+      sendingBackupPhrase: false,
     }
   },
   computed: {
@@ -291,7 +322,7 @@ export default {
     log.info('this.tKeyStore', this.tKeyStore)
   },
   methods: {
-    ...mapActions(['addPassword', 'changePassword', 'exportShare', 'deleteShare']),
+    ...mapActions(['addPassword', 'addRecoveryShare', 'changePassword', 'exportShare', 'deleteShare']),
     accountLinked() {
       // TODO check linking successfull
       this.linkingDialog = true
@@ -329,6 +360,11 @@ export default {
       this.ongoingDelete = true
       await this.deleteShare(this.shareToDelete)
       this.closeDeleteShareModal()
+    },
+    async sendBackupPhrase() {
+      this.sendingBackupPhrase = true
+      await this.addRecoveryShare(this.recoveryEmail)
+      this.sendingBackupPhrase = false
     },
   },
 }

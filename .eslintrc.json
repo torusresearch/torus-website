@@ -38,6 +38,7 @@
     "sourceType": "module"
   },
   "rules": {
+    "unicorn/no-array-reduce": 0,
     "accessor-pairs": 0,
     "unicorn/prefer-ternary": 0,
     "unicorn/prevent-abbreviations": 0,

@@ -48,7 +48,7 @@ class TransactionStateManager extends EventEmitter {
     if (netId === 'loading') throw new Error('MetaMask is having trouble connecting to the network')
     return {
       id: createId(),
-      time: new Date().getTime(),
+      time: Date.now(),
       status: 'unapproved',
       metamaskNetworkId: netId,
       loadingDefaults: true,
@@ -348,7 +348,7 @@ class TransactionStateManager extends EventEmitter {
   */
   setTxStatusSubmitted(txId) {
     const txMeta = this.getTx(txId)
-    txMeta.submittedTime = new Date().getTime()
+    txMeta.submittedTime = Date.now()
     this.updateTx(txMeta, 'txStateManager - add submitted time stamp')
     this._setTxStatus(txId, 'submitted')
   }

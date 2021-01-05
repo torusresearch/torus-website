@@ -82,28 +82,19 @@ class ThresholdKeyController extends EventEmitter {
         }
       }
 
-      // Need input from UI
-      if (requiredShares > 0 && descriptionBuffer.length > 0) {
-        const tkeyJsonReturned = await this.tkeyInputFlow()
-        await this._rehydrate(postboxKey, tkeyJsonReturned)
-      } else {
-        await this.setSettingsPageData()
-      }
-
-      // while (requiredShares > 0 && descriptionBuffer.length > 0) {
-      //   try {
-      //     const shareStore = await this.getShareFromAnotherDevice(descriptionBuffer)
-      //     descriptionBuffer = descriptionBuffer.filter((x) => x.shareIndex.toString('hex') !== shareStore.share.shareIndex.toString('hex'))
-      //     requiredShares -= 1
-      //   } catch {
-      //     log.warn('User declined share transfer')
-      //     break
-      //   }
-      // }
+      await this.setSettingsPageData()
 
       const { keyDetails: newDetails } = this.state
 
+      // Need input from UI
       if (newDetails.requiredShares > 0) {
+        const tkeyJsonReturned = await this.tkeyInputFlow()
+        await this._rehydrate(postboxKey, tkeyJsonReturned)
+      }
+
+      const { keyDetails: postInputDetails } = this.state
+
+      if (postInputDetails.requiredShares > 0) {
         log.error('cannot recover key')
         this.handleError('tkeyNew.errorCannotRecover')
         throw new Error('Cannot recover key')
@@ -254,29 +245,35 @@ class ThresholdKeyController extends EventEmitter {
     }
 
     if (recoveryEmail) {
-      try {
-        const shareCreated = await tKey.generateNewShare()
-        const requiredShareStore = shareCreated.newShareStores[shareCreated.newShareIndex.toString('hex')]
-        const serializedShare = await tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].serialize(requiredShareStore.share.share, 'mnemonic')
-        log.info(requiredShareStore.share, serializedShare)
-        await post(config.tkeyEmailHost, {
-          data: serializedShare,
-          logo: 'https://app.tor.us/images/torus_logo.png',
-          name: 'Torus Labs',
-          email: recoveryEmail,
-          baseUrl: config.baseUrl,
-        })
-      } catch (error) {
-        log.error(error)
-      }
+      await this.addRecoveryShare(recoveryEmail, false)
     }
 
-    log.info('privKey', privKey.toString('hex', 64))
+    log.info('privKey of tkey', privKey.toString('hex', 64))
     await this.setSettingsPageData()
     this.startShareTransferRequestListener()
     return {
       ethAddress: generateAddressFromPrivateKey(privKey.toString('hex', 64)),
       privKey: privKey.toString('hex', 64),
+    }
+  }
+
+  async addRecoveryShare(recoveryEmail, reCalculate = true) {
+    try {
+      const { tKey } = this.state
+      const shareCreated = await tKey.generateNewShare()
+      const requiredShareStore = shareCreated.newShareStores[shareCreated.newShareIndex.toString('hex')]
+      const serializedShare = await tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].serialize(requiredShareStore.share.share, 'mnemonic')
+      log.info(requiredShareStore.share, serializedShare)
+      await post(config.tkeyEmailHost, {
+        data: serializedShare,
+        logo: 'https://app.tor.us/images/torus_logo.png',
+        name: 'Torus Labs',
+        email: recoveryEmail,
+        baseUrl: config.baseUrl,
+      })
+      if (reCalculate) await this.setSettingsPageData()
+    } catch (error) {
+      log.error(error)
     }
   }
 

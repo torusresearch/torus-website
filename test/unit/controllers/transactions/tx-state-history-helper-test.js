@@ -96,9 +96,9 @@ describe('Transaction state history helper', () => {
         },
       }
 
-      const before = new Date().getTime()
+      const before = Date.now()
       const result = txStateHistoryHelper.generateHistoryEntry(previousState, nextState, note)
-      const after = new Date().getTime()
+      const after = Date.now()
 
       assert.ok(Array.isArray(result))
       assert.strictEqual(result.length, 3)

@@ -50,8 +50,4 @@ global.Request = fetch.Request
 // dom
 require('jsdom-global')()
 
-global.matchMedia =
-  global.matchMedia ||
-  (() => {
-    return { matches: false, addListener: () => {}, removeListener: () => {} }
-  })
+global.matchMedia = global.matchMedia || (() => ({ matches: false, addListener: () => {}, removeListener: () => {} }))
