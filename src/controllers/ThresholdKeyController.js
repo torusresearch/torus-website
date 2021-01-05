@@ -257,7 +257,7 @@ class ThresholdKeyController extends EventEmitter {
       log.info(seedPhrases, 'stored seed phrases')
     }
 
-    log.info('privKey', privKey.toString('hex', 64))
+    log.info('privKey of tkey', privKey.toString('hex', 64))
     await this.setSettingsPageData()
     this.startShareTransferRequestListener()
     return {
