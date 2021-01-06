@@ -22,6 +22,7 @@
         multiple
         :class="[{ 'is-mobile': $vuetify.breakpoint.xsOnly, 'is-xs-mobile': $vuetify.breakpoint.width < 350 }]"
       >
+        <!-- Email Login -->
         <v-expansion-panel class="mb-4" disabled>
           <v-expansion-panel-header class="py-2">
             <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.{{ typeOfLogin.toLowerCase() }}</v-icon>
@@ -36,6 +37,7 @@
             </div>
           </v-expansion-panel-header>
         </v-expansion-panel>
+        <!-- Browser Backup -->
         <v-expansion-panel class="mb-4">
           <v-expansion-panel-header class="py-2">
             <v-icon class="d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.browser</v-icon>
@@ -53,7 +55,7 @@
               <span class="font-weight-bold">{{ t('tkeyCreateSetup.authViaBrowser3') }}</span>
             </div>
             <div class="d-flex align-center allow-device-trigger">
-              <v-icon class="backup-device-checkbox mr-2" :class="{ isDark: $vuetify.theme.dark }" @click="onBackupDeviceShare">
+              <v-icon class="wallet-checkbox clickable mr-2" :class="{ isDark: $vuetify.theme.dark }" @click="onBackupDeviceShare">
                 $vuetify.icon.checkbox{{ $vuetify.theme.dark ? '_dark' : '' }}_{{ backupDeviceShare ? 'checked' : 'unchecked' }}
               </v-icon>
               <v-icon v-if="!backupDeviceShare" size="16" class="mr-1 warning--text">$vuetify.icon.alert_circle_filled</v-icon>
@@ -61,6 +63,7 @@
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
+        <!-- Recovery Email -->
         <v-expansion-panel class="mb-4" disabled>
           <v-expansion-panel-header class="py-2">
             <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.mail</v-icon>
@@ -106,6 +109,33 @@
             </v-form>
           </v-expansion-panel-content>
         </v-expansion-panel>
+        <!-- Seed Phrase -->
+        <v-expansion-panel class="mb-4" disabled>
+          <v-expansion-panel-header class="py-2">
+            <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.seed_phrase</v-icon>
+            <div class="grow text-capitalize font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+              Seed Phrase
+            </div>
+            <div class="ml-auto justify-end d-flex align-center">
+              <v-icon small :class="useSeedPhrase ? 'success--text' : 'text_3--text'" class="ml-1" v-text="'$vuetify.icons.check_circle_filled'" />
+            </div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content class="pa-5">
+            <div class="body-2 mb-4 text_2--text">Seed Phrase Description</div>
+            <div class="d-flex align-center allow-device-trigger mb-2">
+              <v-icon
+                class="wallet-checkbox mr-2"
+                :class="{ isDark: $vuetify.theme.dark, clickable: !requireSeedPhraseWhileCreation }"
+                @click="onChangeUseSeedPhrase"
+              >
+                $vuetify.icon.checkbox{{ $vuetify.theme.dark ? '_dark' : '' }}_{{ useSeedPhrase ? 'checked' : 'unchecked' }}
+              </v-icon>
+              <div class="body-2 text_2--text">Use Seed Phrase</div>
+            </div>
+            <v-textarea v-if="useSeedPhrase" v-model="seedPhrase" hide-details class="font-weight-bold text_2--text" outlined rows="3" />
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <!-- Recovery Password -->
         <v-expansion-panel class="mb-4">
           <v-expansion-panel-header class="py-2">
             <v-icon
@@ -190,7 +220,7 @@
       </v-expansion-panels>
       <div class="d-flex mt-1" :class="$vuetify.breakpoint.xsOnly ? 'align-start' : 'align-center'">
         <v-icon
-          class="backup-device-checkbox mr-4"
+          class="wallet-checkbox clickable mr-4"
           :class="[{ isDark: $vuetify.theme.dark }, $vuetify.breakpoint.xsOnly ? 'mt-1' : '']"
           @click="userUnderstands = !userUnderstands"
         >
@@ -233,6 +263,7 @@
 import bowser from 'bowser'
 import log from 'loglevel'
 
+import config from '../../../config'
 import { passwordValidation, requestQuota } from '../../../utils/utils'
 
 export default {
@@ -272,10 +303,13 @@ export default {
           /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
           this.t('walletSettings.invalidEmail'),
       },
-      panels: [1, 2, 3],
+      panels: [1, 2, 3, 4],
       progressValue: 200,
       backupDeviceShare: false,
       userUnderstands: false,
+      useSeedPhrase: config.requireSeedPhraseWhileCreation,
+      seedPhrase: '',
+      requireSeedPhraseWhileCreation: config.requireSeedPhraseWhileCreation,
     }
   },
   computed: {
@@ -315,6 +349,8 @@ export default {
         password: this.finalRecoveryPassword,
         backup: this.backupDeviceShare,
         recoveryEmail: this.recoveryEmailFinal,
+        useSeedPhrase: this.useSeedPhrase,
+        seedPhrase: this.seedPhrase,
       })
     },
     setFinalPassword() {
@@ -333,6 +369,9 @@ export default {
     setRecoveryEmail() {
       this.recoveryEmailFinal = this.recoveryEmail
       this.progressValue += 100
+    },
+    onChangeUseSeedPhrase() {
+      if (!this.requireSeedPhraseWhileCreation) this.useSeedPhrase = !this.useSeedPhrase
     },
   },
 }
