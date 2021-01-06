@@ -250,7 +250,7 @@ class ThresholdKeyController extends EventEmitter {
     }
 
     if (useSeedPhrase) {
-      await this.addSeedPhrase(seedPhrase)
+      await this.addSeedPhrase(seedPhrase, false)
     }
 
     const { allKeys } = await tKey.reconstructKey()
@@ -262,13 +262,14 @@ class ThresholdKeyController extends EventEmitter {
     return hexKeys
   }
 
-  async addSeedPhrase(seedPhrase) {
+  async addSeedPhrase(seedPhrase, reCalculate = true) {
     try {
       let seedPhrases = []
       const { tKey } = this.state
       await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree', seedPhrase || undefined)
       seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
       log.info(seedPhrases, 'stored seed phrases')
+      if (reCalculate) await this.setSettingsPageData()
     } catch (error) {
       log.error(error)
     }
