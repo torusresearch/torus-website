@@ -249,11 +249,8 @@ class ThresholdKeyController extends EventEmitter {
       await this.addRecoveryShare(recoveryEmail, false)
     }
 
-    let seedPhrases = []
     if (useSeedPhrase) {
-      await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree', seedPhrase || undefined)
-      seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
-      log.info(seedPhrases, 'stored seed phrases')
+      await this.addSeedPhrase(seedPhrase)
     }
 
     const { allKeys } = await tKey.reconstructKey()
@@ -263,6 +260,18 @@ class ThresholdKeyController extends EventEmitter {
     const hexKeys = allKeys.map((x) => x.toString('hex', 64))
     log.info(hexKeys, 'privKeys')
     return hexKeys
+  }
+
+  async addSeedPhrase(seedPhrase) {
+    try {
+      let seedPhrases = []
+      const { tKey } = this.state
+      await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree', seedPhrase || undefined)
+      seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
+      log.info(seedPhrases, 'stored seed phrases')
+    } catch (error) {
+      log.error(error)
+    }
   }
 
   async addRecoveryShare(recoveryEmail, reCalculate = true) {

@@ -196,4 +196,7 @@ export default {
   addRecoveryShare(_, payload) {
     return thresholdKeyController.addRecoveryShare(payload)
   },
+  addSeedPhrase(_, payload) {
+    return thresholdKeyController.addSeedPhrase(payload)
+  },
 }
