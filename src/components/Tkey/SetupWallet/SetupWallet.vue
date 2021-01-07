@@ -260,6 +260,7 @@
 </template>
 
 <script>
+import { generateMnemonic } from 'bip39'
 import bowser from 'bowser'
 import log from 'loglevel'
 
@@ -371,7 +372,10 @@ export default {
       this.progressValue += 100
     },
     onChangeUseSeedPhrase() {
-      if (!this.requireSeedPhraseWhileCreation) this.useSeedPhrase = !this.useSeedPhrase
+      if (!this.requireSeedPhraseWhileCreation) {
+        this.useSeedPhrase = !this.useSeedPhrase
+        this.seedPhrase = generateMnemonic()
+      }
     },
   },
 }

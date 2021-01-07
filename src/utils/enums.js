@@ -267,6 +267,7 @@ export const ACCOUNT_TYPE = {
   NORMAL: 'normal',
   THRESHOLD: 'threshold',
   IMPORTED: 'imported',
+  TKEY_SEED_PHRASE: 'tkey_seed_phrase',
 }
 
 export const WEB_STORAGE_MODULE_KEY = WEB_STORAGE_MODULE_NAME

@@ -19,15 +19,14 @@ export default {
     try {
       const finalKey = state.postboxKey
       const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-      const allKeys = await thresholdKeyController.login(finalKey.privateKey)
+      let allKeys = await thresholdKeyController.login(finalKey.privateKey)
       if (config.onlySeedPhraseAccounts && allKeys.length > 1) {
         // don't use the first key
-        allKeys.shift()
+        allKeys = allKeys.filter((x) => x.accountType !== ACCOUNT_TYPE.THRESHOLD)
       }
       const thresholdKeys = allKeys.map((x) => ({
-        ethAddress: generateAddressFromPrivateKey(x),
-        privKey: x,
-        accountType: ACCOUNT_TYPE.THRESHOLD,
+        ethAddress: generateAddressFromPrivateKey(x.privKey),
+        ...x,
       }))
       log.info('tkey 2', thresholdKeys)
       return dispatch('initTorusKeyring', {
@@ -45,15 +44,14 @@ export default {
   async createNewTKey({ state, dispatch, commit }, payload) {
     const { postboxKey } = state
     const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-    const allKeys = await thresholdKeyController.createNewTKey({ postboxKey: postboxKey.privateKey, ...payload })
+    let allKeys = await thresholdKeyController.createNewTKey({ postboxKey: postboxKey.privateKey, ...payload })
     if (config.onlySeedPhraseAccounts && allKeys.length > 1) {
       // don't use the first key
-      allKeys.shift()
+      allKeys = allKeys.filter((x) => x.accountType !== ACCOUNT_TYPE.THRESHOLD)
     }
     const thresholdKeys = allKeys.map((x) => ({
-      ethAddress: generateAddressFromPrivateKey(x),
-      privKey: x,
-      accountType: ACCOUNT_TYPE.THRESHOLD,
+      ethAddress: generateAddressFromPrivateKey(x.privKey),
+      ...x,
     }))
     log.info('tkey 2', thresholdKeys)
     await dispatch('initTorusKeyring', {

@@ -9,6 +9,7 @@ import config from '../config'
 import createTKeyInstance from '../handlers/Tkey/TkeyFactory'
 import { calculateSettingsPageData, getPendingShareTransferRequests } from '../handlers/Tkey/TkeyUtils'
 import {
+  ACCOUNT_TYPE,
   CHROME_EXTENSION_STORAGE_MODULE_KEY,
   ERROR_TIME,
   PASSWORD_QUESTION,
@@ -102,16 +103,29 @@ class ThresholdKeyController extends EventEmitter {
         throw new Error('Cannot recover key')
       } else {
         const { tKey: newTKey } = this.state
-        const { allKeys } = await newTKey.reconstructKey()
+        const { privKey } = await newTKey.reconstructKey()
         await this.setSettingsPageData()
         this.startShareTransferRequestListener()
-        const hexKeys = allKeys.map((x) => x.toString('hex', 64))
-        log.info(hexKeys, 'privKeys')
+
+        const hexKeys = await this.getAllPrivateKeys(newTKey, privKey)
         return hexKeys
       }
     } finally {
       window.removeEventListener('beforeunload', beforeUnloadHandler)
     }
+  }
+
+  async getAllPrivateKeys(newTKey, privKey) {
+    const seedPhraseKeys = await newTKey.modules[SEED_PHRASE_MODULE_KEY].getAccounts()
+    const hexKeys = [
+      { privKey: privKey.toString('hex', 64), accountType: ACCOUNT_TYPE.THRESHOLD },
+      ...seedPhraseKeys.map((x) => ({
+        privKey: x.toString('hex', 64),
+        accountType: ACCOUNT_TYPE.SEED_PHRASE,
+      })),
+    ]
+    log.info(hexKeys, 'privKeys')
+    return hexKeys
   }
 
   handleError(error) {
@@ -253,12 +267,11 @@ class ThresholdKeyController extends EventEmitter {
       await this.addSeedPhrase(seedPhrase, false)
     }
 
-    const { allKeys } = await tKey.reconstructKey()
+    const { privKey } = await tKey.reconstructKey()
 
     await this.setSettingsPageData()
     this.startShareTransferRequestListener()
-    const hexKeys = allKeys.map((x) => x.toString('hex', 64))
-    log.info(hexKeys, 'privKeys')
+    const hexKeys = await this.getAllPrivateKeys(tKey, privKey)
     return hexKeys
   }
 
