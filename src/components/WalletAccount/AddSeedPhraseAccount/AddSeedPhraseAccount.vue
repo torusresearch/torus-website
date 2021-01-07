@@ -9,18 +9,14 @@
       </v-flex>
     </v-layout>
     <v-layout mx-6 py-6 wrap>
-      <v-flex xs12 class="mb-2">
-        <div v-for="(wallet, index) in wallets" :key="index" class="seed-group pa-4 mb-4">
-          <div class="text_1--text title mb-2">Account #{{ index + 1 }}</div>
-          <div class="text_2--text body-2 font-weight-bold mb-4">{{ wallet.seedPhrase }}</div>
+      <v-flex xs12>
+        <div lass="mb-4">
           <v-list dense outlined class="pa-0 seed-group_item mb-4">
-            <v-list-item v-for="address in wallet.accounts" :key="address" class="pl-0 pr-1">
-              <v-list-item-content>
-                <v-list-item-title class="font-weight-regular caption px-4">
-                  <span class="text_1--text">{{ address }}</span>
-                </v-list-item-title>
+            <v-list-item v-for="(address, index) in accounts" :key="index" class="pl-0 pr-1">
+              <v-list-item-content class="px-4">
+                <v-list-item-title>Account #{{ index + 1 }}</v-list-item-title>
+                <v-list-item-subtitle :class="{ caption: $vuetify.breakpoint.xsOnly }">{{ address }}</v-list-item-subtitle>
               </v-list-item-content>
-              <v-list-item-action class="ma-0"></v-list-item-action>
             </v-list-item>
           </v-list>
           <div class="d-flex">
@@ -62,23 +58,11 @@ export default {
     ...mapState({
       wallet: 'wallet',
     }),
-    wallets() {
-      const wallets = Object.keys(this.wallet).reduce((acc, address) => {
-        const { seedPhrase, accountType } = this.wallet[address]
-        if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
-          let targetGroup = acc.find((group) => group.seedPhrase === seedPhrase)
-          if (!targetGroup) {
-            targetGroup = {
-              seedPhrase,
-              accounts: [address],
-            }
-            acc.push(targetGroup)
-          } else {
-            targetGroup.accounts.push(address)
-          }
-        }
-        return acc
-      }, [])
+    accounts() {
+      const wallets = Object.keys(this.wallet).filter((address) => {
+        const { accountType } = this.wallet[address]
+        return accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE
+      })
 
       return wallets
     },

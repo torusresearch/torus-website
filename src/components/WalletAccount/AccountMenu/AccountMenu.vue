@@ -86,7 +86,7 @@
         </v-list-item-action>
         <v-list-item-content class="caption font-weight-bold text_1--text">{{ t('tkeySettings.tkeySeedPhrase.addAccount') }}</v-list-item-content>
       </v-list-item>
-      <v-dialog v-model="seedPhraseDialog" max-width="600" :fullscreen="$vuetify.breakpoint.xsOnly">
+      <v-dialog v-model="seedPhraseDialog" max-width="450" :fullscreen="$vuetify.breakpoint.xsOnly">
         <AddSeedPhraseAccount @onClose="seedPhraseDialog = false" />
       </v-dialog>
     </v-list>
