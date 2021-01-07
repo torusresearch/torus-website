@@ -340,6 +340,11 @@ export default {
       return this.progressValue / 4
     },
   },
+  mounted() {
+    if (this.requireSeedPhraseWhileCreation) {
+      this.seedPhrase = generateMnemonic()
+    }
+  },
   methods: {
     cancelOnboarding() {
       this.$emit('tKeyOnboardingCancel')
