@@ -80,13 +80,15 @@
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
         <AccountImport @onClose="accountImportDialog = false" />
       </v-dialog>
-      <v-list-item v-if="hasSeedPhrase" :disabled="addingSeedPhraseAccount" @click="addAccount">
+      <v-list-item v-if="seedPhraseWallets.length > 0" @click="seedPhraseDialog = true">
         <v-list-item-action class="mr-2 justify-center">
-          <v-progress-circular v-if="addingSeedPhraseAccount" indeterminate :size="20" :width="2" color="text_3--text"></v-progress-circular>
-          <v-icon v-else size="20" class="text_2--text" v-text="'$vuetify.icons.add_circle'" />
+          <v-icon size="20" class="text_2--text" v-text="'$vuetify.icons.add_circle'" />
         </v-list-item-action>
         <v-list-item-content class="caption font-weight-bold text_1--text">{{ t('tkeySettings.tkeySeedPhrase.addAccount') }}</v-list-item-content>
       </v-list-item>
+      <v-dialog v-model="seedPhraseDialog" max-width="600" :fullscreen="$vuetify.breakpoint.xsOnly">
+        <AddSeedPhraseAccount @onClose="seedPhraseDialog = false" />
+      </v-dialog>
     </v-list>
 
     <v-divider></v-divider>
@@ -136,6 +138,7 @@ import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
+import AddSeedPhraseAccount from '../AddSeedPhraseAccount'
 
 export default {
   components: {
@@ -143,6 +146,7 @@ export default {
     ExportQrCode,
     AccountImport,
     LanguageSelector,
+    AddSeedPhraseAccount,
   },
   props: {
     headerItems: {
@@ -166,6 +170,7 @@ export default {
       camera: 'off',
       hasStreamApiSupport: true,
       addingSeedPhraseAccount: false,
+      seedPhraseDialog: false,
     }
   },
   computed: {
@@ -211,8 +216,8 @@ export default {
       }
       return []
     },
-    hasSeedPhrase() {
-      return this.wallets.some((wallet) => wallet.accountType === ACCOUNT_TYPE.THRESHOLD)
+    seedPhraseWallets() {
+      return this.wallets.filter((wallet) => wallet.accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
     },
   },
   methods: {
@@ -258,12 +263,6 @@ export default {
         return `${this.t('accountMenu.importedAccount')} ${index + 1}`
       }
       return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
-    },
-    async addAccount() {
-      if (this.addingSeedPhraseAccount) return
-      this.addingSeedPhraseAccount = true
-      await this.addSeedPhraseAccount()
-      this.addingSeedPhraseAccount = false
     },
   },
 }

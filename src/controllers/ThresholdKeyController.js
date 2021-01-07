@@ -299,6 +299,8 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async addSeedPhraseAccount(seedPhrase) {
+    // eslint-disable-next-line no-console
+    console.log('🚀 ~ ThresholdKeyController ~ addSeedPhraseAccount ~ seedPhrase', seedPhrase)
     const { tKey } = this.state
     const seedPhraseStores = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrasesWithAccounts()
     const requiredSeedPhraseStore = seedPhraseStores.find((x) => x.seedPhrase === seedPhrase)
