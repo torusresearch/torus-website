@@ -116,14 +116,21 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async getAllPrivateKeys(newTKey, privKey) {
-    const seedPhraseKeys = await newTKey.modules[SEED_PHRASE_MODULE_KEY].getAccounts()
+    const seedPhraseStores = await newTKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrasesWithAccounts()
     const hexKeys = []
     if (privKey) hexKeys.push({ privKey: privKey.toString('hex', 64), accountType: ACCOUNT_TYPE.THRESHOLD })
     hexKeys.push(
-      ...seedPhraseKeys.map((x) => ({
-        privKey: x.toString('hex', 64),
-        accountType: ACCOUNT_TYPE.TKEY_SEED_PHRASE,
-      }))
+      ...seedPhraseStores.reduce((acc, x) => {
+        const { keys, seedPhrase } = x
+        acc.push(
+          ...keys.map((y) => ({
+            privKey: y.toString('hex', 64),
+            accountType: ACCOUNT_TYPE.TKEY_SEED_PHRASE,
+            seedPhrase,
+          }))
+        )
+        return acc
+      }, [])
     )
 
     log.info(hexKeys, 'privKeys')
@@ -279,22 +286,22 @@ class ThresholdKeyController extends EventEmitter {
 
   async addSeedPhrase(seedPhrase, reCalculate = true) {
     try {
-      let seedPhrases = []
+      // const seedPhrases = []
       const { tKey } = this.state
       log.info('adding seed phrase', seedPhrase)
       await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree', seedPhrase || undefined)
-      seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
-      log.info(seedPhrases, 'stored seed phrases')
+      // seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
+      // log.info(seedPhrases, 'stored seed phrases')
       if (reCalculate) await this.setSettingsPageData()
     } catch (error) {
       log.error(error)
     }
   }
 
-  async addSeedPhraseAccount() {
+  async addSeedPhraseAccount(seedPhrase) {
     const { tKey } = this.state
-    const seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
-    const requiredSeedPhraseStore = seedPhrases[0]
+    const seedPhraseStores = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrasesWithAccounts()
+    const requiredSeedPhraseStore = seedPhraseStores.find((x) => x.seedPhrase === seedPhrase)
     requiredSeedPhraseStore.numberOfWallets += 1
     await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhraseStoreItem(requiredSeedPhraseStore)
     return this.getAllPrivateKeys(tKey)

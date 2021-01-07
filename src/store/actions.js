@@ -269,7 +269,11 @@ export default {
     if (payload.ethAddress) {
       context.commit('setWallet', {
         ...context.state.wallet,
-        [payload.ethAddress]: { privateKey: payload.privKey, accountType: payload.accountType || ACCOUNT_TYPE.NORMAL },
+        [payload.ethAddress]: {
+          privateKey: payload.privKey,
+          accountType: payload.accountType || ACCOUNT_TYPE.NORMAL,
+          seedPhrase: payload.seedPhrase,
+        },
       })
     }
   },
