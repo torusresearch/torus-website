@@ -3,7 +3,7 @@
     <v-layout class="card-header" wrap>
       <v-flex text-center xs12 py-7 px-6>
         <v-avatar class="avatar" size="64">
-          <v-icon size="20" dark>$vuetify.icons.seed_phrase</v-icon>
+          <v-icon size="20" dark>$vuetify.icons.tkey_seed_phrase</v-icon>
         </v-avatar>
         <v-btn class="close-btn" icon aria-label="Close Seed Phrase" title="Close Seed Phrase" @click="onClose">
           <v-icon>$vuetify.icons.close</v-icon>
@@ -12,8 +12,8 @@
     </v-layout>
     <v-layout mx-6 pt-6 pb-12 wrap>
       <v-flex xs12 class="text-center mb-6">
-        <div class="display-1 mb-2">Your Mnemonic</div>
-        <div class="body-2">You may wish to note down your Mnemonic. This Mnemonic is unique to your account and cannot be regenerated.</div>
+        <div class="display-1 mb-2">{{ t('tkeySettings.tkeySeedPhrase.viewTitle') }}</div>
+        <div class="body-2">{{ t('tkeySettings.tkeySeedPhrase.viewDescription') }}</div>
       </v-flex>
       <v-flex xs12 class="text-center mb-2">
         <div class="seed-phrase-container">

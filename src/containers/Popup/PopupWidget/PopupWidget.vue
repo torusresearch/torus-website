@@ -174,7 +174,7 @@ import {
   DEPLOY_CONTRACT_ACTION_KEY,
   TOKEN_METHOD_APPROVE,
 } from '../../../utils/enums'
-import { addressSlicer, getUserEmail } from '../../../utils/utils'
+import { addressSlicer, getUserEmail, getUserIcon } from '../../../utils/utils'
 
 export default {
   name: 'PopupWidget',
@@ -249,13 +249,7 @@ export default {
       return getUserEmail(this.userInfo, this.embedState.loginConfig, this.t('accountMenu.wallet'))
     },
     userIcon() {
-      if (this.accountType === ACCOUNT_TYPE.THRESHOLD) {
-        return 'wallet'
-      }
-      if (this.accountType === ACCOUNT_TYPE.IMPORTED) {
-        return 'person_circle'
-      }
-      return this.userInfo.typeOfLogin.toLowerCase()
+      return getUserIcon(this.accountType, this.userInfo.typeOfLogin)
     },
     accountType() {
       return this.wallet[this.fullAddress]?.accountType

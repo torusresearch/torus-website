@@ -1,5 +1,6 @@
 import AccountIcon from './AccountIcon.vue'
 import ActivitiesIcon from './ActivitiesIcon.vue'
+import AddCircleIcon from './AddCircleIcon.vue'
 import AddIcon from './AddIcon.vue'
 import AddressIcon from './AddressIcon.vue'
 import AlertCircleFilledIcon from './AlertCircleFilledIcon.vue'
@@ -377,7 +378,10 @@ export default {
   export: {
     component: ExportIcon,
   },
-  seed_phrase: {
+  tkey_seed_phrase: {
     component: SeedPhraseIcon,
+  },
+  add_circle: {
+    component: AddCircleIcon,
   },
 }

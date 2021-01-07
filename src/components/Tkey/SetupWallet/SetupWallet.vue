@@ -109,32 +109,6 @@
             </v-form>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <!-- Seed Phrase -->
-        <v-expansion-panel class="mb-4" disabled>
-          <v-expansion-panel-header class="py-2">
-            <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.seed_phrase</v-icon>
-            <div class="grow text-capitalize font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
-              Seed Phrase
-            </div>
-            <div class="ml-auto justify-end d-flex align-center">
-              <v-icon small :class="useSeedPhrase ? 'success--text' : 'text_3--text'" class="ml-1" v-text="'$vuetify.icons.check_circle_filled'" />
-            </div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content class="pa-5">
-            <div class="body-2 mb-4 text_2--text">Seed Phrase Description</div>
-            <div class="d-flex align-center allow-device-trigger mb-2">
-              <v-icon
-                class="wallet-checkbox mr-2"
-                :class="{ isDark: $vuetify.theme.dark, clickable: !requireSeedPhraseWhileCreation }"
-                @click="onChangeUseSeedPhrase"
-              >
-                $vuetify.icon.checkbox{{ $vuetify.theme.dark ? '_dark' : '' }}_{{ useSeedPhrase ? 'checked' : 'unchecked' }}
-              </v-icon>
-              <div class="body-2 text_2--text">Use Seed Phrase</div>
-            </div>
-            <v-textarea v-if="useSeedPhrase" v-model="seedPhrase" hide-details class="font-weight-bold text_2--text" outlined rows="3" />
-          </v-expansion-panel-content>
-        </v-expansion-panel>
         <!-- Recovery Password -->
         <v-expansion-panel class="mb-4">
           <v-expansion-panel-header class="py-2">
@@ -215,6 +189,40 @@
                 </v-btn>
               </div>
             </v-form>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <!-- Seed Phrase -->
+        <v-expansion-panel class="mb-4" disabled>
+          <v-expansion-panel-header class="py-2">
+            <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.tkey_seed_phrase</v-icon>
+            <div class="grow text-capitalize font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+              {{ t('tkeySettings.tkeySeedPhrase.title') }}
+            </div>
+            <div class="ml-auto justify-end d-flex align-center">
+              <v-icon small :class="useSeedPhrase ? 'success--text' : 'text_3--text'" class="ml-1" v-text="'$vuetify.icons.check_circle_filled'" />
+            </div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content class="pa-5">
+            <div class="body-2 mb-4 text_2--text">{{ t('tkeySettings.tkeySeedPhrase.description') }}</div>
+            <div class="d-flex align-center allow-device-trigger mb-2">
+              <v-icon
+                class="wallet-checkbox mr-2"
+                :class="{ isDark: $vuetify.theme.dark, clickable: !requireSeedPhraseWhileCreation }"
+                @click="onChangeUseSeedPhrase"
+              >
+                $vuetify.icon.checkbox{{ $vuetify.theme.dark ? '_dark' : '' }}_{{ useSeedPhrase ? 'checked' : 'unchecked' }}
+              </v-icon>
+              <div class="body-2 text_2--text">{{ t('tkeySettings.tkeySeedPhrase.use') }}</div>
+            </div>
+            <v-textarea
+              v-if="useSeedPhrase"
+              v-model="seedPhrase"
+              :placeholder="t('tkeySettings.tkeySeedPhrase.enterSeedPhrase')"
+              hide-details
+              class="font-weight-bold text_2--text"
+              outlined
+              rows="3"
+            />
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>

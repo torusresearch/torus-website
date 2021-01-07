@@ -80,6 +80,13 @@
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
         <AccountImport @onClose="accountImportDialog = false" />
       </v-dialog>
+      <v-list-item v-if="hasSeedPhrase" :disabled="addingSeedPhraseAccount" @click="addAccount">
+        <v-list-item-action class="mr-2 justify-center">
+          <v-progress-circular v-if="addingSeedPhraseAccount" indeterminate :size="20" :width="2" color="text_3--text"></v-progress-circular>
+          <v-icon v-else size="20" class="text_2--text" v-text="'$vuetify.icons.add_circle'" />
+        </v-list-item-action>
+        <v-list-item-content class="caption font-weight-bold text_1--text">{{ t('tkeySettings.tkeySeedPhrase.addAccount') }}</v-list-item-content>
+      </v-list-item>
     </v-list>
 
     <v-divider></v-divider>
@@ -104,7 +111,7 @@
     <v-divider v-if="$vuetify.breakpoint.smAndDown"></v-divider>
     <v-list class="ml-1">
       <v-list-item href="https://docs.tor.us/#users" target="_blank" rel="noreferrer noopener">
-        <v-list-item-action class="mr-2">
+        <v-list-item-action class="mr-2 justify-center">
           <v-icon size="20" class="text_2--text" v-text="'$vuetify.icons.info'" />
         </v-list-item-action>
         <v-list-item-content class="caption font-weight-bold">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
@@ -124,7 +131,7 @@ import { BroadcastChannel } from 'broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE, DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
-import { addressSlicer, broadcastChannelOptions, getEtherScanAddressLink, getUserEmail } from '../../../utils/utils'
+import { addressSlicer, broadcastChannelOptions, getEtherScanAddressLink, getUserEmail, getUserIcon } from '../../../utils/utils'
 import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import ShowToolTip from '../../helpers/ShowToolTip'
@@ -158,6 +165,7 @@ export default {
       ACCOUNT_TYPE,
       camera: 'off',
       hasStreamApiSupport: true,
+      addingSeedPhraseAccount: false,
     }
   },
   computed: {
@@ -203,9 +211,12 @@ export default {
       }
       return []
     },
+    hasSeedPhrase() {
+      return this.wallets.some((wallet) => wallet.accountType === ACCOUNT_TYPE.THRESHOLD)
+    },
   },
   methods: {
-    ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
+    ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect', 'addSeedPhraseAccount']),
     etherscanAddressLink(address) {
       return getEtherScanAddressLink(address, this.networkType.host)
     },
@@ -234,13 +245,7 @@ export default {
       }
     },
     userIcon(accountType) {
-      if (accountType === ACCOUNT_TYPE.THRESHOLD) {
-        return 'wallet'
-      }
-      if (accountType === ACCOUNT_TYPE.IMPORTED) {
-        return 'person_circle'
-      }
-      return this.userInfo.typeOfLogin.toLowerCase()
+      return getUserIcon(accountType, this.userInfo.typeOfLogin)
     },
     userEmail(account) {
       if (account.accountType === ACCOUNT_TYPE.THRESHOLD) {
@@ -253,6 +258,12 @@ export default {
         return `${this.t('accountMenu.importedAccount')} ${index + 1}`
       }
       return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
+    },
+    async addAccount() {
+      if (this.addingSeedPhraseAccount) return
+      this.addingSeedPhraseAccount = true
+      await this.addSeedPhraseAccount()
+      this.addingSeedPhraseAccount = false
     },
   },
 }

@@ -86,7 +86,7 @@ import SetupWallet from '../../components/Tkey/SetupWallet'
 import TkeyOnboardingSetup from '../../components/Tkey/TkeyOnboardingSetup'
 import TkeyOnboardingTry from '../../components/Tkey/TkeyOnboardingTry'
 import { ACCOUNT_TYPE } from '../../utils/enums'
-import { addressSlicer, getUserEmail } from '../../utils/utils'
+import { addressSlicer, getUserEmail, getUserIcon } from '../../utils/utils'
 
 export default {
   name: 'TkeyCreate',
@@ -122,7 +122,7 @@ export default {
             key,
             keySliced: addressSlicer(key),
             accountType,
-            icon: accountType === ACCOUNT_TYPE.THRESHOLD ? 'wallet' : this.userInfo.typeOfLogin.toLowerCase(),
+            icon: getUserIcon(accountType, this.userInfo.typeOfLogin),
             title: accountType === ACCOUNT_TYPE.THRESHOLD ? this.t('tkeyCreateDone.yourWallet') : this.userInfo.verifierId,
           })
         return acc

@@ -7,6 +7,7 @@ import { isAddress, toChecksumAddress } from 'web3-utils'
 import config from '../config'
 import languages from '../plugins/locales'
 import {
+  ACCOUNT_TYPE,
   ACTIVE,
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
@@ -716,4 +717,17 @@ export async function requestQuota() {
     if (navigator.webkitPersistentStorage?.requestQuota) navigator.webkitPersistentStorage.requestQuota(1024 * 1024 * 10, resolve, reject)
     else resolve()
   })
+}
+
+export function getUserIcon(accountType, typeOfLogin) {
+  if (accountType === ACCOUNT_TYPE.THRESHOLD) {
+    return 'wallet'
+  }
+  if (accountType === ACCOUNT_TYPE.IMPORTED) {
+    return 'person_circle'
+  }
+  if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
+    return 'tkey_seed_phrase'
+  }
+  return typeOfLogin.toLowerCase()
 }
