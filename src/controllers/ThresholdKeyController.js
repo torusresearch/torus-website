@@ -117,13 +117,15 @@ class ThresholdKeyController extends EventEmitter {
 
   async getAllPrivateKeys(newTKey, privKey) {
     const seedPhraseKeys = await newTKey.modules[SEED_PHRASE_MODULE_KEY].getAccounts()
-    const hexKeys = [
-      { privKey: privKey.toString('hex', 64), accountType: ACCOUNT_TYPE.THRESHOLD },
+    const hexKeys = []
+    if (privKey) hexKeys.push({ privKey: privKey.toString('hex', 64), accountType: ACCOUNT_TYPE.THRESHOLD })
+    hexKeys.push(
       ...seedPhraseKeys.map((x) => ({
         privKey: x.toString('hex', 64),
         accountType: ACCOUNT_TYPE.SEED_PHRASE,
-      })),
-    ]
+      }))
+    )
+
     log.info(hexKeys, 'privKeys')
     return hexKeys
   }
@@ -287,6 +289,15 @@ class ThresholdKeyController extends EventEmitter {
     } catch (error) {
       log.error(error)
     }
+  }
+
+  async addSeedPhraseAccount() {
+    const { tKey } = this.state
+    const seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
+    const requiredSeedPhraseStore = seedPhrases[0]
+    requiredSeedPhraseStore.numberOfWallets += 1
+    await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhraseStoreItem(requiredSeedPhraseStore)
+    return this.getAllPrivateKeys(tKey)
   }
 
   async addRecoveryShare(recoveryEmail, reCalculate = true) {

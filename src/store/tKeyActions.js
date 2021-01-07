@@ -197,4 +197,19 @@ export default {
   addSeedPhrase(_, payload) {
     return thresholdKeyController.addSeedPhrase(payload)
   },
+  async addSeedPhraseAccount({ dispatch, state }, _) {
+    const accounts = await thresholdKeyController.addSeedPhraseAccount()
+    const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
+    const thresholdKeys = accounts.map((x) => ({
+      ethAddress: generateAddressFromPrivateKey(x.privKey),
+      ...x,
+    }))
+    log.info('tkey 2', thresholdKeys)
+    return dispatch('initTorusKeyring', {
+      keys: thresholdKeys,
+      calledFromEmbed: false,
+      rehydrate: false,
+      postboxAddress: normalAccountAddress || state.postboxKey.ethAddress,
+    })
+  },
 }
