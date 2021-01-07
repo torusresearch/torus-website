@@ -279,6 +279,7 @@ class ThresholdKeyController extends EventEmitter {
     try {
       let seedPhrases = []
       const { tKey } = this.state
+      log.info('adding seed phrase', seedPhrase)
       await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree', seedPhrase || undefined)
       seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
       log.info(seedPhrases, 'stored seed phrases')
