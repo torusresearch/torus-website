@@ -122,7 +122,7 @@ class ThresholdKeyController extends EventEmitter {
     hexKeys.push(
       ...seedPhraseKeys.map((x) => ({
         privKey: x.toString('hex', 64),
-        accountType: ACCOUNT_TYPE.SEED_PHRASE,
+        accountType: ACCOUNT_TYPE.TKEY_SEED_PHRASE,
       }))
     )
 
