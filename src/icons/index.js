@@ -37,6 +37,7 @@ import EthIcon from './EthIcon.vue'
 import ExportIcon from './ExportIcon.vue'
 import GlobeIcon from './GlobeIcon.vue'
 import InfoIcon from './InfoIcon.vue'
+import JsonIcon from './JsonIcon.vue'
 import KeyIcon from './KeyIcon.vue'
 import LinkIcon from './LinkIcon.vue'
 import ListIcon from './ListIcon.vue'
@@ -383,5 +384,8 @@ export default {
   },
   add_circle: {
     component: AddCircleIcon,
+  },
+  json: {
+    component: JsonIcon,
   },
 }
