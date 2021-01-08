@@ -293,8 +293,11 @@ class ThresholdKeyController extends EventEmitter {
       // seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
       // log.info(seedPhrases, 'stored seed phrases')
       if (reCalculate) await this.setSettingsPageData()
+      const hexKeys = await this.getAllPrivateKeys(tKey)
+      return hexKeys
     } catch (error) {
       log.error(error)
+      return []
     }
   }
 

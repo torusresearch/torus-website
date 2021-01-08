@@ -81,6 +81,7 @@ const initialState = {
   wcConnectorSession: {},
   confirmModals: [],
   postboxKey: {},
+  isTkeySeedPhraseInputRequired: false,
 }
 
 export default initialState

@@ -15,14 +15,19 @@ const { torusController } = torus || {}
 const { thresholdKeyController } = torusController || {}
 
 export default {
-  async addTKey({ dispatch, state }, { calledFromEmbed }) {
+  async addTKey({ dispatch, state, commit }, { calledFromEmbed }) {
     try {
       const finalKey = state.postboxKey
       const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
       let allKeys = await thresholdKeyController.login(finalKey.privateKey)
-      if (config.onlySeedPhraseAccounts && allKeys.length > 1) {
+      if (config.onlySeedPhraseAccounts && allKeys.length > 0) {
         // don't use the first key
         allKeys = allKeys.filter((x) => x.accountType !== ACCOUNT_TYPE.THRESHOLD)
+      }
+      if (allKeys.length === 0) {
+        commit('setIsTkeySeedPhraseInputRequired', true)
+        log.error('No usable keys found')
+        throw new Error('User has no account')
       }
       const thresholdKeys = allKeys.map((x) => ({
         ethAddress: generateAddressFromPrivateKey(x.privKey),
@@ -194,8 +199,22 @@ export default {
   addRecoveryShare(_, payload) {
     return thresholdKeyController.addRecoveryShare(payload)
   },
-  addSeedPhrase(_, payload) {
-    return thresholdKeyController.addSeedPhrase(payload)
+  async addSeedPhrase({ state, dispatch, commit }, payload) {
+    const accounts = await thresholdKeyController.addSeedPhrase(payload)
+    const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
+    const thresholdKeys = accounts.map((x) => ({
+      ethAddress: generateAddressFromPrivateKey(x.privKey),
+      ...x,
+    }))
+    log.info('tkey 2', thresholdKeys)
+    await dispatch('initTorusKeyring', {
+      keys: thresholdKeys,
+      calledFromEmbed: false,
+      rehydrate: false,
+      postboxAddress: normalAccountAddress || state.postboxKey.ethAddress,
+    })
+    commit('setTkeyExists', true)
+    dispatch('updateSelectedAddress', { selectedAddress: thresholdKeys[0].ethAddress }) // synchronous
   },
   async addSeedPhraseAccount({ dispatch, state }, payload) {
     const accounts = await thresholdKeyController.addSeedPhraseAccount(payload)
