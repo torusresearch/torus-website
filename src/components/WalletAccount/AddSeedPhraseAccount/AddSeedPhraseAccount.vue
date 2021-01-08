@@ -2,7 +2,7 @@
   <v-card class="seed-phrase" :class="{ 'is-mobile': $vuetify.breakpoint.xsOnly, 'is-dark': $vuetify.theme.dark }">
     <v-layout class="card-header" wrap>
       <v-flex text-center xs12 pt-10 pb-6 px-6>
-        <div class="display-1 mb-2">Seed Phrase Accounts</div>
+        <div class="display-1 mb-2">{{ t('tkeySettings.tkeySeedPhrase.seedPhraseAccounts') }}</div>
         <v-btn class="close-btn" icon aria-label="Close Add Seed Phrase" title="Close Add Seed Phrase" @click="onClose">
           <v-icon>$vuetify.icons.close</v-icon>
         </v-btn>
@@ -12,10 +12,10 @@
       <v-flex xs12>
         <div lass="mb-4">
           <v-list dense outlined class="pa-0 seed-group_item mb-4">
-            <v-list-item v-for="(address, index) in accounts" :key="index" class="pl-0 pr-1">
+            <v-list-item v-for="(account, index) in accounts" :key="index" class="pl-0 pr-1">
               <v-list-item-content class="px-4">
-                <v-list-item-title>Account #{{ index + 1 }}</v-list-item-title>
-                <v-list-item-subtitle :class="{ caption: $vuetify.breakpoint.xsOnly }">{{ address }}</v-list-item-subtitle>
+                <v-list-item-title class="text-capitalize">{{ t('tkeySettings.account') }} #{{ index + 1 }}</v-list-item-title>
+                <v-list-item-subtitle :class="{ caption: $vuetify.breakpoint.xsOnly }">{{ account.address }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -28,10 +28,10 @@
                 aria-label="Add Account"
                 :loading="addingAccount"
                 :disabled="addingAccount"
-                @click="addAccount(wallet.seedPhrase)"
+                @click="addAccount(accounts[0].seedPhrase)"
               >
                 <v-icon left x-small>$vuetify.icons.add</v-icon>
-                Add Account
+                {{ t('tkeySettings.tkeySeedPhrase.addAccount') }}
               </v-btn>
             </div>
           </div>
@@ -59,10 +59,16 @@ export default {
       wallet: 'wallet',
     }),
     accounts() {
-      const wallets = Object.keys(this.wallet).filter((address) => {
-        const { accountType } = this.wallet[address]
-        return accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE
-      })
+      const wallets = Object.keys(this.wallet).reduce((acc, address) => {
+        const { accountType, seedPhrase } = this.wallet[address]
+        if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
+          acc.push({
+            seedPhrase,
+            address,
+          })
+        }
+        return acc
+      }, [])
 
       return wallets
     },

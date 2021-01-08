@@ -117,13 +117,14 @@ export default {
     computedWallets() {
       return Object.keys(this.wallets).reduce((acc, key) => {
         const { accountType } = this.wallets[key]
+
         if (accountType !== ACCOUNT_TYPE.IMPORTED)
           acc.push({
             key,
             keySliced: addressSlicer(key),
             accountType,
             icon: getUserIcon(accountType, this.userInfo.typeOfLogin),
-            title: accountType === ACCOUNT_TYPE.THRESHOLD ? this.t('tkeyCreateDone.yourWallet') : this.userInfo.verifierId,
+            title: this.accountTitle(accountType),
           })
         return acc
       }, [])
@@ -170,6 +171,11 @@ export default {
       } finally {
         this.creatingTkey = false
       }
+    },
+    accountTitle(accountType) {
+      if (accountType === ACCOUNT_TYPE.THRESHOLD) return this.t('tkeyCreateDone.yourWallet')
+      if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) return this.t('tkeyCreateDone.yourSeedPhrase')
+      return this.userInfo.verifierId
     },
   },
 }

@@ -262,6 +262,12 @@ export default {
           .indexOf(account.address)
         return `${this.t('accountMenu.importedAccount')} ${index + 1}`
       }
+      if (account.accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
+        const index = Object.keys(this.wallet)
+          .filter((x) => this.wallet[x].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
+          .indexOf(account.address)
+        return `${this.t('tkeySettings.tkeySeedPhrase.seedPhraseAccount')} ${index + 1}`
+      }
       return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
     },
   },
