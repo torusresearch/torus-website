@@ -70,6 +70,22 @@
         </v-list-item-content>
         <v-list-item-action class="ma-0"></v-list-item-action>
       </v-list-item>
+
+      <v-list-item v-if="hasThreshold && !hasSeedPhraseAccount" class="pl-0 pr-1">
+        <v-list-item-avatar class="ma-0">
+          <v-icon size="16" class="torusGray1--text">$vuetify.icons.tkey_seed_phrase</v-icon>
+        </v-list-item-avatar>
+        <v-list-item-content>
+          <v-list-item-title class="font-weight-regular caption">
+            <span class="text_1--text">{{ t('tkeySettings.tkeySeedPhrase.seedPhraseAccount') }}</span>
+          </v-list-item-title>
+        </v-list-item-content>
+        <v-list-item-action class="ma-0">
+          <v-btn text small color="torusBrand1" class="caption" @click="createSeedPhraseAccount">
+            {{ t('tkeySettings.createAccount') }}
+          </v-btn>
+        </v-list-item-action>
+      </v-list-item>
     </v-list>
 
     <div class="caption text_3--text mb-4 px-5">{{ t('tkeySettings.note') }}: {{ t('tkeySettings.theSelectedAccount') }}</div>
@@ -77,7 +93,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE } from '../../../utils/enums'
 import { getUserEmail } from '../../../utils/utils'
@@ -115,7 +131,7 @@ export default {
             accountType,
             isDefault: this.defaultPublicAddress && this.hasThreshold ? key === this.defaultPublicAddress : accountType === ACCOUNT_TYPE.NORMAL,
             icon: accountType === ACCOUNT_TYPE.THRESHOLD ? 'wallet' : this.userInfo.typeOfLogin.toLowerCase(),
-            title: accountType === ACCOUNT_TYPE.THRESHOLD ? 'tKey' : this.userEmail,
+            title: this.accountTitle(accountType, key),
           })
         return acc
       }, [])
@@ -123,9 +139,13 @@ export default {
     userEmail() {
       return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
     },
+    hasSeedPhraseAccount() {
+      return Object.keys(this.wallets).filter((address) => this.wallets[address].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE).length > 0
+    },
   },
   methods: {
     ...mapActions(['setDefaultPublicAddress', 'manualAddTKey', 'updateSelectedAddress']),
+    ...mapMutations(['setIsTkeySeedPhraseInputRequired']),
     goToTkeyOnboarding() {
       this.$router.push({ name: 'tkeyCreate' }).catch((_) => {})
     },
@@ -133,6 +153,19 @@ export default {
       this.loggingWithTKey = true
       await this.manualAddTKey({ calledFromEmbed: false })
       this.loggingWithTKey = false
+    },
+    createSeedPhraseAccount() {
+      this.setIsTkeySeedPhraseInputRequired(true)
+    },
+    accountTitle(accountType, address) {
+      if (accountType === ACCOUNT_TYPE.THRESHOLD) return 'tKey'
+      if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
+        const index = Object.keys(this.wallets)
+          .filter((x) => this.wallets[x].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
+          .indexOf(address)
+        return `${this.t('tkeySettings.tkeySeedPhrase.seedPhraseAccount')} ${index + 1}`
+      }
+      return this.userInfo.verifierId
     },
   },
 }

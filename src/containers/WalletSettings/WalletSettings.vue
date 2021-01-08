@@ -73,7 +73,7 @@
           <v-expansion-panel readonly class="my-2">
             <v-expansion-panel-header id="display-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.person_circle'" />
-              <div class="grow font-weight-bold title text_1--text">{{ t('tkeySettings.defaultAccount') }}</div>
+              <div class="grow font-weight-bold title text_1--text">{{ t('tkeySettings.accountManagement') }}</div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <DefaultAccount :has-threshold="hasThreshold" :has-threshold-logged="hasThresholdLogged" />
