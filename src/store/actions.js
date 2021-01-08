@@ -522,12 +522,13 @@ export default {
       dispatch('subscribeToControllers')
       await dispatch('initTorusKeyring', {
         keys: walletKeys.map((x) => {
-          const { privateKey, accountType } = wallet[x]
+          const { privateKey, accountType, seedPhrase } = wallet[x]
           return {
             ethAddress: x,
             privKey: privateKey,
             accountType,
             jwtToken: jwtToken[x],
+            seedPhrase,
           }
         }),
         calledFromEmbed: false,
