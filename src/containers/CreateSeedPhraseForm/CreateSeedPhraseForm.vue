@@ -12,9 +12,15 @@
     </v-layout>
     <v-layout mx-6 pt-6 pb-12 wrap>
       <v-flex xs12 class="text-center mb-6">
-        <div class="display-1 mb-2">{{ t('tkeySettings.tkeySeedPhrase.add.title') }}</div>
-        <div class="body-2 mb-4">{{ t('tkeySettings.tkeySeedPhrase.add.description1') }}</div>
-        <div class="body-2">{{ t('tkeySettings.tkeySeedPhrase.add.description2') }}</div>
+        <div class="display-1 mb-2">
+          {{ isSeedPhraseRequired ? t('tkeySettings.tkeySeedPhrase.add.require.title') : t('tkeySettings.tkeySeedPhrase.add.title') }}
+        </div>
+        <div class="body-2 mb-4">
+          {{ isSeedPhraseRequired ? t('tkeySettings.tkeySeedPhrase.add.required.description1') : t('tkeySettings.tkeySeedPhrase.add.description1') }}
+        </div>
+        <div class="body-2">
+          {{ isSeedPhraseRequired ? t('tkeySettings.tkeySeedPhrase.add.required.description2') : t('tkeySettings.tkeySeedPhrase.add.description2') }}
+        </div>
       </v-flex>
       <v-flex v-if="isCustomSeedPhrase" xs12 class="text-center">
         <v-textarea
@@ -128,6 +134,7 @@ import { mapActions, mapMutations } from 'vuex'
 
 import HelpTooltip from '../../components/helpers/HelpTooltip'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
+import config from '../../config'
 
 export default {
   components: { HelpTooltip, ShowToolTip },
@@ -138,6 +145,7 @@ export default {
       seedPhrase: '',
       newSeedPhrase: '',
       addingSeedPhrase: false,
+      isSeedPhraseRequired: config.requireSeedPhraseWhileCreation,
     }
   },
   computed: {
