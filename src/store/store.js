@@ -152,7 +152,7 @@ const VuexStore = new Vuex.Store({
         commit('addConfirmModal', JSON.parse(JSON.stringify(popupPayload)))
       } else if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: popupPayload.type, id: popupPayload.id } })
-      } else if (popupPayload.type === TX_MESSAGE && isCustomSignedMessage(popupPayload.msgParams)) {
+      } else if (popupPayload.type === TX_MESSAGE && isCustomSignedMessage(popupPayload.msgParams.msgParams)) {
         handleConfirm({ data: { txType: popupPayload.type, id: popupPayload.id } })
       } else {
         try {
@@ -190,8 +190,9 @@ const VuexStore = new Vuex.Store({
 })
 
 function isCustomSignedMessage(messageParameters) {
-  const { origin } = messageParameters
-  if (origin && messageParameters.customPrefix === `\u0019${origin} Signed Message:\n`) return true
+  const { origin, customPrefix } = messageParameters
+  log.info(origin, customPrefix, `\u0019${origin} Signed Message:\n`, customPrefix === `\u0019${origin} Signed Message:\n`)
+  if (origin && customPrefix === `\u0019${origin} Signed Message:\n`) return true
 
   // if (!/.+\.tor\.us$/.exec(origin) && origin !== 'tor.us') {
   //   return false
