@@ -47,7 +47,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setTkeyInputFlow', 'setTkeySuccess', 'clearTkeySuccess', 'setTkeyError', 'clearTkeyError']),
+    ...mapActions(['addSeedPhrase', 'setTkeyInputFlow', 'setTkeySuccess', 'clearTkeySuccess', 'setTkeyError', 'clearTkeyError']),
     triggerSign(data) {
       this.setTkeyInputFlow(data)
     },

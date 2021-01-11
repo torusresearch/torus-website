@@ -7,9 +7,10 @@
         </v-flex>
         <v-flex xs12 mt-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <v-list>
+            <!-- Download JSON -->
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" src="../../../assets/img/icons/file-text-grey.svg" alt="Download JSON Icon" />
+                <v-icon size="26" class="text_3--text" :style="{ marginRight: '10px' }" v-text="'$vuetify.icons.json'" />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="text-subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.downloadSoftCopy') }} (JSON)</div>
@@ -48,7 +49,7 @@
                               {{ t('walletSettings.confirm') }}
                               <template #loader>
                                 <span>
-                                  Encrypting
+                                  {{ t('tkeySettings.encrypting') }}
                                   <v-progress-circular :indeterminate="true" size="24" value="0" width="4" color="text_2" />
                                 </span>
                               </template>
@@ -82,7 +83,7 @@
                         {{ t('walletSettings.confirm') }}
                         <template #loader>
                           <span>
-                            Encrypting
+                            {{ t('tkeySettings.encrypting') }}
                             <v-progress-circular :indeterminate="true" size="24" value="0" width="4" color="text_2" />
                           </span>
                         </template>
@@ -109,13 +110,17 @@
             </v-list-item>
 
             <v-divider></v-divider>
-
+            <!-- Show Private Key -->
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <img :width="$vuetify.breakpoint.xsOnly ? '18' : ''" src="../../../assets/img/icons/key.svg" alt="Key Icon" />
+                <v-icon size="26" class="text_3--text" :style="{ marginRight: '10px' }">
+                  {{ isSeedPhrase ? '$vuetify.icons.tkey_seed_phrase' : '$vuetify.icons.key' }}
+                </v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <div class="text-subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.showPrivateKey') }}</div>
+                <div class="text-subtitle-1 flex-grow-1 font-weight-bold">
+                  {{ isSeedPhrase ? t('tkeySettings.tkeySeedPhrase.showSeedPhrase') : t('walletSettings.showPrivateKey') }}
+                </div>
                 <v-layout v-if="isShowPrivateKey" wrap align-center justify-space-between class="mt-2">
                   <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12' : ''">
                     <div class="text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" style="word-break: break-all">
@@ -166,6 +171,7 @@ import log from 'loglevel'
 import { mapState } from 'vuex'
 import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
 
+import { ACCOUNT_TYPE } from '../../../utils/enums'
 import ShowToolTip from '../../helpers/ShowToolTip'
 
 export default {
@@ -181,14 +187,17 @@ export default {
       isLoadingDownloadWallet: false,
       downloadFormValid: true,
       rules: {
-        required: (value) => !!value || 'Required.',
+        required: (value) => !!value || this.t('walletSettings.required'),
       },
     }
   },
   computed: {
     ...mapState(['selectedAddress', 'wallet']),
     selectedKey() {
-      return this.wallet[this.selectedAddress]?.privateKey
+      return this.isSeedPhrase ? this.wallet[this.selectedAddress]?.seedPhrase : this.wallet[this.selectedAddress]?.privateKey
+    },
+    isSeedPhrase() {
+      return this.wallet[this.selectedAddress]?.accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE
     },
   },
   methods: {

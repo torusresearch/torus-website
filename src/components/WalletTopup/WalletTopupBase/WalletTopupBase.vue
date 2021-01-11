@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card class="elevation-1 pa-6">
-      <v-form ref="paymentForm" v-model="formValid" lazy-validation @submit.prevent>
+      <v-form ref="paymentForm" v-model="formValid" lazy-validation @submit.prevent="">
         <v-layout wrap class="wallet-topup">
           <v-flex xs12>
             <p class="body-2 text_1--text">

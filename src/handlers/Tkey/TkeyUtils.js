@@ -1,8 +1,11 @@
 import bowser from 'bowser'
+import log from 'loglevel'
 
 import {
+  ACCOUNT_TYPE,
   CHROME_EXTENSION_STORAGE_MODULE_KEY,
   SECURITY_QUESTIONS_MODULE_KEY,
+  SEED_PHRASE_MODULE_KEY,
   SHARE_TRANSFER_MODULE_KEY,
   THRESHOLD_KEY_PRIORITY_ORDER,
   WEB_STORAGE_MODULE_KEY,
@@ -82,4 +85,26 @@ export async function getPendingShareTransferRequests(tKey) {
     return acc
   }, [])
   return pendingRequests
+}
+
+export async function getAllPrivateKeys(newTKey, privKey) {
+  const seedPhraseStores = await newTKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrasesWithAccounts()
+  const hexKeys = []
+  if (privKey) hexKeys.push({ privKey: privKey.toString('hex', 64), accountType: ACCOUNT_TYPE.THRESHOLD })
+  hexKeys.push(
+    ...seedPhraseStores.reduce((acc, x) => {
+      const { keys, seedPhrase } = x
+      acc.push(
+        ...keys.map((y) => ({
+          privKey: y.toString('hex', 64),
+          accountType: ACCOUNT_TYPE.TKEY_SEED_PHRASE,
+          seedPhrase,
+        }))
+      )
+      return acc
+    }, [])
+  )
+
+  log.info(hexKeys, 'privKeys')
+  return hexKeys
 }

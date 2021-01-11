@@ -1,5 +1,6 @@
 import AccountIcon from './AccountIcon.vue'
 import ActivitiesIcon from './ActivitiesIcon.vue'
+import AddCircleIcon from './AddCircleIcon.vue'
 import AddIcon from './AddIcon.vue'
 import AddressIcon from './AddressIcon.vue'
 import AlertCircleFilledIcon from './AlertCircleFilledIcon.vue'
@@ -36,6 +37,7 @@ import EthIcon from './EthIcon.vue'
 import ExportIcon from './ExportIcon.vue'
 import GlobeIcon from './GlobeIcon.vue'
 import InfoIcon from './InfoIcon.vue'
+import JsonIcon from './JsonIcon.vue'
 import KeyIcon from './KeyIcon.vue'
 import LinkIcon from './LinkIcon.vue'
 import ListIcon from './ListIcon.vue'
@@ -57,6 +59,7 @@ import RadioUncheckedIcon from './RadioUncheckedIcon.vue'
 import RefreshIcon from './RefreshIcon.vue'
 import ScanIcon from './ScanIcon.vue'
 import SearchIcon from './SearchIcon.vue'
+import SeedPhraseIcon from './SeedPhraseIcon.vue'
 import SelectIcon from './SelectIcon.vue'
 import SendIcon from './SendIcon.vue'
 import ServerIcon from './ServerIcon.vue'
@@ -375,5 +378,14 @@ export default {
   },
   export: {
     component: ExportIcon,
+  },
+  tkey_seed_phrase: {
+    component: SeedPhraseIcon,
+  },
+  add_circle: {
+    component: AddCircleIcon,
+  },
+  json: {
+    component: JsonIcon,
   },
 }

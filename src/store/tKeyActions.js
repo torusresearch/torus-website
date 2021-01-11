@@ -6,8 +6,8 @@ import config from '../config'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import router from '../router'
 import torus from '../torus'
-import { ACCOUNT_TYPE, FEATURES_DEFAULT_POPUP_WINDOW, LINKED_VERIFIER_SUBIDENTIFIER } from '../utils/enums'
-import { isMain } from '../utils/utils'
+import { ACCOUNT_TYPE, FEATURES_DEFAULT_POPUP_WINDOW, LINKED_VERIFIER_SUBIDENTIFIER, REQUEST_TKEY_SEED_PHRASE_INPUT } from '../utils/enums'
+import { generateAddressFromPrivateKey, isMain } from '../utils/utils'
 
 const { baseRoute } = config
 
@@ -19,10 +19,21 @@ export default {
     try {
       const finalKey = state.postboxKey
       const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-      const thresholdKey = await thresholdKeyController.login(finalKey.privateKey)
-      log.info('tkey 2', thresholdKey)
+      let allKeys = await thresholdKeyController.login(finalKey.privateKey)
+      if (config.onlySeedPhraseAccounts && allKeys.length > 0) {
+        // don't use the first key
+        allKeys = allKeys.filter((x) => x.accountType !== ACCOUNT_TYPE.THRESHOLD)
+      }
+      if (allKeys.length === 0) {
+        allKeys = await thresholdKeyController.getSeedPhraseFromInput(finalKey.privateKey)
+      }
+      const thresholdKeys = allKeys.map((x) => ({
+        ethAddress: generateAddressFromPrivateKey(x.privKey),
+        ...x,
+      }))
+      log.info('tkey 2', thresholdKeys)
       return dispatch('initTorusKeyring', {
-        keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
+        keys: thresholdKeys,
         calledFromEmbed,
         rehydrate: false,
         postboxAddress: normalAccountAddress || finalKey.ethAddress,
@@ -36,16 +47,28 @@ export default {
   async createNewTKey({ state, dispatch, commit }, payload) {
     const { postboxKey } = state
     const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-    const thresholdKey = await thresholdKeyController.createNewTKey({ postboxKey: postboxKey.privateKey, ...payload })
-    log.info('tkey 2', thresholdKey)
+    let allKeys = await thresholdKeyController.createNewTKey({ postboxKey: postboxKey.privateKey, ...payload })
+    if (config.onlySeedPhraseAccounts && allKeys.length > 0) {
+      // don't use the first key
+      allKeys = allKeys.filter((x) => x.accountType !== ACCOUNT_TYPE.THRESHOLD)
+    }
+    if (allKeys.length === 0) {
+      return allKeys
+    }
+    const thresholdKeys = allKeys.map((x) => ({
+      ethAddress: generateAddressFromPrivateKey(x.privKey),
+      ...x,
+    }))
+    log.info('tkey 2', thresholdKeys)
     await dispatch('initTorusKeyring', {
-      keys: [{ ...thresholdKey, accountType: ACCOUNT_TYPE.THRESHOLD }],
+      keys: thresholdKeys,
       calledFromEmbed: false,
       rehydrate: false,
       postboxAddress: normalAccountAddress || postboxKey.ethAddress,
     })
     commit('setTkeyExists', true)
-    dispatch('updateSelectedAddress', { selectedAddress: thresholdKey.ethAddress }) // synchronous
+    dispatch('updateSelectedAddress', { selectedAddress: thresholdKeys[0].ethAddress }) // synchronous
+    return allKeys
   },
   addPassword(_, payload) {
     return thresholdKeyController.addPassword(payload)
@@ -65,11 +88,11 @@ export default {
       const windowId = randomId()
       const handleDeny = (error) => {
         log.info('Tkey input denied', error)
-        dispatch('setTkeyInputFlow', { rejected: true })
+        dispatch(type === REQUEST_TKEY_SEED_PHRASE_INPUT ? 'setTkeySeedPhraseCreateFlow' : 'setTkeyInputFlow', { rejected: true })
       }
       const handleSuccess = (successData) => {
         log.info('tkey input success', successData)
-        dispatch('setTkeyInputFlow', { response: JSON.parse(successData) })
+        dispatch(type === REQUEST_TKEY_SEED_PHRASE_INPUT ? 'setTkeySeedPhraseCreateFlow' : 'setTkeyInputFlow', { response: JSON.parse(successData) })
       }
       try {
         const { loginConfig } = state.embedState
@@ -79,6 +102,7 @@ export default {
           whiteLabel: state.whiteLabel,
           data: JSON.stringify(data),
           postboxKey: state.postboxKey?.privateKey,
+          type,
         }
         const finalUrl = `${baseRoute}tkey/dapp-input?integrity=true&instanceId=${windowId}`
         const tKeyInputWindow = new PopupWithBcHandler({
@@ -99,22 +123,11 @@ export default {
       }
     }
   },
-  // setSecurityQuestionShareFromUserInput(_, payload) {
-  //   const { id, password, rejected } = payload
-  //   thresholdKeyController.setSecurityQuestionShareFromUserInput(id, { password, rejected })
-  // },
-  // setStoreDeviceFlow(_, payload) {
-  //   const { id, response, rejected } = payload
-  //   log.info('payload', payload)
-  //   // response is { isOld: Boolean, oldIndex: '' }
-  //   thresholdKeyController.setStoreDeviceFlow(id, { response, rejected })
-  // },
-  // setShareTransferInput(_, payload) {
-  //   const { id, success } = payload
-  //   thresholdKeyController.setShareTransferStatus(id, { success })
-  // },
   setTkeyInputFlow(_, payload) {
     thresholdKeyController.setTkeyInputFlow(payload)
+  },
+  setTkeySeedPhraseCreateFlow(_, payload) {
+    thresholdKeyController.setTkeySeedPhraseCreateFlow(payload)
   },
   clearTkeyError() {
     return thresholdKeyController.clearTkeyError()
@@ -177,5 +190,37 @@ export default {
   },
   addRecoveryShare(_, payload) {
     return thresholdKeyController.addRecoveryShare(payload)
+  },
+  async addSeedPhrase({ state, dispatch, commit }, payload) {
+    const accounts = await thresholdKeyController.addSeedPhrase(payload)
+    const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
+    const thresholdKeys = accounts.map((x) => ({
+      ethAddress: generateAddressFromPrivateKey(x.privKey),
+      ...x,
+    }))
+    log.info('tkey 2', thresholdKeys)
+    await dispatch('initTorusKeyring', {
+      keys: thresholdKeys,
+      calledFromEmbed: false,
+      rehydrate: false,
+      postboxAddress: normalAccountAddress || state.postboxKey.ethAddress,
+    })
+    commit('setTkeyExists', true)
+    dispatch('updateSelectedAddress', { selectedAddress: thresholdKeys[0].ethAddress }) // synchronous
+  },
+  async addSeedPhraseAccount({ dispatch, state }, payload) {
+    const accounts = await thresholdKeyController.addSeedPhraseAccount(payload)
+    const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
+    const thresholdKeys = accounts.map((x) => ({
+      ethAddress: generateAddressFromPrivateKey(x.privKey),
+      ...x,
+    }))
+    log.info('tkey 2', thresholdKeys)
+    return dispatch('initTorusKeyring', {
+      keys: thresholdKeys,
+      calledFromEmbed: false,
+      rehydrate: false,
+      postboxAddress: normalAccountAddress || state.postboxKey.ethAddress,
+    })
   },
 }
