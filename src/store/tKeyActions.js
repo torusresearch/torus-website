@@ -6,7 +6,7 @@ import config from '../config'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import router from '../router'
 import torus from '../torus'
-import { ACCOUNT_TYPE, FEATURES_DEFAULT_POPUP_WINDOW, LINKED_VERIFIER_SUBIDENTIFIER } from '../utils/enums'
+import { ACCOUNT_TYPE, FEATURES_DEFAULT_POPUP_WINDOW, LINKED_VERIFIER_SUBIDENTIFIER, REQUEST_TKEY_SEED_PHRASE_INPUT } from '../utils/enums'
 import { generateAddressFromPrivateKey, isMain } from '../utils/utils'
 
 const { baseRoute } = config
@@ -85,16 +85,16 @@ export default {
     const { type, data } = payload
     // data is store of thresholdkeycontroller
     log.info(data, type)
-    if (isMain) router.push({ name: 'tKeyInput' })
+    if (isMain) router.push({ name: type === REQUEST_TKEY_SEED_PHRASE_INPUT ? 'tkeySeedPhrase' : 'tKeyInput' })
     else {
       const windowId = randomId()
       const handleDeny = (error) => {
         log.info('Tkey input denied', error)
-        dispatch('setTkeyInputFlow', { rejected: true })
+        dispatch(type === REQUEST_TKEY_SEED_PHRASE_INPUT ? 'setTkeySeedPhraseCreateFlow' : 'setTkeyInputFlow', { rejected: true })
       }
       const handleSuccess = (successData) => {
         log.info('tkey input success', successData)
-        dispatch('setTkeyInputFlow', { response: JSON.parse(successData) })
+        dispatch(type === REQUEST_TKEY_SEED_PHRASE_INPUT ? 'setTkeySeedPhraseCreateFlow' : 'setTkeyInputFlow', { response: JSON.parse(successData) })
       }
       try {
         const { loginConfig } = state.embedState
@@ -104,6 +104,7 @@ export default {
           whiteLabel: state.whiteLabel,
           data: JSON.stringify(data),
           postboxKey: state.postboxKey?.privateKey,
+          type,
         }
         const finalUrl = `${baseRoute}tkey/dapp-input?integrity=true&instanceId=${windowId}`
         const tKeyInputWindow = new PopupWithBcHandler({
@@ -124,22 +125,11 @@ export default {
       }
     }
   },
-  // setSecurityQuestionShareFromUserInput(_, payload) {
-  //   const { id, password, rejected } = payload
-  //   thresholdKeyController.setSecurityQuestionShareFromUserInput(id, { password, rejected })
-  // },
-  // setStoreDeviceFlow(_, payload) {
-  //   const { id, response, rejected } = payload
-  //   log.info('payload', payload)
-  //   // response is { isOld: Boolean, oldIndex: '' }
-  //   thresholdKeyController.setStoreDeviceFlow(id, { response, rejected })
-  // },
-  // setShareTransferInput(_, payload) {
-  //   const { id, success } = payload
-  //   thresholdKeyController.setShareTransferStatus(id, { success })
-  // },
   setTkeyInputFlow(_, payload) {
     thresholdKeyController.setTkeyInputFlow(payload)
+  },
+  setTkeySeedPhraseCreateFlow(_, payload) {
+    thresholdKeyController.setTkeySeedPhraseCreateFlow(payload)
   },
   clearTkeyError() {
     return thresholdKeyController.clearTkeyError()

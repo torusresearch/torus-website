@@ -36,6 +36,7 @@ class ThresholdKeyController extends EventEmitter {
     super()
     this.store = new ObservableStore({})
     this.requestTkeyInput = opts.requestTkeyInput
+    this.requestTkeySeedPhraseInput = opts.requestTkeySeedPhraseInput
     this.provider = opts.provider
   }
 
@@ -198,6 +199,28 @@ class ThresholdKeyController extends EventEmitter {
     const { response, rejected } = payload
     if (rejected) this.emit('input:finished', { status: 'rejected' })
     if (response) this.emit('input:finished', { status: 'approved', response })
+  }
+
+  async tkeySeedPhraseCreateFlow() {
+    return new Promise((resolve, reject) => {
+      this.requestTkeySeedPhraseInput(this.state.tKey)
+      this.once('seedphrasecreate:finished', (data) => {
+        switch (data.status) {
+          case 'approved':
+            return resolve(data.response)
+          case 'rejected':
+            return reject(ethErrors.provider.userRejectedRequest('Torus User Input: User denied input.'))
+          default:
+            return reject(new Error(`Torus User Input: Unknown problem: ${JSON.stringify(this.state.tKey)}`))
+        }
+      })
+    })
+  }
+
+  async setTkeySeedPhraseCreateFlow(payload) {
+    const { response, rejected } = payload
+    if (rejected) this.emit('seedphrasecreate:finished', { status: 'rejected' })
+    if (response) this.emit('seedphrasecreate:finished', { status: 'approved', response })
   }
 
   startShareTransferRequestListener() {
