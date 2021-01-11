@@ -125,6 +125,7 @@ class PreferencesController extends EventEmitter {
     commit,
   }) {
     let response = { token: jwtToken }
+    if (this.state(address)) return this.state(address).defaultPublicAddress || address
     if (!jwtToken) {
       const messageToSign = await this.getMessageForSigning(address)
       if (!messageToSign.startsWith('Torus Signin')) throw new Error('Cannot sign on invalid message')

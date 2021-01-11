@@ -269,7 +269,11 @@ export default {
     if (payload.ethAddress) {
       context.commit('setWallet', {
         ...context.state.wallet,
-        [payload.ethAddress]: { privateKey: payload.privKey, accountType: payload.accountType || ACCOUNT_TYPE.NORMAL },
+        [payload.ethAddress]: {
+          privateKey: payload.privKey,
+          accountType: payload.accountType || ACCOUNT_TYPE.NORMAL,
+          seedPhrase: payload.seedPhrase,
+        },
       })
     }
   },
@@ -518,12 +522,13 @@ export default {
       dispatch('subscribeToControllers')
       await dispatch('initTorusKeyring', {
         keys: walletKeys.map((x) => {
-          const { privateKey, accountType } = wallet[x]
+          const { privateKey, accountType, seedPhrase } = wallet[x]
           return {
             ethAddress: x,
             privKey: privateKey,
             accountType,
             jwtToken: jwtToken[x],
+            seedPhrase,
           }
         }),
         calledFromEmbed: false,

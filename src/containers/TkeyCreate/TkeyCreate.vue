@@ -38,7 +38,7 @@
       </v-container>
       <v-container v-else class="pt-6 pb-5">
         <div class="text-center display-1 mb-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">
-          {{ tab === 2 ? t('tkeyCreate.setUpWallet') : t('tkeyCreate.greatCreated') }}
+          {{ tab === 4 ? t('tkeyCreate.greatCreated') : tab === 3 ? t('tkeySettings.tkeyCreate.setUpSeedPhrase') : t('tkeyCreate.setUpWallet') }}
         </div>
       </v-container>
     </div>
@@ -63,6 +63,14 @@
               />
             </v-tab-item>
             <v-tab-item>
+              <SetupSeedPhrase
+                :is-required="true"
+                :adding-seed-phrase="addingSeedPhrase"
+                @cancelSeedPhrase="cancelSeedPhrase"
+                @addSeedPhrase="createSeedPhrase"
+              />
+            </v-tab-item>
+            <v-tab-item>
               <CreatedWallet
                 :wallets="computedWallets"
                 :default-public-address="selectedPublicAddress"
@@ -82,19 +90,21 @@ import { mapActions, mapState } from 'vuex'
 
 import HelpTooltip from '../../components/helpers/HelpTooltip'
 import CreatedWallet from '../../components/Tkey/CreatedWallet'
+import SetupSeedPhrase from '../../components/Tkey/SetupSeedPhrase'
 import SetupWallet from '../../components/Tkey/SetupWallet'
 import TkeyOnboardingSetup from '../../components/Tkey/TkeyOnboardingSetup'
 import TkeyOnboardingTry from '../../components/Tkey/TkeyOnboardingTry'
 import { ACCOUNT_TYPE } from '../../utils/enums'
-import { addressSlicer, getUserEmail } from '../../utils/utils'
+import { addressSlicer, getUserEmail, getUserIcon } from '../../utils/utils'
 
 export default {
   name: 'TkeyCreate',
-  components: { TkeyOnboardingSetup, TkeyOnboardingTry, SetupWallet, CreatedWallet, HelpTooltip },
+  components: { TkeyOnboardingSetup, TkeyOnboardingTry, SetupSeedPhrase, SetupWallet, CreatedWallet, HelpTooltip },
   data() {
     return {
       tab: 0,
       creatingTkey: false,
+      addingSeedPhrase: false,
     }
   },
   computed: {
@@ -104,6 +114,7 @@ export default {
       selectedAddress: 'selectedAddress',
       defaultPublicAddress: 'defaultPublicAddress',
       tKeyExists: 'tKeyExists',
+      isTkeySeedPhraseInputRequired: 'isTkeySeedPhraseInputRequired',
       loginConfig: (state) => state.embedState.loginConfig,
     }),
     userEmail() {
@@ -117,13 +128,14 @@ export default {
     computedWallets() {
       return Object.keys(this.wallets).reduce((acc, key) => {
         const { accountType } = this.wallets[key]
+
         if (accountType !== ACCOUNT_TYPE.IMPORTED)
           acc.push({
             key,
             keySliced: addressSlicer(key),
             accountType,
-            icon: accountType === ACCOUNT_TYPE.THRESHOLD ? 'wallet' : this.userInfo.typeOfLogin.toLowerCase(),
-            title: accountType === ACCOUNT_TYPE.THRESHOLD ? this.t('tkeyCreateDone.yourWallet') : this.userInfo.verifierId,
+            icon: getUserIcon(accountType, this.userInfo.typeOfLogin),
+            title: this.accountTitle(accountType),
           })
         return acc
       }, [])
@@ -140,7 +152,7 @@ export default {
     if (this.tKeyExists) this.redirectHome()
   },
   methods: {
-    ...mapActions(['setTKeyOnboardingStatus', 'setDefaultPublicAddress', 'createNewTKey']),
+    ...mapActions(['setTKeyOnboardingStatus', 'setDefaultPublicAddress', 'createNewTKey', 'addSeedPhrase', 'logOut']),
     redirectHome() {
       let redirectPath = this.$route.query.redirect
       if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
@@ -163,13 +175,28 @@ export default {
     async createTKey(payload) {
       try {
         this.creatingTkey = true
-        await this.createNewTKey(payload)
-        this.tab = 3
+        const allKeys = await this.createNewTKey(payload)
+        this.tab = allKeys.length === 0 ? 3 : 4
       } catch (error) {
         log.error(error)
       } finally {
         this.creatingTkey = false
       }
+    },
+    accountTitle(accountType) {
+      if (accountType === ACCOUNT_TYPE.THRESHOLD) return this.t('tkeyCreateDone.yourWallet')
+      if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) return this.t('tkeyCreateDone.yourSeedPhrase')
+      return this.userInfo.verifierId
+    },
+    cancelSeedPhrase() {
+      this.logOut()
+      this.$router.push({ path: '/logout' }).catch((_) => {})
+    },
+    async createSeedPhrase(seedPhrase) {
+      this.addingSeedPhrase = true
+      await this.addSeedPhrase(seedPhrase)
+      this.tab = 4
+      this.addingSeedPhrase = false
     },
   },
 }

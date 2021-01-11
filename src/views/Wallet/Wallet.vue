@@ -31,6 +31,11 @@
       @confirmShareTransfer="confirmShareTransfer"
       @denyShareTransfer="denyShareTransfer"
     />
+    <v-dialog v-model="isTkeySeedPhraseInputRequired" persistent width="400">
+      <v-card>
+        <CreateSeedPhraseForm />
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -41,6 +46,7 @@ import ConfirmForm from '../../components/Confirm/ConfirmForm'
 import Navbar from '../../components/helpers/Navbar'
 import TkeyConfirmLogin from '../../components/Tkey/TkeyConfirmLogin'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
+import CreateSeedPhraseForm from '../../containers/CreateSeedPhraseForm'
 // import BadgesAlert from '../../components/WalletHome/BadgesAlert'
 import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION } from '../../utils/enums'
 
@@ -50,6 +56,7 @@ export default {
     AccountMenu,
     ConfirmForm,
     TkeyConfirmLogin,
+    CreateSeedPhraseForm,
     // BadgesAlert,
   },
   data() {
@@ -70,6 +77,7 @@ export default {
       paymentTxStore: 'paymentTx',
       wallet: 'wallet',
       confirmModals: 'confirmModals',
+      isTkeySeedPhraseInputRequired: 'isTkeySeedPhraseInputRequired',
       shareTransferRequests: (state) => state.tKeyStore.shareTransferRequests,
       deviceShare: (state) => state.tKeyStore.settingsPageData && state.tKeyStore.settingsPageData.deviceShare,
     }),

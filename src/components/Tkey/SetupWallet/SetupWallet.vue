@@ -22,6 +22,7 @@
         multiple
         :class="[{ 'is-mobile': $vuetify.breakpoint.xsOnly, 'is-xs-mobile': $vuetify.breakpoint.width < 350 }]"
       >
+        <!-- Email Login -->
         <v-expansion-panel class="mb-4" disabled>
           <v-expansion-panel-header class="py-2">
             <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.{{ typeOfLogin.toLowerCase() }}</v-icon>
@@ -36,6 +37,7 @@
             </div>
           </v-expansion-panel-header>
         </v-expansion-panel>
+        <!-- Browser Backup -->
         <v-expansion-panel class="mb-4">
           <v-expansion-panel-header class="py-2">
             <v-icon class="d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.browser</v-icon>
@@ -53,7 +55,7 @@
               <span class="font-weight-bold">{{ t('tkeyCreateSetup.authViaBrowser3') }}</span>
             </div>
             <div class="d-flex align-center allow-device-trigger">
-              <v-icon class="backup-device-checkbox mr-2" :class="{ isDark: $vuetify.theme.dark }" @click="onBackupDeviceShare">
+              <v-icon class="wallet-checkbox clickable mr-2" :class="{ isDark: $vuetify.theme.dark }" @click="onBackupDeviceShare">
                 $vuetify.icon.checkbox{{ $vuetify.theme.dark ? '_dark' : '' }}_{{ backupDeviceShare ? 'checked' : 'unchecked' }}
               </v-icon>
               <v-icon v-if="!backupDeviceShare" size="16" class="mr-1 warning--text">$vuetify.icon.alert_circle_filled</v-icon>
@@ -61,6 +63,7 @@
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
+        <!-- Recovery Email -->
         <v-expansion-panel class="mb-4" disabled>
           <v-expansion-panel-header class="py-2">
             <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.mail</v-icon>
@@ -77,7 +80,7 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
-            <v-form v-model="validRecoveryEmailForm">
+            <v-form v-model="validRecoveryEmailForm" @submit.prevent="setRecoveryEmail">
               <div class="body-2 mb-4 text_2--text">
                 {{ t('tkeyBackup.recoveryEmailDesc1') }}
                 <span class="font-weight-bold">{{ t('tkeyBackup.recoveryEmailDesc2') }}</span>
@@ -89,16 +92,16 @@
                 type="email"
                 outlined
                 :placeholder="t('tkeyBackup.enterEmail')"
+                autocomplete="email"
                 :readonly="!!recoveryEmailFinal"
               />
               <div class="text-right">
                 <v-btn
                   v-if="!recoveryEmailFinal"
-                  type="button"
+                  type="submit"
                   :disabled="!validRecoveryEmailForm"
                   class="caption white--text font-weight-bold px-8"
                   color="torusBrand1"
-                  @click="setRecoveryEmail"
                 >
                   {{ t('tkeyNew.confirm') }}
                 </v-btn>
@@ -106,6 +109,7 @@
             </v-form>
           </v-expansion-panel-content>
         </v-expansion-panel>
+        <!-- Recovery Password -->
         <v-expansion-panel class="mb-4">
           <v-expansion-panel-header class="py-2">
             <v-icon
@@ -147,7 +151,7 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
-            <v-form v-model="validPasswordForm">
+            <v-form v-model="validPasswordForm" @submit.prevent="setFinalPassword">
               <v-text-field
                 v-model="recoveryPassword"
                 :readonly="!!finalRecoveryPassword"
@@ -179,7 +183,6 @@
                   :disabled="!validPasswordForm"
                   class="caption button_text--text font-weight-bold"
                   color="torusBrand1"
-                  @click="setFinalPassword"
                 >
                   {{ t('tkeyNew.setPassword') }}
                 </v-btn>
@@ -187,10 +190,44 @@
             </v-form>
           </v-expansion-panel-content>
         </v-expansion-panel>
+        <!-- Seed Phrase -->
+        <!-- <v-expansion-panel class="mb-4" disabled>
+          <v-expansion-panel-header class="py-2">
+            <v-icon class="mr-2 d-inline-flex mr-2 shrink text_2--text" size="24">$vuetify.icons.tkey_seed_phrase</v-icon>
+            <div class="grow text-capitalize font-weight-bold body-2" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
+              {{ t('tkeySettings.tkeySeedPhrase.title') }}
+            </div>
+            <div class="ml-auto justify-end d-flex align-center">
+              <v-icon small :class="useSeedPhrase ? 'success--text' : 'text_3--text'" class="ml-1" v-text="'$vuetify.icons.check_circle_filled'" />
+            </div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content class="pa-5">
+            <div class="body-2 mb-4 text_2--text">{{ t('tkeySettings.tkeySeedPhrase.description') }}</div>
+            <div class="d-flex align-center allow-device-trigger mb-2">
+              <v-icon
+                class="wallet-checkbox mr-2"
+                :class="{ isDark: $vuetify.theme.dark, clickable: !requireSeedPhraseWhileCreation }"
+                @click="onChangeUseSeedPhrase"
+              >
+                $vuetify.icon.checkbox{{ $vuetify.theme.dark ? '_dark' : '' }}_{{ useSeedPhrase ? 'checked' : 'unchecked' }}
+              </v-icon>
+              <div class="body-2 text_2--text">{{ t('tkeySettings.tkeySeedPhrase.use') }}</div>
+            </div>
+            <v-textarea
+              v-if="useSeedPhrase"
+              v-model="seedPhrase"
+              :placeholder="t('tkeySettings.tkeySeedPhrase.enterSeedPhrase')"
+              hide-details
+              class="font-weight-bold text_2--text"
+              outlined
+              rows="3"
+            />
+          </v-expansion-panel-content>
+        </v-expansion-panel> -->
       </v-expansion-panels>
       <div class="d-flex mt-1" :class="$vuetify.breakpoint.xsOnly ? 'align-start' : 'align-center'">
         <v-icon
-          class="backup-device-checkbox mr-4"
+          class="wallet-checkbox clickable mr-4"
           :class="[{ isDark: $vuetify.theme.dark }, $vuetify.breakpoint.xsOnly ? 'mt-1' : '']"
           @click="userUnderstands = !userUnderstands"
         >
@@ -230,9 +267,11 @@
 </template>
 
 <script>
+import { generateMnemonic } from 'bip39'
 import bowser from 'bowser'
 import log from 'loglevel'
 
+// import config from '../../../config'
 import { passwordValidation, requestQuota } from '../../../utils/utils'
 
 export default {
@@ -272,10 +311,13 @@ export default {
           /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
           this.t('walletSettings.invalidEmail'),
       },
-      panels: [1, 2, 3],
+      panels: [1, 2, 3, 4],
       progressValue: 200,
       backupDeviceShare: false,
       userUnderstands: false,
+      useSeedPhrase: false,
+      seedPhrase: '',
+      requireSeedPhraseWhileCreation: false,
     }
   },
   computed: {
@@ -305,6 +347,11 @@ export default {
       return this.progressValue / 4
     },
   },
+  mounted() {
+    // if (this.requireSeedPhraseWhileCreation) {
+    //   this.seedPhrase = generateMnemonic()
+    // }
+  },
   methods: {
     cancelOnboarding() {
       this.$emit('tKeyOnboardingCancel')
@@ -315,6 +362,8 @@ export default {
         password: this.finalRecoveryPassword,
         backup: this.backupDeviceShare,
         recoveryEmail: this.recoveryEmailFinal,
+        useSeedPhrase: this.useSeedPhrase,
+        seedPhrase: this.seedPhrase,
       })
     },
     setFinalPassword() {
@@ -333,6 +382,12 @@ export default {
     setRecoveryEmail() {
       this.recoveryEmailFinal = this.recoveryEmail
       this.progressValue += 100
+    },
+    onChangeUseSeedPhrase() {
+      if (!this.requireSeedPhraseWhileCreation) {
+        this.useSeedPhrase = !this.useSeedPhrase
+        this.seedPhrase = generateMnemonic()
+      }
     },
   },
 }

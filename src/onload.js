@@ -5,7 +5,7 @@ import Web3 from 'web3'
 
 import TorusController from './controllers/TorusController'
 import setupMultiplex from './controllers/utils/setupMultiplex'
-import { BSC_MAINNET, BSC_MAINNET_CODE, BSC_MAINNET_DISPLAY_NAME } from './utils/enums'
+import { BSC_MAINNET, BSC_MAINNET_CODE, BSC_MAINNET_DISPLAY_NAME, REQUEST_TKEY_SEED_PHRASE_INPUT, REQUREST_TKEY_INPUT } from './utils/enums'
 import { getIFrameOrigin, isMain, isPwa, storageAvailable } from './utils/utils'
 // import store from './store'
 let storeReference
@@ -58,7 +58,8 @@ function onloadTorus(torus) {
     unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
     showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
     openPopup: triggerUi.bind(window, 'bindopenPopup'),
-    requestTkeyInput: triggerThresholdUi.bind(window, 'requestTkeyInput'),
+    requestTkeyInput: triggerThresholdUi.bind(window, REQUREST_TKEY_INPUT),
+    requestTkeySeedPhraseInput: triggerThresholdUi.bind(window, REQUEST_TKEY_SEED_PHRASE_INPUT),
     storeProps: () => {
       const { state } = getStore()
       const { selectedAddress, wallet } = state || {}

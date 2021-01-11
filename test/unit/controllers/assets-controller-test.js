@@ -31,6 +31,7 @@ describe('AssetsController', () => {
     prefsController = new PreferencesController()
     sandbox.stub(prefsController, 'sync')
     sandbox.stub(prefsController, 'createUser')
+    sandbox.stub(prefsController, 'storeUserLogin')
     await prefsController.init({ address: testAccount.address, rehydrate: true, jwtToken: 'hello', dispatch: noop, commit: noop })
     prefsController.setSelectedAddress(testAccount.address)
     const networkControllerProviderConfig = {
