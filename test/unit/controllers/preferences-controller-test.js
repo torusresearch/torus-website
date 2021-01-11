@@ -24,6 +24,7 @@ describe('Preferences Controller', () => {
   let preferencesController
   let network
   let sandbox = sinon.createSandbox()
+  let storeUserLoginStub
 
   const networkControllerProviderConfig = {
     getAccounts: noop,
@@ -35,6 +36,7 @@ describe('Preferences Controller', () => {
     network = new NetworkController()
     network.initializeProvider(networkControllerProviderConfig)
     preferencesController = new PreferencesController({ signMessage: noop, network, provider: network.getProviderAndBlockTracker().provider })
+    storeUserLoginStub = sandbox.stub(preferencesController, 'storeUserLogin')
 
     nock(TORUS_API)
       .post('/auth/message', (body) => body.public_address === testAccount.address || body.public_address === testAccount2.address)
@@ -70,7 +72,6 @@ describe('Preferences Controller', () => {
   })
 
   it('fresh init correctly', async () => {
-    const storeUserLoginStub = sandbox.stub(preferencesController, 'storeUserLogin')
     const syncStub = sandbox.stub(preferencesController, 'sync')
     const defaultAddress = await preferencesController.init({ address: testAccount.address, dispatch: noop, commit: noop })
     const state = preferencesController.state(testAccount.address)
@@ -96,7 +97,6 @@ describe('Preferences Controller', () => {
   })
 
   it('fresh init twice correctly', async () => {
-    const storeUserLoginStub = sandbox.stub(preferencesController, 'storeUserLogin')
     const syncStub = sandbox.stub(preferencesController, 'sync')
     const defaultAddresses = await Promise.all([
       preferencesController.init({ address: testAccount.address, dispatch: noop, commit: noop }),
@@ -144,7 +144,6 @@ describe('Preferences Controller', () => {
 
   it('init with jwt should set jwt correctly', async () => {
     const getMessageForSigningStub = sandbox.stub(preferencesController, 'getMessageForSigning')
-    const storeUserLoginStub = sandbox.stub(preferencesController, 'storeUserLogin')
     const syncStub = sandbox.stub(preferencesController, 'sync')
     const defaultAddress = await preferencesController.init({
       address: testAccount.address,
@@ -499,6 +498,7 @@ describe('Preferences Controller', () => {
   it('should not poll user without selectedaddress', async () => {
     const clock = sandbox.useFakeTimers()
     const prefsController = new PreferencesController()
+    sandbox.stub(prefsController, 'storeUserLogin')
     const mockSync = sandbox.stub(prefsController, 'sync')
     clock.tick(180000)
     sandbox.assert.notCalled(mockSync)
@@ -510,6 +510,7 @@ describe('Preferences Controller', () => {
   it('should not poll user without jwt', async () => {
     const clock = sandbox.useFakeTimers()
     const prefsController = new PreferencesController()
+    sandbox.stub(prefsController, 'storeUserLogin')
     prefsController.setSelectedAddress(testAccount.address)
     const mockSync = sandbox.stub(prefsController, 'sync')
     clock.tick(180000)
@@ -522,6 +523,7 @@ describe('Preferences Controller', () => {
   it('should poll user with jwt & selected address', async () => {
     const clock = sandbox.useFakeTimers()
     const prefsController = new PreferencesController({ interval: 100 })
+    sandbox.stub(prefsController, 'storeUserLogin')
     await prefsController.init({ address: testAccount.address, jwtToken: 'hello', commit: noop, dispatch: noop })
     prefsController.setSelectedAddress(testAccount.address)
     const mockSync = sandbox.stub(prefsController, 'sync')
