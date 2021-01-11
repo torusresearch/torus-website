@@ -38,7 +38,7 @@
           </v-btn>
         </v-list-item-action>
       </v-list-item>
-      <v-list-item v-if="!hasThreshold" class="pl-0 pr-1">
+      <v-list-item v-if="!hasThreshold && !hasSeedPhraseAccount" class="pl-0 pr-1">
         <v-list-item-avatar class="ma-0">
           <v-icon size="16" class="torusGray1--text">$vuetify.icons.wallet</v-icon>
         </v-list-item-avatar>

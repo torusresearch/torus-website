@@ -122,7 +122,7 @@ export default {
       return this.tKeyExists
     },
     hasThresholdLogged() {
-      return Object.values(this.wallet).some((x) => x.accountType === ACCOUNT_TYPE.THRESHOLD)
+      return Object.values(this.wallet).some((x) => x.accountType === ACCOUNT_TYPE.THRESHOLD || x.accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
     },
   },
   mounted() {
