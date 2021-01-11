@@ -1,19 +1,27 @@
 <template>
   <div class="tkey-input-form">
-    <TkeyInputView
-      v-if="!userInputCompleted"
-      :security-questions="securityQuestions"
-      :incorrect-password="incorrectPassword"
-      :incorrect-share-mnemonic="incorrectShareMnemonic"
-      :required-shares="settingsData && settingsData.keyDetails && settingsData.keyDetails.requiredShares"
-      :all-device-shares="settingsData && settingsData.allDeviceShares"
-      :verifier-name="verifierName"
-      :share-mnemonic-arr="shareMnemonicArr"
-      @setPasswordInput="enterPassword"
-      @onShareMnemonicInput="inputShareMnemonic"
-      @skipLogin="setInput"
-    />
-    <TkeyDeviceDetected v-if="userInputCompleted" :all-device-shares="settingsData && settingsData.allDeviceShares" @storeDevice="storeDevice" />
+    <v-tabs-items v-model="tab" touchless>
+      <v-tab-item>
+        <TkeyInputView
+          :security-questions="securityQuestions"
+          :incorrect-password="incorrectPassword"
+          :incorrect-share-mnemonic="incorrectShareMnemonic"
+          :required-shares="settingsData && settingsData.keyDetails && settingsData.keyDetails.requiredShares"
+          :all-device-shares="settingsData && settingsData.allDeviceShares"
+          :verifier-name="verifierName"
+          :share-mnemonic-arr="shareMnemonicArr"
+          @setPasswordInput="enterPassword"
+          @onShareMnemonicInput="inputShareMnemonic"
+          @skipLogin="setInput"
+        />
+      </v-tab-item>
+      <v-tab-item>
+        <TkeyDeviceDetected :all-device-shares="settingsData && settingsData.allDeviceShares" @storeDevice="storeDevice" />
+      </v-tab-item>
+      <v-tab-item>
+        <TkeySeedPhrase :adding-seed-phrase="addingSeedPhrase" @addSeedPhrase="createSeedPhrase" />
+      </v-tab-item>
+    </v-tabs-items>
   </div>
 </template>
 
@@ -27,16 +35,18 @@ import torus from '../../../torus'
 import {
   ACCOUNT_TYPE,
   SECURITY_QUESTIONS_MODULE_KEY,
+  SEED_PHRASE_MODULE_KEY,
   SHARE_SERIALIZATION_MODULE_KEY,
   SHARE_TRANSFER_MODULE_KEY,
   WEB_STORAGE_MODULE_KEY,
 } from '../../../utils/enums'
 import TkeyDeviceDetected from '../TkeyDeviceDetected'
 import TkeyInputView from '../TkeyInputView'
+import TkeySeedPhrase from '../TkeySeedPhrase'
 
 export default {
   name: 'TkeyInputForm',
-  components: { TkeyInputView, TkeyDeviceDetected },
+  components: { TkeyInputView, TkeyDeviceDetected, TkeySeedPhrase },
   props: {
     tKeyJson: {
       type: Object,
@@ -67,6 +77,9 @@ export default {
       currentEncPubKeyX: '',
       incorrectShareMnemonic: false,
       shareMnemonicArr: [],
+      requireSeedPhraseInput: false,
+      addingSeedPhrase: false,
+      tab: 0,
     }
   },
   watch: {
@@ -235,17 +248,33 @@ export default {
           // don't use the first key
           allKeys = allKeys.filter((x) => x.accountType !== ACCOUNT_TYPE.THRESHOLD)
         }
+
+        if (this.tab === 0) this.tab = 1
+
         if (allKeys.length === 0) {
-          // wait for seed phrase input here
+          this.tab = 2
+          return
         }
         this.$emit('postSuccessMessage', this.t('tkeyNew.verifySuccess'))
-        this.userInputCompleted = true
         await this.cleanUpShareTransfer()
         // finish fn
 
         setTimeout(() => {
           this.$emit('clearSuccessMessage')
         }, 2000)
+      }
+    },
+    async createSeedPhrase(seedPhrase) {
+      this.addingSeedPhrase = true
+      try {
+        log.info('adding seed phrase', seedPhrase)
+        await this.tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree', seedPhrase || undefined)
+        await this.tryFinish()
+        await this.setInput({ response: this.tKey })
+        this.addingSeedPhrase = false
+        return
+      } catch (error) {
+        log.error(error)
       }
     },
   },

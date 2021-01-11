@@ -1,14 +1,14 @@
 <template>
   <div class="setup-seed-phrase" :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark }]">
     <div class="text-center mb-6">
-      <div class="headline mb-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'text_1--text'">
-        {{ t('tkeySettings.tkeySeedPhrase.add.required.title') }}
+      <div class="mb-2" :class="[$vuetify.theme.dark ? 'torusFont2--text' : 'text_1--text', isRequired ? 'display-1' : 'headline']">
+        {{ isRequired ? t('tkeySettings.tkeySeedPhrase.add.required.title') : t('tkeySettings.tkeySeedPhrase.add.title') }}
       </div>
       <div class="body-2 text_2--text mb-4">
-        {{ t('tkeySettings.tkeySeedPhrase.add.required.description1') }}
+        {{ isRequired ? t('tkeySettings.tkeySeedPhrase.add.required.description1') : t('tkeySettings.tkeySeedPhrase.add.description1') }}
       </div>
       <div class="body-2 text_2--text">
-        {{ t('tkeySettings.tkeySeedPhrase.add.required.description2') }}
+        {{ isRequired ? t('tkeySettings.tkeySeedPhrase.add.required.description2') : t('tkeySettings.tkeySeedPhrase.add.description2') }}
       </div>
     </div>
     <div>
@@ -87,6 +87,7 @@
     <v-layout class="mx-n2 mt-9 mb-12">
       <v-flex class="xs6 px-2">
         <v-btn
+          v-if="!isRequired"
           block
           :x-large="!$vuetify.breakpoint.xsOnly"
           class="body-2 font-weight-bold"
@@ -125,6 +126,10 @@ export default {
   components: { HelpTooltip, ShowToolTip },
   props: {
     addingSeedPhrase: {
+      type: Boolean,
+      default: false,
+    },
+    isRequired: {
       type: Boolean,
       default: false,
     },

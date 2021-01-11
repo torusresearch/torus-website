@@ -63,7 +63,12 @@
               />
             </v-tab-item>
             <v-tab-item>
-              <SetupSeedPhrase :adding-seed-phrase="addingSeedPhrase" @cancelSeedPhrase="cancelSeedPhrase" @addSeedPhrase="createSeedPhrase" />
+              <SetupSeedPhrase
+                :is-required="true"
+                :adding-seed-phrase="addingSeedPhrase"
+                @cancelSeedPhrase="cancelSeedPhrase"
+                @addSeedPhrase="createSeedPhrase"
+              />
             </v-tab-item>
             <v-tab-item>
               <CreatedWallet
