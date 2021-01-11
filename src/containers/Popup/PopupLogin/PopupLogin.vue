@@ -146,7 +146,7 @@
             </v-btn>
           </div>
           <div
-            v-if="!canHideDisclaimer1 && !viewMoreOptions"
+            v-if="!canHideDisclaimer1 && !viewMoreOptions && thirdPartyAuthenticators.length > 0"
             class="text_3--text px-6 footer-notes"
             :class="$vuetify.breakpoint.xsOnly ? 'pb-13' : 'mb-4'"
           >

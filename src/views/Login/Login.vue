@@ -94,17 +94,19 @@
                     <div class="text_3--text mb-4">
                       <div class="text_2--text mb-2 font-weight-bold">{{ t('login.note') }}:</div>
                       <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
-                      <span>{{ t('dappLogin.termsAuth01') }}</span>
-                      <br />
-                      <span>{{ thirdPartyAuthenticators }}.</span>
-                      <a
-                        class="privacy-learn-more text_3--text"
-                        href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
-                        {{ t('dappLogin.termsLearnMore') }}
-                      </a>
+                      <div v-if="thirdPartyAuthenticators.length > 0">
+                        <span>{{ t('dappLogin.termsAuth01') }}</span>
+                        <br />
+                        <span>{{ thirdPartyAuthenticators }}.</span>
+                        <a
+                          class="privacy-learn-more text_3--text"
+                          href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          {{ t('dappLogin.termsLearnMore') }}
+                        </a>
+                      </div>
                     </div>
                     <v-divider class="mb-2"></v-divider>
                     <div class="d-flex justify-center footer-links">
@@ -256,17 +258,19 @@
                   <div class="text_3--text mb-6">
                     <div class="text_2--text mb-2 font-weight-bold">{{ t('login.note') }}:</div>
                     <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
-                    <span>{{ t('dappLogin.termsAuth01') }}</span>
-                    <br />
-                    <span>{{ thirdPartyAuthenticators }}.</span>
-                    <a
-                      class="privacy-learn-more text_3--text"
-                      href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      {{ t('dappLogin.termsLearnMore') }}
-                    </a>
+                    <div v-if="thirdPartyAuthenticators.length > 0">
+                      <span>{{ t('dappLogin.termsAuth01') }}</span>
+                      <br />
+                      <span>{{ thirdPartyAuthenticators }}.</span>
+                      <a
+                        class="privacy-learn-more text_3--text"
+                        href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        {{ t('dappLogin.termsLearnMore') }}
+                      </a>
+                    </div>
                   </div>
                   <v-divider class="mb-2"></v-divider>
                   <div class="d-flex footer-links">
