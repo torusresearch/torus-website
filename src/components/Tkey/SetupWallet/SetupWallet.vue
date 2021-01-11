@@ -80,7 +80,7 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
-            <v-form v-model="validRecoveryEmailForm">
+            <v-form v-model="validRecoveryEmailForm" @submit.prevent="setRecoveryEmail">
               <div class="body-2 mb-4 text_2--text">
                 {{ t('tkeyBackup.recoveryEmailDesc1') }}
                 <span class="font-weight-bold">{{ t('tkeyBackup.recoveryEmailDesc2') }}</span>
@@ -92,16 +92,16 @@
                 type="email"
                 outlined
                 :placeholder="t('tkeyBackup.enterEmail')"
+                autocomplete="email"
                 :readonly="!!recoveryEmailFinal"
               />
               <div class="text-right">
                 <v-btn
                   v-if="!recoveryEmailFinal"
-                  type="button"
+                  type="submit"
                   :disabled="!validRecoveryEmailForm"
                   class="caption white--text font-weight-bold px-8"
                   color="torusBrand1"
-                  @click="setRecoveryEmail"
                 >
                   {{ t('tkeyNew.confirm') }}
                 </v-btn>
@@ -151,7 +151,7 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="pa-5">
-            <v-form v-model="validPasswordForm">
+            <v-form v-model="validPasswordForm" @submit.prevent="setFinalPassword">
               <v-text-field
                 v-model="recoveryPassword"
                 :readonly="!!finalRecoveryPassword"
@@ -183,7 +183,6 @@
                   :disabled="!validPasswordForm"
                   class="caption white--text font-weight-bold"
                   color="torusBrand1"
-                  @click="setFinalPassword"
                 >
                   {{ t('tkeyNew.setPassword') }}
                 </v-btn>

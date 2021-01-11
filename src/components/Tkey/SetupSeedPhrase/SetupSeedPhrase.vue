@@ -20,6 +20,9 @@
           class="custom-seed-phrase text_3--text mb-4"
           outlined
           rows="10"
+          autocomplete="off"
+          spellcheck="false"
+          data-gramm_editor="false"
         />
         <div class="text-right mb-4">
           <v-btn text large class="text_2--text mr-2" @click="cancelCustomSeedPhrase">
