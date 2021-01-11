@@ -164,8 +164,8 @@ export default {
     async createTKey(payload) {
       try {
         this.creatingTkey = true
-        await this.createNewTKey(payload)
-        this.tab = 3
+        const allKeys = await this.createNewTKey(payload)
+        this.tab = allKeys.length === 0 ? 3 : 4
       } catch (error) {
         log.error(error)
       } finally {
