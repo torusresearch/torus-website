@@ -272,7 +272,7 @@ import { generateMnemonic } from 'bip39'
 import bowser from 'bowser'
 import log from 'loglevel'
 
-import config from '../../../config'
+// import config from '../../../config'
 import { passwordValidation, requestQuota } from '../../../utils/utils'
 
 export default {
@@ -316,9 +316,9 @@ export default {
       progressValue: 200,
       backupDeviceShare: false,
       userUnderstands: false,
-      useSeedPhrase: config.requireSeedPhraseWhileCreation,
+      useSeedPhrase: false,
       seedPhrase: '',
-      requireSeedPhraseWhileCreation: config.requireSeedPhraseWhileCreation,
+      requireSeedPhraseWhileCreation: false,
     }
   },
   computed: {
@@ -349,9 +349,9 @@ export default {
     },
   },
   mounted() {
-    if (this.requireSeedPhraseWhileCreation) {
-      this.seedPhrase = generateMnemonic()
-    }
+    // if (this.requireSeedPhraseWhileCreation) {
+    //   this.seedPhrase = generateMnemonic()
+    // }
   },
   methods: {
     cancelOnboarding() {

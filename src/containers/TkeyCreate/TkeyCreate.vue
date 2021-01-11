@@ -63,6 +63,9 @@
               />
             </v-tab-item>
             <v-tab-item>
+              <SetupSeedPhrase :seed-phrase="seedPhrase" @cancelSeedPhrase="cancelSeedPhrase" @next="tab = 4" />
+            </v-tab-item>
+            <v-tab-item>
               <CreatedWallet
                 :wallets="computedWallets"
                 :default-public-address="selectedPublicAddress"
@@ -82,6 +85,7 @@ import { mapActions, mapState } from 'vuex'
 
 import HelpTooltip from '../../components/helpers/HelpTooltip'
 import CreatedWallet from '../../components/Tkey/CreatedWallet'
+import SetupSeedPhrase from '../../components/Tkey/SetupSeedPhrase'
 import SetupWallet from '../../components/Tkey/SetupWallet'
 import TkeyOnboardingSetup from '../../components/Tkey/TkeyOnboardingSetup'
 import TkeyOnboardingTry from '../../components/Tkey/TkeyOnboardingTry'
@@ -90,11 +94,12 @@ import { addressSlicer, getUserEmail, getUserIcon } from '../../utils/utils'
 
 export default {
   name: 'TkeyCreate',
-  components: { TkeyOnboardingSetup, TkeyOnboardingTry, SetupWallet, CreatedWallet, HelpTooltip },
+  components: { TkeyOnboardingSetup, TkeyOnboardingTry, SetupSeedPhrase, SetupWallet, CreatedWallet, HelpTooltip },
   data() {
     return {
       tab: 0,
       creatingTkey: false,
+      seedPhrase: '',
     }
   },
   computed: {
@@ -104,6 +109,7 @@ export default {
       selectedAddress: 'selectedAddress',
       defaultPublicAddress: 'defaultPublicAddress',
       tKeyExists: 'tKeyExists',
+      isTkeySeedPhraseInputRequired: 'isTkeySeedPhraseInputRequired',
       loginConfig: (state) => state.embedState.loginConfig,
     }),
     userEmail() {
@@ -165,7 +171,9 @@ export default {
       try {
         this.creatingTkey = true
         await this.createNewTKey(payload)
-        this.tab = 3
+        // eslint-disable-next-line no-console
+        console.log('🚀 ~ createTKey ~ isTkeySeedPhraseInputRequired', this.isTkeySeedPhraseInputRequired)
+        this.tab = this.isTkeySeedPhraseInputRequired ? 3 : 4
       } catch (error) {
         log.error(error)
       } finally {
@@ -176,6 +184,10 @@ export default {
       if (accountType === ACCOUNT_TYPE.THRESHOLD) return this.t('tkeyCreateDone.yourWallet')
       if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) return this.t('tkeyCreateDone.yourSeedPhrase')
       return this.userInfo.verifierId
+    },
+    cancelSeedPhrase() {
+      // eslint-disable-next-line no-console
+      console.log('🚀 ~ cancelSeedPhrase ~ cancelSeedPhrase')
     },
   },
 }
