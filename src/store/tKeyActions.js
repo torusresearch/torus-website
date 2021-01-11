@@ -54,6 +54,9 @@ export default {
       // don't use the first key
       allKeys = allKeys.filter((x) => x.accountType !== ACCOUNT_TYPE.THRESHOLD)
     }
+    if (allKeys.length === 0) {
+      return allKeys
+    }
     const thresholdKeys = allKeys.map((x) => ({
       ethAddress: generateAddressFromPrivateKey(x.privKey),
       ...x,
@@ -67,6 +70,7 @@ export default {
     })
     commit('setTkeyExists', true)
     dispatch('updateSelectedAddress', { selectedAddress: thresholdKeys[0].ethAddress }) // synchronous
+    return allKeys
   },
   addPassword(_, payload) {
     return thresholdKeyController.addPassword(payload)

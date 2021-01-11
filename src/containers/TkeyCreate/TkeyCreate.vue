@@ -170,10 +170,8 @@ export default {
     async createTKey(payload) {
       try {
         this.creatingTkey = true
-        await this.createNewTKey(payload)
-        // eslint-disable-next-line no-console
-        console.log('🚀 ~ createTKey ~ isTkeySeedPhraseInputRequired', this.isTkeySeedPhraseInputRequired)
-        this.tab = this.isTkeySeedPhraseInputRequired ? 3 : 4
+        const allKeys = await this.createNewTKey(payload)
+        this.tab = allKeys.length === 0 ? 3 : 4
       } catch (error) {
         log.error(error)
       } finally {
