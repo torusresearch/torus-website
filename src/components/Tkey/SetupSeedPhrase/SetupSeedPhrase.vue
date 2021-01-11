@@ -60,7 +60,7 @@
           <ShowToolTip :is-btn="true" :address="seedPhrase">
             <v-icon size="12" class="torusFont2--text" v-text="'$vuetify.icons.copy'" />
           </ShowToolTip>
-          <v-btn class="circle-btn ml-2" icon small aria-label="Download Seed Phrase" title="Download Seed Phrase">
+          <v-btn class="circle-btn ml-2" icon small aria-label="Download Seed Phrase" title="Download Seed Phrase" @click="downloadSeedPhrase">
             <v-icon class="torusFont2--text" size="16">$vuetify.icons.download</v-icon>
           </v-btn>
         </div>
@@ -114,6 +114,7 @@
 <script>
 import { generateMnemonic } from 'bip39'
 
+import { downloadItem } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 import ShowToolTip from '../../helpers/ShowToolTip'
 
@@ -162,6 +163,9 @@ export default {
     confirmCustomSeedPhrase() {
       this.seedPhrase = this.newSeedPhrase
       this.isCustomSeedPhrase = false
+    },
+    downloadSeedPhrase() {
+      downloadItem('seed-phrase.txt', this.seedPhrase)
     },
   },
 }

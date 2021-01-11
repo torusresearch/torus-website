@@ -80,7 +80,7 @@
           <ShowToolTip :is-btn="true" :address="seedPhrase">
             <v-icon size="12" class="torusFont2--text" v-text="'$vuetify.icons.copy'" />
           </ShowToolTip>
-          <v-btn class="circle-btn ml-2" icon small aria-label="Download Seed Phrase" title="Download Seed Phrase">
+          <v-btn class="circle-btn ml-2" icon small aria-label="Download Seed Phrase" title="Download Seed Phrase" @click="downloadSeedPhrase">
             <v-icon class="torusFont2--text" size="16">$vuetify.icons.download</v-icon>
           </v-btn>
         </div>
@@ -135,6 +135,7 @@ import { mapActions, mapMutations } from 'vuex'
 import HelpTooltip from '../../components/helpers/HelpTooltip'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import config from '../../config'
+import { downloadItem } from '../../utils/utils'
 
 export default {
   components: { HelpTooltip, ShowToolTip },
@@ -182,6 +183,9 @@ export default {
     confirmCustomSeedPhrase() {
       this.seedPhrase = this.newSeedPhrase
       this.isCustomSeedPhrase = false
+    },
+    downloadSeedPhrase() {
+      downloadItem('seed-phrase.txt', this.seedPhrase)
     },
   },
 }
