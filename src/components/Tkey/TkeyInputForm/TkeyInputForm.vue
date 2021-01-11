@@ -20,10 +20,12 @@
 <script>
 import log from 'loglevel'
 
+import config from '../../../config'
 import createTKeyInstance from '../../../handlers/Tkey/TkeyFactory'
-import { calculateSettingsPageData } from '../../../handlers/Tkey/TkeyUtils'
+import { calculateSettingsPageData, getAllPrivateKeys } from '../../../handlers/Tkey/TkeyUtils'
 import torus from '../../../torus'
 import {
+  ACCOUNT_TYPE,
   SECURITY_QUESTIONS_MODULE_KEY,
   SHARE_SERIALIZATION_MODULE_KEY,
   SHARE_TRANSFER_MODULE_KEY,
@@ -106,6 +108,8 @@ export default {
           // start share transfer listener
           this.listenForShareTransfer()
         }
+      } else {
+        await this.tryFinish()
       }
     },
     async inputShareMnemonic(shareMnemonic) {
@@ -225,8 +229,16 @@ export default {
       log.info(this.tKey, this.settingsData)
 
       if (requiredShares === 0) {
+        const { privKey } = await this.tKey.reconstructKey()
+        let allKeys = await getAllPrivateKeys(this.tKey, privKey)
+        if (config.onlySeedPhraseAccounts && allKeys.length > 0) {
+          // don't use the first key
+          allKeys = allKeys.filter((x) => x.accountType !== ACCOUNT_TYPE.THRESHOLD)
+        }
+        if (allKeys.length === 0) {
+          // wait for seed phrase input here
+        }
         this.$emit('postSuccessMessage', this.t('tkeyNew.verifySuccess'))
-        await this.tKey.reconstructKey()
         this.userInputCompleted = true
         await this.cleanUpShareTransfer()
         // finish fn

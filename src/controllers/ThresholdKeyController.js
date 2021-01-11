@@ -7,9 +7,8 @@ import EventEmitter from 'safe-event-emitter'
 
 import config from '../config'
 import createTKeyInstance from '../handlers/Tkey/TkeyFactory'
-import { calculateSettingsPageData, getPendingShareTransferRequests } from '../handlers/Tkey/TkeyUtils'
+import { calculateSettingsPageData, getAllPrivateKeys, getPendingShareTransferRequests } from '../handlers/Tkey/TkeyUtils'
 import {
-  ACCOUNT_TYPE,
   CHROME_EXTENSION_STORAGE_MODULE_KEY,
   ERROR_TIME,
   PASSWORD_QUESTION,
@@ -108,34 +107,12 @@ class ThresholdKeyController extends EventEmitter {
         await this.setSettingsPageData()
         this.startShareTransferRequestListener()
 
-        const hexKeys = await this.getAllPrivateKeys(newTKey, privKey)
+        const hexKeys = await getAllPrivateKeys(newTKey, privKey)
         return hexKeys
       }
     } finally {
       window.removeEventListener('beforeunload', beforeUnloadHandler)
     }
-  }
-
-  async getAllPrivateKeys(newTKey, privKey) {
-    const seedPhraseStores = await newTKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrasesWithAccounts()
-    const hexKeys = []
-    if (privKey) hexKeys.push({ privKey: privKey.toString('hex', 64), accountType: ACCOUNT_TYPE.THRESHOLD })
-    hexKeys.push(
-      ...seedPhraseStores.reduce((acc, x) => {
-        const { keys, seedPhrase } = x
-        acc.push(
-          ...keys.map((y) => ({
-            privKey: y.toString('hex', 64),
-            accountType: ACCOUNT_TYPE.TKEY_SEED_PHRASE,
-            seedPhrase,
-          }))
-        )
-        return acc
-      }, [])
-    )
-
-    log.info(hexKeys, 'privKeys')
-    return hexKeys
   }
 
   handleError(error) {
@@ -177,6 +154,19 @@ class ThresholdKeyController extends EventEmitter {
     const newShare = await tKey.generateNewShare()
     await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShare(newShare.newShareStores[newShare.newShareIndex.toString('hex')])
     await this.setSettingsPageData()
+  }
+
+  async getSeedPhraseFromInput(postboxKey) {
+    // Need input from UI
+    const tkeyJsonReturned = await this.tkeySeedPhraseCreateFlow()
+    await this._rehydrate(postboxKey, tkeyJsonReturned)
+
+    const { tKey: newTKey } = this.state
+    const { privKey } = await newTKey.reconstructKey()
+    await this.setSettingsPageData()
+
+    const hexKeys = await getAllPrivateKeys(newTKey, privKey)
+    return hexKeys
   }
 
   async tkeyInputFlow() {
@@ -303,7 +293,7 @@ class ThresholdKeyController extends EventEmitter {
 
     await this.setSettingsPageData()
     this.startShareTransferRequestListener()
-    const hexKeys = await this.getAllPrivateKeys(tKey, privKey)
+    const hexKeys = await getAllPrivateKeys(tKey, privKey)
     return hexKeys
   }
 
@@ -316,7 +306,7 @@ class ThresholdKeyController extends EventEmitter {
       // seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
       // log.info(seedPhrases, 'stored seed phrases')
       if (reCalculate) await this.setSettingsPageData()
-      const hexKeys = await this.getAllPrivateKeys(tKey)
+      const hexKeys = await getAllPrivateKeys(tKey)
       return hexKeys
     } catch (error) {
       log.error(error)
@@ -325,14 +315,13 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async addSeedPhraseAccount(seedPhrase) {
-    // eslint-disable-next-line no-console
-    console.log('🚀 ~ ThresholdKeyController ~ addSeedPhraseAccount ~ seedPhrase', seedPhrase)
+    log.info('🚀 ~ ThresholdKeyController ~ addSeedPhraseAccount ~ seedPhrase', seedPhrase)
     const { tKey } = this.state
     const seedPhraseStores = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrasesWithAccounts()
     const requiredSeedPhraseStore = seedPhraseStores.find((x) => x.seedPhrase === seedPhrase)
     requiredSeedPhraseStore.numberOfWallets += 1
     await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhraseStoreItem(requiredSeedPhraseStore)
-    return this.getAllPrivateKeys(tKey)
+    return getAllPrivateKeys(tKey)
   }
 
   async addRecoveryShare(recoveryEmail, reCalculate = true) {

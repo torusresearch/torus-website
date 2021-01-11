@@ -15,7 +15,7 @@ const { torusController } = torus || {}
 const { thresholdKeyController } = torusController || {}
 
 export default {
-  async addTKey({ dispatch, state, commit }, { calledFromEmbed }) {
+  async addTKey({ dispatch, state }, { calledFromEmbed }) {
     try {
       const finalKey = state.postboxKey
       const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
@@ -25,9 +25,7 @@ export default {
         allKeys = allKeys.filter((x) => x.accountType !== ACCOUNT_TYPE.THRESHOLD)
       }
       if (allKeys.length === 0) {
-        commit('setIsTkeySeedPhraseInputRequired', true)
-        log.error('No usable keys found')
-        throw new Error('User has no account')
+        allKeys = await thresholdKeyController.getSeedPhraseFromInput(finalKey.privateKey)
       }
       const thresholdKeys = allKeys.map((x) => ({
         ethAddress: generateAddressFromPrivateKey(x.privKey),
