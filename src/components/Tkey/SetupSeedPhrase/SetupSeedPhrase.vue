@@ -1,5 +1,5 @@
 <template>
-  <div class="setup-wallet-container" :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark }]">
+  <div class="setup-seed-phrase" :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark }]">
     <div class="text-center mb-6">
       <div class="headline mb-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'text_1--text'">
         {{ t('tkeySettings.tkeySeedPhrase.add.required.title') }}
@@ -11,7 +11,76 @@
         {{ t('tkeySettings.tkeySeedPhrase.add.required.description2') }}
       </div>
     </div>
-    <div>SeedPhrase</div>
+    <div>
+      <v-flex v-if="isCustomSeedPhrase" xs12 class="text-center">
+        <v-textarea
+          v-model="newSeedPhrase"
+          :placeholder="t('tkeySettings.tkeySeedPhrase.enterSeedPhrase')"
+          hide-details
+          class="custom-seed-phrase text_3--text mb-4"
+          outlined
+          rows="10"
+        />
+        <div class="text-right mb-4">
+          <v-btn text large class="text_2--text mr-2" @click="cancelCustomSeedPhrase">
+            {{ t('walletSettings.cancel') }}
+          </v-btn>
+          <v-btn
+            class="px-8 white--text"
+            :disabled="!newSeedPhrase"
+            large
+            depressed
+            color="torusBrand1"
+            type="button"
+            @click="confirmCustomSeedPhrase"
+          >
+            {{ t('walletSettings.confirm') }}
+          </v-btn>
+        </div>
+        <div class="d-flex align-start mb-8">
+          <v-icon size="14" class="mr-2 warning--text" :style="{ marginTop: '2px' }">$vuetify.icons.alert_circle_filled</v-icon>
+          <div class="caption text_2--text text-left">
+            {{ t('tkeySettings.tkeySeedPhrase.add.note2') }}
+          </div>
+        </div>
+      </v-flex>
+      <v-flex v-else xs12 class="text-center mb-2">
+        <div class="seed-phrase-container">
+          <div v-show="!showSeedPhrase" class="seed-phrase-container_overlay"></div>
+          <ul>
+            <li v-for="(phrase, index) in seedPhraseArray" :key="index" class="body-2">
+              <span class="text_3--text mr-2">{{ padZero(index + 1) }}.</span>
+              <span class="text_2--text font-weight-bold">{{ phrase }}</span>
+            </li>
+          </ul>
+        </div>
+      </v-flex>
+      <v-flex v-if="!isCustomSeedPhrase" xs12 class="d-flex mb-10">
+        <div>
+          <ShowToolTip :is-btn="true" :address="seedPhrase">
+            <v-icon size="12" class="torusFont2--text" v-text="'$vuetify.icons.copy'" />
+          </ShowToolTip>
+          <v-btn class="circle-btn ml-2" icon small aria-label="Download Seed Phrase" title="Download Seed Phrase">
+            <v-icon class="torusFont2--text" size="16">$vuetify.icons.download</v-icon>
+          </v-btn>
+        </div>
+        <div class="ml-auto d-flex align-center">
+          <v-btn text small color="torusBrand1" class="caption px-1" @click="showCustomSeedPhrase">
+            {{ t('tkeySettings.tkeySeedPhrase.add.useYourOwn') }}
+          </v-btn>
+          <HelpTooltip>
+            <template #description>
+              <div class="d-flex align-start">
+                <v-icon size="14" class="mr-2 text_3--text" :style="{ marginTop: '4px' }">$vuetify.icons.question_filled</v-icon>
+                <div class="body-2 text_3--text text-justify">
+                  {{ t('tkeySettings.tkeySeedPhrase.add.note') }}
+                </div>
+              </div>
+            </template>
+          </HelpTooltip>
+        </div>
+      </v-flex>
+    </div>
     <v-layout class="mx-n2 mt-9 mb-12">
       <v-flex class="xs6 px-2">
         <v-btn
@@ -31,7 +100,8 @@
           :x-large="!$vuetify.breakpoint.xsOnly"
           color="torusBrand1"
           class="white--text body-2 font-weight-bold"
-          :loading="settingUpSeedPhrase"
+          :disabled="addingSeedPhrase || isCustomSeedPhrase"
+          :loading="addingSeedPhrase"
           @click="createSeedPhrase"
         >
           {{ t('tkeyNew.confirm') }}
@@ -42,20 +112,56 @@
 </template>
 
 <script>
+import { generateMnemonic } from 'bip39'
+
+import HelpTooltip from '../../helpers/HelpTooltip'
+import ShowToolTip from '../../helpers/ShowToolTip'
+
 export default {
+  components: { HelpTooltip, ShowToolTip },
+  props: {
+    addingSeedPhrase: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
-      settingUpSeedPhrase: false,
+      showSeedPhrase: true,
+      isCustomSeedPhrase: false,
+      seedPhrase: '',
+      newSeedPhrase: '',
     }
+  },
+  computed: {
+    seedPhraseArray() {
+      return this.seedPhrase.split(' ')
+    },
+  },
+  mounted() {
+    this.seedPhrase = generateMnemonic()
   },
   methods: {
     createSeedPhrase() {
-      this.settingUpSeedPhrase = true
-      // eslint-disable-next-line no-console
-      console.log('🚀 ~ createSeedPhrase ~ createSeedPhrase')
+      this.$emit('addSeedPhrase', this.seedPhrase)
     },
     cancelSeedPhrase() {
       this.$emit('cancelSeedPhrase')
+    },
+    padZero(seedIndex) {
+      return seedIndex.toString().padStart(2, 0)
+    },
+    showCustomSeedPhrase() {
+      this.newSeedPhrase = this.seedPhrase
+      this.isCustomSeedPhrase = true
+    },
+    cancelCustomSeedPhrase() {
+      this.newSeedPhrase = ''
+      this.isCustomSeedPhrase = false
+    },
+    confirmCustomSeedPhrase() {
+      this.seedPhrase = this.newSeedPhrase
+      this.isCustomSeedPhrase = false
     },
   },
 }

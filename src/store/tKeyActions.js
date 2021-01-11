@@ -50,7 +50,7 @@ export default {
     const { postboxKey } = state
     const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
     let allKeys = await thresholdKeyController.createNewTKey({ postboxKey: postboxKey.privateKey, ...payload })
-    if (config.onlySeedPhraseAccounts && allKeys.length > 1) {
+    if (config.onlySeedPhraseAccounts && allKeys.length > 0) {
       // don't use the first key
       allKeys = allKeys.filter((x) => x.accountType !== ACCOUNT_TYPE.THRESHOLD)
     }

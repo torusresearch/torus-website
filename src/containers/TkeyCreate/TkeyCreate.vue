@@ -38,7 +38,7 @@
       </v-container>
       <v-container v-else class="pt-6 pb-5">
         <div class="text-center display-1 mb-2" :class="$vuetify.theme.dark ? 'torusFont2--text' : 'torusFont1--text'">
-          {{ tab === 2 ? t('tkeyCreate.setUpWallet') : t('tkeyCreate.greatCreated') }}
+          {{ tab === 4 ? t('tkeyCreate.greatCreated') : tab === 3 ? t('tkeySettings.tkeyCreate.setUpSeedPhrase') : t('tkeyCreate.setUpWallet') }}
         </div>
       </v-container>
     </div>
@@ -63,7 +63,7 @@
               />
             </v-tab-item>
             <v-tab-item>
-              <SetupSeedPhrase :seed-phrase="seedPhrase" @cancelSeedPhrase="cancelSeedPhrase" @next="tab = 4" />
+              <SetupSeedPhrase :adding-seed-phrase="addingSeedPhrase" @cancelSeedPhrase="cancelSeedPhrase" @addSeedPhrase="createSeedPhrase" />
             </v-tab-item>
             <v-tab-item>
               <CreatedWallet
@@ -99,7 +99,7 @@ export default {
     return {
       tab: 0,
       creatingTkey: false,
-      seedPhrase: '',
+      addingSeedPhrase: false,
     }
   },
   computed: {
@@ -147,7 +147,7 @@ export default {
     if (this.tKeyExists) this.redirectHome()
   },
   methods: {
-    ...mapActions(['setTKeyOnboardingStatus', 'setDefaultPublicAddress', 'createNewTKey']),
+    ...mapActions(['setTKeyOnboardingStatus', 'setDefaultPublicAddress', 'createNewTKey', 'addSeedPhrase', 'logOut']),
     redirectHome() {
       let redirectPath = this.$route.query.redirect
       if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
@@ -184,8 +184,14 @@ export default {
       return this.userInfo.verifierId
     },
     cancelSeedPhrase() {
-      // eslint-disable-next-line no-console
-      console.log('🚀 ~ cancelSeedPhrase ~ cancelSeedPhrase')
+      this.logOut()
+      this.$router.push({ path: '/logout' }).catch((_) => {})
+    },
+    async createSeedPhrase(seedPhrase) {
+      this.addingSeedPhrase = true
+      await this.addSeedPhrase(seedPhrase)
+      this.tab = 4
+      this.addingSeedPhrase = false
     },
   },
 }
