@@ -23,30 +23,35 @@
         </div>
       </v-flex>
       <v-flex v-if="isCustomSeedPhrase" xs12 class="text-center">
-        <v-textarea
-          v-model="newSeedPhrase"
-          :placeholder="t('tkeySettings.tkeySeedPhrase.enterSeedPhrase')"
-          hide-details
-          class="custom-seed-phrase text_3--text mb-4"
-          outlined
-          rows="10"
-        />
-        <div class="text-right mb-4">
-          <v-btn text large class="text_2--text mr-2" @click="cancelCustomSeedPhrase">
-            {{ t('walletSettings.cancel') }}
-          </v-btn>
-          <v-btn
-            class="px-8 white--text"
-            :disabled="!newSeedPhrase"
-            large
-            depressed
-            color="torusBrand1"
-            type="button"
-            @click="confirmCustomSeedPhrase"
-          >
-            {{ t('walletSettings.confirm') }}
-          </v-btn>
-        </div>
+        <v-form v-model="editSeedPhraseFormValid" lazy-validation @submit.prevent="confirmSeedPhrase">
+          <v-textarea
+            v-model="newSeedPhrase"
+            :rules="[rules.required, validMnemonic]"
+            :placeholder="t('tkeySettings.tkeySeedPhrase.enterSeedPhrase')"
+            class="custom-seed-phrase text_3--text"
+            outlined
+            rows="10"
+            autocomplete="off"
+            spellcheck="false"
+            data-gramm_editor="false"
+          />
+          <div class="text-right mb-4">
+            <v-btn text large class="text_2--text mr-2" @click="cancelCustomSeedPhrase">
+              {{ t('walletSettings.cancel') }}
+            </v-btn>
+            <v-btn
+              class="px-8 white--text"
+              :disabled="!editSeedPhraseFormValid"
+              large
+              depressed
+              color="torusBrand1"
+              type="button"
+              @click="confirmCustomSeedPhrase"
+            >
+              {{ t('walletSettings.confirm') }}
+            </v-btn>
+          </div>
+        </v-form>
         <div class="d-flex align-start mb-8">
           <v-icon size="14" class="mr-2 warning--text" :style="{ marginTop: '2px' }">$vuetify.icons.alert_circle_filled</v-icon>
           <div class="caption text_2--text text-left">
@@ -129,7 +134,7 @@
 </template>
 
 <script>
-import { generateMnemonic } from 'bip39'
+import { generateMnemonic, validateMnemonic } from 'bip39'
 import { mapActions, mapMutations } from 'vuex'
 
 import HelpTooltip from '../../components/helpers/HelpTooltip'
@@ -147,11 +152,18 @@ export default {
       newSeedPhrase: '',
       addingSeedPhrase: false,
       isSeedPhraseRequired: config.requireSeedPhraseWhileCreation,
+      rules: {
+        required: (value) => !!value || this.t('walletSettings.required'),
+      },
+      editSeedPhraseFormValid: true,
     }
   },
   computed: {
     seedPhraseArray() {
       return this.seedPhrase.split(' ')
+    },
+    validMnemonic() {
+      return validateMnemonic(this.newSeedPhrase) || this.t('tkeySettings.tkeySeedPhrase.add.incorrect')
     },
   },
   mounted() {

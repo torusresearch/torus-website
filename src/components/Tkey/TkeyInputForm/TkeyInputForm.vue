@@ -271,10 +271,10 @@ export default {
         await this.tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree', seedPhrase || undefined)
         await this.tryFinish()
         await this.setInput({ response: this.tKey })
-        this.addingSeedPhrase = false
-        return
       } catch (error) {
         log.error(error)
+      } finally {
+        this.addingSeedPhrase = false
       }
     },
   },
