@@ -146,13 +146,13 @@
             </v-btn>
           </div>
           <div
-            v-if="!canHideDisclaimer1 && !viewMoreOptions"
+            v-if="!canHideDisclaimer1 && !viewMoreOptions && thirdPartyAuthenticators.length > 0"
             class="text_3--text px-6 footer-notes"
             :class="$vuetify.breakpoint.xsOnly ? 'pb-13' : 'mb-4'"
           >
             <span>{{ t('dappLogin.termsAuth01') }}</span>
             <br />
-            <span>{{ t('dappLogin.termsAuth02') }}</span>
+            <span>{{ thirdPartyAuthenticators }}.</span>
             <a
               class="privacy-learn-more text_3--text"
               href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
@@ -185,6 +185,7 @@ import log from 'loglevel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { GITHUB, GOOGLE_VERIFIER, TWITTER } from '../../../utils/enums'
+import { thirdPartyAuthenticators } from '../../../utils/utils'
 
 export default {
   name: 'PopupLogin',
@@ -206,6 +207,7 @@ export default {
     ...mapGetters(['loginButtonsArray', 'getLogo']),
     ...mapState({
       whiteLabel: 'whiteLabel',
+      loginConfig: (state) => state.embedState.loginConfig,
     }),
     mainButtonsLong() {
       return this.loginButtonsArray.filter(
@@ -276,6 +278,9 @@ export default {
     },
     activeButtonDetails() {
       return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
+    },
+    thirdPartyAuthenticators() {
+      return thirdPartyAuthenticators(this.loginConfig)
     },
   },
   watch: {

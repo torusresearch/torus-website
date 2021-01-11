@@ -211,6 +211,9 @@ export default {
   setPostboxKey(state, payload) {
     state.postboxKey = payload
   },
+  setIsTkeySeedPhraseInputRequired(state, payload) {
+    state.isTkeySeedPhraseInputRequired = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]

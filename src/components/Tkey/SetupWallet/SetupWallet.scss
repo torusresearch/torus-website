@@ -61,12 +61,14 @@
       text-align: right;
     }
   }
- }
-.backup-device-checkbox {
-  cursor: pointer;
+}
+.wallet-checkbox {
   color: #ffffff;
   -webkit-appearance: none;
   &.isDark {
-    color: #28292E;
+    color: #28292e;
+  }
+  &.clickable {
+    cursor: pointer;
   }
 }

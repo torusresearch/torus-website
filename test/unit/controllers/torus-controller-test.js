@@ -68,6 +68,7 @@ describe('MetaMaskController', () => {
       initState: clone(firstTimeState),
       platform: { showTransactionNotification: () => {} },
       requestTkeyInput: noop,
+      requestTkeySeedPhraseInput: noop,
     })
     // disable diagnostics
     metamaskController.diagnostics = null
