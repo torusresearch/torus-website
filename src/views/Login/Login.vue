@@ -96,7 +96,7 @@
                       <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
                       <span>{{ t('dappLogin.termsAuth01') }}</span>
                       <br />
-                      <span>{{ t('dappLogin.termsAuth02') }}</span>
+                      <span>{{ thirdPartyAuthenticators }}.</span>
                       <a
                         class="privacy-learn-more text_3--text"
                         href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
@@ -258,7 +258,7 @@
                     <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
                     <span>{{ t('dappLogin.termsAuth01') }}</span>
                     <br />
-                    <span>{{ t('dappLogin.termsAuth02') }}</span>
+                    <span>{{ thirdPartyAuthenticators }}.</span>
                     <a
                       class="privacy-learn-more text_3--text"
                       href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
@@ -388,7 +388,7 @@ import {
 } from '../../content-loader'
 import { HandlerFactory as createHandler } from '../../handlers/Auth'
 import { GOOGLE, GOOGLE_VERIFIER } from '../../utils/enums'
-import { handleRedirectParameters } from '../../utils/utils'
+import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/utils'
 
 export default {
   name: 'Login',
@@ -454,6 +454,9 @@ export default {
     },
     activeButtonDetails() {
       return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
+    },
+    thirdPartyAuthenticators() {
+      return thirdPartyAuthenticators(this.loginConfig)
     },
   },
   watch: {

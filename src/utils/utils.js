@@ -731,3 +731,20 @@ export function getUserIcon(accountType, typeOfLogin) {
   }
   return typeOfLogin.toLowerCase()
 }
+
+export function thirdPartyAuthenticators(loginConfig) {
+  const finalAauthenticators = Object.values(loginConfig)
+    .reduce((authenticators, authenticator) => {
+      if (Object.prototype.hasOwnProperty.call(authenticator, 'jwtParameters')) {
+        authenticators.push(capitalizeFirstLetter(authenticator.name))
+      }
+      return authenticators
+    }, [])
+    .sort((a, b) => {
+      if (a > b) return 1
+      if (a < b) return -1
+      return 0
+    })
+
+  return finalAauthenticators.join(', ')
+}
