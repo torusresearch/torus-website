@@ -130,7 +130,7 @@ export default {
             key,
             accountType,
             isDefault: this.defaultPublicAddress && this.hasThreshold ? key === this.defaultPublicAddress : accountType === ACCOUNT_TYPE.NORMAL,
-            icon: accountType === ACCOUNT_TYPE.THRESHOLD ? 'wallet' : this.userInfo.typeOfLogin.toLowerCase(),
+            icon: this.accountIcon(accountType),
             title: this.accountTitle(accountType, key),
           })
         return acc
@@ -166,6 +166,11 @@ export default {
         return `${this.t('tkeySettings.tkeySeedPhrase.seedPhraseAccount')} ${index + 1}`
       }
       return this.userInfo.verifierId
+    },
+    accountIcon(accountType) {
+      if (accountType === ACCOUNT_TYPE.THRESHOLD) return 'tKey'
+      if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) return 'tkey_seed_phrase'
+      return this.userInfo.typeOfLogin.toLowerCase()
     },
   },
 }
