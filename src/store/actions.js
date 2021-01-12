@@ -457,6 +457,7 @@ export default {
     const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress)
       ? selectedDefaultAddress
       : oAuthKey.ethAddress || Object.keys(state.wallet)[0]
+    if (!selectedAddress) throw new Error('No Accounts available')
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
     prefsController.getBillboardContents()
     // continue enable function
