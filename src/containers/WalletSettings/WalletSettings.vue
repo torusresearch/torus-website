@@ -116,7 +116,8 @@ export default {
   computed: {
     ...mapState(['wallet', 'selectedAddress', 'tKeyExists']),
     isThreshold() {
-      return this.wallet[this.selectedAddress]?.accountType === ACCOUNT_TYPE.THRESHOLD
+      const accountType = this.wallet[this.selectedAddress]?.accountType
+      return accountType === ACCOUNT_TYPE.THRESHOLD || accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE
     },
     hasThreshold() {
       return this.tKeyExists
