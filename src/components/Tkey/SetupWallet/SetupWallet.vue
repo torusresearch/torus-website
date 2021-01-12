@@ -267,11 +267,11 @@
 </template>
 
 <script>
-import { generateMnemonic } from 'bip39'
+// import { generateMnemonic } from 'bip39'
 import bowser from 'bowser'
 import log from 'loglevel'
 
-// import config from '../../../config'
+import config from '../../../config'
 import { passwordValidation, requestQuota } from '../../../utils/utils'
 
 export default {
@@ -317,7 +317,8 @@ export default {
       userUnderstands: false,
       useSeedPhrase: false,
       seedPhrase: '',
-      requireSeedPhraseWhileCreation: false,
+      // requireSeedPhraseWhileCreation: false,
+      mandatorySecurityQuestionsWhileCreation: config.mandatorySecurityQuestionsWhileCreation,
     }
   },
   computed: {
@@ -383,12 +384,12 @@ export default {
       this.recoveryEmailFinal = this.recoveryEmail
       this.progressValue += 100
     },
-    onChangeUseSeedPhrase() {
-      if (!this.requireSeedPhraseWhileCreation) {
-        this.useSeedPhrase = !this.useSeedPhrase
-        this.seedPhrase = generateMnemonic()
-      }
-    },
+    // onChangeUseSeedPhrase() {
+    //   if (!this.requireSeedPhraseWhileCreation) {
+    //     this.useSeedPhrase = !this.useSeedPhrase
+    //     this.seedPhrase = generateMnemonic()
+    //   }
+    // },
   },
 }
 </script>
