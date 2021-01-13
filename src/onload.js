@@ -75,7 +75,6 @@ function onloadTorus(torus) {
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
 
-  // update node details https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0
   const network = `https://${process.env.VUE_APP_PROXY_NETWORK || 'mainnet'}.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
   torus.nodeDetailManager = new NodeDetailManager({ network, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
   torus.nodeDetailManager
