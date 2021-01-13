@@ -15,7 +15,7 @@
       height: 100%;
     }
     ul {
-      padding: 20px;
+      padding: 20px 60px;
       list-style: none;
       -webkit-column-count: 3;
       -moz-column-count: 3;
@@ -49,6 +49,7 @@
   &.is-mobile {
     .seed-phrase-container {
       ul {
+        padding: 20px 60px;
         -webkit-column-count: 2;
         -moz-column-count: 2;
         column-count: 2;

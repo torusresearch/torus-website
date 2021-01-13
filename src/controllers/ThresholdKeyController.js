@@ -103,7 +103,7 @@ class ThresholdKeyController extends EventEmitter {
         throw new Error('Cannot recover key')
       } else {
         const { tKey: newTKey } = this.state
-        const { privKey } = await newTKey.reconstructKey()
+        const { privKey } = await newTKey.reconstructKey(false)
         await this.setSettingsPageData()
         this.startShareTransferRequestListener()
 
@@ -162,7 +162,7 @@ class ThresholdKeyController extends EventEmitter {
     await this._rehydrate(postboxKey, tkeyJsonReturned)
 
     const { tKey: newTKey } = this.state
-    const { privKey } = await newTKey.reconstructKey()
+    const { privKey } = await newTKey.reconstructKey(false)
     await this.setSettingsPageData()
 
     const hexKeys = await getAllPrivateKeys(newTKey, privKey)
@@ -268,7 +268,7 @@ class ThresholdKeyController extends EventEmitter {
     const { tKey, settingsPageData = {} } = this.state
     if (password) await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
     // can't do some operations without key reconstruction
-    await tKey.reconstructKey()
+    await tKey.reconstructKey(false)
     if (backup) {
       try {
         const { deviceShare } = settingsPageData
@@ -289,7 +289,7 @@ class ThresholdKeyController extends EventEmitter {
       await this.addSeedPhrase(seedPhrase, false)
     }
 
-    const { privKey } = await tKey.reconstructKey()
+    const { privKey } = await tKey.reconstructKey(false)
 
     await this.setSettingsPageData()
     this.startShareTransferRequestListener()

@@ -242,7 +242,7 @@ export default {
       log.info(this.tKey, this.settingsData)
 
       if (requiredShares === 0) {
-        const { privKey } = await this.tKey.reconstructKey()
+        const { privKey } = await this.tKey.reconstructKey(false)
         let allKeys = await getAllPrivateKeys(this.tKey, privKey)
         if (config.onlySeedPhraseAccounts && allKeys.length > 0) {
           // don't use the first key

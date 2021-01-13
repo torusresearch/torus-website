@@ -72,7 +72,7 @@ const initialState = {
     theme: {},
     logoDark: '',
     logoLight: '',
-    topupHide: false,
+    topupHide: config.hideTopup,
     featuredBillboardHide: false,
   },
   etherscanTx: [],
