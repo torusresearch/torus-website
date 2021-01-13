@@ -170,6 +170,8 @@
                       aria-label="Recipient Selector"
                       @blur="verifierChangedManual"
                     >
+                      <template #selection="{ item }">{{ t(item.name) }}</template>
+                      <template #item="{ item }">{{ t(item.name) }}</template>
                       <template #message="props">
                         {{ t(props.message) }}
                       </template>
@@ -406,7 +408,6 @@ import config from '../../config'
 import torus from '../../torus'
 import {
   ACCOUNT_TYPE,
-  ALLOWED_VERIFIERS,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ETH,
@@ -421,7 +422,7 @@ import {
   UNSTOPPABLE_DOMAINS,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
-import { apiStreamSupported, getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
+import { apiStreamSupported, getEtherScanHashLink, getVerifierOptions, significantDigits, validateVerifierId } from '../../utils/utils'
 
 export default {
   name: 'WalletTransfer',
@@ -498,6 +499,7 @@ export default {
       tokenBalances: 'tokenBalances',
       collectibles: 'collectibleBalances',
       currencyMultiplier: 'currencyMultiplier',
+      contacts: 'filteredContacts',
     }),
     ...mapState([
       'selectedCurrency',
@@ -505,22 +507,13 @@ export default {
       'tokenDataLoaded',
       'currencyData',
       'tokenRates',
-      'contacts',
       'selectedAddress',
       'userInfo',
       'networkType',
       'wallet',
     ]),
     verifierOptions() {
-      try {
-        const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
-        return verifiers.map((verifier) => {
-          verifier.name = this.t(verifier.name)
-          return verifier
-        })
-      } catch {
-        return []
-      }
+      return getVerifierOptions()
     },
     randomName() {
       return `torus-${torus.instanceId}`
@@ -566,7 +559,7 @@ export default {
     },
     verifierPlaceholder() {
       return this.selectedVerifier
-        ? `${this.t('walletSettings.enter')} ${this.verifierOptions.find((verifier) => verifier.value === this.selectedVerifier).name}`
+        ? `${this.t('walletSettings.enter')} ${this.t(this.verifierOptions.find((verifier) => verifier.value === this.selectedVerifier).name)}`
         : ''
     },
     contactList() {

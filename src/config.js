@@ -69,6 +69,7 @@ const {
   VUE_APP_HIDE_TOPUP,
   VUE_APP_TKEY_SECURITY_QUESTIONS_MANDATORY,
   VUE_APP_INFURA_KEY,
+  VUE_APP_ETH_TRANSFER_ONLY,
 } = process.env
 
 log.info('baseurl', VUE_APP_BASE_ROUTE, 'is tkey', VUE_APP_TKEY_ONLY)
@@ -103,6 +104,7 @@ export default {
   mandatorySecurityQuestionsWhileCreation: VUE_APP_TKEY_SECURITY_QUESTIONS_MANDATORY === 'true',
 
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
+  ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
 
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',

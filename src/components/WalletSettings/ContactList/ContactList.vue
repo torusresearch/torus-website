@@ -29,7 +29,10 @@
               item-value="value"
               aria-label="Filter Type"
               :placeholder="t('walletSettings.filterByType')"
-            ></v-select>
+            >
+              <template #selection="{ item }">{{ item === 'All' ? item : t(item.name) }}</template>
+              <template #item="{ item }">{{ t(item.name) }}</template>
+            </v-select>
           </div>
         </div>
         <div v-if="$vuetify.breakpoint.smAndDown" class="mt-4">
@@ -103,7 +106,10 @@
                 item-value="value"
                 aria-label="Select Contact Verifier"
                 @change="validateContactForm"
-              ></v-select>
+              >
+                <template #selection="{ item }">{{ t(item.name) }}</template>
+                <template #item="{ item }">{{ t(item.name) }}</template>
+              </v-select>
             </v-flex>
           </v-layout>
           <v-layout wrap>
@@ -146,10 +152,10 @@
 
 <script>
 import log from 'loglevel'
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 
 import { ALLOWED_VERIFIERS, ETH } from '../../../utils/enums'
-import { validateVerifierId } from '../../../utils/utils'
+import { getVerifierOptions, validateVerifierId } from '../../../utils/utils'
 
 export default {
   name: 'NetworkSettings',
@@ -168,8 +174,8 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      stateContacts: 'contacts',
+    ...mapGetters({
+      stateContacts: 'filteredContacts',
     }),
     verifierOptions() {
       return [
@@ -196,16 +202,7 @@ export default {
       })
     },
     verifierOptionsNew() {
-      try {
-        const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
-        return verifiers.map((verifier) => {
-          verifier.name = this.t(verifier.name)
-          return verifier
-        })
-      } catch (error) {
-        log.error(error)
-        return []
-      }
+      return getVerifierOptions()
     },
   },
   methods: {
