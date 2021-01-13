@@ -170,7 +170,11 @@
                       aria-label="Recipient Selector"
                       @blur="verifierChangedManual"
                     >
-                      <template #selection="{ item }">{{ t(item.name) }}</template>
+                      <template #selection="{ item }">
+                        <div class="v-select__selection v-select__selection--comma">
+                          {{ t(item.name) }}
+                        </div>
+                      </template>
                       <template #item="{ item }">{{ t(item.name) }}</template>
                       <template #message="props">
                         {{ t(props.message) }}

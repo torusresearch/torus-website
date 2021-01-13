@@ -30,7 +30,11 @@
               aria-label="Filter Type"
               :placeholder="t('walletSettings.filterByType')"
             >
-              <template #selection="{ item }">{{ item === 'All' ? item : t(item.name) }}</template>
+              <template #selection="{ item }">
+                <div class="v-select__selection v-select__selection--comma">
+                  {{ item === 'walletSettings.all' ? t(item) : t(item.name) }}
+                </div>
+              </template>
               <template #item="{ item }">{{ t(item.name) }}</template>
             </v-select>
           </div>
@@ -107,7 +111,11 @@
                 aria-label="Select Contact Verifier"
                 @change="validateContactForm"
               >
-                <template #selection="{ item }">{{ t(item.name) }}</template>
+                <template #selection="{ item }">
+                  <div class="v-select__selection v-select__selection--comma">
+                    {{ t(item.name) }}
+                  </div>
+                </template>
                 <template #item="{ item }">{{ t(item.name) }}</template>
               </v-select>
             </v-flex>
@@ -180,7 +188,7 @@ export default {
     verifierOptions() {
       return [
         {
-          name: 'All',
+          name: 'walletSettings.all',
           value: '',
         },
         ...this.verifierOptionsNew,
