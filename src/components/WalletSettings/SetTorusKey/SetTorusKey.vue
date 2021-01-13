@@ -11,20 +11,20 @@
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-action class="ma-0">
-          <v-btn text small color="torusBrand1" class="caption" @click="setKey(wallet.key)">
+          <v-btn text small color="torusBrand1" class="caption" @click="selectWallet(wallet.key)">
             {{ 'Set key' }}
           </v-btn>
         </v-list-item-action>
       </v-list-item>
     </v-list>
-    <v-dialog v-model="torusKeyDialog" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
-      <TorusKeyDialog key-data="selectedTorusKey" @onClose="torusKeyDialog = false" />
+    <v-dialog v-model="torusKeyDialog" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly" @click:outside="dialogClose">
+      <TorusKeyDialog prev-key="selectedTorusWallet" @dialogClose="dialogClose" @setKey="setKey" />
     </v-dialog>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE } from '../../../utils/enums'
 import TorusKeyDialog from '../TorusKeyDialog'
@@ -34,11 +34,12 @@ export default {
   components: { TorusKeyDialog },
   data() {
     return {
-      selectedTorusKey: '',
+      selectedTorusWallet: '',
       torusKeyDialog: false,
     }
   },
   computed: {
+    ...mapActions(['setTorusKey']),
     ...mapState({
       wallets: 'wallet',
       userInfo: 'userInfo',
@@ -59,9 +60,16 @@ export default {
     },
   },
   methods: {
-    setKey(key) {
-      this.selectedTorusKey = key
+    dialogClose() {
+      this.selectedTorusWallet = ''
+      this.torusKeyDialog = false
+    },
+    selectWallet(address) {
+      this.selectedTorusWallet = address
       this.torusKeyDialog = true
+    },
+    setKey(prevKey, newKey) {
+      if (prevKey) this.setTorusKey(prevKey, newKey)
     },
   },
 }

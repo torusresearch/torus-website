@@ -138,6 +138,8 @@ export default {
       else commit('setCurrencyData', data)
     })
   },
+  // async setTorusKey({}, payload) {
+  // },
   async forceFetchTokens({ state }) {
     detectTokensController.refreshTokenBalances()
     assetDetectionController.restartAssetDetection()
