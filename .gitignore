@@ -13,7 +13,6 @@ yarn-error.log*
 
 # Editor directories and files
 .idea
-.vscode
 *.suo
 *.ntvs*
 *.njsproj
@@ -24,3 +23,4 @@ embed.min.js
 .nyc_output
 coverage
 src/plugins/i18n
+.env
