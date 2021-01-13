@@ -84,6 +84,9 @@ export default {
     // Update vuetify theme
     localThemeSet(payload, state)
   },
+  setCrashReport(state, payload) {
+    state.crashReport = payload
+  },
   setLocale(state, payload) {
     updateDefaultLanguage(state, payload)
   },

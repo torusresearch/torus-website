@@ -21,6 +21,7 @@ import {
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
 import { notifyUser } from '../utils/notifications'
+import { setSentryEnabled } from '../utils/sentry'
 import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
@@ -190,6 +191,7 @@ class PreferencesController extends EventEmitter {
           default_currency: defaultCurrency,
           contacts,
           theme,
+          enable_crash_reporter,
           locale,
           permissions,
           public_address,
@@ -226,6 +228,7 @@ class PreferencesController extends EventEmitter {
           {
             contacts,
             theme,
+            crashReport: Boolean(enable_crash_reporter),
             selectedCurrency: defaultCurrency,
             locale: whiteLabelLocale || locale || getUserLanguage(),
             permissions,
@@ -237,6 +240,7 @@ class PreferencesController extends EventEmitter {
           },
           public_address
         )
+        setSentryEnabled(Boolean(enable_crash_reporter))
         return user
       }
       return undefined
@@ -446,6 +450,22 @@ class PreferencesController extends EventEmitter {
     } catch (error) {
       log.error(error)
       this.handleError('navBar.snackFailTheme')
+    }
+  }
+
+  async setCrashReport(payload) {
+    if (payload === this.state()?.crashReport) return
+    try {
+      await patch(`${config.api}/user/crashreporter`, { enable_crash_reporter: payload }, this.headers(), { useAPIKey: true })
+      if (storageAvailable('localStorage')) {
+        localStorage.setItem('torus-enable-crash-reporter', String(payload))
+      }
+      setSentryEnabled(payload)
+      this.handleSuccess('navBar.snackSuccessCrashReport')
+      this.updateStore({ crashReport: payload })
+    } catch (error) {
+      log.error(error)
+      this.handleError('navBar.snackFailCrashReport')
     }
   }
 

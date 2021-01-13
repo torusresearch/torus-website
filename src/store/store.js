@@ -17,6 +17,7 @@ import {
   TX_TRANSACTION,
   TX_TYPED_MESSAGE,
 } from '../utils/enums'
+import { setSentryEnabled } from '../utils/sentry'
 import { getIFrameOriginObject, isPwa, storageAvailable } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
@@ -50,6 +51,7 @@ if (storageAvailable(isPwa ? 'localStorage' : 'sessionStorage')) {
       selectedCurrency: state.selectedCurrency,
       jwtToken: state.jwtToken,
       theme: state.theme,
+      crashReport: state.crashReport,
       locale: state.locale,
       billboard: state.billboard,
       contacts: state.contacts,
@@ -320,10 +322,15 @@ if (storageAvailable('localStorage')) {
   if (torusTheme) {
     VuexStore.commit('setTheme', torusTheme)
   }
+  const torusEnableCrashReporter = localStorage.getItem('torus-enable-crash-reporter')
+  if (torusEnableCrashReporter !== null) {
+    VuexStore.commit('setCrashReport', Boolean(torusEnableCrashReporter))
+  }
 }
 
 // Another location
 
 setAPIKey(VuexStore.state.embedState.apiKey)
+setSentryEnabled(VuexStore.state.crashReport)
 
 export default VuexStore

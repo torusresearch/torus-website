@@ -52,6 +52,7 @@ const initialState = {
   pastTransactions: [],
   paymentTx: [],
   theme: THEME_LIGHT_BLUE_NAME,
+  crashReport: true,
   locale: LOCALE_EN,
   billboard: {},
   contacts: [],

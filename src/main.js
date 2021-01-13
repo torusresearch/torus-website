@@ -9,6 +9,7 @@ import App from './App.vue'
 import { vuetify } from './plugins'
 import router from './router'
 import store from './store'
+import { installSentry } from './utils/sentry'
 // import torus from './torus'
 
 log.enableAll()
@@ -55,6 +56,8 @@ Vue.mixin({
     },
   },
 })
+
+installSentry(Vue)
 
 new Vue({
   router,

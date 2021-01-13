@@ -13,6 +13,12 @@ npm install
 find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
 
+Add `.env` the project's root directory:
+
+```
+VUE_APP_INFURA_KEY={Infura key}
+```
+
 ### Compiles and hot-reloads for development
 
 ```sh
