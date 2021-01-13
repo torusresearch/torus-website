@@ -18,6 +18,7 @@ import ObservableStore from 'obs-store'
 import ComposedStore from 'obs-store/lib/composed'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 
+import config from '../config'
 import {
   BSC_MAINNET,
   BSC_MAINNET_CODE,
@@ -334,7 +335,7 @@ export default class NetworkController extends EventEmitter {
 }
 
 function createInfuraClient({ network }) {
-  const infuraMiddleware = createInfuraMiddleware({ network })
+  const infuraMiddleware = createInfuraMiddleware({ network, projectId: config.infuraKey })
   const infuraProvider = providerFromMiddleware(infuraMiddleware)
   const blockTracker = new BlockTracker({ provider: infuraProvider })
 

@@ -68,6 +68,7 @@ const {
   VUE_APP_REQUIRE_SEED_PHRASE,
   VUE_APP_HIDE_TOPUP,
   VUE_APP_TKEY_SECURITY_QUESTIONS_MANDATORY,
+  VUE_APP_INFURA_KEY,
 } = process.env
 
 log.info('baseurl', VUE_APP_BASE_ROUTE, 'is tkey', VUE_APP_TKEY_ONLY)
@@ -91,6 +92,7 @@ export default {
   metadataHost: 'https://metadata.tor.us',
   api: 'https://api.tor.us',
   // api: 'http://localhost:2020',
+  infuraKey: VUE_APP_INFURA_KEY,
 
   onlyTkey: VUE_APP_TKEY_ONLY === 'true',
   // use this flag to force check a flag in frontend while creation of tkey
