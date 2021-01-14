@@ -411,7 +411,6 @@ import MessageModal from '../../components/WalletTransfer/MessageModal'
 import config from '../../config'
 import torus from '../../torus'
 import {
-  ACCOUNT_TYPE,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ETH,
@@ -426,7 +425,7 @@ import {
   UNSTOPPABLE_DOMAINS,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
-import { apiStreamSupported, getEtherScanHashLink, getVerifierOptions, significantDigits, validateVerifierId } from '../../utils/utils'
+import { apiStreamSupported, getEtherScanHashLink, getUserIcon, getVerifierOptions, significantDigits, validateVerifierId } from '../../utils/utils'
 
 export default {
   name: 'WalletTransfer',
@@ -606,14 +605,7 @@ export default {
     },
     fromVerifier() {
       const accountType = this.wallet[this.selectedAddress]?.accountType || ''
-
-      if (accountType === ACCOUNT_TYPE.THRESHOLD) {
-        return 'wallet'
-      }
-      if (accountType === ACCOUNT_TYPE.IMPORTED) {
-        return 'person_circle'
-      }
-      return this.userInfo.typeOfLogin.toLowerCase()
+      return getUserIcon(accountType, this.userInfo.typeOfLogin)
     },
     apiStreamSupported() {
       return apiStreamSupported()
