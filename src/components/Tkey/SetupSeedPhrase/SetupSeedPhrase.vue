@@ -1,5 +1,8 @@
 <template>
-  <div class="setup-seed-phrase" :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark }]">
+  <div
+    class="setup-seed-phrase"
+    :class="[$vuetify.breakpoint.xsOnly ? 'pa-6' : 'pa-10', { 'is-dark': $vuetify.theme.dark }, { 'is-mobile': $vuetify.breakpoint.xsOnly }]"
+  >
     <div class="text-center mb-6">
       <div class="mb-2" :class="[$vuetify.theme.dark ? 'torusFont2--text' : 'text_1--text', isRequired ? 'display-1' : 'headline']">
         {{ isRequired ? t('tkeySettings.tkeySeedPhrase.add.required.title') : t('tkeySettings.tkeySeedPhrase.add.title') }}

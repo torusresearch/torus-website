@@ -96,7 +96,7 @@
 import { mapActions, mapMutations, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE } from '../../../utils/enums'
-import { getUserEmail } from '../../../utils/utils'
+import { getUserEmail, getUserIcon } from '../../../utils/utils'
 
 export default {
   name: 'DefaultAccount',
@@ -130,7 +130,7 @@ export default {
             key,
             accountType,
             isDefault: this.defaultPublicAddress && this.hasThreshold ? key === this.defaultPublicAddress : accountType === ACCOUNT_TYPE.NORMAL,
-            icon: accountType === ACCOUNT_TYPE.THRESHOLD ? 'wallet' : this.userInfo.typeOfLogin.toLowerCase(),
+            icon: this.accountIcon(accountType),
             title: this.accountTitle(accountType, key),
           })
         return acc
@@ -166,6 +166,9 @@ export default {
         return `${this.t('tkeySettings.tkeySeedPhrase.seedPhraseAccount')} ${index + 1}`
       }
       return this.userInfo.verifierId
+    },
+    accountIcon(accountType) {
+      return getUserIcon(accountType, this.userInfo.typeOfLogin)
     },
   },
 }

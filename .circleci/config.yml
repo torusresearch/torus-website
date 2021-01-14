@@ -222,6 +222,7 @@ workflows:
               only:
                 - master
       - deploy:
+          context: AWS
           requires:
             - build
             - test-coverage
@@ -230,6 +231,7 @@ workflows:
               only:
                 - master
       - update-lambda:
+          context: AWS
           requires:
             - deploy
           filters:
@@ -237,6 +239,7 @@ workflows:
               only:
                 - master
       - update-iframeIntegrity:
+          context: AWS
           requires:
             - deploy
           filters:
@@ -249,6 +252,7 @@ workflows:
               only:
                 - binance
       - deploy-binance:
+          context: AWS
           requires:
             - build-binance
             - test-coverage
@@ -257,6 +261,7 @@ workflows:
               only:
                 - binance
       - update-lambda-binance:
+          context: AWS
           requires:
             - deploy-binance
           filters:
@@ -264,6 +269,7 @@ workflows:
               only:
                 - binance
       - update-iframeIntegrity-binance:
+          context: AWS
           requires:
             - deploy-binance
           filters:

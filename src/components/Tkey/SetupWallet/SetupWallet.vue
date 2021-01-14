@@ -139,7 +139,8 @@
                   : 'text_1--text'
               "
             >
-              {{ t('tkeyCreateSetup.recoveryPass') }}
+              <span v-if="mandatorySecurityQuestionsWhileCreation">{{ t('tkeyCreateSetup.recoveryPass') }}*</span>
+              <span v-else>{{ t('tkeyCreateSetup.recoveryPass') }}</span>
             </div>
             <div class="ml-auto text-right caption" :class="$vuetify.theme.dark ? 'torusFont1--text' : 'text_2--text'">
               <v-icon
@@ -176,12 +177,13 @@
                 autocomplete="new-password"
                 @click:append="showRecoveryPasswordConfirm = !showRecoveryPasswordConfirm"
               />
-              <div class="text-right">
+              <div class="d-flex align-end">
+                <span v-if="mandatorySecurityQuestionsWhileCreation" class="body-2">*{{ t('tkeyCreateSetup.passwordRequired') }}</span>
                 <v-btn
                   v-if="!finalRecoveryPassword"
                   type="submit"
                   :disabled="!validPasswordForm"
-                  class="caption white--text font-weight-bold"
+                  class="caption white--text font-weight-bold ml-auto"
                   color="torusBrand1"
                 >
                   {{ t('tkeyNew.setPassword') }}
@@ -252,7 +254,7 @@
       <v-flex class="xs6 px-2">
         <v-btn
           block
-          :disabled="progressValue < 300 || !userUnderstands"
+          :disabled="disableSubmit"
           :x-large="!$vuetify.breakpoint.xsOnly"
           color="torusBrand1"
           class="white--text body-2 font-weight-bold"
@@ -267,11 +269,11 @@
 </template>
 
 <script>
-import { generateMnemonic } from 'bip39'
+// import { generateMnemonic } from 'bip39'
 import bowser from 'bowser'
 import log from 'loglevel'
 
-// import config from '../../../config'
+import config from '../../../config'
 import { passwordValidation, requestQuota } from '../../../utils/utils'
 
 export default {
@@ -317,7 +319,8 @@ export default {
       userUnderstands: false,
       useSeedPhrase: false,
       seedPhrase: '',
-      requireSeedPhraseWhileCreation: false,
+      // requireSeedPhraseWhileCreation: false,
+      mandatorySecurityQuestionsWhileCreation: config.mandatorySecurityQuestionsWhileCreation,
     }
   },
   computed: {
@@ -345,6 +348,9 @@ export default {
     },
     progressRate() {
       return this.progressValue / 4
+    },
+    disableSubmit() {
+      return this.progressValue < 300 || !this.userUnderstands || (this.mandatorySecurityQuestionsWhileCreation && !this.finalRecoveryPassword)
     },
   },
   mounted() {
@@ -383,12 +389,12 @@ export default {
       this.recoveryEmailFinal = this.recoveryEmail
       this.progressValue += 100
     },
-    onChangeUseSeedPhrase() {
-      if (!this.requireSeedPhraseWhileCreation) {
-        this.useSeedPhrase = !this.useSeedPhrase
-        this.seedPhrase = generateMnemonic()
-      }
-    },
+    // onChangeUseSeedPhrase() {
+    //   if (!this.requireSeedPhraseWhileCreation) {
+    //     this.useSeedPhrase = !this.useSeedPhrase
+    //     this.seedPhrase = generateMnemonic()
+    //   }
+    // },
   },
 }
 </script>
