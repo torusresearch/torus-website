@@ -96,7 +96,7 @@
 import { mapActions, mapMutations, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE } from '../../../utils/enums'
-import { getUserEmail } from '../../../utils/utils'
+import { getUserEmail, getUserIcon } from '../../../utils/utils'
 
 export default {
   name: 'DefaultAccount',
@@ -168,9 +168,7 @@ export default {
       return this.userInfo.verifierId
     },
     accountIcon(accountType) {
-      if (accountType === ACCOUNT_TYPE.THRESHOLD) return 'tKey'
-      if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) return 'tkey_seed_phrase'
-      return this.userInfo.typeOfLogin.toLowerCase()
+      return getUserIcon(accountType, this.userInfo.typeOfLogin)
     },
   },
 }
