@@ -58,6 +58,10 @@ deploy_function: &deploy_function
         name: 'Deploy Over SSH to AWS'
         command: |
           . ./scripts/uploadToAws.sh
+    # - run:
+    #     name: 'Upload source to Sentry'
+    #     command: |
+    #       . ./scripts/uploadToSentry.sh
 jobs:
   test-coverage:
     <<: *job_common
