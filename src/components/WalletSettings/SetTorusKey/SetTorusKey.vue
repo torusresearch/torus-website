@@ -11,8 +11,8 @@
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-action class="ma-0">
-          <v-btn text small color="torusBrand1" class="caption" @click="selectWallet(wallet.key)">
-            {{ 'Set key' }}
+          <v-btn :disabled="settingKey" text small color="torusBrand1" class="caption" @click="selectWallet(wallet.key)">
+            {{ !settingKey ? 'Set key' : 'Setting key...' }}
           </v-btn>
         </v-list-item-action>
       </v-list-item>
@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE } from '../../../utils/enums'
@@ -36,6 +37,7 @@ export default {
     return {
       selectedTorusWallet: '',
       torusKeyDialog: false,
+      settingKey: false,
     }
   },
   computed: {
@@ -68,8 +70,17 @@ export default {
       this.selectedTorusWallet = address
       this.torusKeyDialog = true
     },
-    setKey(prevKey, newKey) {
-      if (prevKey) this.setTorusKey(prevKey, newKey)
+    async setKey(prevKey, newKey) {
+      this.settingKey = true
+      try {
+        if (prevKey) {
+          await this.setTorusKey({ prevKey, newKey })
+        }
+      } catch (error) {
+        log.error(error)
+      } finally {
+        this.settingKey = false
+      }
     },
   },
 }

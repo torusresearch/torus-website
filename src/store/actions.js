@@ -1,6 +1,9 @@
 import randomId from '@chaitanyapotti/random-id'
+import Torus from '@toruslabs/torus.js'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
+import elliptic from 'elliptic'
+import { BN, keccak256 } from 'ethereumjs-util'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 
@@ -47,6 +50,8 @@ import {
 } from './controllerSubscriptions'
 import initialState from './state'
 
+const ec = elliptic.ec('secp256k1')
+
 const { baseRoute } = config
 const { torusController } = torus || {}
 const {
@@ -67,6 +72,8 @@ const {
   decryptMessageManager,
 } = torusController || {}
 
+const _torus = new Torus()
+
 // stream to send logged in status
 const { communicationMux = { getStream: () => fakeStream } } = torus || {}
 const statusStream = communicationMux.getStream('status')
@@ -74,6 +81,21 @@ const oauthStream = communicationMux.getStream('oauth')
 const userInfoStream = communicationMux.getStream('user_info')
 const providerChangeStream = communicationMux.getStream('provider_change')
 const widgetStream = communicationMux.getStream('widget')
+
+const generateMetadataParams = (message, privateKeyHex) => {
+  const key = ec.keyFromPrivate(privateKeyHex)
+  const setData = {
+    data: message,
+    timestamp: new BN(Date.now()).toString(16),
+  }
+  const sig = key.sign(keccak256(Buffer.from(JSON.stringify(setData)))).slice(2)
+  return {
+    pub_key_X: key.getPublic().getX().toString('hex'),
+    pub_key_Y: key.getPublic().getY().toString('hex'),
+    set_data: setData,
+    signature: Buffer.from(sig.r.toString(16, 64) + sig.s.toString(16, 64) + new BN(sig.v).toString(16, 2), 'hex').toString('base64'),
+  }
+}
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
@@ -138,8 +160,10 @@ export default {
       else commit('setCurrencyData', data)
     })
   },
-  // async setTorusKey({}, payload) {
-  // },
+  async setTorusKey(context, { prevKey, newKey }) {
+    const diff = new BN(newKey, 'hex').sub(new BN(prevKey, 'hex')).umod(ec.curve.n)
+    return _torus.setMetadata(generateMetadataParams(diff.toString(16)))
+  },
   async forceFetchTokens({ state }) {
     detectTokensController.refreshTokenBalances()
     assetDetectionController.restartAssetDetection()
