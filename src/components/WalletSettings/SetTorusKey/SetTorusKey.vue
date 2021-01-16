@@ -12,23 +12,27 @@
         </v-list-item-content>
         <v-list-item-action class="ma-0">
           <v-btn :disabled="settingKey" text small color="torusBrand1" class="caption" @click="selectWallet(wallet.key)">
-            {{ !settingKey ? 'Set key' : 'Setting key...' }}
+            {{ !settingKey ? 'Set custom key' : 'Setting key...' }}
           </v-btn>
         </v-list-item-action>
       </v-list-item>
     </v-list>
     <v-dialog v-model="torusKeyDialog" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly" @click:outside="dialogClose">
-      <TorusKeyDialog prev-key="selectedTorusWallet" @dialogClose="dialogClose" @setKey="setKey" />
+      <TorusKeyDialog :prev-key="selectedTorusWallet" @dialogClose="dialogClose" @setKey="setKey" @resetKey="resetKey" />
     </v-dialog>
   </div>
 </template>
 
 <script>
+import elliptic from 'elliptic'
+import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE } from '../../../utils/enums'
 import TorusKeyDialog from '../TorusKeyDialog'
+
+const ec = elliptic.ec('secp256k1')
 
 export default {
   name: 'SetTorusKey',
@@ -41,7 +45,6 @@ export default {
     }
   },
   computed: {
-    ...mapActions(['setTorusKey']),
     ...mapState({
       wallets: 'wallet',
       userInfo: 'userInfo',
@@ -62,6 +65,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setTorusKey']),
     dialogClose() {
       this.selectedTorusWallet = ''
       this.torusKeyDialog = false
@@ -70,11 +74,30 @@ export default {
       this.selectedTorusWallet = address
       this.torusKeyDialog = true
     },
-    async setKey(prevKey, newKey) {
+    async resetKey(prevAddress) {
       this.settingKey = true
       try {
-        if (prevKey) {
-          await this.setTorusKey({ prevKey, newKey })
+        const wallet = this.wallets[`0x${prevAddress}`]
+        if (wallet) {
+          const defaultKey = new BN(wallet.privateKey, 16).sub(new BN(wallet.metadataNonceHex, 16)).umod(ec.curve.n)
+          window.console.log('DEFAULT KEY IS WHAT', defaultKey.toString(16))
+          window.console.log(wallet.privateKey.toString(16))
+          window.console.log(wallet)
+          window.console.log(wallet.metadataNonceHex.toString(16))
+          await this.setTorusKey({ prevAddress, newKey: defaultKey.toString(16) })
+        }
+      } catch (error) {
+        log.error(error)
+      } finally {
+        this.settingKey = false
+      }
+    },
+    async setKey(prevAddress, newKey) {
+      this.settingKey = true
+      try {
+        const wallet = this.wallets[`0x${prevAddress}`]
+        if (wallet) {
+          await this.setTorusKey({ prevAddress, newKey })
         }
       } catch (error) {
         log.error(error)

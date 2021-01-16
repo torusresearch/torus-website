@@ -1,9 +1,9 @@
 import randomId from '@chaitanyapotti/random-id'
-import Torus from '@toruslabs/torus.js'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
 import elliptic from 'elliptic'
 import { BN, keccak256 } from 'ethereumjs-util'
+import stringify from 'json-stable-stringify'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 
@@ -52,6 +52,7 @@ import initialState from './state'
 
 const ec = elliptic.ec('secp256k1')
 
+window.torus = torus
 const { baseRoute } = config
 const { torusController } = torus || {}
 const {
@@ -72,8 +73,6 @@ const {
   decryptMessageManager,
 } = torusController || {}
 
-const _torus = new Torus()
-
 // stream to send logged in status
 const { communicationMux = { getStream: () => fakeStream } } = torus || {}
 const statusStream = communicationMux.getStream('status')
@@ -88,7 +87,7 @@ const generateMetadataParams = (message, privateKeyHex) => {
     data: message,
     timestamp: new BN(Date.now()).toString(16),
   }
-  const sig = key.sign(keccak256(Buffer.from(JSON.stringify(setData)))).slice(2)
+  const sig = key.sign(keccak256(Buffer.from(stringify(setData))))
   return {
     pub_key_X: key.getPublic().getX().toString('hex'),
     pub_key_Y: key.getPublic().getY().toString('hex'),
@@ -96,6 +95,7 @@ const generateMetadataParams = (message, privateKeyHex) => {
     signature: Buffer.from(sig.r.toString(16, 64) + sig.s.toString(16, 64) + new BN(sig.v).toString(16, 2), 'hex').toString('base64'),
   }
 }
+window.gg = generateMetadataParams
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
@@ -160,9 +160,21 @@ export default {
       else commit('setCurrencyData', data)
     })
   },
-  async setTorusKey(context, { prevKey, newKey }) {
-    const diff = new BN(newKey, 'hex').sub(new BN(prevKey, 'hex')).umod(ec.curve.n)
-    return _torus.setMetadata(generateMetadataParams(diff.toString(16)))
+  async setTorusKey({ state }, { prevAddress, newKey }) {
+    const prevWallet = state.wallet[`0x${prevAddress}`]
+    if (!prevWallet) {
+      throw new Error(`could not find Torus wallet with address 0x${prevAddress}`)
+    }
+    const prevKey = prevWallet.privateKey
+    let oldDiff = new BN(0)
+    // if metadataNonce was previously set
+    if (prevWallet.metadataNonceHex) {
+      oldDiff = new BN(prevWallet.metadataNonceHex, 16)
+    }
+    const originalKey = new BN(prevKey, 16).sub(oldDiff).umod(ec.curve.n)
+    const newDiff = new BN(newKey, 16).sub(new BN(originalKey, 16)).umod(ec.curve.n)
+    // window.console.log('NEW DIFF IS WHAT NOW', newDiff)
+    return torus.setMetadata(generateMetadataParams(newDiff.toString(16), originalKey.toString(16)))
   },
   async forceFetchTokens({ state }) {
     detectTokensController.refreshTokenBalances()
@@ -299,6 +311,7 @@ export default {
           privateKey: payload.privKey,
           accountType: payload.accountType || ACCOUNT_TYPE.NORMAL,
           seedPhrase: payload.seedPhrase,
+          metadataNonceHex: payload.metadataNonce?.toString(16),
         },
       })
     }
@@ -510,6 +523,7 @@ export default {
     log.info('New private key assigned to user at address ', publicAddress)
     const torusKey = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
     if (publicAddress.toLowerCase() !== torusKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
+    window.console.log('WHAT IS THE GET TORUS KEY', torusKey)
     return torusKey
   },
   cleanupOAuth({ state }, payload) {
