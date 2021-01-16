@@ -43,8 +43,8 @@
         padding: 0
       }
     }
-    .v-input__append-inner {
-      margin-top: 0;
+    ::v-deep .v-input__append-inner {
+      margin-top: 2px !important;
     }
   }
 }

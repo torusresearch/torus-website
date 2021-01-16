@@ -82,6 +82,7 @@ const initialState = {
   confirmModals: [],
   postboxKey: {},
   isTkeySeedPhraseInputRequired: false,
+  ethTransferOnly: config.ethTransferOnly,
 }
 
 export default initialState

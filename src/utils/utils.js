@@ -11,6 +11,7 @@ import {
   ACTIVE,
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
+  ALLOWED_VERIFIERS,
   APPLE,
   BSC_MAINNET_CHAIN_ID,
   BSC_MAINNET_CODE,
@@ -747,4 +748,20 @@ export function thirdPartyAuthenticators(loginConfig) {
     })
 
   return finalAauthenticators.join(', ')
+}
+
+export function getVerifierOptions() {
+  try {
+    const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+    return verifiers.filter((verifier) => {
+      if (config.ethTransferOnly) {
+        if (verifier.value === ETH) return true
+      } else {
+        return true
+      }
+      return false
+    })
+  } catch {
+    return []
+  }
 }

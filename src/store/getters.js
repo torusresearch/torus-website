@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import config from '../config'
-import { MAINNET, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { ETH, MAINNET, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { significantDigits } from '../utils/utils'
 
 const fallBackLogoDark = require('#/assets/images/torus-logo-blue.svg')
@@ -98,6 +98,16 @@ const supportedCurrencies = (state) => {
   return returnArr
 }
 
+const filteredContacts = (state) =>
+  state.contacts.filter((contact) => {
+    if (config.ethTransferOnly) {
+      if (contact.verifier === ETH) return true
+    } else {
+      return true
+    }
+    return false
+  })
+
 function calculateBalances(state, y) {
   const { weiBalance, tokenData: tokenDataState, tokenRates: tokenRatesState, selectedCurrency, networkType } = state || {}
   const tokenData = tokenDataState
@@ -151,4 +161,5 @@ export default {
   getLogo,
   getIcon,
   supportedCurrencies,
+  filteredContacts,
 }
