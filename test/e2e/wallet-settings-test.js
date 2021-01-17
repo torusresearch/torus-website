@@ -73,7 +73,9 @@ describe('Tests Wallet Settings Page', () => {
 
     // wait for download wallet to appear
     await page.waitForResponse(
-      (response) => response.url().includes('https://api.infura.io/v1/jsonrpc/rinkeby') && (response.status() >= 200 || response.status() < 300),
+      (response) =>
+        response.url().includes('https://rinkeby.infura.io/v3/341eacb578dd44a1a049cbc5f6fd4035') &&
+        (response.status() >= 200 || response.status() < 300),
       { timeout: 60000 }
     )
 
