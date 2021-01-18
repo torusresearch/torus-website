@@ -180,7 +180,6 @@ export default {
         verifierParams: aggregateVerifierParams,
         oAuthToken: aggregateIdToken,
       })
-      window.console.log(postboxKey, 'WHAT IS POSTBOX KEY')
       commit('setPostboxKey', {
         privateKey: postboxKey.privKey,
         ethAddress: postboxKey.ethAddress,

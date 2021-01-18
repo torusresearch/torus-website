@@ -33,8 +33,10 @@
         <v-card-text>
           {{
             nextAction === 'resetKey'
-              ? 'This will remove your custom private key and replace it with your default Torus key.'
-              : 'This will remove your private key and set it to the custom key that you have provided.'
+              ? 'This will remove your custom private key and replace it with your default Torus key.' +
+                'You will be logged out of your wallet and asked to relogin.'
+              : 'This will remove your private key and set it to the custom key that you have provided.' +
+                'You will be logged out of your wallte and asked to relogin.'
           }}
         </v-card-text>
         <v-card-actions>

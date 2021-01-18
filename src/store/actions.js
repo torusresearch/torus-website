@@ -173,7 +173,6 @@ export default {
     }
     const originalKey = new BN(prevKey, 16).sub(oldDiff).umod(ec.curve.n)
     const newDiff = new BN(newKey, 16).sub(new BN(originalKey, 16)).umod(ec.curve.n)
-    // window.console.log('NEW DIFF IS WHAT NOW', newDiff)
     return torus.setMetadata(generateMetadataParams(newDiff.toString(16), originalKey.toString(16)))
   },
   async forceFetchTokens({ state }) {
@@ -523,7 +522,6 @@ export default {
     log.info('New private key assigned to user at address ', publicAddress)
     const torusKey = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
     if (publicAddress.toLowerCase() !== torusKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
-    window.console.log('WHAT IS THE GET TORUS KEY', torusKey)
     return torusKey
   },
   cleanupOAuth({ state }, payload) {

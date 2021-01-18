@@ -80,10 +80,6 @@ export default {
         const wallet = this.wallets[`0x${prevAddress}`]
         if (wallet) {
           const defaultKey = new BN(wallet.privateKey, 16).sub(new BN(wallet.metadataNonceHex, 16)).umod(ec.curve.n)
-          window.console.log('DEFAULT KEY IS WHAT', defaultKey.toString(16))
-          window.console.log(wallet.privateKey.toString(16))
-          window.console.log(wallet)
-          window.console.log(wallet.metadataNonceHex.toString(16))
           await this.setTorusKey({ prevAddress, newKey: defaultKey.toString(16) })
         }
       } catch (error) {
