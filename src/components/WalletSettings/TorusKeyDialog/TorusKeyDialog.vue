@@ -104,7 +104,6 @@ export default {
       this.confirm = true
     },
     resetKey() {
-      if (!this.privateKeyValidated) return
       this.nextAction = 'resetKey'
       this.confirm = true
     },

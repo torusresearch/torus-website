@@ -65,7 +65,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setTorusKey']),
+    ...mapActions(['setTorusKey', 'logOut']),
     dialogClose() {
       this.selectedTorusWallet = ''
       this.torusKeyDialog = false
@@ -86,6 +86,8 @@ export default {
         log.error(error)
       } finally {
         this.settingKey = false
+        this.logOut()
+        this.$router.push({ path: '/logout' }).catch((_) => {})
       }
     },
     async setKey(prevAddress, newKey) {
@@ -99,6 +101,8 @@ export default {
         log.error(error)
       } finally {
         this.settingKey = false
+        this.logOut()
+        this.$router.push({ path: '/logout' }).catch((_) => {})
       }
     },
   },
