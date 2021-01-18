@@ -12,7 +12,7 @@
         </v-list-item-content>
         <v-list-item-action class="ma-0">
           <v-btn :disabled="settingKey" text small color="torusBrand1" class="caption" @click="selectWallet(wallet.key)">
-            {{ !settingKey ? 'Set custom key' : 'Setting key...' }}
+            {{ !settingKey ? t('walletSettings.customKey.setCustomKey') : t('walletSettings.customKey.settingKey') }}
           </v-btn>
         </v-list-item-action>
       </v-list-item>
