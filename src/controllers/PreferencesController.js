@@ -7,6 +7,7 @@ import EventEmitter from 'safe-event-emitter'
 import Web3 from 'web3'
 
 import config from '../config'
+import ApiHelpers from '../utils/apiHelpers'
 import {
   ACCOUNT_TYPE,
   ACTIVITY_ACTION_RECEIVE,
@@ -19,7 +20,6 @@ import {
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
-import { get, getEtherscanTransactions, getPastOrders, getWalletOrders, patch, post, remove } from '../utils/httpHelpers'
 import { notifyUser } from '../utils/notifications'
 import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
@@ -64,15 +64,6 @@ class PreferencesController extends EventEmitter {
    *
    * @typedef {Object} PreferencesController
    * @param {Object} opts - Overrides the defaults for the initial state of this.store
-   * @property {object} store The stored object containing a users preferences, stored in torus-backend
-   * @property {string} store.selectedAddress A hex string that matches the currently selected address in the app
-   * @property {string} store.selectedCurrency A string showing the user selected currency
-   * @property {string} store.theme the user selected theme
-   * @property {string} store.locale the user selected locale
-   * @property {Array} store.contacts the contacts of the user
-   * @property {Array} store.customTokens the custom tokens of the user
-   * @property {object} store.permissions the stored permissions of the user for different domains
-   * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
   constructor(options = {}) {
     super()
@@ -81,6 +72,7 @@ class PreferencesController extends EventEmitter {
 
     this.network = network
     this.web3 = new Web3(provider)
+    this.api = new ApiHelpers(options.storeDispatch)
     this.signMessage = signMessage
 
     this.interval = options.interval || DEFAULT_INTERVAL
@@ -132,7 +124,7 @@ class PreferencesController extends EventEmitter {
       const bufferedMessage = Buffer.from(messageToSign, 'utf-8')
       const hashedMessage = hashPersonalMessage(bufferedMessage).toString('hex')
       const signedMessage = await this.signMessage(address, hashedMessage)
-      response = await post(
+      response = await this.api.post(
         `${config.api}/auth/verify`,
         {
           public_address: address,
@@ -191,7 +183,7 @@ class PreferencesController extends EventEmitter {
 
   async sync(address) {
     try {
-      const user = await get(`${config.api}/user?fetchTx=false`, this.headers(address), { useAPIKey: true })
+      const user = await this.api.get(`${config.api}/user?fetchTx=false`, this.headers(address), { useAPIKey: true })
       if (user?.data) {
         const {
           badge: userBadges,
@@ -253,10 +245,10 @@ class PreferencesController extends EventEmitter {
       return undefined
     } finally {
       Promise.all([
-        getWalletOrders({}, this.headers(address).headers).catch((error) => {
+        this.api.getWalletOrders({}, this.headers(address).headers).catch((error) => {
           log.error('unable to fetch wallet orders', error)
         }),
-        getPastOrders({}, this.headers(address).headers).catch((error) => {
+        this.api.getPastOrders({}, this.headers(address).headers).catch((error) => {
           log.error('unable to fetch past orders', error)
         }),
       ])
@@ -344,7 +336,7 @@ class PreferencesController extends EventEmitter {
 
   async fetchEtherscanTx(address) {
     try {
-      const tx = await getEtherscanTransactions({ selectedAddress: address }, this.headers(address).headers)
+      const tx = await this.api.getEtherscanTransactions({ selectedAddress: address }, this.headers(address).headers)
       if (tx?.data) {
         this.emit('addEtherscanTransactions', tx.data)
       }
@@ -377,7 +369,7 @@ class PreferencesController extends EventEmitter {
   /* istanbul ignore next */
   async postPastTx(tx, address) {
     try {
-      const response = await post(`${config.api}/transaction`, tx, this.headers(address), { useAPIKey: true })
+      const response = await this.api.post(`${config.api}/transaction`, tx, this.headers(address), { useAPIKey: true })
       log.info('successfully added', response)
     } catch (error) {
       log.error(error, 'unable to insert transaction')
@@ -395,7 +387,7 @@ class PreferencesController extends EventEmitter {
 
   /* istanbul ignore next */
   async createUser(selectedCurrency, theme, verifier, verifierId, accountType, address) {
-    await post(
+    await this.api.post(
       `${config.api}/user`,
       {
         default_currency: selectedCurrency,
@@ -429,7 +421,7 @@ class PreferencesController extends EventEmitter {
         const urlParameters = new URLSearchParams(window.location.search)
         const referrer = urlParameters.get('referrer') || ''
         if (window.location.href.includes('referrer') && !referrer) return
-        post(
+        this.api.post(
           `${config.api}/user/recordLogin`,
           {
             hostname: userOrigin,
@@ -448,7 +440,7 @@ class PreferencesController extends EventEmitter {
   async setUserTheme(payload) {
     if (payload === this.state()?.theme) return
     try {
-      await patch(`${config.api}/user/theme`, { theme: payload }, this.headers(), { useAPIKey: true })
+      await this.api.patch(`${config.api}/user/theme`, { theme: payload }, this.headers(), { useAPIKey: true })
       this.handleSuccess('navBar.snackSuccessTheme')
       this.updateStore({ theme: payload })
     } catch (error) {
@@ -460,7 +452,7 @@ class PreferencesController extends EventEmitter {
   /* istanbul ignore next */
   async setPermissions(payload) {
     try {
-      const response = await post(`${config.api}/permissions`, payload, this.headers(), { useAPIKey: true })
+      const response = await this.api.post(`${config.api}/permissions`, payload, this.headers(), { useAPIKey: true })
       log.info('successfully set permissions', response)
     } catch (error) {
       log.error('unable to set permissions', error)
@@ -470,7 +462,7 @@ class PreferencesController extends EventEmitter {
   async setUserLocale(payload) {
     if (payload === this.state()?.locale) return
     try {
-      await patch(`${config.api}/user/locale`, { locale: payload }, this.headers(), { useAPIKey: true })
+      await this.api.patch(`${config.api}/user/locale`, { locale: payload }, this.headers(), { useAPIKey: true })
       this.updateStore({ locale: payload })
       // this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {
@@ -482,7 +474,7 @@ class PreferencesController extends EventEmitter {
   async setSelectedCurrency(payload) {
     if (payload.selectedCurrency === this.state()?.selectedCurrency) return
     try {
-      await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers(), { useAPIKey: true })
+      await this.api.patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers(), { useAPIKey: true })
       this.updateStore({ selectedCurrency: payload.selectedCurrency })
       this.handleSuccess('navBar.snackSuccessCurrency')
     } catch (error) {
@@ -494,7 +486,7 @@ class PreferencesController extends EventEmitter {
   async setTKeyOnboardingStatus(payload, address) {
     // This is called before set selected address is assigned
     try {
-      await patch(`${config.api}/user`, { tkey_onboarding_complete: payload }, this.headers(address), { useAPIKey: true })
+      await this.api.patch(`${config.api}/user`, { tkey_onboarding_complete: payload }, this.headers(address), { useAPIKey: true })
       this.updateStore({ tKeyOnboardingComplete: payload }, address)
       log.info('successfully updated onboarding status')
     } catch (error) {
@@ -505,7 +497,7 @@ class PreferencesController extends EventEmitter {
   /* istanbul ignore next */
   async setVerifier(verifier, verifierId, address) {
     try {
-      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers(address), { useAPIKey: true })
+      const response = await this.api.patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers(address), { useAPIKey: true })
       log.info('successfully updated verifier info', response)
     } catch (error) {
       log.error('unable to update verifier info', error)
@@ -514,7 +506,7 @@ class PreferencesController extends EventEmitter {
 
   async setDefaultPublicAddress(ofAddress, address) {
     try {
-      const response = await patch(`${config.api}/user`, { default_public_address: address }, this.headers(ofAddress), { useAPIKey: true })
+      const response = await this.api.patch(`${config.api}/user`, { default_public_address: address }, this.headers(ofAddress), { useAPIKey: true })
       this.updateStore({ defaultPublicAddress: address }, ofAddress)
       log.info('successfully updated default public address', response)
     } catch (error) {
@@ -524,14 +516,14 @@ class PreferencesController extends EventEmitter {
 
   /* istanbul ignore next */
   getEtherScanTokenBalances(address) {
-    return get(`${config.api}/tokenbalances`, this.headers(address), { useAPIKey: true })
+    return this.api.get(`${config.api}/tokenbalances`, this.headers(address), { useAPIKey: true })
   }
 
   async getBillboardContents() {
     try {
       const { selectedAddress } = this.store.getState()
       if (!selectedAddress) return
-      const resp = await get(`${config.api}/billboard`, this.headers(), { useAPIKey: true })
+      const resp = await this.api.get(`${config.api}/billboard`, this.headers(), { useAPIKey: true })
       const events = resp.data.reduce((accumulator, event) => {
         if (!accumulator[event.callToActionLink]) accumulator[event.callToActionLink] = {}
         accumulator[event.callToActionLink][event.locale] = event
@@ -546,7 +538,7 @@ class PreferencesController extends EventEmitter {
 
   async addContact(payload) {
     try {
-      const response = await post(`${config.api}/contact`, payload, this.headers(), { useAPIKey: true })
+      const response = await this.api.post(`${config.api}/contact`, payload, this.headers(), { useAPIKey: true })
       this.updateStore({ contacts: [...this.state().contacts, response.data] })
       this.handleSuccess('navBar.snackSuccessContactAdd')
     } catch {
@@ -556,7 +548,7 @@ class PreferencesController extends EventEmitter {
 
   async deleteContact(payload) {
     try {
-      const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers(), { useAPIKey: true })
+      const response = await this.api.remove(`${config.api}/contact/${payload}`, {}, this.headers(), { useAPIKey: true })
       const finalContacts = this.state().contacts.filter((contact) => contact.id !== response.data.id)
       this.updateStore({ contacts: finalContacts })
       this.handleSuccess('navBar.snackSuccessContactDelete')
@@ -568,7 +560,7 @@ class PreferencesController extends EventEmitter {
   async addCustomToken(payload) {
     try {
       // payload is { token_address, network, token_symbol, decimals, token_name }
-      const response = await post(`${config.api}/customtoken`, payload, this.headers(), { useAPIKey: true })
+      const response = await this.api.post(`${config.api}/customtoken`, payload, this.headers(), { useAPIKey: true })
       this.updateStore({ customTokens: [...this.state().customTokens, response.data] })
       this.handleSuccess('navBar.snackSuccessCustomTokenAdd')
     } catch {
@@ -579,7 +571,7 @@ class PreferencesController extends EventEmitter {
   async deleteCustomToken(payload) {
     try {
       // payload is id
-      const response = await remove(`${config.api}/customtoken/${payload}`, {}, this.headers(), { useAPIKey: true })
+      const response = await this.api.remove(`${config.api}/customtoken/${payload}`, {}, this.headers(), { useAPIKey: true })
       const customTokens = this.state().customTokens.filter((x) => x.id.toString() !== response.data.id.toString())
       this.updateStore({ customTokens })
       this.handleSuccess('navBar.snackSuccessCustomTokenDelete')
@@ -591,7 +583,7 @@ class PreferencesController extends EventEmitter {
   /* istanbul ignore next */
   async revokeDiscord(idToken) {
     try {
-      const resp = await post(`${config.api}/revoke/discord`, { token: idToken }, this.headers(), { useAPIKey: true })
+      const resp = await this.api.post(`${config.api}/revoke/discord`, { token: idToken }, this.headers(), { useAPIKey: true })
       log.info(resp)
     } catch (error) {
       log.error(error)
@@ -601,7 +593,7 @@ class PreferencesController extends EventEmitter {
   /* istanbul ignore next */
   async patchPastTx(body, address) {
     try {
-      const response = await patch(`${config.api}/transaction`, body, this.headers(address), { useAPIKey: true })
+      const response = await this.api.patch(`${config.api}/transaction`, body, this.headers(address), { useAPIKey: true })
       log.info('successfully patched', response)
     } catch (error) {
       log.error('unable to patch tx', error)
@@ -642,7 +634,7 @@ class PreferencesController extends EventEmitter {
     const newBadgeCompletion = { ...this.state().badgesCompletion, ...{ [payload]: true } }
     this.updateStore({ badgesCompletion: newBadgeCompletion })
     try {
-      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers(), { useAPIKey: true })
+      await this.api.patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers(), { useAPIKey: true })
     } catch (error) {
       log.error('unable to set badge', error)
     }
@@ -650,7 +642,7 @@ class PreferencesController extends EventEmitter {
 
   async getMessageForSigning(publicAddress) {
     try {
-      const response = await post(
+      const response = await this.api.post(
         `${config.api}/auth/message`,
         {
           public_address: publicAddress,
@@ -667,18 +659,18 @@ class PreferencesController extends EventEmitter {
 
   /* istanbul ignore next */
   async getOpenSeaCollectibles(api) {
-    return get(`${config.api}/opensea?url=${api}`, this.headers(), { useAPIKey: true })
+    return this.api.get(`${config.api}/opensea?url=${api}`, this.headers(), { useAPIKey: true })
   }
 
   /* istanbul ignore next */
   async getTwitterId(payload) {
-    const userId = await get(`${config.api}/twitter?screen_name=${payload.nick}`, this.headers(), { useAPIKey: true })
+    const userId = await this.api.get(`${config.api}/twitter?screen_name=${payload.nick}`, this.headers(), { useAPIKey: true })
     return `${payload.typeOfLogin.toLowerCase()}|${userId.data.toString()}`
   }
 
   /* istanbul ignore next */
   async sendEmail(payload) {
-    return post(`${config.api}/transaction/sendemail`, payload.emailObject, this.headers(), { useAPIKey: true })
+    return this.api.post(`${config.api}/transaction/sendemail`, payload.emailObject, this.headers(), { useAPIKey: true })
   }
 }
 

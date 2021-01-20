@@ -90,6 +90,7 @@ export default class TorusController extends EventEmitter {
       network: this.networkController,
       provider: this.provider,
       signMessage: this.keyringController.signMessage.bind(this.keyringController),
+      storeDispatch: this.opts.storeDispatch,
     })
 
     // detect tokens controller
