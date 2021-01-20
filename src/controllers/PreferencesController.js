@@ -64,15 +64,6 @@ class PreferencesController extends EventEmitter {
    *
    * @typedef {Object} PreferencesController
    * @param {Object} opts - Overrides the defaults for the initial state of this.store
-   * @property {object} store The stored object containing a users preferences, stored in torus-backend
-   * @property {string} store.selectedAddress A hex string that matches the currently selected address in the app
-   * @property {string} store.selectedCurrency A string showing the user selected currency
-   * @property {string} store.theme the user selected theme
-   * @property {string} store.locale the user selected locale
-   * @property {Array} store.contacts the contacts of the user
-   * @property {Array} store.customTokens the custom tokens of the user
-   * @property {object} store.permissions the stored permissions of the user for different domains
-   * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
   constructor(options = {}) {
     super()
@@ -81,7 +72,7 @@ class PreferencesController extends EventEmitter {
 
     this.network = network
     this.web3 = new Web3(provider)
-    this.api = null
+    this.api = new ApiHelpers(options.storeDispatch)
     this.signMessage = signMessage
 
     this.interval = options.interval || DEFAULT_INTERVAL
@@ -125,7 +116,6 @@ class PreferencesController extends EventEmitter {
     dispatch,
     commit,
   }) {
-    this.api = new ApiHelpers({ dispatch })
     let response = { token: jwtToken }
     if (this.state(address)) return this.state(address).defaultPublicAddress || address
     if (!jwtToken) {

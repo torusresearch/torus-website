@@ -1,20 +1,21 @@
 import config from '../config'
 import router from '../router'
-import * as httpHelpers from './httpHelpers'
+import { get, patch, post, remove } from './httpHelpers'
 
 export default class ApiHelpers {
-  constructor({ dispatch }) {
-    this.dispatch = dispatch
-    this.get = this._wrap(httpHelpers.get)
-    this.post = this._wrap(httpHelpers.post)
-    this.patch = this._wrap(httpHelpers.patch)
-    this.remove = this._wrap(httpHelpers.remove)
+  constructor(getDispatch) {
+    this.getDispatch = getDispatch
+    this.get = this._wrap(get)
+    this.patch = this._wrap(patch)
+    this.post = this._wrap(post)
+    this.remove = this._wrap(remove)
   }
 
   _wrap(fn) {
     return async (...args) => {
       try {
-        return await fn(...args)
+        const result = await fn(...args)
+        return result
       } catch (error) {
         if (error.status === 401) {
           const body = await error.json()
@@ -68,7 +69,7 @@ export default class ApiHelpers {
   }
 
   async logOut() {
-    await this.dispatch('logOut')
+    await this.getDispatch()('logOut')
     await router.push({ name: 'logout' })
   }
 }
