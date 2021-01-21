@@ -215,6 +215,7 @@ export default {
       try {
         const { isOld, oldIndex, rejected } = details
         if (rejected) throw new Error('User rejected to store device')
+        await this.tKey.updateMetadata()
         if (!isOld) {
           const newShare = await this.tKey.generateNewShare()
           log.info(newShare, 'new Share')
