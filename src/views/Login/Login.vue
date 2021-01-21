@@ -267,7 +267,7 @@
                         <div v-if="!fakeIFrame" id="test" style="all: unset; position: absolute">
                           <iframe id="ifrm" style="all: unset; border: 0; position: absolute" src="http://localhost:4000"></iframe>
                         </div>
-                        <div id="unset" style="all: unset">{{ '' }}</div>
+                        <div id="unset" style="all: unset; white-space: nowrap">{{ '' }}</div>
                         {{ t('dappLogin.termsAuth01') }}
                       </span>
                       <br />
@@ -405,7 +405,7 @@ import { HandlerFactory as createHandler } from '../../handlers/Auth'
 import { GOOGLE, GOOGLE_VERIFIER } from '../../utils/enums'
 import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/utils'
 
-window.whitespace = () => {
+window.whitespace_deprecated = () => {
   window.document.querySelector('#unset').innerHTML = '&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;'
 }
 
@@ -416,6 +416,32 @@ window.getPos = (el) => {
   }
   const rect = elem.getBoundingClientRect()
   return { x: rect.left, y: rect.top }
+}
+
+function genText(numSpaces) {
+  const space = '&#8201;'
+  let str = ''
+  for (let i = 0; i < numSpaces; i += 1) {
+    str += space
+  }
+  return str
+}
+
+window.whitespace = () => {
+  const unset = window.document.querySelector('#unset')
+  unset.innerHTML = ''
+  function fitWidth() {
+    if (unset.getBoundingClientRect().width < window.document.querySelector('#test').getBoundingClientRect().width) {
+      return false
+    }
+    return true
+  }
+
+  let numSpaces = 1
+  while (!fitWidth()) {
+    window.document.querySelector('#unset').innerHTML = genText(numSpaces)
+    numSpaces += 1
+  }
 }
 
 window.copyStyle = () => {
