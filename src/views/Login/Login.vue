@@ -95,7 +95,10 @@
                       <div class="text_2--text mb-2 font-weight-bold">{{ t('login.note') }}:</div>
                       <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
                       <div v-if="thirdPartyAuthenticators.length > 0">
-                        <span>{{ t('dappLogin.termsAuth01') }}</span>
+                        <span>
+                          <div id="unset" style="all: unset"></div>
+                          {{ t('dappLogin.termsAuth01') }}
+                        </span>
                         <br />
                         <span>{{ thirdPartyAuthenticators }}.</span>
                         <a
@@ -259,8 +262,16 @@
                     <div class="text_2--text mb-2 font-weight-bold">{{ t('login.note') }}:</div>
                     <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
                     <div v-if="thirdPartyAuthenticators.length > 0">
-                      <span>{{ t('dappLogin.termsAuth01') }}</span>
+                      <span>
+                        <div v-if="fakeIFrame" id="fakeifrm" style="all: unset; position: absolute">{{ 'Leonard Ten' }}</div>
+                        <div v-if="!fakeIFrame" id="test" style="all: unset; position: absolute">
+                          <iframe id="ifrm" style="all: unset; border: 0; position: absolute" src="http://localhost:4000"></iframe>
+                        </div>
+                        <div id="unset" style="all: unset">{{ '' }}</div>
+                        {{ t('dappLogin.termsAuth01') }}
+                      </span>
                       <br />
+
                       <span>{{ thirdPartyAuthenticators }}.</span>
                       <a
                         class="privacy-learn-more text_3--text"
@@ -394,6 +405,59 @@ import { HandlerFactory as createHandler } from '../../handlers/Auth'
 import { GOOGLE, GOOGLE_VERIFIER } from '../../utils/enums'
 import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/utils'
 
+window.whitespace = () => {
+  window.document.querySelector('#unset').innerHTML = '&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;'
+}
+
+window.getPos = (el) => {
+  let elem = el
+  if (typeof el === 'string') {
+    elem = window.document.querySelector(`#${el}`)
+  }
+  const rect = elem.getBoundingClientRect()
+  return { x: rect.left, y: rect.top }
+}
+
+window.copyStyle = () => {
+  const unset = document.querySelector('#unset')
+  const copiedStyle = JSON.parse(JSON.stringify(window.getComputedStyle(unset)))
+  const ifrm = window.document.querySelector('#ifrm')
+  ifrm.contentWindow.postMessage(
+    {
+      method: 'setCSS',
+      data: {
+        css: copiedStyle,
+      },
+    },
+    'http://localhost:4000'
+  )
+}
+
+window.getDimensions = () => {
+  const ifrm = window.document.querySelector('#ifrm')
+
+  ifrm.contentWindow.postMessage(
+    {
+      method: 'getDimensions',
+    },
+    'http://localhost:4000'
+  )
+}
+
+window.addEventListener('message', (ev) => {
+  const { method, data } = ev.data
+  window.console.log('WHATTTT', ev)
+  if (method === 'setDimensions') {
+    const ifrm = window.document.querySelector('#ifrm')
+    const test = window.document.querySelector('#test')
+    // const unsetWhitespaceHeight = window.document.querySelector('#unset').getBoundingClientRect().height
+    ifrm.style.height = `${data.height}px`
+    ifrm.style.width = `${data.width}px`
+    test.style.height = `${data.height}px`
+    test.style.width = `${data.width}px`
+  }
+})
+
 export default {
   name: 'Login',
   components: { WalletLoginLoader, WalletLoginLoaderMobile },
@@ -408,6 +472,7 @@ export default {
       snackbarText: '',
       snackbarColor: 'error',
       scrollOnTop: true,
+      fakeIFrame: false,
     }
   },
   computed: {
@@ -475,6 +540,10 @@ export default {
     },
   },
   async mounted() {
+    const self = this
+    window.toggleFakeIFrame = () => {
+      self.toggleFakeIFrame()
+    }
     if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
 
     this.isLogout = this.$route.name !== 'login'
@@ -530,6 +599,11 @@ export default {
       handleLogin: 'handleLogin',
     }),
     ...mapMutations(['setUserInfo']),
+    toggleFakeIFrame() {
+      window.console.log('THIS FAKEIFRAME IS', this.fakeIFrame)
+      this.fakeIFrame = !this.fakeIFrame
+      window.console.log('THIS FAKEIFRAME IS NOW', this.fakeIFrame)
+    },
     async startLogin(verifier) {
       try {
         this.loginInProgress = true
