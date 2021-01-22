@@ -82,7 +82,7 @@ const redirectURI = `${baseUrl}/redirect`
 
 const LOGIN_DOMAIN = VUE_APP_LOGIN_DOMAIN
 
-// no reddit for binance
+// no reddit for binance.tor.us
 
 // In Modal, show 6 by default (view more)
 export default {
