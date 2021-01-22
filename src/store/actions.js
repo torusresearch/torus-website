@@ -131,7 +131,7 @@ export default {
     clearInterval(thresholdKeyController.requestStatusCheckId)
     assetDetectionController.stopAssetDetection()
     torus.updateStaticData({ isUnlocked: false })
-    router.push({ path: '/logout' }).catch(() => {})
+    if (isMain) router.push({ path: '/logout' }).catch(() => {})
   },
   setSelectedCurrency({ commit }, payload) {
     torusController.setCurrentCurrency(payload, (error, data) => {
