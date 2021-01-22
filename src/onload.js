@@ -65,6 +65,7 @@ function onloadTorus(torus) {
       const { selectedAddress, wallet } = state || {}
       return { selectedAddress, wallet }
     },
+    storeDispatch: () => getStore().dispatch,
     rehydrate() {
       getStore().dispatch('rehydrate')
     },

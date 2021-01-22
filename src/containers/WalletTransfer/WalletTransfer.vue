@@ -882,7 +882,7 @@ export default {
     },
     getUnstoppableDomains(domain) {
       return new Resolution({
-        blockchain: { ens: 'https://api.infura.io/v1/jsonrpc/mainnet', cns: 'https://api.infura.io/v1/jsonrpc/mainnet' },
+        blockchain: { ens: `https://mainnet.infura.io/v3/${config.infuraKey}`, cns: `https://mainnet.infura.io/v3/${config.infuraKey}` },
       }).addr(domain, 'ETH')
     },
     getEnsAddress(ens) {

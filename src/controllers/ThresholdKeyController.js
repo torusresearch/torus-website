@@ -272,7 +272,7 @@ class ThresholdKeyController extends EventEmitter {
     if (backup) {
       try {
         const { deviceShare } = settingsPageData
-        log.info(deviceShare, 'deviceShare')
+        // log.info(deviceShare, 'deviceShare')
         if (deviceShare.share) {
           await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage(deviceShare.share.share.shareIndex)
         }
@@ -301,7 +301,7 @@ class ThresholdKeyController extends EventEmitter {
     try {
       // const seedPhrases = []
       const { tKey } = this.state
-      log.info('adding seed phrase', seedPhrase)
+      // log.info('adding seed phrase', seedPhrase)
       await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree', seedPhrase || undefined)
       // seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
       // log.info(seedPhrases, 'stored seed phrases')
@@ -315,7 +315,7 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async addSeedPhraseAccount(seedPhrase) {
-    log.info('🚀 ~ ThresholdKeyController ~ addSeedPhraseAccount ~ seedPhrase', seedPhrase)
+    // log.info('🚀 ~ ThresholdKeyController ~ addSeedPhraseAccount ~ seedPhrase', seedPhrase)
     const { tKey } = this.state
     const seedPhraseStores = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrasesWithAccounts()
     const requiredSeedPhraseStore = seedPhraseStores.find((x) => x.seedPhrase === seedPhrase)
@@ -330,7 +330,7 @@ class ThresholdKeyController extends EventEmitter {
       const shareCreated = await tKey.generateNewShare()
       const requiredShareStore = shareCreated.newShareStores[shareCreated.newShareIndex.toString('hex')]
       const serializedShare = await tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].serialize(requiredShareStore.share.share, 'mnemonic')
-      log.info(requiredShareStore.share, serializedShare)
+      // log.info(requiredShareStore.share, serializedShare)
       await post(config.tkeyEmailHost, {
         data: serializedShare,
         logo: 'https://app.tor.us/images/torus_logo.png',

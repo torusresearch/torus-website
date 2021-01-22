@@ -131,6 +131,7 @@ export default {
     clearInterval(thresholdKeyController.requestStatusCheckId)
     assetDetectionController.stopAssetDetection()
     torus.updateStaticData({ isUnlocked: false })
+    router.push({ path: '/logout' }).catch(() => {})
   },
   setSelectedCurrency({ commit }, payload) {
     torusController.setCurrentCurrency(payload, (error, data) => {
@@ -414,7 +415,7 @@ export default {
 
     if (!config.onlyTkey) {
       oAuthKey = await dispatch('getTorusKey', { verifier, verifierId, verifierParams, oAuthToken })
-      log.info('key 1', oAuthKey)
+      // log.info('key 1', oAuthKey)
 
       defaultAddresses.push(
         ...(await dispatch('initTorusKeyring', {
@@ -460,7 +461,6 @@ export default {
 
     if (!selectedAddress) {
       dispatch('logOut')
-      router.push({ name: 'logout' }).catch((_) => {})
       throw new Error('No Accounts available')
     }
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
@@ -511,17 +511,6 @@ export default {
       wcConnectorSession,
     } = state
     try {
-      // if jwtToken expires, logout
-      // if (jwtToken) {
-      //   const decoded = jwtDecode(jwtToken)
-      //   if (Date.now() / 1000 > decoded.exp) {
-      //     dispatch('logOut')
-      //     return
-      //   }
-      //   setTimeout(() => {
-      //     dispatch('logOut')
-      //   }, decoded.exp * 1000 - Date.now())
-      // }
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       const walletKeys = Object.keys(wallet)

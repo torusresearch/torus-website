@@ -44,6 +44,17 @@
               <TwoFactorAuth />
             </v-expansion-panel-content>
           </v-expansion-panel>
+          <v-expansion-panel class="my-2">
+            <v-expansion-panel-header id="privacy-panel-header">
+              <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.device_detailed'" />
+              <div class="grow font-weight-bold title text_1--text">
+                {{ t('walletSettings.crashReport') }}
+              </div>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <CrashReport />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
         </v-expansion-panels>
       </v-flex>
       <v-flex px-4 xs12 md6>
@@ -89,6 +100,7 @@ import { mapState } from 'vuex'
 
 import QuickAddress from '../../components/helpers/QuickAddress'
 import ContactList from '../../components/WalletSettings/ContactList'
+import CrashReport from '../../components/WalletSettings/CrashReport'
 import DefaultAccount from '../../components/WalletSettings/DefaultAccount'
 import Display from '../../components/WalletSettings/Display'
 import Network from '../../components/WalletSettings/Network'
@@ -102,6 +114,7 @@ export default {
     PrivacySecurity,
     Network,
     ContactList,
+    CrashReport,
     QuickAddress,
     Display,
     TwoFactorAuth,

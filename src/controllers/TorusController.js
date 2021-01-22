@@ -90,6 +90,7 @@ export default class TorusController extends EventEmitter {
       network: this.networkController,
       provider: this.provider,
       signMessage: this.keyringController.signMessage.bind(this.keyringController),
+      storeDispatch: this.opts.storeDispatch,
     })
 
     // detect tokens controller
@@ -225,13 +226,12 @@ export default class TorusController extends EventEmitter {
       },
       version,
       // account mgmt
-      getAccounts: async () => {
+      getAccounts: async () =>
         // Expose no accounts if this origin has not been approved, preventing
         // account-requiring RPC methods from completing successfully
         // only show address if account is unlocked
-        log.info(this.prefsController.store.getState().selectedAddress, 'accounts')
-        return this.prefsController.store.getState().selectedAddress ? [this.prefsController.store.getState().selectedAddress] : []
-      },
+        // log.info(this.prefsController.store.getState().selectedAddress, 'accounts')
+        this.prefsController.store.getState().selectedAddress ? [this.prefsController.store.getState().selectedAddress] : [],
       // tx signing
       processTransaction: this.newUnapprovedTransaction.bind(this),
       // msg signing

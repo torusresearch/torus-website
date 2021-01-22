@@ -190,7 +190,6 @@ export default {
     },
     cancelSeedPhrase() {
       this.logOut()
-      this.$router.push({ path: '/logout' }).catch((_) => {})
     },
     async createSeedPhrase(seedPhrase) {
       this.addingSeedPhrase = true

@@ -4,6 +4,7 @@ const TerserPlugin = require('terser-webpack-plugin')
 const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
+process.env.VUE_APP_TORUS_BUILD_VERSION = version
 
 module.exports = {
   devServer: {
@@ -63,7 +64,7 @@ module.exports = {
   publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'binance' ? `/${version}/` : '/',
   integrity: true,
   crossorigin: 'anonymous',
-  productionSourceMap: false,
+  productionSourceMap: true,
   pwa: {
     name: 'Torus',
     themeColor: '#0364ff',
