@@ -413,20 +413,26 @@ export default {
     let oAuthKey = {}
     dispatch('subscribeToControllers')
 
-    if (!config.onlyTkey) {
-      oAuthKey = await dispatch('getTorusKey', { verifier, verifierId, verifierParams, oAuthToken })
-      // log.info('key 1', oAuthKey)
+    const promises = []
 
-      defaultAddresses.push(
-        ...(await dispatch('initTorusKeyring', {
-          keys: [{ ...oAuthKey, accountType: ACCOUNT_TYPE.NORMAL }],
-          calledFromEmbed,
-          rehydrate: false,
-        }))
-      )
+    if (!config.onlyTkey) {
+      const p1 = async () => {
+        oAuthKey = await dispatch('getTorusKey', { verifier, verifierId, verifierParams, oAuthToken })
+        // log.info('key 1', oAuthKey)
+
+        defaultAddresses.push(
+          ...(await dispatch('initTorusKeyring', {
+            keys: [{ ...oAuthKey, accountType: ACCOUNT_TYPE.NORMAL }],
+            calledFromEmbed,
+            rehydrate: false,
+          }))
+        )
+      }
+      promises.push(p1())
     }
 
-    await dispatch('calculatePostboxKey', { oAuthToken })
+    promises.push(dispatch('calculatePostboxKey', { oAuthToken }))
+    await Promise.all(promises)
     // Threshold Bak region
     // Check if tkey exists
     const keyExists = await thresholdKeyController.checkIfTKeyExists(state.postboxKey.privateKey)
