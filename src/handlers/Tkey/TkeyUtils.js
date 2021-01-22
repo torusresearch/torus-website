@@ -1,6 +1,6 @@
 import bowser from 'bowser'
-import log from 'loglevel'
 
+// import log from 'loglevel'
 import {
   ACCOUNT_TYPE,
   CHROME_EXTENSION_STORAGE_MODULE_KEY,
@@ -105,6 +105,6 @@ export async function getAllPrivateKeys(newTKey, privKey) {
     }, [])
   )
 
-  log.info(hexKeys, 'privKeys')
+  // log.info(hexKeys, 'privKeys')
   return hexKeys
 }

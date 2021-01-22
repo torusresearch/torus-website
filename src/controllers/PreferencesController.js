@@ -456,7 +456,7 @@ class PreferencesController extends EventEmitter {
   async setCrashReport(payload) {
     if (payload === this.state()?.crashReport) return
     try {
-      await patch(`${config.api}/user/crashreporter`, { enable_crash_reporter: payload }, this.headers(), { useAPIKey: true })
+      await this.api.patch(`${config.api}/user/crashreporter`, { enable_crash_reporter: payload }, this.headers(), { useAPIKey: true })
       if (storageAvailable('localStorage')) {
         localStorage.setItem('torus-enable-crash-reporter', String(payload))
       }

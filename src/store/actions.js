@@ -414,7 +414,7 @@ export default {
 
     if (!config.onlyTkey) {
       oAuthKey = await dispatch('getTorusKey', { verifier, verifierId, verifierParams, oAuthToken })
-      log.info('key 1', oAuthKey)
+      // log.info('key 1', oAuthKey)
 
       defaultAddresses.push(
         ...(await dispatch('initTorusKeyring', {

@@ -31,7 +31,7 @@ export default {
         ethAddress: generateAddressFromPrivateKey(x.privKey),
         ...x,
       }))
-      log.info('tkey 2', thresholdKeys)
+      // log.info('tkey 2', thresholdKeys)
       return dispatch('initTorusKeyring', {
         keys: thresholdKeys,
         calledFromEmbed,
@@ -59,7 +59,7 @@ export default {
       ethAddress: generateAddressFromPrivateKey(x.privKey),
       ...x,
     }))
-    log.info('tkey 2', thresholdKeys)
+    // log.info('tkey 2', thresholdKeys)
     await dispatch('initTorusKeyring', {
       keys: thresholdKeys,
       calledFromEmbed: false,
@@ -82,7 +82,7 @@ export default {
   async showThresholdKeyUi({ state, dispatch }, payload) {
     const { type, data } = payload
     // data is store of thresholdkeycontroller
-    log.info(data, type)
+    // log.info(data, type)
     if (isMain) router.push({ name: 'tKeyInput' })
     else {
       const windowId = randomId()
@@ -91,7 +91,7 @@ export default {
         dispatch(type === REQUEST_TKEY_SEED_PHRASE_INPUT ? 'setTkeySeedPhraseCreateFlow' : 'setTkeyInputFlow', { rejected: true })
       }
       const handleSuccess = (successData) => {
-        log.info('tkey input success', successData)
+        log.info('tkey input success')
         dispatch(type === REQUEST_TKEY_SEED_PHRASE_INPUT ? 'setTkeySeedPhraseCreateFlow' : 'setTkeyInputFlow', { response: JSON.parse(successData) })
       }
       try {
@@ -198,7 +198,7 @@ export default {
       ethAddress: generateAddressFromPrivateKey(x.privKey),
       ...x,
     }))
-    log.info('tkey 2', thresholdKeys)
+    // log.info('tkey 2', thresholdKeys)
     await dispatch('initTorusKeyring', {
       keys: thresholdKeys,
       calledFromEmbed: false,
@@ -215,7 +215,7 @@ export default {
       ethAddress: generateAddressFromPrivateKey(x.privKey),
       ...x,
     }))
-    log.info('tkey 2', thresholdKeys)
+    // log.info('tkey 2', thresholdKeys)
     return dispatch('initTorusKeyring', {
       keys: thresholdKeys,
       calledFromEmbed: false,

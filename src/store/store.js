@@ -193,7 +193,6 @@ const VuexStore = new Vuex.Store({
 
 function isCustomSignedMessage(messageParameters) {
   const { origin, customPrefix } = messageParameters
-  log.info(origin, customPrefix, `\u0019${origin} Signed Message:\n`, customPrefix === `\u0019${origin} Signed Message:\n`)
   if (origin && customPrefix === `\u0019${origin} Signed Message:\n`) return true
 
   // if (!/.+\.tor\.us$/.exec(origin) && origin !== 'tor.us') {
