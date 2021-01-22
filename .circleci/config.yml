@@ -54,13 +54,13 @@ deploy_function: &deploy_function
     - attach_workspace:
         at: ~/
     - add_ssh_keys
-    # - run:
-    #     name: 'Upload source to Sentry'
-    #     command: |
-    #       . ./scripts/uploadToSentry.sh
-    # - run:
-    #     name: 'Delete sourcemaps'
-    #     command: rm ./dist/js/*.js.map
+    - run:
+        name: 'Upload source to Sentry'
+        command: |
+          . ./scripts/uploadToSentry.sh
+    - run:
+        name: 'Delete sourcemaps'
+        command: rm ./dist/js/*.js.map
     - run:
         name: 'Deploy Over SSH to AWS'
         command: |
