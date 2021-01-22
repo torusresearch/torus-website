@@ -49,7 +49,7 @@ update_iframeIntegrity: &update_iframeIntegrity
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateIframeIntegrity.sh
 deploy_function: &deploy_function
-  <<: *job_common_node
+  <<: *job_common
   steps:
     - attach_workspace:
         at: ~/
