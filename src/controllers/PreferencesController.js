@@ -453,6 +453,7 @@ class PreferencesController extends EventEmitter {
     }
   }
 
+  /* istanbul ignore next */
   async setCrashReport(payload) {
     if (payload === this.state()?.crashReport) return
     try {
