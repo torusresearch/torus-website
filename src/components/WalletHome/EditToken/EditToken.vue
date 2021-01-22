@@ -171,8 +171,6 @@ export default {
   mounted() {
     if (this.isHideMode) {
       this.tab = 1
-      // // eslint-disable-next-line no-console
-      // console.log('🚀 ~ mounted ~ this.deleteToken', this.deleteToken)
       this.customSymbol = this.deleteToken.symbol
       this.customDecimals = this.deleteToken.decimals
       this.customName = this.deleteToken.name

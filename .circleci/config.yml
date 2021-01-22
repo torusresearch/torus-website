@@ -55,6 +55,13 @@ deploy_function: &deploy_function
         at: ~/
     - add_ssh_keys
     - run:
+        name: 'Upload source to Sentry'
+        command: |
+          . ./scripts/uploadToSentry.sh
+    - run:
+        name: 'Delete sourcemaps'
+        command: rm ./dist/js/*.js.map
+    - run:
         name: 'Deploy Over SSH to AWS'
         command: |
           . ./scripts/uploadToAws.sh

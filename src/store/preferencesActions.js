@@ -34,6 +34,9 @@ export default {
   setUserTheme(context, payload) {
     return prefsController.setUserTheme(payload)
   },
+  setCrashReport(context, payload) {
+    return prefsController.setCrashReport(payload)
+  },
   setUserLocale(context, payload) {
     prefsController.setUserLocale(payload)
   },
