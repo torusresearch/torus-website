@@ -15,11 +15,11 @@ const { torusController } = torus || {}
 const { thresholdKeyController } = torusController || {}
 
 export default {
-  async addTKey({ dispatch, state }, { calledFromEmbed }) {
+  async addTKey({ dispatch, state }, { calledFromEmbed, share }) {
     try {
       const finalKey = state.postboxKey
       const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-      let allKeys = await thresholdKeyController.login(finalKey.privateKey)
+      let allKeys = await thresholdKeyController.login({ postboxKey: finalKey.privateKey, share })
       if (config.onlySeedPhraseAccounts && allKeys.length > 0) {
         // don't use the first key
         allKeys = allKeys.filter((x) => x.accountType !== ACCOUNT_TYPE.THRESHOLD)

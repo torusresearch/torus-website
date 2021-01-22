@@ -96,7 +96,7 @@ export default {
   methods: {
     async initTkey(json) {
       // log.info('creating tkey using json ', json)
-      this.tKey = await createTKeyInstance(this.postboxKey, json, torus.web3.eth.currentProvider)
+      this.tKey = await createTKeyInstance({ postboxKey: this.postboxKey, tKeyJson: json, provider: torus.web3.eth.currentProvider })
       this.settingsData = await calculateSettingsPageData(this.tKey)
       const { keyDetails, parsedShareDescriptions } = this.settingsData
       const { requiredShares } = keyDetails
