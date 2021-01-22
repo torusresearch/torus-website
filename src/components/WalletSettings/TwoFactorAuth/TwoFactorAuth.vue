@@ -220,7 +220,7 @@
 </template>
 
 <script>
-import log from 'loglevel'
+// import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
 import PopupLogin from '../../../containers/Popup/PopupLogin'
@@ -317,9 +317,6 @@ export default {
       const visibleSharesTotal = Object.keys(this.deviceShares).length + (this.hasPassword ? 1 : 0) + 1
       return visibleSharesTotal < this.tKeyStore.keyDetails.totalShares
     },
-  },
-  mounted() {
-    log.info('this.tKeyStore', this.tKeyStore)
   },
   methods: {
     ...mapActions(['addPassword', 'addRecoveryShare', 'changePassword', 'exportShare', 'deleteShare']),

@@ -17,6 +17,7 @@ import {
   TX_TRANSACTION,
   TX_TYPED_MESSAGE,
 } from '../utils/enums'
+import { setSentryEnabled } from '../utils/sentry'
 import { getIFrameOriginObject, isPwa, storageAvailable } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
@@ -50,6 +51,7 @@ if (storageAvailable(isPwa ? 'localStorage' : 'sessionStorage')) {
       selectedCurrency: state.selectedCurrency,
       jwtToken: state.jwtToken,
       theme: state.theme,
+      crashReport: state.crashReport,
       locale: state.locale,
       billboard: state.billboard,
       contacts: state.contacts,
@@ -99,13 +101,6 @@ const VuexStore = new Vuex.Store({
       const windowId = isTx ? payload.id : payload
       const channelName = `torus_channel_${windowId}`
       const finalUrl = `${baseRoute}confirm?instanceId=${windowId}&integrity=true&id=${windowId}`
-      const confirmWindow = new PopupWithBcHandler({
-        url: finalUrl,
-        target: '_blank',
-        features: FEATURES_CONFIRM_WINDOW,
-        channelName,
-        preopenInstanceId: request.preopenInstanceId,
-      })
       const popupPayload = {
         id: windowId,
         origin: getIFrameOriginObject(),
@@ -156,6 +151,13 @@ const VuexStore = new Vuex.Store({
         handleConfirm({ data: { txType: popupPayload.type, id: popupPayload.id } })
       } else {
         try {
+          const confirmWindow = new PopupWithBcHandler({
+            url: finalUrl,
+            target: '_blank',
+            features: FEATURES_CONFIRM_WINDOW,
+            channelName,
+            preopenInstanceId: request.preopenInstanceId,
+          })
           const result = await confirmWindow.handleWithHandshake({
             payload: popupPayload,
           })
@@ -191,7 +193,6 @@ const VuexStore = new Vuex.Store({
 
 function isCustomSignedMessage(messageParameters) {
   const { origin, customPrefix } = messageParameters
-  log.info(origin, customPrefix, `\u0019${origin} Signed Message:\n`, customPrefix === `\u0019${origin} Signed Message:\n`)
   if (origin && customPrefix === `\u0019${origin} Signed Message:\n`) return true
 
   // if (!/.+\.tor\.us$/.exec(origin) && origin !== 'tor.us') {
@@ -320,10 +321,15 @@ if (storageAvailable('localStorage')) {
   if (torusTheme) {
     VuexStore.commit('setTheme', torusTheme)
   }
+  const torusEnableCrashReporter = localStorage.getItem('torus-enable-crash-reporter')
+  if (torusEnableCrashReporter !== null) {
+    VuexStore.commit('setCrashReport', Boolean(torusEnableCrashReporter))
+  }
 }
 
 // Another location
 
 setAPIKey(VuexStore.state.embedState.apiKey)
+setSentryEnabled(VuexStore.state.crashReport)
 
 export default VuexStore
