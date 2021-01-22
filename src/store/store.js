@@ -99,13 +99,6 @@ const VuexStore = new Vuex.Store({
       const windowId = isTx ? payload.id : payload
       const channelName = `torus_channel_${windowId}`
       const finalUrl = `${baseRoute}confirm?instanceId=${windowId}&integrity=true&id=${windowId}`
-      const confirmWindow = new PopupWithBcHandler({
-        url: finalUrl,
-        target: '_blank',
-        features: FEATURES_CONFIRM_WINDOW,
-        channelName,
-        preopenInstanceId: request.preopenInstanceId,
-      })
       const popupPayload = {
         id: windowId,
         origin: getIFrameOriginObject(),
@@ -156,6 +149,13 @@ const VuexStore = new Vuex.Store({
         handleConfirm({ data: { txType: popupPayload.type, id: popupPayload.id } })
       } else {
         try {
+          const confirmWindow = new PopupWithBcHandler({
+            url: finalUrl,
+            target: '_blank',
+            features: FEATURES_CONFIRM_WINDOW,
+            channelName,
+            preopenInstanceId: request.preopenInstanceId,
+          })
           const result = await confirmWindow.handleWithHandshake({
             payload: popupPayload,
           })
