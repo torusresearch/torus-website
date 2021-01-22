@@ -233,7 +233,6 @@ export default {
         bc.close()
       }
       this.logOut()
-      this.$router.push({ path: '/logout' }).catch((_) => {})
     },
     async changeAccount(newAddress) {
       this.updateSelectedAddress({ selectedAddress: newAddress })

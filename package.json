@@ -115,6 +115,7 @@
     "babel-eslint": "^10.1.0",
     "codecov": "^3.8.1",
     "cross-env": "^7.0.3",
+    "dotenv": "^8.2.0",
     "envify": "^4.1.0",
     "eslint": "^7.18.0",
     "eslint-config-airbnb-base": "^14.2.1",

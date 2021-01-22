@@ -1,5 +1,4 @@
 import config from '../config'
-import router from '../router'
 import { get, patch, post, remove } from './httpHelpers'
 
 export default class ApiHelpers {
@@ -69,7 +68,6 @@ export default class ApiHelpers {
   }
 
   async logOut() {
-    await this.getDispatch()('logOut')
-    await router.push({ name: 'logout' })
+    return this.getDispatch()('logOut')
   }
 }
