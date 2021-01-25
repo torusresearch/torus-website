@@ -88,7 +88,7 @@ export default {
             const contract = selectedAddressAssets.find((x) => x.address.toLowerCase() === txParams.to.toLowerCase()) || {}
             log.info(contract, amountValue)
             if (contract) {
-              const { name: foundAssetName } = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
+              const { name: foundAssetName } = (contract.assets || []).find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
               assetName = foundAssetName || ''
               symbol = assetName
               type = 'erc721'
