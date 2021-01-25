@@ -163,14 +163,14 @@ export default {
   },
   mounted() {
     if (Object.keys(this.wallet).length === 0) {
-      this.$router.push({ name: 'login' })
+      this.$router.push({ name: 'login' }).catch((_) => {})
     }
   },
   methods: {
     ...mapActions(['setUserBadge', 'handleConfirmModal', 'approveShareTransferRequest', 'denyShareTransferRequest']),
     closeBadge(data) {
       this.setUserBadge(data.type)
-      if (data.returnHome && !['walletHomeMain', 'walletHome'].includes(this.$route.name)) this.$router.push({ name: 'walletHome' })
+      if (data.returnHome && !['walletHomeMain', 'walletHome'].includes(this.$route.name)) this.$router.push({ name: 'walletHome' }).catch((_) => {})
     },
     confirmShareTransfer(encPubKeyX) {
       this.approveShareTransferRequest(encPubKeyX)

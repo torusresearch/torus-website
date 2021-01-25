@@ -83,7 +83,7 @@ export default {
     const { type, data } = payload
     // data is store of thresholdkeycontroller
     // log.info(data, type)
-    if (isMain) router.push({ name: 'tKeyInput' })
+    if (isMain) router.push({ name: 'tKeyInput' }).catch((_) => {})
     else {
       const windowId = randomId()
       const handleDeny = (error) => {
