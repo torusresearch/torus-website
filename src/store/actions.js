@@ -455,7 +455,7 @@ export default {
     } else if (config.onlyTkey && !keyExists) {
       if (!isMain) dispatch('showWalletPopup', { path: 'tkey' })
       else {
-        router.push({ path: 'tkey' })
+        router.push({ path: 'tkey' }).catch((_) => {})
       }
       throw new Error('User has no account')
     }

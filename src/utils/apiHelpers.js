@@ -1,3 +1,5 @@
+import log from 'loglevel'
+
 import config from '../config'
 import { get, patch, post, remove } from './httpHelpers'
 
@@ -18,7 +20,10 @@ export default class ApiHelpers {
       } catch (error) {
         if (error.status === 401) {
           const body = await error.json()
-          if (body.error === 'Token expired') return this.logOut()
+          if (body.error === 'Token expired') {
+            log.warn('Token expired')
+            await this.logOut()
+          }
         }
         throw error
       }
