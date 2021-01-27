@@ -5,7 +5,7 @@
         <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <div class="font-weight-bold headline">{{ t('walletSettings.customKey.setCustomPrivateKey') }}</div>
         </v-flex>
-        <v-flex xs12>
+        <v-flex xs12 mb-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <v-layout wrap align-center>
             <v-flex>
               <v-text-field v-model="customPrivateKey" :rules="rules"></v-text-field>

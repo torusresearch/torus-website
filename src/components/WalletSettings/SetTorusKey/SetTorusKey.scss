@@ -1,52 +1,32 @@
 .account-list {
-  &__item {
-    border: 0;
-    box-shadow: none;
-    cursor: pointer;
-    &:hover,
-    &.active {
-      background: #ffffff;
-      border: 1px solid #f5f5f5;
-      box-sizing: border-box;
-      box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
-      border-radius: 9px;
-      &.theme--dark {
-        border: 0;
-        background: var(--v-torusBlack2-base);
-        box-shadow: 5px 5px 10px #212121, -5px -5px 10px rgba(55, 56, 60, 0.25);
-      }
-    }
-    .v-btn.v-btn--icon.etherscan-lnk {
-      background-color: var(--v-torusGray4-base);
-      color: var(--v-torusFont2-base);
-      &.theme--dark {
-        background-color: var(--v-torusBlack2-base);
-        color: #5C6C7F;
-      }
+  border-radius: 6px;
+  .v-avatar {
+    border-radius: 0;
+    align-self: start;
+    & > svg, & > .v-icon {
+      margin: auto;
     }
   }
-  &__details {
-    width: 100%;
-  }
-  &__address-container {
-    line-height: 10px;
-    padding-left: 26px;
-  }
-  &__address {
-    line-height: 10px;
-    font-size: 10px;
-    color: #8f9fb4;
-  }
-
-  &__user-email {
-    max-width: 120px;
-    overflow-wrap: break-word;
-
-    @media (min-width: 375px) {
-      max-width: 160px;
+  .v-list-item {
+    border-bottom: 1px solid #D3D5E2;
+    &.theme--dark {
+      border-bottom: 1px solid #202125;
     }
-    @media (min-width: 500px) {
-      max-width: none;
+  }
+  .v-list-item:last-child {
+    border-bottom: 0;
+    &.theme--dark {
+      border-bottom: 0;
     }
+  }
+  &.theme--dark {
+    border: 1px solid #202125;
+    .v-list-item {
+      background: #28292E;
+    }
+  }
+  
+  .tkey-features {
+    padding-left: 16px
   }
 }
