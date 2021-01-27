@@ -30,7 +30,7 @@
     "@chaitanyapotti/random-id": "^1.0.3",
     "@metamask/contract-metadata": "^1.21.0",
     "@sentry/browser": "^6.0.2",
-    "@sentry/vue": "^6.0.1",
+    "@sentry/vue": "^6.0.2",
     "@tkey/core": "^3.8.1",
     "@tkey/security-questions": "^3.8.0",
     "@tkey/seed-phrase": "^3.8.0",

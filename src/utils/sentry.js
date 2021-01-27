@@ -5,7 +5,7 @@ import log from 'loglevel'
 
 function getSampleRate() {
   try {
-    return Math.parseFloat(process.env.VUE_APP_SENTRY_SAMPLE_RATE)
+    return Number.parseFloat(process.env.VUE_APP_SENTRY_SAMPLE_RATE)
   } catch {
     return 0.2
   }
