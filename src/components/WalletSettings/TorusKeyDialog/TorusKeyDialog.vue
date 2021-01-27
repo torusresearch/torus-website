@@ -24,6 +24,10 @@
           </v-flex>
         </v-flex>
       </v-layout>
+      <v-layout mt-4 pr-4>
+        <v-spacer></v-spacer>
+        <v-btn large text @click="closeDialog">{{ 'Close' }}</v-btn>
+      </v-layout>
     </v-card-text>
     <v-dialog v-model="confirm" max-width="290">
       <v-card>
@@ -37,10 +41,19 @@
               : `${t('walletSettings.customKey.resetKeyWarning')} ${t('walletSettings.customKey.reloginWarning')}`
           }}
         </v-card-text>
+        <v-card-text xs12>{{ 'Please enter the text below to continue.' }}</v-card-text>
+        <v-card-text xs12>
+          <v-text-field
+            v-model="warningCheckText"
+            class="warning-check"
+            placeholder="I agree to deleting my current private key"
+            @keypress="warningCheck"
+          ></v-text-field>
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text @click="disagree">{{ t('walletSettings.customKey.disagree') }}</v-btn>
-          <v-btn text @click="agree">{{ t('walletSettings.customKey.agree') }}</v-btn>
+          <v-btn :disabled="!warningCheckPassed ? true : false" text @click="disagree">{{ t('walletSettings.customKey.disagree') }}</v-btn>
+          <v-btn :disabled="!warningCheckPassed ? true : false" text @click="agree">{{ t('walletSettings.customKey.agree') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -65,6 +78,8 @@ export default {
       confirm: false,
       customPrivateKey: '',
       consent: false,
+      warningCheckText: '',
+      warningCheckPassed: false,
       privateKeyValidated: false,
       nextAction: '',
       nextParams: [],
@@ -72,6 +87,9 @@ export default {
     }
   },
   methods: {
+    closeDialog() {
+      this.$emit('dialogClose')
+    },
     privateKeyValidation(v) {
       try {
         if (v.length !== 64) {
@@ -95,6 +113,14 @@ export default {
       }
       this.privateKeyValidated = true
       return true
+    },
+    warningCheck() {
+      if (this.warningCheckText === 'I agree to deleting my current private key') {
+        this.warningCheckPassed = true
+      } else {
+        this.warningCheckPassed = false
+      }
+      window.console.log(this.warningCheckText, this.warningCheckPassed, 'I agree to deleting my current private key')
     },
     setKey(newKey) {
       if (!this.privateKeyValidated) return
@@ -129,3 +155,7 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+@import 'TorusKeyDialog.scss';
+</style>
