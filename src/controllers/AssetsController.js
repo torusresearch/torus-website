@@ -4,11 +4,14 @@
  * Controller stores the assets and exposes some convienient methods
  */
 
+import deepmerge from 'deepmerge'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import { get } from '../utils/httpHelpers'
+
+const overwriteMerge = (destinationArray, sourceArray, _) => sourceArray
 
 const initStateObject = { allCollectibleContracts: {}, allCollectibles: {}, allTokens: {}, collectibleContracts: [], collectibles: [], tokens: [] }
 
@@ -362,5 +365,56 @@ export default class AssetController {
     } catch (error) {
       log.error(error)
     }
+  }
+
+  /**
+   * Adds collectibles and respective collectible contracts to the stored collectible and collectible contracts lists
+   *
+   * @param newCollectibles - List of collectibles to add
+   * @param detection? - Whether the collectible is manually added or autodetected
+   * @returns - Promise resolving to the current collectible list
+   */
+  async addCollectibles(newCollectibles) {
+    const { selectedAddress } = this
+    const initState = this.state
+    const { allCollectibles, collectibles } = initState
+    const networkType = this.network.getNetworkNameFromNetworkCode()
+
+    const collectibleContracts = await Promise.all(
+      newCollectibles.map(({ contractAddress, options }) => this.addCollectibleContract(contractAddress, true, options))
+    ).then((result) => {
+      if (result.length === 0) return []
+      return deepmerge(...result, { arrayMerge: overwriteMerge })
+    })
+
+    const finalCollectibles = await Promise.all(
+      newCollectibles
+        .filter(({ contractAddress }) => {
+          let address
+          if (isAddress(address)) address = toChecksumAddress(contractAddress)
+          else address = contractAddress
+
+          // If collectible contract was not added, do not add to collectible
+          return collectibleContracts.find((contract) => contract.address === address)
+        })
+        .map(async (collectible) => {
+          let address
+          if (isAddress(address)) address = toChecksumAddress(collectible.contractAddress)
+          else address = collectible.contractAddress
+
+          const { name, image, description } = collectible.options || (await this.getCollectibleInformation(address, collectible.tokenId))
+          return { address, tokenID: collectible.tokenID, name, image, description }
+        })
+    )
+
+    const newCollectiblesFinal = deepmerge(collectibles, finalCollectibles, { arrayMerge: overwriteMerge })
+    const addressCollectibles = allCollectibles[selectedAddress]
+    const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: newCollectiblesFinal } }
+    const newAllCollectibles = { ...allCollectibles, ...{ [selectedAddress]: newAddressCollectibles } }
+
+    this.store.updateState({
+      allCollectibles: newAllCollectibles,
+      collectibles: newCollectiblesFinal,
+    })
   }
 }

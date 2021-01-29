@@ -108,25 +108,25 @@ export default class AssetsDetectionController {
     }
     this.assetController.setSelectedAddress(selectedAddress)
     const apiCollectibles = await this.getOwnerCollectibles()
-    for (const {
-      token_id: tokenID,
-      image_url: imageURL,
-      name,
-      description,
-      asset_contract: {
-        address: contractAddress,
-        name: contractName,
-        symbol: contractSymbol,
-        image_url: contractImage = '',
-        total_supply: contractSupply,
-        description: contractDescription,
-      },
-    } of apiCollectibles) {
-      // eslint-disable-next-line no-await-in-loop
-      await this.assetController.addCollectible(
+
+    const apiCollectiblesFinal = apiCollectibles.map(
+      ({
+        token_id: tokenID,
+        image_url: imageURL,
+        name,
+        description,
+        asset_contract: {
+          address: contractAddress,
+          name: contractName,
+          symbol: contractSymbol,
+          image_url: contractImage = '',
+          total_supply: contractSupply,
+          description: contractDescription,
+        },
+      }) => ({
         contractAddress,
-        tokenID.toString(),
-        {
+        tokenID: tokenID.toString(),
+        options: {
           description,
           image: imageURL || (contractImage || '').replace('=s60', '=s240'),
           name: name || `${contractName}#${tokenID}`,
@@ -137,9 +137,10 @@ export default class AssetsDetectionController {
           contractSupply,
           contractDescription,
         },
-        true
-      )
-    }
+      })
+    )
+
+    await this.assetController.addCollectibles(apiCollectiblesFinal)
   }
 }
 
