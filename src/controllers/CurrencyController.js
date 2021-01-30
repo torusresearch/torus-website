@@ -1,6 +1,8 @@
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
+import config from '../config'
+
 // every ten minutes
 const POLLING_INTERVAL = 600000
 
@@ -144,7 +146,7 @@ class CurrencyController {
       //   apiUrl = `https://api.infura.io/v1/ticker/eth${currentCurrency.toLowerCase()}`
       // } else {
       // ETC
-      const apiUrl = `https://min-api.cryptocompare.com/data/price?fsym=${nativeCurrency.toUpperCase()}&tsyms=${currentCurrency.toUpperCase()}`
+      const apiUrl = `${config.api}/currency?fsym=${nativeCurrency.toUpperCase()}&tsyms=${currentCurrency.toUpperCase()}`
       // }
       // attempt request
       let response
