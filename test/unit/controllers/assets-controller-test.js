@@ -180,7 +180,16 @@ describe('AssetsController', () => {
   })
 
   it('should add collectible and collectible contract', async () => {
-    await assetsController.addCollectible('foo', '1', { name: 'name', image: 'image', description: 'description' }, false)
+    await assetsController.addCollectibles(
+      [
+        {
+          contractAddress: 'foo',
+          tokenId: '1',
+          options: { name: 'name', image: 'image', description: 'description' },
+        },
+      ],
+      false
+    )
     assert.deepStrictEqual(assetsController.state.collectibles[0], {
       address: 'foo',
       description: 'description',
@@ -199,21 +208,53 @@ describe('AssetsController', () => {
   })
 
   it('should not duplicate collectible nor collectible contract if already added', async () => {
-    await assetsController.addCollectible('foo', '1', { name: 'name', image: 'image', description: 'description' })
-    await assetsController.addCollectible('foo', '1', { name: 'name', image: 'image', description: 'description' })
+    await assetsController.addCollectibles([
+      {
+        contractAddress: 'foo',
+        tokenId: '1',
+        options: { name: 'name', image: 'image', description: 'description' },
+      },
+    ])
+    await assetsController.addCollectibles([
+      {
+        contractAddress: 'foo',
+        tokenId: '1',
+        options: { name: 'name', image: 'image', description: 'description' },
+      },
+    ])
     assert(assetsController.state.collectibles.length === 1)
     assert(assetsController.state.collectibleContracts.length === 1)
   })
 
   it('should not add collectible contract if collectible contract already exists', async () => {
-    await assetsController.addCollectible('foo', '1', { name: 'name', image: 'image', description: 'description' })
-    await assetsController.addCollectible('foo', '2', { name: 'name', image: 'image', description: 'description' })
+    await assetsController.addCollectibles([
+      {
+        contractAddress: 'foo',
+        tokenId: '1',
+        options: { name: 'name', image: 'image', description: 'description' },
+      },
+    ])
+    await assetsController.addCollectibles([
+      {
+        contractAddress: 'foo',
+        tokenId: '2',
+        options: { name: 'name', image: 'image', description: 'description' },
+      },
+    ])
+
+    console.log('assetsController.state.collectibles.length', assetsController.state.collectibles.length)
+    console.log('assetsController.state.collectibles.length', assetsController.state.collectibleContracts.length)
     assert(assetsController.state.collectibles.length === 2)
     assert(assetsController.state.collectibleContracts.length === 1)
   })
 
   it('should add collectible and get information from OpenSea', async () => {
-    await assetsController.addCollectible('foo', '1')
+    await assetsController.addCollectibles([
+      {
+        contractAddress: 'foo',
+        tokenId: '1',
+      },
+    ])
     assert.deepStrictEqual(assetsController.state.collectibles[0], {
       address: 'foo',
       description: 'Description',
@@ -223,6 +264,7 @@ describe('AssetsController', () => {
     })
   })
 
+  // COMMMENT
   // it('should add collectible and get collectible contract information from contract', async () => {
   //   sandbox.stub(assetsController, 'getCollectibleContractInformationFromApi').returns(undefined)
   //   sandbox.stub(assetsController, 'getCollectibleInformationFromApi').returns(undefined)
@@ -252,9 +294,19 @@ describe('AssetsController', () => {
     const secondAddress = TEST_ADDRESS_3
     sandbox.stub(assetsController, 'getCollectibleInformation').returns({ name: 'name', image: 'url', description: 'description' })
     assetsController.setSelectedAddress(firstAddress)
-    await assetsController.addCollectible('foo', '1234')
+    await assetsController.addCollectibles([
+      {
+        contractAddress: 'foo',
+        tokenId: '1234',
+      },
+    ])
     assetsController.setSelectedAddress(secondAddress)
-    await assetsController.addCollectible('fou', '4321')
+    await assetsController.addCollectibles([
+      {
+        contractAddress: 'fou',
+        tokenId: '4321',
+      },
+    ])
     assetsController.setSelectedAddress(firstAddress)
     assert.deepStrictEqual(assetsController.state.collectibles[0], {
       address: 'foo',
@@ -270,7 +322,12 @@ describe('AssetsController', () => {
     const secondNetworkType = 'ropsten'
     sandbox.stub(assetsController, 'getCollectibleInformation').returns({ name: 'name', image: 'url', description: 'description' })
     network.setProviderType(firstNetworkType)
-    await assetsController.addCollectible('foo', '1234')
+    await assetsController.addCollectibles([
+      {
+        contractAddress: 'foo',
+        tokenId: '1234',
+      },
+    ])
     network.setProviderType(secondNetworkType)
     assert(assetsController.state.collectibles.length === 0)
     network.setProviderType(firstNetworkType)
@@ -284,10 +341,26 @@ describe('AssetsController', () => {
   })
 
   it('should not add collectibles with no contract information when auto detecting', async () => {
-    await assetsController.addCollectible('0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab', '123', undefined, true)
+    await assetsController.addCollectibles(
+      [
+        {
+          contractAddress: '0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab',
+          tokenId: '123',
+        },
+      ],
+      true
+    )
     assert.deepStrictEqual(assetsController.state.collectibles, [])
     assert.deepStrictEqual(assetsController.state.collectibleContracts, [])
-    await assetsController.addCollectible('0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163', '1203', undefined, true)
+    await assetsController.addCollectibles(
+      [
+        {
+          contractAddress: '0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163',
+          tokenId: '1203',
+        },
+      ],
+      true
+    )
     assert.deepStrictEqual(assetsController.state.collectibles, [
       {
         address: '0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163',

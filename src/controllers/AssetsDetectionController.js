@@ -111,7 +111,7 @@ export default class AssetsDetectionController {
 
     const apiCollectiblesFinal = apiCollectibles.map(
       ({
-        token_id: tokenID,
+        token_id: tokenId,
         image_url: imageURL,
         name,
         description,
@@ -125,11 +125,11 @@ export default class AssetsDetectionController {
         },
       }) => ({
         contractAddress,
-        tokenID: tokenID.toString(),
+        tokenId: tokenId.toString(),
         options: {
           description,
           image: imageURL || (contractImage || '').replace('=s60', '=s240'),
-          name: name || `${contractName}#${tokenID}`,
+          name: name || `${contractName}#${tokenId}`,
           contractAddress,
           contractName,
           contractSymbol,
@@ -140,7 +140,7 @@ export default class AssetsDetectionController {
       })
     )
 
-    await this.assetController.addCollectibles(apiCollectiblesFinal)
+    await this.assetController.addCollectibles(apiCollectiblesFinal, true)
   }
 }
 

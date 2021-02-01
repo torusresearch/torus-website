@@ -4,14 +4,11 @@
  * Controller stores the assets and exposes some convienient methods
  */
 
-import deepmerge from 'deepmerge'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import { get } from '../utils/httpHelpers'
-
-const overwriteMerge = (destinationArray, sourceArray, _) => sourceArray
 
 const initStateObject = { allCollectibleContracts: {}, allCollectibles: {}, allTokens: {}, collectibleContracts: [], collectibles: [], tokens: [] }
 
@@ -201,46 +198,6 @@ export default class AssetController {
   }
 
   /**
-   * Adds an individual collectible to the stored collectible list
-   *
-   * @param address - Hex address of the collectible contract
-   * @param tokenId - The collectible identifier
-   * @param opts - Collectible optional information (name, image and description)
-   * @param detection? - Whether the collectible is manually added or autodetected
-   * @returns - Promise resolving to the current collectible list
-   */
-  async addIndividualCollectible(address2, tokenId, options) {
-    try {
-      let address
-      if (isAddress(address)) address = toChecksumAddress(address2)
-      else address = address2
-      const { selectedAddress } = this
-      const initState = this.state
-      const { allCollectibles, collectibles } = initState
-      const networkType = this.network.getNetworkNameFromNetworkCode()
-      const existingEntry = collectibles.find((collectible) => collectible.address === address && collectible.tokenId === tokenId)
-      if (existingEntry) {
-        return collectibles
-      }
-      const { name, image, description } = options || (await this.getCollectibleInformation(address, tokenId))
-      const newEntry = { address, tokenId, name, image, description }
-      const newCollectibles = [...collectibles, newEntry]
-      const addressCollectibles = allCollectibles[selectedAddress]
-      const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: newCollectibles } }
-      const newAllCollectibles = { ...allCollectibles, ...{ [selectedAddress]: newAddressCollectibles } }
-      this.store.updateState({
-        allCollectibles: newAllCollectibles,
-        collectibles: newCollectibles,
-      })
-
-      return newCollectibles
-    } catch (error) {
-      log.error(error)
-    }
-    return {}
-  }
-
-  /**
    * Adds a token to the stored token list
    *
    * @param address2 - Hex address of the token contract
@@ -309,6 +266,7 @@ export default class AssetController {
     } else {
       contractInformation = await this.getCollectibleContractInformation(address)
     }
+
     const { name, symbol, image_url: imageURL, description, total_supply: totalSupply } = contractInformation
     // If being auto-detected opensea information is expected
     // Oherwise at least name and symbol from contract is needed
@@ -341,51 +299,29 @@ export default class AssetController {
   }
 
   /**
-   * Adds a collectible and respective collectible contract to the stored collectible and collectible contracts lists
-   *
-   * @param address2 - Hex address of the collectible contract
-   * @param tokenId - The collectible identifier
-   * @param opts - Collectible optional information (name, image and description)
-   * @param detection? - Whether the collectible is manually added or autodetected
-   * @returns - Promise resolving to the current collectible list
-   */
-  async addCollectible(address2, tokenId, options, detection) {
-    try {
-      let address
-      if (isAddress(address)) address = toChecksumAddress(address2)
-      else address = address2
-      const newCollectibleContracts = await this.addCollectibleContract(address, detection, options)
-      // If collectible contract was not added, do not add individual collectible
-      const collectibleContract = newCollectibleContracts.find((contract) => contract.address === address)
-
-      // If collectible contract information, add individual collectible
-      if (collectibleContract) {
-        await this.addIndividualCollectible(address, tokenId, options)
-      }
-    } catch (error) {
-      log.error(error)
-    }
-  }
-
-  /**
    * Adds collectibles and respective collectible contracts to the stored collectible and collectible contracts lists
    *
    * @param newCollectibles - List of collectibles to add
    * @param detection? - Whether the collectible is manually added or autodetected
    * @returns - Promise resolving to the current collectible list
    */
-  async addCollectibles(newCollectibles) {
+  async addCollectibles(newCollectibles, detection) {
     const { selectedAddress } = this
     const initState = this.state
     const { allCollectibles, collectibles } = initState
     const networkType = this.network.getNetworkNameFromNetworkCode()
 
     const collectibleContracts = await Promise.all(
-      newCollectibles.map(({ contractAddress, options }) => this.addCollectibleContract(contractAddress, true, options))
-    ).then((result) => {
-      if (result.length === 0) return []
-      return deepmerge(...result, { arrayMerge: overwriteMerge })
-    })
+      newCollectibles.map(async ({ contractAddress, options }) => this.addCollectibleContract(contractAddress, detection, options))
+    ).then((results) =>
+      results.reduce((list, result) => {
+        for (const item of result) {
+          const found = list.find((listItem) => listItem.address === item.address)
+          if (!found) list.push(item)
+        }
+        return list
+      }, [])
+    )
 
     const finalCollectibles = await Promise.all(
       newCollectibles
@@ -403,11 +339,12 @@ export default class AssetController {
           else address = collectible.contractAddress
 
           const { name, image, description } = collectible.options || (await this.getCollectibleInformation(address, collectible.tokenId))
-          return { address, tokenID: collectible.tokenID, name, image, description }
-        })
+          return { address, tokenId: collectible.tokenId, name, image, description }
+        }) || []
     )
 
-    const newCollectiblesFinal = deepmerge(collectibles, finalCollectibles, { arrayMerge: overwriteMerge })
+    const ids = new Set(collectibles.map((d) => d.tokenId))
+    const newCollectiblesFinal = [...collectibles, ...finalCollectibles.filter((d) => !ids.has(d.tokenId))]
     const addressCollectibles = allCollectibles[selectedAddress]
     const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: newCollectiblesFinal } }
     const newAllCollectibles = { ...allCollectibles, ...{ [selectedAddress]: newAddressCollectibles } }
