@@ -5,7 +5,7 @@ function getSampleRate() {
   try {
     return Number.parseFloat(process.env.VUE_APP_SENTRY_SAMPLE_RATE)
   } catch {
-    return 0.5
+    return 0.2
   }
 }
 
