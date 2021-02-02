@@ -183,7 +183,9 @@
                 </v-expansion-panel>
               </v-expansion-panels>
               <div class="text-right">
-                <a class="caption torusBrand1--text" @click="skipLogin">{{ t('tkeyNew.skip').replace(/\{verifier\}/gi, verifierName) }}</a>
+                <a class="caption torusBrand1--text" @click="skipLogin">
+                  {{ allowSkip ? t('tkeyNew.skip').replace(/\{verifier\}/gi, verifierName) : t('tkeyNew.cancel') }}
+                </a>
               </div>
             </div>
             <NewDeviceFooter />
@@ -234,6 +236,10 @@ export default {
       default() {
         return []
       },
+    },
+    allowSkip: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {

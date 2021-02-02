@@ -10,6 +10,7 @@
           :all-device-shares="settingsData && settingsData.allDeviceShares"
           :verifier-name="verifierName"
           :share-mnemonic-arr="shareMnemonicArr"
+          :allow-skip="allowSkip"
           @setPasswordInput="enterPassword"
           @onShareMnemonicInput="inputShareMnemonic"
           @skipLogin="setInput"
@@ -61,6 +62,10 @@ export default {
     verifierName: {
       type: String,
       default: '',
+    },
+    allowSkip: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {

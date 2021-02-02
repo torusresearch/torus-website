@@ -103,6 +103,7 @@ export default {
           data: JSON.stringify(data),
           postboxKey: state.postboxKey?.privateKey,
           type,
+          allowSkip: Object.keys(state.wallet).length > 0,
         }
         const finalUrl = `${baseRoute}tkey/dapp-input?integrity=true&instanceId=${windowId}`
         const tKeyInputWindow = new PopupWithBcHandler({
