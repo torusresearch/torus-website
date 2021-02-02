@@ -24,15 +24,15 @@
 </template>
 
 <script>
-import elliptic from 'elliptic'
 import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
+import torus from '../../../torus'
 import { ACCOUNT_TYPE } from '../../../utils/enums'
 import TorusKeyDialog from '../TorusKeyDialog'
 
-const ec = elliptic.ec('secp256k1')
+const { ec } = torus
 
 export default {
   name: 'SetTorusKey',
