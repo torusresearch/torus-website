@@ -1,5 +1,5 @@
 <template>
-  <div :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
+  <div v-if="wallets.length > 0" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
     <v-list dense outlined class="pa-0 account-list mb-2">
       <v-list-item v-for="wallet in torusWallets" :key="wallet.key" class="pl-0 pr-1">
         <v-list-item-avatar class="ma-0">
@@ -87,7 +87,6 @@ export default {
       } finally {
         this.settingKey = false
         this.logOut()
-        this.$router.push({ path: '/logout' }).catch((_) => {})
       }
     },
     async setKey(prevAddress, newKey) {
@@ -101,7 +100,6 @@ export default {
         log.error(error)
       } finally {
         this.settingKey = false
-        this.logOut()
         this.$router.push({ path: '/logout' }).catch((_) => {})
       }
     },

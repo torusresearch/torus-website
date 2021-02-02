@@ -85,7 +85,7 @@
               <div class="grow font-weight-bold title text_1--text">{{ 'Set Torus Key' }}</div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <SetTorusKey :has-threshold="hasThreshold" :has-threshold-logged="hasThresholdLogged" />
+              <SetTorusKey />
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>

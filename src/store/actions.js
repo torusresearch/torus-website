@@ -1,7 +1,6 @@
 import randomId from '@chaitanyapotti/random-id'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
-import elliptic from 'elliptic'
 import { BN, keccak256 } from 'ethereumjs-util'
 import stringify from 'json-stable-stringify'
 // import jwtDecode from 'jwt-decode'
@@ -50,9 +49,8 @@ import {
 } from './controllerSubscriptions'
 import initialState from './state'
 
-const ec = elliptic.ec('secp256k1')
+const { ec } = torus
 
-window.torus = torus
 const { baseRoute } = config
 const { torusController } = torus || {}
 const {
@@ -95,7 +93,6 @@ const generateMetadataParams = (message, privateKeyHex) => {
     signature: Buffer.from(sig.r.toString(16, 64) + sig.s.toString(16, 64) + new BN(sig.v).toString(16, 2), 'hex').toString('base64'),
   }
 }
-window.gg = generateMetadataParams
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
