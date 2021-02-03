@@ -180,7 +180,11 @@ export default {
         verifierParams: aggregateVerifierParams,
         oAuthToken: aggregateIdToken,
       })
-      commit('setPostboxKey', { privateKey: postboxKey.privKey, ethAddress: postboxKey.ethAddress })
+      commit('setPostboxKey', {
+        privateKey: postboxKey.privKey,
+        ethAddress: postboxKey.ethAddress,
+        metadataNonceHex: postboxKey.metadataNonce.toString(16),
+      })
     } catch (error) {
       log.error(error, 'unable to get postbox key')
     }
