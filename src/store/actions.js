@@ -292,7 +292,7 @@ export default {
           privateKey: payload.privKey,
           accountType: payload.accountType || ACCOUNT_TYPE.NORMAL,
           seedPhrase: payload.seedPhrase,
-          metadataNonceHex: payload.metadataNonce.toString(16),
+          metadataNonceHex: payload.metadataNonce?.toString(16),
         },
       })
     }
