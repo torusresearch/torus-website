@@ -43,7 +43,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
+    ...mapActions(['updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
     ...mapMutations(['setErrorMsg']),
     toggleWC() {
       if (this.wcConnectorSession?.connected) {

@@ -11,6 +11,7 @@ import {
   ACTIVE,
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
+  ALLOWED_VERIFIERS,
   APPLE,
   BSC_MAINNET_CHAIN_ID,
   BSC_MAINNET_CODE,
@@ -695,7 +696,8 @@ export function padPrivateKey(privKey) {
 }
 
 export function getUserEmail(userInfo, loginConfig, walletDisplay) {
-  const verifierName = loginConfig[userInfo.verifier].name
+  const currentConfig = loginConfig[userInfo.verifier]
+  const verifierName = currentConfig?.name || ''
   const typeOfLoginDisplay = verifierName.charAt(0).toUpperCase() + verifierName.slice(1)
   return (userInfo.typeOfLogin !== APPLE && userInfo.email) || userInfo.name || `${typeOfLoginDisplay} ${walletDisplay}`
 }
@@ -747,4 +749,20 @@ export function thirdPartyAuthenticators(loginConfig) {
     })
 
   return finalAauthenticators.join(', ')
+}
+
+export function getVerifierOptions() {
+  try {
+    const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+    return verifiers.filter((verifier) => {
+      if (config.ethTransferOnly) {
+        if (verifier.value === ETH) return true
+      } else {
+        return true
+      }
+      return false
+    })
+  } catch {
+    return []
+  }
 }

@@ -144,7 +144,8 @@ export default {
       return this.defaultPublicAddress || Object.keys(this.wallets).find((x) => this.wallets[x].accountType === ACCOUNT_TYPE.THRESHOLD)
     },
     verifierName() {
-      const verifierName = this.loginConfig[this.userInfo.verifier].name
+      const currentVerifier = this.loginConfig[this.userInfo.verifier]
+      const verifierName = currentVerifier?.name || ''
       return verifierName.charAt(0).toUpperCase() + verifierName.slice(1)
     },
   },
@@ -190,7 +191,6 @@ export default {
     },
     cancelSeedPhrase() {
       this.logOut()
-      this.$router.push({ path: '/logout' }).catch((_) => {})
     },
     async createSeedPhrase(seedPhrase) {
       this.addingSeedPhrase = true

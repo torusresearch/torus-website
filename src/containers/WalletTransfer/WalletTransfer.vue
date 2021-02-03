@@ -170,6 +170,12 @@
                       aria-label="Recipient Selector"
                       @blur="verifierChangedManual"
                     >
+                      <template #selection="{ item }">
+                        <div class="v-select__selection v-select__selection--comma">
+                          {{ t(item.name) }}
+                        </div>
+                      </template>
+                      <template #item="{ item }">{{ t(item.name) }}</template>
                       <template #message="props">
                         {{ t(props.message) }}
                       </template>
@@ -405,8 +411,6 @@ import MessageModal from '../../components/WalletTransfer/MessageModal'
 import config from '../../config'
 import torus from '../../torus'
 import {
-  ACCOUNT_TYPE,
-  ALLOWED_VERIFIERS,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ETH,
@@ -421,7 +425,7 @@ import {
   UNSTOPPABLE_DOMAINS,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
-import { apiStreamSupported, getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
+import { apiStreamSupported, getEtherScanHashLink, getUserIcon, getVerifierOptions, significantDigits, validateVerifierId } from '../../utils/utils'
 
 export default {
   name: 'WalletTransfer',
@@ -498,6 +502,7 @@ export default {
       tokenBalances: 'tokenBalances',
       collectibles: 'collectibleBalances',
       currencyMultiplier: 'currencyMultiplier',
+      contacts: 'filteredContacts',
     }),
     ...mapState([
       'selectedCurrency',
@@ -505,22 +510,13 @@ export default {
       'tokenDataLoaded',
       'currencyData',
       'tokenRates',
-      'contacts',
       'selectedAddress',
       'userInfo',
       'networkType',
       'wallet',
     ]),
     verifierOptions() {
-      try {
-        const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
-        return verifiers.map((verifier) => {
-          verifier.name = this.t(verifier.name)
-          return verifier
-        })
-      } catch {
-        return []
-      }
+      return getVerifierOptions()
     },
     randomName() {
       return `torus-${torus.instanceId}`
@@ -540,7 +536,7 @@ export default {
     selectedItemDisplay() {
       if (this.contractType !== CONTRACT_TYPE_ERC721) return this.selectedItem
 
-      return this.collectibles.find((x) => x.address === this.collectibleSelected.address)
+      return this.collectibleSelected
     },
     selectedTokenAddress() {
       if (this.tokenAddress === '0x' || !isAddress(this.tokenAddress)) return '0x'
@@ -566,7 +562,7 @@ export default {
     },
     verifierPlaceholder() {
       return this.selectedVerifier
-        ? `${this.t('walletSettings.enter')} ${this.verifierOptions.find((verifier) => verifier.value === this.selectedVerifier).name}`
+        ? `${this.t('walletSettings.enter')} ${this.t(this.verifierOptions.find((verifier) => verifier.value === this.selectedVerifier).name)}`
         : ''
     },
     contactList() {
@@ -609,14 +605,7 @@ export default {
     },
     fromVerifier() {
       const accountType = this.wallet[this.selectedAddress]?.accountType || ''
-
-      if (accountType === ACCOUNT_TYPE.THRESHOLD) {
-        return 'wallet'
-      }
-      if (accountType === ACCOUNT_TYPE.IMPORTED) {
-        return 'person_circle'
-      }
-      return this.userInfo.typeOfLogin.toLowerCase()
+      return getUserIcon(accountType, this.userInfo.typeOfLogin)
     },
     apiStreamSupported() {
       return apiStreamSupported()
@@ -640,13 +629,13 @@ export default {
     this.contactSelected = this.toAddress
 
     this.$watch('collectibles', (newValue, oldValue) => {
-      if (newValue !== oldValue) {
+      if (newValue !== oldValue && newValue?.length > 0) {
         this.updateFieldsBasedOnRoute()
       }
     })
 
     const tokensUnwatch = this.$watch('finalBalancesArray', (newValue, oldValue) => {
-      if (newValue !== oldValue) {
+      if (newValue !== oldValue && newValue?.length > 0) {
         this.updateFieldsBasedOnRoute()
         tokensUnwatch()
       }
@@ -872,8 +861,8 @@ export default {
       if (foundInBalances) {
         this.tokenAddress = foundInBalances.tokenAddress
         this.contractType = foundInBalances.erc20 ? CONTRACT_TYPE_ERC20 : CONTRACT_TYPE_ETH
-        this.collectibleSelected = ''
-        this.assetSelected = ''
+        this.collectibleSelected = {}
+        this.assetSelected = {}
       } else if (foundInCollectibles) {
         this.tokenAddress = foundInCollectibles.address
         this.contractType = CONTRACT_TYPE_ERC721
@@ -893,7 +882,7 @@ export default {
     },
     getUnstoppableDomains(domain) {
       return new Resolution({
-        blockchain: { ens: 'https://api.infura.io/v1/jsonrpc/mainnet', cns: 'https://api.infura.io/v1/jsonrpc/mainnet' },
+        blockchain: { ens: `https://mainnet.infura.io/v3/${config.infuraKey}`, cns: `https://mainnet.infura.io/v3/${config.infuraKey}` },
       }).addr(domain, 'ETH')
     },
     getEnsAddress(ens) {

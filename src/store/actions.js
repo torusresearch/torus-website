@@ -134,6 +134,7 @@ export default {
     clearInterval(thresholdKeyController.requestStatusCheckId)
     assetDetectionController.stopAssetDetection()
     torus.updateStaticData({ isUnlocked: false })
+    if (isMain) router.push({ path: '/logout' }).catch(() => {})
   },
   setSelectedCurrency({ commit }, payload) {
     torusController.setCurrentCurrency(payload, (error, data) => {
@@ -431,23 +432,29 @@ export default {
     let oAuthKey = {}
     dispatch('subscribeToControllers')
 
-    if (!config.onlyTkey) {
-      oAuthKey = await dispatch('getTorusKey', { verifier, verifierId, verifierParams, oAuthToken })
-      log.info('key 1', oAuthKey)
+    const promises = []
 
-      defaultAddresses.push(
-        ...(await dispatch('initTorusKeyring', {
-          keys: [{ ...oAuthKey, accountType: ACCOUNT_TYPE.NORMAL }],
-          calledFromEmbed,
-          rehydrate: false,
-        }))
-      )
+    if (!config.onlyTkey) {
+      const p1 = async () => {
+        oAuthKey = await dispatch('getTorusKey', { verifier, verifierId, verifierParams, oAuthToken })
+        // log.info('key 1', oAuthKey)
+
+        defaultAddresses.push(
+          ...(await dispatch('initTorusKeyring', {
+            keys: [{ ...oAuthKey, accountType: ACCOUNT_TYPE.NORMAL }],
+            calledFromEmbed,
+            rehydrate: false,
+          }))
+        )
+      }
+      promises.push(p1())
     }
 
-    await dispatch('calculatePostboxKey', { oAuthToken })
+    promises.push(dispatch('calculatePostboxKey', { oAuthToken }))
+    await Promise.all(promises)
     // Threshold Bak region
     // Check if tkey exists
-    const keyExists = await thresholdKeyController.checkIfTKeyExists(state.postboxKey.privateKey)
+    const { status: keyExists, share } = await thresholdKeyController.checkIfTKeyExists(state.postboxKey.privateKey)
     // if in iframe && keyExists, initialize tkey only if it's set as default address
     // if not in iframe && keyExists, initialize tkey always
     // inside an iframe
@@ -456,18 +463,18 @@ export default {
       if (!isMain) {
         if (defaultAddresses[0] && defaultAddresses[0] !== oAuthKey.ethAddress) {
           // Do tkey
-          defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
+          defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed, share })))
         } else if (config.onlyTkey) {
-          defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
+          defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed, share })))
         }
       } else {
         // In app.tor.us
-        defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
+        defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed, share })))
       }
     } else if (config.onlyTkey && !keyExists) {
       if (!isMain) dispatch('showWalletPopup', { path: 'tkey' })
       else {
-        router.push({ path: 'tkey' })
+        router.push({ path: 'tkey' }).catch((_) => {})
       }
       throw new Error('User has no account')
     }
@@ -479,7 +486,6 @@ export default {
 
     if (!selectedAddress) {
       dispatch('logOut')
-      router.push({ name: 'logout' }).catch((_) => {})
       throw new Error('No Accounts available')
     }
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
@@ -530,17 +536,6 @@ export default {
       wcConnectorSession,
     } = state
     try {
-      // if jwtToken expires, logout
-      // if (jwtToken) {
-      //   const decoded = jwtDecode(jwtToken)
-      //   if (Date.now() / 1000 > decoded.exp) {
-      //     dispatch('logOut')
-      //     return
-      //   }
-      //   setTimeout(() => {
-      //     dispatch('logOut')
-      //   }, decoded.exp * 1000 - Date.now())
-      // }
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       const walletKeys = Object.keys(wallet)

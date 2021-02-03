@@ -95,8 +95,8 @@ export default {
   },
   methods: {
     async initTkey(json) {
-      log.info('creating tkey using json ', json)
-      this.tKey = await createTKeyInstance(this.postboxKey, json, torus.web3.eth.currentProvider)
+      // log.info('creating tkey using json ', json)
+      this.tKey = await createTKeyInstance({ postboxKey: this.postboxKey, tKeyJson: json, provider: torus.web3.eth.currentProvider })
       this.settingsData = await calculateSettingsPageData(this.tKey)
       const { keyDetails, parsedShareDescriptions } = this.settingsData
       const { requiredShares } = keyDetails
@@ -147,7 +147,7 @@ export default {
           this.tKey.getCurrentShareIndexes()
         )
         const shareStore = await this.tKey.modules[SHARE_TRANSFER_MODULE_KEY].startRequestStatusCheck(this.currentEncPubKeyX, true)
-        log.info(shareStore, 'received transferred Share')
+        log.info('received transferred Share')
         this.currentEncPubKeyX = ''
         if (this.shareTransfer[shareStore.share.shareIndex]) {
           this.shareTransfer[shareStore.share.shareIndex].finished = true
@@ -215,13 +215,14 @@ export default {
       try {
         const { isOld, oldIndex, rejected } = details
         if (rejected) throw new Error('User rejected to store device')
+        await this.tKey.updateMetadata()
         if (!isOld) {
           const newShare = await this.tKey.generateNewShare()
-          log.info(newShare, 'new Share')
+          log.info('new Share')
           await this.tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShare(newShare.newShareStores[newShare.newShareIndex.toString('hex')])
         } else {
           const outputShareStore = await this.tKey.outputShareStore(oldIndex)
-          log.info(outputShareStore, 'old Share')
+          log.info('old Share')
           await this.tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShare(outputShareStore)
         }
       } catch (error) {
@@ -239,7 +240,7 @@ export default {
         keyDetails: { requiredShares },
       } = this.settingsData
 
-      log.info(this.tKey, this.settingsData)
+      // log.info(this.tKey, this.settingsData)
 
       if (requiredShares === 0) {
         const { privKey } = await this.tKey.reconstructKey(false)
@@ -267,7 +268,7 @@ export default {
     async createSeedPhrase(seedPhrase) {
       this.addingSeedPhrase = true
       try {
-        log.info('adding seed phrase', seedPhrase)
+        // log.info('adding seed phrase', seedPhrase)
         await this.tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree', seedPhrase || undefined)
         await this.tryFinish()
         await this.setInput({ response: this.tKey })

@@ -44,10 +44,10 @@ class ThresholdKeyController extends EventEmitter {
       if (!postboxKey) return false
       const storageLayer = new TorusStorageLayer({ hostUrl: config.metadataHost })
       const metadata = await storageLayer.getMetadata({ privKey: postboxKey })
-      return Object.keys(metadata).length > 0
+      return { status: Object.keys(metadata).length > 0, share: metadata }
     } catch (error) {
       log.error('unable to check for tkey', error)
-      return false
+      return { status: false }
     }
   }
 
@@ -55,9 +55,9 @@ class ThresholdKeyController extends EventEmitter {
     return this.store.getState()
   }
 
-  async login(postboxKey, tKeyJson) {
+  async login({ postboxKey, tKeyJson, share }) {
     try {
-      await this._init(postboxKey, tKeyJson)
+      await this._init({ postboxKey, tKeyJson, share })
       const { keyDetails, tKey, parsedShareDescriptions } = this.state
       log.info(keyDetails)
       const { requiredShares: shareCount } = keyDetails
@@ -264,7 +264,7 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async createNewTKey({ postboxKey, password, backup, recoveryEmail, useSeedPhrase, seedPhrase }) {
-    await this._init(postboxKey)
+    await this._init({ postboxKey })
     const { tKey, settingsPageData = {} } = this.state
     if (password) await tKey.modules[SECURITY_QUESTIONS_MODULE_KEY].generateNewShareWithSecurityQuestions(password, PASSWORD_QUESTION)
     // can't do some operations without key reconstruction
@@ -272,7 +272,7 @@ class ThresholdKeyController extends EventEmitter {
     if (backup) {
       try {
         const { deviceShare } = settingsPageData
-        log.info(deviceShare, 'deviceShare')
+        // log.info(deviceShare, 'deviceShare')
         if (deviceShare.share) {
           await tKey.modules[WEB_STORAGE_MODULE_KEY].storeDeviceShareOnFileStorage(deviceShare.share.share.shareIndex)
         }
@@ -301,7 +301,7 @@ class ThresholdKeyController extends EventEmitter {
     try {
       // const seedPhrases = []
       const { tKey } = this.state
-      log.info('adding seed phrase', seedPhrase)
+      // log.info('adding seed phrase', seedPhrase)
       await tKey.modules[SEED_PHRASE_MODULE_KEY].setSeedPhrase('HD Key Tree', seedPhrase || undefined)
       // seedPhrases = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrases()
       // log.info(seedPhrases, 'stored seed phrases')
@@ -315,7 +315,7 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async addSeedPhraseAccount(seedPhrase) {
-    log.info('🚀 ~ ThresholdKeyController ~ addSeedPhraseAccount ~ seedPhrase', seedPhrase)
+    // log.info('🚀 ~ ThresholdKeyController ~ addSeedPhraseAccount ~ seedPhrase', seedPhrase)
     const { tKey } = this.state
     const seedPhraseStores = await tKey.modules[SEED_PHRASE_MODULE_KEY].getSeedPhrasesWithAccounts()
     const requiredSeedPhraseStore = seedPhraseStores.find((x) => x.seedPhrase === seedPhrase)
@@ -330,7 +330,7 @@ class ThresholdKeyController extends EventEmitter {
       const shareCreated = await tKey.generateNewShare()
       const requiredShareStore = shareCreated.newShareStores[shareCreated.newShareIndex.toString('hex')]
       const serializedShare = await tKey.modules[SHARE_SERIALIZATION_MODULE_KEY].serialize(requiredShareStore.share.share, 'mnemonic')
-      log.info(requiredShareStore.share, serializedShare)
+      // log.info(requiredShareStore.share, serializedShare)
       await post(config.tkeyEmailHost, {
         data: serializedShare,
         logo: 'https://app.tor.us/images/torus_logo.png',
@@ -350,7 +350,7 @@ class ThresholdKeyController extends EventEmitter {
   }
 
   async _rehydrate(postboxKey, tKeyJson) {
-    await this._init(postboxKey, tKeyJson)
+    await this._init({ postboxKey, tKeyJson })
     await this.setSettingsPageData()
   }
 
@@ -377,10 +377,10 @@ class ThresholdKeyController extends EventEmitter {
     })
   }
 
-  async _init(postboxKey, tKeyJson) {
+  async _init({ postboxKey, tKeyJson, share }) {
     // const { tKey: stateTKey } = this.state
     // if (stateTKey && stateTKey.privKey) throw new Error('TKey already initialized')
-    const tKey = await createTKeyInstance(postboxKey, tKeyJson, this.provider)
+    const tKey = await createTKeyInstance({ postboxKey, tKeyJson, provider: this.provider, share })
 
     this.store.updateState({ tKey })
     await this.setSettingsPageData()

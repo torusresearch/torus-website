@@ -292,7 +292,7 @@ export default {
       const search = this.search || ''
       const regEx = new RegExp(search, 'i')
 
-      return this.finalBalancesArray.filter((balance) => balance.name.match(regEx))
+      return this.finalBalancesArray.filter((balance) => balance?.name.match(regEx))
     },
     isRefreshVisible() {
       return this.networkType.host === MAINNET

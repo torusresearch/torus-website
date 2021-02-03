@@ -230,7 +230,7 @@ export default {
             log.error(error)
             this.isLoadingDownloadWallet = false
           })
-          log.info(this.keyStorePassword, this.selectedKey)
+          // log.info(this.keyStorePassword, this.selectedKey)
           worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
         }
       }

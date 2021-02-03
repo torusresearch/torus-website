@@ -34,6 +34,9 @@ export default {
   setUserTheme(context, payload) {
     return prefsController.setUserTheme(payload)
   },
+  setCrashReport(context, payload) {
+    return prefsController.setCrashReport(payload)
+  },
   setUserLocale(context, payload) {
     prefsController.setUserLocale(payload)
   },
@@ -85,7 +88,7 @@ export default {
             const contract = selectedAddressAssets.find((x) => x.address.toLowerCase() === txParams.to.toLowerCase()) || {}
             log.info(contract, amountValue)
             if (contract) {
-              const { name: foundAssetName } = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
+              const { name: foundAssetName } = (contract.assets || []).find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
               assetName = foundAssetName || ''
               symbol = assetName
               type = 'erc721'
@@ -119,7 +122,7 @@ export default {
           typeName = name || 'ERC20'
           typeImageLink = logo
           const bnAmount = new BigNumber(amountValue && amountValue.value ? amountValue.value : txParams.value || 0)
-          totalAmount = decimals ? bnAmount.div(new BigNumber(10).pow(new BigNumber(decimals))).toString() : fromWei(bnAmount)
+          totalAmount = bnAmount.div(new BigNumber(10).pow(new BigNumber(decimals || 18))).toString()
           finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
         } else {
           tokenRate = 1

@@ -9,6 +9,7 @@ import App from './App.vue'
 import { vuetify } from './plugins'
 import router from './router'
 import store from './store'
+import { installSentry } from './utils/sentry'
 // import torus from './torus'
 
 log.enableAll()
@@ -29,17 +30,17 @@ switch (buildEnvironment) {
   case 'production':
     logLevel = 'error'
     log.setDefaultLevel(logLevel)
-    log.disableAll()
     break
   default:
     logLevel = 'error'
     log.setDefaultLevel(logLevel)
+    break
 }
 log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 
 Vue.use(VueGtm, {
   id: 'GTM-PDF8MFV', // Your GTM single container ID or array of container ids ['GTM-xxxxxxx', 'GTM-yyyyyyy']
-  enabled: buildEnvironment === 'production' || buildEnvironment === 'testing', // defaults to true. change on production
+  enabled: buildEnvironment === 'production' || buildEnvironment === 'binance', // defaults to true. change on production
   defer: true, // Defers script execution to end of page load
   debug: false, // Whether or not display console logs debugs (optional)
   loadScript: true,
@@ -55,6 +56,8 @@ Vue.mixin({
     },
   },
 })
+
+installSentry(Vue)
 
 new Vue({
   router,

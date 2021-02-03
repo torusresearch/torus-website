@@ -49,11 +49,18 @@ update_iframeIntegrity: &update_iframeIntegrity
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateIframeIntegrity.sh
 deploy_function: &deploy_function
-  <<: *job_common_base
+  <<: *job_common
   steps:
     - attach_workspace:
         at: ~/
     - add_ssh_keys
+    - run:
+        name: 'Upload source to Sentry'
+        command: |
+          . ./scripts/uploadToSentry.sh
+    - run:
+        name: 'Delete sourcemaps'
+        command: rm ./dist/js/*.js.map
     - run:
         name: 'Deploy Over SSH to AWS'
         command: |

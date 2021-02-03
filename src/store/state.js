@@ -52,6 +52,7 @@ const initialState = {
   pastTransactions: [],
   paymentTx: [],
   theme: THEME_LIGHT_BLUE_NAME,
+  crashReport: true,
   locale: LOCALE_EN,
   billboard: {},
   contacts: [],
@@ -82,6 +83,7 @@ const initialState = {
   confirmModals: [],
   postboxKey: {},
   isTkeySeedPhraseInputRequired: false,
+  ethTransferOnly: config.ethTransferOnly,
 }
 
 export default initialState
