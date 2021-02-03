@@ -17,7 +17,7 @@ import {
   WEB_STORAGE_MODULE_KEY,
 } from '../../utils/enums'
 
-export default async function createTKeyInstance(postboxKey, tKeyJson, provider) {
+export default async function createTKeyInstance({ postboxKey, tKeyJson, provider, share }) {
   const modules = {
     [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
     [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),
@@ -34,7 +34,7 @@ export default async function createTKeyInstance(postboxKey, tKeyJson, provider)
       storageLayer,
       modules,
     })
-    await tKey.initialize()
+    await tKey.initialize({ input: share })
   } else {
     tKey = await ThresholdKey.fromJSON(tKeyJson, {
       modules,

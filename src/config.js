@@ -70,6 +70,7 @@ const {
   VUE_APP_TKEY_SECURITY_QUESTIONS_MANDATORY,
   VUE_APP_INFURA_KEY,
   VUE_APP_ETH_TRANSFER_ONLY,
+  VUE_APP_SHOW_SPRING_FESTIVAL,
 } = process.env
 
 log.info('baseurl', VUE_APP_BASE_ROUTE, 'is tkey', VUE_APP_TKEY_ONLY)
@@ -102,6 +103,8 @@ export default {
   onlySeedPhraseAccounts: VUE_APP_SEED_PHRASE_KEYS_ONLY === 'true',
   // use this flag to force password in frontend while creation of tkey
   mandatorySecurityQuestionsWhileCreation: VUE_APP_TKEY_SECURITY_QUESTIONS_MANDATORY === 'true',
+  // show spring festival slide
+  showSpringFestival: VUE_APP_SHOW_SPRING_FESTIVAL === 'true',
 
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',

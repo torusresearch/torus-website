@@ -4,6 +4,7 @@
       :verifier-name="verifierName"
       :t-key-json="currentFormData"
       :postbox-key="postboxKey"
+      :allow-skip="allowSkip"
       @triggerSign="triggerSign"
       @triggerDeny="triggerDeny"
       @postErrorMessage="setTkeyError"
@@ -29,6 +30,7 @@ export default {
       channel: '',
       currentFormData: undefined,
       postboxKey: '',
+      allowSkip: true,
     }
   },
   mounted() {
@@ -37,11 +39,12 @@ export default {
     this.channel = `tkey_channel_${instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
-      const { whiteLabel, data, postboxKey, verifierName } = ev.data || {}
+      const { whiteLabel, data, postboxKey, verifierName, allowSkip } = ev.data || {}
       this.currentFormData = JSON.parse(data)
       this.postboxKey = postboxKey
       this.$store.commit('setWhiteLabel', whiteLabel)
       this.verifierName = verifierName.charAt(0).toUpperCase() + verifierName.slice(1)
+      this.allowSkip = allowSkip
 
       bc.close()
     })

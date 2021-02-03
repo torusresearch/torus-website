@@ -66,7 +66,7 @@ export default {
       this.$emit('onClose')
     },
     redirectTo() {
-      this.$router.push({ name: this.goTo })
+      this.$router.push({ name: this.goTo }).catch((_) => {})
     },
   },
 }

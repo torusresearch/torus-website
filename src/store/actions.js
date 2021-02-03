@@ -1,6 +1,7 @@
 import randomId from '@chaitanyapotti/random-id'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
+import { BN } from 'ethereumjs-util'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 
@@ -46,6 +47,8 @@ import {
   walletConnectHandler,
 } from './controllerSubscriptions'
 import initialState from './state'
+
+const { ec } = torus
 
 const { baseRoute } = config
 const { torusController } = torus || {}
@@ -138,6 +141,21 @@ export default {
       if (error) log.error('currency fetch failed')
       else commit('setCurrencyData', data)
     })
+  },
+  async setTorusKey({ state }, { prevAddress, newKey }) {
+    const prevWallet = state.wallet[`0x${prevAddress}`]
+    if (!prevWallet) {
+      throw new Error(`could not find Torus wallet with address 0x${prevAddress}`)
+    }
+    const prevKey = prevWallet.privateKey
+    let oldDiff = new BN(0)
+    // if metadataNonce was previously set
+    if (prevWallet.metadataNonceHex) {
+      oldDiff = new BN(prevWallet.metadataNonceHex, 16)
+    }
+    const originalKey = new BN(prevKey, 16).sub(oldDiff).umod(ec.curve.n)
+    const newDiff = new BN(newKey, 16).sub(new BN(originalKey, 16)).umod(ec.curve.n)
+    return torus.setMetadata(torus.generateMetadataParams(newDiff.toString(16), originalKey))
   },
   async forceFetchTokens({ state }) {
     detectTokensController.refreshTokenBalances()
@@ -274,6 +292,7 @@ export default {
           privateKey: payload.privKey,
           accountType: payload.accountType || ACCOUNT_TYPE.NORMAL,
           seedPhrase: payload.seedPhrase,
+          metadataNonceHex: payload.metadataNonce?.toString(16),
         },
       })
     }
@@ -435,7 +454,7 @@ export default {
     await Promise.all(promises)
     // Threshold Bak region
     // Check if tkey exists
-    const keyExists = await thresholdKeyController.checkIfTKeyExists(state.postboxKey.privateKey)
+    const { status: keyExists, share } = await thresholdKeyController.checkIfTKeyExists(state.postboxKey.privateKey)
     // if in iframe && keyExists, initialize tkey only if it's set as default address
     // if not in iframe && keyExists, initialize tkey always
     // inside an iframe
@@ -444,18 +463,18 @@ export default {
       if (!isMain) {
         if (defaultAddresses[0] && defaultAddresses[0] !== oAuthKey.ethAddress) {
           // Do tkey
-          defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
+          defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed, share })))
         } else if (config.onlyTkey) {
-          defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
+          defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed, share })))
         }
       } else {
         // In app.tor.us
-        defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed })))
+        defaultAddresses.push(...(await dispatch('addTKey', { calledFromEmbed, share })))
       }
     } else if (config.onlyTkey && !keyExists) {
       if (!isMain) dispatch('showWalletPopup', { path: 'tkey' })
       else {
-        router.push({ path: 'tkey' })
+        router.push({ path: 'tkey' }).catch((_) => {})
       }
       throw new Error('User has no account')
     }
