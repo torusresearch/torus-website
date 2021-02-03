@@ -696,7 +696,8 @@ export function padPrivateKey(privKey) {
 }
 
 export function getUserEmail(userInfo, loginConfig, walletDisplay) {
-  const verifierName = loginConfig[userInfo.verifier].name
+  const currentConfig = loginConfig[userInfo.verifier]
+  const verifierName = currentConfig?.name || ''
   const typeOfLoginDisplay = verifierName.charAt(0).toUpperCase() + verifierName.slice(1)
   return (userInfo.typeOfLogin !== APPLE && userInfo.email) || userInfo.name || `${typeOfLoginDisplay} ${walletDisplay}`
 }

@@ -536,7 +536,7 @@ export default {
     selectedItemDisplay() {
       if (this.contractType !== CONTRACT_TYPE_ERC721) return this.selectedItem
 
-      return this.collectibles.find((x) => x.address === this.collectibleSelected.address)
+      return this.collectibleSelected
     },
     selectedTokenAddress() {
       if (this.tokenAddress === '0x' || !isAddress(this.tokenAddress)) return '0x'
@@ -629,13 +629,13 @@ export default {
     this.contactSelected = this.toAddress
 
     this.$watch('collectibles', (newValue, oldValue) => {
-      if (newValue !== oldValue) {
+      if (newValue !== oldValue && newValue?.length > 0) {
         this.updateFieldsBasedOnRoute()
       }
     })
 
     const tokensUnwatch = this.$watch('finalBalancesArray', (newValue, oldValue) => {
-      if (newValue !== oldValue) {
+      if (newValue !== oldValue && newValue?.length > 0) {
         this.updateFieldsBasedOnRoute()
         tokensUnwatch()
       }
@@ -861,8 +861,8 @@ export default {
       if (foundInBalances) {
         this.tokenAddress = foundInBalances.tokenAddress
         this.contractType = foundInBalances.erc20 ? CONTRACT_TYPE_ERC20 : CONTRACT_TYPE_ETH
-        this.collectibleSelected = ''
-        this.assetSelected = ''
+        this.collectibleSelected = {}
+        this.assetSelected = {}
       } else if (foundInCollectibles) {
         this.tokenAddress = foundInCollectibles.address
         this.contractType = CONTRACT_TYPE_ERC721

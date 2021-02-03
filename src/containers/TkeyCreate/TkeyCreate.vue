@@ -47,10 +47,10 @@
         <v-flex class="xs12 sm10 md8 lg7">
           <v-tabs-items v-model="tab" touchless>
             <v-tab-item>
-              <TkeyOnboardingTry @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
+              <TkeyOnboardingTry :allow-skip="allowSkip" @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 1" />
             </v-tab-item>
             <v-tab-item>
-              <TkeyOnboardingSetup @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 2" />
+              <TkeyOnboardingSetup :allow-skip="allowSkip" @tKeyOnboardingCancel="tKeyOnboardingCancel" @next="tab = 2" />
             </v-tab-item>
             <v-tab-item>
               <SetupWallet
@@ -144,8 +144,12 @@ export default {
       return this.defaultPublicAddress || Object.keys(this.wallets).find((x) => this.wallets[x].accountType === ACCOUNT_TYPE.THRESHOLD)
     },
     verifierName() {
-      const verifierName = this.loginConfig[this.userInfo.verifier].name
+      const currentVerifier = this.loginConfig[this.userInfo.verifier]
+      const verifierName = currentVerifier?.name || ''
       return verifierName.charAt(0).toUpperCase() + verifierName.slice(1)
+    },
+    allowSkip() {
+      return Object.keys(this.wallets).length > 0
     },
   },
   mounted() {

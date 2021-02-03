@@ -4,6 +4,7 @@
       :verifier-name="verifierName"
       :t-key-json="tKeyJson"
       :postbox-key="postboxKey"
+      :allow-skip="allowSkip"
       @triggerSign="triggerSign"
       @triggerDeny="triggerDeny"
       @postErrorMessage="setTkeyError"
@@ -25,7 +26,7 @@ export default {
   computed: {
     ...mapState({
       tKeyJson: (state) => state.tKeyStore.tKey,
-      wallet: 'wallet',
+      wallets: 'wallet',
       selectedAddress: 'selectedAddress',
       loginConfig: (state) => state.embedState.loginConfig,
       userInfo: 'userInfo',
@@ -34,6 +35,9 @@ export default {
     verifierName() {
       const verifierName = this.loginConfig[this.userInfo.verifier].name
       return verifierName.charAt(0).toUpperCase() + verifierName.slice(1)
+    },
+    allowSkip() {
+      return Object.keys(this.wallets).length > 0
     },
   },
   watch: {

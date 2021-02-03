@@ -15,11 +15,11 @@ const { torusController } = torus || {}
 const { thresholdKeyController } = torusController || {}
 
 export default {
-  async addTKey({ dispatch, state }, { calledFromEmbed }) {
+  async addTKey({ dispatch, state }, { calledFromEmbed, share }) {
     try {
       const finalKey = state.postboxKey
       const normalAccountAddress = Object.keys(state.wallet).find((x) => state.wallet[x].accountType === ACCOUNT_TYPE.NORMAL)
-      let allKeys = await thresholdKeyController.login(finalKey.privateKey)
+      let allKeys = await thresholdKeyController.login({ postboxKey: finalKey.privateKey, share })
       if (config.onlySeedPhraseAccounts && allKeys.length > 0) {
         // don't use the first key
         allKeys = allKeys.filter((x) => x.accountType !== ACCOUNT_TYPE.THRESHOLD)
@@ -83,7 +83,7 @@ export default {
     const { type, data } = payload
     // data is store of thresholdkeycontroller
     // log.info(data, type)
-    if (isMain) router.push({ name: 'tKeyInput' })
+    if (isMain) router.push({ name: 'tKeyInput' }).catch((_) => {})
     else {
       const windowId = randomId()
       const handleDeny = (error) => {
@@ -103,6 +103,7 @@ export default {
           data: JSON.stringify(data),
           postboxKey: state.postboxKey?.privateKey,
           type,
+          allowSkip: Object.keys(state.wallet).length > 0,
         }
         const finalUrl = `${baseRoute}tkey/dapp-input?integrity=true&instanceId=${windowId}`
         const tKeyInputWindow = new PopupWithBcHandler({
@@ -180,7 +181,11 @@ export default {
         verifierParams: aggregateVerifierParams,
         oAuthToken: aggregateIdToken,
       })
-      commit('setPostboxKey', { privateKey: postboxKey.privKey, ethAddress: postboxKey.ethAddress })
+      commit('setPostboxKey', {
+        privateKey: postboxKey.privKey,
+        ethAddress: postboxKey.ethAddress,
+        metadataNonceHex: postboxKey.metadataNonce.toString(16),
+      })
     } catch (error) {
       log.error(error, 'unable to get postbox key')
     }

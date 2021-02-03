@@ -1,11 +1,13 @@
+import { Integrations } from '@sentry/browser'
 import * as Sentry from '@sentry/vue'
+import LoglevelSentryPlugin from '@toruslabs/loglevel-sentry'
 import log from 'loglevel'
 
 function getSampleRate() {
   try {
     return Number.parseFloat(process.env.VUE_APP_SENTRY_SAMPLE_RATE)
   } catch {
-    return 0.5
+    return 0.2
   }
 }
 
@@ -18,29 +20,12 @@ export function installSentry(Vue) {
     environment: process.env.VUE_APP_TORUS_BUILD_ENV,
     release: `torus-website@${process.env.VUE_APP_TORUS_BUILD_VERSION}`,
     autoSessionTracking: true,
-    tracesSampleRate: getSampleRate(),
+    integrations: [new Integrations.Breadcrumbs({ console: false })],
+    sampleRate: getSampleRate(),
   })
 
-  const defaultFactory = log.methodFactory
-  log.methodFactory = (method, level, name) => {
-    const defaultMethod = defaultFactory(method, level, name)
-
-    switch (method) {
-      case 'error':
-        return (err, ...messages) => {
-          Sentry.captureException(err, {
-            extra: {
-              messages,
-            },
-          })
-          defaultMethod(err, ...messages)
-        }
-      default:
-        return defaultMethod
-    }
-  }
-
-  log.setLevel(log.getLevel())
+  const plugin = new LoglevelSentryPlugin(Sentry)
+  plugin.install(log)
 }
 
 export function setSentryEnabled(enabled) {

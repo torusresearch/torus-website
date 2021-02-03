@@ -119,7 +119,7 @@ function calculateBalances(state, y) {
       decimals: 18,
       erc20: false,
       logo: networkType.logo,
-      name: networkType.tickerName,
+      name: networkType.tickerName || '',
       symbol: networkType.ticker,
       tokenAddress: '0x',
     },

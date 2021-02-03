@@ -255,7 +255,8 @@ export default {
         const callback = (p) => {
           p.then(async ({ success }) => {
             if (success) {
-              this.$router.push({ name: 'walletHistory' })
+              // eslint-disable-next-line
+              this.$router.push({ name: 'walletHistory' }).catch((_) => {})
             } else {
               this.snackbar = true
               this.snackbarColor = 'error'

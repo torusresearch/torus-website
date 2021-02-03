@@ -44,7 +44,7 @@
               class="caption font-weight-bold"
               @click="tKeyOnboardingCancel"
             >
-              {{ t('tkeyCreateAdd.skip') }}
+              {{ allowSkip ? t('tkeyCreateAdd.skip') : t('tkeyNew.cancel') }}
             </v-btn>
           </v-flex>
           <v-flex class="xs6 px-2">
@@ -69,6 +69,12 @@
 
 <script>
 export default {
+  props: {
+    allowSkip: {
+      type: Boolean,
+      default: true,
+    },
+  },
   methods: {
     tKeyOnboardingCancel() {
       this.$emit('tKeyOnboardingCancel')
