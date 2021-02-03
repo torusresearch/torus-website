@@ -1,8 +1,7 @@
 import randomId from '@chaitanyapotti/random-id'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
-import { BN, keccak256 } from 'ethereumjs-util'
-import stringify from 'json-stable-stringify'
+import { BN } from 'ethereumjs-util'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 
@@ -78,21 +77,6 @@ const oauthStream = communicationMux.getStream('oauth')
 const userInfoStream = communicationMux.getStream('user_info')
 const providerChangeStream = communicationMux.getStream('provider_change')
 const widgetStream = communicationMux.getStream('widget')
-
-const generateMetadataParams = (message, privateKeyHex) => {
-  const key = ec.keyFromPrivate(privateKeyHex)
-  const setData = {
-    data: message,
-    timestamp: new BN(Date.now()).toString(16),
-  }
-  const sig = key.sign(keccak256(Buffer.from(stringify(setData))))
-  return {
-    pub_key_X: key.getPublic().getX().toString('hex'),
-    pub_key_Y: key.getPublic().getY().toString('hex'),
-    set_data: setData,
-    signature: Buffer.from(sig.r.toString(16, 64) + sig.s.toString(16, 64) + new BN(sig.v).toString(16, 2), 'hex').toString('base64'),
-  }
-}
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
@@ -170,7 +154,7 @@ export default {
     }
     const originalKey = new BN(prevKey, 16).sub(oldDiff).umod(ec.curve.n)
     const newDiff = new BN(newKey, 16).sub(new BN(originalKey, 16)).umod(ec.curve.n)
-    return torus.setMetadata(generateMetadataParams(newDiff.toString(16), originalKey.toString(16)))
+    return torus.setMetadata(torus.generateMetadataParams(newDiff.toString(16), originalKey))
   },
   async forceFetchTokens({ state }) {
     detectTokensController.refreshTokenBalances()

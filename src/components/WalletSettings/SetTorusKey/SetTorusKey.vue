@@ -100,7 +100,7 @@ export default {
         log.error(error)
       } finally {
         this.settingKey = false
-        this.$router.push({ path: '/logout' }).catch((_) => {})
+        this.logOut()
       }
     },
   },

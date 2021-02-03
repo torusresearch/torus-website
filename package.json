@@ -71,7 +71,6 @@
     "human-standard-token-abi": "^2.0.0",
     "json-rpc-engine": "^6.1.0",
     "json-rpc-middleware-stream": "^3.0.0",
-    "json-stable-stringify": "^1.0.1",
     "jsonschema": "^1.4.0",
     "jwt-decode": "^3.1.2",
     "lodash.debounce": "^4.0.8",
