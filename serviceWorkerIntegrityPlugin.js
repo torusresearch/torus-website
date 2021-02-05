@@ -1,5 +1,13 @@
-/* eslint-disable */
-module.exports = class ServiceWorkerIntegrityPlugin {
+/* eslint-disable import/no-extraneous-dependencies */
+
+const log = require('loglevel')
+const ssri = require('ssri')
+const fs = require('fs')
+const { RawSource } = require('webpack-sources')
+
+const getFileName = (compilation, partialName) => Object.keys(compilation.assets).find((name) => name.includes(partialName))
+
+class ServiceWorkerIntegrityPlugin {
   constructor(appPath, stringToReplace, serviceWorkerPath) {
     this.appPath = appPath
     this.stringToReplace = stringToReplace
@@ -7,13 +15,8 @@ module.exports = class ServiceWorkerIntegrityPlugin {
   }
 
   apply(compiler) {
-    const ssri = require('ssri')
-    const fs = require('fs')
-    const { RawSource } = require('webpack-sources')
     const ID = 'service-worker-integrity-plugin'
-    const getFileName = function (compilation, partialName) {
-      return Object.keys(compilation.assets).find((name) => name.includes(partialName))
-    }
+
     compiler.hooks.emit.tap(ID, (compilation) => {
       try {
         const precacheManifestName = getFileName(compilation, 'precache-manifest.')
@@ -41,15 +44,17 @@ module.exports = class ServiceWorkerIntegrityPlugin {
             const modifiedFile = appHTMLFile
               .toString()
               .replace(/app\.[\da-z]*\.js/, 'app.js')
-              .replace(/(\/js\/app.js.*)(integrity=["]?sha384-[\d+\/=A-Za-z]*["]?)( *><\/script>)/, `$1integrity="${appIntegrity}"$3`)
+              .replace(/(\/js\/app.js.*)(integrity="?sha384-[\d+/=A-Za-z]*"?)( *><\/script>)/, `$1integrity="${appIntegrity}"$3`)
             fs.writeFileSync(appHTMLPath, modifiedFile)
           } catch (error) {
-            console.error('Could not run service worker integrity plugin on compilation', error)
+            log.error('Could not run service worker integrity plugin on compilation', error)
           }
         })
       } catch (error) {
-        console.error('Could not run service worker integrity plugin', error)
+        log.error('Could not run service worker integrity plugin', error)
       }
     })
   }
 }
+
+module.exports = ServiceWorkerIntegrityPlugin
