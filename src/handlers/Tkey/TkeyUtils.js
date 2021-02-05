@@ -24,7 +24,7 @@ export function parseShares(parsedShareDescriptions) {
       acc[x.shareIndex].browsers = [...acc[x.shareIndex].browsers, x]
     } else {
       const deviceType = x.module === CHROME_EXTENSION_STORAGE_MODULE_KEY ? 'Chrome Extension' : capitalizeFirstLetter(browserInfo.platform.type)
-      const deviceInfo = `${deviceType} - ${browserInfo.os.name}`
+      const deviceInfo = `${deviceType || ''} - ${browserInfo.os.name}`
       acc[x.shareIndex] = {
         index: x.shareIndex,
         osName: browserInfo.os.name,
