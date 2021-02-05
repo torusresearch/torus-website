@@ -28,7 +28,9 @@ module.exports = class ServiceWorkerIntegrityPlugin {
         }
         const swIntegrity = ssri.fromData(compilation.assets[serviceWorkerName].source(), { algorithms: ['sha384'] }).toString()
         const appName = getFileName(compilation, 'js/app.')
-        const string = compilation.assets[appName]._value
+        // console.log('%O', compilation.assets[appName].children[0])
+        // console.log(appName, 'appname')
+        const string = compilation.assets[appName].children[0]._value
         compilation.assets['js/app.js'] = new RawSource(string.toString().replace('SERVICE_WORKER_SHA_INTEGRITY', swIntegrity))
         compiler.hooks.done.tap(ID, (stats) => {
           try {
