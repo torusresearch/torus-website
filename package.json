@@ -164,8 +164,10 @@
     "through2": "^4.0.2",
     "uglifyify": "^5.0.2",
     "vue-cli-plugin-vuetify": "^2.1.0",
+    "vue-cli-plugin-webpack-bundle-analyzer": "~4.0.0",
     "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.7.1",
+    "webpack": "^4.46.0",
     "worker-loader": "^3.0.7"
   },
   "browserslist": [
