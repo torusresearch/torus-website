@@ -42,6 +42,7 @@
     "guard-for-in": 0,
     "no-underscore-dangle": 0,
     "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
     "operator-linebreak": 0,
     "promise/always-return": 0,
     "unicorn/filename-case": 0,
