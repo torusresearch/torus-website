@@ -54,7 +54,7 @@
           :currency-multiplier="currencyMultiplier"
           :currency-multiplier-eth="currencyMultiplier"
           :contract-type="contractType"
-          :symbol="SEND_ETHER_ACTION_KEY === transactionCategory ? 'ETH' : selectedToken"
+          :symbol="SEND_ETHER_ACTION_KEY === transactionCategory ? network.ticker : selectedToken"
           :is-confirm="true"
           :network-host="network.host"
           @onSelectSpeed="onSelectSpeed"
@@ -68,7 +68,7 @@
         <v-flex xs9>
           <v-text-field
             :value="`${costOfTransaction} ${
-              isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + 'ETH' : ''
+              isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + network.ticker : ''
             }`"
             :hint="costOfTransactionConverted"
             outlined
@@ -492,7 +492,7 @@ export default {
           return `ID: ${this.amountValue}`
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
-          return `${this.amountDisplay(this.value)} ETH`
+          return `${this.amountDisplay(this.value)} ${this.network.ticker}`
         case DEPLOY_CONTRACT_ACTION_KEY:
           return this.t('dappTransfer.notApplicable')
         default:
@@ -518,7 +518,7 @@ export default {
       if ([TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)) {
         return `${this.displayAmountValue}`
       }
-      return `${this.totalEthCostDisplay} ETH`
+      return `${this.totalEthCostDisplay} ${this.network.ticker}`
     },
     isOtherToken() {
       return [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)
@@ -538,7 +538,7 @@ export default {
     getCurrencyRate() {
       const ethConverted = this.currencyMultiplier
       const tokenPriceConverted = this.isOtherToken ? this.tokenPrice.times(ethConverted) : ethConverted
-      const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
+      const selectedToken = this.isOtherToken ? this.selectedToken : this.network.ticker
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
     },
   },
