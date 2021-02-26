@@ -82,7 +82,7 @@ export default class TorusKeyring extends EventEmitter {
     for (let i = 0; i < n; i += 1) {
       newWallets.push(Wallet.generate())
     }
-    this.wallets = this.wallets.concat(newWallets)
+    this.wallets = [...this.wallets, ...newWallets]
     const hexWallets = newWallets.map((w) => bufferToHex(w.getAddress()))
     return Promise.resolve(hexWallets)
   }

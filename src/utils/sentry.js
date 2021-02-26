@@ -22,6 +22,7 @@ export function installSentry(Vue) {
     autoSessionTracking: true,
     integrations: [new Integrations.Breadcrumbs({ console: false })],
     sampleRate: getSampleRate(),
+    normalizeDepth: 5,
   })
 
   const plugin = new LoglevelSentryPlugin(Sentry)

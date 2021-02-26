@@ -6,4 +6,4 @@ import JwtHandler from './JwtHandler'
 import RedditHandler from './RedditHandler'
 import TwitchHandler from './TwitchHandler'
 
-export { GoogleHandler, FacebookHandler, DiscordHandler, HandlerFactory, JwtHandler, RedditHandler, TwitchHandler }
+export { DiscordHandler, FacebookHandler, GoogleHandler, HandlerFactory, JwtHandler, RedditHandler, TwitchHandler }
