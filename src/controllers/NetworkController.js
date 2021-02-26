@@ -309,7 +309,8 @@ export default class NetworkController extends EventEmitter {
   _setNetworkClient({ networkMiddleware, blockTracker }) {
     const metamaskMiddleware = createMetamaskMiddleware(this._baseProviderParams)
     const engine = new JsonRpcEngine()
-    engine.push(metamaskMiddleware, networkMiddleware)
+    engine.push(metamaskMiddleware)
+    engine.push(networkMiddleware)
     const provider = providerFromEngine(engine)
     this._setProviderAndBlockTracker({ provider, blockTracker })
   }

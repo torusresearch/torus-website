@@ -718,14 +718,17 @@ export default class TorusController extends EventEmitter {
     subscriptionManager.events.on('notification', (message) => engine.emit('notification', message))
 
     // metadata
-    engine.push(
-      createOriginMiddleware({ origin }),
-      createLoggerMiddleware({ origin }),
-      filterMiddleware,
-      subscriptionManager.middleware,
-      this.permissionsController.createMiddleware({ origin }),
-      providerAsMiddleware(provider)
-    )
+    engine.push(createOriginMiddleware({ origin }))
+    engine.push(createLoggerMiddleware({ origin }))
+    // filter and subscription polyfills
+    engine.push(filterMiddleware)
+    engine.push(subscriptionManager.middleware)
+    // permissions
+    engine.push(this.permissionsController.createMiddleware({ origin }))
+    // watch asset
+    // engine.push(this.preferencesController.requestWatchAsset.bind(this.preferencesController))
+    // forward to metamask primary provider
+    engine.push(providerAsMiddleware(provider))
     return engine
   }
 
