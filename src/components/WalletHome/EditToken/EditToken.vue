@@ -189,7 +189,6 @@ export default {
       this.isValidAddress = await validateContractAddress(torus.web3, value)
       if (this.isValidAddress) {
         try {
-          this.isValidAddress = true
           this.currentToken = new TokenHandler({ address: value, web3: torus.web3 })
           const [symbol, name, balance, decimals] = await Promise.all([
             this.currentToken.getSymbol(),
@@ -206,8 +205,6 @@ export default {
         } catch (error) {
           log.error('Error while adding custom token.', error)
         }
-      } else {
-        this.isValidAddress = false
       }
     },
     addToken() {
