@@ -9,14 +9,11 @@
       "standard",
       "@vue/standard",
       "plugin:vue/recommended",
-      "prettier/babel",
       "plugin:prettier/recommended",
-      "prettier/vue",
       "eslint:recommended",
       "airbnb-base",
       "plugin:import/errors",
       "plugin:import/warnings",
-      "plugin:flowtype/recommended",
       "problems",
       "plugin:vue-scoped-css/recommended",
       "plugin:promise/recommended",
@@ -24,7 +21,7 @@
       "plugin:unicorn/recommended",
       "prettier"
     ],
-    "plugins": ["prettier", "vue", "babel", "promise", "import", "flowtype", "vue-scoped-css", "simple-import-sort", "switch-case", "unicorn"],
+    "plugins": ["prettier", "vue", "babel", "promise", "import", "vue-scoped-css", "simple-import-sort", "switch-case", "unicorn"],
     "parser": "vue-eslint-parser",
     "parserOptions": {
       "parser": "babel-eslint",
@@ -32,6 +29,7 @@
       "sourceType": "module"
     },
     "rules": {
+      "unicorn/no-array-for-each": 0,
       "unicorn/consistent-destructuring": 0,
       "unicorn/prefer-regexp-test": 0,
       "unicorn/no-array-reduce": 0,
