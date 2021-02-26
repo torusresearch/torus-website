@@ -36,7 +36,7 @@ if (
         log.info('No internet connection found. App is running in offline mode.')
       },
       error(error) {
-        log.error('Error during service worker registration:', error)
+        log.warn('Error during service worker registration:', error)
       },
     })
   } else {
