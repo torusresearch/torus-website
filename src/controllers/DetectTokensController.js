@@ -176,29 +176,35 @@ class DetectTokensController {
       if (x.network === localNetwork) acc.push(x)
       return acc
     }, [])
-    const nonZeroTokens = await Promise.all(
+    let nonZeroTokens = await Promise.all(
       currentNetworkTokens.map(async (x) => {
-        const tokenInstance = new TokenHandler({
-          address: x.token_address,
-          decimals: x.decimals,
-          name: x.token_name,
-          symbol: x.token_symbol,
-          web3: this.web3,
-        })
-        const balance = await tokenInstance.getUserBalance(userAddress)
-        return {
-          decimals: tokenInstance.decimals,
-          erc20: true,
-          logo: 'eth.svg',
-          name: tokenInstance.name,
-          symbol: tokenInstance.symbol,
-          tokenAddress: toChecksumAddress(tokenInstance.address),
-          balance: `0x${balance}`,
-          customTokenId: x.id,
-          network: localNetwork,
+        try {
+          const tokenInstance = new TokenHandler({
+            address: x.token_address,
+            decimals: x.decimals,
+            name: x.token_name,
+            symbol: x.token_symbol,
+            web3: this.web3,
+          })
+          const balance = await tokenInstance.getUserBalance(userAddress)
+          return {
+            decimals: tokenInstance.decimals,
+            erc20: true,
+            logo: 'eth.svg',
+            name: tokenInstance.name,
+            symbol: tokenInstance.symbol,
+            tokenAddress: toChecksumAddress(tokenInstance.address),
+            balance: `0x${balance}`,
+            customTokenId: x.id,
+            network: localNetwork,
+          }
+        } catch (error) {
+          log.warn('Invalid contract address while fetching', error)
+          return undefined
         }
       })
     )
+    nonZeroTokens = nonZeroTokens.filter((x) => x)
     const currentTokens = this.detectedTokensStore.getState()[userAddress] || []
     this.detectedTokensStore.updateState({ [userAddress]: mergeCustomTokenArrays(currentTokens, nonZeroTokens) })
   }

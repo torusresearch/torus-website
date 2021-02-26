@@ -154,7 +154,7 @@ export default {
       ]
     },
     calculatedFinalTx() {
-      let finalTx = this.paymentTx.concat(this.pastTx, this.etherscanTx)
+      let finalTx = [...this.paymentTx, ...this.pastTx, ...this.etherscanTx]
       finalTx = finalTx.reduce((accumulator, x) => {
         x.actionIcon = this.getIcon(x)
         x.actionText = this.getActionText(x)

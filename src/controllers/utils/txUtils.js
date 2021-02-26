@@ -3,7 +3,7 @@ import { addHexPrefix, isValidAddress } from 'ethereumjs-util'
 /**
 @module
 */
-export { normalizeTxParameters as normalizeTxParams, validateTxParameters as validateTxParams, validateFrom, validateRecipient, getFinalStates }
+export { getFinalStates, normalizeTxParameters as normalizeTxParams, validateFrom, validateRecipient, validateTxParameters as validateTxParams }
 
 // functions that handle normalizing of that key in txParams
 const normalizers = {

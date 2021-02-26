@@ -51,7 +51,7 @@ function notifyUrl(url) {
         registration.showNotification('Sent Transaction', {
           body: 'Check Tx Status',
           icon: 'favicon.png',
-          actions: [{ action: 'close', title: 'Close Notification', icon: 'img/icons/close.svg' }],
+          actions: [{ action: 'close', title: 'Close Notification', icon: 'images/close.svg' }],
           vibrate: [100, 50, 100],
           tag: 'transaction-status',
           data: {
