@@ -26,7 +26,7 @@ describe('MetaMaskController', () => {
 
   beforeEach(async () => {
     nock.cleanAll()
-    nock.enableNetConnect()
+    nock.enableNetConnect((host) => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
 
     nock('https://min-api.cryptocompare.com')
       .get('/data/price')

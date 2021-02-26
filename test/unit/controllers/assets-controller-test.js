@@ -60,6 +60,7 @@ describe('AssetsController', () => {
           total_supply: 0,
         },
       })
+      .persist(true)
 
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/fou')
@@ -72,6 +73,7 @@ describe('AssetsController', () => {
           total_supply: 10,
         },
       })
+      .persist(true)
 
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset/foo/1')
@@ -82,6 +84,7 @@ describe('AssetsController', () => {
           name: 'Name',
         },
       })
+      .persist(true)
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset/0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163/1203')
       .reply(200, {
@@ -91,17 +94,23 @@ describe('AssetsController', () => {
           name: 'Kudos Name',
         },
       })
-    nock('https://ipfs.gitcoin.co:443').get('/api/v0/cat/QmPmt6EAaioN78ECnW5oCL8v2YvVSpoBjLCjrXhhsAvoov').reply(200, {
-      image: 'Kudos Image',
-      name: 'Kudos Name',
-    })
+      .persist(true)
+    nock('https://ipfs.gitcoin.co:443')
+      .get('/api/v0/cat/QmPmt6EAaioN78ECnW5oCL8v2YvVSpoBjLCjrXhhsAvoov')
+      .reply(200, {
+        image: 'Kudos Image',
+        name: 'Kudos Name',
+      })
+      .persist(true)
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/798958393')
       .replyWithError(new TypeError('failed to fetch'))
+      .persist(true)
 
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab')
       .replyWithError(new TypeError('failed to fetch'))
+      .persist(true)
 
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163')
@@ -114,6 +123,7 @@ describe('AssetsController', () => {
           total_supply: 10,
         },
       })
+      .persist(true)
   })
 
   afterEach(() => {

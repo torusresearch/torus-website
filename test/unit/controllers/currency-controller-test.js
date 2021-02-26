@@ -11,7 +11,7 @@ describe('currency-controller', () => {
 
   beforeEach(() => {
     nock.cleanAll()
-    nock.enableNetConnect()
+    nock.disableNetConnect()
     currencyController = new CurrencyController()
   })
 
