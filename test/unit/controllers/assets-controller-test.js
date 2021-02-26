@@ -2,6 +2,7 @@
 import assert from 'assert'
 import nock from 'nock'
 import { createSandbox } from 'sinon'
+import config from '../../../src/config'
 
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
 import AssetsController from '../../../src/controllers/AssetsController'
@@ -13,7 +14,7 @@ const KUDOSADDRESS = '0x2aea4add166ebf38b63d09a75de1a7b94aa24163'
 const TEST_ADDRESS = '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'
 const TEST_ADDRESS_2 = '0xec1adf982415d2ef5ec55899b9bfb8bc0f29251b'
 const TEST_ADDRESS_3 = '0xeb9e64b93097bc15f01f13eae97015c57ab64823'
-const OPEN_SEA_API = `https://api.tor.us`
+const OPEN_SEA_API = config.api
 
 const testAccount = {
   key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
