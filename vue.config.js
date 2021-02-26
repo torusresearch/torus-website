@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
+const { IgnorePlugin } = require('webpack')
 const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
@@ -51,6 +52,10 @@ module.exports = {
     config.resolve.alias.set('lodash', path.resolve(__dirname, 'node_modules/lodash'))
     config.resolve.alias.set('#', path.resolve(__dirname, 'src/'))
     config.resolve.extensions.add('.vue')
+
+    config.plugin('ignore').use(IgnorePlugin, [/^\.\/wordlists\/(?!english)/, /bip39\/src$/])
+
+    // new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/)
     if (process.env.NODE_ENV === 'production') {
       config
         .plugin('service-worker-integrity')
@@ -107,6 +112,12 @@ module.exports = {
     },
   },
   parallel: !process.env.CIRCLECI,
+  pluginOptions: {
+    webpackBundleAnalyzer: {
+      openAnalyzer: false,
+      analyzerMode: 'disabled',
+    },
+  },
 }
 
 function getAndroidIcon(size) {

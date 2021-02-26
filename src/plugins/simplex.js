@@ -46,4 +46,4 @@ const getStatus = (userId, headers) => {
   }
   return undefined
 }
-export { postQuote, postOrder, getStatus }
+export { getStatus, postOrder, postQuote }

@@ -285,12 +285,12 @@ export default {
     getActionText(transaction) {
       if (transaction.type_name === 'n/a' || transaction.type === 'n/a') {
         return `${transaction.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
-          transaction.type_name !== 'n/a' ? transaction.type_name : transaction.type.toUpperCase()
+          transaction.type_name !== 'n/a' ? transaction.type_name : transaction.type?.toUpperCase() || ''
         }`
       }
       if (transaction.type_name || transaction.type) {
         return `${transaction.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
-          transaction.type === 'eth' ? transaction.type_name.toUpperCase() : transaction.type_name
+          transaction.type === 'eth' ? transaction.type_name?.toUpperCase() || '' : transaction.type_name
         }`
       }
       return `${`${this.t(transaction.action)} ${transaction.from}`} `

@@ -32,7 +32,7 @@ class AbiDecoder {
         return undefined
       })
 
-      this.state.savedABIs = this.state.savedABIs.concat(abiArray)
+      this.state.savedABIs = [...this.state.savedABIs, ...abiArray]
     } else {
       throw new TypeError(`Expected ABI array, got ${typeof abiArray}`)
     }

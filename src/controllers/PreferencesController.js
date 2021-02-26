@@ -88,7 +88,7 @@ class PreferencesController extends EventEmitter {
     const selectedAddress = address || this.store.getState().selectedAddress
     return {
       headers: {
-        Authorization: `Bearer ${this.state(selectedAddress)?.jwtToken}`,
+        Authorization: `Bearer ${this.state(selectedAddress)?.jwtToken || ''}`,
         'Content-Type': 'application/json; charset=utf-8',
       },
     }
@@ -356,7 +356,7 @@ class PreferencesController extends EventEmitter {
     if (tx.status === 'submitted' || tx.status === 'confirmed') {
       if (duplicateIndex === -1 && tx.status === 'submitted') {
         // No duplicate found
-        this.updateStore({ pastTransactions: storePastTx.concat([formattedTx]) }, address)
+        this.updateStore({ pastTransactions: [...storePastTx, formattedTx] }, address)
         this.postPastTx(tx, address)
         try {
           notifyUser(formattedTx.etherscanLink)

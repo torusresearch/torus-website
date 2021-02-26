@@ -6,4 +6,4 @@ import WalletTopupSimplex from './WalletTopupSimplex'
 import WalletTopupWyre from './WalletTopupWyre'
 import WalletTopupXanpool from './WalletTopupXanpool'
 
-export { WalletTopupHome, WalletTopupMoonpay, WalletTopupRampNetwork, WalletTopupSimplex, WalletTopupWyre, WalletTopupXanpool, WalletTopupMercuryo }
+export { WalletTopupHome, WalletTopupMercuryo, WalletTopupMoonpay, WalletTopupRampNetwork, WalletTopupSimplex, WalletTopupWyre, WalletTopupXanpool }
