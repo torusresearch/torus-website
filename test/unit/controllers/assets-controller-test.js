@@ -2,6 +2,7 @@
 import assert from 'assert'
 import nock from 'nock'
 import { createSandbox } from 'sinon'
+import config from '../../../src/config'
 
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
 import AssetsController from '../../../src/controllers/AssetsController'
@@ -13,7 +14,7 @@ const KUDOSADDRESS = '0x2aea4add166ebf38b63d09a75de1a7b94aa24163'
 const TEST_ADDRESS = '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'
 const TEST_ADDRESS_2 = '0xec1adf982415d2ef5ec55899b9bfb8bc0f29251b'
 const TEST_ADDRESS_3 = '0xeb9e64b93097bc15f01f13eae97015c57ab64823'
-const OPEN_SEA_API = `https://api.tor.us`
+const OPEN_SEA_API = config.api
 
 const testAccount = {
   key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
@@ -59,6 +60,7 @@ describe('AssetsController', () => {
           total_supply: 0,
         },
       })
+      .persist(true)
 
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/fou')
@@ -71,6 +73,7 @@ describe('AssetsController', () => {
           total_supply: 10,
         },
       })
+      .persist(true)
 
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset/foo/1')
@@ -81,6 +84,7 @@ describe('AssetsController', () => {
           name: 'Name',
         },
       })
+      .persist(true)
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset/0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163/1203')
       .reply(200, {
@@ -90,17 +94,23 @@ describe('AssetsController', () => {
           name: 'Kudos Name',
         },
       })
-    nock('https://ipfs.gitcoin.co:443').get('/api/v0/cat/QmPmt6EAaioN78ECnW5oCL8v2YvVSpoBjLCjrXhhsAvoov').reply(200, {
-      image: 'Kudos Image',
-      name: 'Kudos Name',
-    })
+      .persist(true)
+    nock('https://ipfs.gitcoin.co:443')
+      .get('/api/v0/cat/QmPmt6EAaioN78ECnW5oCL8v2YvVSpoBjLCjrXhhsAvoov')
+      .reply(200, {
+        image: 'Kudos Image',
+        name: 'Kudos Name',
+      })
+      .persist(true)
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/798958393')
       .replyWithError(new TypeError('failed to fetch'))
+      .persist(true)
 
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab')
       .replyWithError(new TypeError('failed to fetch'))
+      .persist(true)
 
     nock(OPEN_SEA_API)
       .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163')
@@ -113,6 +123,7 @@ describe('AssetsController', () => {
           total_supply: 10,
         },
       })
+      .persist(true)
   })
 
   afterEach(() => {

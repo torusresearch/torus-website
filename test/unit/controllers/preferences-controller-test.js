@@ -6,8 +6,9 @@ import sinon from 'sinon'
 import PreferencesController from '../../../src/controllers/PreferencesController'
 import NetworkController from '../../../src/controllers/NetworkController'
 import { ACCOUNT_TYPE, THEME_LIGHT_BLUE_NAME } from '../../../src/utils/enums'
+import config from '../../../src/config'
 
-const TORUS_API = `https://api.tor.us`
+const TORUS_API = config.api
 const noop = () => {}
 
 const testAccount = {
@@ -32,7 +33,7 @@ describe('Preferences Controller', () => {
 
   beforeEach(() => {
     nock.cleanAll()
-    nock.enableNetConnect()
+    nock.disableNetConnect()
     network = new NetworkController()
     network.initializeProvider(networkControllerProviderConfig)
     preferencesController = new PreferencesController({ signMessage: noop, network, provider: network.getProviderAndBlockTracker().provider })
@@ -226,7 +227,7 @@ describe('Preferences Controller', () => {
   //     sandbox.restore()
   //   })
   //   it('user sync error', async () => {
-  //     nock('https://api.tor.us').get(/.*/).replyWithError(new TypeError('Invalid request'))
+  //     nock(TORUS_API).get(/.*/).replyWithError(new TypeError('Invalid request'))
 
   //     nock('https://common-api.tor.us').get('/transaction').reply(200, {
   //       data: {},
@@ -242,15 +243,15 @@ describe('Preferences Controller', () => {
   //   it('payment sync error', async () => {
   //     sandbox.stub(preferencesController, 'setVerifier')
 
-  //     nock('https://api.tor.us')
+  //     nock(TORUS_API)
   //       .get(/transaction/)
   //       .reply(400)
 
-  //     nock('https://api.tor.us')
+  //     nock(TORUS_API)
   //       .get(/etherscan/)
   //       .reply(400)
 
-  //     nock('https://api.tor.us').get(/user/).reply(200, { data: {} })
+  //     nock(TORUS_API).get(/user/).reply(200, { data: {} })
 
   //     nock('https://common-api.tor.us').get(/.*/).reply(400)
 
@@ -272,17 +273,17 @@ describe('Preferences Controller', () => {
   //       verifier_id: 'hc@njv.com',
   //       permissions: {},
   //     }
-  //     nock('https://api.tor.us').get(/user/).reply(200, {
+  //     nock(TORUS_API).get(/user/).reply(200, {
   //       data: userData,
   //     })
 
-  //     nock('https://api.tor.us')
+  //     nock(TORUS_API)
   //       .get(/transaction/)
   //       .reply(200, {
   //         data: [],
   //       })
 
-  //     nock('https://api.tor.us')
+  //     nock(TORUS_API)
   //       .get(/etherscan/)
   //       .reply(200, {
   //         data: [],
@@ -309,19 +310,19 @@ describe('Preferences Controller', () => {
     beforeEach(async () => {
       await preferencesController.init({ address: testAccount.address, jwtToken: 'hello', dispatch: noop, commit: noop })
       preferencesController.setSelectedAddress(testAccount.address)
-      nock('https://api.tor.us')
+      nock(TORUS_API)
         .patch('/user/theme')
         .reply(201, { data: { theme: '' } })
 
-      nock('https://api.tor.us')
+      nock(TORUS_API)
         .patch('/user/locale')
         .reply(201, { data: { locale: '' } })
 
-      nock('https://api.tor.us')
+      nock(TORUS_API)
         .patch('/user')
         .reply(201, { data: { default_currency: '' } })
 
-      nock('https://api.tor.us')
+      nock(TORUS_API)
         .get('/billboard')
         .reply(200, {
           data: [
@@ -337,7 +338,7 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
-      nock('https://api.tor.us')
+      nock(TORUS_API)
         .post('/contact')
         .reply(201, {
           data: {
@@ -349,7 +350,7 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
-      nock('https://api.tor.us')
+      nock(TORUS_API)
         .delete('/contact/1')
         .reply(200, {
           data: {
@@ -358,7 +359,7 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
-      nock('https://api.tor.us')
+      nock(TORUS_API)
         .post('/customtoken')
         .reply(201, {
           data: {
@@ -372,7 +373,7 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
-      nock('https://api.tor.us')
+      nock(TORUS_API)
         .delete('/customtoken/1')
         .reply(200, {
           data: {
@@ -381,7 +382,7 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
-      nock('https://api.tor.us').patch('/user/badge').reply(200, { success: true })
+      nock(TORUS_API).patch('/user/badge').reply(200, { success: true })
 
       handleSuccessStub = sandbox.stub(preferencesController, 'handleSuccess')
     })
