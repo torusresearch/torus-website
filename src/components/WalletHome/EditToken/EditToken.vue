@@ -23,7 +23,7 @@
                 <div class="body-2 mb-2">{{ t('homeToken.contract') }}</div>
                 <v-text-field
                   :value="customAddress"
-                  :rules="[rules.required, duplicateTokenRule]"
+                  :rules="[rules.required, duplicateTokenRule, addressValidityRule]"
                   outlined
                   @change="onCustomAddressChange"
                 ></v-text-field>
@@ -121,12 +121,11 @@
 import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
-import { isAddress } from 'web3-utils'
 
 import config from '../../../config'
 import TokenHandler from '../../../handlers/Token/TokenHandler'
 import torus from '../../../torus'
-import { significantDigits } from '../../../utils/utils'
+import { significantDigits, validateContractAddress } from '../../../utils/utils'
 
 export default {
   props: {
@@ -152,6 +151,7 @@ export default {
       customName: '',
       customBalance: '',
       currentToken: undefined,
+      isValidAddress: true,
       rules: {
         required: (value) => !!value || this.t('walletSettings.required'),
       },
@@ -167,6 +167,10 @@ export default {
       )
       return found ? this.t('homeToken.duplicateToken') : true
     },
+    addressValidityRule() {
+      if (this.isValidAddress) return true
+      return this.t('homeToken.invalidContractAddress')
+    },
   },
   mounted() {
     if (this.isHideMode) {
@@ -181,8 +185,11 @@ export default {
     ...mapActions(['addCustomToken', 'deleteCustomToken']),
     async onCustomAddressChange(value) {
       this.customAddress = value
-      if (isAddress(value)) {
+      // log.debug(await torus.web3.eth.getCode(value))
+      this.isValidAddress = await validateContractAddress(torus.web3, value)
+      if (this.isValidAddress) {
         try {
+          this.isValidAddress = true
           this.currentToken = new TokenHandler({ address: value, web3: torus.web3 })
           const [symbol, name, balance, decimals] = await Promise.all([
             this.currentToken.getSymbol(),
@@ -197,8 +204,10 @@ export default {
           this.customName = name
           this.customBalance = `${significantDigits(computedBalance, false, 3)} ${this.customSymbol}`
         } catch (error) {
-          log.error(error)
+          log.error('Error while adding custom token.', error)
         }
+      } else {
+        this.isValidAddress = false
       }
     },
     addToken() {

@@ -767,3 +767,15 @@ export function getVerifierOptions() {
     return []
   }
 }
+
+export async function validateContractAddress(web3, address) {
+  if (isAddress(address)) {
+    const contractCode = await web3.eth.getCode(address)
+    // user account address will return 0x for networks , except ganache returns 0x0
+    if (contractCode === '0x' || contractCode === '0x0') {
+      return false
+    }
+    return true
+  }
+  return false
+}
