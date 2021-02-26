@@ -88,7 +88,7 @@ class PreferencesController extends EventEmitter {
     const selectedAddress = address || this.store.getState().selectedAddress
     return {
       headers: {
-        Authorization: `Bearer ${this.state(selectedAddress)?.jwtToken}`,
+        Authorization: `Bearer ${this.state(selectedAddress)?.jwtToken || ''}`,
         'Content-Type': 'application/json; charset=utf-8',
       },
     }
