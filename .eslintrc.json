@@ -23,6 +23,7 @@
     "sourceType": "module"
   },
   "rules": {
+    "unicorn/no-this-assignment": 0,
     "unicorn/no-array-for-each": 0,
     "unicorn/consistent-destructuring": 0,
     "unicorn/prefer-regexp-test": 0,
