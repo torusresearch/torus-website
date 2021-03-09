@@ -20,7 +20,7 @@ const buildEnvironment = process.env.VUE_APP_TORUS_BUILD_ENV
 let logLevel
 switch (buildEnvironment) {
   case 'binance':
-    logLevel = 'info'
+    logLevel = 'error'
     log.setDefaultLevel(logLevel)
     break
   case 'testing' || 'development' || 'lrc':
@@ -36,6 +36,8 @@ switch (buildEnvironment) {
     log.setDefaultLevel(logLevel)
     break
 }
+
+log.setLevel(logLevel)
 log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 
 Vue.use(VueGtm, {

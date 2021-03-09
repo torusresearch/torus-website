@@ -261,8 +261,10 @@ class PreferencesController extends EventEmitter {
           if (paymentTx?.data) {
             this.calculatePaymentTx(paymentTx.data, address)
           }
-          this.updateStore({ fetchedPastTx: walletTx.data }, address)
-          this.calculatePastTx(walletTx.data, address)
+          if (walletTx?.data) {
+            this.updateStore({ fetchedPastTx: walletTx.data }, address)
+            this.calculatePastTx(walletTx.data, address)
+          }
         })
         .catch((error) => log.error(error))
     }

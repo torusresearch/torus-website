@@ -13,10 +13,26 @@
             <div class="headline verifier-title font-weight-regular text_2--text">
               <span v-if="$vuetify.breakpoint.xsOnly">
                 {{ t('dappLogin.yourDigital') }}
-                <img
-                  :src="require(`../../../assets/images/login-verifiers-${$vuetify.theme.dark ? 'dark' : 'light'}.gif`)"
-                  alt="Login Verifier Icon"
-                />
+                <template v-if="activeMobileButton">
+                  <span v-if="activeMobileButton === GOOGLE_VERIFIER">
+                    <span class="verifier-title__google-blue">G</span>
+                    <span class="verifier-title__google-red">o</span>
+                    <span class="verifier-title__google-yellow">o</span>
+                    <span class="verifier-title__google-blue">g</span>
+                    <span class="verifier-title__google-green">l</span>
+                    <span class="verifier-title__google-red">e</span>
+                  </span>
+                  <span
+                    v-else
+                    class="text-capitalize"
+                    :class="[
+                      `verifier-title__${activeMobileButtonDetails.name.toLowerCase()}`,
+                      { 'white--text': activeMobileButtonDetails.hasLightLogo && $vuetify.theme.dark },
+                    ]"
+                  >
+                    {{ activeMobileButtonDetails.name }}
+                  </span>
+                </template>
               </span>
               <span v-else>
                 {{ t('dappLogin.yourDigital') }}
@@ -200,6 +216,8 @@ export default {
       GOOGLE_VERIFIER,
       showModal: true,
       activeButton: '',
+      activeMobileButton: '',
+      activeMobileButtonInterval: null,
       viewMoreOptions: false,
     }
   },
@@ -279,6 +297,9 @@ export default {
     activeButtonDetails() {
       return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
     },
+    activeMobileButtonDetails() {
+      return this.loginButtonsArray.find((x) => x.verifier === this.activeMobileButton)
+    },
     thirdPartyAuthenticators() {
       return thirdPartyAuthenticators(this.loginConfig)
     },
@@ -297,6 +318,10 @@ export default {
   },
   mounted() {
     this.chooseAndSetActiveButton()
+    this.animateVerifier()
+  },
+  beforeDestroy() {
+    clearInterval(this.activeMobileButtonInterval)
   },
   methods: {
     chooseAndSetActiveButton() {
@@ -333,6 +358,20 @@ export default {
     formatDescription(verifier) {
       const finalDesc = verifier.description ? this.t(verifier.description) : this.t('dappLogin.continue')
       return finalDesc.replace(/{verifier}/gi, verifier.name.charAt(0).toUpperCase() + verifier.name.slice(1))
+    },
+    animateVerifier() {
+      if (this.allActiveButtons.length > 0) {
+        let counter = 0
+
+        clearInterval(this.activeMobileButtonInterval)
+        this.activeMobileButtonInterval = setInterval(() => {
+          if (counter >= this.allActiveButtons.length) {
+            counter = 0
+          }
+          this.activeMobileButton = this.allActiveButtons[counter].verifier
+          counter += 1
+        }, 1000)
+      }
     },
   },
 }

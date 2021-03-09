@@ -153,7 +153,7 @@ class CurrencyController {
       try {
         response = await fetch(apiUrl)
       } catch (error) {
-        log.error(new Error(`CurrencyController - Failed to request currency from cryptocompare:\n${error.stack}`))
+        log.error(error, 'CurrencyController - Failed to request currency from cryptocompare')
         return
       }
       // parse response
@@ -186,7 +186,7 @@ class CurrencyController {
       this.setConversionRate(0)
       this.setConversionDate('N/A')
       // throw error
-      log.error(new Error(`CurrencyController - Failed to query rate for currency "${currentCurrency}":\n${error.stack}`))
+      log.error(error, `CurrencyController - Failed to query rate for currency "${currentCurrency}"`)
     }
   }
 
