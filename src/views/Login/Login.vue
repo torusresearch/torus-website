@@ -14,10 +14,26 @@
                     <div class="verifier-title font-weight-bold display-1">
                       <span class="text_2--text">
                         {{ t('login.your') }}
-                        <img
-                          :src="require(`../../assets/images/login-verifiers-${$vuetify.theme.dark ? 'dark' : 'light'}.gif`)"
-                          alt="Login Verifiers"
-                        />
+                        <template v-if="activeMobileButton">
+                          <span v-if="activeMobileButton === GOOGLE_VERIFIER">
+                            <span class="verifier-title__google-blue">G</span>
+                            <span class="verifier-title__google-red">o</span>
+                            <span class="verifier-title__google-yellow">o</span>
+                            <span class="verifier-title__google-blue">g</span>
+                            <span class="verifier-title__google-green">l</span>
+                            <span class="verifier-title__google-red">e</span>
+                          </span>
+                          <span
+                            v-else
+                            class="text-capitalize"
+                            :class="[
+                              `verifier-title__${activeMobileButtonDetails.name.toLowerCase()}`,
+                              { 'white--text': activeMobileButtonDetails.hasLightLogo && $vuetify.theme.dark },
+                            ]"
+                          >
+                            {{ activeMobileButtonDetails.name }}
+                          </span>
+                        </template>
                       </span>
                     </div>
                     <div class="font-weight-bold headline text_2--text">
@@ -66,11 +82,11 @@
                   </v-flex>
                   <v-flex v-if="loginButtonsMobileLong.length > 0" xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
                     <div class="d-flex align-center">
-                      <v-divider></v-divider>
+                      <v-divider />
                       <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
                         <div class="body-2 text_2--text">{{ t('login.or') }}</div>
                       </div>
-                      <v-divider></v-divider>
+                      <v-divider />
                     </div>
                     <div v-for="verifier in loginButtonsMobileLong" :key="verifier.verifier" class="mt-4">
                       <v-btn
@@ -104,7 +120,7 @@
                         </a>
                       </div>
                     </div>
-                    <v-divider class="mb-2"></v-divider>
+                    <v-divider class="mb-2" />
                     <div class="d-flex justify-center footer-links">
                       <div class="mx-2">
                         <a class="torusBrand1--text" href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
@@ -218,11 +234,11 @@
                 </v-flex>
                 <v-flex v-if="loginButtonsLong.length > 0" xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
                   <div class="d-flex align-center mb-4" :style="{ maxWidth: '372px' }">
-                    <v-divider></v-divider>
+                    <v-divider />
                     <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
                       <div class="body-2 text_2--text">{{ t('login.or') }}</div>
                     </div>
-                    <v-divider></v-divider>
+                    <v-divider />
                   </div>
                   <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="mt-2" :style="{ maxWidth: '372px' }">
                     <v-btn
@@ -264,7 +280,7 @@
                       </a>
                     </div>
                   </div>
-                  <v-divider class="mb-2"></v-divider>
+                  <v-divider class="mb-2" />
                   <div class="d-flex footer-links">
                     <div class="mr-4">
                       <a class="torusBrand1--text" href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
@@ -359,7 +375,7 @@
       </v-layout>
     </template>
     <template v-else>
-      <component :is="activeLoader"></component>
+      <component :is="activeLoader" />
     </template>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
@@ -402,6 +418,8 @@ export default {
       GOOGLE,
       GOOGLE_VERIFIER,
       activeButton: '',
+      activeMobileButton: '',
+      activeMobileButtonInterval: null,
       loginInProgress: false,
       snackbar: false,
       snackbarText: '',
@@ -460,6 +478,9 @@ export default {
     activeButtonDetails() {
       return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
     },
+    activeMobileButtonDetails() {
+      return this.loginButtonsArray.find((x) => x.verifier === this.activeMobileButton)
+    },
     thirdPartyAuthenticators() {
       return thirdPartyAuthenticators(this.loginConfig)
     },
@@ -513,6 +534,7 @@ export default {
     if (this.loginButtons.length > 0) this.activeButton = this.loginButtons[0].verifier
     else if (this.loginButtonsLong.length > 0) this.activeButton = this.loginButtonsLong[0].verifier
 
+    this.animateVerifier()
     this.scroll()
 
     try {
@@ -555,6 +577,9 @@ export default {
       this.loginInProgress = false
     }
   },
+  beforeDestroy() {
+    clearInterval(this.activeMobileButtonInterval)
+  },
   methods: {
     ...mapActions({
       triggerLogin: 'triggerLogin',
@@ -586,6 +611,21 @@ export default {
     formatDescription(verifier) {
       const finalDesc = verifier.torusDescription ? this.t(verifier.torusDescription) : this.t('dappLogin.continue')
       return finalDesc.replace(/{verifier}/gi, verifier.name.charAt(0).toUpperCase() + verifier.name.slice(1))
+    },
+    animateVerifier() {
+      const verifiers = this.loginButtonsArray.filter((button) => button.showOnMobile)
+      if (verifiers.length > 0) {
+        let counter = 0
+
+        clearInterval(this.activeMobileButtonInterval)
+        this.activeMobileButtonInterval = setInterval(() => {
+          if (counter >= verifiers.length) {
+            counter = 0
+          }
+          this.activeMobileButton = verifiers[counter].verifier
+          counter += 1
+        }, 1000)
+      }
     },
   },
 }
