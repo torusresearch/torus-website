@@ -1,9 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import TkeyCreate from './containers/TkeyCreate'
-import TKeyDappInput from './containers/TKeyDappInput'
-import TKeyInput from './containers/TKeyInput'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
@@ -22,8 +19,6 @@ import Login from './views/Login'
 import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import RedirectCatch from './views/RedirectCatch'
-import Tkey from './views/Tkey'
-import UserInfoRequest from './views/UserInfoRequest'
 import Wallet from './views/Wallet'
 
 Vue.use(Router)
@@ -66,12 +61,6 @@ const router = new Router({
       path: '/providerchange',
       name: 'providerchange',
       component: ProviderChange,
-      meta: { requiresAuth: false },
-    },
-    {
-      path: '/userinforequest',
-      name: 'userInfoRequest',
-      component: UserInfoRequest,
       meta: { requiresAuth: false },
     },
     {
@@ -153,36 +142,6 @@ const router = new Router({
               component: WalletTopupMercuryo,
             },
           ],
-        },
-      ],
-    },
-    {
-      path: '/tkey',
-      component: Tkey,
-      children: [
-        {
-          path: '/',
-          name: 'tkeyCreate',
-          component: TkeyCreate,
-          meta: {
-            requiresAuth: false,
-          },
-        },
-        {
-          path: 'dapp-input',
-          name: 'tkeyDappInput',
-          component: TKeyDappInput,
-          meta: {
-            requiresAuth: false,
-          },
-        },
-        {
-          path: 'input',
-          name: 'tKeyInput',
-          component: TKeyInput,
-          meta: {
-            requiresAuth: false,
-          },
         },
       ],
     },

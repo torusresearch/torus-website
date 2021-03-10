@@ -875,7 +875,7 @@ self.addEventListener('notificationclick', function (e) {
 
 self.__precacheManifest = [
   {
-    url: '/js/app.js',
+    url: '/v1.9.11/js/app.js',
   },
 ].concat(self.__precacheManifest || [])
 
