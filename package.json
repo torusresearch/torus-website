@@ -48,6 +48,7 @@
     "@walletconnect/iso-crypto": "^1.3.6",
     "assert": "^2.0.0",
     "await-semaphore": "^0.1.3",
+    "big-integer": "^1.6.48",
     "bignumber.js": "^9.0.1",
     "bip39": "^3.0.3",
     "bowser": "^2.11.0",
