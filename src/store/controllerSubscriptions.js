@@ -123,10 +123,6 @@ export function billboardHandler(state) {
   getStore().commit('setBillboard', state)
 }
 
-export function tKeyHandler(state) {
-  getStore().commit('setTKey', state)
-}
-
 export function walletConnectHandler(state) {
   getStore().commit('setWCConnectorSession', state)
 }

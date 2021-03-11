@@ -28,7 +28,6 @@ import NetworkController from './NetworkController'
 import PermissionsController from './PermissionsController'
 import PersonalMessageManager from './PersonalMessageManager'
 import PreferencesController from './PreferencesController'
-import ThresholdKeyController from './ThresholdKeyController'
 import TokenRatesController from './TokenRatesController'
 import KeyringController from './TorusKeyring'
 import TransactionController from './TransactionController'
@@ -170,12 +169,6 @@ export default class TorusController extends EventEmitter {
       assetController: this.assetController,
       assetContractController: this.assetContractController,
       getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
-    })
-
-    this.thresholdKeyController = new ThresholdKeyController({
-      requestTkeyInput: this.opts.requestTkeyInput.bind(this.thresholdKeyController),
-      requestTkeySeedPhraseInput: this.opts.requestTkeySeedPhraseInput.bind(this.thresholdKeyController),
-      provider: this.provider,
     })
 
     this.networkController.lookupNetwork()

@@ -2,15 +2,14 @@ import randomId from '@chaitanyapotti/random-id'
 
 import PopupWithBcHandler from '../Popup/PopupWithBcHandler'
 
-class AbstractLoginHandler {
+class OpenLoginHandler {
   nonce = randomId()
 
-  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener = false }) {
+  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId }) {
     this.clientId = clientId
     this.verifier = verifier
     this.preopenInstanceId = preopenInstanceId
     this.redirect_uri = redirect_uri
-    this.redirectToOpener = redirectToOpener
     this.typeOfLogin = typeOfLogin
   }
 
@@ -40,8 +39,9 @@ class AbstractLoginHandler {
     const {
       hashParams: { access_token: accessToken, id_token: idToken },
     } = result
+    // TODO: Get all stuff here in hash params
     return { accessToken, idToken: idToken || '' }
   }
 }
 
-export default AbstractLoginHandler
+export default OpenLoginHandler
