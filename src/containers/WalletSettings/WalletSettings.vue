@@ -35,15 +35,6 @@
               <ContactList />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel v-show="isThreshold" class="my-2">
-            <v-expansion-panel-header id="contact-list-panel-header">
-              <v-icon size="16" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.wallet'" />
-              <div class="grow font-weight-bold title text_1--text">{{ t('tkeySettings.twoFaSettings') }}</div>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <TwoFactorAuth />
-            </v-expansion-panel-content>
-          </v-expansion-panel>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="privacy-panel-header">
               <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.device_detailed'" />
@@ -115,7 +106,6 @@ import Display from '../../components/WalletSettings/Display'
 import Network from '../../components/WalletSettings/Network'
 import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
 import SetTorusKey from '../../components/WalletSettings/SetTorusKey'
-import TwoFactorAuth from '../../components/WalletSettings/TwoFactorAuth'
 import { ACCOUNT_TYPE } from '../../utils/enums'
 
 export default {
@@ -127,7 +117,6 @@ export default {
     CrashReport,
     QuickAddress,
     Display,
-    TwoFactorAuth,
     DefaultAccount,
     SetTorusKey,
   },

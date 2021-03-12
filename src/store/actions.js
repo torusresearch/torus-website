@@ -354,7 +354,8 @@ export default {
         ),
       })
       const loginParameters = await loginHandler.handleLoginWindow()
-      const { accessToken, idToken, userInfo } = loginParameters
+      const { accessToken, idToken } = loginParameters
+      const userInfo = await loginHandler.getUserInfo(loginParameters)
       // Get all open login results
       const { profileImage, name, email, verifierId, typeOfLogin: returnTypeOfLogin } = userInfo
       commit('setUserInfo', {
@@ -366,13 +367,32 @@ export default {
         verifierParams: { verifier_id: verifierId },
         typeOfLogin: returnTypeOfLogin,
       })
-      await dispatch('handleLogin', { calledFromEmbed, oAuthToken: idToken || accessToken })
+      const oAuthKey = await dispatch('getTorusKey', {
+        verifier,
+        verifierId,
+        verifierParams: { verifier_id: verifierId },
+        oAuthToken: idToken || accessToken,
+      })
+      await dispatch('handleLogin', {
+        calledFromEmbed,
+        oAuthToken: idToken || accessToken,
+        keys: [{ accountType: ACCOUNT_TYPE.NORMAL, ...oAuthKey }],
+      })
     } catch (error) {
       log.error(error)
       oauthStream.write({ err: { message: error.message } })
       commit('setOAuthModalStatus', false)
       throw error
     }
+  },
+  async getTorusKey(_, { verifier, verifierId, verifierParams, oAuthToken }) {
+    if (!verifier) throw new Error('Verifier is required')
+    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await torus.nodeDetailManager.getNodeDetails()
+    const publicAddress = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
+    log.info('New private key assigned to user at address ', publicAddress)
+    const torusKey = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
+    if (publicAddress.toLowerCase() !== torusKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
+    return torusKey
   },
   subscribeToControllers() {
     accountTracker.store.subscribe(accountTrackerHandler)

@@ -25,7 +25,6 @@ import mutations from './mutations'
 import paymentActions from './PaymentActions'
 import preferencesActions from './preferencesActions'
 import defaultState from './state'
-import tKeyActions from './tKeyActions'
 
 const { baseRoute } = config
 
@@ -95,7 +94,6 @@ const VuexStore = new Vuex.Store({
     ...actions,
     ...paymentActions,
     ...preferencesActions,
-    ...tKeyActions,
     async showPopup({ state, commit }, { payload, request }) {
       const isTx = payload && typeof payload === 'object'
       const windowId = isTx ? payload.id : payload
