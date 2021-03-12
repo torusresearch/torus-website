@@ -95,6 +95,7 @@ export default {
   api: 'https://api.tor.us',
   // api: 'http://localhost:2020',
   infuraKey: VUE_APP_INFURA_KEY,
+  openloginClientId: 'BCY9aYsh8iGshQuzNjBbONYE-tKD0JM389l87IiMOVeOU1TBmRaZphKOyphkUpo41fuSMnO6QRlloxCV-3nt8dU',
 
   onlyTkey: VUE_APP_TKEY_ONLY === 'true',
   // use this flag to force check a flag in frontend while creation of tkey

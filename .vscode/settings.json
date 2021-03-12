@@ -1,9 +1,4 @@
 {
-  "editor.formatOnSave": false,
-  "editor.codeActionsOnSave": {
-    "source.fixAll": true
-  },
-  "vetur.validation.template": false,
   "eslint.options": {
     "extends": [
       "standard",
@@ -120,8 +115,5 @@
       "node": true
     }
   },
-  "eslint.lintTask.enable": true,
-  "eslint.format.enable": true,
-  "prettier.jsxBracketSameLine": true,
   "prettier.printWidth": 150
 }
