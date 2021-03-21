@@ -33,7 +33,9 @@ export default {
         uxMode: 'redirect',
       })
       await openLogin.init()
-      await openLogin.login()
+      await openLogin.login({
+        loginProvider: 'google',
+      })
     } catch (error) {
       log.info(error, 'something went wrong')
     }
