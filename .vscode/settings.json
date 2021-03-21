@@ -20,7 +20,7 @@
     "parser": "vue-eslint-parser",
     "parserOptions": {
       "parser": "babel-eslint",
-      "ecmaVersion": 9,
+      "ecmaVersion": 11,
       "sourceType": "module"
     },
     "rules": {

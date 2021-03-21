@@ -20,7 +20,7 @@ import BeatLoader from 'vue-spinner/src/BeatLoader'
 import config from '../../config'
 
 export default {
-  name: 'Start',
+  name: 'End',
   components: { BeatLoader },
   async mounted() {
     try {
@@ -34,6 +34,8 @@ export default {
       })
       await openLogin.init()
       await openLogin.login()
+      const { privKey } = openLogin
+      log.info(privKey, 'privKey')
     } catch (error) {
       log.info(error, 'something went wrong')
     }
@@ -42,5 +44,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'Start.scss';
+@import 'End.scss';
 </style>
