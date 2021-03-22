@@ -18,13 +18,16 @@ Vue.config.productionTip = false
 
 // Loglevel init
 const buildEnvironment = process.env.VUE_APP_TORUS_BUILD_ENV
+log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 let logLevel
 switch (buildEnvironment) {
   case 'binance':
     logLevel = 'error'
     log.setDefaultLevel(logLevel)
     break
-  case 'testing' || 'development' || 'lrc':
+  case 'testing':
+  case 'development':
+  case 'lrc':
     logLevel = 'debug'
     log.setDefaultLevel(logLevel)
     break
@@ -39,7 +42,6 @@ switch (buildEnvironment) {
 }
 
 log.setLevel(logLevel)
-log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 
 Vue.use(VueGtm, {
   id: 'GTM-PDF8MFV', // Your GTM single container ID or array of container ids ['GTM-xxxxxxx', 'GTM-yyyyyyy']
