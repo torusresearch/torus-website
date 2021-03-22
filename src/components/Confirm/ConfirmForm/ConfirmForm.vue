@@ -679,7 +679,7 @@ export default {
         const ethCost = finalValue.plus(this.gasCost)
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
         const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
-        this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
+        this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2 < 0 ? 0 : gasCostLength - 2)
         this.totalUsdCost = significantDigits(ethCost.times(this.currencyMultiplier))
         if (reason) {
           this.errorMsg = reason
@@ -775,7 +775,7 @@ export default {
       const ethCost = this.value.plus(this.gasCost)
       this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
       const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
-      this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
+      this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2 < 0 ? 0 : gasCostLength - 2)
       this.totalUsdCost = significantDigits(ethCost.times(this.currencyMultiplier))
       if (this.balance.lt(ethCost) && !this.canShowError) {
         this.errorMsg = 'dappTransfer.insufficientFunds'
