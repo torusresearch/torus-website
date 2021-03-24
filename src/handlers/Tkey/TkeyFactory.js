@@ -20,7 +20,7 @@ import {
 export default async function createTKeyInstance({ postboxKey, tKeyJson, provider, share }) {
   if (!postboxKey) throw new Error('Invalid postbox key')
   const modules = {
-    [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
+    [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(true),
     [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),
     [SHARE_TRANSFER_MODULE_KEY]: new ShareTransferModule(),
     [SHARE_SERIALIZATION_MODULE_KEY]: new ShareSerialization(),
