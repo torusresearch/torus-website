@@ -34,8 +34,8 @@ export default {
       })
       await openLogin.init()
       await openLogin.login()
-      const { privKey } = openLogin
-      log.info(privKey, 'privKey')
+      const { state } = openLogin
+      log.info(state, 'state')
     } catch (error) {
       log.info(error, 'something went wrong')
     }
