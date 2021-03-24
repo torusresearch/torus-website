@@ -1,6 +1,5 @@
 <template>
   <v-container px-0 py-0>
-    <DappCreateTkey v-if="!tKeyExists" />
     <template v-if="type === 'none'">
       <ChangeProviderScreenLoader />
     </template>
@@ -80,7 +79,6 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { mapGetters } from 'vuex'
 
-import DappCreateTkey from '../../components/helpers/DappCreateTkey'
 import { ChangeProviderScreenLoader } from '../../content-loader'
 import { POPUP_LOADED, POPUP_RESULT, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
@@ -89,7 +87,6 @@ export default {
   name: 'Confirm',
   components: {
     ChangeProviderScreenLoader,
-    DappCreateTkey,
   },
   data() {
     return {
@@ -98,7 +95,6 @@ export default {
       network: {},
       currentNetwork: {},
       channel: '',
-      tKeyExists: true,
     }
   },
   computed: {
@@ -123,13 +119,11 @@ export default {
         origin,
         currentNetwork,
         whiteLabel,
-        tKeyExists,
       } = ev.data || {}
       this.origin = origin // origin of tx: website url
       this.network = network
       this.type = type
       this.currentNetwork = currentNetwork
-      this.tKeyExists = tKeyExists
 
       this.$store.commit('setWhiteLabel', whiteLabel)
 

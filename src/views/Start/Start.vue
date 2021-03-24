@@ -16,15 +16,22 @@
 import OpenLogin from '@toruslabs/openlogin'
 import log from 'loglevel'
 import BeatLoader from 'vue-spinner/src/BeatLoader'
+import { mapState } from 'vuex'
 
 import config from '../../config'
 
 export default {
   name: 'Start',
   components: { BeatLoader },
+  computed: {
+    ...mapState({
+      loginConfig: (state) => state.embedState.loginConfig,
+    }),
+  },
   async mounted() {
     try {
-      // TODO: integrate open login here
+      const { verifier, state } = this.$route.query
+      log.info(verifier, 'logging with')
       const openLogin = new OpenLogin({
         clientId: config.openLoginClientId,
         iframeUrl: config.openLoginUrl,
@@ -34,7 +41,10 @@ export default {
       })
       await openLogin.init()
       await openLogin.login({
-        loginProvider: 'google',
+        loginProvider: this.loginConfig[verifier]?.loginProvider,
+        getWalletKey: true,
+        relogin: true,
+        appState: state,
       })
     } catch (error) {
       log.info(error, 'something went wrong')

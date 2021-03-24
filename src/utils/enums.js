@@ -238,6 +238,21 @@ export const LINE_LINKED_VERIFIER = process.env.VUE_APP_LINE_LINKED_VERIFIER
 export const APPLE_LINKED_VERIFIER = process.env.VUE_APP_APPLE_LINKED_VERIFIER
 export const HOSTED_EMAIL_PASSWORDLESS_LINKED_VERIFIER = process.env.VUE_APP_HOSTED_EMAIL_PASSWORDLESS_LINKED_VERIFIER
 
+export const GOOGLE_LOGIN_PROVIDER = 'google'
+export const FACEBOOK_LOGIN_PROVIDER = 'facebook'
+export const REDDIT_LOGIN_PROVIDER = 'reddit'
+export const DISCORD_LOGIN_PROVIDER = 'discord'
+export const TWITCH_LOGIN_PROVIDER = 'twitch'
+export const APPLE_LOGIN_PROVIDER = 'apple'
+export const LINE_LOGIN_PROVIDER = 'line'
+export const GITHUB_LOGIN_PROVIDER = 'github'
+export const KAKAO_LOGIN_PROVIDER = 'kakao'
+export const LINKEDIN_LOGIN_PROVIDER = 'linkedin'
+export const TWITTER_LOGIN_PROVIDER = 'twitter'
+export const WEIBO_LOGIN_PROVIDER = 'weibo'
+export const WECHAT_LOGIN_PROVIDER = 'wechat'
+export const EMAIL_PASSWORDLESS_LOGIN_PROVIDER = 'email_passwordless'
+
 export const LINKED_VERIFIER_SUBIDENTIFIER = process.env.VUE_APP_LINKED_VERIFIER_SUBIDENTIFIER
 
 export const ENS = 'ENS'

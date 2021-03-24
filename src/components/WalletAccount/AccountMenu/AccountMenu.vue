@@ -158,8 +158,6 @@ export default {
       ACCOUNT_TYPE,
       camera: 'off',
       hasStreamApiSupport: true,
-      addingSeedPhraseAccount: false,
-      seedPhraseDialog: false,
     }
   },
   computed: {
@@ -205,12 +203,9 @@ export default {
       }
       return []
     },
-    seedPhraseWallets() {
-      return this.wallets.filter((wallet) => wallet.accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
-    },
   },
   methods: {
-    ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect', 'addSeedPhraseAccount']),
+    ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
     etherscanAddressLink(address) {
       return getEtherScanAddressLink(address, this.networkType.host)
     },

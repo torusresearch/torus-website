@@ -9,10 +9,9 @@ process.env.VUE_APP_TORUS_BUILD_VERSION = version
 
 module.exports = {
   devServer: {
-    https: true,
+    https: false,
     host: 'localhost',
-    port: 3000, // CHANGE YOUR PORT HERE!
-    hotOnly: false,
+    port: 4050, // CHANGE YOUR PORT HERE!
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Cache-Control': 'max-age=3600',
@@ -67,7 +66,7 @@ module.exports = {
   },
 
   publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'binance' ? `/${version}/` : '/',
-  integrity: true,
+  integrity: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'binance',
   crossorigin: 'anonymous',
   productionSourceMap: true,
   pwa: {

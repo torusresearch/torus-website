@@ -196,9 +196,6 @@ export default {
   setTKey(state, payload) {
     state.tKeyStore = payload
   },
-  setTkeyExists(state, payload) {
-    state.tKeyExists = payload
-  },
   addConfirmModal(state, payload) {
     state.confirmModals = [...state.confirmModals, payload]
   },

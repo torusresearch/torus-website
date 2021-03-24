@@ -62,7 +62,6 @@ if (storageAvailable(isPwa ? 'localStorage' : 'sessionStorage')) {
       tKeyOnboardingComplete: state.tKeyOnboardingComplete,
       defaultPublicAddress: state.defaultPublicAddress,
       tKeyStore: { ...state.tKeyStore, shareTransferRequests: [] },
-      tKeyExists: state.tKeyExists,
       wcConnectorSession: state.wcConnectorSession,
       postboxKey: state.postboxKey,
     }),
@@ -109,7 +108,6 @@ const VuexStore = new Vuex.Store({
         network: state.networkType,
         whiteLabel: state.whiteLabel,
         selectedAddress: state.selectedAddress,
-        tKeyExists: state.tKeyExists,
       }
       if (isTx) {
         const txParameters = payload

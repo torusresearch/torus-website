@@ -15,10 +15,12 @@ import {
 } from './containers/WalletTopup'
 import WalletTransfer from './containers/WalletTransfer'
 import Confirm from './views/Confirm'
+import End from './views/End'
 import Login from './views/Login'
 import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import RedirectCatch from './views/RedirectCatch'
+import Start from './views/Start'
 import Wallet from './views/Wallet'
 
 Vue.use(Router)
@@ -31,6 +33,18 @@ const router = new Router({
       path: '/',
       name: 'login',
       component: Login,
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/start',
+      name: 'start',
+      component: Start,
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/end',
+      name: 'end',
+      component: End,
       meta: { requiresAuth: false },
     },
     {

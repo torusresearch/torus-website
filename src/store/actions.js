@@ -191,7 +191,6 @@ export default {
           payload,
           currentNetwork: state.networkType,
           whiteLabel: state.whiteLabel,
-          tKeyExists: state.tKeyExists,
         },
       })
       const { approve = false } = result
@@ -353,30 +352,13 @@ export default {
           jwtParameters || {}
         ),
       })
-      const loginParameters = await loginHandler.handleLoginWindow()
-      const { accessToken, idToken } = loginParameters
-      const userInfo = await loginHandler.getUserInfo(loginParameters)
+      const { keys, userInfo } = await loginHandler.handleLoginWindow()
       // Get all open login results
-      const { profileImage, name, email, verifierId, typeOfLogin: returnTypeOfLogin } = userInfo
-      commit('setUserInfo', {
-        profileImage,
-        name,
-        email,
-        verifierId,
-        verifier,
-        verifierParams: { verifier_id: verifierId },
-        typeOfLogin: returnTypeOfLogin,
-      })
-      const oAuthKey = await dispatch('getTorusKey', {
-        verifier,
-        verifierId,
-        verifierParams: { verifier_id: verifierId },
-        oAuthToken: idToken || accessToken,
-      })
+      commit('setUserInfo', userInfo)
       await dispatch('handleLogin', {
         calledFromEmbed,
-        oAuthToken: idToken || accessToken,
-        keys: [{ accountType: ACCOUNT_TYPE.NORMAL, ...oAuthKey }],
+        oAuthToken: userInfo.idToken || userInfo.accessToken,
+        keys,
       })
     } catch (error) {
       log.error(error)
@@ -384,15 +366,6 @@ export default {
       commit('setOAuthModalStatus', false)
       throw error
     }
-  },
-  async getTorusKey(_, { verifier, verifierId, verifierParams, oAuthToken }) {
-    if (!verifier) throw new Error('Verifier is required')
-    const { torusNodeEndpoints, torusNodePub, torusIndexes } = await torus.nodeDetailManager.getNodeDetails()
-    const publicAddress = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
-    log.info('New private key assigned to user at address ', publicAddress)
-    const torusKey = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, oAuthToken)
-    if (publicAddress.toLowerCase() !== torusKey.ethAddress.toLowerCase()) throw new Error('Invalid Key')
-    return torusKey
   },
   subscribeToControllers() {
     accountTracker.store.subscribe(accountTrackerHandler)
@@ -477,12 +450,14 @@ export default {
       userInfo: { typeOfLogin },
     } = state
     const { oAuthToken } = payload
-    if (typeOfLogin === FACEBOOK) {
-      remove(`https://graph.facebook.com/me/permissions?access_token=${oAuthToken}`)
-        .then((resp) => log.info(resp))
-        .catch((error) => log.error(error))
-    } else if (typeOfLogin === DISCORD) {
-      prefsController.revokeDiscord(oAuthToken)
+    if (oAuthToken) {
+      if (typeOfLogin === FACEBOOK) {
+        remove(`https://graph.facebook.com/me/permissions?access_token=${oAuthToken}`)
+          .then((resp) => log.info(resp))
+          .catch((error) => log.error(error))
+      } else if (typeOfLogin === DISCORD) {
+        prefsController.revokeDiscord(oAuthToken)
+      }
     }
   },
   async rehydrate({ state, dispatch, commit }) {
