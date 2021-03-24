@@ -18,6 +18,7 @@ import {
 } from '../../utils/enums'
 
 export default async function createTKeyInstance({ postboxKey, tKeyJson, provider, share }) {
+  if (!postboxKey) throw new Error('Invalid postbox key')
   const modules = {
     [SECURITY_QUESTIONS_MODULE_KEY]: new SecurityQuestionsModule(),
     [WEB_STORAGE_MODULE_KEY]: new WebStorageModule(),
@@ -34,7 +35,8 @@ export default async function createTKeyInstance({ postboxKey, tKeyJson, provide
       storageLayer,
       modules,
     })
-    await tKey.initialize({ input: share })
+    await tKey.initialize()
+    if (share) await tKey.inputShareStoreSafe(share)
   } else {
     tKey = await ThresholdKey.fromJSON(tKeyJson, {
       modules,
@@ -45,6 +47,6 @@ export default async function createTKeyInstance({ postboxKey, tKeyJson, provide
       tKey.modules[WEB_STORAGE_MODULE_KEY].canUseFileStorage = tKeyJson.modules[WEB_STORAGE_MODULE_KEY].canUseFileStorage
     }
   }
-  tKey.modules[SHARE_TRANSFER_MODULE_KEY].setRequestStatusCheckInterval(TKEY_SHARE_TRANSFER_INTERVAL)
+  if (tKey.modules[SHARE_TRANSFER_MODULE_KEY]) tKey.modules[SHARE_TRANSFER_MODULE_KEY].setRequestStatusCheckInterval(TKEY_SHARE_TRANSFER_INTERVAL)
   return tKey
 }
