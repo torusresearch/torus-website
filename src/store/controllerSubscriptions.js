@@ -124,7 +124,7 @@ export function billboardHandler(state) {
 }
 
 export function tKeyHandler(state) {
-  getStore().commit('setTKey', state)
+  getStore().commit('setTKey', JSON.parse(JSON.stringify(state)))
 }
 
 export function walletConnectHandler(state) {
