@@ -80,6 +80,7 @@ const {
   VUE_APP_HIDE_TOPUP,
   VUE_APP_INFURA_KEY,
   VUE_APP_ETH_TRANSFER_ONLY,
+  VUE_APP_OPENLOGIN_URL,
 } = process.env
 
 log.info('baseurl', VUE_APP_BASE_ROUTE, 'is tkey', VUE_APP_TKEY_ONLY)
@@ -105,8 +106,7 @@ export default {
   // api: 'http://localhost:2020',
   infuraKey: VUE_APP_INFURA_KEY,
   openLoginClientId: 'BCY9aYsh8iGshQuzNjBbONYE-tKD0JM389l87IiMOVeOU1TBmRaZphKOyphkUpo41fuSMnO6QRlloxCV-3nt8dU',
-  // openLoginUrl: 'https://beta.openlogin.com',
-  openLoginUrl: 'http://localhost:3000',
+  openLoginUrl: VUE_APP_OPENLOGIN_URL,
 
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
