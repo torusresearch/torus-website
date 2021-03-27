@@ -35,6 +35,9 @@ export default {
         redirectUrl: `${window.location.origin}/end`,
         replaceUrlOnRedirect: true,
         uxMode: 'redirect',
+        originData: {
+          [window.location.origin]: config.openLoginOriginSig,
+        },
       })
       await openLogin.init()
       const { state } = openLogin
