@@ -81,6 +81,7 @@ const {
   VUE_APP_INFURA_KEY,
   VUE_APP_ETH_TRANSFER_ONLY,
   VUE_APP_OPENLOGIN_URL,
+  VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
 } = process.env
 
 log.info('baseurl', VUE_APP_BASE_ROUTE, 'is tkey', VUE_APP_TKEY_ONLY)
@@ -107,6 +108,7 @@ export default {
   infuraKey: VUE_APP_INFURA_KEY,
   openLoginClientId: 'BCY9aYsh8iGshQuzNjBbONYE-tKD0JM389l87IiMOVeOU1TBmRaZphKOyphkUpo41fuSMnO6QRlloxCV-3nt8dU',
   openLoginUrl: VUE_APP_OPENLOGIN_URL,
+  openLoginOriginSig: VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
 
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
