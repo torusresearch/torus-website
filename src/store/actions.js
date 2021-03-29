@@ -1,4 +1,5 @@
 import randomId from '@chaitanyapotti/random-id'
+import OpenLogin from '@toruslabs/openlogin'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
 import { BN } from 'ethereumjs-util'
@@ -110,6 +111,7 @@ export default {
     commit('logOut', { ...initialState, networkType: state.networkType, networkId: state.networkId })
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
+
     statusStream.write({ loggedIn: false })
     resetStore(accountTracker.store, accountTrackerHandler)
     resetStore(txController.store, transactionControllerHandler)
@@ -131,6 +133,24 @@ export default {
     assetDetectionController.stopAssetDetection()
     torus.updateStaticData({ isUnlocked: false })
     if (isMain) router.push({ path: '/logout' }).catch(() => {})
+    try {
+      const openLogin = new OpenLogin({
+        clientId: config.openLoginClientId,
+        iframeUrl: config.openLoginUrl,
+        redirectUrl: `${window.location.origin}/end`,
+        replaceUrlOnRedirect: true,
+        uxMode: 'redirect',
+        originData: {
+          [window.location.origin]: config.openLoginOriginSig,
+        },
+      })
+      await openLogin.init()
+      await openLogin.logout({ clientId: config.openLoginClientId })
+    } catch {
+      log.warn('unable to logout with openlogin')
+      // eslint-disable-next-line require-atomic-updates
+      if (isMain) window.location.href = '/'
+    }
   },
   setSelectedCurrency({ commit }, payload) {
     torusController.setCurrentCurrency(payload, (error, data) => {
