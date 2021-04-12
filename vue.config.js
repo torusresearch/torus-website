@@ -28,7 +28,7 @@ module.exports = {
     extract: false,
   },
   // Adds support for Edge browser, IE 11 and Safari 9
-  transpileDependencies: ['vuetify', 'obs-store', 'fast-json-patch'],
+  transpileDependencies: ['vuetify', 'fast-json-patch'],
 
   configureWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {

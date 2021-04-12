@@ -1,5 +1,5 @@
+import { ObservableStore } from '@metamask/obs-store'
 import assert from 'assert'
-import ObservableStore from 'obs-store'
 
 import ComposableObservableStore from '../../../src/controllers/utils/ComposableObservableStore'
 

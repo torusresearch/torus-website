@@ -1,6 +1,6 @@
+import { ObservableStore } from '@metamask/obs-store'
 import { normalize as normalizeAddress } from 'eth-sig-util'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
 
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
