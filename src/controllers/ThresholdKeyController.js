@@ -1,9 +1,9 @@
 /* eslint-disable no-await-in-loop */
+import { ObservableStore } from '@metamask/obs-store'
 import EventEmitter from '@metamask/safe-event-emitter'
 import TorusStorageLayer from '@tkey/storage-layer-torus'
 import { ethErrors } from 'eth-rpc-errors'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
 
 import config from '../config'
 import createTKeyInstance from '../handlers/Tkey/TkeyFactory'

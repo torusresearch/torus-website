@@ -1,6 +1,6 @@
+import { ObservableStore } from '@metamask/obs-store'
 import EventEmitter from '@metamask/safe-event-emitter'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
 
 import createId from '../utils/random-id'
 import txStateHistoryHelper from './utils/tx-state-history-helper'

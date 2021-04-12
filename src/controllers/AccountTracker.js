@@ -7,9 +7,9 @@
  * on each new block.
  */
 
+import { ObservableStore } from '@metamask/obs-store'
 import EthQuery from 'eth-query'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
 import pify from 'pify'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 import Web3 from 'web3'

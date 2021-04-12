@@ -1,8 +1,8 @@
+import { ObservableStore } from '@metamask/obs-store'
 import { ethErrors } from 'eth-rpc-errors'
 import { addHexPrefix, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
 
 const hexRe = /^[\dA-Fa-f]+$/g
 

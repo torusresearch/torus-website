@@ -4,8 +4,8 @@
  * Controller stores the assets and exposes some convienient methods
  */
 
+import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import { get } from '../utils/httpHelpers'

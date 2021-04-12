@@ -1,3 +1,4 @@
+import { ComposedStore, ObservableStore } from '@metamask/obs-store'
 import assert from 'assert'
 import { PollingBlockTracker } from 'eth-block-tracker'
 import createInfuraMiddleware from 'eth-json-rpc-infura'
@@ -16,8 +17,6 @@ import EthQuery from 'eth-query'
 import EventEmitter from 'events'
 import { createScaffoldMiddleware, JsonRpcEngine, mergeMiddleware } from 'json-rpc-engine'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
-import ComposedStore from 'obs-store/lib/composed'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 
 import config from '../config'

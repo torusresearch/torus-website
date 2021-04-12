@@ -1,3 +1,4 @@
+import { ObservableStore, storeAsStream } from '@metamask/obs-store'
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import { providerAsMiddleware } from 'eth-json-rpc-middleware'
@@ -8,8 +9,6 @@ import { JsonRpcEngine } from 'json-rpc-engine'
 import { createEngineStream } from 'json-rpc-middleware-stream'
 import debounce from 'lodash.debounce'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
-import asStream from 'obs-store/lib/asStream'
 import pump from 'pump'
 import { toChecksumAddress } from 'web3-utils'
 
@@ -743,7 +742,7 @@ export default class TorusController extends EventEmitter {
    * @param {*} outStream - The stream to provide public config over.
    */
   setupPublicConfig(outStream) {
-    const configStream = asStream(this.publicConfigStore)
+    const configStream = storeAsStream(this.publicConfigStore)
     pump(configStream, outStream, (error) => {
       configStream.destroy()
       if (error) log.error(error)
