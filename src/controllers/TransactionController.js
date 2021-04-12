@@ -1,4 +1,5 @@
 /* eslint-disable require-atomic-updates */
+import EventEmitter from '@metamask/safe-event-emitter'
 import { ethErrors } from 'eth-rpc-errors'
 import Common from 'ethereumjs-common'
 import { Transaction } from 'ethereumjs-tx'
@@ -8,7 +9,6 @@ import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
-import EventEmitter from 'safe-event-emitter'
 import { fromWei, isAddress, sha3, toBN, toChecksumAddress } from 'web3-utils'
 
 import erc721Contracts from '../assets/assets-map.json'

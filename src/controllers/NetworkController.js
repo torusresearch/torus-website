@@ -1,15 +1,17 @@
 import assert from 'assert'
-import BlockTracker from 'eth-block-tracker'
+import { PollingBlockTracker } from 'eth-block-tracker'
 import createInfuraMiddleware from 'eth-json-rpc-infura'
-import createBlockCacheMiddleware from 'eth-json-rpc-middleware/block-cache'
-import createBlockReRefMiddleware from 'eth-json-rpc-middleware/block-ref'
-import createBlockRefRewriteMiddleware from 'eth-json-rpc-middleware/block-ref-rewrite'
-import createBlockTrackerInspectorMiddleware from 'eth-json-rpc-middleware/block-tracker-inspector'
-import createFetchMiddleware from 'eth-json-rpc-middleware/fetch'
-import createInflightMiddleware from 'eth-json-rpc-middleware/inflight-cache'
-import providerFromEngine from 'eth-json-rpc-middleware/providerFromEngine'
-import providerFromMiddleware from 'eth-json-rpc-middleware/providerFromMiddleware'
-import createRetryOnEmptyMiddleware from 'eth-json-rpc-middleware/retryOnEmpty'
+import {
+  createBlockCacheMiddleware,
+  createBlockRefMiddleware,
+  createBlockRefRewriteMiddleware,
+  createBlockTrackerInspectorMiddleware,
+  createFetchMiddleware,
+  createInflightCacheMiddleware,
+  createRetryOnEmptyMiddleware,
+  providerFromEngine,
+  providerFromMiddleware,
+} from 'eth-json-rpc-middleware'
 import EthQuery from 'eth-query'
 import EventEmitter from 'events'
 import { createScaffoldMiddleware, JsonRpcEngine, mergeMiddleware } from 'json-rpc-engine'
@@ -337,13 +339,13 @@ export default class NetworkController extends EventEmitter {
 function createInfuraClient({ network }) {
   const infuraMiddleware = createInfuraMiddleware({ network, projectId: config.infuraKey })
   const infuraProvider = providerFromMiddleware(infuraMiddleware)
-  const blockTracker = new BlockTracker({ provider: infuraProvider })
+  const blockTracker = new PollingBlockTracker({ provider: infuraProvider })
 
   const networkMiddleware = mergeMiddleware([
     createNetworkAndChainIdMiddleware({ network }),
     createBlockCacheMiddleware({ blockTracker }),
-    createInflightMiddleware(),
-    createBlockReRefMiddleware({ blockTracker, provider: infuraProvider }),
+    createInflightCacheMiddleware(),
+    createBlockRefMiddleware({ blockTracker, provider: infuraProvider }),
     createRetryOnEmptyMiddleware({ blockTracker, provider: infuraProvider }),
     createBlockTrackerInspectorMiddleware({ blockTracker }),
     infuraMiddleware,
@@ -388,7 +390,7 @@ function createNetworkAndChainIdMiddleware({ network }) {
 function createLocalhostClient() {
   const fetchMiddleware = createFetchMiddleware({ rpcUrl: 'https://localhost:8545/' })
   const blockProvider = providerFromMiddleware(fetchMiddleware)
-  const blockTracker = new BlockTracker({ provider: blockProvider, pollingInterval: 1000 })
+  const blockTracker = new PollingBlockTracker({ provider: blockProvider, pollingInterval: 1000 })
 
   const networkMiddleware = mergeMiddleware([
     createBlockRefRewriteMiddleware({ blockTracker }),
@@ -401,12 +403,12 @@ function createLocalhostClient() {
 function createJsonRpcClient({ rpcUrl }) {
   const fetchMiddleware = createFetchMiddleware({ rpcUrl })
   const blockProvider = providerFromMiddleware(fetchMiddleware)
-  const blockTracker = new BlockTracker({ provider: blockProvider })
+  const blockTracker = new PollingBlockTracker({ provider: blockProvider })
 
   const networkMiddleware = mergeMiddleware([
     createBlockRefRewriteMiddleware({ blockTracker }),
     createBlockCacheMiddleware({ blockTracker }),
-    createInflightMiddleware(),
+    createInflightCacheMiddleware(),
     createBlockTrackerInspectorMiddleware({ blockTracker }),
     fetchMiddleware,
   ])

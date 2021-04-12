@@ -1,6 +1,6 @@
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
-import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
+import { providerAsMiddleware } from 'eth-json-rpc-middleware'
 import { normalize } from 'eth-sig-util'
 import { stripHexPrefix } from 'ethereumjs-util'
 import EventEmitter from 'events'
