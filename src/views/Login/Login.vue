@@ -146,27 +146,14 @@
                 </v-layout>
               </section>
               <section>
-                <v-carousel height="650" interval="7000" :show-arrows="false" hide-delimiters>
-                  <v-carousel-item v-for="slide in slides" :key="slide.title" reverse-transition="fade-transition" transition="fade-transition">
-                    <v-layout align-center fill-height px-10>
-                      <v-flex class="text-center">
-                        <img class="mb-6 login-panel-right__image" :src="require(`../../assets/images/${slide.image}`)" alt="Login Carousel" />
-                        <div class="headline mb-3 text_2--text px-2">{{ t(slide.title) }}</div>
-                        <div class="caption text_2--text">{{ t(slide.subtitle1) }}</div>
-                        <div v-if="slide.subtitle2" class="caption text_2--text">{{ t(slide.subtitle2) }}</div>
-                        <v-btn
-                          class="learn-more-btn mt-6"
-                          :class="{ isDark: $vuetify.theme.dark, isMobile: $vuetify.breakpoint.xsOnly }"
-                          href="https://tor.us"
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          {{ t('login.visitOurWebsite') }}
-                        </v-btn>
-                      </v-flex>
-                    </v-layout>
-                  </v-carousel-item>
-                </v-carousel>
+                <LoginSlide
+                  :show-spring-festival="showSpringFestival"
+                  @change="
+                    (current) => {
+                      currentCarousel = current
+                    }
+                  "
+                />
               </section>
               <v-icon v-if="scrollOnTop" class="more-icon">$vuetify.icons.login_more</v-icon>
             </v-flex>
@@ -340,39 +327,14 @@
         <v-flex v-if="$vuetify.breakpoint.smAndUp" sm4 md6 fill-height class="login-panel-right" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
           <v-layout wrap fill-height align-center>
             <v-flex xs12 text-center>
-              <v-carousel
-                cycle
-                height="650"
-                :interval="showSpringFestival && currentCarousel === 0 ? 10000 : 7000"
-                :show-arrows="false"
+              <LoginSlide
+                :show-spring-festival="showSpringFestival"
                 @change="
                   (current) => {
                     currentCarousel = current
                   }
                 "
-              >
-                <v-carousel-item v-for="slide in slides" :key="slide.title" reverse-transition="fade-transition" transition="fade-transition">
-                  <div class="d-flex flex-column fill-height justify-end pb-12">
-                    <div class="text-center">
-                      <img class="mb-7 login-panel-right__image" :src="require(`../../assets/images/${slide.image}`)" alt="Login Carousel" />
-                    </div>
-                    <div class="display-1 mb-3 font-weight-medium text_2--text px-10">{{ t(slide.title) }}</div>
-                    <div class="text-body-1 text_2--text px-10">{{ t(slide.subtitle1) }}</div>
-                    <div v-if="slide.subtitle2" class="text-body-1 text_2--text px-10">{{ t(slide.subtitle2) }}</div>
-                    <div class="mb-5">
-                      <v-btn
-                        class="learn-more-btn gmt-learn-more text_2--text"
-                        :class="{ isDark: $vuetify.theme.dark }"
-                        href="https://tor.us"
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
-                        {{ t('login.visitOurWebsite') }}
-                      </v-btn>
-                    </div>
-                  </div>
-                </v-carousel-item>
-              </v-carousel>
+              />
             </v-flex>
           </v-layout>
         </v-flex>
@@ -392,6 +354,7 @@
 import log from 'loglevel'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
+import LoginSlide from '../../components/Login/LoginSlide'
 import config from '../../config'
 import {
   WalletActivityLoader,
@@ -415,7 +378,7 @@ import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/
 
 export default {
   name: 'Login',
-  components: { WalletLoginLoader, WalletLoginLoaderMobile },
+  components: { LoginSlide, WalletLoginLoader, WalletLoginLoaderMobile },
   data() {
     return {
       isLogout: false,
@@ -486,36 +449,6 @@ export default {
     },
     thirdPartyAuthenticators() {
       return thirdPartyAuthenticators(this.loginConfig)
-    },
-    slides() {
-      const slides = [
-        {
-          image: `login-bg-${this.$vuetify.theme.dark ? 'dark-' : ''}1.svg`,
-          title: 'login.slide1Title',
-          subtitle1: 'login.slide1Subtitle1',
-          subtitle2: 'login.slide1Subtitle2',
-        },
-        {
-          image: `login-bg-${this.$vuetify.theme.dark ? 'dark-' : ''}2.svg`,
-          title: 'login.slide2Title',
-          subtitle1: 'login.slide2Subtitle1',
-          subtitle2: 'login.slide2Subtitle2',
-        },
-        {
-          image: `login-bg-${this.$vuetify.theme.dark ? 'dark-' : ''}3.svg`,
-          title: 'login.slide3Title',
-          subtitle1: 'login.slide3Subtitle1',
-          subtitle2: 'login.slide3Subtitle2',
-        },
-      ]
-      if (this.showSpringFestival)
-        slides.unshift({
-          image: `login-bg-${this.$vuetify.theme.dark ? 'dark-' : ''}binance-1.svg`,
-          title: 'login.slideBinance1Title',
-          subtitle1: 'login.slideBinance1Subtitle1',
-        })
-
-      return slides
     },
   },
   watch: {
