@@ -16,6 +16,7 @@
                   </v-flex>
                   <LoginTitle v-if="activeMobileButton" :active-button-details="activeMobileButtonDetails" class="mb-6" />
                   <LoginButtons
+                    :login-buttons-array="loginButtonsArray"
                     @setActiveMobileBtn="(verifier) => (activeMobileButton = verifier)"
                     @triggerLogin="startLogin"
                     @confirmPasswordlessEmail="confirmPasswordlessEmail"
@@ -47,6 +48,7 @@
                 </v-flex> -->
                 <v-flex xs8 mx-auto mt-4>
                   <LoginButtons
+                    :login-buttons-array="loginButtonsArray"
                     :active-button="activeButton"
                     @setActiveBtn="(verifier) => (activeButton = verifier)"
                     @triggerLogin="startLogin"

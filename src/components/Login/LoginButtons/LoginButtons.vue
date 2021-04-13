@@ -90,8 +90,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
 import { HOSTED_EMAIL_PASSWORDLESS_VERIFIER } from '../../../utils/enums'
 import LoginButton from '../LoginButton'
 
@@ -105,6 +103,12 @@ export default {
     isPopup: {
       type: Boolean,
       default: false,
+    },
+    loginButtonsArray: {
+      type: Array,
+      default() {
+        return []
+      },
     },
   },
   data() {
@@ -122,7 +126,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['loginButtonsArray']),
     mainButtonsLong() {
       return this.loginButtonsArray.filter(
         (button) =>

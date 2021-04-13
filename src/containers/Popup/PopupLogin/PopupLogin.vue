@@ -17,6 +17,7 @@
           </div>
           <div class="mx-sm-6">
             <LoginButtons
+              :login-buttons-array="loginButtonsArray"
               :is-popup="true"
               :active-button="activeButton"
               @setActiveBtn="(verifier) => (activeButton = verifier)"
