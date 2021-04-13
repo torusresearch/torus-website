@@ -29,84 +29,84 @@
   }
 }
 
-.login-btn-google {
-  &.v-btn {
-    background: #ffffff !important;
-    border: 1px solid #f1f2f6 !important;
-    box-sizing: border-box;
-    box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06) !important;
-    border-radius: 9px;
-    height: 60px;
-    img {
-      height: 26px;
-    }
-  }
-  ::v-deep .v-btn__content {
-    justify-content: left;
-    font-weight: normal;
-    font-size: 18px;
-    line-height: 21px;
-    letter-spacing: 0;
-  }
+// .login-btn-google {
+//   &.v-btn {
+//     background: #ffffff !important;
+//     border: 1px solid #f1f2f6 !important;
+//     box-sizing: border-box;
+//     box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06) !important;
+//     border-radius: 9px;
+//     height: 60px;
+//     img {
+//       height: 26px;
+//     }
+//   }
+//   ::v-deep .v-btn__content {
+//     justify-content: left;
+//     font-weight: normal;
+//     font-size: 18px;
+//     line-height: 21px;
+//     letter-spacing: 0;
+//   }
 
-  &.torus-dark {
-    background: #2f3136 !important;
-    border: 1px solid #404145 !important;
-    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
-    color: #ffffff !important;
-  }
-}
+//   &.torus-dark {
+//     background: #2f3136 !important;
+//     border: 1px solid #404145 !important;
+//     box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+//     color: #ffffff !important;
+//   }
+// }
 
-.login-btn-long {
-  &.v-btn {
-    background: #ffffff !important;
-    border: 1px solid #f1f2f6 !important;
-    box-sizing: border-box;
-    box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06) !important;
-    border-radius: 9px;
-    height: 60px;
-  }
-  ::v-deep .v-btn__content {
-    justify-content: left;
-    font-weight: normal;
-    font-size: 18px;
-    line-height: 21px;
-    letter-spacing: 0;
-  }
+// .login-btn-long {
+//   &.v-btn {
+//     background: #ffffff !important;
+//     border: 1px solid #f1f2f6 !important;
+//     box-sizing: border-box;
+//     box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06) !important;
+//     border-radius: 9px;
+//     height: 60px;
+//   }
+//   ::v-deep .v-btn__content {
+//     justify-content: left;
+//     font-weight: normal;
+//     font-size: 18px;
+//     line-height: 21px;
+//     letter-spacing: 0;
+//   }
 
-  &.torus-dark {
-    background: #2f3136 !important;
-    border: 1px solid #404145 !important;
-    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06) !important;
-    color: #ffffff !important;
-  }
-}
+//   &.torus-dark {
+//     background: #2f3136 !important;
+//     border: 1px solid #404145 !important;
+//     box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06) !important;
+//     color: #ffffff !important;
+//   }
+// }
 
-.login-btn.v-btn:not(.v-btn--text):not(.v-btn--icon) {
-  background: #ffffff;
-  border: 1px solid #f1f2f6;
-  box-sizing: border-box;
-  box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
-  min-width: inherit;
-  padding: 0;
-  margin-right: 7px;
-  margin-bottom: 7px;
-  width: 56px;
-  height: 56px;
-  img {
-    width: 26px;
-    height: 26px;
-  }
-  &.isDark {
-    background: #2f3136 !important;
-    border: 1px solid #404145 !important;
-    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
-  }
-  &.login-btn--mobile {
-    width: 100%;
-    margin: 0;
-  }
-}
+// .login-btn.v-btn:not(.v-btn--text):not(.v-btn--icon) {
+//   background: #ffffff;
+//   border: 1px solid #f1f2f6;
+//   box-sizing: border-box;
+//   box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
+//   min-width: inherit;
+//   padding: 0;
+//   margin-right: 7px;
+//   margin-bottom: 7px;
+//   width: 56px;
+//   height: 56px;
+//   img {
+//     width: 26px;
+//     height: 26px;
+//   }
+//   &.isDark {
+//     background: #2f3136 !important;
+//     border: 1px solid #404145 !important;
+//     box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+//   }
+//   &.login-btn--mobile {
+//     width: 100%;
+//     margin: 0;
+//   }
+// }
 
 .verifier-title {
   img {
@@ -193,7 +193,7 @@ html {
   }
 
   &.not-sm {
-    margin-top: 52px;
+    margin-top: 20px;
     font-size: 12px;
   }
 }

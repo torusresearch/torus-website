@@ -57,113 +57,17 @@
               </span>
             </div>
           </div>
-          <div class="login-btns-container mx-6">
-            <v-btn
-              v-for="verifier in mainButtonsLong"
-              :key="verifier.verifier"
-              block
-              large
-              :color="$vuetify.theme.dark ? '' : 'white'"
-              :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-google`]"
-              class="text_2--text login-btn-long mb-2"
-              @mouseover="loginBtnHover(verifier.verifier)"
-              @click="startLogin(verifier.verifier)"
-            >
-              <img
-                v-if="verifier.verifier === activeButton || $vuetify.breakpoint.xsOnly"
-                :src="
-                  verifier.logoHover ||
-                  require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}${
-                    verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''
-                  }.svg`)
-                "
-                :alt="`${verifier.name} Icon`"
-              />
-              <img v-else-if="$vuetify.theme.isDark && verifier.logoLight" :src="verifier.logoLight" :alt="`${verifier.name} Icon`" />
-              <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
-              <v-icon v-else size="26" class="text_3--text">
-                {{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}
-              </v-icon>
-              <span class="ml-4">{{ formatDescription(verifier) }}</span>
-            </v-btn>
-            <v-layout wrap mx-n1>
-              <v-flex v-for="verifier in mainButtons" :key="verifier.verifier" xs4 px-1>
-                <v-btn
-                  block
-                  class="login-btn active mb-2"
-                  type="button"
-                  :title="`${t('login.loginWith')} ${verifier.name}`"
-                  @mouseover="loginBtnHover(verifier.verifier)"
-                  @click="startLogin(verifier.verifier)"
-                >
-                  <img
-                    v-if="verifier.verifier === activeButton || $vuetify.breakpoint.xsOnly"
-                    :src="
-                      verifier.logoHover ||
-                      require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}${
-                        verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''
-                      }.svg`)
-                    "
-                    :alt="`${verifier.name} Icon`"
-                  />
-                  <img v-else-if="$vuetify.theme.isDark && verifier.logoLight" :src="verifier.logoLight" :alt="`${verifier.name} Icon`" />
-                  <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
-                  <v-icon v-else size="32" class="text_3--text">
-                    {{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}
-                  </v-icon>
-                </v-btn>
-              </v-flex>
-            </v-layout>
-            <v-flex v-if="loginButtonsLong.length > 0" xs12 mt-2 mb-4 class="text-center">
-              <div class="d-flex align-center mb-4">
-                <v-divider></v-divider>
-                <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
-                  <div class="body-2 text_2--text">{{ t('login.or') }}</div>
-                </div>
-                <v-divider></v-divider>
-              </div>
-              <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="mb-2">
-                <v-btn
-                  :id="`${verifier.name}LoginBtn`"
-                  :color="$vuetify.theme.dark ? '' : 'white'"
-                  block
-                  :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-${verifier.name.toLowerCase()}`]"
-                  class="text_2--text login-btn-long"
-                  @mouseover="loginBtnHover(verifier.verifier)"
-                  @click="startLogin(verifier.verifier)"
-                >
-                  <img
-                    v-if="verifier.verifier === activeButton || $vuetify.breakpoint.xsOnly"
-                    :src="
-                      verifier.logoHover ||
-                      require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}${
-                        verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''
-                      }.svg`)
-                    "
-                    :alt="`${verifier.name} Icon`"
-                  />
-                  <img v-else-if="$vuetify.theme.isDark && verifier.logoLight" :src="verifier.logoLight" :alt="`${verifier.name} Icon`" />
-                  <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
-                  <v-icon v-else size="26" class="text_3--text">
-                    {{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}
-                  </v-icon>
-                  <span class="ml-4">
-                    {{ formatDescription(verifier) }}
-                  </span>
-                </v-btn>
-              </div>
-            </v-flex>
-          </div>
-          <div class="d-flex align-center px-6 mb-7">
-            <v-spacer></v-spacer>
-            <v-btn x-small :class="{ 'has-more': viewMoreOptions }" class="view-option-selector" @click="viewMoreOptions = !viewMoreOptions">
-              <span class="body-2">{{ viewMoreOptions ? t('dappLogin.viewLess') : t('dappLogin.viewMore') }}</span>
-              <v-icon>$vuetify.icons.select</v-icon>
-            </v-btn>
+          <div class="mx-sm-6">
+            <LoginButtons
+              :is-popup="true"
+              :active="activeButton"
+              @setActiveBtn="(verifier) => (activeButton = verifier)"
+              @triggerLogin="startLogin"
+            />
           </div>
           <div
             v-if="!canHideDisclaimer1 && !viewMoreOptions && thirdPartyAuthenticators.length > 0"
-            class="text_3--text px-6 footer-notes"
+            class="text_3--text px-6 footer-notes mt-5"
             :class="$vuetify.breakpoint.xsOnly ? 'pb-13' : 'mb-4'"
           >
             <span>{{ t('dappLogin.termsAuth01') }}</span>
@@ -200,11 +104,13 @@
 import log from 'loglevel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
+import LoginButtons from '../../../components/Login/LoginButtons'
 import { GITHUB, GOOGLE_VERIFIER, TWITTER } from '../../../utils/enums'
 import { thirdPartyAuthenticators } from '../../../utils/utils'
 
 export default {
   name: 'PopupLogin',
+  components: { LoginButtons },
   props: {
     loginDialog: {
       type: Boolean,

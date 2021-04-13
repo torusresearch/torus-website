@@ -44,68 +44,7 @@
                       {{ t('login.digitalWallet') }}
                     </div>
                   </v-flex>
-                  <v-flex v-if="showGoogleLogin" xs10 sm8 ml-auto mt-2 mr-auto>
-                    <v-btn
-                      id="loginBtn"
-                      :color="$vuetify.theme.dark ? '' : 'white'"
-                      block
-                      :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                      class="text-body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google gmt-login gmt-login-google"
-                      @click="startLogin(GOOGLE_VERIFIER)"
-                    >
-                      <img
-                        class="mr-5"
-                        src="../../assets/img/icons/login-google.svg"
-                        :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                        alt="Google Icon"
-                      />
-                      {{ t('login.signIn') }} Google
-                    </v-btn>
-                  </v-flex>
-                  <v-flex xs10 sm8 ml-auto mr-auto>
-                    <v-layout wrap mx-n1>
-                      <v-flex v-for="verifier in loginButtonsMobile" :key="verifier.verifier" xs6 px-1 mt-2>
-                        <v-btn
-                          class="login-btn login-btn--mobile gmt-login"
-                          :class="[{ isDark: $vuetify.theme.dark }, `gmt-login-${verifier.name.toLowerCase()}`]"
-                          type="button"
-                          :title="`${t('login.loginWith')} ${verifier.name}`"
-                          @click="startLogin(verifier.verifier)"
-                        >
-                          <img
-                            :src="
-                              require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}${
-                                $vuetify.theme.isDark && verifier.hasLightLogo ? '-light' : ''
-                              }.svg`)
-                            "
-                            :alt="`${verifier.name} Icon`"
-                          />
-                        </v-btn>
-                      </v-flex>
-                    </v-layout>
-                  </v-flex>
-                  <v-flex v-if="loginButtonsMobileLong.length > 0" xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
-                    <div class="d-flex align-center">
-                      <v-divider />
-                      <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
-                        <div class="body-2 text_2--text">{{ t('login.or') }}</div>
-                      </div>
-                      <v-divider />
-                    </div>
-                    <div v-for="verifier in loginButtonsMobileLong" :key="verifier.verifier" class="mt-4">
-                      <v-btn
-                        :id="`${verifier.name}LoginBtn`"
-                        :color="$vuetify.theme.dark ? '' : 'white'"
-                        block
-                        :class="[$vuetify.theme.dark ? 'torus-dark' : '', `login-btn-${verifier.name.toLowerCase()}`]"
-                        class="text-body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
-                        @click="startLogin(verifier.verifier)"
-                      >
-                        <v-icon class="mr-4">{{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}</v-icon>
-                        {{ formatDescription(verifier) }}
-                      </v-btn>
-                    </div>
-                  </v-flex>
+                  <LoginButtons :active="activeButton" @setActiveBtn="(verifier) => (activeButton = verifier)" @triggerLogin="startLogin" />
                   <v-flex xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes">
                     <div class="text_3--text mb-4">
                       <div class="text_2--text mb-2 font-weight-bold">{{ t('login.note') }}:</div>
@@ -157,6 +96,7 @@
               </section>
               <v-icon v-if="scrollOnTop" class="more-icon">$vuetify.icons.login_more</v-icon>
             </v-flex>
+            <!-- Desktop -->
             <v-flex v-else xs12>
               <v-layout wrap>
                 <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
@@ -193,65 +133,8 @@
                 <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-10']">
                   <div class="headline font-weight-regular" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
                 </v-flex>
-                <v-flex xs10 sm8 mx-auto mt-4>
-                  <div :style="{ maxWidth: '380px' }">
-                    <v-btn
-                      v-for="verifier in loginButtons"
-                      :key="verifier.verifier"
-                      class="login-btn gmt-login"
-                      :class="[
-                        { active: verifier.verifier === activeButton, isDark: $vuetify.theme.dark },
-                        `gmt-login-${verifier.name.toLowerCase()}`,
-                      ]"
-                      type="button"
-                      :title="`${t('login.loginWith')} ${verifier.name}`"
-                      @click="startLogin(verifier.verifier)"
-                      @mouseover="activeButton = verifier.verifier"
-                    >
-                      <img
-                        v-if="verifier.verifier === activeButton"
-                        :src="
-                          require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}${
-                            verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''
-                          }.svg`)
-                        "
-                        :alt="`${verifier.name} Icon`"
-                      />
-                      <v-icon v-else class="text_3--text">
-                        {{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}
-                      </v-icon>
-                    </v-btn>
-                  </div>
-                </v-flex>
-                <v-flex v-if="loginButtonsLong.length > 0" xs10 sm8 ml-auto mr-auto mt-4 class="text-center">
-                  <div class="d-flex align-center mb-4" :style="{ maxWidth: '372px' }">
-                    <v-divider />
-                    <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
-                      <div class="body-2 text_2--text">{{ t('login.or') }}</div>
-                    </div>
-                    <v-divider />
-                  </div>
-                  <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="mt-2" :style="{ maxWidth: '372px' }">
-                    <v-btn
-                      id="emailLoginBtn"
-                      :color="$vuetify.theme.dark ? '' : 'white'"
-                      block
-                      :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                      class="text-body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-long"
-                      @click="startLogin(verifier.verifier)"
-                      @mouseover="activeButton = verifier.verifier"
-                    >
-                      <img
-                        v-if="verifier.verifier === activeButton"
-                        height="24"
-                        class="mr-4"
-                        :src="require(`../../assets/img/icons/login-${verifier.name.toLowerCase()}.svg`)"
-                        :alt="`${verifier.name} Icon`"
-                      />
-                      <v-icon v-else class="mr-4">{{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}</v-icon>
-                      {{ formatDescription(verifier) }}
-                    </v-btn>
-                  </div>
+                <v-flex xs8 mx-auto mt-4>
+                  <LoginButtons :active="activeButton" @setActiveBtn="(verifier) => (activeButton = verifier)" @triggerLogin="startLogin" />
                 </v-flex>
                 <v-flex xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes" :class="{ 'not-sm': !$vuetify.breakpoint.xsOnly }">
                   <div class="text_3--text mb-6">
@@ -354,6 +237,7 @@
 import log from 'loglevel'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
+import LoginButtons from '../../components/Login/LoginButtons'
 import LoginSlide from '../../components/Login/LoginSlide'
 import config from '../../config'
 import {
@@ -378,7 +262,7 @@ import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/
 
 export default {
   name: 'Login',
-  components: { LoginSlide, WalletLoginLoader, WalletLoginLoaderMobile },
+  components: { LoginButtons, LoginSlide, WalletLoginLoader, WalletLoginLoaderMobile },
   data() {
     return {
       isLogout: false,
@@ -429,17 +313,8 @@ export default {
     loginButtons() {
       return this.loginButtonsArray.filter((button) => button.showOnDesktop && !button.torusDescription)
     },
-    loginButtonsMobile() {
-      return this.loginButtonsArray.filter((button) => button.showOnMobile && button.typeOfLogin !== GOOGLE && !button.torusDescription)
-    },
     loginButtonsLong() {
       return this.loginButtonsArray.filter((button) => button.showOnDesktop && button.torusDescription)
-    },
-    loginButtonsMobileLong() {
-      return this.loginButtonsArray.filter((button) => button.showOnMobile && button.typeOfLogin !== GOOGLE && button.torusDescription)
-    },
-    showGoogleLogin() {
-      return this.loginConfig[GOOGLE_VERIFIER].showOnModal && this.loginConfig[GOOGLE_VERIFIER].showOnMobile
     },
     activeButtonDetails() {
       return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
@@ -542,10 +417,6 @@ export default {
       window.addEventListener('scroll', () => {
         this.scrollOnTop = window.pageYOffset < 40
       })
-    },
-    formatDescription(verifier) {
-      const finalDesc = verifier.torusDescription ? this.t(verifier.torusDescription) : this.t('dappLogin.continue')
-      return finalDesc.replace(/{verifier}/gi, verifier.name.charAt(0).toUpperCase() + verifier.name.slice(1))
     },
     animateVerifier() {
       const verifiers = this.loginButtonsArray.filter((button) => button.showOnMobile)
