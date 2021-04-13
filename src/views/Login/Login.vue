@@ -14,74 +14,9 @@
                       alt="Torus Logo"
                     />
                   </v-flex>
-                  <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
-                    <div class="verifier-title font-weight-bold display-1">
-                      <span class="text_2--text">
-                        {{ t('login.your') }}
-                        <template v-if="activeMobileButton">
-                          <span v-if="activeMobileButton === GOOGLE_VERIFIER">
-                            <span class="verifier-title__google-blue">G</span>
-                            <span class="verifier-title__google-red">o</span>
-                            <span class="verifier-title__google-yellow">o</span>
-                            <span class="verifier-title__google-blue">g</span>
-                            <span class="verifier-title__google-green">l</span>
-                            <span class="verifier-title__google-red">e</span>
-                          </span>
-                          <span
-                            v-else
-                            class="text-capitalize"
-                            :class="[
-                              `verifier-title__${activeMobileButtonDetails.name.toLowerCase()}`,
-                              { 'white--text': activeMobileButtonDetails.hasLightLogo && $vuetify.theme.dark },
-                            ]"
-                          >
-                            {{ activeMobileButtonDetails.name }}
-                          </span>
-                        </template>
-                      </span>
-                    </div>
-                    <div class="font-weight-bold headline text_2--text">
-                      {{ t('login.digitalWallet') }}
-                    </div>
-                  </v-flex>
+                  <LoginTitle v-if="activeMobileButton" :active-button-details="activeMobileButtonDetails" />
                   <LoginButtons :active="activeButton" @setActiveBtn="(verifier) => (activeButton = verifier)" @triggerLogin="startLogin" />
-                  <v-flex xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes">
-                    <div class="text_3--text mb-4">
-                      <div class="text_2--text mb-2 font-weight-bold">{{ t('login.note') }}:</div>
-                      <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
-                      <div v-if="thirdPartyAuthenticators.length > 0">
-                        <span>{{ t('dappLogin.termsAuth01') }}</span>
-                        <br />
-                        <span>{{ thirdPartyAuthenticators }}.</span>
-                        <a
-                          class="privacy-learn-more text_3--text"
-                          href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          {{ t('dappLogin.termsLearnMore') }}
-                        </a>
-                      </div>
-                    </div>
-                    <v-divider class="mb-2" />
-                    <div class="d-flex justify-center footer-links">
-                      <div class="mx-2">
-                        <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
-                          {{ t('dappLogin.termsConditions') }}
-                        </a>
-                      </div>
-                      <div class="mx-2">
-                        <a href="https://docs.tor.us/legal/privacy-policy" target="_blank" rel="noreferrer noopener">
-                          {{ t('dappLogin.privacyPolicy') }}
-                        </a>
-                      </div>
-                      <div class="mx-2">
-                        <a href="https://t.me/TorusLabs" target="_blank" rel="noreferrer noopener">
-                          {{ t('dappLogin.contactUs') }}
-                        </a>
-                      </div>
-                    </div>
-                  </v-flex>
+                  <LoginFooter :authenticators="thirdPartyAuthenticators" />
                 </v-layout>
               </section>
               <section>
@@ -102,77 +37,14 @@
                 <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
                   <img width="180" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                 </v-flex>
-                <v-flex xs10 sm8 ml-auto mr-auto>
-                  <div class="verifier-title font-weight-bold" :class="[$vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2']">
-                    <span class="text_2--text">
-                      {{ t('login.your') }}
-                      <span v-if="activeButton === GOOGLE_VERIFIER">
-                        <span class="verifier-title__google-blue">G</span>
-                        <span class="verifier-title__google-red">o</span>
-                        <span class="verifier-title__google-yellow">o</span>
-                        <span class="verifier-title__google-blue">g</span>
-                        <span class="verifier-title__google-green">l</span>
-                        <span class="verifier-title__google-red">e</span>
-                      </span>
-                      <span
-                        v-else-if="activeButton"
-                        class="text-capitalize"
-                        :class="[
-                          `verifier-title__${activeButtonDetails.name.toLowerCase()}`,
-                          { 'white--text': activeButtonDetails.hasLightLogo && $vuetify.theme.dark },
-                        ]"
-                      >
-                        {{ activeButtonDetails.name }}
-                      </span>
-                    </span>
-                  </div>
-                  <div class="font-weight-bold text_2--text" :class="[$vuetify.breakpoint.xsOnly ? 'headline' : 'display-2']">
-                    {{ t('login.digitalWallet') }}
-                  </div>
-                </v-flex>
+                <LoginTitle v-if="activeButton" :active-button-details="activeButtonDetails" />
                 <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-10']">
                   <div class="headline font-weight-regular" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
                 </v-flex>
                 <v-flex xs8 mx-auto mt-4>
                   <LoginButtons :active="activeButton" @setActiveBtn="(verifier) => (activeButton = verifier)" @triggerLogin="startLogin" />
                 </v-flex>
-                <v-flex xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes" :class="{ 'not-sm': !$vuetify.breakpoint.xsOnly }">
-                  <div class="text_3--text mb-6">
-                    <div class="text_2--text mb-2 font-weight-bold">{{ t('login.note') }}:</div>
-                    <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
-                    <div v-if="thirdPartyAuthenticators.length > 0">
-                      <span>{{ t('dappLogin.termsAuth01') }}</span>
-                      <br />
-                      <span>{{ thirdPartyAuthenticators }}.</span>
-                      <a
-                        class="privacy-learn-more text_3--text"
-                        href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
-                        {{ t('dappLogin.termsLearnMore') }}
-                      </a>
-                    </div>
-                  </div>
-                  <v-divider class="mb-2" />
-                  <div class="d-flex footer-links">
-                    <div class="mr-4">
-                      <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
-                        {{ t('dappLogin.termsConditions') }}
-                      </a>
-                    </div>
-                    <div class="mr-4">
-                      <a href="https://docs.tor.us/legal/privacy-policy" target="_blank" rel="noreferrer noopener">
-                        {{ t('dappLogin.privacyPolicy') }}
-                      </a>
-                    </div>
-                    <div class="mr-4">
-                      <a href="https://t.me/TorusLabs" target="_blank" rel="noreferrer noopener">
-                        {{ t('dappLogin.contactUs') }}
-                      </a>
-                    </div>
-                  </div>
-                </v-flex>
+                <LoginFooter :authenticators="thirdPartyAuthenticators" />
               </v-layout>
             </v-flex>
           </v-layout>
@@ -238,7 +110,9 @@ import log from 'loglevel'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 import LoginButtons from '../../components/Login/LoginButtons'
+import LoginFooter from '../../components/Login/LoginFooter'
 import LoginSlide from '../../components/Login/LoginSlide'
+import LoginTitle from '../../components/Login/LoginTitle'
 import config from '../../config'
 import {
   WalletActivityLoader,
@@ -262,7 +136,7 @@ import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/
 
 export default {
   name: 'Login',
-  components: { LoginButtons, LoginSlide, WalletLoginLoader, WalletLoginLoaderMobile },
+  components: { LoginButtons, LoginFooter, LoginSlide, LoginTitle, WalletLoginLoader, WalletLoginLoaderMobile },
   data() {
     return {
       isLogout: false,
