@@ -11,58 +11,18 @@
               <span>{{ t('dappLogin.signIn') }}</span>
             </div>
             <div class="headline verifier-title font-weight-regular text_2--text">
-              <span v-if="$vuetify.breakpoint.xsOnly">
-                {{ t('dappLogin.yourDigital') }}
-                <template v-if="activeMobileButton">
-                  <span v-if="activeMobileButton === GOOGLE_VERIFIER">
-                    <span class="verifier-title__google-blue">G</span>
-                    <span class="verifier-title__google-red">o</span>
-                    <span class="verifier-title__google-yellow">o</span>
-                    <span class="verifier-title__google-blue">g</span>
-                    <span class="verifier-title__google-green">l</span>
-                    <span class="verifier-title__google-red">e</span>
-                  </span>
-                  <span
-                    v-else
-                    class="text-capitalize"
-                    :class="[
-                      `verifier-title__${activeMobileButtonDetails.name.toLowerCase()}`,
-                      { 'white--text': activeMobileButtonDetails.hasLightLogo && $vuetify.theme.dark },
-                    ]"
-                  >
-                    {{ activeMobileButtonDetails.name }}
-                  </span>
-                </template>
-              </span>
-              <span v-else>
-                {{ t('dappLogin.yourDigital') }}
-                <span v-if="activeButton === GOOGLE_VERIFIER" class="font-weight-bold">
-                  <span class="verifier-title__google-blue">G</span>
-                  <span class="verifier-title__google-red">o</span>
-                  <span class="verifier-title__google-yellow">o</span>
-                  <span class="verifier-title__google-blue">g</span>
-                  <span class="verifier-title__google-green">l</span>
-                  <span class="verifier-title__google-red">e</span>
-                </span>
-                <span
-                  v-else-if="activeButton"
-                  class="text-capitalize font-weight-bold"
-                  :class="[
-                    `verifier-title__${activeButtonDetails.name.toLowerCase()}`,
-                    { 'white--text': activeButtonDetails.hasLightLogo && $vuetify.theme.dark },
-                  ]"
-                >
-                  {{ activeButtonDetails.name }}
-                </span>
-              </span>
+              <LoginTitleDapp v-if="$vuetify.breakpoint.xsOnly && activeMobileButton" :active-button-details="activeMobileButtonDetails" />
+              <LoginTitleDapp v-if="!$vuetify.breakpoint.xsOnly && activeButton" :active-button-details="activeButtonDetails" />
             </div>
           </div>
           <div class="mx-sm-6">
             <LoginButtons
               :is-popup="true"
-              :active="activeButton"
+              :active-button="activeButton"
               @setActiveBtn="(verifier) => (activeButton = verifier)"
+              @setActiveMobileBtn="(verifier) => (activeMobileButton = verifier)"
               @triggerLogin="startLogin"
+              @confirmPasswordlessEmail="confirmPasswordlessEmail"
             />
           </div>
           <div
@@ -82,13 +42,13 @@
               {{ t('dappLogin.termsLearnMore') }}
             </a>
           </div>
-          <div class="d-flex justify-center caption footer-links pt-3 pb-4" :class="{ smallScreen: $vuetify.breakpoint.width < 385 }">
+          <div class="d-flex justify-center caption footer-links pt-3 pb-4 px-6" :class="{ smallScreen: $vuetify.breakpoint.width < 385 }">
             <div>
               <a class="text-decoration-none text_2--text" :href="tncLink" target="_blank" rel="noreferrer noopener">
                 {{ t('dappLogin.termsConditions') }}
               </a>
             </div>
-            <v-divider v-if="!whiteLabel.isActive" class="mx-3" vertical></v-divider>
+            <v-spacer></v-spacer>
             <div v-if="!whiteLabel.isActive" class="d-flex align-center">
               <span class="text_2--text mr-1">{{ t('dappLogin.poweredBy') }}</span>
               <img alt="Torus Logo" height="10" :src="getLogo.logo" />
@@ -105,12 +65,13 @@ import log from 'loglevel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import LoginButtons from '../../../components/Login/LoginButtons'
+import LoginTitleDapp from '../../../components/Login/LoginTitleDapp'
 import { GITHUB, GOOGLE_VERIFIER, TWITTER } from '../../../utils/enums'
 import { thirdPartyAuthenticators } from '../../../utils/utils'
 
 export default {
   name: 'PopupLogin',
-  components: { LoginButtons },
+  components: { LoginButtons, LoginTitleDapp },
   props: {
     loginDialog: {
       type: Boolean,
@@ -133,36 +94,6 @@ export default {
       whiteLabel: 'whiteLabel',
       loginConfig: (state) => state.embedState.loginConfig,
     }),
-    mainButtonsLong() {
-      return this.loginButtonsArray.filter(
-        (button) =>
-          ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
-          button.mainOption &&
-          button.description !== ''
-      )
-    },
-    mainButtons() {
-      return this.loginButtonsArray.filter((button) => {
-        if (this.viewMoreOptions) {
-          return (
-            ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
-            button.description === ''
-          )
-        }
-        return (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.mainOption && button.description === ''
-      })
-    },
-    loginButtonsLong() {
-      return this.loginButtonsArray.filter(
-        (button) =>
-          ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
-          !button.mainOption &&
-          button.description !== ''
-      )
-    },
-    allActiveButtons() {
-      return [...this.mainButtonsLong, ...this.mainButtons, ...this.loginButtonsLong]
-    },
     localeSelected() {
       return this.$vuetify.lang.current
     },
@@ -210,40 +141,7 @@ export default {
       return thirdPartyAuthenticators(this.loginConfig)
     },
   },
-  watch: {
-    loginButtonsArray(newValue, oldValue) {
-      if (newValue !== oldValue && newValue.length > 0) {
-        this.chooseAndSetActiveButton()
-      }
-    },
-    viewMoreOptions(newValue, oldValue) {
-      if (newValue !== oldValue && !this.$vuetify.breakpoint.xsOnly) {
-        this.chooseAndSetActiveButton()
-      }
-    },
-  },
-  mounted() {
-    this.chooseAndSetActiveButton()
-    this.animateVerifier()
-  },
-  beforeDestroy() {
-    clearInterval(this.activeMobileButtonInterval)
-  },
   methods: {
-    chooseAndSetActiveButton() {
-      // if present in any visible ones, don't do anything
-      // else, set it to first of main buttons long
-      // if not present, set it to first of main buttons long
-      if (this.activeButton && this.allActiveButtons.some((x) => x.verifier === this.activeButton)) {
-        return
-      }
-      if (this.mainButtonsLong.length > 0) this.activeButton = this.mainButtonsLong[0].verifier
-      else if (this.mainButtons.length > 0) this.activeButton = this.mainButtons[0].verifier
-      else if (this.loginButtonsLong.length > 0) this.activeButton = this.loginButtonsLong[0].verifier
-    },
-    loginBtnHover(verifier) {
-      if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
-    },
     async startLogin(verifier) {
       try {
         this.showModal = false
@@ -261,23 +159,8 @@ export default {
     ...mapActions({
       triggerLogin: 'triggerLogin',
     }),
-    formatDescription(verifier) {
-      const finalDesc = verifier.description ? this.t(verifier.description) : this.t('dappLogin.continue')
-      return finalDesc.replace(/{verifier}/gi, verifier.name.charAt(0).toUpperCase() + verifier.name.slice(1))
-    },
-    animateVerifier() {
-      if (this.allActiveButtons.length > 0) {
-        let counter = 0
-
-        clearInterval(this.activeMobileButtonInterval)
-        this.activeMobileButtonInterval = setInterval(() => {
-          if (counter >= this.allActiveButtons.length) {
-            counter = 0
-          }
-          this.activeMobileButton = this.allActiveButtons[counter].verifier
-          counter += 1
-        }, 1000)
-      }
+    confirmPasswordlessEmail(passwordlessEmail) {
+      log.info('🚀 ~ file: Login.vue ~ line 321 ~ confirmPasswordlessEmail ~ passwordlessEmail', passwordlessEmail)
     },
   },
 }

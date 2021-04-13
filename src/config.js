@@ -167,7 +167,6 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: GOOGLE_LOGIN_PROVIDER,
       },
     }),
@@ -187,7 +186,6 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: FACEBOOK_LOGIN_PROVIDER,
       },
     }),
@@ -212,7 +210,6 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: TWITTER_LOGIN_PROVIDER,
       },
     }),
@@ -232,7 +229,6 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: DISCORD_LOGIN_PROVIDER,
       },
     }),
@@ -255,7 +251,6 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: LINE_LOGIN_PROVIDER,
       },
     }),
@@ -274,7 +269,6 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: REDDIT_LOGIN_PROVIDER,
       },
     }),
@@ -297,7 +291,6 @@ export default {
         },
         // For torus only
         hasLightLogo: true,
-        torusDescription: '',
         loginProvider: APPLE_LOGIN_PROVIDER,
       },
     }),
@@ -321,7 +314,6 @@ export default {
         },
         // For torus only
         hasLightLogo: true,
-        torusDescription: '',
         loginProvider: GITHUB_LOGIN_PROVIDER,
       },
     }),
@@ -340,7 +332,6 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: TWITCH_LOGIN_PROVIDER,
       },
     }),
@@ -363,7 +354,6 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: LINKEDIN_LOGIN_PROVIDER,
       },
     }),
@@ -386,7 +376,6 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: WECHAT_LOGIN_PROVIDER,
       },
     }),
@@ -409,7 +398,6 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: KAKAO_LOGIN_PROVIDER,
       },
     }),
@@ -434,7 +422,6 @@ export default {
         },
         // For torus only
         hasLightLogo: true,
-        torusDescription: 'login.signUpEmail',
         loginProvider: EMAIL_PASSWORDLESS_LOGIN_PROVIDER,
       },
     }),
@@ -455,7 +442,6 @@ export default {
     //     },
     //     // For torus only
     //     hasLightLogo: false,
-    //     torusDescription: '',
     //   },
     // }),
   },

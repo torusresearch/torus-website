@@ -5,17 +5,21 @@
         <v-flex xs12 sm8 md6>
           <v-layout v-if="!isLogout" wrap>
             <v-flex v-if="$vuetify.breakpoint.xsOnly" class="mobile-login-container" xs12>
-              <section class="py-12">
+              <section class="py-10 py-sm-12">
                 <v-layout wrap>
-                  <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
+                  <v-flex class="mb-6" xs10 sm8 ml-auto mr-auto>
                     <img
-                      width="180"
+                      height="25"
                       :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
                       alt="Torus Logo"
                     />
                   </v-flex>
-                  <LoginTitle v-if="activeMobileButton" :active-button-details="activeMobileButtonDetails" />
-                  <LoginButtons :active="activeButton" @setActiveBtn="(verifier) => (activeButton = verifier)" @triggerLogin="startLogin" />
+                  <LoginTitle v-if="activeMobileButton" :active-button-details="activeMobileButtonDetails" class="mb-6" />
+                  <LoginButtons
+                    @setActiveMobileBtn="(verifier) => (activeMobileButton = verifier)"
+                    @triggerLogin="startLogin"
+                    @confirmPasswordlessEmail="confirmPasswordlessEmail"
+                  />
                   <LoginFooter :authenticators="thirdPartyAuthenticators" />
                 </v-layout>
               </section>
@@ -35,14 +39,19 @@
             <v-flex v-else xs12>
               <v-layout wrap>
                 <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
-                  <img width="180" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
+                  <img height="25" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                 </v-flex>
                 <LoginTitle v-if="activeButton" :active-button-details="activeButtonDetails" />
-                <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-10']">
+                <!-- <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-10']">
                   <div class="headline font-weight-regular" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
-                </v-flex>
+                </v-flex> -->
                 <v-flex xs8 mx-auto mt-4>
-                  <LoginButtons :active="activeButton" @setActiveBtn="(verifier) => (activeButton = verifier)" @triggerLogin="startLogin" />
+                  <LoginButtons
+                    :active-button="activeButton"
+                    @setActiveBtn="(verifier) => (activeButton = verifier)"
+                    @triggerLogin="startLogin"
+                    @confirmPasswordlessEmail="confirmPasswordlessEmail"
+                  />
                 </v-flex>
                 <LoginFooter :authenticators="thirdPartyAuthenticators" />
               </v-layout>
@@ -131,7 +140,6 @@ import {
   WalletTransferLoaderMobile,
 } from '../../content-loader'
 import { HandlerFactory as createHandler } from '../../handlers/Auth'
-import { GOOGLE, GOOGLE_VERIFIER } from '../../utils/enums'
 import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/utils'
 
 export default {
@@ -140,11 +148,8 @@ export default {
   data() {
     return {
       isLogout: false,
-      GOOGLE,
-      GOOGLE_VERIFIER,
       activeButton: '',
       activeMobileButton: '',
-      activeMobileButtonInterval: null,
       loginInProgress: false,
       snackbar: false,
       snackbarText: '',
@@ -184,12 +189,6 @@ export default {
       }
       return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
     },
-    loginButtons() {
-      return this.loginButtonsArray.filter((button) => button.showOnDesktop && !button.torusDescription)
-    },
-    loginButtonsLong() {
-      return this.loginButtonsArray.filter((button) => button.showOnDesktop && button.torusDescription)
-    },
     activeButtonDetails() {
       return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
     },
@@ -215,10 +214,6 @@ export default {
 
     this.isLogout = this.$route.name !== 'login'
 
-    if (this.loginButtons.length > 0) this.activeButton = this.loginButtons[0].verifier
-    else if (this.loginButtonsLong.length > 0) this.activeButton = this.loginButtonsLong[0].verifier
-
-    this.animateVerifier()
     this.scroll()
 
     try {
@@ -292,20 +287,8 @@ export default {
         this.scrollOnTop = window.pageYOffset < 40
       })
     },
-    animateVerifier() {
-      const verifiers = this.loginButtonsArray.filter((button) => button.showOnMobile)
-      if (verifiers.length > 0) {
-        let counter = 0
-
-        clearInterval(this.activeMobileButtonInterval)
-        this.activeMobileButtonInterval = setInterval(() => {
-          if (counter >= verifiers.length) {
-            counter = 0
-          }
-          this.activeMobileButton = verifiers[counter].verifier
-          counter += 1
-        }, 1000)
-      }
+    confirmPasswordlessEmail(passwordlessEmail) {
+      log.info('🚀 ~ file: Login.vue ~ line 321 ~ confirmPasswordlessEmail ~ passwordlessEmail', passwordlessEmail)
     },
   },
 }

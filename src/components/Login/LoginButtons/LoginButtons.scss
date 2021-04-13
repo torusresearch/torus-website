@@ -15,3 +15,19 @@
     color: var(--v-text_2-base);
   }
 }
+
+.v-input.passwordless-email {
+  ::v-deep .v-input__control {
+    .v-text-field__details {
+      display: none;
+    }
+  }
+  &.error--text {
+    ::v-deep .v-input__control {
+      .v-text-field__details {
+        display: block;
+        margin-bottom: 0;
+      }
+    }
+  }
+}
