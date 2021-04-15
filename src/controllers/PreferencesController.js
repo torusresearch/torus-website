@@ -1,9 +1,9 @@
+import { ObservableStore } from '@metamask/obs-store'
+import EventEmitter from '@metamask/safe-event-emitter'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
 import { hashPersonalMessage } from 'ethereumjs-util'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
-import EventEmitter from 'safe-event-emitter'
 import Web3 from 'web3'
 
 import config from '../config'

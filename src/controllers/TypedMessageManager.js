@@ -1,11 +1,11 @@
 /* eslint-disable no-case-declarations */
+import { ObservableStore } from '@metamask/obs-store'
 import assert from 'assert'
 import { ethErrors } from 'eth-rpc-errors'
 import { TYPED_MESSAGE_SCHEMA, typedSignatureHash } from 'eth-sig-util'
 import EventEmitter from 'events'
 import jsonschema from 'jsonschema'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
 
 /**
  * Represents, and contains data about, an 'eth_signTypedData' type signature request. These are created when a

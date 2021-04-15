@@ -4,7 +4,7 @@ import EventEmitter from 'events'
 import { toBuffer } from 'ethereumjs-util'
 import Common from 'ethereumjs-common'
 import { Transaction as EthTx } from 'ethereumjs-tx'
-import ObservableStore from 'obs-store'
+import { ObservableStore } from '@metamask/obs-store'
 import sinon from 'sinon'
 import TransactionController from '../../../../src/controllers/TransactionController'
 import {
