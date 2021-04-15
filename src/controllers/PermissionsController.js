@@ -2,7 +2,7 @@ import { ethErrors } from 'eth-rpc-errors'
 import { JsonRpcEngine } from 'json-rpc-engine'
 import log from 'loglevel'
 
-// import ObservableStore from 'obs-store'
+// import { ObservableStore } from '@metamask/obs-store'
 // import { CapabilitiesController as RpcCap } from 'rpc-cap'
 // Methods that do not require any permissions to use:
 import {
