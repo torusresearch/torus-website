@@ -1,5 +1,6 @@
 /* eslint-disable require-atomic-updates */
-import erc20Contracts from '@metamask/contract-metadata'
+import { ObservableStore } from '@metamask/obs-store'
+import EventEmitter from '@metamask/safe-event-emitter'
 import { ethErrors } from 'eth-rpc-errors'
 import Common from 'ethereumjs-common'
 import { Transaction } from 'ethereumjs-tx'
@@ -8,12 +9,11 @@ import EthQuery from 'ethjs-query'
 import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
-import EventEmitter from 'safe-event-emitter'
 import { fromWei, isAddress, sha3, toBN, toChecksumAddress } from 'web3-utils'
 
 import erc721Contracts from '../assets/assets-map.json'
 import AbiDecoder from '../utils/abiDecoder'
+import erc20Contracts from '../utils/contractMetadata'
 import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   CONTRACT_INTERACTION_KEY,

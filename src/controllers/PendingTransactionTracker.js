@@ -1,6 +1,6 @@
+import EventEmitter from '@metamask/safe-event-emitter'
 import EthQuery from 'ethjs-query'
 import log from 'loglevel'
-import EventEmitter from 'safe-event-emitter'
 
 /**
 

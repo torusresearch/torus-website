@@ -1,7 +1,7 @@
+import { ObservableStore } from '@metamask/obs-store'
 import { ethErrors } from 'eth-rpc-errors'
 import { bufferToHex, keccak256 } from 'ethereumjs-util'
 import EventEmitter from 'events'
-import ObservableStore from 'obs-store'
 
 /**
  * Represents, and contains data about, an 'eth_sign' type signature request. These are created when a signature for

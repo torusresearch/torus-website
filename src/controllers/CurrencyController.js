@@ -1,5 +1,5 @@
+import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
 
 import config from '../config'
 

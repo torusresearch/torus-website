@@ -1,7 +1,6 @@
-import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
-import scaffoldMiddleware from 'eth-json-rpc-middleware/scaffold'
+import { providerAsMiddleware } from 'eth-json-rpc-middleware'
 import GanacheCore from 'ganache-core'
-import { JsonRpcEngine } from 'json-rpc-engine'
+import { createScaffoldMiddleware, JsonRpcEngine } from 'json-rpc-engine'
 
 export function getTestSeed() {
   return 'people carpet cluster attract ankle motor ozone mass dove original primary mask'
@@ -36,7 +35,7 @@ export function providerFromEngine(engine) {
 export function createTestProviderTools(options = {}) {
   const engine = createEngineForTestData()
   // handle provided hooks
-  engine.push(scaffoldMiddleware(options.scaffold || {}))
+  engine.push(createScaffoldMiddleware(options.scaffold || {}))
   // handle block tracker methods
   engine.push(
     providerAsMiddleware(

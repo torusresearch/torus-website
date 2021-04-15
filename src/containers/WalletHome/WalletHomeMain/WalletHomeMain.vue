@@ -94,7 +94,7 @@
           </v-layout>
         </v-card>
       </v-flex>
-      <v-flex v-if="isFreshAccount" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
+      <v-flex v-if="isFreshAccount || events.length === 0" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
         <v-card class="card-shadow elevation-1" :style="{ height: $vuetify.breakpoint.xsOnly ? 'inherit' : '159px' }">
           <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
             <v-layout>
@@ -307,7 +307,7 @@ export default {
       Object.keys(this.billboard).forEach((key) => {
         const event = this.billboard[key]
         const finalEvent = event[lang] || event[LOCALE_EN]
-        events.push(finalEvent)
+        if (finalEvent) events.push(finalEvent)
       })
 
       return events

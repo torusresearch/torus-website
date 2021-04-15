@@ -2,7 +2,7 @@
 import assert from 'assert'
 import sinon from 'sinon'
 import TokenRatesController from '../../../src/controllers/TokenRatesController'
-import ObservableStore from 'obs-store'
+import { ObservableStore } from '@metamask/obs-store'
 
 describe('TokenRatesController', () => {
   it('should listen for preferences store updates', () => {

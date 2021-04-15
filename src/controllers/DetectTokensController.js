@@ -1,13 +1,13 @@
-import contracts from '@metamask/contract-metadata'
+import { ObservableStore } from '@metamask/obs-store'
 import BigNumber from 'bignumber.js'
 import isEqual from 'lodash.isequal'
 import log from 'loglevel'
-import ObservableStore from 'obs-store'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 import Web3 from 'web3'
 import { toChecksumAddress, toHex } from 'web3-utils'
 
 import TokenHandler from '../handlers/Token/TokenHandler'
+import contracts from '../utils/contractMetadata'
 import { MAINNET } from '../utils/enums'
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000

@@ -1,4 +1,4 @@
-import createWalletSubprovider from 'eth-json-rpc-middleware/wallet'
+import { createWalletMiddleware } from 'eth-json-rpc-middleware'
 import { createAsyncMiddleware, createScaffoldMiddleware, mergeMiddleware } from 'json-rpc-engine'
 
 import { formatTxMetaForRpcResult } from '../../utils/utils'
@@ -23,7 +23,7 @@ export default function createMetamaskMiddleware({
       eth_syncing: false,
       web3_clientVersion: `MetaMask/v${version}`,
     }),
-    createWalletSubprovider({
+    createWalletMiddleware({
       getAccounts,
       processTransaction,
       processEthSignMessage,
