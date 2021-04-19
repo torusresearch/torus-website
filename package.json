@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "1.10.2",
+  "version": "1.10.3",
   "private": true,
   "scripts": {
     "clean": "rimraf node_modules package-lock.json",
