@@ -49,7 +49,7 @@
           v-if="verifier.verifier === HOSTED_EMAIL_PASSWORDLESS_VERIFIER"
           ref="passwordlessEmailForm"
           v-model="passwordlessEmailFormValid"
-          @submit.prevent="confirmPasswordlessEmail"
+          @submit.prevent="triggerLogin(verifier.verifier, passwordlessEmail)"
         >
           <v-text-field
             v-model="passwordlessEmail"
@@ -212,11 +212,8 @@ export default {
     setActiveMobileBtn(verifier) {
       this.$emit('setActiveMobileBtn', verifier)
     },
-    triggerLogin(verifier) {
-      this.$emit('triggerLogin', verifier)
-    },
-    confirmPasswordlessEmail() {
-      this.$emit('confirmPasswordlessEmail', this.passwordlessEmail)
+    triggerLogin(verifier, email) {
+      this.$emit('triggerLogin', verifier, email)
     },
   },
 }

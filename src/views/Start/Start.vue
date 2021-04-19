@@ -30,7 +30,7 @@ export default {
   },
   async mounted() {
     try {
-      const { verifier, state } = this.$route.query
+      const { verifier, state, ...rest } = this.$route.query
       log.info(verifier, 'logging with')
       const openLogin = new OpenLogin({
         clientId: config.openLoginClientId,
@@ -48,6 +48,9 @@ export default {
         getWalletKey: true,
         relogin: true,
         appState: state,
+        extraLoginOptions: {
+          ...rest,
+        },
       })
     } catch (error) {
       log.info(error, 'something went wrong')

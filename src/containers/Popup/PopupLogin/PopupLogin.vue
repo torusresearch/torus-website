@@ -23,7 +23,6 @@
               @setActiveBtn="(verifier) => (activeButton = verifier)"
               @setActiveMobileBtn="(verifier) => (activeMobileButton = verifier)"
               @triggerLogin="startLogin"
-              @confirmPasswordlessEmail="confirmPasswordlessEmail"
             />
           </div>
           <div
@@ -143,10 +142,10 @@ export default {
     },
   },
   methods: {
-    async startLogin(verifier) {
+    async startLogin(verifier, email) {
       try {
         this.showModal = false
-        await this.triggerLogin({ verifier, calledFromEmbed: true })
+        await this.triggerLogin({ verifier, calledFromEmbed: true, login_hint: email })
       } catch (error) {
         log.error(error)
         this.closeDialog()
@@ -160,9 +159,6 @@ export default {
     ...mapActions({
       triggerLogin: 'triggerLogin',
     }),
-    confirmPasswordlessEmail(passwordlessEmail) {
-      log.info('🚀 ~ file: Login.vue ~ line 321 ~ confirmPasswordlessEmail ~ passwordlessEmail', passwordlessEmail)
-    },
   },
 }
 </script>

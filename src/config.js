@@ -82,6 +82,7 @@ const {
   VUE_APP_ETH_TRANSFER_ONLY,
   VUE_APP_OPENLOGIN_URL,
   VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
+  VUE_APP_PASSWORDLESS_DOMAIN,
 } = process.env
 
 log.info('baseurl', VUE_APP_BASE_ROUTE, 'is tkey', VUE_APP_TKEY_ONLY)
@@ -415,7 +416,7 @@ export default {
         showOnDesktop: true,
         showOnMobile: true,
         jwtParameters: {
-          domain: LOGIN_DOMAIN,
+          domain: VUE_APP_PASSWORDLESS_DOMAIN,
           verifierIdField: 'name',
           connection: '',
           isVerifierIdCaseSensitive: false,

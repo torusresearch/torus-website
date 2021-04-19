@@ -77,6 +77,7 @@ export default {
         data: { type: POPUP_RESULT, userInfo, keys },
       })
       bc.close()
+      log.info(bc)
       log.info('posted info')
     } catch (error) {
       log.info(error, 'something went wrong')

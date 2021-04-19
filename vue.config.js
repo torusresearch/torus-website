@@ -9,12 +9,9 @@ process.env.VUE_APP_TORUS_BUILD_VERSION = version
 
 module.exports = {
   devServer: {
-    https: false,
-    host: 'localhost',
     port: 4050, // CHANGE YOUR PORT HERE!
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'max-age=3600',
     },
     historyApiFallback: {
       rewrites: [

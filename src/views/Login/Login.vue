@@ -19,7 +19,6 @@
                     :login-buttons-array="loginButtonsArray"
                     @setActiveMobileBtn="(verifier) => (activeMobileButton = verifier)"
                     @triggerLogin="startLogin"
-                    @confirmPasswordlessEmail="confirmPasswordlessEmail"
                   />
                   <LoginFooter :authenticators="thirdPartyAuthenticators" />
                 </v-layout>
@@ -52,7 +51,6 @@
                     :active-button="activeButton"
                     @setActiveBtn="(verifier) => (activeButton = verifier)"
                     @triggerLogin="startLogin"
-                    @confirmPasswordlessEmail="confirmPasswordlessEmail"
                   />
                 </v-flex>
                 <LoginFooter :authenticators="thirdPartyAuthenticators" />
@@ -267,10 +265,11 @@ export default {
       handleLogin: 'handleLogin',
     }),
     ...mapMutations(['setUserInfo']),
-    async startLogin(verifier) {
+    async startLogin(verifier, email) {
       try {
+        log.info('starting login with', { verifier, email })
         this.loginInProgress = true
-        await this.triggerLogin({ verifier, calledFromEmbed: false })
+        await this.triggerLogin({ verifier, calledFromEmbed: false, login_hint: email })
       } catch (error) {
         log.error(error)
         this.snackbar = true
@@ -288,9 +287,6 @@ export default {
       window.addEventListener('scroll', () => {
         this.scrollOnTop = window.pageYOffset < 40
       })
-    },
-    confirmPasswordlessEmail(passwordlessEmail) {
-      log.info('🚀 ~ file: Login.vue ~ line 321 ~ confirmPasswordlessEmail ~ passwordlessEmail', passwordlessEmail)
     },
   },
 }
