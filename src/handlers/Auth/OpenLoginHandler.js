@@ -30,8 +30,7 @@ class OpenLoginHandler {
   }
 
   setFinalUrl() {
-    const finalUrl = new URL(config.baseRoute)
-    finalUrl.pathname = '/start'
+    const finalUrl = new URL(`${config.baseRoute}start`)
     finalUrl.searchParams.append('verifier', this.verifier)
     finalUrl.searchParams.append('state', this.state)
     Object.keys(this.jwtParameters).forEach((x) => {
