@@ -32,7 +32,7 @@ export default {
       const openLogin = new OpenLogin({
         clientId: config.openLoginClientId,
         iframeUrl: config.openLoginUrl,
-        redirectUrl: `${config.baseUrl}/end`,
+        redirectUrl: `${config.baseRoute}end`,
         replaceUrlOnRedirect: true,
         uxMode: 'redirect',
         originData: {
