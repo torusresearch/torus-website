@@ -243,7 +243,7 @@ class ThresholdKeyController extends EventEmitter {
       const { tKey } = this.state
       log.info(encPubKeyX, 'approving')
       await tKey.modules[SHARE_TRANSFER_MODULE_KEY].approveRequest(encPubKeyX)
-      await tKey.syncShareMetadata()
+      // await tKey.syncShareMetadata()
     } catch (error) {
       log.error(error)
     } finally {
@@ -351,6 +351,15 @@ class ThresholdKeyController extends EventEmitter {
 
   async _rehydrate(postboxKey, tKeyJson) {
     await this._init({ postboxKey, tKeyJson })
+    try {
+      const localTKey = this.state.tKey
+      // In rehydration we always have privKey
+      if (localTKey.privKey) {
+        await localTKey.reconstructKey()
+      }
+    } catch (error) {
+      log.warn(error, 'maybe reconstruct only in certain times')
+    }
     await this.setSettingsPageData()
   }
 
