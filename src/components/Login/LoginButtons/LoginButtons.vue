@@ -1,12 +1,12 @@
 <template>
   <v-flex xs10 sm12 ml-auto mr-auto>
-    <div
+    <!-- <div
       v-if="(mainButtonsLong.length > 0 || mainButtons.length > 0) && !$vuetify.breakpoint.xsOnly && !isPopup"
       class="headline font-weight-regular mb-2"
       :class="$vuetify.theme.dark ? '' : 'text_2--text'"
     >
       {{ t('login.signUpIn') }}
-    </div>
+    </div> -->
     <div :style="{ maxWidth: '372px' }">
       <LoginButton
         v-for="verifier in mainButtonsLong"
