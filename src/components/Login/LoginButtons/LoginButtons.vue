@@ -63,6 +63,7 @@
             :active="verifier.verifier === activeButton"
             :block="true"
             :is-long="true"
+            :disabled="!passwordlessEmailFormValid"
             button-type="submit"
             @mouseover="loginBtnHover(verifier.verifier)"
           />
