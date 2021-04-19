@@ -44,7 +44,6 @@ const initialState = {
   unapprovedDecryptMsgs: {},
   // preferences
   tKeyOnboardingComplete: true,
-  tKeyExists: false,
   defaultPublicAddress: '',
   selectedAddress: '',
   supportedNetworks: { ...SUPPORTED_NETWORK_TYPES },

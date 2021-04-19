@@ -35,15 +35,6 @@
               <ContactList />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel v-show="isThreshold" class="my-2">
-            <v-expansion-panel-header id="contact-list-panel-header">
-              <v-icon size="16" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.wallet'" />
-              <div class="grow font-weight-bold title text_1--text">{{ t('tkeySettings.twoFaSettings') }}</div>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <TwoFactorAuth />
-            </v-expansion-panel-content>
-          </v-expansion-panel>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="privacy-panel-header">
               <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.device_detailed'" />
@@ -87,10 +78,10 @@
               <div class="grow font-weight-bold title text_1--text">{{ t('tkeySettings.accountManagement') }}</div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <DefaultAccount :has-threshold="hasThreshold" :has-threshold-logged="hasThresholdLogged" />
+              <DefaultAccount :has-threshold-logged="hasThresholdLogged" />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel readonly class="my-2">
+          <v-expansion-panel v-show="canShowSetCustomKey" readonly class="my-2">
             <v-expansion-panel-header id="display-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.person_circle'" />
               <div class="grow font-weight-bold title text_1--text">{{ 'Set Torus Key' }}</div>
@@ -105,6 +96,7 @@
   </v-container>
 </template>
 <script>
+import log from 'loglevel'
 import { mapState } from 'vuex'
 
 import QuickAddress from '../../components/helpers/QuickAddress'
@@ -115,7 +107,6 @@ import Display from '../../components/WalletSettings/Display'
 import Network from '../../components/WalletSettings/Network'
 import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
 import SetTorusKey from '../../components/WalletSettings/SetTorusKey'
-import TwoFactorAuth from '../../components/WalletSettings/TwoFactorAuth'
 import { ACCOUNT_TYPE } from '../../utils/enums'
 
 export default {
@@ -127,7 +118,6 @@ export default {
     CrashReport,
     QuickAddress,
     Display,
-    TwoFactorAuth,
     DefaultAccount,
     SetTorusKey,
   },
@@ -138,16 +128,18 @@ export default {
     }
   },
   computed: {
-    ...mapState(['wallet', 'selectedAddress', 'tKeyExists']),
+    ...mapState(['wallet', 'selectedAddress']),
     isThreshold() {
       const accountType = this.wallet[this.selectedAddress]?.accountType
       return accountType === ACCOUNT_TYPE.THRESHOLD || accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE
     },
-    hasThreshold() {
-      return this.tKeyExists
+    canShowSetCustomKey() {
+      const normalAccount = Object.values(this.wallet).find((x) => x.accountType === ACCOUNT_TYPE.NORMAL) || {}
+      log.info(normalAccount.metadataNonceHex)
+      return !!normalAccount.metadataNonceHex
     },
     hasThresholdLogged() {
-      return Object.values(this.wallet).some((x) => x.accountType === ACCOUNT_TYPE.THRESHOLD || x.accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
+      return Object.values(this.wallet).some((x) => x.accountType === ACCOUNT_TYPE.THRESHOLD)
     },
   },
   mounted() {

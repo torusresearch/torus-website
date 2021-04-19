@@ -3,7 +3,7 @@
     <template v-if="type === TX_TRANSACTION">
       <v-layout pa-6 class="elevation-1">
         <v-flex text-center xs12>
-          <img class="home-link mr-1" alt="Torus Logo" width="70" :height="getLogo.isExternal ? 'inherit' : '17'" :src="getLogo.logo" />
+          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
           <div class="display-1 text_2--text">{{ t('dappTransfer.confirmation') }}</div>
         </v-flex>
       </v-layout>
@@ -173,7 +173,7 @@
     >
       <v-layout py-6 class="elevation-1">
         <v-flex xs12 text-center>
-          <img class="home-link mr-1" alt="Torus Logo" width="70" :height="getLogo.isExternal ? 'inherit' : '17'" :src="getLogo.logo" />
+          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
           <div class="display-1 text_2--text">
             {{
               type === TX_GET_ENCRYPTION_KEY

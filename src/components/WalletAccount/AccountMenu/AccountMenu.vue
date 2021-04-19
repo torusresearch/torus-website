@@ -80,15 +80,6 @@
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
         <AccountImport @onClose="accountImportDialog = false" />
       </v-dialog>
-      <v-list-item v-if="seedPhraseWallets.length > 0" @click="seedPhraseDialog = true">
-        <v-list-item-action class="mr-2 justify-center">
-          <v-icon size="20" class="text_2--text" v-text="'$vuetify.icons.add_circle'" />
-        </v-list-item-action>
-        <v-list-item-content class="caption font-weight-bold text_1--text">{{ t('tkeySettings.tkeySeedPhrase.addAccount') }}</v-list-item-content>
-      </v-list-item>
-      <v-dialog v-model="seedPhraseDialog" max-width="450" :fullscreen="$vuetify.breakpoint.xsOnly">
-        <AddSeedPhraseAccount @onClose="seedPhraseDialog = false" />
-      </v-dialog>
     </v-list>
 
     <v-divider></v-divider>
@@ -138,7 +129,6 @@ import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
-import AddSeedPhraseAccount from '../AddSeedPhraseAccount'
 
 export default {
   components: {
@@ -146,7 +136,6 @@ export default {
     ExportQrCode,
     AccountImport,
     LanguageSelector,
-    AddSeedPhraseAccount,
   },
   props: {
     headerItems: {
@@ -169,8 +158,6 @@ export default {
       ACCOUNT_TYPE,
       camera: 'off',
       hasStreamApiSupport: true,
-      addingSeedPhraseAccount: false,
-      seedPhraseDialog: false,
     }
   },
   computed: {
@@ -216,12 +203,9 @@ export default {
       }
       return []
     },
-    seedPhraseWallets() {
-      return this.wallets.filter((wallet) => wallet.accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
-    },
   },
   methods: {
-    ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect', 'addSeedPhraseAccount']),
+    ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
     etherscanAddressLink(address) {
       return getEtherScanAddressLink(address, this.networkType.host)
     },
@@ -253,19 +237,13 @@ export default {
     },
     userEmail(account) {
       if (account.accountType === ACCOUNT_TYPE.THRESHOLD) {
-        return this.t('tkeySettings.twoFaWallet')
+        return `OpenLogin ${this.t('accountMenu.wallet')}`
       }
       if (account.accountType === ACCOUNT_TYPE.IMPORTED) {
         const index = Object.keys(this.wallet)
           .filter((x) => this.wallet[x].accountType === ACCOUNT_TYPE.IMPORTED)
           .indexOf(account.address)
         return `${this.t('accountMenu.importedAccount')} ${index + 1}`
-      }
-      if (account.accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
-        const index = Object.keys(this.wallet)
-          .filter((x) => this.wallet[x].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
-          .indexOf(account.address)
-        return `${this.t('tkeySettings.tkeySeedPhrase.seedPhraseAccount')} ${index + 1}`
       }
       return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
     },

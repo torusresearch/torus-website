@@ -1,0 +1,12 @@
+.footer-notes {
+  font-size: 11px;
+  margin-top: 16px;
+  .privacy-learn-more {
+    font-weight: bold;
+  }
+
+  &.not-sm {
+    margin-top: 20px;
+    font-size: 12px;
+  }
+}

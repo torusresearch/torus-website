@@ -1,9 +1,3 @@
-import { SECURITY_QUESTIONS_MODULE_NAME } from '@tkey/security-questions'
-import { SEED_PHRASE_MODULE_NAME } from '@tkey/seed-phrase'
-import { SHARE_SERIALIZATION_MODULE_NAME } from '@tkey/share-serialization'
-import { SHARE_TRANSFER_MODULE_NAME } from '@tkey/share-transfer'
-import { WEB_STORAGE_MODULE_NAME } from '@tkey/web-storage'
-
 export const ETH = 'eth'
 
 export const PLATFORM_BRAVE = 'Brave'
@@ -244,6 +238,21 @@ export const LINE_LINKED_VERIFIER = process.env.VUE_APP_LINE_LINKED_VERIFIER
 export const APPLE_LINKED_VERIFIER = process.env.VUE_APP_APPLE_LINKED_VERIFIER
 export const HOSTED_EMAIL_PASSWORDLESS_LINKED_VERIFIER = process.env.VUE_APP_HOSTED_EMAIL_PASSWORDLESS_LINKED_VERIFIER
 
+export const GOOGLE_LOGIN_PROVIDER = 'google'
+export const FACEBOOK_LOGIN_PROVIDER = 'facebook'
+export const REDDIT_LOGIN_PROVIDER = 'reddit'
+export const DISCORD_LOGIN_PROVIDER = 'discord'
+export const TWITCH_LOGIN_PROVIDER = 'twitch'
+export const APPLE_LOGIN_PROVIDER = 'apple'
+export const LINE_LOGIN_PROVIDER = 'line'
+export const GITHUB_LOGIN_PROVIDER = 'github'
+export const KAKAO_LOGIN_PROVIDER = 'kakao'
+export const LINKEDIN_LOGIN_PROVIDER = 'linkedin'
+export const TWITTER_LOGIN_PROVIDER = 'twitter'
+export const WEIBO_LOGIN_PROVIDER = 'weibo'
+export const WECHAT_LOGIN_PROVIDER = 'wechat'
+export const EMAIL_PASSWORDLESS_LOGIN_PROVIDER = 'email_passwordless'
+
 export const LINKED_VERIFIER_SUBIDENTIFIER = process.env.VUE_APP_LINKED_VERIFIER_SUBIDENTIFIER
 
 export const ENS = 'ENS'
@@ -267,25 +276,6 @@ export const ACCOUNT_TYPE = {
   NORMAL: 'normal',
   THRESHOLD: 'threshold',
   IMPORTED: 'imported',
-  TKEY_SEED_PHRASE: 'tkey_seed_phrase',
-}
-
-export const REQUEST_TKEY_SEED_PHRASE_INPUT = 'requestTkeySeedPhraseInput'
-export const REQUREST_TKEY_INPUT = 'requestTkeyInput'
-
-export const WEB_STORAGE_MODULE_KEY = WEB_STORAGE_MODULE_NAME
-export const SECURITY_QUESTIONS_MODULE_KEY = SECURITY_QUESTIONS_MODULE_NAME
-export const SHARE_SERIALIZATION_MODULE_KEY = SHARE_SERIALIZATION_MODULE_NAME
-export const CHROME_EXTENSION_STORAGE_MODULE_KEY = 'chromeExtensionStorage'
-export const SHARE_TRANSFER_MODULE_KEY = SHARE_TRANSFER_MODULE_NAME
-export const SEED_PHRASE_MODULE_KEY = SEED_PHRASE_MODULE_NAME
-export const PASSWORD_QUESTION = 'what is your password?'
-export const THRESHOLD_KEY_PRIORITY_ORDER = [WEB_STORAGE_MODULE_KEY, SECURITY_QUESTIONS_MODULE_KEY, CHROME_EXTENSION_STORAGE_MODULE_KEY]
-export const TKEY_SHARE_TRANSFER_INTERVAL = 5000
-
-export const STORAGE_MAP = {
-  [WEB_STORAGE_MODULE_KEY]: 'Web Storage',
-  [CHROME_EXTENSION_STORAGE_MODULE_KEY]: 'Chrome Extension',
 }
 
 export const OLD_ERC721_LIST = {
