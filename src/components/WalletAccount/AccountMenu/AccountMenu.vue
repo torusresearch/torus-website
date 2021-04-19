@@ -237,7 +237,7 @@ export default {
     },
     userEmail(account) {
       if (account.accountType === ACCOUNT_TYPE.THRESHOLD) {
-        return this.t('tkeySettings.twoFaWallet')
+        return `OpenLogin ${this.t('accountMenu.wallet')}`
       }
       if (account.accountType === ACCOUNT_TYPE.IMPORTED) {
         const index = Object.keys(this.wallet)

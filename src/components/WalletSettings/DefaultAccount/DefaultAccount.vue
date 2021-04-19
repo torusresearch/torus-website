@@ -142,7 +142,7 @@ export default {
       this.setIsTkeySeedPhraseInputRequired(true)
     },
     accountTitle(accountType, address) {
-      if (accountType === ACCOUNT_TYPE.THRESHOLD) return 'tKey'
+      if (accountType === ACCOUNT_TYPE.THRESHOLD) return `OpenLogin ${this.t('tkeySettings.account')}`
       if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
         const index = Object.keys(this.wallets)
           .filter((x) => this.wallets[x].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
