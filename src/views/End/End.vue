@@ -78,7 +78,7 @@ export default {
       })
       bc.close()
       log.info(bc)
-      log.info('posted info')
+      log.info('posted info', POPUP_RESULT)
     } catch (error) {
       log.info(error, 'something went wrong')
     }
