@@ -499,6 +499,8 @@
         document.querySelector('#app').style.height = '100%'
         document.querySelector('#app').style.backgroundColor = '#FCFCFC'
         selectedLoader = 'skeleton-redirect'
+      } else if (/\/end/i.test(redirectPath) || /\/start/i.test(redirectPath)) {
+        selectedLoader = ''
       }
 
       const loaderElement = document.querySelector('#' + selectedLoader)
