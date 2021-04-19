@@ -1,0 +1,48 @@
+::v-deep .v-carousel__controls {
+  background: none;
+  bottom: -15px;
+  .v-btn.v-btn--icon {
+    width: 14px;
+    height: 14px;
+    background-color: var(--v-torusGray1-base);
+    &.v-btn--active {
+      background-color: var(--v-torusGray3-base);
+    }
+  }
+}
+
+.slide-image {
+  width: 85%;
+  height: auto;
+  max-width: 550px;
+}
+
+.caption {
+  width: 80%;
+  margin: auto;
+}
+
+.learn-more-btn {
+  height: inherit;
+  padding: 16px 40px;
+  margin-top: 32px;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 16px;
+  color: #5c6c7f;
+  background: #ffffff !important;
+  box-sizing: border-box;
+  box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
+  border-radius: 9px;
+  border: thin solid #f1f2f6;
+  &.isDark {
+    color: #d3d3d4;
+    border: thin solid #d3d3d4;
+    background: none !important;
+    box-sizing: border-box;
+    box-shadow: 0px 9.40298px 18.806px rgba(46, 91, 255, 0.06);
+  }
+  &.isMobile {
+    padding: 12px 25px;
+  }
+}

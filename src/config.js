@@ -82,6 +82,7 @@ const {
   VUE_APP_ETH_TRANSFER_ONLY,
   VUE_APP_OPENLOGIN_URL,
   VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
+  VUE_APP_PASSWORDLESS_DOMAIN,
 } = process.env
 
 log.info('baseurl', VUE_APP_BASE_ROUTE, 'is tkey', VUE_APP_TKEY_ONLY)
@@ -167,7 +168,6 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: GOOGLE_LOGIN_PROVIDER,
       },
     }),
@@ -187,7 +187,6 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: FACEBOOK_LOGIN_PROVIDER,
       },
     }),
@@ -212,7 +211,6 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: TWITTER_LOGIN_PROVIDER,
       },
     }),
@@ -232,7 +230,6 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: DISCORD_LOGIN_PROVIDER,
       },
     }),
@@ -255,7 +252,6 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: LINE_LOGIN_PROVIDER,
       },
     }),
@@ -274,7 +270,6 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: REDDIT_LOGIN_PROVIDER,
       },
     }),
@@ -297,7 +292,6 @@ export default {
         },
         // For torus only
         hasLightLogo: true,
-        torusDescription: '',
         loginProvider: APPLE_LOGIN_PROVIDER,
       },
     }),
@@ -321,7 +315,6 @@ export default {
         },
         // For torus only
         hasLightLogo: true,
-        torusDescription: '',
         loginProvider: GITHUB_LOGIN_PROVIDER,
       },
     }),
@@ -340,7 +333,6 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: TWITCH_LOGIN_PROVIDER,
       },
     }),
@@ -363,7 +355,6 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: LINKEDIN_LOGIN_PROVIDER,
       },
     }),
@@ -386,7 +377,6 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: WECHAT_LOGIN_PROVIDER,
       },
     }),
@@ -409,7 +399,6 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
         loginProvider: KAKAO_LOGIN_PROVIDER,
       },
     }),
@@ -427,14 +416,13 @@ export default {
         showOnDesktop: true,
         showOnMobile: true,
         jwtParameters: {
-          domain: LOGIN_DOMAIN,
+          domain: VUE_APP_PASSWORDLESS_DOMAIN,
           verifierIdField: 'name',
           connection: '',
           isVerifierIdCaseSensitive: false,
         },
         // For torus only
         hasLightLogo: true,
-        torusDescription: 'login.signUpEmail',
         loginProvider: EMAIL_PASSWORDLESS_LOGIN_PROVIDER,
       },
     }),
@@ -455,7 +443,6 @@ export default {
     //     },
     //     // For torus only
     //     hasLightLogo: false,
-    //     torusDescription: '',
     //   },
     // }),
   },

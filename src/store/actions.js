@@ -10,7 +10,7 @@ import config from '../config'
 import { HandlerFactory as createHandler } from '../handlers/Auth'
 import PopupHandler from '../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
-import vuetify from '../plugins/vuetify'
+// import vuetify from '../plugins/vuetify'
 import router from '../router'
 import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
@@ -108,6 +108,7 @@ function resetStore(store, handler, initState) {
 
 export default {
   async logOut({ commit, state }, _) {
+    const { selectedAddress } = state
     commit('logOut', { ...initialState, networkType: state.networkType, networkId: state.networkId })
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
@@ -133,23 +134,25 @@ export default {
     assetDetectionController.stopAssetDetection()
     torus.updateStaticData({ isUnlocked: false })
     if (isMain) router.push({ path: '/logout' }).catch(() => {})
-    try {
-      const openLogin = new OpenLogin({
-        clientId: config.openLoginClientId,
-        iframeUrl: config.openLoginUrl,
-        redirectUrl: `${window.location.origin}/end`,
-        replaceUrlOnRedirect: true,
-        uxMode: 'redirect',
-        originData: {
-          [window.location.origin]: config.openLoginOriginSig,
-        },
-      })
-      await openLogin.init()
-      await openLogin.logout({ clientId: config.openLoginClientId })
-    } catch {
-      log.warn('unable to logout with openlogin')
-      // eslint-disable-next-line require-atomic-updates
-      if (isMain) window.location.href = '/'
+    if (selectedAddress) {
+      try {
+        const openLogin = new OpenLogin({
+          clientId: config.openLoginClientId,
+          iframeUrl: config.openLoginUrl,
+          redirectUrl: `${window.location.origin}/end`,
+          replaceUrlOnRedirect: true,
+          uxMode: 'redirect',
+          originData: {
+            [window.location.origin]: config.openLoginOriginSig,
+          },
+        })
+        await openLogin.init()
+        await openLogin.logout({ clientId: config.openLoginClientId })
+      } catch (error) {
+        log.warn(error, 'unable to logout with openlogin')
+        // eslint-disable-next-line require-atomic-updates
+        if (isMain) window.location.href = '/'
+      }
     }
   },
   setSelectedCurrency({ commit }, payload) {
@@ -344,13 +347,14 @@ export default {
     else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
     return undefined
   },
-  async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId }) {
+  async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint }) {
     try {
       // This is to maintain backward compatibility
       const currentVeriferConfig = state.embedState.loginConfig[verifier]
-      const locale = vuetify.framework.lang.current
+      // const locale = vuetify.framework.lang.current
       if (!currentVeriferConfig) throw new Error('Invalid verifier')
       const { typeOfLogin, clientId, jwtParameters } = currentVeriferConfig
+      log.info('starting login', { calledFromEmbed, verifier, preopenInstanceId, login_hint })
       const loginHandler = createHandler({
         typeOfLogin,
         clientId,
@@ -359,15 +363,16 @@ export default {
         preopenInstanceId,
         jwtParameters: deepmerge(
           {
-            ui_locales: locale,
-            languageDictionary: JSON.stringify({
-              title: vuetify.framework.lang.t('$vuetify.walletHome.auth0Title') || '',
-              error: {
-                passwordless: {
-                  invalid_user_password: vuetify.framework.lang.t('$vuetify.login.invalid_user_password') || '',
-                },
-              },
-            }),
+            login_hint,
+            // ui_locales: locale,
+            // languageDictionary: JSON.stringify({
+            //   title: vuetify.framework.lang.t('$vuetify.walletHome.auth0Title') || '',
+            //   error: {
+            //     passwordless: {
+            //       invalid_user_password: vuetify.framework.lang.t('$vuetify.login.invalid_user_password') || '',
+            //     },
+            //   },
+            // }),
           },
           jwtParameters || {}
         ),
