@@ -145,7 +145,7 @@ export default {
       }
     } else {
       try {
-        const finalUrl = new URL(`${config.baseUrl}/wallet/topup`)
+        const finalUrl = new URL(`${config.baseRoute}wallet/topup`)
         const channelId = randomId()
         finalUrl.searchParams.append('instanceId', channelId)
         if (params)

@@ -30,7 +30,7 @@ class OpenLoginHandler {
   }
 
   setFinalUrl() {
-    const finalUrl = new URL(config.baseUrl)
+    const finalUrl = new URL(config.baseRoute)
     finalUrl.pathname = '/start'
     finalUrl.searchParams.append('verifier', this.verifier)
     finalUrl.searchParams.append('state', this.state)
