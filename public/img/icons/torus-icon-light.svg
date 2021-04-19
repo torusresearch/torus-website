@@ -1,14 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="42px" height="43px" viewBox="0 0 42 43" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
-    <title>T</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="More-Icons" class="fill-me" transform="translate(-181.000000, -39.000000)" fill="#FFFFFF">
-            <g id="T" transform="translate(182.000000, 40.000000)">
-                <polygon id="Stroke-1" points="23.2546191 0.0152085396 23.2546191 0 0 0 0 12.361033 10.6314341 12.361033 10.6314341 41 23.255814 41 23.255814 0.0152085396"></polygon>
-                <path d="M33.4883721,0 C37.0846198,0 40,2.85545292 40,6.37777778 C40,9.90010264 37.0846198,12.7555556 33.4883721,12.7555556 C29.8921244,12.7555556 26.9767442,9.90010264 26.9767442,6.37777778 C26.9767442,2.85545292 29.8921244,0 33.4883721,0 Z" id="Stroke-3"></path>
-            </g>
-        </g>
-    </g>
+<svg width="203" height="219" viewBox="0 0 203 219" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M20.4865 0C9.1721 0 0 9.17208 0 20.4864V44.3516C0 55.6659 9.17209 64.838 20.4864 64.838H56.7325V198.342C56.7325 209.656 65.9046 218.828 77.219 218.828H101.084C112.398 218.828 121.571 209.656 121.571 198.342V44.525C121.571 44.4673 121.571 44.4095 121.571 44.3516V20.4865C121.571 9.1721 112.399 0 101.085 0H77.219H20.4865Z" fill="white"/>
+<path d="M170.209 64.838C188.114 64.838 202.628 50.3235 202.628 32.419C202.628 14.5145 188.114 0 170.209 0C152.305 0 137.79 14.5145 137.79 32.419C137.79 50.3235 152.305 64.838 170.209 64.838Z" fill="white"/>
 </svg>

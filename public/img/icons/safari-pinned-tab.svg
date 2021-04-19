@@ -1,1 +1,11 @@
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12.25 13.15"><defs><style>.cls-1{fill:#231f20;}</style></defs><title>safari-pinned-tab</title><rect class="cls-1" width="7.3" height="3.96"/><rect class="cls-1" x="3.34" width="3.96" height="13.14"/><circle class="cls-1" cx="10.27" cy="1.98" r="1.98"/></svg>
+<svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0)">
+<path d="M0 1.23852C0 0.554503 0.554504 0 1.23852 0H6.11114C6.79515 0 7.34966 0.554504 7.34966 1.23852V2.6813L7.34961 2.69179V11.9909C7.34961 12.6749 6.79511 13.2294 6.11109 13.2294H4.66832C3.9843 13.2294 3.4298 12.6749 3.4298 11.9909V3.91982H1.23852C0.554504 3.91982 0 3.36531 0 2.6813V1.23852Z" fill="#231F20"/>
+<path d="M12.25 1.95991C12.25 3.04234 11.3725 3.91982 10.2901 3.91982C9.20768 3.91982 8.3302 3.04234 8.3302 1.95991C8.3302 0.877481 9.20768 0 10.2901 0C11.3725 0 12.25 0.877481 12.25 1.95991Z" fill="#231F20"/>
+</g>
+<defs>
+<clipPath id="clip0">
+<rect width="12.25" height="13.15" fill="white"/>
+</clipPath>
+</defs>
+</svg>
