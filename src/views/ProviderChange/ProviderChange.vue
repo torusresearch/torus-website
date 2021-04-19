@@ -1,13 +1,12 @@
 <template>
   <v-container px-0 py-0>
-    <DappCreateTkey v-if="!tKeyExists" />
     <template v-if="type === 'none'">
       <ChangeProviderScreenLoader />
     </template>
     <template v-else>
       <v-layout py-6 class="elevation-1">
         <v-flex xs12 text-center>
-          <img class="home-link mr-1" alt="Torus Logo" width="70" :height="getLogo.isExternal ? 'inherit' : '17'" :src="getLogo.logo" />
+          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
           <div class="display-1 text_2--text">{{ t('dappInfo.permission') }}</div>
         </v-flex>
       </v-layout>
@@ -80,7 +79,6 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { mapGetters } from 'vuex'
 
-import DappCreateTkey from '../../components/helpers/DappCreateTkey'
 import { ChangeProviderScreenLoader } from '../../content-loader'
 import { POPUP_LOADED, POPUP_RESULT, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
@@ -89,7 +87,6 @@ export default {
   name: 'Confirm',
   components: {
     ChangeProviderScreenLoader,
-    DappCreateTkey,
   },
   data() {
     return {
@@ -98,7 +95,6 @@ export default {
       network: {},
       currentNetwork: {},
       channel: '',
-      tKeyExists: true,
     }
   },
   computed: {
@@ -123,13 +119,11 @@ export default {
         origin,
         currentNetwork,
         whiteLabel,
-        tKeyExists,
       } = ev.data || {}
       this.origin = origin // origin of tx: website url
       this.network = network
       this.type = type
       this.currentNetwork = currentNetwork
-      this.tKeyExists = tKeyExists
 
       this.$store.commit('setWhiteLabel', whiteLabel)
 

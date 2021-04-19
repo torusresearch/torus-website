@@ -3,19 +3,25 @@ import log from 'loglevel'
 import {
   APPLE,
   APPLE_LINKED_VERIFIER,
+  APPLE_LOGIN_PROVIDER,
   APPLE_VERIFIER,
   DISCORD,
   DISCORD_LINKED_VERIFIER,
+  DISCORD_LOGIN_PROVIDER,
   DISCORD_VERIFIER,
+  EMAIL_PASSWORDLESS_LOGIN_PROVIDER,
   // EMAIL_PASSWORD,
   FACEBOOK,
   FACEBOOK_LINKED_VERIFIER,
+  FACEBOOK_LOGIN_PROVIDER,
   FACEBOOK_VERIFIER,
   GITHUB,
   GITHUB_LINKED_VERIFIER,
+  GITHUB_LOGIN_PROVIDER,
   GITHUB_VERIFIER,
   GOOGLE,
   GOOGLE_LINKED_VERIFIER,
+  GOOGLE_LOGIN_PROVIDER,
   GOOGLE_VERIFIER,
   HOSTED_EMAIL_PASSWORDLESS_LINKED_VERIFIER,
   HOSTED_EMAIL_PASSWORDLESS_VERIFIER,
@@ -23,24 +29,31 @@ import {
   // JWT,
   KAKAO,
   KAKAO_LINKED_VERIFIER,
+  KAKAO_LOGIN_PROVIDER,
   KAKAO_VERIFIER,
   LINE,
   LINE_LINKED_VERIFIER,
+  LINE_LOGIN_PROVIDER,
   LINE_VERIFIER,
   LINKEDIN,
   LINKEDIN_LINKED_VERIFIER,
+  LINKEDIN_LOGIN_PROVIDER,
   LINKEDIN_VERIFIER,
   REDDIT,
   REDDIT_LINKED_VERIFIER,
+  REDDIT_LOGIN_PROVIDER,
   REDDIT_VERIFIER,
   TWITCH,
   TWITCH_LINKED_VERIFIER,
+  TWITCH_LOGIN_PROVIDER,
   TWITCH_VERIFIER,
   TWITTER,
   TWITTER_LINKED_VERIFIER,
+  TWITTER_LOGIN_PROVIDER,
   TWITTER_VERIFIER,
   WECHAT,
   WECHAT_LINKED_VERIFIER,
+  WECHAT_LOGIN_PROVIDER,
   WECHAT_VERIFIER,
   // WEIBO,
   // WEIBO_VERIFIER,
@@ -64,18 +77,17 @@ const {
   VUE_APP_WECHAT_CLIENT_ID,
   VUE_APP_KAKAO_CLIENT_ID,
   VUE_APP_TKEY_ONLY,
-  VUE_APP_SEED_PHRASE_KEYS_ONLY,
-  VUE_APP_REQUIRE_SEED_PHRASE,
   VUE_APP_HIDE_TOPUP,
-  VUE_APP_TKEY_SECURITY_QUESTIONS_MANDATORY,
   VUE_APP_INFURA_KEY,
   VUE_APP_ETH_TRANSFER_ONLY,
-  VUE_APP_SHOW_SPRING_FESTIVAL,
+  VUE_APP_OPENLOGIN_URL,
+  VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
+  VUE_APP_PASSWORDLESS_DOMAIN,
 } = process.env
 
 log.info('baseurl', VUE_APP_BASE_ROUTE, 'is tkey', VUE_APP_TKEY_ONLY)
 
-const baseUrl = VUE_APP_BASE_ROUTE || 'https://localhost:3000'
+const baseUrl = VUE_APP_BASE_ROUTE || 'https://localhost:4050'
 
 const baseRoute = baseUrl + process.env.BASE_URL
 
@@ -95,16 +107,9 @@ export default {
   api: 'https://api.tor.us',
   // api: 'http://localhost:2020',
   infuraKey: VUE_APP_INFURA_KEY,
-
-  onlyTkey: VUE_APP_TKEY_ONLY === 'true',
-  // use this flag to force check a flag in frontend while creation of tkey
-  requireSeedPhraseWhileCreation: VUE_APP_REQUIRE_SEED_PHRASE === 'true',
-  // after login, only display seed phrase accounts
-  onlySeedPhraseAccounts: VUE_APP_SEED_PHRASE_KEYS_ONLY === 'true',
-  // use this flag to force password in frontend while creation of tkey
-  mandatorySecurityQuestionsWhileCreation: VUE_APP_TKEY_SECURITY_QUESTIONS_MANDATORY === 'true',
-  // show spring festival slide
-  showSpringFestival: VUE_APP_SHOW_SPRING_FESTIVAL === 'true',
+  openLoginClientId: 'BCY9aYsh8iGshQuzNjBbONYE-tKD0JM389l87IiMOVeOU1TBmRaZphKOyphkUpo41fuSMnO6QRlloxCV-3nt8dU',
+  openLoginUrl: VUE_APP_OPENLOGIN_URL,
+  openLoginOriginSig: VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
 
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
@@ -163,7 +168,7 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
+        loginProvider: GOOGLE_LOGIN_PROVIDER,
       },
     }),
     ...(FACEBOOK_VERIFIER && {
@@ -182,7 +187,7 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
+        loginProvider: FACEBOOK_LOGIN_PROVIDER,
       },
     }),
     ...(TWITTER_VERIFIER && {
@@ -206,7 +211,7 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
+        loginProvider: TWITTER_LOGIN_PROVIDER,
       },
     }),
     ...(DISCORD_VERIFIER && {
@@ -225,7 +230,7 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
+        loginProvider: DISCORD_LOGIN_PROVIDER,
       },
     }),
     ...(LINE_VERIFIER && {
@@ -247,7 +252,7 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
+        loginProvider: LINE_LOGIN_PROVIDER,
       },
     }),
     ...(REDDIT_VERIFIER && {
@@ -265,7 +270,7 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
+        loginProvider: REDDIT_LOGIN_PROVIDER,
       },
     }),
     ...(APPLE_VERIFIER && {
@@ -287,7 +292,7 @@ export default {
         },
         // For torus only
         hasLightLogo: true,
-        torusDescription: '',
+        loginProvider: APPLE_LOGIN_PROVIDER,
       },
     }),
     ...(GITHUB_VERIFIER && {
@@ -310,7 +315,7 @@ export default {
         },
         // For torus only
         hasLightLogo: true,
-        torusDescription: '',
+        loginProvider: GITHUB_LOGIN_PROVIDER,
       },
     }),
     ...(TWITCH_VERIFIER && {
@@ -328,7 +333,7 @@ export default {
         showOnMobile: true,
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
+        loginProvider: TWITCH_LOGIN_PROVIDER,
       },
     }),
     ...(LINKEDIN_VERIFIER && {
@@ -350,7 +355,7 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
+        loginProvider: LINKEDIN_LOGIN_PROVIDER,
       },
     }),
     ...(WECHAT_VERIFIER && {
@@ -372,7 +377,7 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
+        loginProvider: WECHAT_LOGIN_PROVIDER,
       },
     }),
     ...(KAKAO_VERIFIER && {
@@ -394,7 +399,7 @@ export default {
         },
         // For torus only
         hasLightLogo: false,
-        torusDescription: '',
+        loginProvider: KAKAO_LOGIN_PROVIDER,
       },
     }),
     ...(HOSTED_EMAIL_PASSWORDLESS_VERIFIER && {
@@ -411,14 +416,14 @@ export default {
         showOnDesktop: true,
         showOnMobile: true,
         jwtParameters: {
-          domain: LOGIN_DOMAIN,
+          domain: VUE_APP_PASSWORDLESS_DOMAIN,
           verifierIdField: 'name',
           connection: '',
           isVerifierIdCaseSensitive: false,
         },
         // For torus only
         hasLightLogo: true,
-        torusDescription: 'login.signUpEmail',
+        loginProvider: EMAIL_PASSWORDLESS_LOGIN_PROVIDER,
       },
     }),
     // ...(WEIBO_VERIFIER && {
@@ -438,7 +443,6 @@ export default {
     //     },
     //     // For torus only
     //     hasLightLogo: false,
-    //     torusDescription: '',
     //   },
     // }),
   },

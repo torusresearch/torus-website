@@ -1,0 +1,33 @@
+.v-btn.view-option-selector:not(.v-btn--text):not(.v-btn--icon):not(.v-btn--round) {
+  height: 25px;
+  border-radius: 12.5px;
+  padding: 3px 12px 3px 20px;
+  background: var(--v-torusGray4-base);
+  box-shadow: none;
+  color: var(--v-text_2-base);
+  &.has-more {
+    .v-icon {
+      transform: rotate(-180deg);
+    }
+  }
+  &.theme--dark {
+    background: var(--v-torusBlack2-base);
+    color: var(--v-text_2-base);
+  }
+}
+
+.v-input.passwordless-email {
+  ::v-deep .v-input__control {
+    .v-text-field__details {
+      display: none;
+    }
+  }
+  &.error--text {
+    ::v-deep .v-input__control {
+      .v-text-field__details {
+        display: block;
+        margin-bottom: 0;
+      }
+    }
+  }
+}

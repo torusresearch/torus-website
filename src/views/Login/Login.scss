@@ -1,5 +1,3 @@
-@import '../../scss/login-types.mixin';
-
 .login-panel-left.torus-dark {
   background: linear-gradient(
     43.08deg,
@@ -14,11 +12,6 @@
 .login-panel-right {
   background: linear-gradient(36.97deg, #f1f4fb 39.12%, rgba(241, 244, 251, 0) 83.1%);
 
-  .caption {
-    width: 80%;
-    margin: auto;
-  }
-
   &.torus-dark {
     background: linear-gradient(
       222.08deg,
@@ -32,140 +25,6 @@
   &.login-panel-right--mobile {
     background: none;
   }
-
-  &__image {
-    width: 85%;
-    height: auto;
-    max-width: 550px;
-  }
-
-  .right-panel-header {
-    font-size: 24px;
-    @media only screen and (min-width: 960px) {
-      font-size: 32px;
-    }
-  }
-  .right-panel-subheader {
-    width: 100%;
-    @media only screen and (min-width: 960px) {
-      width: 80%;
-    }
-    @media only screen and (min-width: 1400px) {
-      width: 60%;
-    }
-  }
-}
-
-.login-btn-google {
-  &.v-btn {
-    background: #ffffff !important;
-    border: 1px solid #f1f2f6 !important;
-    box-sizing: border-box;
-    box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06) !important;
-    border-radius: 9px;
-    height: 60px;
-    img {
-      height: 26px;
-    }
-  }
-  ::v-deep .v-btn__content {
-    justify-content: left;
-    font-weight: normal;
-    font-size: 18px;
-    line-height: 21px;
-    letter-spacing: 0;
-  }
-
-  &.torus-dark {
-    background: #2f3136 !important;
-    border: 1px solid #404145 !important;
-    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
-    color: #ffffff !important;
-  }
-}
-
-.learn-more-btn {
-  height: inherit;
-  padding: 16px 40px;
-  margin-top: 32px;
-  font-weight: normal;
-  font-size: 14px;
-  line-height: 16px;
-  color: #5c6c7f;
-  background: #ffffff !important;
-  box-sizing: border-box;
-  box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
-  border-radius: 9px;
-  border: thin solid #f1f2f6;
-  &.isDark {
-    color: #d3d3d4;
-    border: thin solid #d3d3d4;
-    background: none !important;
-    box-sizing: border-box;
-    box-shadow: 0px 9.40298px 18.806px rgba(46, 91, 255, 0.06);
-  }
-  &.isMobile {
-    padding: 12px 25px;
-  }
-}
-
-.login-btn-long {
-  &.v-btn {
-    background: #ffffff !important;
-    border: 1px solid #f1f2f6 !important;
-    box-sizing: border-box;
-    box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06) !important;
-    border-radius: 9px;
-    height: 60px;
-  }
-  ::v-deep .v-btn__content {
-    justify-content: left;
-    font-weight: normal;
-    font-size: 18px;
-    line-height: 21px;
-    letter-spacing: 0;
-  }
-
-  &.torus-dark {
-    background: #2f3136 !important;
-    border: 1px solid #404145 !important;
-    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06) !important;
-    color: #ffffff !important;
-  }
-}
-
-.login-btn.v-btn:not(.v-btn--text):not(.v-btn--icon) {
-  background: #ffffff;
-  border: 1px solid #f1f2f6;
-  box-sizing: border-box;
-  box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
-  min-width: inherit;
-  padding: 0;
-  margin-right: 7px;
-  margin-bottom: 7px;
-  width: 56px;
-  height: 56px;
-  img {
-    width: 26px;
-    height: 26px;
-  }
-  &.isDark {
-    background: #2f3136 !important;
-    border: 1px solid #404145 !important;
-    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
-  }
-  &.login-btn--mobile {
-    width: 100%;
-    margin: 0;
-  }
-}
-
-.verifier-title {
-  img {
-    height: 23px;
-    margin-bottom: -5px;
-  }
-  @include loginTypes()
 }
 
 .logout-btn {
@@ -179,10 +38,6 @@
   }
 }
 
-a {
-  text-decoration: none;
-}
-
 .background-login {
   position: relative;
   @extend .default;
@@ -190,15 +45,6 @@ a {
   @media only screen and (min-width: 1264px) {
     background-size: 100%;
   }
-}
-
-.text-gray {
-  color: var(--v-text_1-lighten4);
-}
-
-.login-subtitle {
-  max-width: 514px;
-  margin: 0 auto;
 }
 
 .default {
@@ -211,19 +57,6 @@ html {
   overflow-y: hidden;
 }
 
-::v-deep .v-carousel__controls {
-  background: none;
-  bottom: -15px;
-  .v-btn.v-btn--icon {
-    width: 14px;
-    height: 14px;
-    background-color: var(--v-torusGray1-base);
-    &.v-btn--active {
-      background-color: var(--v-torusGray3-base);
-    }
-  }
-}
-
 .mobile-login-container {
   section {
     min-height: 100vh;
@@ -234,18 +67,5 @@ html {
     left: 50%;
     transform: translate(-50%, 20%);
     box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
-  }
-}
-
-.footer-notes {
-  font-size: 11px;
-  margin-top: 30px;
-  .privacy-learn-more {
-    font-weight: bold;
-  }
-
-  &.not-sm {
-    margin-top: 52px;
-    font-size: 12px;
   }
 }

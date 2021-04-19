@@ -23,7 +23,7 @@
           </v-btn>
         </v-list-item-action>
       </v-list-item>
-      <v-list-item v-if="hasThreshold && !hasThresholdLogged" class="pl-0 pr-1">
+      <!-- <v-list-item v-if="hasThreshold && !hasThresholdLogged" class="pl-0 pr-1">
         <v-list-item-avatar class="ma-0">
           <v-icon size="16" class="torusGray1--text">$vuetify.icons.wallet</v-icon>
         </v-list-item-avatar>
@@ -37,8 +37,8 @@
             {{ t('tkeySettings.loginWithTkey') }}
           </v-btn>
         </v-list-item-action>
-      </v-list-item>
-      <v-list-item v-if="!hasThreshold && !hasSeedPhraseAccount" class="pl-0 pr-1">
+      </v-list-item> -->
+      <!-- <v-list-item v-if="!hasThreshold" class="pl-0 pr-1">
         <v-list-item-avatar class="ma-0">
           <v-icon size="16" class="torusGray1--text">$vuetify.icons.wallet</v-icon>
         </v-list-item-avatar>
@@ -69,23 +69,7 @@
           </div>
         </v-list-item-content>
         <v-list-item-action class="ma-0"></v-list-item-action>
-      </v-list-item>
-
-      <v-list-item v-if="hasThreshold && !hasSeedPhraseAccount" class="pl-0 pr-1">
-        <v-list-item-avatar class="ma-0">
-          <v-icon size="16" class="torusGray1--text">$vuetify.icons.tkey_seed_phrase</v-icon>
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title class="font-weight-regular caption">
-            <span class="text_1--text">{{ t('tkeySettings.tkeySeedPhrase.seedPhraseAccount') }}</span>
-          </v-list-item-title>
-        </v-list-item-content>
-        <v-list-item-action class="ma-0">
-          <v-btn text small color="torusBrand1" class="caption" @click="createSeedPhraseAccount">
-            {{ t('tkeySettings.createAccount') }}
-          </v-btn>
-        </v-list-item-action>
-      </v-list-item>
+      </v-list-item> -->
     </v-list>
 
     <div class="caption text_3--text mb-4 px-5">{{ t('tkeySettings.note') }}: {{ t('tkeySettings.theSelectedAccount') }}</div>
@@ -158,7 +142,7 @@ export default {
       this.setIsTkeySeedPhraseInputRequired(true)
     },
     accountTitle(accountType, address) {
-      if (accountType === ACCOUNT_TYPE.THRESHOLD) return 'tKey'
+      if (accountType === ACCOUNT_TYPE.THRESHOLD) return `OpenLogin ${this.t('tkeySettings.account')}`
       if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
         const index = Object.keys(this.wallets)
           .filter((x) => this.wallets[x].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
