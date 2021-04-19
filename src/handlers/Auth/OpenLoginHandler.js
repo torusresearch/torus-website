@@ -1,6 +1,7 @@
 import randomId from '@chaitanyapotti/random-id'
 import log from 'loglevel'
 
+import config from '../../config'
 import PopupWithBcHandler from '../Popup/PopupWithBcHandler'
 
 class OpenLoginHandler {
@@ -29,7 +30,7 @@ class OpenLoginHandler {
   }
 
   setFinalUrl() {
-    const finalUrl = new URL(window.location.href)
+    const finalUrl = new URL(config.baseUrl)
     finalUrl.pathname = '/start'
     finalUrl.searchParams.append('verifier', this.verifier)
     finalUrl.searchParams.append('state', this.state)
