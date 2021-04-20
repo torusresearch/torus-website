@@ -1,5 +1,4 @@
 import randomId from '@chaitanyapotti/random-id'
-import OpenLogin from '@toruslabs/openlogin'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
 import { BN } from 'ethereumjs-util'
@@ -136,18 +135,8 @@ export default {
     if (isMain) router.push({ path: '/logout' }).catch(() => {})
     if (selectedAddress) {
       try {
-        const openLogin = new OpenLogin({
-          clientId: config.openLoginClientId,
-          iframeUrl: config.openLoginUrl,
-          redirectUrl: `${window.location.origin}/end`,
-          replaceUrlOnRedirect: true,
-          uxMode: 'redirect',
-          originData: {
-            [window.location.origin]: config.openLoginOriginSig,
-          },
-        })
-        await openLogin.init()
-        await openLogin.logout({ clientId: config.openLoginClientId })
+        const openLoginInstance = await torus.getOpenLoginInstance()
+        await openLoginInstance.logout({ clientId: config.openLoginClientId })
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
         // eslint-disable-next-line require-atomic-updates

@@ -13,13 +13,11 @@
 </template>
 
 <script>
-import OpenLogin from '@toruslabs/openlogin'
 import { BroadcastChannel } from 'broadcast-channel'
 import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
 
 // import BeatLoader from 'vue-spinner/src/BeatLoader'
-import config from '../../config'
 import torus from '../../torus'
 import { ACCOUNT_TYPE, POPUP_RESULT } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
@@ -29,17 +27,7 @@ export default {
   // components: { BeatLoader },
   async mounted() {
     try {
-      const openLogin = new OpenLogin({
-        clientId: config.openLoginClientId,
-        iframeUrl: config.openLoginUrl,
-        redirectUrl: `${config.baseRoute}end`,
-        replaceUrlOnRedirect: true,
-        uxMode: 'redirect',
-        originData: {
-          [window.location.origin]: config.openLoginOriginSig,
-        },
-      })
-      await openLogin.init()
+      const openLogin = await torus.getOpenLoginInstance()
       const { state } = openLogin
       log.info(state, 'state')
       const allInfo = state.store.getStore()
