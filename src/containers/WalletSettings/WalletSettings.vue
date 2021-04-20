@@ -78,7 +78,7 @@
               <div class="grow font-weight-bold title text_1--text">{{ t('tkeySettings.accountManagement') }}</div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <DefaultAccount :has-threshold-logged="hasThresholdLogged" />
+              <DefaultAccount />
             </v-expansion-panel-content>
           </v-expansion-panel>
           <v-expansion-panel v-show="canShowSetCustomKey" readonly class="my-2">
@@ -137,9 +137,6 @@ export default {
       const normalAccount = Object.values(this.wallet).find((x) => x.accountType === ACCOUNT_TYPE.NORMAL) || {}
       log.info(normalAccount.metadataNonceHex)
       return !!normalAccount.metadataNonceHex
-    },
-    hasThresholdLogged() {
-      return Object.values(this.wallet).some((x) => x.accountType === ACCOUNT_TYPE.THRESHOLD)
     },
   },
   mounted() {
