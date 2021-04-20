@@ -85,10 +85,6 @@ import { getUserEmail, getUserIcon } from '../../../utils/utils'
 export default {
   name: 'DefaultAccount',
   props: {
-    hasThreshold: {
-      type: Boolean,
-      default: false,
-    },
     hasThresholdLogged: {
       type: Boolean,
       default: false,
@@ -113,7 +109,7 @@ export default {
           acc.push({
             key,
             accountType,
-            isDefault: this.defaultPublicAddress && this.hasThreshold ? key === this.defaultPublicAddress : accountType === ACCOUNT_TYPE.NORMAL,
+            isDefault: this.defaultPublicAddress ? key === this.defaultPublicAddress : accountType === ACCOUNT_TYPE.NORMAL,
             icon: this.accountIcon(accountType),
             title: this.accountTitle(accountType, key),
           })
