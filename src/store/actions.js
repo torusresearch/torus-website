@@ -377,9 +377,10 @@ export default {
           jwtParameters || {}
         ),
       })
-      const { keys, userInfo } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey } = await loginHandler.handleLoginWindow()
       // Get all open login results
       commit('setUserInfo', userInfo)
+      commit('setPostboxKey', postboxKey)
       await dispatch('handleLogin', {
         calledFromEmbed,
         oAuthToken: userInfo.idToken || userInfo.accessToken,

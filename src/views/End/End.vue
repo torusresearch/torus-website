@@ -45,6 +45,7 @@ export default {
       const allInfo = state.store.getStore()
       log.info('allInfo', allInfo)
       const keys = []
+      let postboxKey
       if (state.tKey) {
         keys.push({
           privKey: state.tKey,
@@ -59,6 +60,12 @@ export default {
           ethAddress: torus.generateAddressFromPrivKey(new BN(state.walletKey, 'hex')),
         })
       }
+      if (state.oAuthPrivateKey) {
+        postboxKey = {
+          privKey: state.oAuthPrivateKey,
+          ethAddress: torus.generateAddressFromPrivKey(new BN(state.oAuthPrivateKey, 'hex')),
+        }
+      }
       const userInfo = {
         name: allInfo.name, // first + last name
         profileImage: allInfo.profileImage, // image url
@@ -71,10 +78,10 @@ export default {
       const { appState } = allInfo
       log.info(appState, 'appState')
       const parsedAppState = JSON.parse(atob(decodeURIComponent(decodeURIComponent(appState))))
-      log.info(parsedAppState.instanceId, keys, userInfo)
+      log.info(parsedAppState.instanceId, keys, userInfo, postboxKey)
       const bc = new BroadcastChannel(`redirect_openlogin_channel_${parsedAppState.instanceId}`, broadcastChannelOptions)
       await bc.postMessage({
-        data: { type: POPUP_RESULT, userInfo, keys },
+        data: { type: POPUP_RESULT, userInfo, keys, postboxKey },
       })
       bc.close()
       log.info(bc)
