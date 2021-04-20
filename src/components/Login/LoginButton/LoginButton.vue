@@ -10,7 +10,6 @@
   >
     <img
       v-if="(active || $vuetify.breakpoint.xsOnly) && buttonType !== 'submit'"
-      class="mr-2"
       :src="
         verifier.logoHover ||
         require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}${verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''}.svg`)
@@ -19,17 +18,11 @@
     />
     <img
       v-else-if="$vuetify.theme.isDark && verifier.logoLight && buttonType !== 'submit'"
-      class="mr-2"
       :src="verifier.logoLight"
       :alt="`${verifier.name} Icon`"
     />
-    <img
-      v-else-if="!$vuetify.theme.isDark && verifier.logoDark && buttonType !== 'submit'"
-      class="mr-2"
-      :src="verifier.logoDark"
-      :alt="`${verifier.name} Icon`"
-    />
-    <v-icon v-else-if="buttonType !== 'submit'" size="26" class="text_3--text mr-2">
+    <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark && buttonType !== 'submit'" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
+    <v-icon v-else-if="buttonType !== 'submit'" size="26" class="text_3--text">
       {{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}
     </v-icon>
     <span v-if="isLong">{{ formatDescription }}</span>
