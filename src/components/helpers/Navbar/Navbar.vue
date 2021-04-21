@@ -1,25 +1,15 @@
 <template>
   <v-app-bar app flat class="header-container" :color="$vuetify.theme.dark ? '' : 'white'">
-    <div v-if="!showNav" class="d-flex align-end">
-      <img
-        v-if="!$vuetify.breakpoint.xsOnly || $store.state.whiteLabel.isActive"
-        class="home-link mr-1"
-        alt="Torus Logo"
-        :height="$store.state.whiteLabel.isActive ? 30 : 24"
-        :src="getLogo.logo"
-      />
-      <img v-else src="../../../assets/img/icons/t-fill.svg" width="35" height="30" alt="Torus Logo" />
-    </div>
-    <div v-else class="d-flex align-end">
+    <div class="d-flex align-end">
       <router-link v-if="!$vuetify.breakpoint.xsOnly || $store.state.whiteLabel.isActive" :to="{ name: 'walletHome' }" :style="{ lineHeight: 0 }">
-        <img class="home-link mr-1" alt="Torus Logo" :height="$store.state.whiteLabel.isActive ? 30 : 24" :src="getLogo.logo" />
+        <v-img class="home-link mr-1" contain position="left center" alt="Torus Logo" :max-height="30" :width="193" :src="getLogo.logo" />
       </router-link>
       <router-link v-else id="logo-home-lnk" :to="{ name: 'walletHome' }" :style="{ lineHeight: 0 }">
         <img src="../../../assets/img/icons/t-fill.svg" width="35" height="30" alt="Torus Logo" />
       </router-link>
     </div>
     <v-spacer></v-spacer>
-    <v-tabs v-if="!$vuetify.breakpoint.smAndDown && showNav" centered>
+    <v-tabs v-if="!$vuetify.breakpoint.smAndDown" centered>
       <v-tab
         v-for="headerItem in headerItems"
         :id="`${headerItem.name}-link`"
@@ -118,10 +108,6 @@ export default {
     headerItems: {
       type: Array,
       default: () => [],
-    },
-    showNav: {
-      type: Boolean,
-      default: true,
     },
     showLanguageSelector: {
       type: Boolean,
