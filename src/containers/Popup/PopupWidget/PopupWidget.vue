@@ -5,10 +5,7 @@
         <div class="d-flex torus-widget__user-details">
           <div class="avatar-container">
             <v-avatar size="32">
-              <div v-if="accountType === ACCOUNT_TYPE.THRESHOLD" class="avatar-two-factor">
-                <span class="caption font-weight-bold">tKey</span>
-              </div>
-              <div v-else-if="accountType === ACCOUNT_TYPE.IMPORTED" class="avatar-import">
+              <div v-if="accountType === ACCOUNT_TYPE.IMPORTED" class="avatar-import">
                 <v-icon>$vuetify.icons.person</v-icon>
               </div>
               <img
@@ -238,7 +235,7 @@ export default {
     },
     userEmail() {
       if (this.accountType === ACCOUNT_TYPE.THRESHOLD) {
-        return this.t('tkeySettings.twoFaWallet')
+        return `OpenLogin ${this.t('accountMenu.wallet')}`
       }
       if (this.accountType === ACCOUNT_TYPE.IMPORTED) {
         const index = Object.keys(this.wallet)
