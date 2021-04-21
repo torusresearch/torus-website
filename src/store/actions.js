@@ -132,14 +132,14 @@ export default {
     resetStore(decryptMessageManager.store, unapprovedDecryptMsgsHandler)
     assetDetectionController.stopAssetDetection()
     torus.updateStaticData({ isUnlocked: false })
-    if (isMain) router.push({ path: '/logout' }).catch(() => {})
-    if (selectedAddress) {
+    if (isMain && selectedAddress) {
+      router.push({ path: '/logout' }).catch(() => {})
       try {
         const openLoginInstance = await torus.getOpenLoginInstance()
         await openLoginInstance.logout({ clientId: config.openLoginClientId })
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
-        if (isMain) window.location.href = '/'
+        window.location.href = '/'
       }
     }
   },
