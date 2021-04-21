@@ -136,7 +136,9 @@ export default {
       router.push({ path: '/logout' }).catch(() => {})
       try {
         const openLoginInstance = await torus.getOpenLoginInstance()
-        await openLoginInstance.logout({ clientId: config.openLoginClientId })
+        if (openLoginInstance.state.support3PC) {
+          await openLoginInstance.logout({ clientId: config.openLoginClientId })
+        }
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
         window.location.href = '/'
