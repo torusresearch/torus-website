@@ -19,6 +19,7 @@ class TorusExtended extends Torus {
   }
 
   async getOpenLoginInstance() {
+    log.info('getting openlogin instance')
     if (this.openLogin !== null) {
       return this.openLogin
     }

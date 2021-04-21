@@ -139,7 +139,6 @@ export default {
         await openLoginInstance.logout({ clientId: config.openLoginClientId })
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
-        // eslint-disable-next-line require-atomic-updates
         if (isMain) window.location.href = '/'
       }
     }

@@ -34,18 +34,18 @@ export default {
       log.info('allInfo', allInfo)
       const keys = []
       let postboxKey
-      if (state.tKey) {
-        keys.push({
-          privKey: state.tKey,
-          accountType: ACCOUNT_TYPE.THRESHOLD,
-          ethAddress: torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex')),
-        })
-      }
       if (state.walletKey) {
         keys.push({
           privKey: state.walletKey,
           accountType: ACCOUNT_TYPE.NORMAL,
           ethAddress: torus.generateAddressFromPrivKey(new BN(state.walletKey, 'hex')),
+        })
+      }
+      if (state.tKey) {
+        keys.push({
+          privKey: state.tKey,
+          accountType: ACCOUNT_TYPE.THRESHOLD,
+          ethAddress: torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex')),
         })
       }
       if (state.oAuthPrivateKey) {
