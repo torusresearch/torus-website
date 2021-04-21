@@ -13,12 +13,11 @@
 </template>
 
 <script>
-import OpenLogin from '@toruslabs/openlogin'
 import log from 'loglevel'
 // import BeatLoader from 'vue-spinner/src/BeatLoader'
 import { mapState } from 'vuex'
 
-import config from '../../config'
+import torus from '../../torus'
 
 export default {
   name: 'Start',
@@ -31,18 +30,7 @@ export default {
   async mounted() {
     try {
       const { verifier, state, ...rest } = this.$route.query
-      log.info(verifier, 'logging with')
-      const openLogin = new OpenLogin({
-        clientId: config.openLoginClientId,
-        iframeUrl: config.openLoginUrl,
-        redirectUrl: `${config.baseRoute}end`,
-        replaceUrlOnRedirect: true,
-        uxMode: 'redirect',
-        originData: {
-          [window.location.origin]: config.openLoginOriginSig,
-        },
-      })
-      await openLogin.init()
+      const openLogin = await torus.getOpenLoginInstance()
       await openLogin.login({
         loginProvider: this.loginConfig[verifier]?.loginProvider,
         getWalletKey: true,

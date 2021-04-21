@@ -13,13 +13,11 @@
 </template>
 
 <script>
-import OpenLogin from '@toruslabs/openlogin'
 import { BroadcastChannel } from 'broadcast-channel'
 import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
 
 // import BeatLoader from 'vue-spinner/src/BeatLoader'
-import config from '../../config'
 import torus from '../../torus'
 import { ACCOUNT_TYPE, POPUP_RESULT } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
@@ -29,22 +27,20 @@ export default {
   // components: { BeatLoader },
   async mounted() {
     try {
-      const openLogin = new OpenLogin({
-        clientId: config.openLoginClientId,
-        iframeUrl: config.openLoginUrl,
-        redirectUrl: `${config.baseRoute}end`,
-        replaceUrlOnRedirect: true,
-        uxMode: 'redirect',
-        originData: {
-          [window.location.origin]: config.openLoginOriginSig,
-        },
-      })
-      await openLogin.init()
+      const openLogin = await torus.getOpenLoginInstance()
       const { state } = openLogin
       log.info(state, 'state')
       const allInfo = state.store.getStore()
       log.info('allInfo', allInfo)
       const keys = []
+      let postboxKey
+      if (state.walletKey) {
+        keys.push({
+          privKey: state.walletKey,
+          accountType: ACCOUNT_TYPE.NORMAL,
+          ethAddress: torus.generateAddressFromPrivKey(new BN(state.walletKey, 'hex')),
+        })
+      }
       if (state.tKey) {
         keys.push({
           privKey: state.tKey,
@@ -52,12 +48,11 @@ export default {
           ethAddress: torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex')),
         })
       }
-      if (state.walletKey) {
-        keys.push({
-          privKey: state.walletKey,
-          accountType: ACCOUNT_TYPE.NORMAL,
-          ethAddress: torus.generateAddressFromPrivKey(new BN(state.walletKey, 'hex')),
-        })
+      if (state.oAuthPrivateKey) {
+        postboxKey = {
+          privKey: state.oAuthPrivateKey,
+          ethAddress: torus.generateAddressFromPrivKey(new BN(state.oAuthPrivateKey, 'hex')),
+        }
       }
       const userInfo = {
         name: allInfo.name, // first + last name
@@ -71,10 +66,10 @@ export default {
       const { appState } = allInfo
       log.info(appState, 'appState')
       const parsedAppState = JSON.parse(atob(decodeURIComponent(decodeURIComponent(appState))))
-      log.info(parsedAppState.instanceId, keys, userInfo)
+      log.info(parsedAppState.instanceId, keys, userInfo, postboxKey)
       const bc = new BroadcastChannel(`redirect_openlogin_channel_${parsedAppState.instanceId}`, broadcastChannelOptions)
       await bc.postMessage({
-        data: { type: POPUP_RESULT, userInfo, keys },
+        data: { type: POPUP_RESULT, userInfo, keys, postboxKey },
       })
       bc.close()
       log.info(bc)

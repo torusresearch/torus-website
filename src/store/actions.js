@@ -1,5 +1,4 @@
 import randomId from '@chaitanyapotti/random-id'
-import OpenLogin from '@toruslabs/openlogin'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
 import { BN } from 'ethereumjs-util'
@@ -133,25 +132,16 @@ export default {
     resetStore(decryptMessageManager.store, unapprovedDecryptMsgsHandler)
     assetDetectionController.stopAssetDetection()
     torus.updateStaticData({ isUnlocked: false })
-    if (isMain) router.push({ path: '/logout' }).catch(() => {})
-    if (selectedAddress) {
+    if (isMain && selectedAddress) {
+      router.push({ path: '/logout' }).catch(() => {})
       try {
-        const openLogin = new OpenLogin({
-          clientId: config.openLoginClientId,
-          iframeUrl: config.openLoginUrl,
-          redirectUrl: `${window.location.origin}/end`,
-          replaceUrlOnRedirect: true,
-          uxMode: 'redirect',
-          originData: {
-            [window.location.origin]: config.openLoginOriginSig,
-          },
-        })
-        await openLogin.init()
-        await openLogin.logout({ clientId: config.openLoginClientId })
+        const openLoginInstance = await torus.getOpenLoginInstance()
+        if (openLoginInstance.state.support3PC) {
+          await openLoginInstance.logout({ clientId: config.openLoginClientId })
+        }
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
-        // eslint-disable-next-line require-atomic-updates
-        if (isMain) window.location.href = '/'
+        window.location.href = '/'
       }
     }
   },
@@ -377,9 +367,10 @@ export default {
           jwtParameters || {}
         ),
       })
-      const { keys, userInfo } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey } = await loginHandler.handleLoginWindow()
       // Get all open login results
       commit('setUserInfo', userInfo)
+      commit('setPostboxKey', postboxKey)
       await dispatch('handleLogin', {
         calledFromEmbed,
         oAuthToken: userInfo.idToken || userInfo.accessToken,
