@@ -3,30 +3,48 @@
   .v-avatar {
     border-radius: 0;
     align-self: start;
-    & > svg, & > .v-icon {
+    & > svg,
+    & > .v-icon {
       margin: auto;
     }
   }
-  .v-list-item {
-    border-bottom: 1px solid #D3D5E2;
-    &.theme--dark {
-      border-bottom: 1px solid #202125;
-    }
+
+  .tkey-features {
+    padding-left: 16px;
   }
-  .v-list-item:last-child {
-    border-bottom: 0;
-    &.theme--dark {
-      border-bottom: 0;
-    }
-  }
+
   &.theme--dark {
     border: 1px solid #202125;
-    .v-list-item {
-      background: #28292E;
+  }
+}
+
+.v-list-item {
+  border-bottom: 1px solid #d3d5e2;
+  &.theme--dark {
+    border-bottom: 1px solid #202125;
+    background: #28292e;
+  }
+  &.menu-item.v-list-item--link:hover {
+    ::v-deep .v-list-item__title > span {
+      color: var(--v-torusBrand1-base) !important;
+    }
+    &:before {
+      opacity: 0.1;
+      background-color: var(--v-torusBrand1-base);
     }
   }
-  
-  .tkey-features {
-    padding-left: 16px
+}
+.v-list-item:last-child {
+  border-bottom: 0;
+  &.theme--dark {
+    border-bottom: 0;
+  }
+}
+.v-menu__content {
+  border-radius: 6px !important;
+}
+.select-default-label {
+  ::v-deep .v-icon.tooltip-icon {
+    margin-top: 0;
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <v-tooltip top>
     <template #activator="{ on }">
-      <v-icon size="14" class="ml-1 text_3--text" :style="{ marginTop: '-2px' }" v-on="on">$vuetify.icons.question_filled</v-icon>
+      <v-icon :size="iconSize" class="ml-1 text_3--text tooltip-icon" v-on="on">$vuetify.icons.{{ icon }}</v-icon>
     </template>
     <span>
       <div class="body-2 text_2--text font-weight-bold mb-2">{{ title }}</div>
@@ -22,6 +22,14 @@ export default {
     description: {
       type: String,
       default: '',
+    },
+    icon: {
+      type: String,
+      default: 'question_filled',
+    },
+    iconSize: {
+      type: Number,
+      default: 14,
     },
   },
 }
