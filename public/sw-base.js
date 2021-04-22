@@ -531,6 +531,7 @@ self.addEventListener('message', function (event) {
 self.addEventListener('fetch', function (event) {
   try {
     const url = new URL(event.request.url)
+    const scopeURL = new URL(getScope())
     const integrityParam = url.searchParams.get('integrity')
     if (url.pathname.includes('/redirect') && url.href.includes(getScope())) {
       event.respondWith(
@@ -545,7 +546,7 @@ self.addEventListener('fetch', function (event) {
           )
         )
       )
-    } else if (integrityParam && integrityParam === 'true' && !isOrigin() && url.href.includes(getScope())) {
+    }  else if (integrityParam && integrityParam === 'true' && scopeURL.pathname !== "/" && !isOrigin() && url.href.includes(getScope())) {
       var promRes
       var promRej
       var prom = new Promise(function (resolve, reject) {
