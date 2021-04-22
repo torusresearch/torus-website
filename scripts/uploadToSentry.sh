@@ -7,7 +7,7 @@ PACKAGE_VERSION=$(cat package.json \
   | sed 's/[",]//g' \
   | xargs)
 
-if [[ "$CIRCLE_BRANCH" = 'master' ]]; then
+if [[ "$CIRCLE_BRANCH" = 'master' || "$CIRCLE_BRANCH" = '1.x' ]]; then
   SENTRY_PROJECT='torus-website'
 elif [[ "$CIRCLE_BRANCH" = 'binance' ]]; then
   SENTRY_PROJECT='binance-torus-website'

@@ -5,7 +5,7 @@ PACKAGE_VERSION=$(cat package.json \
   | awk -F: '{ print $2 }' \
   | sed 's/[",]//g')
 URL=''
-if [[ "$CIRCLE_BRANCH" = 'master' ]]; then
+if [[ "$CIRCLE_BRANCH" = 'master' || "$CIRCLE_BRANCH" = '1.x' ]]; then
   URL=$(echo s3://app.tor.us/v"$PACKAGE_VERSION" | tr -d ' ')
 elif [[ "$CIRCLE_BRANCH" = 'binance' ]]; then
   URL=$(echo s3://binance.tor.us/v"$PACKAGE_VERSION" | tr -d ' ')

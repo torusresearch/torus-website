@@ -228,6 +228,7 @@ workflows:
             branches:
               only:
                 - master
+                - 1.x
       - deploy:
           context: AWS
           requires:
@@ -237,6 +238,7 @@ workflows:
             branches:
               only:
                 - master
+                - 1.x
       - update-lambda:
           context: AWS
           requires:
