@@ -9,7 +9,7 @@
         <span>{{ authenticators }}.</span>
         <a
           class="privacy-learn-more text_3--text ml-1 text-decoration-none"
-          href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
+          href="https://docs.tor.us/key-infrastructure/role-of-torus-nodes/oauth2-vs-proxy-sign-in"
           target="_blank"
           rel="noreferrer noopener"
         >
