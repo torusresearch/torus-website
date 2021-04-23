@@ -19,7 +19,7 @@ export async function getOpenLoginInstance() {
     originData: {
       [window.location.origin]: config.openLoginOriginSig,
     },
-    no3PC: true,
+    // no3PC: true,
   })
 
   await openLogin.init()
