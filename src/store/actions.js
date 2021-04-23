@@ -9,6 +9,7 @@ import config from '../config'
 import { HandlerFactory as createHandler } from '../handlers/Auth'
 import PopupHandler from '../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
+import { getOpenLoginInstance } from '../openlogin'
 // import vuetify from '../plugins/vuetify'
 import router from '../router'
 import torus from '../torus'
@@ -135,7 +136,7 @@ export default {
     if (isMain && selectedAddress) {
       router.push({ path: '/logout' }).catch(() => {})
       try {
-        const openLoginInstance = await torus.getOpenLoginInstance()
+        const openLoginInstance = await getOpenLoginInstance()
         if (openLoginInstance.state.support3PC) {
           await openLoginInstance.logout({ clientId: config.openLoginClientId })
         }
