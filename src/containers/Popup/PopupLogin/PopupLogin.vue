@@ -35,7 +35,7 @@
             <span>{{ thirdPartyAuthenticators }}.</span>
             <a
               class="privacy-learn-more text_3--text"
-              href="https://docs.tor.us/how-torus-works/oauth2-vs-proxy-sign-in"
+              href="https://docs.tor.us/key-infrastructure/role-of-torus-nodes/oauth2-vs-proxy-sign-in"
               target="_blank"
               rel="noreferrer noopener"
             >
