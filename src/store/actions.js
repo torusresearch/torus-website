@@ -468,7 +468,7 @@ export default {
         'openlogin'
       )
       if (openloginUser) {
-        throw new Error('OpenLogin users are not supported at the moment')
+        // throw new Error('OpenLogin users are not supported at the moment')
       }
       if (!isMain) {
         if (defaultAddresses[0] && defaultAddresses[0] !== oAuthKey.ethAddress) {
