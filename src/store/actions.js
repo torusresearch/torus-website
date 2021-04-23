@@ -1,5 +1,5 @@
 import randomId from '@chaitanyapotti/random-id'
-import MetadataStorageLayer from '@toruslabs/metadata-helpers'
+// import MetadataStorageLayer from '@toruslabs/metadata-helpers'
 import clone from 'clone'
 import deepmerge from 'deepmerge'
 import { BN } from 'ethereumjs-util'
@@ -462,14 +462,14 @@ export default {
     // inside an iframe
     commit('setTkeyExists', keyExists)
     if (keyExists) {
-      const metadataStorageLayer = new MetadataStorageLayer()
-      const openloginUser = await metadataStorageLayer.getMetadata(
-        metadataStorageLayer.generatePubKeyParams(state.postboxKey.privateKey),
-        'openlogin'
-      )
-      if (openloginUser) {
-        throw new Error('OpenLogin users are not supported at the moment')
-      }
+      // const metadataStorageLayer = new MetadataStorageLayer()
+      // const openloginUser = await metadataStorageLayer.getMetadata(
+      //   metadataStorageLayer.generatePubKeyParams(state.postboxKey.privateKey),
+      //   'openlogin'
+      // )
+      // if (openloginUser) {
+      //   throw new Error('OpenLogin users are not supported at the moment')
+      // }
       if (!isMain) {
         if (defaultAddresses[0] && defaultAddresses[0] !== oAuthKey.ethAddress) {
           // Do tkey
