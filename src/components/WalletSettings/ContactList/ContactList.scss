@@ -6,14 +6,16 @@
     .v-avatar {
       border-radius: 0;
       align-self: start;
-      & > svg, & > .v-icon, & > img {
+      & > svg,
+      & > .v-icon,
+      & > img {
         margin: auto !important;
       }
     }
     &.theme--dark {
       border: 1px solid #202125;
       .contact-list__id {
-        color: #8D98A5;
+        color: #8d98a5;
       }
     }
   }
@@ -35,15 +37,19 @@
       width: inherit;
     }
   }
-  .search-verifier {
+  .v-input.search-verifier {
     margin-left: 8px;
     width: 130px;
+    ::v-deep .v-input__slot {
+      margin-bottom: 0;
+      padding: 2px 12px;
+    }
     ::v-deep .v-select__selections {
       .v-select__selection--comma {
-        margin: 0
+        margin: 0;
       }
       input {
-        padding: 0
+        padding: 0;
       }
     }
     ::v-deep .v-input__append-inner {
