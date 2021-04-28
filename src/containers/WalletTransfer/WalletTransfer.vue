@@ -392,6 +392,7 @@
 
 <script>
 import randomId from '@chaitanyapotti/random-id'
+import NodeDetailManager from '@toruslabs/fetch-node-details'
 import Resolution from '@unstoppabledomains/resolution'
 import BigNumber from 'bignumber.js'
 import erc721TransferABI from 'human-standard-collectible-abi'
@@ -426,6 +427,8 @@ import {
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
 import { apiStreamSupported, getEtherScanHashLink, getUserIcon, getVerifierOptions, significantDigits, validateVerifierId } from '../../utils/utils'
+
+const nodeDetailManager = new NodeDetailManager({ network: process.env.VUE_APP_PROXY_NETWORK, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
 
 export default {
   name: 'WalletTransfer',
@@ -643,9 +646,10 @@ export default {
 
     this.updateFieldsBasedOnRoute()
 
-    torus.nodeDetailManager
+    nodeDetailManager
       .getNodeDetails()
       .then((nodeDetails) => {
+        log.info('fetched node details', nodeDetails)
         this.nodeDetails = nodeDetails
       })
       .catch((error) => log.error(error))

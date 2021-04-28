@@ -69,6 +69,7 @@ export default {
       log.info(appState, 'appState')
       const parsedAppState = JSON.parse(atob(decodeURIComponent(decodeURIComponent(appState))))
       log.info(parsedAppState.instanceId, keys, userInfo, postboxKey)
+      // debugger
       const bc = new BroadcastChannel(`redirect_openlogin_channel_${parsedAppState.instanceId}`, broadcastChannelOptions)
       await bc.postMessage({
         data: { type: POPUP_RESULT, userInfo, keys, postboxKey },
@@ -77,7 +78,7 @@ export default {
       log.info(bc)
       log.info('posted info', POPUP_RESULT)
     } catch (error) {
-      log.info(error, 'something went wrong')
+      log.error(error, 'something went wrong')
     }
   },
 }
