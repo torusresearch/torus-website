@@ -1,3 +1,4 @@
+import NodeDetailManager from '@toruslabs/fetch-node-details'
 import log from 'loglevel'
 import LocalMessageDuplexStream from 'post-message-stream'
 import Web3 from 'web3'
@@ -67,6 +68,9 @@ function onloadTorus(torus) {
 
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
+
+  torus.nodeDetailManager = new NodeDetailManager({ network: process.env.VUE_APP_PROXY_NETWORK, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
+  log.info('torus network', process.env.VUE_APP_PROXY_NETWORK)
 
   // we use this to start accounttracker balances
   torusController.setupControllerConnection()
