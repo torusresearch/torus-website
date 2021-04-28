@@ -646,6 +646,7 @@ export default {
     torus.nodeDetailManager
       .getNodeDetails()
       .then((nodeDetails) => {
+        log.info('fetched node details', nodeDetails)
         this.nodeDetails = nodeDetails
       })
       .catch((error) => log.error(error))

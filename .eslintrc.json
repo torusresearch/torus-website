@@ -23,6 +23,9 @@
     "sourceType": "module"
   },
   "rules": {
+    "unicorn/prefer-module": 0,
+    "unicorn/prefer-node-protocol": 0,
+    "unicorn/prefer-switch": 0,
     "unicorn/no-array-push-push": 0,
     "unicorn/no-this-assignment": 0,
     "unicorn/no-array-for-each": 0,

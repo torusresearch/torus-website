@@ -138,6 +138,7 @@ export default {
       try {
         const openLoginInstance = await getOpenLoginInstance()
         if (openLoginInstance.state.support3PC) {
+          await openLoginInstance._syncState(await openLoginInstance._getData())
           await openLoginInstance.logout({ clientId: config.openLoginClientId })
         }
       } catch (error) {

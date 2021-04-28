@@ -70,10 +70,7 @@ function onloadTorus(torus) {
   torus.web3 = new Web3(torusController.provider)
 
   torus.nodeDetailManager = new NodeDetailManager({ network: process.env.VUE_APP_PROXY_NETWORK, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
-  torus.nodeDetailManager
-    .getNodeDetails()
-    .then((nodeDetails) => log.info(nodeDetails))
-    .catch((error) => log.error(error))
+  log.info('torus network', process.env.VUE_APP_PROXY_NETWORK)
 
   // we use this to start accounttracker balances
   torusController.setupControllerConnection()
