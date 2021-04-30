@@ -254,6 +254,7 @@ export function addressSlicer(address = '') {
   if (address.length < 11) {
     return address
   }
+  if (typeof address !== 'string') return ''
   return `${address.slice(0, 5)}...${address.slice(-5)}`
 }
 
@@ -587,9 +588,9 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     id: x.created_at.toString(),
     date: new Date(x.created_at),
     from: x.from,
-    slicedFrom: addressSlicer(x.from),
+    slicedFrom: typeof x.from === 'string' ? addressSlicer(x.from) : '',
     to: x.to,
-    slicedTo: addressSlicer(x.to),
+    slicedTo: typeof x.to === 'string' ? addressSlicer(x.to) : '',
     action: lowerCaseSelectedAddress === x.to.toLowerCase() ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
     totalAmount: x.total_amount,
     totalAmountString,
