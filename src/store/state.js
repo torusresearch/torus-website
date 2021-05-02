@@ -66,6 +66,7 @@ const initialState = {
     buttonPosition: 'bottom-left',
     torusWidgetVisibility: true,
     apiKey: 'torus-default',
+    skipTKey: false,
   },
   whiteLabel: {
     isActive: false,
