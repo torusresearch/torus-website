@@ -143,6 +143,12 @@ export default {
       apiKey: payload || 'torus-default',
     }
   },
+  setSkipTKey(state, payload) {
+    state.embedState = {
+      ...state.embedState,
+      skipTKey: payload || false,
+    }
+  },
   setButtonPosition(state, payload) {
     state.embedState = { ...state.embedState, buttonPosition: payload || 'bottom-left' }
   },

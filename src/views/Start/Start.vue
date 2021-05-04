@@ -29,13 +29,15 @@ export default {
   },
   async mounted() {
     try {
-      const { verifier, state, ...rest } = this.$route.query
+      const { verifier, state, skipTKey, ...rest } = this.$route.query
+      log.info('logging in with', verifier, state, skipTKey)
       const openLogin = await getOpenLoginInstance()
       await openLogin.login({
         loginProvider: this.loginConfig[verifier]?.loginProvider,
         getWalletKey: true,
         relogin: true,
         appState: state,
+        skipTKey: skipTKey === 'true',
         extraLoginOptions: {
           ...rest,
         },
