@@ -1,6 +1,6 @@
 .v-tooltip__content {
   background: var(--v-torusLight-base);
-  border: 1px solid #F1F2F6;
+  border: 1px solid #f1f2f6;
   box-sizing: border-box;
   box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
   border-radius: 6px;
@@ -15,7 +15,8 @@
     box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
   }
 }
-.v-icon {
+.v-icon.tooltip-icon {
   color: var(--v-text_1-base);
   cursor: pointer;
+  margin-top: -2px;
 }
