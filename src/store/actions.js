@@ -9,6 +9,7 @@ import config from '../config'
 import { HandlerFactory as createHandler } from '../handlers/Auth'
 import PopupHandler from '../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
+import { getOpenLoginInstance } from '../openlogin'
 // import vuetify from '../plugins/vuetify'
 import router from '../router'
 import torus from '../torus'
@@ -132,14 +133,17 @@ export default {
     resetStore(decryptMessageManager.store, unapprovedDecryptMsgsHandler)
     assetDetectionController.stopAssetDetection()
     torus.updateStaticData({ isUnlocked: false })
-    if (isMain) router.push({ path: '/logout' }).catch(() => {})
-    if (selectedAddress) {
+    if (isMain && selectedAddress) {
+      router.push({ path: '/logout' }).catch(() => {})
       try {
-        const openLoginInstance = await torus.getOpenLoginInstance()
-        await openLoginInstance.logout({ clientId: config.openLoginClientId })
+        const openLoginInstance = await getOpenLoginInstance()
+        if (openLoginInstance.state.support3PC) {
+          await openLoginInstance._syncState(await openLoginInstance._getData())
+          await openLoginInstance.logout({ clientId: config.openLoginClientId })
+        }
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
-        if (isMain) window.location.href = '/'
+        window.location.href = '/'
       }
     }
   },
@@ -364,6 +368,7 @@ export default {
           },
           jwtParameters || {}
         ),
+        skipTKey: state.embedState.skipTKey,
       })
       const { keys, userInfo, postboxKey } = await loginHandler.handleLoginWindow()
       // Get all open login results

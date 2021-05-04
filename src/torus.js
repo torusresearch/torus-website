@@ -1,10 +1,8 @@
 import randomId from '@chaitanyapotti/random-id'
-import OpenLogin from '@toruslabs/openlogin'
 import Torus from '@toruslabs/torus.js'
 import { hashPersonalMessage } from 'ethereumjs-util'
 import log from 'loglevel'
 
-import config from './config'
 import setupMultiplex from './controllers/utils/setupMultiplex'
 import onloadTorus from './onload'
 import { fakeStream, selectChainId } from './utils/utils'
@@ -16,27 +14,6 @@ class TorusExtended extends Torus {
     this.instanceId = randomId()
     this.setupMultiplex = setupMultiplex
     this.openLogin = null
-  }
-
-  async getOpenLoginInstance() {
-    log.info('getting openlogin instance')
-    if (this.openLogin !== null) {
-      return this.openLogin
-    }
-    const openLogin = new OpenLogin({
-      clientId: config.openLoginClientId,
-      iframeUrl: config.openLoginUrl,
-      redirectUrl: `${config.baseRoute}end`,
-      replaceUrlOnRedirect: true,
-      uxMode: 'redirect',
-      originData: {
-        [window.location.origin]: config.openLoginOriginSig,
-      },
-    })
-
-    await openLogin.init()
-    this.openLogin = openLogin
-    return this.openLogin
   }
 
   updateStaticData(payload) {

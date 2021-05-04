@@ -17,7 +17,7 @@ import log from 'loglevel'
 // import BeatLoader from 'vue-spinner/src/BeatLoader'
 import { mapState } from 'vuex'
 
-import torus from '../../torus'
+import { getOpenLoginInstance } from '../../openlogin'
 
 export default {
   name: 'Start',
@@ -29,13 +29,15 @@ export default {
   },
   async mounted() {
     try {
-      const { verifier, state, ...rest } = this.$route.query
-      const openLogin = await torus.getOpenLoginInstance()
+      const { verifier, state, skipTKey, ...rest } = this.$route.query
+      log.info('logging in with', verifier, state, skipTKey)
+      const openLogin = await getOpenLoginInstance()
       await openLogin.login({
         loginProvider: this.loginConfig[verifier]?.loginProvider,
         getWalletKey: true,
         relogin: true,
         appState: state,
+        skipTKey: skipTKey === 'true',
         extraLoginOptions: {
           ...rest,
         },
