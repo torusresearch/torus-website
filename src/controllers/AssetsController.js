@@ -68,12 +68,12 @@ export default class AssetController {
    */
   async getCollectibleTokenURI(contractAddress, tokenId) {
     try {
-      const supportsMetadata = await this.assetContractController.contractSupportsMetadataInterface(contractAddress)
+      const interfaceStandard = await this.assetContractController.contractSupportsMetadataInterface(contractAddress)
       /* istanbul ignore if */
-      if (!supportsMetadata) {
+      if (!interfaceStandard) {
         return ''
       }
-      return this.assetContractController.getCollectibleTokenURI(contractAddress, tokenId)
+      return this.assetContractController.getCollectibleTokenURI(contractAddress, tokenId, interfaceStandard)
     } catch (error) {
       log.error(error)
     }
@@ -219,8 +219,8 @@ export default class AssetController {
       if (existingEntry) {
         return collectibles
       }
-      const { name, image, description } = options || (await this.getCollectibleInformation(address, tokenId))
-      const newEntry = { address, tokenId, name, image, description }
+      const { name, image, description, standard, tokenBalance } = options || (await this.getCollectibleInformation(address, tokenId))
+      const newEntry = { address, tokenId, name, image, description, standard, tokenBalance }
       const newCollectibles = [...collectibles, newEntry]
       const addressCollectibles = allCollectibles[selectedAddress]
       const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: newCollectibles } }
@@ -320,6 +320,7 @@ export default class AssetController {
       symbol,
       totalSupply,
     }
+
     const newCollectibleContracts = [...collectibleContracts, newEntry]
     const addressCollectibleContracts = allCollectibleContracts[selectedAddress]
     const newAddressCollectibleContracts = {
@@ -354,7 +355,6 @@ export default class AssetController {
       const newCollectibleContracts = await this.addCollectibleContract(address, detection, options)
       // If collectible contract was not added, do not add individual collectible
       const collectibleContract = newCollectibleContracts.find((contract) => contract.address === address)
-
       // If collectible contract information, add individual collectible
       if (collectibleContract) {
         await this.addIndividualCollectible(address, tokenId, options)

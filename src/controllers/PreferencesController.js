@@ -686,6 +686,11 @@ class PreferencesController extends EventEmitter {
   }
 
   /* istanbul ignore next */
+  async getCovalentNfts(api) {
+    return this.api.get(`${config.api}/covalent?url=${api}`, this.headers(), { useAPIKey: true })
+  }
+
+  /* istanbul ignore next */
   async getTwitterId(payload) {
     const userId = await this.api.get(`${config.api}/twitter?screen_name=${payload.nick}`, this.headers(), { useAPIKey: true })
     return `${payload.typeOfLogin.toLowerCase()}|${userId.data.toString()}`

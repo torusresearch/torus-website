@@ -5,7 +5,7 @@
 
 import log from 'loglevel'
 
-import { MAINNET } from '../utils/enums'
+import { BSC_MAINNET, MAINNET, MATIC } from '../utils/enums'
 
 const DEFAULT_INTERVAL = 60000
 
@@ -17,6 +17,9 @@ export default class AssetsDetectionController {
     this.assetController = options.assetController
     this.assetContractController = options.assetContractController
     this.getOpenSeaCollectibles = options.getOpenSeaCollectibles
+    this.getCovalentNfts = options.getCovalentNfts
+    this.currentNetwork = null
+    this.collectibleApi = null
   }
 
   restartAssetDetection() {
@@ -54,17 +57,35 @@ export default class AssetsDetectionController {
   }
 
   getOwnerCollectiblesApi(address) {
-    return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
+    if (this.currentNetwork === MAINNET) {
+      return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
+    }
+    if (this.currentNetwork === MATIC || BSC_MAINNET) {
+      return `https://api.covalenthq.com/v1/137/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
+    }
+    if (this.currentNetwork === BSC_MAINNET) {
+      return `https://api.covalenthq.com/v1/56/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
+    }
+    return null
   }
 
   async getOwnerCollectibles() {
-    const { selectedAddress } = this
-    const api = this.getOwnerCollectiblesApi(selectedAddress)
+    if (!this.collectibleApi) {
+      return []
+    }
     let response
     try {
-      response = await this.getOpenSeaCollectibles(api)
-      const collectibles = response.data.assets
-      return collectibles
+      if (this.currentNetwork === MAINNET) {
+        response = await this.getOpenSeaCollectibles(this.collectibleApi)
+        const collectibles = response.data.assets
+        return collectibles
+      }
+      if (this.currentNetwork === MATIC || BSC_MAINNET) {
+        response = await this.getCovalentNfts(this.collectibleApi)
+        const collectibles = response.data?.data?.items || []
+        return collectibles
+      }
+      return []
     } catch (error) {
       log.error(error)
       return []
@@ -72,22 +93,36 @@ export default class AssetsDetectionController {
   }
 
   /**
-   * Checks whether network is mainnet or not
+   * Checks whether network is eth mainnet or not
    *
-   * @returns - Whether current network is mainnet
+   * @returns - Whether current network is eth mainnet
    */
-  isMainnet() {
+  isEthMainnet() {
     return this.network.getNetworkNameFromNetworkCode() === MAINNET
+  }
+
+  /**
+   * Checks whether network is polygon mainnet or not
+   *
+   * @returns - Whether current network is polygon mainnet
+   */
+  isPolygonMainnet() {
+    return this.network.getNetworkNameFromNetworkCode() === MATIC
+  }
+
+  /**
+   * Checks whether network is binance mainnet or not
+   *
+   * @returns - Whether current network is binance mainnet
+   */
+  isBinanceMainnet() {
+    return this.network.getNetworkNameFromNetworkCode() === BSC_MAINNET
   }
 
   /**
    * Detect assets owned by current account on mainnet
    */
   async detectAssets() {
-    /* istanbul ignore if */
-    if (!this.isMainnet()) {
-      return
-    }
     // this.detectTokens()
     this.detectCollectibles()
   }
@@ -98,9 +133,25 @@ export default class AssetsDetectionController {
    */
   async detectCollectibles() {
     /* istanbul ignore if */
-    if (!this.isMainnet()) {
-      return
+    if (this.isEthMainnet()) {
+      await this.setNetworkConfig(MAINNET)
+      await this.detectMainnetCollectibles()
+    } else if (this.isPolygonMainnet()) {
+      await this.setNetworkConfig(MATIC)
+      await this.detectCollectiblesFromCovalent(MATIC)
+    } else if (this.isBinanceMainnet()) {
+      await this.setNetworkConfig(BSC_MAINNET)
+      await this.detectCollectiblesFromCovalent(BSC_MAINNET)
     }
+  }
+
+  async setNetworkConfig(network) {
+    this.currentNetwork = network
+    const { selectedAddress } = this
+    this.collectibleApi = this.getOwnerCollectiblesApi(selectedAddress)
+  }
+
+  async detectMainnetCollectibles() {
     const { selectedAddress } = this
     /* istanbul ignore else */
     if (!selectedAddress) {
@@ -139,6 +190,71 @@ export default class AssetsDetectionController {
         },
         true
       )
+    }
+  }
+
+  async detectCollectiblesFromCovalent(network) {
+    const { selectedAddress } = this
+    /* istanbul ignore else */
+    if (!selectedAddress) {
+      return
+    }
+    let protocolPrefix = 'ERC'
+    if (network === BSC_MAINNET) {
+      protocolPrefix = 'BEP'
+    }
+    this.assetController.setSelectedAddress(selectedAddress)
+    const apiCollectibles = await this.getOwnerCollectibles()
+    for (const item of apiCollectibles) {
+      if (item.type === 'nft') {
+        let contractName = item.contract_name
+        let standard
+        const { contract_address: contractAddress, contract_ticker_symbol: contractSymbol, nft_data, supports_erc } = item
+        if (supports_erc.includes('erc721')) {
+          contractName = `${contractName} (${protocolPrefix}721)`
+          standard = 'ERC721'
+        }
+        if (supports_erc.includes('erc1155')) {
+          contractName = `${contractName} (${protocolPrefix}1155)`
+          standard = 'ERC1155'
+        }
+
+        let contractImage
+        if (!!nft_data && nft_data.length > 0) {
+          for (const nft of nft_data) {
+            const {
+              token_id: tokenID,
+              token_balance: tokenBalance,
+              external_data: { name, image: imageURL, description },
+            } = nft
+
+            // nft contract images urls are invalid most of the times in covalent
+            // so using asset image as contract image
+            if (!contractImage) {
+              contractImage = imageURL || ''
+            }
+            // eslint-disable-next-line no-await-in-loop
+            await this.assetController.addCollectible(
+              contractAddress,
+              tokenID.toString(),
+              {
+                description,
+                image: imageURL || '',
+                name: name || `${contractName}#${tokenID}`,
+                contractAddress,
+                contractName,
+                contractSymbol,
+                contractImage,
+                contractSupply: null,
+                tokenBalance,
+                standard,
+                contractDescription: '',
+              },
+              true
+            )
+          }
+        }
+      }
     }
   }
 }

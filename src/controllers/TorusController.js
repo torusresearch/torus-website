@@ -156,6 +156,7 @@ export default class TorusController extends EventEmitter {
       network: this.networkController,
       provider: this.provider,
       getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
+      getCovalentNfts: this.prefsController.getCovalentNfts.bind(this.prefsController),
     })
 
     this.assetContractController = new AssetContractController({
@@ -168,6 +169,7 @@ export default class TorusController extends EventEmitter {
       assetController: this.assetController,
       assetContractController: this.assetContractController,
       getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
+      getCovalentNfts: this.prefsController.getCovalentNfts.bind(this.prefsController),
     })
 
     this.networkController.lookupNetwork()

@@ -104,6 +104,7 @@ export const DEPLOY_CONTRACT_ACTION_KEY = 'contractDeployment'
 export const CONTRACT_INTERACTION_KEY = 'contractInteraction'
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+export const ERC1155METADATA_INTERFACE_ID = '0x0e89341c'
 export const ERC721METADATA_INTERFACE_ID = '0x5b5e139f'
 export const ERC721ENUMERABLE_INTERFACE_ID = '0x780e9d63'
 export const SINGLE_CALL_BALANCES_ADDRESS = '0xb1f8e55c7f64d203c1400b9d8555d050f94adf39'
@@ -118,6 +119,7 @@ export const USER_INFO_REQUEST_NEW = 'user_info_request_new'
 export const CONTRACT_TYPE_ETH = 'eth'
 export const CONTRACT_TYPE_ERC20 = 'erc20'
 export const CONTRACT_TYPE_ERC721 = 'erc721'
+export const CONTRACT_TYPE_ERC1155 = 'erc1155'
 
 export const getInfuraBlockExplorerUrl = (network) => {
   if (network === MAINNET) return 'https://etherscan.io'

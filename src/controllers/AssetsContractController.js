@@ -9,7 +9,15 @@ import abiERC20 from 'human-standard-token-abi'
 import abiSingleCallBalancesContract from 'single-call-balance-checker-abi'
 import Web3 from 'web3'
 
-import { ERC721ENUMERABLE_INTERFACE_ID, ERC721METADATA_INTERFACE_ID, SINGLE_CALL_BALANCES_ADDRESS } from '../utils/enums'
+import {
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC1155,
+  ERC721ENUMERABLE_INTERFACE_ID,
+  ERC721METADATA_INTERFACE_ID,
+  ERC1155METADATA_INTERFACE_ID,
+  SINGLE_CALL_BALANCES_ADDRESS,
+} from '../utils/enums'
+import abiERC1155 from '../utils/ERC1155Abi'
 
 export default class AssetContractController {
   /**
@@ -32,10 +40,17 @@ export default class AssetContractController {
    * @param interfaceId - Interface identifier
    * @returns - Promise resolving to whether the contract implements `interfaceID`
    */
-  contractSupportsInterface(address, interfaceId) {
+  contractSupportsInterface(address, interfaceId, standard = CONTRACT_TYPE_ERC721) {
     const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC721, address)
-    return contract.methods.supportsInterface(interfaceId).call()
+    if (standard === 'ERC721') {
+      const contract = new web3Instance.eth.Contract(abiERC721, address)
+      return contract.methods.supportsInterface(interfaceId).call()
+    }
+    if (standard === 'ERC1155') {
+      const contract = new web3Instance.eth.Contract(abiERC1155, address)
+      return contract.methods.supportsInterface(interfaceId).call()
+    }
+    return false
   }
 
   /**
@@ -45,7 +60,17 @@ export default class AssetContractController {
    * @returns - Promise resolving to whether the contract implements ERC721Metadata interface
    */
   contractSupportsMetadataInterface(address) {
-    return this.contractSupportsInterface(address, ERC721METADATA_INTERFACE_ID)
+    const isErc721 = this.contractSupportsInterface(address, ERC721METADATA_INTERFACE_ID, CONTRACT_TYPE_ERC721)
+
+    if (isErc721) {
+      return CONTRACT_TYPE_ERC721
+    }
+    const isErc1155 = this.contractSupportsInterface(address, ERC1155METADATA_INTERFACE_ID, CONTRACT_TYPE_ERC1155)
+
+    if (isErc1155) {
+      return CONTRACT_TYPE_ERC1155
+    }
+    return false
   }
 
   /**
@@ -88,13 +113,14 @@ export default class AssetContractController {
   /**
    * Query for tokenURI for a given asset
    *
-   * @param address - ERC721 asset contract address
-   * @param tokenId - ERC721 asset identifier
+   * @param address - ERC721/ERC1155 asset contract address
+   * @param tokenId - ERC721/ERC1155 asset identifier
    * @returns - Promise resolving to the 'tokenURI'
    */
-  getCollectibleTokenURI(address, tokenId) {
+  getCollectibleTokenURI(address, tokenId, standard = CONTRACT_TYPE_ERC721) {
+    const abi = standard === CONTRACT_TYPE_ERC721 ? abiERC721 : abiERC1155
     const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC721, address)
+    const contract = new web3Instance.eth.Contract(abi, address)
     return contract.methods.tokenURI(tokenId).call()
   }
 
