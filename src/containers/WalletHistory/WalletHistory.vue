@@ -90,6 +90,7 @@ import {
   CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
   MAINNET,
@@ -154,6 +155,8 @@ export default {
       ]
     },
     calculatedFinalTx() {
+      // eslint-disable-next-line no-console
+      console.log('transactions', this.pastTx, this.paymentTx, this.etherscanTx)
       let finalTx = [...this.paymentTx, ...this.pastTx, ...this.etherscanTx]
       finalTx = finalTx.reduce((accumulator, x) => {
         x.actionIcon = this.getIcon(x)
@@ -221,7 +224,7 @@ export default {
         return `provider-${activity.from.toLowerCase()}.svg`
       }
       if (activity.action === ACTIVITY_ACTION_SEND || activity.action === ACTIVITY_ACTION_RECEIVE) {
-        if (activity.type === CONTRACT_TYPE_ERC721) {
+        if (activity.type === CONTRACT_TYPE_ERC721 || activity.type === CONTRACT_TYPE_ERC1155) {
           return activity.type_image_link // will be an opensea image url
         }
         if (activity.type === CONTRACT_TYPE_ERC20) {

@@ -329,6 +329,7 @@ import {
   CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
   SEND_ETHER_ACTION_KEY,
@@ -594,7 +595,10 @@ export default {
         }
         // Get ABI for method
         let txDataParameters = ''
-        if (contractParams.erc721) {
+        if (contractParams.erc1155) {
+          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          this.contractType = CONTRACT_TYPE_ERC1155
+        } else if (contractParams.erc721) {
           txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
           this.contractType = CONTRACT_TYPE_ERC721
         } else if (contractParams.erc20) {
@@ -658,6 +662,29 @@ export default {
             this.assetDetails = {
               name: assetDetails.data.name || '',
               logo: assetDetails.data.image_thumbnail_url || '',
+            }
+          } catch (error) {
+            log.info(error)
+          }
+        } else if (methodParams && contractParams.erc1155) {
+          log.info(methodParams, contractParams)
+          this.isNonFungibleToken = true
+          let assetDetails = {}
+          try {
+            const url = `https://api.covalenthq.com/v1/${this.network.chainId}/tokens/${checkSummedTo}/nft_metadata/${this.amountValue}`
+            assetDetails = await get(
+              `${config.api}/covalent?url=${url}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${jwtToken}`,
+                },
+              },
+              { useAPIKey: true }
+            )
+            const nftData = assetDetails.data?.data?.items[0]?.nftData[0]?.externalData
+            this.assetDetails = {
+              name: nftData?.name || '',
+              logo: nftData?.image || '',
             }
           } catch (error) {
             log.info(error)

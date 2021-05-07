@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
@@ -72,8 +73,36 @@ export default {
         let typeName
         let typeImageLink
         let symbol
+        // debugger
+        if (contractParams.erc1155) {
+          ;[, amountTo, amountValue] = methodParams || []
 
-        if (contractParams.erc721) {
+          const { name = '', logo } = contractParams
+          // Get asset name of the 721
+          const selectedAddressAssets = state.assets[state.selectedAddress]
+          if (selectedAddressAssets) {
+            const contract = selectedAddressAssets.find((x) => x.address.toLowerCase() === txParams.to.toLowerCase()) || {}
+            log.info(contract, amountValue)
+            if (contract) {
+              const { name: foundAssetName } = (contract.assets || []).find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
+              assetName = foundAssetName || ''
+              symbol = assetName
+              type = 'erc1155'
+              typeName = contract.name || name
+              typeImageLink = contract.logo || logo
+              totalAmount = fromWei(toBN(txParams.value || 0))
+              finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+            }
+          } else {
+            tokenRate = 1
+            symbol = state.networkType.ticker
+            type = 'eth'
+            typeName = state.networkType.ticker
+            typeImageLink = 'n/a'
+            totalAmount = fromWei(toBN(txParams.value || 0))
+            finalTo = toChecksumAddress(txParams.to)
+          }
+        } else if (contractParams.erc721) {
           // Handling cryptokitties
           if (contractParams.isSpecial) {
             ;[amountTo, amountValue] = methodParams || []

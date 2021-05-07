@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Assets Detection
  * Controller that passively polls on a set interval for assets auto detection
@@ -6,7 +5,7 @@
 
 import log from 'loglevel'
 
-import { BSC_MAINNET, MAINNET, MATIC, MUMBAI } from '../utils/enums'
+import { BSC_MAINNET, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, MATIC, MUMBAI } from '../utils/enums'
 
 const DEFAULT_INTERVAL = 60000
 
@@ -58,8 +57,6 @@ export default class AssetsDetectionController {
   }
 
   getOwnerCollectiblesApi(address) {
-    // eslint-disable-next-line no-console
-    console.log('current address', address, this.currentNetwork)
     if (this.currentNetwork === MAINNET) {
       return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
     }
@@ -223,7 +220,6 @@ export default class AssetsDetectionController {
     }
     this.assetController.setSelectedAddress(selectedAddress)
     const apiCollectibles = await this.getOwnerCollectibles()
-    console.log('collectibles', apiCollectibles)
     for (const item of apiCollectibles) {
       if (item.type === 'nft') {
         let contractName = item.contract_name
@@ -232,10 +228,10 @@ export default class AssetsDetectionController {
 
         if (supports_erc.includes('erc1155')) {
           contractName = `${contractName} (${protocolPrefix}1155)`
-          standard = 'ERC1155'
+          standard = CONTRACT_TYPE_ERC1155
         } else if (supports_erc.includes('erc721')) {
           contractName = `${contractName} (${protocolPrefix}721)`
-          standard = 'ERC721'
+          standard = CONTRACT_TYPE_ERC721
         }
 
         let contractImage

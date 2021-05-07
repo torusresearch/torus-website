@@ -219,7 +219,9 @@ export default class AssetController {
       if (existingEntry) {
         return collectibles
       }
+
       const { name, image, description, standard, tokenBalance } = options || (await this.getCollectibleInformation(address, tokenId))
+
       const newEntry = { address, tokenId, name, image, description, standard, tokenBalance }
       const newCollectibles = [...collectibles, newEntry]
       const addressCollectibles = allCollectibles[selectedAddress]
@@ -302,10 +304,12 @@ export default class AssetController {
         image_url: options.contractImage,
         total_supply: options.contractSupply,
         description: options.contractDescription,
+        standard: options.standard,
       }
     } else {
       contractInformation = await this.getCollectibleContractInformation(address)
     }
+    const interfaceStandard = contractInformation.standard || (await this.assetContractController.contractSupportsMetadataInterface(address))
     const { name, symbol, image_url: imageURL, description, total_supply: totalSupply } = contractInformation
     // If being auto-detected opensea information is expected
     // Oherwise at least name and symbol from contract is needed
@@ -313,6 +317,7 @@ export default class AssetController {
       return collectibleContracts
     }
     const newEntry = {
+      standard: interfaceStandard,
       address,
       description,
       logo: imageURL,
@@ -355,9 +360,10 @@ export default class AssetController {
       const newCollectibleContracts = await this.addCollectibleContract(address, detection, options)
       // If collectible contract was not added, do not add individual collectible
       const collectibleContract = newCollectibleContracts.find((contract) => contract.address === address)
+      const collectibleOptions = { ...options, standard: collectibleContract.standard }
       // If collectible contract information, add individual collectible
       if (collectibleContract) {
-        await this.addIndividualCollectible(address, tokenId, options)
+        await this.addIndividualCollectible(address, tokenId, collectibleOptions)
       }
     } catch (error) {
       log.error(error)
