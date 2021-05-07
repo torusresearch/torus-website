@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Assets Detection
  * Controller that passively polls on a set interval for assets auto detection
@@ -5,7 +6,7 @@
 
 import log from 'loglevel'
 
-import { BSC_MAINNET, MAINNET, MATIC } from '../utils/enums'
+import { BSC_MAINNET, MAINNET, MATIC, MUMBAI } from '../utils/enums'
 
 const DEFAULT_INTERVAL = 60000
 
@@ -57,11 +58,16 @@ export default class AssetsDetectionController {
   }
 
   getOwnerCollectiblesApi(address) {
+    // eslint-disable-next-line no-console
+    console.log('current address', address, this.currentNetwork)
     if (this.currentNetwork === MAINNET) {
       return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
     }
-    if (this.currentNetwork === MATIC || BSC_MAINNET) {
+    if (this.currentNetwork === MATIC) {
       return `https://api.covalenthq.com/v1/137/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
+    }
+    if (this.currentNetwork === MUMBAI) {
+      return `https://api.covalenthq.com/v1/80001/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
     }
     if (this.currentNetwork === BSC_MAINNET) {
       return `https://api.covalenthq.com/v1/56/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
@@ -80,7 +86,7 @@ export default class AssetsDetectionController {
         const collectibles = response.data.assets
         return collectibles
       }
-      if (this.currentNetwork === MATIC || BSC_MAINNET) {
+      if (this.currentNetwork === MATIC || this.currentNetwork === BSC_MAINNET || this.currentNetwork === MUMBAI) {
         response = await this.getCovalentNfts(this.collectibleApi)
         const collectibles = response.data?.data?.items || []
         return collectibles
@@ -108,6 +114,15 @@ export default class AssetsDetectionController {
    */
   isPolygonMainnet() {
     return this.network.getNetworkNameFromNetworkCode() === MATIC
+  }
+
+  /**
+   * Checks whether network is polygon mumbai testnet or not
+   *
+   * @returns - Whether current network is polygon mumbai testnet
+   */
+  isPolygonMumbaiTestnet() {
+    return this.network.getNetworkNameFromNetworkCode() === MUMBAI
   }
 
   /**
@@ -139,6 +154,9 @@ export default class AssetsDetectionController {
     } else if (this.isPolygonMainnet()) {
       await this.setNetworkConfig(MATIC)
       await this.detectCollectiblesFromCovalent(MATIC)
+    } else if (this.isPolygonMumbaiTestnet()) {
+      await this.setNetworkConfig(MUMBAI)
+      await this.detectCollectiblesFromCovalent(MUMBAI)
     } else if (this.isBinanceMainnet()) {
       await this.setNetworkConfig(BSC_MAINNET)
       await this.detectCollectiblesFromCovalent(BSC_MAINNET)
@@ -205,18 +223,19 @@ export default class AssetsDetectionController {
     }
     this.assetController.setSelectedAddress(selectedAddress)
     const apiCollectibles = await this.getOwnerCollectibles()
+    console.log('collectibles', apiCollectibles)
     for (const item of apiCollectibles) {
       if (item.type === 'nft') {
         let contractName = item.contract_name
         let standard
         const { contract_address: contractAddress, contract_ticker_symbol: contractSymbol, nft_data, supports_erc } = item
-        if (supports_erc.includes('erc721')) {
-          contractName = `${contractName} (${protocolPrefix}721)`
-          standard = 'ERC721'
-        }
+
         if (supports_erc.includes('erc1155')) {
           contractName = `${contractName} (${protocolPrefix}1155)`
           standard = 'ERC1155'
+        } else if (supports_erc.includes('erc721')) {
+          contractName = `${contractName} (${protocolPrefix}721)`
+          standard = 'ERC721'
         }
 
         let contractImage
