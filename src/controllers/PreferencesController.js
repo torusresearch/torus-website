@@ -542,6 +542,12 @@ class PreferencesController extends EventEmitter {
     return this.api.get(`${config.api}/tokenbalances`, this.headers(address), { useAPIKey: true })
   }
 
+  async getCovalentTokenBalances(address, chainId) {
+    return this.api.get(`${config.api}/covalent?url=https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/`, this.headers(), {
+      useAPIKey: true,
+    })
+  }
+
   async getBillboardContents() {
     try {
       const { selectedAddress } = this.store.getState()

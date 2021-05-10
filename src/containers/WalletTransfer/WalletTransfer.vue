@@ -795,7 +795,6 @@ export default {
         return amount.lte(this.assetSelected?.tokenBalance) || 'walletTransfer.insufficient'
       }
       if (this.selectedItem) {
-        log.info('val', value)
         let amount = new BigNumber(value || '0')
         if (this.toggle_exclusive === 1) {
           amount = amount.div(this.getCurrencyTokenRate)
