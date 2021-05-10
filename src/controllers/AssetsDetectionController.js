@@ -8,7 +8,7 @@ import log from 'loglevel'
 import { BSC_MAINNET, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, MATIC, MUMBAI } from '../utils/enums'
 
 const DEFAULT_INTERVAL = 60000
-
+const SUPPORTED_NETWORKS = new Set([MAINNET, MATIC, MUMBAI, BSC_MAINNET])
 export default class AssetsDetectionController {
   constructor(options) {
     this.interval = options.interval || DEFAULT_INTERVAL
@@ -16,7 +16,6 @@ export default class AssetsDetectionController {
     this.network = options.network
     this.assetController = options.assetController
     this.assetContractController = options.assetContractController
-    this.getOpenSeaCollectibles = options.getOpenSeaCollectibles
     this.getCovalentNfts = options.getCovalentNfts
     this.currentNetwork = null
     this.collectibleApi = null
@@ -58,7 +57,7 @@ export default class AssetsDetectionController {
 
   getOwnerCollectiblesApi(address) {
     if (this.currentNetwork === MAINNET) {
-      return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
+      return `https://api.covalenthq.com/v1/1/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
     }
     if (this.currentNetwork === MATIC) {
       return `https://api.covalenthq.com/v1/137/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
@@ -78,12 +77,7 @@ export default class AssetsDetectionController {
     }
     let response
     try {
-      if (this.currentNetwork === MAINNET) {
-        response = await this.getOpenSeaCollectibles(this.collectibleApi)
-        const collectibles = response.data.assets
-        return collectibles
-      }
-      if (this.currentNetwork === MATIC || this.currentNetwork === BSC_MAINNET || this.currentNetwork === MUMBAI) {
+      if (SUPPORTED_NETWORKS.has(this.currentNetwork)) {
         response = await this.getCovalentNfts(this.collectibleApi)
         const collectibles = response.data?.data?.items || []
         return collectibles
@@ -93,42 +87,6 @@ export default class AssetsDetectionController {
       log.error(error)
       return []
     }
-  }
-
-  /**
-   * Checks whether network is eth mainnet or not
-   *
-   * @returns - Whether current network is eth mainnet
-   */
-  isEthMainnet() {
-    return this.network.getNetworkNameFromNetworkCode() === MAINNET
-  }
-
-  /**
-   * Checks whether network is polygon mainnet or not
-   *
-   * @returns - Whether current network is polygon mainnet
-   */
-  isPolygonMainnet() {
-    return this.network.getNetworkNameFromNetworkCode() === MATIC
-  }
-
-  /**
-   * Checks whether network is polygon mumbai testnet or not
-   *
-   * @returns - Whether current network is polygon mumbai testnet
-   */
-  isPolygonMumbaiTestnet() {
-    return this.network.getNetworkNameFromNetworkCode() === MUMBAI
-  }
-
-  /**
-   * Checks whether network is binance mainnet or not
-   *
-   * @returns - Whether current network is binance mainnet
-   */
-  isBinanceMainnet() {
-    return this.network.getNetworkNameFromNetworkCode() === BSC_MAINNET
   }
 
   /**
@@ -145,67 +103,15 @@ export default class AssetsDetectionController {
    */
   async detectCollectibles() {
     /* istanbul ignore if */
-    if (this.isEthMainnet()) {
-      await this.setNetworkConfig(MAINNET)
-      await this.detectMainnetCollectibles()
-    } else if (this.isPolygonMainnet()) {
-      await this.setNetworkConfig(MATIC)
-      await this.detectCollectiblesFromCovalent(MATIC)
-    } else if (this.isPolygonMumbaiTestnet()) {
-      await this.setNetworkConfig(MUMBAI)
-      await this.detectCollectiblesFromCovalent(MUMBAI)
-    } else if (this.isBinanceMainnet()) {
-      await this.setNetworkConfig(BSC_MAINNET)
-      await this.detectCollectiblesFromCovalent(BSC_MAINNET)
-    }
+    const currentNetwork = this.network.getNetworkNameFromNetworkCode()
+    await this.setNetworkConfig(currentNetwork)
+    await this.detectCollectiblesFromCovalent(currentNetwork)
   }
 
   async setNetworkConfig(network) {
     this.currentNetwork = network
     const { selectedAddress } = this
     this.collectibleApi = this.getOwnerCollectiblesApi(selectedAddress)
-  }
-
-  async detectMainnetCollectibles() {
-    const { selectedAddress } = this
-    /* istanbul ignore else */
-    if (!selectedAddress) {
-      return
-    }
-    this.assetController.setSelectedAddress(selectedAddress)
-    const apiCollectibles = await this.getOwnerCollectibles()
-    for (const {
-      token_id: tokenID,
-      image_url: imageURL,
-      name,
-      description,
-      asset_contract: {
-        address: contractAddress,
-        name: contractName,
-        symbol: contractSymbol,
-        image_url: contractImage = '',
-        total_supply: contractSupply,
-        description: contractDescription,
-      },
-    } of apiCollectibles) {
-      // eslint-disable-next-line no-await-in-loop
-      await this.assetController.addCollectible(
-        contractAddress,
-        tokenID.toString(),
-        {
-          description,
-          image: imageURL || (contractImage || '').replace('=s60', '=s240'),
-          name: name || `${contractName}#${tokenID}`,
-          contractAddress,
-          contractName,
-          contractSymbol,
-          contractImage: (contractImage || '').replace('=s60', '=s240') || imageURL,
-          contractSupply,
-          contractDescription,
-        },
-        true
-      )
-    }
   }
 
   async detectCollectiblesFromCovalent(network) {

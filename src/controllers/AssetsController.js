@@ -8,6 +8,7 @@ import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
+import { CONTRACT_TYPE_ERC721 } from '../utils/enums'
 import { get } from '../utils/httpHelpers'
 
 const initStateObject = { allCollectibleContracts: {}, allCollectibles: {}, allTokens: {}, collectibleContracts: [], collectibles: [], tokens: [] }
@@ -19,7 +20,7 @@ export default class AssetController {
     this.network = options.network
     this.assetContractController = options.assetContractController
     this.selectedAddress = options.selectedAddress
-    this.getOpenSeaCollectibles = options.getOpenSeaCollectibles
+    this.getCollectibleMetadata = options.getCollectibleMetadata
     this.initializeNetworkSubscription()
   }
 
@@ -51,48 +52,21 @@ export default class AssetController {
     })
   }
 
-  getCollectibleApi(contractAddress, tokenId) {
-    return `https://api.opensea.io/api/v1/asset/${contractAddress}/${tokenId}`
-  }
-
-  getCollectibleContractInformationApi(contractAddress) {
-    return `https://api.opensea.io/api/v1/asset_contract/${contractAddress}`
-  }
-
   /**
-   * Get collectible tokenURI API following ERC721
+   * Get collectible tokenURI API following ERC721/ERC1155
    *
-   * @param contractAddress - ERC721 asset contract address
-   * @param tokenId - ERC721 asset identifier
+   * @param contractAddress - ERC721/ERC1155 asset contract address
+   * @param tokenId - ERC721/ERC1155 asset identifier
+   * @param interfaceStandard - ERC721/ERC1155 standard
    * @returns - Collectible tokenURI
    */
-  async getCollectibleTokenURI(contractAddress, tokenId) {
+  async getCollectibleTokenURI(contractAddress, tokenId, interfaceStandard) {
     try {
-      const interfaceStandard = await this.assetContractController.contractSupportsMetadataInterface(contractAddress)
-      /* istanbul ignore if */
-      if (!interfaceStandard) {
-        return ''
-      }
       return this.assetContractController.getCollectibleTokenURI(contractAddress, tokenId, interfaceStandard)
     } catch (error) {
       log.error(error)
     }
     return ''
-  }
-
-  /**
-   * Request individual collectible information from OpenSea api
-   *
-   * @param contractAddress - Hex address of the collectible contract
-   * @param tokenId - The collectible identifier
-   * @returns - Promise resolving to the current collectible name and image
-   */
-  async getCollectibleInformationFromApi(contractAddress, tokenId) {
-    const tokenURI = this.getCollectibleApi(contractAddress, tokenId)
-    const collectibleInformation = await this.getOpenSeaCollectibles(tokenURI)
-
-    const { name, description, image_original_url: image } = collectibleInformation.data
-    return { image, name, description }
   }
 
   /**
@@ -103,56 +77,19 @@ export default class AssetController {
    * @returns - Promise resolving to the current collectible name and image
    */
   async getCollectibleInformationFromTokenURI(contractAddress, tokenId) {
-    const tokenURI = await this.getCollectibleTokenURI(contractAddress, tokenId)
+    const interfaceStandard = await this.assetContractController.contractSupportsMetadataInterface(contractAddress)
+    /* istanbul ignore if */
+    if (!interfaceStandard) {
+      return { image: null, name: null, standard: null }
+    }
+    const tokenURI = await this.getCollectibleTokenURI(contractAddress, tokenId, interfaceStandard)
     const object = await get(tokenURI)
     const image = Object.prototype.hasOwnProperty.call(object, 'image') ? 'image' : /* istanbul ignore next */ 'image_url'
-    return { image: object[image], name: object.name }
-  }
-
-  /**
-   * Request individual collectible information (name, image url and description)
-   *
-   * @param contractAddress - Hex address of the collectible contract
-   * @param tokenId - The collectible identifier
-   * @returns - Promise resolving to the current collectible name and image
-   */
-  async getCollectibleInformation(contractAddress, tokenId) {
-    try {
-      let information
-      // First try with OpenSea
-      information = await this.getCollectibleInformationFromApi(contractAddress, tokenId)
-
-      if (information) {
-        return information
-      }
-      // Then following ERC721 standard
-      information = await this.getCollectibleInformationFromTokenURI(contractAddress, tokenId)
-
-      if (information) {
-        return information
-      }
-
-      return {}
-    } catch (error) {
-      log.error(error)
-    }
-    return {}
-  }
-
-  /**
-   * Request collectible contract information from OpenSea api
-   *
-   * @param contractAddress - Hex address of the collectible contract
-   * @returns - Promise resolving to the current collectible name and image
-   */
-  async getCollectibleContractInformationFromApi(contractAddress) {
-    const api = this.getCollectibleContractInformationApi(contractAddress)
-    /* istanbul ignore if */
-
-    const collectibleContractObject = await this.getOpenSeaCollectibles(api)
-
-    const { name, symbol, image_url: imageURL, description, total_supply: totalSupply } = collectibleContractObject.data
-    return { name, symbol, image_url: imageURL, description, total_supply: totalSupply }
+    const tokenBalance =
+      interfaceStandard === CONTRACT_TYPE_ERC721
+        ? 1
+        : await this.assetContractController.getErc1155Balance(contractAddress, this.selectedAddress, tokenId)
+    return { image: object[image], name: object.name, tokenBalance }
   }
 
   /**
@@ -169,23 +106,14 @@ export default class AssetController {
   }
 
   /**
-   * Request collectible contract information from OpenSea api
+   * get collectible contract info from blockchain
    *
    * @param contractAddress - Hex address of the collectible contract
    * @returns - Promise resolving to the collectible contract name, image and description
    */
   async getCollectibleContractInformation(contractAddress) {
     try {
-      let information
-
-      // First try with OpenSea
-      information = await this.getCollectibleContractInformationFromApi(contractAddress)
-      if (information) {
-        return information
-      }
-
-      // Then following ERC721 standard
-      information = await this.getCollectibleContractInformationFromContract(contractAddress)
+      const information = await this.getCollectibleContractInformationFromContract(contractAddress)
       if (information) {
         return information
       }
@@ -217,11 +145,34 @@ export default class AssetController {
       const networkType = this.network.getNetworkNameFromNetworkCode()
       const existingEntry = collectibles.find((collectible) => collectible.address === address && collectible.tokenId === tokenId)
       if (existingEntry) {
+        if (options.standard === CONTRACT_TYPE_ERC721) {
+          return collectibles
+        }
+        if (existingEntry.tokenBalance !== options.tokenBalance) {
+          const newCollectibles = collectibles.map((collectible) => {
+            if (collectible.address === address && collectible.tokenId === tokenId) {
+              const { tokenBalance } = options
+              return { ...collectible, tokenBalance }
+            }
+            return collectible
+          })
+          const addressCollectibles = allCollectibles[selectedAddress]
+          const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: newCollectibles } }
+          const newAllCollectibles = { ...allCollectibles, ...{ [selectedAddress]: newAddressCollectibles } }
+          this.store.updateState({
+            allCollectibles: newAllCollectibles,
+            collectibles: newCollectibles,
+          })
+          return newCollectibles
+        }
         return collectibles
       }
 
-      const { name, image, description, standard, tokenBalance } = options || (await this.getCollectibleInformation(address, tokenId))
+      const { name, image, description, standard, tokenBalance } = options || (await this.getCollectibleInformationFromTokenURI(address, tokenId))
 
+      if (!name && !standard && !image) {
+        return collectibles
+      }
       const newEntry = { address, tokenId, name, image, description, standard, tokenBalance }
       const newCollectibles = [...collectibles, newEntry]
       const addressCollectibles = allCollectibles[selectedAddress]

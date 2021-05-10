@@ -692,6 +692,11 @@ class PreferencesController extends EventEmitter {
   }
 
   /* istanbul ignore next */
+  async getCollectibleMetadata(api) {
+    return this.api.get(`${config.api}/covalent?url=${api}`, this.headers(), { useAPIKey: true })
+  }
+
+  /* istanbul ignore next */
   async getCovalentNfts(api) {
     return this.api.get(`${config.api}/covalent?url=${api}`, this.headers(), { useAPIKey: true })
   }

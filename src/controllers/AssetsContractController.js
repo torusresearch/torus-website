@@ -96,6 +96,12 @@ export default class AssetContractController {
     return contract.methods.balanceOf(selectedAddress).call()
   }
 
+  getErc1155Balance(contractAddress, ownerAddress, tokenId) {
+    const web3Instance = this.web3
+    const contract = new web3Instance.eth.Contract(abiERC1155, contractAddress)
+    return contract.methods.balanceOf(ownerAddress, tokenId).call()
+  }
+
   /**
    * Enumerate assets assigned to an owner
    *
