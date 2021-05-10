@@ -63,7 +63,7 @@ export const XDAI_DISPLAY_NAME = 'xDai'
 export const MATIC_URL = 'https://rpc-mainnet.matic.network'
 export const MATIC_BLOCK_EXPLORER = 'https://explorer.matic.network'
 
-export const MUMBAI_URL = 'https://rpc-mumbai.matic.today'
+export const MUMBAI_URL = 'https://rpc-mumbai.maticvigil.com'
 export const MUMBAI_BLOCK_EXPLORER = 'https://mumbai-explorer.matic.today'
 
 export const XDAI_URL = 'https://rpc.xdaichain.com'

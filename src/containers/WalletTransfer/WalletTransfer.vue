@@ -903,7 +903,7 @@ export default {
 
       throw new Error('Invalid Contract Type')
     },
-    getNftTransferMethod(contractType, selectedAddress, toAddress, tokenId, value = 1) {
+    getNftTransferMethod(contractType, selectedAddress, toAddress, tokenId, value = 2) {
       if (contractType === CONTRACT_TYPE_ERC721) {
         const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
         return contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, tokenId)

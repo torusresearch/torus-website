@@ -596,13 +596,13 @@ export default {
         // Get ABI for method
         let txDataParameters = ''
         if (contractParams.erc1155) {
-          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory.toLowerCase()) || ''
           this.contractType = CONTRACT_TYPE_ERC1155
         } else if (contractParams.erc721) {
-          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory.toLowerCase()) || ''
           this.contractType = CONTRACT_TYPE_ERC721
         } else if (contractParams.erc20) {
-          txDataParameters = tokenABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          txDataParameters = tokenABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory.toLowerCase()) || ''
           this.contractType = CONTRACT_TYPE_ERC20
         }
         // Get Params from method type ABI
@@ -610,7 +610,7 @@ export default {
         let amountValue
         if (methodParams && Array.isArray(methodParams)) {
           if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
-            ;[amountTo, amountValue] = methodParams || []
+            ;[, amountTo, amountValue] = methodParams || []
           } else [amountTo, amountValue] = methodParams || []
         }
         log.info(methodParams, 'params')
@@ -649,9 +649,9 @@ export default {
           this.isNonFungibleToken = true
           let assetDetails = {}
           try {
-            const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
+            const url = `https://api.covalenthq.com/v1/${this.network.chainId}/tokens/${checkSummedTo}/nft_metadata/${this.amountValue}/`
             assetDetails = await get(
-              `${config.api}/opensea?url=${url}`,
+              `${config.api}/covalent?url=${url}`,
               {
                 headers: {
                   Authorization: `Bearer ${jwtToken}`,
@@ -659,9 +659,10 @@ export default {
               },
               { useAPIKey: true }
             )
+            const nftData = assetDetails.data?.data?.items[0]?.nftData[0]?.externalData
             this.assetDetails = {
-              name: assetDetails.data.name || '',
-              logo: assetDetails.data.image_thumbnail_url || '',
+              name: nftData?.name || '',
+              logo: nftData?.image || '',
             }
           } catch (error) {
             log.info(error)
