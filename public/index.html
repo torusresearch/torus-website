@@ -74,9 +74,15 @@
       <div id="skeleton-redirect" class="redirect-skeleton-container skeleton-holder">
         <div class="redirect-skeleton-content">
           <div class="spinner content">
-            <div class="beat beat-odd"></div>
-            <div class="beat beat-even"></div>
-            <div class="beat beat-odd"></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
           <!-- <h1 class="title content">Loading</h1> -->
         </div>
@@ -502,7 +508,7 @@
       } else if (/\/end/i.test(redirectPath) || /\/start/i.test(redirectPath)) {
         selectedLoader = ''
       }
-
+      
       if (selectedLoader) {
         const loaderElement = document.querySelector('#' + selectedLoader)
         if (theme === 'dark') {

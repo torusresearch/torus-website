@@ -35,57 +35,69 @@
         margin: 0;
         text-align: center;
       }
-
-      .spinner .beat {
-        background-color: #0364ff;
-        height: 12px;
-        width: 12px;
-        margin: 24px 2px 10px;
-        border-radius: 100%;
-        -webkit-animation: beatStretchDelay 0.7s infinite linear;
-        animation: beatStretchDelay 0.7s infinite linear;
-        -webkit-animation-fill-mode: both;
-        animation-fill-mode: both;
+      .spinner {
         display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
       }
-
-      .spinner .beat-odd {
+      .spinner div {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #0364ff;
+        animation: spinner 1.2s linear infinite;
+      }
+      .spinner div:nth-child(1) {
+        border-radius: 25%;
+        top: 8px;
+        left: 8px;
         animation-delay: 0s;
       }
-
-      .spinner .beat-even {
-        animation-delay: 0.35s;
+      .spinner div:nth-child(2) {
+        border-radius: 25%;
+        top: 8px;
+        left: 28px;
+        animation-delay: -0.8s;
+      }
+      .spinner div:nth-child(3) {
+        top: 8px;
+        left: 48px;
+        animation-delay: -0.4s;
+      }
+      .spinner div:nth-child(4) {
+        display: none;
+      }
+      .spinner div:nth-child(5) {
+        border-radius: 25%;
+        top: 28px;
+        left: 28px;
+        animation-delay: -0.6s;
+      }
+      .spinner div:nth-child(6) {
+        display: none;
+      }
+      .spinner div:nth-child(7) {
+        display: none;
+      }
+      .spinner div:nth-child(8) {
+        border-radius: 25%;
+        top: 48px;
+        left: 28px;
+        animation-delay: -1.2s;
+      }
+      .spinner div:nth-child(9) {
+        display: none;
       }
 
-      @-webkit-keyframes beatStretchDelay {
-        50% {
-          -webkit-transform: scale(0.75);
-          transform: scale(0.75);
-          -webkit-opacity: 0.2;
-          opacity: 0.2;
-        }
-
+      @keyframes spinner {
+        0%,
         100% {
-          -webkit-transform: scale(1);
-          transform: scale(1);
-          -webkit-opacity: 1;
           opacity: 1;
         }
-      }
-
-      @keyframes beatStretchDelay {
         50% {
-          -webkit-transform: scale(0.75);
-          transform: scale(0.75);
-          -webkit-opacity: 0.2;
-          opacity: 0.2;
-        }
-
-        100% {
-          -webkit-transform: scale(1);
-          transform: scale(1);
-          -webkit-opacity: 1;
-          opacity: 1;
+          opacity: 0.3;
         }
       }
 
@@ -109,9 +121,7 @@
   <body>
     <div id="message" class="container">
       <div class="spinner content" id="spinner">
-        <div class="beat beat-odd"></div>
-        <div class="beat beat-even"></div>
-        <div class="beat beat-odd"></div>
+        <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
       </div>
       <h1 class="title content" id="closeText" style="display: none;">You can close this window now</h1>
     </div>

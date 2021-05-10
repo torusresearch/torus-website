@@ -1,0 +1,69 @@
+<template>
+  <div class="box-loader">
+    <div
+      v-for="n in 9"
+      :key="n"
+      class="box-loader_beat"
+      :class="[`box-loader_beat-${n % 2 ? 'odd' : 'even'}`, { 'box-loader_beat--hidden': hidden.includes(n) }]"
+      :style="spinnerStyle(n)"
+    ></div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'BoxLoader',
+  props: {
+    color: {
+      type: String,
+      default: '#0364FF',
+    },
+    size: {
+      type: String,
+      default: '16px',
+    },
+    margin: {
+      type: String,
+      default: '2px',
+    },
+    radius: {
+      type: String,
+      default: '50%',
+    },
+    hidden: {
+      type: Array,
+      default() {
+        return [4, 6, 7, 9]
+      },
+    },
+    square: {
+      type: Array,
+      default() {
+        return [1, 2, 5, 8]
+      },
+    },
+  },
+  data() {
+    return {
+      accent: [1, 3, 5],
+    }
+  },
+  methods: {
+    spinnerStyle(n) {
+      const delay = Math.random()
+      return {
+        backgroundColor: this.accent.includes(n) ? this.color : '#0364FF',
+        height: this.size,
+        width: this.size,
+        margin: this.margin,
+        borderRadius: this.square.includes(n) ? '25%' : '50%',
+        animationDelay: `-${delay.toFixed(2)}s`,
+      }
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+@import 'BoxLoader.scss';
+</style>
