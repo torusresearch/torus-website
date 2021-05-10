@@ -237,12 +237,10 @@ export default class AssetsDetectionController {
         let contractImage
         if (!!nft_data && nft_data.length > 0) {
           for (const nft of nft_data) {
-            const {
-              token_id: tokenID,
-              token_balance: tokenBalance,
-              external_data: { name, image: imageURL, description },
-            } = nft
-
+            const { token_id: tokenID, token_balance: tokenBalance, external_data } = nft
+            const name = external_data?.name
+            const description = external_data?.description
+            const imageURL = external_data?.image
             // nft contract images urls are invalid most of the times in covalent
             // so using asset image as contract image
             if (!contractImage) {
