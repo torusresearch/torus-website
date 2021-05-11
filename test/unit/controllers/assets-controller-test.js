@@ -52,9 +52,7 @@ describe('AssetsController', () => {
     })
 
     nock(COVALENT_API)
-      .get(
-        '/covalent?url=https://api.covalenthq.com/v1/1/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false'
-      )
+      .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/1/')
       .reply(200, {
         data: {
           data: {
