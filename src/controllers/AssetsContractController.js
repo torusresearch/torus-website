@@ -160,9 +160,10 @@ export default class AssetContractController {
    * @param address - ERC721 or ERC20 asset contract address
    * @returns - Promise resolving to the 'symbol'
    */
-  getAssetSymbol(address) {
+  getAssetSymbol(address, standard = CONTRACT_TYPE_ERC721) {
+    const abi = standard === CONTRACT_TYPE_ERC1155 ? abiERC1155 : abiERC721
     const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC721, address)
+    const contract = new web3Instance.eth.Contract(abi, address)
     return contract.methods.symbol().call()
   }
 
@@ -173,9 +174,10 @@ export default class AssetContractController {
    * @param tokenId - ERC721 asset identifier
    * @returns - Promise resolving to the owner address
    */
-  getOwnerOf(address, tokenId) {
+  getOwnerOf(address, tokenId, standard = CONTRACT_TYPE_ERC721) {
+    const abi = standard === CONTRACT_TYPE_ERC1155 ? abiERC1155 : abiERC721
     const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC721, address)
+    const contract = new web3Instance.eth.Contract(abi, address)
     return contract.methods.ownerOf(tokenId).call()
   }
 

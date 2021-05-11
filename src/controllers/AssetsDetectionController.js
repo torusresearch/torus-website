@@ -42,6 +42,10 @@ export default class AssetsDetectionController {
     this.selectedAddress = ''
   }
 
+  isMainnet() {
+    return this.network.getNetworkNameFromNetworkCode() === MAINNET
+  }
+
   /**
    * @type {Number}
    */
@@ -93,8 +97,10 @@ export default class AssetsDetectionController {
    * Detect assets owned by current account on mainnet
    */
   async detectAssets() {
-    // this.detectTokens()
-    this.detectCollectibles()
+    if (SUPPORTED_NETWORKS.has(this.network.getNetworkNameFromNetworkCode())) {
+      // this.detectTokens()
+      this.detectCollectibles()
+    }
   }
 
   /**
@@ -130,7 +136,7 @@ export default class AssetsDetectionController {
       if (item.type === 'nft') {
         let contractName = item.contract_name
         let standard
-        const { contract_address: contractAddress, contract_ticker_symbol: contractSymbol, nft_data, supports_erc } = item
+        const { logo_url, contract_address: contractAddress, contract_ticker_symbol: contractSymbol, nft_data, supports_erc } = item
 
         if (supports_erc.includes('erc1155')) {
           contractName = `${contractName} (${protocolPrefix}1155)`
@@ -140,7 +146,7 @@ export default class AssetsDetectionController {
           standard = CONTRACT_TYPE_ERC721
         }
 
-        let contractImage
+        let contractImage = logo_url
         if (!!nft_data && nft_data.length > 0) {
           for (const nft of nft_data) {
             const { token_id: tokenID, token_balance: tokenBalance, external_data } = nft
@@ -164,7 +170,6 @@ export default class AssetsDetectionController {
                 contractName,
                 contractSymbol,
                 contractImage,
-                contractSupply: null,
                 tokenBalance,
                 standard,
                 contractDescription: '',
