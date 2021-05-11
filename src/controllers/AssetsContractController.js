@@ -42,11 +42,11 @@ export default class AssetContractController {
    */
   contractSupportsInterface(address, interfaceId, standard = CONTRACT_TYPE_ERC721) {
     const web3Instance = this.web3
-    if (standard === 'ERC721') {
+    if (standard === CONTRACT_TYPE_ERC721) {
       const contract = new web3Instance.eth.Contract(abiERC721, address)
       return contract.methods.supportsInterface(interfaceId).call()
     }
-    if (standard === 'ERC1155') {
+    if (standard === CONTRACT_TYPE_ERC1155) {
       const contract = new web3Instance.eth.Contract(abiERC1155, address)
       return contract.methods.supportsInterface(interfaceId).call()
     }

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Asset Controller
  *
@@ -312,6 +313,7 @@ export default class AssetController {
       // If collectible contract was not added, do not add individual collectible
       const collectibleContract = newCollectibleContracts.find((contract) => contract.address === address)
       const collectibleOptions = { ...options, standard: collectibleContract?.standard }
+      console.log(collectibleContract, 'collectible')
       // If collectible contract information, add individual collectible
       if (collectibleContract) {
         await this.addIndividualCollectible(address, tokenId, collectibleOptions)
