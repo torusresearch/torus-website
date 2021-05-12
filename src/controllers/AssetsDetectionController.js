@@ -137,7 +137,6 @@ export default class AssetsDetectionController {
         let contractName = item.contract_name
         let standard
         const { logo_url, contract_address: contractAddress, contract_ticker_symbol: contractSymbol, nft_data, supports_erc } = item
-
         if (supports_erc.includes('erc1155')) {
           contractName = `${contractName} (${protocolPrefix}1155)`
           standard = CONTRACT_TYPE_ERC1155

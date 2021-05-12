@@ -79,6 +79,45 @@ export default class AssetController {
   }
 
   /**
+   * Adds a token to the stored token list
+   *
+   * @param address2 - Hex address of the token contract
+   * @param symbol - Symbol of the token
+   * @param decimals - Number of decimals the token uses
+   * @param image - Image of the token
+   * @returns - Current token list
+   */
+  async addToken(address2, symbol, decimals, image) {
+    try {
+      let address
+      if (isAddress(address)) address = toChecksumAddress(address2)
+      else address = address2
+      const { selectedAddress } = this
+      const { allTokens, tokens } = this.state
+      const networkType = this.network.getNetworkNameFromNetworkCode()
+      const newEntry = { address, symbol, decimals, image }
+      const previousIndex = tokens.findIndex((token) => token.address === address)
+      if (previousIndex > -1) {
+        tokens[previousIndex] = newEntry
+      } else {
+        tokens.push(newEntry)
+      }
+      const addressTokens = allTokens[selectedAddress]
+      const newAddressTokens = { ...addressTokens, [networkType]: tokens }
+      const newAllTokens = { ...allTokens, [selectedAddress]: newAddressTokens }
+      const newTokens = [...tokens]
+      this.store.updateState({
+        allTokens: newAllTokens,
+        tokens: newTokens,
+      })
+      return newTokens
+    } catch (error) {
+      log.error(error)
+      return {}
+    }
+  }
+
+  /**
    * Get collectible tokenURI API following ERC721/ERC1155
    *
    * @param contractAddress - ERC721/ERC1155 asset contract address
@@ -100,7 +139,7 @@ export default class AssetController {
    *
    * @param contractAddress - Hex address of the collectible contract
    * @param tokenId - The collectible identifier
-   * @returns - Promise resolving to the current collectible name and image
+   * @returns - Promise resolving to the current collectible name, balance, standard and image
    */
   async getCollectibleInformationFromTokenURI(contractAddress, tokenId) {
     const interfaceStandard = await this.assetContractController.contractSupportsMetadataInterface(contractAddress)
@@ -118,6 +157,13 @@ export default class AssetController {
     return { image: object[image], name: object.name, tokenBalance, description: '', standard: interfaceStandard }
   }
 
+  /**
+   * Request individual collectible information from covalent api
+   *
+   * @param contractAddress - Hex address of the collectible contract
+   * @param tokenId - The collectible identifier
+   * @returns - Promise resolving to the current collectible name, tokenBalance, standard and image
+   */
   async getCollectibleInfoFromApi(contractAddress, tokenId) {
     const collectibleApi = this.getCollectibleApi(contractAddress, tokenId)
     let collectibleInfo = { name: null, image: null, description: null, tokenBalance: null, standard: null }
@@ -143,6 +189,13 @@ export default class AssetController {
     return collectibleInfo
   }
 
+  /**
+   * Request individual collectible information from covalent api or smart contract
+   *
+   * @param contractAddress - Hex address of the collectible contract
+   * @param tokenId - The collectible identifier
+   * @returns - Promise resolving to the current collectible name, tokenBalance, standard, description and image
+   */
   async getCollectibleInfo(contractAddress, tokenId) {
     let info = await this.getCollectibleInfoFromApi(contractAddress, tokenId)
     if (info.name && info.image) {
@@ -156,7 +209,7 @@ export default class AssetController {
    * Request collectible contract information from the contract itself
    *
    * @param contractAddress - Hex address of the collectible contract
-   * @returns - Promise resolving to the current collectible name and image
+   * @returns - Promise resolving to the current collectible conract name, symbol and standard
    */
   async getCollectibleContractInformationFromContract(contractAddress, standard) {
     const assetsContractController = this.assetContractController
@@ -165,6 +218,12 @@ export default class AssetController {
     return { name, symbol, standard }
   }
 
+  /**
+   * Request individual collectible contract information from covalent api
+   *
+   * @param contractAddress - Hex address of the collectible contract
+   * @returns - Promise resolving to the current collectible name, symbol and image_url
+   */
   async getCollectibleContractInformationFromApi(contractAddress) {
     // tokenid is required in covalent api, but any random id can be passed
     // it will return correct contract information if contract exist even if
@@ -183,7 +242,7 @@ export default class AssetController {
    * get collectible contract info from blockchain
    *
    * @param contractAddress - Hex address of the collectible contract
-   * @returns - Promise resolving to the collectible contract name, image and description
+   * @returns - Promise resolving to the collectible contract name, image, standard and description
    */
   async getCollectibleContractInformation(contractAddress) {
     try {
@@ -278,45 +337,6 @@ export default class AssetController {
   }
 
   /**
-   * Adds a token to the stored token list
-   *
-   * @param address2 - Hex address of the token contract
-   * @param symbol - Symbol of the token
-   * @param decimals - Number of decimals the token uses
-   * @param image - Image of the token
-   * @returns - Current token list
-   */
-  async addToken(address2, symbol, decimals, image) {
-    try {
-      let address
-      if (isAddress(address)) address = toChecksumAddress(address2)
-      else address = address2
-      const { selectedAddress } = this
-      const { allTokens, tokens } = this.state
-      const networkType = this.network.getNetworkNameFromNetworkCode()
-      const newEntry = { address, symbol, decimals, image }
-      const previousIndex = tokens.findIndex((token) => token.address === address)
-      if (previousIndex > -1) {
-        tokens[previousIndex] = newEntry
-      } else {
-        tokens.push(newEntry)
-      }
-      const addressTokens = allTokens[selectedAddress]
-      const newAddressTokens = { ...addressTokens, [networkType]: tokens }
-      const newAllTokens = { ...allTokens, [selectedAddress]: newAddressTokens }
-      const newTokens = [...tokens]
-      this.store.updateState({
-        allTokens: newAllTokens,
-        tokens: newTokens,
-      })
-      return newTokens
-    } catch (error) {
-      log.error(error)
-      return {}
-    }
-  }
-
-  /**
    * Adds a collectible contract to the stored collectible contracts list
    *
    * @param address - Hex address of the collectible contract
@@ -346,6 +366,7 @@ export default class AssetController {
     } else {
       contractInformation = await this.getCollectibleContractInformation(address)
     }
+
     const interfaceStandard = contractInformation.standard || (await this.assetContractController.contractSupportsMetadataInterface(address))
     const { name, symbol, image_url: imageURL, description } = contractInformation
     // If being auto-detected covalent information is expected
