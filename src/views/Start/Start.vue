@@ -25,13 +25,14 @@ export default {
   computed: {
     ...mapState({
       loginConfig: (state) => state.embedState.loginConfig,
+      whiteLabel: 'whiteLabel',
     }),
   },
   async mounted() {
     try {
       const { verifier, state, skipTKey, ...rest } = this.$route.query
       log.info('logging in with', verifier, state, skipTKey)
-      const openLogin = await getOpenLoginInstance()
+      const openLogin = await getOpenLoginInstance(this.whiteLabel)
       await openLogin.login({
         loginProvider: this.loginConfig[verifier]?.loginProvider,
         getWalletKey: true,

@@ -18,6 +18,7 @@ import Torus from '@toruslabs/torus.js'
 import { BroadcastChannel } from 'broadcast-channel'
 import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
+import { mapState } from 'vuex'
 
 // import BeatLoader from 'vue-spinner/src/BeatLoader'
 import { getOpenLoginInstance } from '../../openlogin'
@@ -26,11 +27,16 @@ import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   name: 'End',
+  computed: {
+    ...mapState({
+      whiteLabel: 'whiteLabel',
+    }),
+  },
   // components: { BeatLoader },
   async mounted() {
     try {
       const torus = new Torus()
-      const openLogin = await getOpenLoginInstance()
+      const openLogin = await getOpenLoginInstance(this.whiteLabel)
       const { state } = openLogin
       log.info(state, 'state')
       const allInfo = state.store.getStore()
