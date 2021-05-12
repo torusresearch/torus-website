@@ -43,12 +43,12 @@ describe('AssetsController', () => {
     assetsContract = new AssetsContractController({
       provider: network._providerProxy,
     })
-    sandbox.stub(assetsContract, 'contractSupportsMetadataInterface').returns('erc721')
+    sandbox.stub(assetsContract, 'checkNftStandard').returns('erc721')
     assetsController = new AssetsController({
       selectedAddress: TEST_ADDRESS,
       assetContractController: assetsContract,
       network,
-      getCollectibleMetadata: prefsController.getCollectibleMetadata.bind(prefsController),
+      getCovalentNfts: prefsController.getCovalentNfts.bind(prefsController),
     })
 
     nock(COVALENT_API)

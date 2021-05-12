@@ -5,10 +5,9 @@
 
 import log from 'loglevel'
 
-import { BSC_MAINNET, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, MATIC, MUMBAI } from '../utils/enums'
+import { BSC_MAINNET, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
 
 const DEFAULT_INTERVAL = 60000
-const SUPPORTED_NETWORKS = new Set([MAINNET, MATIC, MUMBAI, BSC_MAINNET])
 export default class AssetsDetectionController {
   constructor(options) {
     this.interval = options.interval || DEFAULT_INTERVAL
@@ -60,19 +59,11 @@ export default class AssetsDetectionController {
   }
 
   getOwnerCollectiblesApi(address) {
-    if (this.currentNetwork === MAINNET) {
-      return `https://api.covalenthq.com/v1/1/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
+    const chainId = NFT_SUPPORTED_NETWORKS[this.currentNetwork]
+    if (chainId) {
+      return `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
     }
-    if (this.currentNetwork === MATIC) {
-      return `https://api.covalenthq.com/v1/137/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
-    }
-    if (this.currentNetwork === MUMBAI) {
-      return `https://api.covalenthq.com/v1/80001/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
-    }
-    if (this.currentNetwork === BSC_MAINNET) {
-      return `https://api.covalenthq.com/v1/56/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
-    }
-    return null
+    return ''
   }
 
   async getOwnerCollectibles() {
@@ -81,7 +72,7 @@ export default class AssetsDetectionController {
     }
     let response
     try {
-      if (SUPPORTED_NETWORKS.has(this.currentNetwork)) {
+      if (NFT_SUPPORTED_NETWORKS[this.currentNetwork]) {
         response = await this.getCovalentNfts(this.collectibleApi)
         const collectibles = response.data?.data?.items || []
         return collectibles
@@ -97,7 +88,7 @@ export default class AssetsDetectionController {
    * Detect assets owned by current account on mainnet
    */
   async detectAssets() {
-    if (SUPPORTED_NETWORKS.has(this.network.getNetworkNameFromNetworkCode())) {
+    if (NFT_SUPPORTED_NETWORKS[this.network.getNetworkNameFromNetworkCode()]) {
       // this.detectTokens()
       this.detectCollectibles()
     }
@@ -110,14 +101,10 @@ export default class AssetsDetectionController {
   async detectCollectibles() {
     /* istanbul ignore if */
     const currentNetwork = this.network.getNetworkNameFromNetworkCode()
-    await this.setNetworkConfig(currentNetwork)
-    await this.detectCollectiblesFromCovalent(currentNetwork)
-  }
-
-  async setNetworkConfig(network) {
-    this.currentNetwork = network
+    this.currentNetwork = currentNetwork
     const { selectedAddress } = this
     this.collectibleApi = this.getOwnerCollectiblesApi(selectedAddress)
+    await this.detectCollectiblesFromCovalent(currentNetwork)
   }
 
   async detectCollectiblesFromCovalent(network) {

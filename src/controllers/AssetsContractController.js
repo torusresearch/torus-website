@@ -12,9 +12,10 @@ import Web3 from 'web3'
 import {
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
+  ERC721_INTERFACE_ID,
   ERC721ENUMERABLE_INTERFACE_ID,
   ERC721METADATA_INTERFACE_ID,
-  ERC1155METADATA_INTERFACE_ID,
+  ERC1155_INTERFACE_ID,
   SINGLE_CALL_BALANCES_ADDRESS,
 } from '../utils/enums'
 import abiERC1155 from '../utils/ERC1155Abi'
@@ -40,17 +41,10 @@ export default class AssetContractController {
    * @param interfaceId - Interface identifier
    * @returns - Promise resolving to whether the contract implements `interfaceID`
    */
-  contractSupportsInterface(address, interfaceId, standard = CONTRACT_TYPE_ERC721) {
+  contractSupportsInterface(address, interfaceId) {
     const web3Instance = this.web3
-    if (standard === CONTRACT_TYPE_ERC721) {
-      const contract = new web3Instance.eth.Contract(abiERC721, address)
-      return contract.methods.supportsInterface(interfaceId).call()
-    }
-    if (standard === CONTRACT_TYPE_ERC1155) {
-      const contract = new web3Instance.eth.Contract(abiERC1155, address)
-      return contract.methods.supportsInterface(interfaceId).call()
-    }
-    return false
+    const contract = new web3Instance.eth.Contract(abiERC721, address)
+    return contract.methods.supportsInterface(interfaceId).call()
   }
 
   /**
@@ -60,17 +54,26 @@ export default class AssetContractController {
    * @returns - Promise resolving to whether the contract implements ERC721Metadata interface
    */
   contractSupportsMetadataInterface(address) {
-    const isErc721 = this.contractSupportsInterface(address, ERC721METADATA_INTERFACE_ID, CONTRACT_TYPE_ERC721)
+    return this.contractSupportsInterface(address, ERC721METADATA_INTERFACE_ID, CONTRACT_TYPE_ERC721)
+  }
 
+  /**
+   * Query the nft standard implemented in  given smart contract address
+   *
+   * @param address - ERC721/ERC1155 asset contract address
+   * @returns - Promise resolving to the standard (erc721, erc1155) or throws error if
+   * contract is not a valid nft contract
+   */
+  async checkNftStandard(address) {
+    const isErc721 = await this.contractSupportsInterface(address, ERC721_INTERFACE_ID)
     if (isErc721) {
       return CONTRACT_TYPE_ERC721
     }
-    const isErc1155 = this.contractSupportsInterface(address, ERC1155METADATA_INTERFACE_ID, CONTRACT_TYPE_ERC1155)
-
+    const isErc1155 = await this.contractSupportsInterface(address, ERC1155_INTERFACE_ID)
     if (isErc1155) {
       return CONTRACT_TYPE_ERC1155
     }
-    return false
+    throw new Error('Contract address does not support any valid nft standard')
   }
 
   /**
@@ -124,10 +127,10 @@ export default class AssetContractController {
    * @returns - Promise resolving to the 'tokenURI'
    */
   getCollectibleTokenURI(address, tokenId, standard = CONTRACT_TYPE_ERC721) {
-    const abi = standard === CONTRACT_TYPE_ERC721 ? abiERC721 : abiERC1155
+    const { abi, method } = standard === CONTRACT_TYPE_ERC721 ? { abi: abiERC721, method: 'tokenURI' } : { abi: abiERC1155, method: 'uri' }
     const web3Instance = this.web3
     const contract = new web3Instance.eth.Contract(abi, address)
-    return contract.methods.tokenURI(tokenId).call()
+    return contract.methods[method](tokenId).call()
   }
 
   /**
@@ -145,7 +148,7 @@ export default class AssetContractController {
   /**
    * Query for name for a given asset
    *
-   * @param address - ERC721 or ERC20 asset contract address
+   * @param address - ERC721 or ERC20 or ERC1155 asset contract address
    * @returns - Promise resolving to the 'name'
    */
   getAssetName(address) {
@@ -157,13 +160,12 @@ export default class AssetContractController {
   /**
    * Query for symbol for a given asset
    *
-   * @param address - ERC721 or ERC20 asset contract address
+   * @param address - ERC721/ERC1155 or ERC20 asset contract address
    * @returns - Promise resolving to the 'symbol'
    */
-  getAssetSymbol(address, standard = CONTRACT_TYPE_ERC721) {
-    const abi = standard === CONTRACT_TYPE_ERC1155 ? abiERC1155 : abiERC721
+  getAssetSymbol(address) {
     const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abi, address)
+    const contract = new web3Instance.eth.Contract(abiERC721, address)
     return contract.methods.symbol().call()
   }
 
@@ -174,10 +176,9 @@ export default class AssetContractController {
    * @param tokenId - ERC721 asset identifier
    * @returns - Promise resolving to the owner address
    */
-  getOwnerOf(address, tokenId, standard = CONTRACT_TYPE_ERC721) {
-    const abi = standard === CONTRACT_TYPE_ERC1155 ? abiERC1155 : abiERC721
+  getOwnerOf(address, tokenId) {
     const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abi, address)
+    const contract = new web3Instance.eth.Contract(abiERC721, address)
     return contract.methods.ownerOf(tokenId).call()
   }
 

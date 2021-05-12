@@ -23,9 +23,6 @@ export default {
   sendEmail(_, payload) {
     return prefsController.sendEmail(payload)
   },
-  getOpenseaCollectibles(_, payload) {
-    return prefsController.getOpenSeaCollectibles(payload.tokenURI)
-  },
   setSuccessMessage(context, payload) {
     prefsController.handleSuccess(payload)
   },

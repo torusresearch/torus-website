@@ -8,26 +8,9 @@ import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
-import {
-  BSC_MAINNET,
-  BSC_MAINNET_CODE,
-  CONTRACT_TYPE_ERC721,
-  CONTRACT_TYPE_ERC1155,
-  MAINNET,
-  MAINNET_CODE,
-  MATIC,
-  MATIC_CODE,
-  MUMBAI,
-  MUMBAI_CODE,
-} from '../utils/enums'
+import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
 import { get } from '../utils/httpHelpers'
 
-const SUPPORTED_NETWORKS = {
-  [MATIC]: MATIC_CODE,
-  [MUMBAI]: MUMBAI_CODE,
-  [BSC_MAINNET]: BSC_MAINNET_CODE,
-  [MAINNET]: MAINNET_CODE,
-}
 const initStateObject = { allCollectibleContracts: {}, allCollectibles: {}, allTokens: {}, collectibleContracts: [], collectibles: [], tokens: [] }
 
 export default class AssetController {
@@ -37,7 +20,7 @@ export default class AssetController {
     this.network = options.network
     this.assetContractController = options.assetContractController
     this.selectedAddress = options.selectedAddress
-    this.getCollectibleMetadata = options.getCollectibleMetadata
+    this.getCovalentNfts = options.getCovalentNfts
     this.initializeNetworkSubscription()
   }
 
@@ -71,7 +54,7 @@ export default class AssetController {
 
   getCollectibleApi(contractAddress, tokenId) {
     const networkType = this.network.getNetworkNameFromNetworkCode()
-    const chainId = SUPPORTED_NETWORKS[networkType]
+    const chainId = NFT_SUPPORTED_NETWORKS[networkType]
     if (chainId) {
       return `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${tokenId}/`
     }
@@ -142,11 +125,7 @@ export default class AssetController {
    * @returns - Promise resolving to the current collectible name, balance, standard and image
    */
   async getCollectibleInformationFromTokenURI(contractAddress, tokenId) {
-    const interfaceStandard = await this.assetContractController.contractSupportsMetadataInterface(contractAddress)
-    /* istanbul ignore if */
-    if (!interfaceStandard) {
-      return { image: null, name: null, standard: null, description: null }
-    }
+    const interfaceStandard = await this.assetContractController.checkNftStandard(contractAddress)
     const tokenURI = await this.getCollectibleTokenURI(contractAddress, tokenId, interfaceStandard)
     const object = await get(tokenURI)
     const image = Object.prototype.hasOwnProperty.call(object, 'image') ? 'image' : /* istanbul ignore next */ 'image_url'
@@ -170,7 +149,7 @@ export default class AssetController {
     if (!collectibleApi) {
       return collectibleInfo
     }
-    const res = await this.getCollectibleMetadata(collectibleApi)
+    const res = await this.getCovalentNfts(collectibleApi)
     const contractData = res.data?.data?.items
     if (contractData.length > 0) {
       const { nft_data: nftData } = contractData[0]
@@ -213,8 +192,8 @@ export default class AssetController {
    */
   async getCollectibleContractInformationFromContract(contractAddress, standard) {
     const assetsContractController = this.assetContractController
-    const name = await assetsContractController.getAssetName(contractAddress, standard)
-    const symbol = await assetsContractController.getAssetSymbol(contractAddress, standard)
+    const name = await assetsContractController.getAssetName(contractAddress)
+    const symbol = await assetsContractController.getAssetSymbol(contractAddress)
     return { name, symbol, standard }
   }
 
@@ -229,7 +208,7 @@ export default class AssetController {
     // it will return correct contract information if contract exist even if
     // token id is incorrect.
     const collectibleContractApi = this.getCollectibleApi(contractAddress, 1)
-    const res = await this.getCollectibleMetadata(collectibleContractApi)
+    const res = await this.getCovalentNfts(collectibleContractApi)
     const contractData = res.data?.data?.items
     if (contractData.length > 0) {
       const { contract_name: name, contract_ticker_symbol: symbol, logo_url: image_url } = contractData[0]
@@ -246,14 +225,14 @@ export default class AssetController {
    */
   async getCollectibleContractInformation(contractAddress) {
     try {
-      const standard = await this.assetContractController.contractSupportsMetadataInterface(contractAddress)
+      const standard = await this.assetContractController.checkNftStandard(contractAddress)
       let information = await this.getCollectibleContractInformationFromApi(contractAddress)
       if (information.name && information.symbol) {
         return { ...information, standard }
       }
-      information = await this.getCollectibleContractInformationFromContract(contractAddress, standard)
+      information = await this.getCollectibleContractInformationFromContract(contractAddress)
       if (information) {
-        return information
+        return { ...information, standard }
       }
       /* istanbul ignore next */
       return {}
@@ -367,7 +346,7 @@ export default class AssetController {
       contractInformation = await this.getCollectibleContractInformation(address)
     }
 
-    const interfaceStandard = contractInformation.standard || (await this.assetContractController.contractSupportsMetadataInterface(address))
+    const interfaceStandard = contractInformation.standard || (await this.assetContractController.checkNftStandard(address))
     const { name, symbol, image_url: imageURL, description } = contractInformation
     // If being auto-detected covalent information is expected
     // Oherwise at least name and symbol from contract is needed

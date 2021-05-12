@@ -46,7 +46,12 @@ export const MUMBAI_CHAIN_ID = '0x13881'
 export const BSC_MAINNET_CHAIN_ID = '0x38'
 export const BSC_TESTNET_CHAIN_ID = '0x61'
 export const XDAI_CHAIN_ID = '0x64'
-
+export const NFT_SUPPORTED_NETWORKS = {
+  [MATIC]: MATIC_CODE,
+  [MUMBAI]: MUMBAI_CODE,
+  [BSC_MAINNET]: BSC_MAINNET_CODE,
+  [MAINNET]: MAINNET_CODE,
+}
 export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
 export const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
 export const KOVAN_DISPLAY_NAME = 'Kovan Test Network'
@@ -104,6 +109,8 @@ export const DEPLOY_CONTRACT_ACTION_KEY = 'contractDeployment'
 export const CONTRACT_INTERACTION_KEY = 'contractInteraction'
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+export const ERC1155_INTERFACE_ID = '0xd9b67a26'
+export const ERC721_INTERFACE_ID = '0x80ac58cd'
 export const ERC1155METADATA_INTERFACE_ID = '0x0e89341c'
 export const ERC721METADATA_INTERFACE_ID = '0x5b5e139f'
 export const ERC721ENUMERABLE_INTERFACE_ID = '0x780e9d63'

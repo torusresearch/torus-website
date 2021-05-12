@@ -8,9 +8,9 @@ import AssetsController from '../../../src/controllers/AssetsController'
 import AssetsDetectionController from '../../../src/controllers/AssetsDetectionController'
 import NetworkController from '../../../src/controllers/NetworkController'
 import PreferencesController from '../../../src/controllers/PreferencesController'
+import { BSC_MAINNET, MAINNET, MATIC, MUMBAI } from '../../../src/utils/enums'
 import { userBalances } from '../../data/covalent-nft-data'
 
-const MAINNET = 'mainnet'
 const ROPSTEN = 'ropsten'
 const noop = () => {}
 const TEST_ADDRESS = '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'
@@ -49,7 +49,7 @@ describe('AssetsDetectionController', () => {
       selectedAddress: TEST_ADDRESS,
       assetContractController: assetsContract,
       network,
-      getCollectibleMetadata: prefsController.getCollectibleMetadata.bind(prefsController),
+      getCovalentNfts: prefsController.getCovalentNfts.bind(prefsController),
     })
 
     assetsDetection = new AssetsDetectionController({
@@ -58,8 +58,34 @@ describe('AssetsDetectionController', () => {
       assetController: assets,
       getCovalentNfts: prefsController.getCovalentNfts.bind(prefsController),
     })
+
+    // eth mainnet
     nock(COVALENT_API)
       .get('/covalent?url=https://api.covalenthq.com/v1/1/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
+      .reply(200, {
+        data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
+      })
+      .persist(true)
+
+    // polygon
+    nock(COVALENT_API)
+      .get('/covalent?url=https://api.covalenthq.com/v1/137/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
+      .reply(200, {
+        data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
+      })
+      .persist(true)
+
+    // polygon mumbai
+    nock(COVALENT_API)
+      .get('/covalent?url=https://api.covalenthq.com/v1/80001/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
+      .reply(200, {
+        data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
+      })
+      .persist(true)
+
+    // bsc mainnet
+    nock(COVALENT_API)
+      .get('/covalent?url=https://api.covalenthq.com/v1/56/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -71,7 +97,7 @@ describe('AssetsDetectionController', () => {
     nock.cleanAll()
   })
 
-  it('should poll and detect assets on interval while on mainnet', () =>
+  it('should poll and detect assets on interval while on mainnet, binance net, matic mainnet and matic testnet', () =>
     new Promise((resolve) => {
       const clock = sandbox.useFakeTimers()
       const localNetwork = new NetworkController()
@@ -87,6 +113,15 @@ describe('AssetsDetectionController', () => {
       sandbox.assert.calledOnce(mockCollectibles)
       clock.tick(60000)
       sandbox.assert.calledTwice(mockCollectibles)
+      localNetwork.setProviderType(BSC_MAINNET)
+      clock.tick(60000)
+      sandbox.assert.calledThrice(mockCollectibles)
+      localNetwork.setProviderType(MATIC)
+      clock.tick(60000)
+      sandbox.assert.callCount(mockCollectibles, 4)
+      localNetwork.setProviderType(MUMBAI)
+      clock.tick(60000)
+      sandbox.assert.callCount(mockCollectibles, 5)
       mockCollectibles.restore()
       resolve()
     }))
@@ -164,7 +199,7 @@ describe('AssetsDetectionController', () => {
     network.setProviderType(MAINNET)
     assetsDetection.selectedAddress = TEST_ADDRESS
     await assetsDetection.detectCollectibles()
-    assert.deepStrictEqual(assets.state.collectibles, [
+    const expectedCollectibles = [
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04gg',
         tokenId: '2577',
@@ -219,7 +254,20 @@ describe('AssetsDetectionController', () => {
         tokenBalance: '1',
         description: 'Description 2581',
       },
-    ])
+    ]
+    assert.deepStrictEqual(assets.state.collectibles, expectedCollectibles)
+    network.setProviderType(MUMBAI)
+    assert.deepStrictEqual(assets.state.collectibles, [])
+    await assetsDetection.detectCollectibles()
+    assert.deepStrictEqual(assets.state.collectibles, expectedCollectibles)
+    network.setProviderType(MATIC)
+    assert.deepStrictEqual(assets.state.collectibles, [])
+    await assetsDetection.detectCollectibles()
+    assert.deepStrictEqual(assets.state.collectibles, expectedCollectibles)
+    network.setProviderType(BSC_MAINNET)
+    assert.deepStrictEqual(assets.state.collectibles, [])
+    await assetsDetection.detectCollectibles()
+    assert.deepStrictEqual(assets.state.collectibles, expectedCollectibles)
   })
 
   it('should not detect and add collectibles if there is no selectedAddress', async () => {
