@@ -38,7 +38,12 @@
       <v-layout mx-6 my-4 wrap>
         <v-flex xs3 class="pt-3">
           <div class="caption">
-            {{ t('walletTransfer.totalCost') }}
+            {{
+              contractType === CONTRACT_TYPE_ERC721 ||
+              (contractType === CONTRACT_TYPE_ERC1155 && transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+                ? t('walletTransfer.collectibleId')
+                : t('walletTransfer.totalCost')
+            }}
           </div>
         </v-flex>
         <v-flex xs9>
@@ -431,6 +436,8 @@ export default {
       userInfo: {},
       contractType: CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
+      CONTRACT_TYPE_ERC721,
+      CONTRACT_TYPE_ERC1155,
       nonce: -1,
       decryptedData: {},
       encryptedMessage: '',
@@ -605,6 +612,7 @@ export default {
           txDataParameters = tokenABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory.toLowerCase()) || ''
           this.contractType = CONTRACT_TYPE_ERC20
         }
+
         // Get Params from method type ABI
         let amountTo
         let amountValue

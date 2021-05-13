@@ -271,19 +271,30 @@
                   </template>
                 </v-text-field>
                 <v-text-field
-                  v-if="contractType === CONTRACT_TYPE_ERC1155"
+                  v-if="contractType === CONTRACT_TYPE_ERC1155 && assetSelected.tokenBalance > 1"
                   id="you-send-nft"
                   ref="youSendNft"
                   type="number"
-                  step="1"
                   outlined
                   required
-                  :value="displayAmount"
-                  :rules="[rules.required, lesserThan, moreThanZero, isWholeNumber]"
+                  :value="erc1155DisplayAmount"
+                  :rules="[rules.required, lesserThan, isWholeNumber, moreThanZero]"
                   aria-label="Amount you send"
                   :error-messages="sendAmountError"
-                  @change="onChangeDisplayAmount"
+                  @change="onChangeErc1155DisplayAmount"
                 >
+                  <template #append>
+                    <v-btn
+                      id="coin-mode-btn"
+                      small
+                      class="send-mode mr-2"
+                      :class="!!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusGray3--text' : 'torusGray1--text'}` : 'active'"
+                      :disabled="true"
+                      :outlined="true"
+                    >
+                      {{ assetSelected && assetSelected.name }}
+                    </v-btn>
+                  </template>
                   <template #message="props">
                     {{ $refs.youSendNft && $refs.youSendNft.errorBucket.length === 0 ? props.message : t(props.message) }}
                   </template>
@@ -305,7 +316,7 @@
               />
               <v-flex v-if="contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155" xs12 mb-6 class="text-right">
                 <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
-                <div class="headline text_2--text">{{ getEthAmount(gas, activeGasPrice) }} ETH</div>
+                <div class="headline text_2--text">{{ getEthAmount(gas, activeGasPrice) }} {{ networkType.ticker }}</div>
                 <div class="caption text_2--text">{{ gasPriceInCurrency }} {{ selectedCurrency }}</div>
               </v-flex>
               <v-flex v-else xs12 mb-6 class="text-right">
@@ -481,6 +492,7 @@ export default {
       tokenAddress: '0x',
       toEthAddress: '',
       amount: new BigNumber('0'),
+      erc1155DisplayAmount: new BigNumber('0'),
       displayAmount: new BigNumber('0'),
       convertedAmount: '',
       contactSelected: '',
@@ -715,15 +727,20 @@ export default {
       }
       return nick
     },
-    async onChangeDisplayAmount(value) {
+    async onChangeErc1155DisplayAmount(value) {
       this.sendAmountError = ''
-      if (this.contractType === CONTRACT_TYPE_ERC1155) {
-        this.displayAmount = new BigNumber(value || '0')
+      if (
+        (this.contractType === CONTRACT_TYPE_ERC1155 && BigNumber.isBigNumber(value) && !this.erc1155DisplayAmount.eq(value)) ||
+        !BigNumber.isBigNumber(value)
+      ) {
+        this.erc1155DisplayAmount = BigNumber.isBigNumber(value) ? value : new BigNumber(value || '0')
         if (this.toEthAddress) {
           this.gas = await this.calculateGas(this.toEthAddress)
         }
-        return
       }
+    },
+    async onChangeDisplayAmount(value) {
+      this.sendAmountError = ''
       if ((BigNumber.isBigNumber(value) && !this.displayAmount.eq(value)) || !BigNumber.isBigNumber(value)) {
         this.displayAmount = BigNumber.isBigNumber(value) ? value : new BigNumber(value || '0')
         if (this.toggle_exclusive === 0) {
@@ -776,7 +793,7 @@ export default {
       }
     },
     moreThanZero(value) {
-      if (this.contractType === CONTRACT_TYPE_ERC1155 && this.assetSelected) {
+      if (this.contractType === CONTRACT_TYPE_ERC1155) {
         return new BigNumber(value || '0').gt(new BigNumber('0')) || 'walletTransfer.invalidAmount'
       }
       if (this.selectedItem) {
@@ -792,7 +809,8 @@ export default {
     lesserThan(value) {
       if (this.contractType === CONTRACT_TYPE_ERC1155) {
         const amount = new BigNumber(value || '0')
-        return amount.lte(this.assetSelected?.tokenBalance) || 'walletTransfer.insufficient'
+        const balance = new BigNumber(this.assetSelected?.tokenBalance || '0')
+        return amount.lte(balance) || 'walletTransfer.insufficient'
       }
       if (this.selectedItem) {
         let amount = new BigNumber(value || '0')
@@ -895,7 +913,9 @@ export default {
                 resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC1155) {
-            this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, this.displayAmount)
+            const val =
+              Number.parseInt(this.assetSelected.tokenBalance, 10) === 1 ? new BigNumber(this.assetSelected.tokenBalance) : this.erc1155DisplayAmount
+            this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val)
               .estimateGas({ from: this.selectedAddress })
               .then((response) => {
                 resolve(new BigNumber(response || '0'))
@@ -1167,7 +1187,9 @@ export default {
           }
         )
       } else if (this.contractType === CONTRACT_TYPE_ERC1155) {
-        this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, this.displayAmount).send(
+        const val =
+          Number.parseInt(this.assetSelected.tokenBalance, 10) === 1 ? new BigNumber(this.assetSelected.tokenBalance) : this.erc1155DisplayAmount
+        this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val).send(
           {
             from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
