@@ -368,6 +368,7 @@ export default {
           },
           jwtParameters || {}
         ),
+        skipTKey: state.embedState.skipTKey,
       })
       const { keys, userInfo, postboxKey } = await loginHandler.handleLoginWindow()
       // Get all open login results

@@ -49,7 +49,15 @@ if (!isMain) {
   initStream.on('data', (chunk) => {
     const {
       name,
-      data: { enabledVerifiers = {}, apiKey = 'torus-default', whiteLabel = {}, buttonPosition = '', torusWidgetVisibility = true, loginConfig = {} },
+      data: {
+        enabledVerifiers = {},
+        apiKey = 'torus-default',
+        whiteLabel = {},
+        buttonPosition = '',
+        torusWidgetVisibility = true,
+        loginConfig = {},
+        skipTKey = false,
+      },
     } = chunk
     if (name === 'init_stream') {
       VuexStore.commit('setButtonPosition', buttonPosition)
@@ -57,6 +65,7 @@ if (!isMain) {
       if (Object.keys(whiteLabel).length > 0) VuexStore.commit('setWhiteLabel', whiteLabel)
       VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
       VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
+      VuexStore.commit('setSkipTKey', skipTKey)
       const { isRehydrationComplete } = VuexStore.state
       if (isRehydrationComplete) {
         initStream.write({

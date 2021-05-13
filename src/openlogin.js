@@ -12,7 +12,7 @@ export async function getOpenLoginInstance() {
   }
   const openLogin = new OpenLogin({
     clientId: config.openLoginClientId,
-    iframeUrl: config.openLoginUrl,
+    _iframeUrl: config.openLoginUrl,
     redirectUrl: `${config.baseRoute}end`,
     replaceUrlOnRedirect: true,
     uxMode: 'redirect',
