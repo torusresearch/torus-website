@@ -318,6 +318,8 @@ class PreferencesController extends EventEmitter {
     for (const x of txs) {
       if (
         x.network === this.network.getNetworkNameFromNetworkCode() &&
+        x.to &&
+        x.from &&
         (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase())
       ) {
         if (x.status !== 'confirmed') {
