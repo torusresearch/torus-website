@@ -95,7 +95,10 @@ export default {
               typeName = contract.name || name
               typeImageLink = contract.logo || logo
               totalAmount = fromWei(toBN(txParams.value || 0))
-              finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+              finalTo =
+                transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+                  ? amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+                  : toChecksumAddress(txParams.to)
             }
           } else {
             tokenRate = 1
