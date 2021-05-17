@@ -839,7 +839,7 @@ ${''}
           )
         )
       )
-    } else if (integrityParam && integrityParam === 'true' && scopeURL.pathname !== "/" && !isOrigin() && url.href.includes(getScope())) {
+    }  else if (integrityParam && integrityParam === 'true' && scopeURL.pathname !== "/" && !isOrigin() && url.href.includes(getScope())) {
       var promRes
       var promRej
       var prom = new Promise(function (resolve, reject) {
@@ -876,7 +876,7 @@ self.addEventListener('notificationclick', function (e) {
 
 self.__precacheManifest = [
   {
-    url: '/v1.9.11/js/app.js',
+    url: '/v1.10.10/js/app.js',
   },
 ].concat(self.__precacheManifest || [])
 
