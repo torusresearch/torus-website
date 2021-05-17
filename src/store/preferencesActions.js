@@ -99,6 +99,16 @@ export default {
                 transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
                   ? amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
                   : toChecksumAddress(txParams.to)
+            } else {
+              // their might be a case when user has the asset but it is not present in state
+              // in that case we can record it as a contract interaction transaction.
+              tokenRate = 1
+              symbol = state.networkType.ticker
+              type = 'eth'
+              typeName = state.networkType.ticker
+              typeImageLink = 'n/a'
+              totalAmount = fromWei(toBN(txParams.value || 0))
+              finalTo = toChecksumAddress(txParams.to)
             }
           } else {
             tokenRate = 1
