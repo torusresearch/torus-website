@@ -48,7 +48,7 @@ describe('AssetsController', () => {
       selectedAddress: TEST_ADDRESS,
       assetContractController: assetsContract,
       network,
-      getCovalentNfts: prefsController.getCovalentNfts.bind(prefsController),
+      getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
     })
 
     nock(COVALENT_API)

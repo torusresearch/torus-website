@@ -155,7 +155,7 @@ export default class TorusController extends EventEmitter {
     this.assetController = new AssetController({
       network: this.networkController,
       provider: this.provider,
-      getCovalentNfts: this.prefsController.getCovalentNfts.bind(this.prefsController),
+      getNftMetadata: this.prefsController.getNftMetadata.bind(this.prefsController),
     })
 
     this.assetContractController = new AssetContractController({

@@ -2,7 +2,6 @@ import assert from 'assert'
 import nock from 'nock'
 import { createSandbox } from 'sinon'
 
-import config from '../../../src/config'
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
 import AssetsController from '../../../src/controllers/AssetsController'
 import AssetsDetectionController from '../../../src/controllers/AssetsDetectionController'
@@ -14,7 +13,8 @@ import { userBalances } from '../../data/covalent-nft-data'
 const ROPSTEN = 'ropsten'
 const noop = () => {}
 const TEST_ADDRESS = '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'
-const COVALENT_API = config.api
+const COVALENT_API = 'https://api.covalenthq.com'
+
 const testAccount = {
   key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
   address: '0xa12164FeD66719297D2cF407bb314D07FEb12C02',
@@ -49,7 +49,7 @@ describe('AssetsDetectionController', () => {
       selectedAddress: TEST_ADDRESS,
       assetContractController: assetsContract,
       network,
-      getCovalentNfts: prefsController.getCovalentNfts.bind(prefsController),
+      getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
     })
 
     assetsDetection = new AssetsDetectionController({
@@ -61,7 +61,7 @@ describe('AssetsDetectionController', () => {
 
     // eth mainnet
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/1/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
+      .get('/v1/1/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -69,7 +69,7 @@ describe('AssetsDetectionController', () => {
 
     // polygon
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/137/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
+      .get('/v1/137/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -77,7 +77,7 @@ describe('AssetsDetectionController', () => {
 
     // polygon mumbai
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/80001/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
+      .get('/v1/80001/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -85,7 +85,7 @@ describe('AssetsDetectionController', () => {
 
     // bsc mainnet
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/56/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
+      .get('/v1/56/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })

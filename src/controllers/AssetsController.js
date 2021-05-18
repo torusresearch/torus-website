@@ -20,7 +20,7 @@ export default class AssetController {
     this.network = options.network
     this.assetContractController = options.assetContractController
     this.selectedAddress = options.selectedAddress
-    this.getCovalentNfts = options.getCovalentNfts
+    this.getNftMetadata = options.getNftMetadata
     this.initializeNetworkSubscription()
   }
 
@@ -149,7 +149,7 @@ export default class AssetController {
     if (!collectibleApi) {
       return collectibleInfo
     }
-    const res = await this.getCovalentNfts(collectibleApi)
+    const res = await this.getNftMetadata(collectibleApi)
     const contractData = res.data?.data?.items
     if (contractData.length > 0) {
       const { nft_data: nftData } = contractData[0]
@@ -208,7 +208,7 @@ export default class AssetController {
     // it will return correct contract information if contract exist even if
     // token id is incorrect.
     const collectibleContractApi = this.getCollectibleApi(contractAddress, 1)
-    const res = await this.getCovalentNfts(collectibleContractApi)
+    const res = await this.getNftMetadata(collectibleContractApi)
     const contractData = res.data?.data?.items
     if (contractData.length > 0) {
       const { contract_name: name, contract_ticker_symbol: symbol, logo_url: image_url } = contractData[0]
