@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import { safeatob } from '@toruslabs/openlogin-utils'
 import Torus from '@toruslabs/torus.js'
 import { BroadcastChannel } from 'broadcast-channel'
 import { BN } from 'ethereumjs-util'
@@ -67,7 +68,7 @@ export default {
       }
       const { appState } = allInfo
       log.info(appState, 'appState')
-      const parsedAppState = JSON.parse(atob(decodeURIComponent(decodeURIComponent(appState))))
+      const parsedAppState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(appState))))
       log.info(parsedAppState.instanceId, keys, userInfo, postboxKey)
       // debugger
       const bc = new BroadcastChannel(`redirect_openlogin_channel_${parsedAppState.instanceId}`, broadcastChannelOptions)
