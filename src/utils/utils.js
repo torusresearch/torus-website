@@ -587,6 +587,7 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     x.type === CONTRACT_TYPE_ERC721 || x.type === CONTRACT_TYPE_ERC1155 || x.isEtherscan
       ? ''
       : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
+  log.info(x)
   const finalObject = {
     id: x.created_at.toString(),
     date: new Date(x.created_at),
@@ -594,7 +595,7 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     slicedFrom: typeof x.from === 'string' ? addressSlicer(x.from) : '',
     to: x.to,
     slicedTo: typeof x.to === 'string' ? addressSlicer(x.to) : '',
-    action: lowerCaseSelectedAddress === x.to.toLowerCase() ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
+    action: lowerCaseSelectedAddress === x.to?.toLowerCase() || '' ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
     totalAmount: x.total_amount,
     totalAmountString,
     currencyAmount: x.currency_amount,
