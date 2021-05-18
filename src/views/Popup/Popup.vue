@@ -19,6 +19,9 @@ export default {
     loginDialog: (state) => state.embedState.isOAuthModalVisible,
     torusWidgetVisibility: (state) => state.embedState.torusWidgetVisibility,
   }),
+  mounted() {
+    window.$crisp.push(['do', 'chat:hide'])
+  },
   methods: {
     ...mapActions({
       cancelLogin: 'cancelLogin',
