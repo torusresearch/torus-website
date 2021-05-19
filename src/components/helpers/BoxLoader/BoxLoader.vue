@@ -2,6 +2,7 @@
   <div class="box-loader">
     <div
       v-for="n in 9"
+      v-show="showLoader"
       :key="n"
       class="box-loader_beat"
       :class="[`box-loader_beat-${n % 2 ? 'odd' : 'even'}`, { 'box-loader_beat--hidden': hidden.includes(n) }]"
@@ -42,11 +43,21 @@ export default {
         return [1, 2, 5, 8]
       },
     },
+    delay: {
+      type: Number,
+      default: 500,
+    },
   },
   data() {
     return {
+      showLoader: false,
       accent: [1, 3, 5],
     }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.showLoader = true
+    }, this.delay)
   },
   methods: {
     spinnerStyle(n) {
