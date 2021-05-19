@@ -71,10 +71,11 @@ export default {
     },
     currentConfirmModal() {
       if (this.confirmModals.length > 0) {
-        const { type, txParams, selectedCurrency, currencyData, balance, network, jwtToken, tokenRates, origin } = this.confirmModals[0]
+        const { type, txParams, msgParams, selectedCurrency, currencyData, balance, network, jwtToken, tokenRates, origin } = this.confirmModals[0]
         return {
           type,
           txParams,
+          msgParams,
           selectedCurrency,
           currencyData,
           balance,
