@@ -51,6 +51,7 @@
     <link rel="dns-prefetch" href="https://mainnet.infura.io" />
     <link rel="stylesheet" href="<%= BASE_URL %>css/skeleton.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" />
+    <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="b1ae36a2-c9d5-4554-9db8-b28aeb8ddf4e";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
     <style>
       body {
         background: #fcfcfc;
@@ -74,9 +75,15 @@
       <div id="skeleton-redirect" class="redirect-skeleton-container skeleton-holder">
         <div class="redirect-skeleton-content">
           <div class="spinner content">
-            <div class="beat beat-odd"></div>
-            <div class="beat beat-even"></div>
-            <div class="beat beat-odd"></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
           <!-- <h1 class="title content">Loading</h1> -->
         </div>
@@ -502,7 +509,7 @@
       } else if (/\/end/i.test(redirectPath) || /\/start/i.test(redirectPath)) {
         selectedLoader = ''
       }
-
+      
       if (selectedLoader) {
         const loaderElement = document.querySelector('#' + selectedLoader)
         if (theme === 'dark') {

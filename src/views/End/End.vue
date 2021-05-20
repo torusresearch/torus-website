@@ -2,11 +2,7 @@
   <v-container fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <!-- <BeatLoader
-          margin="24px 4px 0"
-          size="12px"
-          :color="$vuetify.theme.dark ? $vuetify.theme.themes.dark.torusBrand1 : $vuetify.theme.themes.light.torusBrand1"
-        /> -->
+        <BoxLoader />
       </v-flex>
     </v-layout>
   </v-container>
@@ -19,14 +15,14 @@ import { BroadcastChannel } from 'broadcast-channel'
 import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
 
-// import BeatLoader from 'vue-spinner/src/BeatLoader'
+import BoxLoader from '../../components/helpers/BoxLoader'
 import { getOpenLoginInstance } from '../../openlogin'
 import { ACCOUNT_TYPE, POPUP_RESULT } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   name: 'End',
-  // components: { BeatLoader },
+  components: { BoxLoader },
   async mounted() {
     try {
       const torus = new Torus()
