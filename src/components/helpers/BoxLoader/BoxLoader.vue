@@ -21,7 +21,7 @@ export default {
     },
     size: {
       type: String,
-      default: '16px',
+      default: '24px',
     },
     margin: {
       type: String,
