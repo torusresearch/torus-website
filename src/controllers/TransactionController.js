@@ -9,6 +9,7 @@ import EthQuery from 'ethjs-query'
 import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
+import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { fromWei, isAddress, sha3, toBN, toChecksumAddress } from 'web3-utils'
 
 import erc721Contracts from '../assets/assets-map.json'
@@ -38,7 +39,6 @@ import {
   TRANSACTION_TYPE_RETRY,
   TRANSACTION_TYPE_STANDARD,
 } from '../utils/enums'
-import erc1155Abi from '../utils/ERC1155Abi'
 import { BnMultiplyByFraction, bnToHex, formatPastTx, hexToBn } from '../utils/utils'
 import NonceTracker from './NonceTracker'
 import PendingTransactionTracker from './PendingTransactionTracker'
@@ -49,7 +49,7 @@ import * as txUtils from './utils/txUtils'
 
 const tokenABIDecoder = new AbiDecoder(tokenAbi)
 const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
-const erc1155AbiDecoder = new AbiDecoder(erc1155Abi)
+const erc1155AbiDecoder = new AbiDecoder(erc1155Abi.abi)
 const SUPPORTED_CHAINS = new Set([GOERLI_CODE, KOVAN_CODE, MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE])
 
 /**

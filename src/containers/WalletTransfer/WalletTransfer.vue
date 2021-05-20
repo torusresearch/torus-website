@@ -438,6 +438,7 @@ import BigNumber from 'bignumber.js'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import log from 'loglevel'
+import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapGetters, mapState } from 'vuex'
 import { isAddress, toChecksumAddress } from 'web3-utils'
@@ -466,7 +467,6 @@ import {
   TWITTER,
   UNSTOPPABLE_DOMAINS,
 } from '../../utils/enums'
-import erc1155Abi from '../../utils/ERC1155Abi'
 import { get } from '../../utils/httpHelpers'
 import { apiStreamSupported, getEtherScanHashLink, getUserIcon, getVerifierOptions, significantDigits, validateVerifierId } from '../../utils/utils'
 
@@ -945,7 +945,7 @@ export default {
       }
 
       if (contractType === CONTRACT_TYPE_ERC1155) {
-        const contractInstance = new torus.web3.eth.Contract(erc1155Abi, this.selectedTokenAddress)
+        const contractInstance = new torus.web3.eth.Contract(erc1155Abi.abi, this.selectedTokenAddress)
         return contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, tokenId, value, '0x')
       }
 

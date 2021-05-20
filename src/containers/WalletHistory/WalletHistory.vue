@@ -155,8 +155,6 @@ export default {
       ]
     },
     calculatedFinalTx() {
-      // eslint-disable-next-line no-console
-      console.log('transactions', this.pastTx, this.paymentTx, this.etherscanTx)
       let finalTx = [...this.paymentTx, ...this.pastTx, ...this.etherscanTx]
       finalTx = finalTx.reduce((accumulator, x) => {
         x.actionIcon = this.getIcon(x)

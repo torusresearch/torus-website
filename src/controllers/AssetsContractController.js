@@ -6,6 +6,7 @@
  */
 import abiERC721 from 'human-standard-collectible-abi'
 import abiERC20 from 'human-standard-token-abi'
+import { ERC1155 as erc1155abi, ERC1155Metadata as erc1155MetadataAbi } from 'multi-token-standard-abi'
 import abiSingleCallBalancesContract from 'single-call-balance-checker-abi'
 import Web3 from 'web3'
 
@@ -18,7 +19,6 @@ import {
   ERC1155_INTERFACE_ID,
   SINGLE_CALL_BALANCES_ADDRESS,
 } from '../utils/enums'
-import abiERC1155 from '../utils/ERC1155Abi'
 
 export default class AssetContractController {
   /**
@@ -101,7 +101,7 @@ export default class AssetContractController {
 
   getErc1155Balance(contractAddress, ownerAddress, tokenId) {
     const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC1155, contractAddress)
+    const contract = new web3Instance.eth.Contract(erc1155abi.abi, contractAddress)
     return contract.methods.balanceOf(ownerAddress, tokenId).call()
   }
 
@@ -127,7 +127,8 @@ export default class AssetContractController {
    * @returns - Promise resolving to the 'tokenURI'
    */
   getCollectibleTokenURI(address, tokenId, standard = CONTRACT_TYPE_ERC721) {
-    const { abi, method } = standard === CONTRACT_TYPE_ERC721 ? { abi: abiERC721, method: 'tokenURI' } : { abi: abiERC1155, method: 'uri' }
+    const { abi, method } =
+      standard === CONTRACT_TYPE_ERC721 ? { abi: abiERC721, method: 'tokenURI' } : { abi: erc1155MetadataAbi.abi, method: 'uri' }
     const web3Instance = this.web3
     const contract = new web3Instance.eth.Contract(abi, address)
     return contract.methods[method](tokenId).call()
