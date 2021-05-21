@@ -76,6 +76,7 @@ const oauthStream = communicationMux.getStream('oauth')
 const userInfoStream = communicationMux.getStream('user_info')
 const providerChangeStream = communicationMux.getStream('provider_change')
 const widgetStream = communicationMux.getStream('widget')
+const windowStream = communicationMux.getStream('window')
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
@@ -372,6 +373,7 @@ export default {
       })
       const { keys, userInfo, postboxKey } = await loginHandler.handleLoginWindow()
       // Get all open login results
+      userInfo.verifier = verifier
       commit('setUserInfo', userInfo)
       commit('setPostboxKey', postboxKey)
       await dispatch('handleLogin', {
@@ -383,6 +385,11 @@ export default {
       log.error(error)
       oauthStream.write({ err: { message: error.message } })
       commit('setOAuthModalStatus', false)
+      if (preopenInstanceId)
+        windowStream.write({
+          preopenInstanceId,
+          close: true,
+        })
       throw error
     }
   },
