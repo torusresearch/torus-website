@@ -159,12 +159,12 @@ export default class AssetsDetectionController {
                 tokenBalance,
               },
             }
-            collectibles.push(collectibleDetails, false)
+            collectibles.push(collectibleDetails)
           }
         }
       }
     }
-    await this.assetController.addCollectibles(collectibles)
+    await this.assetController.addCollectibles(collectibles, false)
   }
 }
 

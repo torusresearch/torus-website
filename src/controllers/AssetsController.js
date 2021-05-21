@@ -338,9 +338,9 @@ export default class AssetController {
   /**
    * Adds a collectible and respective collectible contract to the stored collectible and collectible contracts lists
    *
-   * @param address2 - Hex address of the collectible contract
-   * @param tokenId - The collectible identifier
-   * @param opts - Collectible optional information (name, image and description)
+   * @param collectibles - array of collectibles , where each object is contains contractAddress, tokenID and
+   * options (name, description, standard, image , tokenBalance)
+   * @param detectFromApi - fetch token details from api if true is sent
    * @returns - Promise resolving to the current collectible list
    */
   async addCollectibles(collectibles = [], detectFromApi = true) {
@@ -375,25 +375,32 @@ export default class AssetController {
                   },
                   detectFromApi
                 )
-                newCollectibleContracts.push(normalizedContractInfo)
-                collectibleTempIndex[contractAddress] = true
+                if (normalizedContractInfo.name && normalizedContractInfo.symbol) {
+                  newCollectibleContracts.push(normalizedContractInfo)
+                  collectibleTempIndex[contractAddress] = true
+                }
               }
 
-              // eslint-disable-next-line no-await-in-loop
-              normalizedCollectibleInfo = await this._normalizeCollectibleDetails(
-                {
-                  address: contractAddress,
-                  name,
-                  image,
-                  description,
-                  standard,
-                  tokenBalance,
-                  tokenID,
-                },
-                detectFromApi
-              )
-              newCollectibles.push(normalizedCollectibleInfo)
-              collectibleTempIndex[collectibleIndex] = true
+              // donot add collectible if contract is not added yet
+              if (collectibleTempIndex[contractAddress]) {
+                // eslint-disable-next-line no-await-in-loop
+                normalizedCollectibleInfo = await this._normalizeCollectibleDetails(
+                  {
+                    address: contractAddress,
+                    name,
+                    image,
+                    description,
+                    standard,
+                    tokenBalance,
+                    tokenID,
+                  },
+                  detectFromApi
+                )
+                if (normalizedCollectibleInfo.name) {
+                  newCollectibles.push(normalizedCollectibleInfo)
+                  collectibleTempIndex[collectibleIndex] = true
+                }
+              }
             }
           } catch (error) {
             log.error(error)
