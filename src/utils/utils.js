@@ -398,7 +398,7 @@ export const paymentProviders = {
     minOrderValue: 50,
     maxOrderValue: 20000,
     validCurrencies: ['USD', 'EUR'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
+    validCryptoCurrencies: ['ETH'],
     includeFees: true,
     api: true,
     enforceMax: true,
