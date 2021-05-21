@@ -398,7 +398,7 @@ export const paymentProviders = {
     minOrderValue: 50,
     maxOrderValue: 20000,
     validCurrencies: ['USD', 'EUR'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
+    validCryptoCurrencies: ['ETH'],
     includeFees: true,
     api: true,
     enforceMax: true,
@@ -584,7 +584,6 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
   else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.type_name, true)
   const currencyAmountString =
     x.type === CONTRACT_TYPE_ERC721 || x.isEtherscan ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
-  log.info(x)
   const finalObject = {
     id: x.created_at.toString(),
     date: new Date(x.created_at),

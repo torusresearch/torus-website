@@ -34,10 +34,11 @@ class OpenLoginHandler {
     const finalUrl = new URL(`${config.baseRoute}start`)
     finalUrl.searchParams.append('verifier', this.verifier)
     finalUrl.searchParams.append('state', this.state)
-    finalUrl.searchParams.append('skipTKey', this.skipTKey)
     Object.keys(this.jwtParameters).forEach((x) => {
       if (this.jwtParameters[x]) finalUrl.searchParams.append(x, this.jwtParameters[x])
     })
+    finalUrl.searchParams.append('skipTKey', this.skipTKey)
+    log.info(finalUrl.href)
     this.finalURL = finalUrl
   }
 
