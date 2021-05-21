@@ -2,6 +2,8 @@
 import assert from 'assert'
 import nock from 'nock'
 import { createSandbox } from 'sinon'
+import { toChecksumAddress } from 'web3-utils'
+
 import config from '../../../src/config'
 
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
@@ -72,6 +74,51 @@ describe('AssetsController', () => {
                 nft_data: [
                   {
                     token_id: '1',
+                    token_balance: '1',
+                    token_url: 'url',
+                    supports_erc: ['erc20', 'erc721'],
+                    token_price_wei: null,
+                    token_quote_rate_eth: null,
+                    external_data: {
+                      description: 'Description',
+                      image: 'url',
+                      name: 'name',
+                      external_url: 'foo',
+                    },
+                  },
+                ],
+              },
+            ],
+            pagination: null,
+          },
+          error: false,
+          error_message: null,
+          error_code: null,
+        },
+      })
+      .persist(true)
+
+    nock(COVALENT_API)
+      .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/2/')
+      .reply(200, {
+        data: {
+          data: {
+            updated_at: '2021-05-11T11:21:52.553495435Z',
+            items: [
+              {
+                contract_decimals: 0,
+                contract_name: 'Name',
+                contract_ticker_symbol: 'FOO',
+                contract_address: 'foo',
+                supports_erc: ['erc20'],
+                logo_url: 'url',
+                type: 'nft',
+                balance: null,
+                quote_rate: null,
+                quote: null,
+                nft_data: [
+                  {
+                    token_id: '2',
                     token_balance: '1',
                     token_url: 'url',
                     supports_erc: ['erc20', 'erc721'],
@@ -313,13 +360,15 @@ describe('AssetsController', () => {
   })
 
   it('should add collectible and collectible contract', async () => {
-    await assetsController.addCollectible(
-      'foo',
-      '1',
-      { name: 'name', image: 'image', description: 'description', contractDescription: 'Description', standard: 'erc721' },
-      false
-    )
+    await assetsController.addCollectibles([
+      {
+        contractAddress: 'foo',
+        tokenID: '1',
+        options: { name: 'name', image: 'image', description: 'description', contractDescription: 'Description', standard: 'erc721' },
+      },
+    ])
     assert.deepStrictEqual(assetsController.state.collectibles[0], {
+      collectibleIndex: 'foo_1',
       address: 'foo',
       description: 'description',
       image: 'image',
@@ -340,21 +389,29 @@ describe('AssetsController', () => {
   })
 
   it('should not duplicate collectible nor collectible contract if already added', async () => {
-    await assetsController.addCollectible('foo', '1', { name: 'name', image: 'image', description: 'description' })
-    await assetsController.addCollectible('foo', '1', { name: 'name', image: 'image', description: 'description' })
+    await assetsController.addCollectibles([
+      { contractAddress: 'foo', tokenID: '1', options: { name: 'name', image: 'image', description: 'description' } },
+    ])
+    await assetsController.addCollectibles([
+      { contractAddress: 'foo', tokenID: '1', options: { name: 'name', image: 'image', description: 'description' } },
+    ])
     assert(assetsController.state.collectibles.length === 1)
     assert(assetsController.state.collectibleContracts.length === 1)
   })
 
   it('should not add collectible contract if collectible contract already exists', async () => {
-    await assetsController.addCollectible('foo', '1', { name: 'name', image: 'image', description: 'description' })
-    await assetsController.addCollectible('foo', '2', { name: 'name', image: 'image', description: 'description' })
+    await assetsController.addCollectibles([
+      { contractAddress: 'foo', tokenID: '1', options: { name: 'name', image: 'image', description: 'description' } },
+    ])
+    await assetsController.addCollectibles([
+      { contractAddress: 'foo', tokenID: '2', options: { name: 'name', image: 'image', description: 'description' } },
+    ])
     assert(assetsController.state.collectibles.length === 2)
     assert(assetsController.state.collectibleContracts.length === 1)
   })
 
   it('should add collectible and get information from covalent', async () => {
-    await assetsController.addCollectible('foo', '1')
+    await assetsController.addCollectibles([{ contractAddress: 'foo', tokenID: '1' }])
 
     assert.deepStrictEqual(assetsController.state.collectibles[0], {
       address: 'foo',
@@ -364,6 +421,7 @@ describe('AssetsController', () => {
       tokenId: '1',
       standard: 'erc721',
       tokenBalance: 1,
+      collectibleIndex: 'foo_1',
     })
 
     assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
@@ -405,9 +463,9 @@ describe('AssetsController', () => {
     const secondAddress = TEST_ADDRESS_3
     sandbox.stub(assetsController, 'getCollectibleInfo').returns({ name: 'name', image: 'url', description: 'description', standard: 'erc721' })
     assetsController.setSelectedAddress(firstAddress)
-    await assetsController.addCollectible('foo', '1234')
+    await assetsController.addCollectibles([{ contractAddress: 'foo', tokenID: '1234' }])
     assetsController.setSelectedAddress(secondAddress)
-    await assetsController.addCollectible('fou', '4321')
+    await assetsController.addCollectibles([{ contractAddress: 'fou', tokenID: '4321' }])
     assetsController.setSelectedAddress(firstAddress)
     assert.deepStrictEqual(assetsController.state.collectibles[0], {
       address: 'foo',
@@ -417,6 +475,7 @@ describe('AssetsController', () => {
       tokenId: '1234',
       standard: 'erc721',
       tokenBalance: 1,
+      collectibleIndex: 'foo_1234',
     })
   })
 
@@ -426,7 +485,7 @@ describe('AssetsController', () => {
     sandbox.stub(assetsController, 'getCollectibleContractInformation').returns({ name: 'name', image_url: 'url', symbol: 'FOO' })
     sandbox.stub(assetsController, 'getCollectibleInfo').returns({ name: 'name', image: 'url', description: 'description', standard: 'erc721' })
     network.setProviderType(firstNetworkType)
-    await assetsController.addCollectible('foo', '1234')
+    await assetsController.addCollectibles([{ contractAddress: 'foo', tokenID: '1234' }])
     network.setProviderType(secondNetworkType)
     assert(assetsController.state.collectibles.length === 0)
     network.setProviderType(firstNetworkType)
@@ -438,28 +497,31 @@ describe('AssetsController', () => {
       tokenId: '1234',
       standard: 'erc721',
       tokenBalance: 1,
+      collectibleIndex: 'foo_1234',
     })
   })
 
   it('should not add collectibles with no contract information when auto detecting', async () => {
-    await assetsController.addCollectible('0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab', '123', undefined, true)
+    await assetsController.addCollectibles([{ contractAddress: '0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab', tokenID: '1' }])
     assert.deepStrictEqual(assetsController.state.collectibles, [])
     assert.deepStrictEqual(assetsController.state.collectibleContracts, [])
-    await assetsController.addCollectible(`${KUDOSADDRESS}`, '1203', undefined, true)
+    await assetsController.addCollectibles([{ contractAddress: `${KUDOSADDRESS}`, tokenID: '1203' }])
+    const checkSummedAddress = toChecksumAddress(`${KUDOSADDRESS}`)
     assert.deepStrictEqual(assetsController.state.collectibles, [
       {
-        address: `${KUDOSADDRESS}`,
+        address: checkSummedAddress,
         description: 'Kudos Description',
         image: 'Kudos url',
         name: 'Kudos Name',
         tokenId: '1203',
         standard: 'erc721',
         tokenBalance: 1,
+        collectibleIndex: checkSummedAddress + '_1203',
       },
     ])
     assert.deepStrictEqual(assetsController.state.collectibleContracts, [
       {
-        address: `${KUDOSADDRESS}`,
+        address: checkSummedAddress,
         description: '', // covalent api doesn't return contract description
         logo: 'Kudos url',
         name: 'Kudos',

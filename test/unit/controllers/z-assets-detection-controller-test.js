@@ -54,7 +54,6 @@ describe('AssetsDetectionController', () => {
 
     assetsDetection = new AssetsDetectionController({
       network,
-      assetContractController: assetsContract,
       assetController: assets,
       getCovalentNfts: prefsController.getCovalentNfts.bind(prefsController),
     })
@@ -208,6 +207,7 @@ describe('AssetsDetectionController', () => {
         standard: 'erc721',
         tokenBalance: '1',
         description: 'Description 2577',
+        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04gg_2577',
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04ii',
@@ -217,6 +217,7 @@ describe('AssetsDetectionController', () => {
         standard: 'erc721',
         tokenBalance: '1',
         description: 'Description 2578',
+        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04ii_2578',
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04hh',
@@ -226,6 +227,7 @@ describe('AssetsDetectionController', () => {
         standard: 'erc721',
         tokenBalance: '1',
         description: 'Description 2574',
+        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04hh_2574',
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04jj',
@@ -235,6 +237,7 @@ describe('AssetsDetectionController', () => {
         standard: 'erc1155',
         tokenBalance: '10',
         description: 'Description 2579',
+        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04jj_2579',
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04kk',
@@ -244,6 +247,7 @@ describe('AssetsDetectionController', () => {
         standard: 'erc1155',
         tokenBalance: '10',
         description: 'Description 2580',
+        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04kk_2580',
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04ll',
@@ -253,6 +257,7 @@ describe('AssetsDetectionController', () => {
         standard: 'erc1155',
         tokenBalance: '1',
         description: 'Description 2581',
+        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04ll_2581',
       },
     ]
     assert.deepStrictEqual(assets.state.collectibles, expectedCollectibles)

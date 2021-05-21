@@ -11,8 +11,36 @@ import { isAddress, toChecksumAddress } from 'web3-utils'
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
 import { get } from '../utils/httpHelpers'
 
+const SUPPORTED_NFT_STANDARDS = new Set([CONTRACT_TYPE_ERC1155, CONTRACT_TYPE_ERC721])
+
 const initStateObject = { allCollectibleContracts: {}, allCollectibles: {}, allTokens: {}, collectibleContracts: [], collectibles: [], tokens: [] }
 
+function getObjectFromArrayBasedonKey(oldArray, key) {
+  return oldArray.reduce((acc, x) => {
+    acc[x[key]] = x
+    return acc
+  }, {})
+}
+
+const mergeContractArrays = (oldArray, newArray) => {
+  const oldMap = getObjectFromArrayBasedonKey(oldArray || [], 'address')
+  const newMap = getObjectFromArrayBasedonKey(newArray || [], 'address')
+  const finalArr = newArray
+  Object.keys(oldMap).forEach((x) => {
+    if (!newMap[x]) finalArr.push(oldMap[x])
+  })
+  return finalArr
+}
+
+const mergeCollectibleArrays = (oldArray, newArray) => {
+  const oldMap = getObjectFromArrayBasedonKey(oldArray || [], 'collectibleIndex')
+  const newMap = getObjectFromArrayBasedonKey(newArray || [], 'collectibleIndex')
+  const finalArr = newArray
+  Object.keys(oldMap).forEach((x) => {
+    if (!newMap[x]) finalArr.push(oldMap[x])
+  })
+  return finalArr
+}
 export default class AssetController {
   constructor(options = {}) {
     this.name = 'AssetsController'
@@ -175,13 +203,20 @@ export default class AssetController {
    * @param tokenId - The collectible identifier
    * @returns - Promise resolving to the current collectible name, tokenBalance, standard, description and image
    */
-  async getCollectibleInfo(contractAddress, tokenId) {
-    let info = await this.getCollectibleInfoFromApi(contractAddress, tokenId)
-    if (info.name && info.image) {
+  async getCollectibleInfo(contractAddress, tokenId, detectFromApi) {
+    try {
+      if (detectFromApi) {
+        const info = await this.getCollectibleInfoFromApi(contractAddress, tokenId)
+        if (info.name && info.image) {
+          return info
+        }
+      }
+      const info = await this.getCollectibleInformationFromTokenURI(toChecksumAddress(contractAddress), tokenId)
+
       return info
+    } catch {
+      return {}
     }
-    info = await this.getCollectibleInformationFromTokenURI(contractAddress, tokenId)
-    return info
   }
 
   /**
@@ -201,7 +236,7 @@ export default class AssetController {
    * Request individual collectible contract information from covalent api
    *
    * @param contractAddress - Hex address of the collectible contract
-   * @returns - Promise resolving to the current collectible name, symbol and image_url
+   * @returns - Promise resolving to the current collectible name, symbol and logo
    */
   async getCollectibleContractInformationFromApi(contractAddress) {
     // tokenid is required in covalent api, but any random id can be passed
@@ -211,26 +246,28 @@ export default class AssetController {
     const res = await this.getNftMetadata(collectibleContractApi)
     const contractData = res.data?.data?.items
     if (contractData.length > 0) {
-      const { contract_name: name, contract_ticker_symbol: symbol, logo_url: image_url } = contractData[0]
-      return { name, symbol, image_url }
+      const { contract_name: name, contract_ticker_symbol: symbol, logo_url: logo } = contractData[0]
+      return { name, symbol, logo }
     }
-    return { name: null, symbol: null, image_url: null }
+    return { name: null, symbol: null, logo: null }
   }
 
   /**
    * get collectible contract info from blockchain
    *
    * @param contractAddress - Hex address of the collectible contract
-   * @returns - Promise resolving to the collectible contract name, image, standard and description
+   * @returns - Promise resolving to the collectible contract name, logo, standard and description
    */
-  async getCollectibleContractInformation(contractAddress) {
+  async getCollectibleContractInformation(contractAddress, detectFromApi) {
     try {
       const standard = await this.assetContractController.checkNftStandard(contractAddress)
-      let information = await this.getCollectibleContractInformationFromApi(contractAddress)
-      if (information.name && information.symbol) {
-        return { ...information, standard }
+      if (detectFromApi) {
+        const information = await this.getCollectibleContractInformationFromApi(contractAddress)
+        if (information.name && information.symbol) {
+          return { ...information, standard }
+        }
       }
-      information = await this.getCollectibleContractInformationFromContract(contractAddress)
+      const information = await this.getCollectibleContractInformationFromContract(contractAddress)
       if (information) {
         return { ...information, standard }
       }
@@ -242,141 +279,60 @@ export default class AssetController {
     return {}
   }
 
-  /**
-   * Adds an individual collectible to the stored collectible list
-   *
-   * @param address - Hex address of the collectible contract
-   * @param tokenId - The collectible identifier
-   * @param opts - Collectible optional information (name, image and description)
-   * @param detection? - Whether the collectible is manually added or autodetected
-   * @returns - Promise resolving to the current collectible list
-   */
-  async addIndividualCollectible(address2, tokenId, options) {
-    try {
-      let address
-      const collectibleOptions = typeof options === 'object' ? options : {}
-      if (isAddress(address)) address = toChecksumAddress(address2)
-      else address = address2
-      const { selectedAddress } = this
-      const initState = this.state
-      const { allCollectibles, collectibles } = initState
-      const networkType = this.network.getNetworkNameFromNetworkCode()
-      const existingEntry = collectibles.find((collectible) => collectible.address === address && collectible.tokenId === tokenId)
-      if (existingEntry) {
-        if (existingEntry.standard === CONTRACT_TYPE_ERC721) {
-          return collectibles
-        }
-        if (collectibleOptions.tokenBalance && existingEntry.tokenBalance !== collectibleOptions.tokenBalance) {
-          const newCollectibles = collectibles.map((collectible) => {
-            if (collectible.address === address && collectible.tokenId === tokenId) {
-              const { tokenBalance } = collectibleOptions
-              return { ...collectible, tokenBalance }
-            }
-            return collectible
-          })
-          const addressCollectibles = allCollectibles[selectedAddress]
-          const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: newCollectibles } }
-          const newAllCollectibles = { ...allCollectibles, ...{ [selectedAddress]: newAddressCollectibles } }
-          this.store.updateState({
-            allCollectibles: newAllCollectibles,
-            collectibles: newCollectibles,
-          })
-          return newCollectibles
-        }
-        return collectibles
-      }
-      const { name, image, description, standard, tokenBalance } = collectibleOptions
-      let newEntry = { address, tokenId, name, image, description, standard, tokenBalance }
+  async _normalizeContractDetails(contractDetails = {}, detectFromApi) {
+    let normalizedContractInfo = {}
+    const { contractName, contractSymbol, standard, contractAddress, contractImage, contractDescription } = contractDetails
+    let _contractAddress
+    if (isAddress(contractAddress)) _contractAddress = toChecksumAddress(contractAddress)
+    else _contractAddress = contractAddress
 
-      if (!name || !image || !standard) {
-        const collectibleInfo = await this.getCollectibleInfo(address, tokenId)
-        newEntry = { ...newEntry, ...collectibleInfo }
-      }
-      if (!newEntry.name || !newEntry.standard || !newEntry.image) {
-        return collectibles
-      }
-      if (!newEntry.tokenBalance) {
-        newEntry.tokenBalance =
-          standard === CONTRACT_TYPE_ERC721 ? 1 : await this.assetContractController.getErc1155Balance(address, this.selectedAddress, tokenId)
-      }
-      const newCollectibles = [...collectibles, newEntry]
-      const addressCollectibles = allCollectibles[selectedAddress]
-      const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: newCollectibles } }
-      const newAllCollectibles = { ...allCollectibles, ...{ [selectedAddress]: newAddressCollectibles } }
-      this.store.updateState({
-        allCollectibles: newAllCollectibles,
-        collectibles: newCollectibles,
-      })
-
-      return newCollectibles
-    } catch (error) {
-      log.error(error)
-    }
-    return {}
-  }
-
-  /**
-   * Adds a collectible contract to the stored collectible contracts list
-   *
-   * @param address - Hex address of the collectible contract
-   * @param detection? - Whether the collectible is manually added or auto-detected
-   * @returns - Promise resolving to the current collectible contracts list
-   */
-  async addCollectibleContract(address2, detection, options) {
-    let address
-    if (isAddress(address)) address = toChecksumAddress(address2)
-    else address = address2
-    const { selectedAddress } = this
-    const { allCollectibleContracts, collectibleContracts } = this.state
-    const networkType = this.network.getNetworkNameFromNetworkCode()
-    const existingEntry = collectibleContracts.find((collectibleContract) => collectibleContract.address === address)
-    if (existingEntry) {
-      return collectibleContracts
-    }
-    let contractInformation
-    if (options && Object.prototype.hasOwnProperty.call(options, 'contractName')) {
-      contractInformation = {
-        name: options.contractName,
-        symbol: options.contractSymbol,
-        image_url: options.contractImage,
-        description: options.contractDescription,
-        standard: options.standard,
+    if (contractName && contractSymbol && standard) {
+      normalizedContractInfo = {
+        standard,
+        address: _contractAddress,
+        description: contractDescription || '',
+        logo: contractImage,
+        name: contractName,
+        symbol: contractSymbol,
       }
     } else {
-      contractInformation = await this.getCollectibleContractInformation(address)
+      // fetch from api or smart contract
+      normalizedContractInfo = await this.getCollectibleContractInformation(contractAddress, detectFromApi)
+      normalizedContractInfo.logo = normalizedContractInfo.logo ? normalizedContractInfo.logo : contractImage
+      normalizedContractInfo.address = _contractAddress
+      normalizedContractInfo.description = contractDescription || ''
     }
+    normalizedContractInfo.standard = normalizedContractInfo.standard || (await this.assetContractController.checkNftStandard(contractAddress))
+    return normalizedContractInfo
+  }
 
-    const interfaceStandard = contractInformation.standard || (await this.assetContractController.checkNftStandard(address))
-    const { name, symbol, image_url: imageURL, description } = contractInformation
-    // If being auto-detected covalent information is expected
-    // Oherwise at least name and symbol from contract is needed
-    if ((detection && !imageURL) || Object.keys(contractInformation).length === 0) {
-      return collectibleContracts
-    }
-    const newEntry = {
-      standard: interfaceStandard,
-      address,
-      description: description || options?.contractDescription || '',
-      logo: imageURL,
+  async _normalizeCollectibleDetails(collectibleDetails = {}, detectFromApi) {
+    const { name, image, description, standard, tokenBalance, address, tokenID } = collectibleDetails
+    let _contractAddress
+    if (isAddress(address)) _contractAddress = toChecksumAddress(address)
+    else _contractAddress = address
+    const collectibleIndex = `${_contractAddress}_${tokenID}`
+    let normalizedCollectibleInfo = {
+      address: _contractAddress,
+      tokenId: tokenID,
       name,
-      symbol,
+      image,
+      description,
+      standard,
+      tokenBalance,
+      collectibleIndex,
     }
-
-    const newCollectibleContracts = [...collectibleContracts, newEntry]
-    const addressCollectibleContracts = allCollectibleContracts[selectedAddress]
-    const newAddressCollectibleContracts = {
-      ...addressCollectibleContracts,
-      [networkType]: newCollectibleContracts,
+    if (!name || !image || !standard || !SUPPORTED_NFT_STANDARDS.has(standard)) {
+      const collectibleInfo = await this.getCollectibleInfo(address, tokenID, detectFromApi)
+      normalizedCollectibleInfo = { ...normalizedCollectibleInfo, ...collectibleInfo }
     }
-    const newAllCollectibleContracts = {
-      ...allCollectibleContracts,
-      [selectedAddress]: newAddressCollectibleContracts,
+    if (!normalizedCollectibleInfo.tokenBalance) {
+      normalizedCollectibleInfo.tokenBalance =
+        normalizedCollectibleInfo.standard === CONTRACT_TYPE_ERC721
+          ? 1
+          : await this.assetContractController.getErc1155Balance(address, this.selectedAddress, tokenID)
     }
-    this.store.updateState({
-      allCollectibleContracts: newAllCollectibleContracts,
-      collectibleContracts: newCollectibleContracts,
-    })
-    return newCollectibleContracts
+    return normalizedCollectibleInfo
   }
 
   /**
@@ -385,22 +341,95 @@ export default class AssetController {
    * @param address2 - Hex address of the collectible contract
    * @param tokenId - The collectible identifier
    * @param opts - Collectible optional information (name, image and description)
-   * @param detection? - Whether the collectible is manually added or autodetected
    * @returns - Promise resolving to the current collectible list
    */
-  async addCollectible(address2, tokenId, options, detection) {
+  async addCollectibles(collectibles = [], detectFromApi = true) {
     try {
-      let address
-      if (isAddress(address)) address = toChecksumAddress(address2)
-      else address = address2
-      const newCollectibleContracts = await this.addCollectibleContract(address, detection, options)
-      // If collectible contract was not added, do not add individual collectible
-      const collectibleContract = newCollectibleContracts.find((contract) => contract.address === address)
-      const collectibleOptions = { ...options, standard: collectibleContract?.standard }
-      // If collectible contract information, add individual collectible
-      if (collectibleContract) {
-        await this.addIndividualCollectible(address, tokenId, collectibleOptions)
+      const newCollectibleContracts = []
+      const newCollectibles = []
+      const collectibleTempIndex = {}
+      let normalizedContractInfo = {}
+      let normalizedCollectibleInfo = {}
+      for (const collectibleDetails of collectibles) {
+        const collectibleInfo = typeof collectibleDetails === 'object' ? collectibleDetails : {}
+        const options = typeof collectibleInfo.options === 'object' ? collectibleInfo.options : {}
+
+        const { contractName, contractSymbol, contractImage, contractDescription, description, image, name, tokenBalance, standard } = options
+
+        const { tokenID, contractAddress } = collectibleInfo
+
+        if (tokenID && contractAddress) {
+          const collectibleIndex = `${contractAddress}_${tokenID}`
+          try {
+            if (!collectibleTempIndex[collectibleIndex]) {
+              if (!collectibleTempIndex[contractAddress]) {
+                // eslint-disable-next-line no-await-in-loop
+                normalizedContractInfo = await this._normalizeContractDetails(
+                  {
+                    contractAddress,
+                    contractName,
+                    contractSymbol,
+                    standard,
+                    contractImage,
+                    contractDescription,
+                  },
+                  detectFromApi
+                )
+                newCollectibleContracts.push(normalizedContractInfo)
+                collectibleTempIndex[contractAddress] = true
+              }
+
+              // eslint-disable-next-line no-await-in-loop
+              normalizedCollectibleInfo = await this._normalizeCollectibleDetails(
+                {
+                  address: contractAddress,
+                  name,
+                  image,
+                  description,
+                  standard,
+                  tokenBalance,
+                  tokenID,
+                },
+                detectFromApi
+              )
+              newCollectibles.push(normalizedCollectibleInfo)
+              collectibleTempIndex[collectibleIndex] = true
+            }
+          } catch (error) {
+            log.error(error)
+          }
+        }
       }
+      const initState = this.state
+      const { allCollectibles, collectibles: oldCollectibles, allCollectibleContracts, collectibleContracts: oldCollectibleContracts } = initState
+
+      const finalContracts = mergeContractArrays(oldCollectibleContracts, newCollectibleContracts)
+
+      const finalCollectibles = mergeCollectibleArrays(oldCollectibles, newCollectibles)
+
+      const { selectedAddress } = this
+      const networkType = this.network.getNetworkNameFromNetworkCode()
+
+      const addressCollectibles = allCollectibles[selectedAddress]
+      const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: finalCollectibles } }
+      const newAllCollectibles = { ...allCollectibles, ...{ [selectedAddress]: newAddressCollectibles } }
+
+      const addressCollectibleContracts = allCollectibleContracts[selectedAddress]
+      const newAddressCollectibleContracts = {
+        ...addressCollectibleContracts,
+        [networkType]: finalContracts,
+      }
+
+      const newAllCollectibleContracts = {
+        ...allCollectibleContracts,
+        [selectedAddress]: newAddressCollectibleContracts,
+      }
+      this.store.updateState({
+        allCollectibleContracts: newAllCollectibleContracts,
+        collectibleContracts: newCollectibleContracts,
+        allCollectibles: newAllCollectibles,
+        collectibles: newCollectibles,
+      })
     } catch (error) {
       log.error(error)
     }

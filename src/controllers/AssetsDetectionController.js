@@ -14,7 +14,6 @@ export default class AssetsDetectionController {
     this.selectedAddress = options.selectedAddress || ''
     this.network = options.network
     this.assetController = options.assetController
-    this.assetContractController = options.assetContractController
     this.getCovalentNfts = options.getCovalentNfts
     this.currentNetwork = null
     this.collectibleApi = null
@@ -119,6 +118,7 @@ export default class AssetsDetectionController {
     }
     this.assetController.setSelectedAddress(selectedAddress)
     const apiCollectibles = await this.getOwnerCollectibles()
+    const collectibles = []
     for (const item of apiCollectibles) {
       if (item.type === 'nft') {
         let contractName = item.contract_name
@@ -144,28 +144,27 @@ export default class AssetsDetectionController {
             if (!contractImage) {
               contractImage = imageURL || ''
             }
-            // eslint-disable-next-line no-await-in-loop
-            await this.assetController.addCollectible(
+            const collectibleDetails = {
               contractAddress,
-              tokenID.toString(),
-              {
-                description,
-                image: imageURL || '',
-                name: name || `${contractName}#${tokenID}`,
-                contractAddress,
+              tokenID: tokenID.toString(),
+              options: {
                 contractName,
                 contractSymbol,
                 contractImage,
-                tokenBalance,
                 standard,
-                contractDescription: '',
+                contractDescription: '', // covalent api doesn't provide contract description like opensea
+                description,
+                image: imageURL || '',
+                name: name || `${contractName}#${tokenID}`,
+                tokenBalance,
               },
-              true
-            )
+            }
+            collectibles.push(collectibleDetails, false)
           }
         }
       }
     }
+    await this.assetController.addCollectibles(collectibles)
   }
 }
 
