@@ -342,6 +342,7 @@ export default {
   },
   async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint }) {
     try {
+      commit('setLoginInProgress', true)
       // This is to maintain backward compatibility
       const currentVeriferConfig = state.embedState.loginConfig[verifier]
       // const locale = vuetify.framework.lang.current
@@ -391,6 +392,8 @@ export default {
           close: true,
         })
       throw error
+    } finally {
+      commit('setLoginInProgress', false)
     }
   },
   subscribeToControllers() {
