@@ -67,6 +67,7 @@ const initialState = {
     torusWidgetVisibility: true,
     apiKey: 'torus-default',
     skipTKey: false,
+    loginInProgress: false,
   },
   whiteLabel: {
     isActive: false,
