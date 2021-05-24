@@ -220,6 +220,9 @@ export default {
   setIsTkeySeedPhraseInputRequired(state, payload) {
     state.isTkeySeedPhraseInputRequired = payload
   },
+  setLoginInProgress(state, payload) {
+    state.embedState = { ...state.embedState, loginInProgress: payload }
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
