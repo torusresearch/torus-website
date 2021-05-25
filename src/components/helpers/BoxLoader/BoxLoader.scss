@@ -1,0 +1,25 @@
+.box-loader {
+  display: inline-block;
+  position: relative;
+  width: 84px;
+  line-height: 0;
+  .box-loader_beat {
+    display: inline-block;
+    &.box-loader_beat--hidden {
+      opacity: 0;
+    }
+    &:not(.box-loader_beat--hidden) {
+      animation: lds-grid 1.2s linear infinite;
+    }
+  }
+}
+
+@keyframes lds-grid {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}

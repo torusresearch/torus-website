@@ -75,9 +75,15 @@
       <div id="skeleton-redirect" class="redirect-skeleton-container skeleton-holder">
         <div class="redirect-skeleton-content">
           <div class="spinner content">
-            <div class="beat beat-odd"></div>
-            <div class="beat beat-even"></div>
-            <div class="beat beat-odd"></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
           <!-- <h1 class="title content">Loading</h1> -->
         </div>
@@ -503,7 +509,7 @@
       } else if (/\/end/i.test(redirectPath) || /\/start/i.test(redirectPath)) {
         selectedLoader = ''
       }
-
+      
       if (selectedLoader) {
         const loaderElement = document.querySelector('#' + selectedLoader)
         if (theme === 'dark') {
@@ -513,41 +519,6 @@
         }
         // loaderElement.style.display = /\/redirect/.test(redirectPath) || mobileTag ? 'flex' : 'flex'
         loaderElement.style.display = 'flex'
-      }
-    </script>
-    <script>
-      if (window.parent) {
-        function storageAvailable(type) {
-          let storage
-          try {
-            storage = window[type]
-            const x = '__storage_test__'
-            storage.setItem(x, x)
-            storage.removeItem(x)
-            return true
-          } catch (error) {
-            return (
-              error &&
-              // everything except Firefox
-              (error.code === 22 ||
-                // Firefox
-                error.code === 1014 ||
-                // test name field too, because code might not be present
-                // everything except Firefox
-                error.name === 'QuotaExceededErro r' ||
-                // Firefox
-                error.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
-              // acknowledge QuotaExceededError only if there's something already stored
-              storage &&
-              storage.length !== 0
-            )
-          }
-        }
-        if (storageAvailable('sessionStorage')) {
-          window.parent.postMessage('torus:3PCsupported', '*')
-        } else {
-          window.parent.postMessage('torus:3PCunsupported', '*')
-        }
       }
     </script>
   </body>

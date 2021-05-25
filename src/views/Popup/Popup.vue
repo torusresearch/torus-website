@@ -1,7 +1,7 @@
 <template>
   <v-container class="pa-0">
     <PopupLogin :login-dialog="loginDialog" @closeDialog="cancelLogin" />
-    <PopupWidget v-if="torusWidgetVisibility" :login-dialog="loginDialog" :logged-in="loggedIn" @onLogin="startLogin" />
+    <PopupWidget v-if="torusWidgetVisibility" :login-dialog="loginDialog || loginInProgress" :logged-in="loggedIn" @onLogin="startLogin" />
   </v-container>
 </template>
 
@@ -18,6 +18,7 @@ export default {
     loggedIn: (state) => state.selectedAddress !== '',
     loginDialog: (state) => state.embedState.isOAuthModalVisible,
     torusWidgetVisibility: (state) => state.embedState.torusWidgetVisibility,
+    loginInProgress: (state) => state.embedState.loginInProgress,
   }),
   mounted() {
     window.$crisp.push(['do', 'chat:hide'])

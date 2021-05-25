@@ -392,14 +392,14 @@ export const paymentProviders = {
     line1: 'Credit/ Debit Card',
     line2: '5% or 10 USD',
     line3: '$20,000/day, $50,000/mo',
-    line4: 'ETH',
+    line4: 'ETH, BNB',
     status: ACTIVE,
     logoExtension: PNG,
     supportPage: 'https://www.simplex.com/support/',
     minOrderValue: 50,
     maxOrderValue: 20000,
     validCurrencies: ['USD', 'EUR'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
+    validCryptoCurrencies: ['ETH', 'BNB'],
     includeFees: true,
     api: true,
     enforceMax: true,
@@ -587,7 +587,6 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     x.type === CONTRACT_TYPE_ERC721 || x.type === CONTRACT_TYPE_ERC1155 || x.isEtherscan
       ? ''
       : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
-  log.info(x)
   const finalObject = {
     id: x.created_at.toString(),
     date: new Date(x.created_at),

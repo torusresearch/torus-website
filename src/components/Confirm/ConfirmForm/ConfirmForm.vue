@@ -563,6 +563,7 @@ export default {
     },
   },
   mounted() {
+    window.$crisp.push(['do', 'chat:hide'])
     this.updateConfirmModal()
   },
   methods: {
@@ -720,10 +721,12 @@ export default {
         if (reason) {
           this.errorMsg = reason
           this.canShowError = true
+          window.$crisp.push(['do', 'chat:show'])
         }
         if (this.balance.lt(ethCost) && !this.canShowError) {
           this.errorMsg = 'dappTransfer.insufficientFunds'
           this.topUpErrorShow = true
+          window.$crisp.push(['do', 'chat:show'])
         }
       }
       this.type = type // type of tx
@@ -816,6 +819,7 @@ export default {
       if (this.balance.lt(ethCost) && !this.canShowError) {
         this.errorMsg = 'dappTransfer.insufficientFunds'
         this.topUpErrorShow = true
+        window.$crisp.push(['do', 'chat:show'])
       }
     },
     async decryptInline() {

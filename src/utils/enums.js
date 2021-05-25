@@ -65,8 +65,8 @@ export const BSC_MAINNET_DISPLAY_NAME = 'Binance Smart Chain Mainnet'
 export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
 export const XDAI_DISPLAY_NAME = 'xDai'
 
-export const MATIC_URL = 'https://rpc-mainnet.matic.network'
-export const MATIC_BLOCK_EXPLORER = 'https://explorer.matic.network'
+export const MATIC_URL = 'https://rpc-mainnet.maticvigil.com'
+export const MATIC_BLOCK_EXPLORER = 'https://explorer-mainnet.maticvigil.com'
 
 export const MUMBAI_URL = 'https://rpc-mumbai.maticvigil.com'
 export const MUMBAI_BLOCK_EXPLORER = 'https://mumbai-explorer.matic.today'
