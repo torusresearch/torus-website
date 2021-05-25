@@ -18,7 +18,7 @@ import {
   TX_TYPED_MESSAGE,
 } from '../utils/enums'
 import { setSentryEnabled } from '../utils/sentry'
-import { getIFrameOriginObject, isPwa, storageAvailable } from '../utils/utils'
+import { getIFrameOriginObject, isMain, isPwa, storageAvailable } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
 import mutations from './mutations'
@@ -130,7 +130,7 @@ const VuexStore = new Vuex.Store({
       }
       popupPayload.balance = fromWei(weiBalance.toString())
 
-      if (request.isWalletConnectRequest && window.location === window.parent.location && window.location.origin === config.baseUrl) {
+      if (request.isWalletConnectRequest && isMain) {
         const originObj = { href: '', hostname: '' }
         try {
           const peerMetaURL = new URL(torus.torusController.walletConnectController.getPeerMetaURL())
@@ -141,7 +141,7 @@ const VuexStore = new Vuex.Store({
         }
         popupPayload.origin = originObj
         commit('addConfirmModal', JSON.parse(JSON.stringify(popupPayload)))
-      } else if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
+      } else if (isMain) {
         handleConfirm({ data: { txType: popupPayload.type, id: popupPayload.id } })
       } else if (popupPayload.type === TX_MESSAGE && isCustomSignedMessage(popupPayload.msgParams.msgParams)) {
         handleConfirm({ data: { txType: popupPayload.type, id: popupPayload.id } })

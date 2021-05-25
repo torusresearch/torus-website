@@ -541,7 +541,7 @@ export function selectChainId(network, store) {
   return standardNetworkId[network] || networkId.toString().startsWith('0x') ? networkId : `0x${Number.parseInt(networkId, 10).toString(16)}`
 }
 
-export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
+export const isMain = window.self === window.top
 
 export const getIFrameOrigin = () => {
   const originHref = window.location.ancestorOrigins?.length > 0 ? window.location.ancestorOrigins[0] : document.referrer
