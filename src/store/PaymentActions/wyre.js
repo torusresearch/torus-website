@@ -24,7 +24,7 @@ export default {
       let preopenInstanceId = preopenInstanceIdPayload
       if (!preopenInstanceId) {
         preopenInstanceId = randomId()
-        const finalUrl = `${config.baseUrl}/redirect?preopenInstanceId=${preopenInstanceId}`
+        const finalUrl = `${config.redirect_uri}?preopenInstanceId=${preopenInstanceId}`
         const handledWindow = new PopupHandler({ url: finalUrl })
         handledWindow.open()
 
