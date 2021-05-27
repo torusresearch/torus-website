@@ -75,6 +75,7 @@
     "lodash.isequal": "^4.5.0",
     "lodash.throttle": "^4.1.1",
     "loglevel": "^1.7.1",
+    "multi-token-standard-abi": "1.0.4",
     "obj-multiplex": "^1.0.0",
     "pify": "^5.0.0",
     "post-message-stream": "^3.0.0",

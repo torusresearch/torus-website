@@ -38,6 +38,8 @@
               <div class="body-2" :class="assetActive ? '' : 'text-clamp-two'" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
                 {{ asset.name || `${selectedContract.name} #${asset.tokenId}` }}
               </div>
+              <div v-if="asset.tokenBalance" class="text-center">Balance: {{ asset.tokenBalance }}</div>
+
               <div class="text-right asset-details mt-1">
                 <div class="font-weight-medium">{{ asset.costEth || '&nbsp;' }}</div>
                 <div class="font-weight-light text_2--text">{{ asset.costCurrency || '&nbsp;' }}</div>

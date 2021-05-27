@@ -61,7 +61,7 @@ describe('DetectTokensController', () => {
 
   it('should not check tokens while in test network', async () => {
     const stub = sandbox
-      .stub(controller, 'detectEtherscanTokenBalance')
+      .stub(controller, 'detectCovalentTokenBalance')
       .withArgs('0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4')
       .returns(true)
       .withArgs('0xBC86727E770de68B1060C91f6BB6945c73e10388')
@@ -74,7 +74,7 @@ describe('DetectTokensController', () => {
   it('should only check and add tokens while in main network', async () => {
     await controller.startTokenDetection(TEMP_ADDRESS)
     sandbox
-      .stub(controller, 'detectEtherscanTokenBalance')
+      .stub(controller, 'detectCovalentTokenBalance')
       .withArgs('0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', { decimals: 8, symbol: 'J8T' })
       .returns(
         controller.detectedTokensStore.putState({
@@ -127,7 +127,7 @@ describe('DetectTokensController', () => {
     })
 
     sandbox
-      .stub(localController, 'detectEtherscanTokenBalance')
+      .stub(localController, 'detectCovalentTokenBalance')
       .withArgs('0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', { decimals: 8, symbol: 'J8T' })
       .returns(
         localController.detectedTokensStore.putState({

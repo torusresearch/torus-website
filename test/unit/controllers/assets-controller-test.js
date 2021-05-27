@@ -2,6 +2,8 @@
 import assert from 'assert'
 import nock from 'nock'
 import { createSandbox } from 'sinon'
+import { toChecksumAddress } from 'web3-utils'
+
 import config from '../../../src/config'
 
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
@@ -14,7 +16,7 @@ const KUDOSADDRESS = '0x2aea4add166ebf38b63d09a75de1a7b94aa24163'
 const TEST_ADDRESS = '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'
 const TEST_ADDRESS_2 = '0xec1adf982415d2ef5ec55899b9bfb8bc0f29251b'
 const TEST_ADDRESS_3 = '0xeb9e64b93097bc15f01f13eae97015c57ab64823'
-const OPEN_SEA_API = config.api
+const COVALENT_API = config.api
 
 const testAccount = {
   key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
@@ -43,55 +45,190 @@ describe('AssetsController', () => {
     assetsContract = new AssetsContractController({
       provider: network._providerProxy,
     })
+    sandbox.stub(assetsContract, 'checkNftStandard').returns('erc721')
     assetsController = new AssetsController({
       selectedAddress: TEST_ADDRESS,
       assetContractController: assetsContract,
       network,
-      getOpenSeaCollectibles: prefsController.getOpenSeaCollectibles.bind(prefsController),
+      getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
     })
-    nock(OPEN_SEA_API)
-      .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/foo')
+
+    nock(COVALENT_API)
+      .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/1/')
       .reply(200, {
         data: {
-          description: 'Description',
-          image_url: 'url',
-          name: 'Name',
-          symbol: 'FOO',
-          total_supply: 0,
+          data: {
+            updated_at: '2021-05-11T11:21:52.553495435Z',
+            items: [
+              {
+                contract_decimals: 0,
+                contract_name: 'Name',
+                contract_ticker_symbol: 'FOO',
+                contract_address: 'foo',
+                supports_erc: ['erc20'],
+                logo_url: 'url',
+                type: 'nft',
+                balance: null,
+                quote_rate: null,
+                quote: null,
+                nft_data: [
+                  {
+                    token_id: '1',
+                    token_balance: '1',
+                    token_url: 'url',
+                    supports_erc: ['erc20', 'erc721'],
+                    token_price_wei: null,
+                    token_quote_rate_eth: null,
+                    external_data: {
+                      description: 'Description',
+                      image: 'url',
+                      name: 'name',
+                      external_url: 'foo',
+                    },
+                  },
+                ],
+              },
+            ],
+            pagination: null,
+          },
+          error: false,
+          error_message: null,
+          error_code: null,
         },
       })
       .persist(true)
 
-    nock(OPEN_SEA_API)
-      .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/fou')
+    nock(COVALENT_API)
+      .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/2/')
       .reply(200, {
         data: {
-          description: 'Description',
-          image_url: 'url',
-          name: 'Name',
-          symbol: 'FOU',
-          total_supply: 10,
+          data: {
+            updated_at: '2021-05-11T11:21:52.553495435Z',
+            items: [
+              {
+                contract_decimals: 0,
+                contract_name: 'Name',
+                contract_ticker_symbol: 'FOO',
+                contract_address: 'foo',
+                supports_erc: ['erc20'],
+                logo_url: 'url',
+                type: 'nft',
+                balance: null,
+                quote_rate: null,
+                quote: null,
+                nft_data: [
+                  {
+                    token_id: '2',
+                    token_balance: '1',
+                    token_url: 'url',
+                    supports_erc: ['erc20', 'erc721'],
+                    token_price_wei: null,
+                    token_quote_rate_eth: null,
+                    external_data: {
+                      description: 'Description',
+                      image: 'url',
+                      name: 'name',
+                      external_url: 'foo',
+                    },
+                  },
+                ],
+              },
+            ],
+            pagination: null,
+          },
+          error: false,
+          error_message: null,
+          error_code: null,
         },
       })
       .persist(true)
 
-    nock(OPEN_SEA_API)
-      .get('/opensea?url=https://api.opensea.io/api/v1/asset/foo/1')
+    nock(COVALENT_API)
+      .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/fou/nft_metadata/1/')
       .reply(200, {
         data: {
-          description: 'Description',
-          image_original_url: 'url',
-          name: 'Name',
+          data: {
+            updated_at: '2021-05-11T11:21:52.553495435Z',
+            items: [
+              {
+                contract_decimals: 0,
+                contract_name: 'Name',
+                contract_ticker_symbol: 'Fau',
+                contract_address: 'fau',
+                supports_erc: ['erc20'],
+                logo_url: 'url',
+                type: 'nft',
+                balance: null,
+                quote_rate: null,
+                quote: null,
+                nft_data: [
+                  {
+                    token_id: '1',
+                    token_balance: '1',
+                    token_url: 'url',
+                    supports_erc: ['erc20', 'erc721'],
+                    token_price_wei: null,
+                    token_quote_rate_eth: null,
+                    external_data: {
+                      description: 'Description',
+                      image: 'url',
+                      name: 'name',
+                      external_url: 'fau',
+                    },
+                  },
+                ],
+              },
+            ],
+            pagination: null,
+          },
+          error: false,
+          error_message: null,
+          error_code: null,
         },
       })
       .persist(true)
-    nock(OPEN_SEA_API)
-      .get('/opensea?url=https://api.opensea.io/api/v1/asset/0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163/1203')
+
+    nock(COVALENT_API)
+      .get(`/covalent?url=https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1203/`)
       .reply(200, {
         data: {
-          description: 'Kudos Description',
-          image_original_url: 'Kudos url',
-          name: 'Kudos Name',
+          data: {
+            updated_at: '2021-05-11T11:21:52.553495435Z',
+            items: [
+              {
+                contract_decimals: 0,
+                contract_name: 'Kudos',
+                contract_ticker_symbol: 'KDO',
+                contract_address: `${KUDOSADDRESS}`,
+                supports_erc: ['erc20'],
+                logo_url: 'Kudos url',
+                type: 'nft',
+                balance: null,
+                quote_rate: null,
+                quote: null,
+                nft_data: [
+                  {
+                    token_id: '1203',
+                    token_balance: '1',
+                    token_url: 'url',
+                    supports_erc: ['erc20', 'erc721'],
+                    token_price_wei: null,
+                    token_quote_rate_eth: null,
+                    external_data: {
+                      description: 'Kudos Description',
+                      image: 'Kudos url',
+                      name: 'Kudos Name',
+                      external_url: 'https://kudos',
+                    },
+                  },
+                ],
+              },
+            ],
+            pagination: null,
+          },
+          error: false,
+          error_message: null,
+          error_code: null,
         },
       })
       .persist(true)
@@ -102,25 +239,57 @@ describe('AssetsController', () => {
         name: 'Kudos Name',
       })
       .persist(true)
-    nock(OPEN_SEA_API)
-      .get('/opensea?url=https://api.opensea.io/api/v1/asset/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/798958393')
+    nock(COVALENT_API)
+      .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/nft_metadata/798958393/')
       .replyWithError(new TypeError('failed to fetch'))
       .persist(true)
 
-    nock(OPEN_SEA_API)
-      .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab')
+    nock(COVALENT_API)
+      .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/nft_metadata/1/')
       .replyWithError(new TypeError('failed to fetch'))
       .persist(true)
 
-    nock(OPEN_SEA_API)
-      .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163')
+    nock(COVALENT_API)
+      .get(`/covalent?url=https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1/`)
       .reply(200, {
         data: {
-          description: 'Kudos Description',
-          image_url: 'Kudos url',
-          name: 'Kudos',
-          symbol: 'KDO',
-          total_supply: 10,
+          data: {
+            updated_at: '2021-05-11T11:21:52.553495435Z',
+            items: [
+              {
+                contract_decimals: 0,
+                contract_name: 'Kudos',
+                contract_ticker_symbol: 'KDO',
+                contract_address: `${KUDOSADDRESS}`,
+                supports_erc: ['erc20'],
+                logo_url: 'Kudos url',
+                type: 'nft',
+                balance: null,
+                quote_rate: null,
+                quote: null,
+                nft_data: [
+                  {
+                    token_id: '1',
+                    token_balance: '1',
+                    token_url: 'url',
+                    supports_erc: ['erc20', 'erc721'],
+                    token_price_wei: null,
+                    token_quote_rate_eth: null,
+                    external_data: {
+                      description: 'Kudos Description',
+                      image: 'Kudos url',
+                      name: 'Kudos Name',
+                      external_url: 'https://kudos',
+                    },
+                  },
+                ],
+              },
+            ],
+            pagination: null,
+          },
+          error: false,
+          error_message: null,
+          error_code: null,
         },
       })
       .persist(true)
@@ -191,46 +360,77 @@ describe('AssetsController', () => {
   })
 
   it('should add collectible and collectible contract', async () => {
-    await assetsController.addCollectible('foo', '1', { name: 'name', image: 'image', description: 'description' }, false)
+    await assetsController.addCollectibles([
+      {
+        contractAddress: 'foo',
+        tokenID: '1',
+        options: { name: 'name', image: 'image', description: 'description', contractDescription: 'Description', standard: 'erc721' },
+      },
+    ])
     assert.deepStrictEqual(assetsController.state.collectibles[0], {
+      collectibleIndex: 'foo_1',
       address: 'foo',
       description: 'description',
       image: 'image',
       name: 'name',
       tokenId: '1',
+      standard: 'erc721',
+      tokenBalance: 1,
     })
+
     assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
       address: 'foo',
       description: 'Description',
       logo: 'url',
       name: 'Name',
       symbol: 'FOO',
-      totalSupply: 0,
+      standard: 'erc721',
     })
   })
 
   it('should not duplicate collectible nor collectible contract if already added', async () => {
-    await assetsController.addCollectible('foo', '1', { name: 'name', image: 'image', description: 'description' })
-    await assetsController.addCollectible('foo', '1', { name: 'name', image: 'image', description: 'description' })
+    await assetsController.addCollectibles([
+      { contractAddress: 'foo', tokenID: '1', options: { name: 'name', image: 'image', description: 'description' } },
+    ])
+    await assetsController.addCollectibles([
+      { contractAddress: 'foo', tokenID: '1', options: { name: 'name', image: 'image', description: 'description' } },
+    ])
     assert(assetsController.state.collectibles.length === 1)
     assert(assetsController.state.collectibleContracts.length === 1)
   })
 
   it('should not add collectible contract if collectible contract already exists', async () => {
-    await assetsController.addCollectible('foo', '1', { name: 'name', image: 'image', description: 'description' })
-    await assetsController.addCollectible('foo', '2', { name: 'name', image: 'image', description: 'description' })
+    await assetsController.addCollectibles([
+      { contractAddress: 'foo', tokenID: '1', options: { name: 'name', image: 'image', description: 'description' } },
+    ])
+    await assetsController.addCollectibles([
+      { contractAddress: 'foo', tokenID: '2', options: { name: 'name', image: 'image', description: 'description' } },
+    ])
     assert(assetsController.state.collectibles.length === 2)
     assert(assetsController.state.collectibleContracts.length === 1)
   })
 
-  it('should add collectible and get information from OpenSea', async () => {
-    await assetsController.addCollectible('foo', '1')
+  it('should add collectible and get information from covalent', async () => {
+    await assetsController.addCollectibles([{ contractAddress: 'foo', tokenID: '1' }])
+
     assert.deepStrictEqual(assetsController.state.collectibles[0], {
       address: 'foo',
       description: 'Description',
       image: 'url',
-      name: 'Name',
+      name: 'name',
       tokenId: '1',
+      standard: 'erc721',
+      tokenBalance: 1,
+      collectibleIndex: 'foo_1',
+    })
+
+    assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
+      address: 'foo',
+      description: '', // covalent api doesn't return contract description
+      logo: 'url',
+      name: 'Name',
+      symbol: 'FOO',
+      standard: 'erc721',
     })
   })
 
@@ -261,11 +461,11 @@ describe('AssetsController', () => {
   it('should add collectible by selected address', async () => {
     const firstAddress = TEST_ADDRESS_2
     const secondAddress = TEST_ADDRESS_3
-    sandbox.stub(assetsController, 'getCollectibleInformation').returns({ name: 'name', image: 'url', description: 'description' })
+    sandbox.stub(assetsController, 'getCollectibleInfo').returns({ name: 'name', image: 'url', description: 'description', standard: 'erc721' })
     assetsController.setSelectedAddress(firstAddress)
-    await assetsController.addCollectible('foo', '1234')
+    await assetsController.addCollectibles([{ contractAddress: 'foo', tokenID: '1234' }])
     assetsController.setSelectedAddress(secondAddress)
-    await assetsController.addCollectible('fou', '4321')
+    await assetsController.addCollectibles([{ contractAddress: 'fou', tokenID: '4321' }])
     assetsController.setSelectedAddress(firstAddress)
     assert.deepStrictEqual(assetsController.state.collectibles[0], {
       address: 'foo',
@@ -273,15 +473,19 @@ describe('AssetsController', () => {
       image: 'url',
       name: 'name',
       tokenId: '1234',
+      standard: 'erc721',
+      tokenBalance: 1,
+      collectibleIndex: 'foo_1234',
     })
   })
 
   it('should add collectible by provider type', async () => {
     const firstNetworkType = 'rinkeby'
     const secondNetworkType = 'ropsten'
-    sandbox.stub(assetsController, 'getCollectibleInformation').returns({ name: 'name', image: 'url', description: 'description' })
+    sandbox.stub(assetsController, 'getCollectibleContractInformation').returns({ name: 'name', image_url: 'url', symbol: 'FOO' })
+    sandbox.stub(assetsController, 'getCollectibleInfo').returns({ name: 'name', image: 'url', description: 'description', standard: 'erc721' })
     network.setProviderType(firstNetworkType)
-    await assetsController.addCollectible('foo', '1234')
+    await assetsController.addCollectibles([{ contractAddress: 'foo', tokenID: '1234' }])
     network.setProviderType(secondNetworkType)
     assert(assetsController.state.collectibles.length === 0)
     network.setProviderType(firstNetworkType)
@@ -291,31 +495,42 @@ describe('AssetsController', () => {
       image: 'url',
       name: 'name',
       tokenId: '1234',
+      standard: 'erc721',
+      tokenBalance: 1,
+      collectibleIndex: 'foo_1234',
     })
   })
 
   it('should not add collectibles with no contract information when auto detecting', async () => {
-    await assetsController.addCollectible('0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab', '123', undefined, true)
+    const stubbedContractInfo = sandbox.stub(assetsController, 'getCollectibleContractInformation').returns({})
+    const stubbedCollectibleInfo = sandbox.stub(assetsController, 'getCollectibleInfo').returns({})
+    await assetsController.addCollectibles([{ contractAddress: '0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab', tokenID: '1' }])
     assert.deepStrictEqual(assetsController.state.collectibles, [])
     assert.deepStrictEqual(assetsController.state.collectibleContracts, [])
-    await assetsController.addCollectible('0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163', '1203', undefined, true)
+    stubbedCollectibleInfo.restore()
+    stubbedContractInfo.restore()
+    await assetsController.addCollectibles([{ contractAddress: `${KUDOSADDRESS}`, tokenID: '1203' }])
+    const checkSummedAddress = toChecksumAddress(`${KUDOSADDRESS}`)
     assert.deepStrictEqual(assetsController.state.collectibles, [
       {
-        address: '0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163',
+        address: checkSummedAddress,
         description: 'Kudos Description',
         image: 'Kudos url',
         name: 'Kudos Name',
         tokenId: '1203',
+        standard: 'erc721',
+        tokenBalance: 1,
+        collectibleIndex: checkSummedAddress + '_1203',
       },
     ])
     assert.deepStrictEqual(assetsController.state.collectibleContracts, [
       {
-        address: '0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163',
-        description: 'Kudos Description',
+        address: checkSummedAddress,
+        description: '', // covalent api doesn't return contract description
         logo: 'Kudos url',
         name: 'Kudos',
         symbol: 'KDO',
-        totalSupply: 10,
+        standard: 'erc721',
       },
     ])
   })
