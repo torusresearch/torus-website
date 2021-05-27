@@ -78,10 +78,10 @@ export default {
           // Get asset name of the 721
           const selectedAddressAssets = state.assets[state.selectedAddress]
           if (selectedAddressAssets) {
-            const contract = selectedAddressAssets.find((x) => x.address.toLowerCase() === txParams.to.toLowerCase()) || {}
+            const contract = selectedAddressAssets.find((x) => x.address?.toLowerCase() === txParams.to?.toLowerCase()) || {}
             log.info(contract, amountValue)
             if (contract) {
-              const { name: foundAssetName } = (contract.assets || []).find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
+              const { name: foundAssetName } = (contract.assets || []).find((x) => x.tokenId?.toString() === amountValue?.value?.toString()) || {}
               assetName = foundAssetName || ''
               symbol = assetName
               type = 'erc1155'
@@ -111,10 +111,10 @@ export default {
           // Get asset name of the 721
           const selectedAddressAssets = state.assets[state.selectedAddress]
           if (selectedAddressAssets) {
-            const contract = selectedAddressAssets.find((x) => x.address.toLowerCase() === txParams.to?.toLowerCase() || '') || {}
+            const contract = selectedAddressAssets.find((x) => x.address?.toLowerCase() === txParams.to?.toLowerCase() || '') || {}
             log.info(contract, amountValue)
             if (contract) {
-              const { name: foundAssetName } = (contract.assets || []).find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
+              const { name: foundAssetName } = (contract.assets || []).find((x) => x.tokenId?.toString() === amountValue.value?.toString()) || {}
               assetName = foundAssetName || ''
               symbol = assetName
               type = 'erc721'

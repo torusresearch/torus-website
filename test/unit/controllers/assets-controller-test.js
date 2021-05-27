@@ -502,10 +502,13 @@ describe('AssetsController', () => {
   })
 
   it('should not add collectibles with no contract information when auto detecting', async () => {
-    sandbox.stub(assetsController, 'getCollectibleContractInformationFromContract').returns({})
+    const stubbedContractInfo = sandbox.stub(assetsController, 'getCollectibleContractInformation').returns({})
+    const stubbedCollectibleInfo = sandbox.stub(assetsController, 'getCollectibleInfo').returns({})
     await assetsController.addCollectibles([{ contractAddress: '0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab', tokenID: '1' }])
     assert.deepStrictEqual(assetsController.state.collectibles, [])
     assert.deepStrictEqual(assetsController.state.collectibleContracts, [])
+    stubbedCollectibleInfo.restore()
+    stubbedContractInfo.restore()
     await assetsController.addCollectibles([{ contractAddress: `${KUDOSADDRESS}`, tokenID: '1203' }])
     const checkSummedAddress = toChecksumAddress(`${KUDOSADDRESS}`)
     assert.deepStrictEqual(assetsController.state.collectibles, [

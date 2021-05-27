@@ -178,7 +178,7 @@ export default class AssetController {
       return collectibleInfo
     }
     const res = await this.getNftMetadata(collectibleApi)
-    const contractData = res.data?.data?.items
+    const contractData = res.data?.data?.items || []
     if (contractData.length > 0) {
       const { nft_data: nftData } = contractData[0]
       if (nftData.length > 0 && !!nftData[0].external_data) {
@@ -244,7 +244,7 @@ export default class AssetController {
     // token id is incorrect.
     const collectibleContractApi = this.getCollectibleApi(contractAddress, 1)
     const res = await this.getNftMetadata(collectibleContractApi)
-    const contractData = res.data?.data?.items
+    const contractData = res.data?.data?.items || []
     if (contractData.length > 0) {
       const { contract_name: name, contract_ticker_symbol: symbol, logo_url: logo } = contractData[0]
       return { name, symbol, logo }
@@ -302,7 +302,14 @@ export default class AssetController {
       normalizedContractInfo.address = _contractAddress
       normalizedContractInfo.description = contractDescription || ''
     }
-    normalizedContractInfo.standard = normalizedContractInfo.standard || (await this.assetContractController.checkNftStandard(contractAddress))
+    if (!normalizedContractInfo.standard) {
+      try {
+        normalizedContractInfo.standard = await this.assetContractController.checkNftStandard(contractAddress)
+      } catch {
+        // return empty obj if not able to get contract standard, which means provided address is invalid
+        return {}
+      }
+    }
     return normalizedContractInfo
   }
 
@@ -327,10 +334,15 @@ export default class AssetController {
       normalizedCollectibleInfo = { ...normalizedCollectibleInfo, ...collectibleInfo }
     }
     if (!normalizedCollectibleInfo.tokenBalance) {
-      normalizedCollectibleInfo.tokenBalance =
-        normalizedCollectibleInfo.standard === CONTRACT_TYPE_ERC721
-          ? 1
-          : await this.assetContractController.getErc1155Balance(address, this.selectedAddress, tokenID)
+      if (normalizedCollectibleInfo.standard === CONTRACT_TYPE_ERC721) {
+        normalizedCollectibleInfo.tokenBalance = 1
+      } else if (normalizedCollectibleInfo.standard === CONTRACT_TYPE_ERC1155) {
+        try {
+          await this.assetContractController.getErc1155Balance(_contractAddress, this.selectedAddress, tokenID)
+        } catch {
+          normalizedCollectibleInfo.tokenBalance = null
+        }
+      }
     }
     return normalizedCollectibleInfo
   }
@@ -348,8 +360,8 @@ export default class AssetController {
       const newCollectibleContracts = []
       const newCollectibles = []
       const collectibleTempIndex = {}
-      let normalizedContractInfo = {}
-      let normalizedCollectibleInfo = {}
+      const contractPromises = []
+      const collectiblePromises = []
       for (const collectibleDetails of collectibles) {
         const collectibleInfo = typeof collectibleDetails === 'object' ? collectibleDetails : {}
         const options = typeof collectibleInfo.options === 'object' ? collectibleInfo.options : {}
@@ -361,50 +373,52 @@ export default class AssetController {
         if (tokenID && contractAddress) {
           const collectibleIndex = `${contractAddress}_${tokenID}`
           try {
+            if (!collectibleTempIndex[contractAddress]) {
+              const normalizedContractPromise = this._normalizeContractDetails(
+                {
+                  contractAddress,
+                  contractName,
+                  contractSymbol,
+                  standard,
+                  contractImage,
+                  contractDescription,
+                },
+                detectFromApi
+              )
+              contractPromises.push(normalizedContractPromise)
+              collectibleTempIndex[contractAddress] = true
+            }
             if (!collectibleTempIndex[collectibleIndex]) {
-              if (!collectibleTempIndex[contractAddress]) {
-                // eslint-disable-next-line no-await-in-loop
-                normalizedContractInfo = await this._normalizeContractDetails(
-                  {
-                    contractAddress,
-                    contractName,
-                    contractSymbol,
-                    standard,
-                    contractImage,
-                    contractDescription,
-                  },
-                  detectFromApi
-                )
-                if (normalizedContractInfo.name && normalizedContractInfo.symbol) {
-                  newCollectibleContracts.push(normalizedContractInfo)
-                  collectibleTempIndex[contractAddress] = true
-                }
-              }
-
-              // donot add collectible if contract is not added yet
-              if (collectibleTempIndex[contractAddress]) {
-                // eslint-disable-next-line no-await-in-loop
-                normalizedCollectibleInfo = await this._normalizeCollectibleDetails(
-                  {
-                    address: contractAddress,
-                    name,
-                    image,
-                    description,
-                    standard,
-                    tokenBalance,
-                    tokenID,
-                  },
-                  detectFromApi
-                )
-                if (normalizedCollectibleInfo.name) {
-                  newCollectibles.push(normalizedCollectibleInfo)
-                  collectibleTempIndex[collectibleIndex] = true
-                }
-              }
+              const normalizedCollectiblePromise = this._normalizeCollectibleDetails(
+                {
+                  address: contractAddress,
+                  name,
+                  image,
+                  description,
+                  standard,
+                  tokenBalance,
+                  tokenID,
+                },
+                detectFromApi
+              )
+              collectiblePromises.push(normalizedCollectiblePromise)
+              collectibleTempIndex[collectibleIndex] = true
             }
           } catch (error) {
             log.error(error)
           }
+        }
+      }
+      const allAssetPromises = await Promise.all([...contractPromises, ...collectiblePromises])
+      for (const [i, assetDetail] of allAssetPromises.entries()) {
+        // first add contracts
+        if (i < contractPromises.length) {
+          if (assetDetail.name && assetDetail.symbol) {
+            newCollectibleContracts.push(assetDetail)
+          }
+        } else if (assetDetail.name && assetDetail.standard && assetDetail.tokenBalance) {
+          // rest are assets
+          newCollectibles.push(assetDetail)
         }
       }
       const initState = this.state
