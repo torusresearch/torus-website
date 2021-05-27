@@ -19,16 +19,7 @@ class ServiceWorkerIntegrityPlugin {
 
     compiler.hooks.emit.tap(ID, (compilation) => {
       try {
-        const precacheManifestName = getFileName(compilation, 'precache-manifest.')
-        const precacheManifestSource = compilation.assets[precacheManifestName].source()
         const serviceWorkerName = getFileName(compilation, 'service-worker.js')
-        const serviceWorkerSource = compilation.assets[serviceWorkerName].source()
-        const strippedImportServiceWorkerSource = serviceWorkerSource.split('\n').slice(2).join('\n')
-        const concatenatedServiceWorkerSource = `${precacheManifestSource.replace(/"/g, `${''}'`)}\n${strippedImportServiceWorkerSource}`
-        compilation.assets[serviceWorkerName] = {
-          source: () => concatenatedServiceWorkerSource,
-          size: () => concatenatedServiceWorkerSource.length,
-        }
         const swIntegrity = ssri.fromData(compilation.assets[serviceWorkerName].source(), { algorithms: ['sha384'] }).toString()
         const appName = getFileName(compilation, 'js/app.')
         // console.log('%O', compilation.assets[appName].children[0])
