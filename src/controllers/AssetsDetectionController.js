@@ -132,17 +132,16 @@ export default class AssetsDetectionController {
           standard = CONTRACT_TYPE_ERC721
         }
 
-        let contractImage = logo_url
+        const contractImage = logo_url
+        let contractFallbackLogo
         if (!!nft_data && nft_data.length > 0) {
-          for (const nft of nft_data) {
+          for (const [i, nft] of nft_data.entries()) {
             const { token_id: tokenID, token_balance: tokenBalance, external_data } = nft
             const name = external_data?.name
             const description = external_data?.description
-            const imageURL = external_data?.image
-            // nft contract images urls are invalid most of the times in covalent
-            // so using asset image as contract image
-            if (!contractImage) {
-              contractImage = imageURL || ''
+            const imageURL = external_data?.image || '/images/nft-placeholder.svg'
+            if (i === 0) {
+              contractFallbackLogo = imageURL
             }
             const collectibleDetails = {
               contractAddress,
@@ -151,10 +150,11 @@ export default class AssetsDetectionController {
                 contractName,
                 contractSymbol,
                 contractImage,
+                contractFallbackLogo,
                 standard,
                 contractDescription: '', // covalent api doesn't provide contract description like opensea
                 description,
-                image: imageURL || '',
+                image: imageURL,
                 name: name || `${contractName}#${tokenID}`,
                 tokenBalance,
               },

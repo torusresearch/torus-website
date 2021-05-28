@@ -10,6 +10,7 @@ import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
 import { get } from '../utils/httpHelpers'
+import { validateImageUrl } from '../utils/utils'
 
 const SUPPORTED_NFT_STANDARDS = new Set([CONTRACT_TYPE_ERC1155, CONTRACT_TYPE_ERC721])
 
@@ -281,7 +282,7 @@ export default class AssetController {
 
   async _normalizeContractDetails(contractDetails = {}, detectFromApi) {
     let normalizedContractInfo = {}
-    const { contractName, contractSymbol, standard, contractAddress, contractImage, contractDescription } = contractDetails
+    const { contractName, contractSymbol, standard, contractAddress, contractImage, contractDescription, assetImage } = contractDetails
     let _contractAddress
     if (isAddress(contractAddress)) _contractAddress = toChecksumAddress(contractAddress)
     else _contractAddress = contractAddress
@@ -308,6 +309,16 @@ export default class AssetController {
       } catch {
         // return empty obj if not able to get contract standard, which means provided address is invalid
         return {}
+      }
+    }
+    if (!normalizedContractInfo.logo) {
+      // fallback to asset image
+      normalizedContractInfo.logo = assetImage
+    } else {
+      try {
+        await validateImageUrl(normalizedContractInfo.logo)
+      } catch {
+        normalizedContractInfo.logo = assetImage
       }
     }
     return normalizedContractInfo
@@ -344,6 +355,10 @@ export default class AssetController {
         }
       }
     }
+
+    if (!normalizedCollectibleInfo.image) {
+      normalizedCollectibleInfo.image = '/images/nft-placeholder.svg'
+    }
     return normalizedCollectibleInfo
   }
 
@@ -366,7 +381,18 @@ export default class AssetController {
         const collectibleInfo = typeof collectibleDetails === 'object' ? collectibleDetails : {}
         const options = typeof collectibleInfo.options === 'object' ? collectibleInfo.options : {}
 
-        const { contractName, contractSymbol, contractImage, contractDescription, description, image, name, tokenBalance, standard } = options
+        const {
+          contractName,
+          contractSymbol,
+          contractImage,
+          contractFallbackLogo,
+          contractDescription,
+          description,
+          image,
+          name,
+          tokenBalance,
+          standard,
+        } = options
 
         const { tokenID, contractAddress } = collectibleInfo
 
@@ -382,6 +408,7 @@ export default class AssetController {
                   standard,
                   contractImage,
                   contractDescription,
+                  assetImage: contractFallbackLogo || '/images/nft-placeholder.svg',
                 },
                 detectFromApi
               )

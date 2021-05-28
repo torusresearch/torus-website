@@ -55,7 +55,7 @@
             height="36"
             large
             :alt="`${transaction.type_name} Icon`"
-            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+            onerror="if (!this.src.includes('images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
           />
           <v-icon
             v-else-if="transaction.type === CONTRACT_TYPE_ERC721 || transaction.type === CONTRACT_TYPE_ERC1155"
