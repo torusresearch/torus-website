@@ -145,6 +145,7 @@ if (
     process.env.VUE_APP_TORUS_BUILD_ENV === 'testing' ||
     process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc')
 ) {
+  log.info('non-integrity sw')
   // if swIntegrity is not calculated
   if (swIntegrity === ['SERVICE', 'WORKER', 'SHA', 'INTEGRITY'].join('_')) {
     register({
@@ -162,6 +163,7 @@ if (
       },
     })
   } else {
+    log.info('full integrity sw')
     // Check on existing service worker registration(s)
     // if there are errors, remove all service workers first
     let swRegistrations

@@ -1,4 +1,3 @@
-/* eslint-disable no-debugger */
 import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
