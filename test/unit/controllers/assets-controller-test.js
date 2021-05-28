@@ -5,7 +5,7 @@ import { createSandbox } from 'sinon'
 import { toChecksumAddress } from 'web3-utils'
 
 import config from '../../../src/config'
-
+import * as utils from '../../../src/utils/utils'
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
 import AssetsController from '../../../src/controllers/AssetsController'
 import NetworkController from '../../../src/controllers/NetworkController'
@@ -28,6 +28,7 @@ describe('AssetsController', () => {
   let assetsContract
   let prefsController
   const sandbox = createSandbox()
+  let validateImageUrlStub
 
   beforeEach(async () => {
     network = new NetworkController()
@@ -52,6 +53,11 @@ describe('AssetsController', () => {
       network,
       getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
     })
+
+    // do it only if the method is not already wrapped
+    if (!utils.validateImageUrl.restore && !utils.validateImageUrl.restore?.sinon) {
+      validateImageUrlStub = sandbox.stub(utils, 'validateImageUrl').returns(true)
+    }
 
     nock(COVALENT_API)
       .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/1/')
@@ -533,5 +539,76 @@ describe('AssetsController', () => {
         standard: 'erc721',
       },
     ])
+  })
+
+  it('should add replace contract logo with contract fallback logo url  if provided logo is not valid', async () => {
+    validateImageUrlStub.restore()
+    sandbox.stub(utils, 'validateImageUrl').throws()
+
+    await assetsController.addCollectibles([
+      {
+        contractAddress: 'foo',
+        tokenID: '1',
+        options: {
+          name: 'name',
+          contractImage: 'invalid image url',
+          contractFallbackLogo: 'valid image url',
+          image: 'valid image url',
+          description: 'description',
+          contractDescription: 'Description',
+          standard: 'erc721',
+        },
+      },
+    ])
+
+    assert.deepStrictEqual(assetsController.state.collectibles[0], {
+      collectibleIndex: 'foo_1',
+      address: 'foo',
+      description: 'description',
+      image: 'valid image url',
+      name: 'name',
+      tokenId: '1',
+      standard: 'erc721',
+      tokenBalance: 1,
+    })
+    assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
+      address: 'foo',
+      description: 'Description',
+      logo: 'valid image url',
+      name: 'Name',
+      symbol: 'FOO',
+      standard: 'erc721',
+    })
+  })
+  it('should add replace contract logo and asset image url with placeholder url if fallback url is not given', async () => {
+    validateImageUrlStub.restore()
+    sandbox.stub(utils, 'validateImageUrl').throws()
+    const stubbedCollectibleInfo = sandbox.stub(assetsController, 'getCollectibleInfo').returns({})
+    await assetsController.addCollectibles([
+      {
+        contractAddress: 'foo',
+        tokenID: '100',
+        options: { name: 'name', description: 'description', contractDescription: 'Description', standard: 'erc721' },
+      },
+    ])
+
+    assert.deepStrictEqual(assetsController.state.collectibles[0], {
+      collectibleIndex: 'foo_100',
+      address: 'foo',
+      description: 'description',
+      image: '/images/nft-placeholder.svg',
+      name: 'name',
+      tokenId: '100',
+      standard: 'erc721',
+      tokenBalance: 1,
+    })
+    assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
+      address: 'foo',
+      description: 'Description',
+      logo: '/images/nft-placeholder.svg',
+      name: 'Name',
+      symbol: 'FOO',
+      standard: 'erc721',
+    })
   })
 })
