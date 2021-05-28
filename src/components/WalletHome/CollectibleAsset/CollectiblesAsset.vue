@@ -15,7 +15,7 @@
             :src="asset.image"
             style="width: auto; height: 140px"
             :alt="asset.name || `${selectedContract.name} #${asset.tokenId}`"
-            onerror="if (!this.src.includes('/images/asset.jpg')) this.src = '/images/asset.jpg';"
+            onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
           />
         </div>
         <v-card-text class="asset-text py-1 px-3">
@@ -57,6 +57,7 @@
         v-if="$vuetify.breakpoint.xsOnly"
         class="asset elevation-1 asset--mobile"
         :class="assetActive ? 'asset--active' : ''"
+        :ripple="false"
         @click="toggleAsset(!assetActive)"
       >
         <v-list-item>
@@ -75,7 +76,7 @@
             <img
               :src="asset.image"
               :alt="asset.name || `${selectedContract.name} #${asset.tokenId}`"
-              onerror="if (!this.src.includes('/images/asset.jpg')) this.src = '/images/asset.jpg';"
+              onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
             />
           </v-list-item-avatar>
         </v-list-item>
@@ -100,7 +101,7 @@
             </v-btn>
           </v-flex>
           <v-flex xs6 class="px-2">
-            <v-btn block depressed :outlined="$vuetify.theme.dark" color="torusBrand1" class="white--text" @click="transferAsset(asset)">
+            <v-btn block depressed :outlined="$vuetify.theme.dark" color="torusBrand1" class="white--text" @click.stop="transferAsset(asset)">
               {{ t('walletHome.transfer') }}
             </v-btn>
           </v-flex>
