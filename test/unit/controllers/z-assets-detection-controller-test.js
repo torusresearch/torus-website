@@ -8,6 +8,7 @@ import AssetsDetectionController from '../../../src/controllers/AssetsDetectionC
 import NetworkController from '../../../src/controllers/NetworkController'
 import PreferencesController from '../../../src/controllers/PreferencesController'
 import { BSC_MAINNET, MAINNET, MATIC, MUMBAI } from '../../../src/utils/enums'
+import * as utils from '../../../src/utils/utils'
 import { userBalances } from '../../data/covalent-nft-data'
 
 const ROPSTEN = 'ropsten'
@@ -26,6 +27,7 @@ describe('AssetsDetectionController', () => {
   let assetsContract
   let prefsController
   const sandbox = createSandbox()
+  // let validateImageUrlStub
 
   beforeEach(async () => {
     network = new NetworkController()
@@ -58,6 +60,10 @@ describe('AssetsDetectionController', () => {
       getCovalentNfts: prefsController.getCovalentNfts.bind(prefsController),
     })
 
+    // do it only if the method is not already wrapped
+    if (!utils.validateImageUrl.restore && !utils.validateImageUrl.restore?.sinon) {
+      sandbox.stub(utils, 'validateImageUrl').returns(true)
+    }
     // eth mainnet
     nock(COVALENT_API)
       .get('/v1/1/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')

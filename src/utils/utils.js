@@ -554,7 +554,6 @@ export const getIFrameOriginObject = () => {
     const url = new URL(getIFrameOrigin())
     return { href: url.href, hostname: url.hostname }
   } catch {
-    log.error('invalid url')
     return { href: window.location.href, hostname: window.location.hostname }
   }
 }
@@ -782,4 +781,21 @@ export async function validateContractAddress(web3, address) {
     return true
   }
   return false
+}
+
+export async function validateImageUrl(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.src = url
+    if (img.complete) {
+      resolve(true)
+    } else {
+      img.addEventListener('load', () => {
+        resolve(true)
+      })
+      img.addEventListener('error', () => {
+        reject()
+      })
+    }
+  })
 }
