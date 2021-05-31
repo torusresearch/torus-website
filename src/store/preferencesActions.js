@@ -196,4 +196,8 @@ export default {
       }
     }
   },
+  hideAnnouncement({ state }, payload) {
+    const { announcements } = state
+    return prefsController.hideAnnouncement(payload, announcements)
+  },
 }

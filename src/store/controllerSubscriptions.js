@@ -134,3 +134,7 @@ export function encryptionPublicKeyHandler({ unapprovedEncryptionPublicKeyMsgs }
 export function unapprovedDecryptMsgsHandler({ unapprovedDecryptMsgs }) {
   getStore().commit('setUnapprovedDecryptMsgs', unapprovedDecryptMsgs)
 }
+
+export function announcemenstHandler(state) {
+  getStore().commit('setAnnouncements', state)
+}

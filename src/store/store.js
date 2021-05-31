@@ -53,6 +53,7 @@ if (storageAvailable(isPwa ? 'localStorage' : 'sessionStorage')) {
       crashReport: state.crashReport,
       locale: state.locale,
       billboard: state.billboard,
+      announcements: state.announcements,
       contacts: state.contacts,
       whiteLabel: state.whiteLabel,
       supportedNetworks: state.supportedNetworks,
