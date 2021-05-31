@@ -1,5 +1,11 @@
 <template>
-  <v-system-bar v-show="message" fixed :color="barColor" :class="[`${$vuetify.theme.dark ? 'white--text' : `${textColor}--text text--darken-1`}`]">
+  <v-system-bar
+    v-show="message"
+    fixed
+    :height="$vuetify.breakpoint.xsOnly ? 46 : ''"
+    :color="barColor"
+    :class="[`${$vuetify.theme.dark ? 'white--text' : `${textColor}--text text--darken-1`}`]"
+  >
     <div class="container d-flex align-center">
       <v-spacer />
       <v-icon v-if="icon" small :class="`${$vuetify.theme.dark ? 'white--text' : `${textColor}--text text--darken-1`}`">

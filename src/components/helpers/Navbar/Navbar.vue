@@ -43,11 +43,11 @@
         :key="announcement.id"
         type="announcement"
         :message="announcement.announcement"
-        icon="alert"
+        icon="info"
         @onClose="hideAnnouncement(announcement)"
       />
       <SystemBar type="success" :message="successMsg" icon="check_circle" @onClose="clearMsg('SuccessMsg')" />
-      <SystemBar type="error" :message="errorMsg" icon="info" @onClose="clearMsg('ErrorMsg')" />
+      <SystemBar type="error" :message="errorMsg" icon="alert" @onClose="clearMsg('ErrorMsg')" />
     </div>
   </v-app-bar>
 </template>
