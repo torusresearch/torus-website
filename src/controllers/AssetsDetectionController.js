@@ -5,18 +5,18 @@
 
 import log from 'loglevel'
 
-import { MAINNET } from '../utils/enums'
+import { BSC_MAINNET, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
 
 const DEFAULT_INTERVAL = 60000
-
 export default class AssetsDetectionController {
   constructor(options) {
     this.interval = options.interval || DEFAULT_INTERVAL
     this.selectedAddress = options.selectedAddress || ''
     this.network = options.network
     this.assetController = options.assetController
-    this.assetContractController = options.assetContractController
-    this.getOpenSeaCollectibles = options.getOpenSeaCollectibles
+    this.getCovalentNfts = options.getCovalentNfts
+    this.currentNetwork = null
+    this.collectibleApi = null
   }
 
   restartAssetDetection() {
@@ -40,6 +40,10 @@ export default class AssetsDetectionController {
     this.selectedAddress = ''
   }
 
+  isMainnet() {
+    return this.network.getNetworkNameFromNetworkCode() === MAINNET
+  }
+
   /**
    * @type {Number}
    */
@@ -54,17 +58,25 @@ export default class AssetsDetectionController {
   }
 
   getOwnerCollectiblesApi(address) {
-    return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
+    const chainId = NFT_SUPPORTED_NETWORKS[this.currentNetwork]
+    if (chainId) {
+      return `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
+    }
+    return ''
   }
 
   async getOwnerCollectibles() {
-    const { selectedAddress } = this
-    const api = this.getOwnerCollectiblesApi(selectedAddress)
+    if (!this.collectibleApi) {
+      return []
+    }
     let response
     try {
-      response = await this.getOpenSeaCollectibles(api)
-      const collectibles = response.data.assets
-      return collectibles
+      if (NFT_SUPPORTED_NETWORKS[this.currentNetwork]) {
+        response = await this.getCovalentNfts(this.collectibleApi)
+        const collectibles = response.data?.data?.items || []
+        return collectibles
+      }
+      return []
     } catch (error) {
       log.error(error)
       return []
@@ -72,24 +84,13 @@ export default class AssetsDetectionController {
   }
 
   /**
-   * Checks whether network is mainnet or not
-   *
-   * @returns - Whether current network is mainnet
-   */
-  isMainnet() {
-    return this.network.getNetworkNameFromNetworkCode() === MAINNET
-  }
-
-  /**
    * Detect assets owned by current account on mainnet
    */
   async detectAssets() {
-    /* istanbul ignore if */
-    if (!this.isMainnet()) {
-      return
+    if (NFT_SUPPORTED_NETWORKS[this.network.getNetworkNameFromNetworkCode()]) {
+      // this.detectTokens()
+      this.detectCollectibles()
     }
-    // this.detectTokens()
-    this.detectCollectibles()
   }
 
   /**
@@ -98,48 +99,72 @@ export default class AssetsDetectionController {
    */
   async detectCollectibles() {
     /* istanbul ignore if */
-    if (!this.isMainnet()) {
-      return
-    }
+    const currentNetwork = this.network.getNetworkNameFromNetworkCode()
+    this.currentNetwork = currentNetwork
+    const { selectedAddress } = this
+    this.collectibleApi = this.getOwnerCollectiblesApi(selectedAddress)
+    await this.detectCollectiblesFromCovalent(currentNetwork)
+  }
+
+  async detectCollectiblesFromCovalent(network) {
     const { selectedAddress } = this
     /* istanbul ignore else */
     if (!selectedAddress) {
       return
     }
+    let protocolPrefix = 'ERC'
+    if (network === BSC_MAINNET) {
+      protocolPrefix = 'BEP'
+    }
     this.assetController.setSelectedAddress(selectedAddress)
     const apiCollectibles = await this.getOwnerCollectibles()
-    for (const {
-      token_id: tokenID,
-      image_url: imageURL,
-      name,
-      description,
-      asset_contract: {
-        address: contractAddress,
-        name: contractName,
-        symbol: contractSymbol,
-        image_url: contractImage = '',
-        total_supply: contractSupply,
-        description: contractDescription,
-      },
-    } of apiCollectibles) {
-      // eslint-disable-next-line no-await-in-loop
-      await this.assetController.addCollectible(
-        contractAddress,
-        tokenID.toString(),
-        {
-          description,
-          image: imageURL || (contractImage || '').replace('=s60', '=s240'),
-          name: name || `${contractName}#${tokenID}`,
-          contractAddress,
-          contractName,
-          contractSymbol,
-          contractImage: (contractImage || '').replace('=s60', '=s240') || imageURL,
-          contractSupply,
-          contractDescription,
-        },
-        true
-      )
+    const collectibles = []
+    for (const item of apiCollectibles) {
+      if (item.type === 'nft') {
+        let contractName = item.contract_name
+        let standard
+        const { logo_url, contract_address: contractAddress, contract_ticker_symbol: contractSymbol, nft_data, supports_erc } = item
+        if (supports_erc.includes('erc1155')) {
+          contractName = `${contractName} (${protocolPrefix}1155)`
+          standard = CONTRACT_TYPE_ERC1155
+        } else if (supports_erc.includes('erc721')) {
+          contractName = `${contractName} (${protocolPrefix}721)`
+          standard = CONTRACT_TYPE_ERC721
+        }
+
+        const contractImage = logo_url
+        let contractFallbackLogo
+        if (!!nft_data && nft_data.length > 0) {
+          for (const [i, nft] of nft_data.entries()) {
+            const { token_id: tokenID, token_balance: tokenBalance, external_data } = nft
+            const name = external_data?.name
+            const description = external_data?.description
+            const imageURL = external_data?.image || '/images/nft-placeholder.svg'
+            if (i === 0) {
+              contractFallbackLogo = imageURL
+            }
+            const collectibleDetails = {
+              contractAddress,
+              tokenID: tokenID.toString(),
+              options: {
+                contractName,
+                contractSymbol,
+                contractImage,
+                contractFallbackLogo,
+                standard,
+                contractDescription: '', // covalent api doesn't provide contract description like opensea
+                description,
+                image: imageURL,
+                name: name || `${contractName}#${tokenID}`,
+                tokenBalance,
+              },
+            }
+            collectibles.push(collectibleDetails)
+          }
+        }
+      }
     }
+    await this.assetController.addCollectibles(collectibles, false)
   }
 }
 

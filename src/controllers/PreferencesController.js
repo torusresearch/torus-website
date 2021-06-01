@@ -544,6 +544,11 @@ class PreferencesController extends EventEmitter {
     return this.api.get(`${config.api}/tokenbalances`, this.headers(address), { useAPIKey: true })
   }
 
+  async getCovalentTokenBalances(address, chainId) {
+    const api = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/`
+    return this.api.get(`${config.api}/covalent?url=${api}`, this.headers(), { useAPIKey: true })
+  }
+
   async getBillboardContents() {
     try {
       const { selectedAddress } = this.store.getState()
@@ -683,8 +688,12 @@ class PreferencesController extends EventEmitter {
   }
 
   /* istanbul ignore next */
-  async getOpenSeaCollectibles(api) {
-    return this.api.get(`${config.api}/opensea?url=${api}`, this.headers(), { useAPIKey: true })
+  async getCovalentNfts(api) {
+    return this.api.get(`${config.api}/covalent?url=${api}`, this.headers(), { useAPIKey: true })
+  }
+
+  async getNftMetadata(api) {
+    return this.api.get(`${config.api}/covalent?url=${api}`, this.headers(), { useAPIKey: true })
   }
 
   /* istanbul ignore next */

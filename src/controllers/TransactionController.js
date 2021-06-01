@@ -9,6 +9,7 @@ import EthQuery from 'ethjs-query'
 import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
+import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { fromWei, isAddress, sha3, toBN, toChecksumAddress } from 'web3-utils'
 
 import erc721Contracts from '../assets/assets-map.json'
@@ -19,6 +20,7 @@ import {
   CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
   GOERLI_CODE,
@@ -47,6 +49,7 @@ import * as txUtils from './utils/txUtils'
 
 const tokenABIDecoder = new AbiDecoder(tokenAbi)
 const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
+const erc1155AbiDecoder = new AbiDecoder(erc1155Abi.abi)
 const SUPPORTED_CHAINS = new Set([GOERLI_CODE, KOVAN_CODE, MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE])
 
 /**
@@ -592,6 +595,11 @@ class TransactionController extends EventEmitter {
 
         tx.type_image_link = contractParams.logo || tx.type_image_link
         tx.type_name = tx.name || tx.tokenName
+
+        if (contractParams.erc1155) {
+          tx.type = CONTRACT_TYPE_ERC1155
+          tx.symbol = tx.tokenName || tx.tokenID || tx.symbol
+        }
         if (contractParams.erc721) {
           tx.type = CONTRACT_TYPE_ERC721
           tx.symbol = tx.tokenName || tx.tokenID || tx.symbol
@@ -737,6 +745,7 @@ class TransactionController extends EventEmitter {
     const { data, to, isEtherscan } = txParameters
     let checkSummedTo = to
     if (isAddress(to)) checkSummedTo = toChecksumAddress(to)
+    const decodedERC1155 = data && erc1155AbiDecoder.decodeMethod(data)
     const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
     const decodedERC20 = data && tokenABIDecoder.decodeMethod(data)
 
@@ -787,6 +796,14 @@ class TransactionController extends EventEmitter {
         : {}
 
       contractParameters.erc721 = true
+      contractParameters.decimals = 0
+      contractParameters.isSpecial = false
+    } else if (checkSummedTo && decodedERC1155) {
+      // Next give preference to erc1155
+      const { name = '', params } = decodedERC1155
+      tokenMethodName = [COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM].find((methodName) => methodName.toLowerCase() === name.toLowerCase())
+      methodParameters = params
+      contractParameters.erc1155 = true
       contractParameters.decimals = 0
       contractParameters.isSpecial = false
     } else if (isEtherscan) {
