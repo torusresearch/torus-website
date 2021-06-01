@@ -227,10 +227,15 @@ export default class AssetController {
    * @returns - Promise resolving to the current collectible conract name, symbol and standard
    */
   async getCollectibleContractInformationFromContract(contractAddress, standard) {
-    const assetsContractController = this.assetContractController
-    const name = await assetsContractController.getAssetName(contractAddress)
-    const symbol = await assetsContractController.getAssetSymbol(contractAddress)
-    return { name, symbol, standard }
+    try {
+      const assetsContractController = this.assetContractController
+      const name = await assetsContractController.getAssetName(contractAddress)
+      const symbol = await assetsContractController.getAssetSymbol(contractAddress)
+      return { name, symbol, standard }
+    } catch (error) {
+      log.warn('unable to get info from contract', contractAddress, error)
+      return { name: '', symbol: '', standard }
+    }
   }
 
   /**
@@ -275,7 +280,7 @@ export default class AssetController {
       /* istanbul ignore next */
       return {}
     } catch (error) {
-      log.error('getCollectibleContractInformation ', error)
+      log.warn('getCollectibleContractInformation ', error)
     }
     return {}
   }
