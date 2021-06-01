@@ -2,18 +2,20 @@ import assert from 'assert'
 import nock from 'nock'
 import { createSandbox } from 'sinon'
 
-import config from '../../../src/config'
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
 import AssetsController from '../../../src/controllers/AssetsController'
 import AssetsDetectionController from '../../../src/controllers/AssetsDetectionController'
 import NetworkController from '../../../src/controllers/NetworkController'
 import PreferencesController from '../../../src/controllers/PreferencesController'
+import { BSC_MAINNET, MAINNET, MATIC, MUMBAI } from '../../../src/utils/enums'
+import * as utils from '../../../src/utils/utils'
+import { userBalances } from '../../data/covalent-nft-data'
 
-const MAINNET = 'mainnet'
 const ROPSTEN = 'ropsten'
 const noop = () => {}
 const TEST_ADDRESS = '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'
-const OPEN_SEA_API = config.api
+const COVALENT_API = 'https://api.covalenthq.com'
+
 const testAccount = {
   key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
   address: '0xa12164FeD66719297D2cF407bb314D07FEb12C02',
@@ -25,6 +27,7 @@ describe('AssetsDetectionController', () => {
   let assetsContract
   let prefsController
   const sandbox = createSandbox()
+  // let validateImageUrlStub
 
   beforeEach(async () => {
     network = new NetworkController()
@@ -48,159 +51,50 @@ describe('AssetsDetectionController', () => {
       selectedAddress: TEST_ADDRESS,
       assetContractController: assetsContract,
       network,
-      getOpenSeaCollectibles: prefsController.getOpenSeaCollectibles.bind(prefsController),
+      getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
     })
 
     assetsDetection = new AssetsDetectionController({
       network,
-      assetContractController: assetsContract,
       assetController: assets,
-      getOpenSeaCollectibles: prefsController.getOpenSeaCollectibles.bind(prefsController),
+      getCovalentNfts: prefsController.getCovalentNfts.bind(prefsController),
     })
 
-    nock(OPEN_SEA_API)
-      .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/0x1d963688FE2209A98dB35C67A041524822Cf04ff')
+    // do it only if the method is not already wrapped
+    if (!utils.validateImageUrl.restore && !utils.validateImageUrl.restore?.sinon) {
+      sandbox.stub(utils, 'validateImageUrl').returns(true)
+    }
+    // eth mainnet
+    nock(COVALENT_API)
+      .get('/v1/1/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')
       .reply(200, {
-        data: {
-          description: 'Description',
-          image_url: 'url',
-          name: 'Name',
-          symbol: 'FOO',
-          total_supply: 0,
-        },
+        data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
+      .persist(true)
 
-    nock(OPEN_SEA_API)
-      .persist()
-      .get('/opensea?url=https://api.opensea.io/api/v1/assets?owner=0x2&limit=300')
+    // polygon
+    nock(COVALENT_API)
+      .get('/v1/137/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')
       .reply(200, {
-        data: {
-          assets: [
-            {
-              asset_contract: {
-                address: '0x1d963688fe2209a98db35c67a041524822cf04ff',
-                name: 'Name FF',
-                symbol: 'FF',
-                image_url: 'url FF',
-                total_supply: 10,
-                description: 'Description FF',
-              },
-              description: 'Description 2577',
-              image_original_url: 'image/2577.png',
-              name: 'ID 2577',
-              token_id: '2577',
-            },
-          ],
-        },
+        data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
+      .persist(true)
 
-    nock(OPEN_SEA_API)
-      .get(`/opensea?url=https://api.opensea.io/api/v1/assets?owner=${TEST_ADDRESS}&limit=300 `)
+    // polygon mumbai
+    nock(COVALENT_API)
+      .get('/v1/80001/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')
       .reply(200, {
-        data: {
-          assets: [
-            {
-              asset_contract: {
-                address: '0x1d963688fe2209a98db35c67a041524822cf04ff',
-                name: 'Name FF',
-                symbol: 'FF',
-                image_url: 'url FF',
-                total_supply: 10,
-                description: 'Description FF',
-              },
-              description: 'Description 2577',
-              image_original_url: 'image/2577.png',
-              name: 'ID 2577',
-              token_id: '2577',
-            },
-            {
-              asset_contract: {
-                address: '0x1d963688fe2209a98db35c67a041524822cf04ff',
-                name: 'Name FF',
-                symbol: 'FF',
-                image_url: 'url FF',
-                total_supply: 10,
-                description: 'Description FF',
-              },
-              description: 'Description 2574',
-              image_original_url: 'image/2574.png',
-              name: 'ID 2574',
-              token_id: '2574',
-            },
-          ],
-        },
+        data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
+      .persist(true)
 
-    nock(OPEN_SEA_API)
-      .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/0x1D963688FE2209A98db35c67A041524822cf04Hh')
+    // bsc mainnet
+    nock(COVALENT_API)
+      .get('/v1/56/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')
       .reply(200, {
-        data: {
-          description: 'Description HH',
-          image_url: 'url HH',
-          name: 'Name HH',
-          symbol: 'HH',
-          total_supply: 10,
-        },
+        data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
-
-    nock(OPEN_SEA_API)
-      .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/0x1d963688FE2209A98db35c67A041524822CF04gg')
-      .replyWithError(new TypeError('Failed to fetch'))
-
-    nock(OPEN_SEA_API)
-      .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/0x1D963688fe2209a98dB35c67a041524822Cf04ii')
-      .replyWithError(new TypeError('Failed to fetch'))
-
-    nock(OPEN_SEA_API)
-      .get(/opensea\?url=https:\/\/api.opensea.io\/api\/v1\/assets\?owner=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&limit=300/)
-      .reply(200, {
-        data: {
-          assets: [
-            {
-              asset_contract: {
-                address: '0x1d963688FE2209A98db35c67A041524822CF04gg',
-                name: 'Name GG',
-                symbol: 'GG',
-                image_url: 'url GG',
-                total_supply: 10,
-                description: 'Description GG',
-              },
-              description: 'Description 2577',
-              image_original_url: 'image/2577.png',
-              name: 'ID 2577',
-              token_id: '2577',
-            },
-            {
-              asset_contract: {
-                address: '0x1d963688FE2209A98db35c67A041524822CF04ii',
-                name: 'Name II',
-                symbol: 'II',
-                image_url: 'url II',
-                total_supply: 10,
-                description: 'Description II',
-              },
-              description: 'Description 2578',
-              image_original_url: 'image/2578.png',
-              name: 'ID 2578',
-              token_id: '2578',
-            },
-            {
-              asset_contract: {
-                address: '0x1d963688FE2209A98db35c67A041524822CF04hh',
-                name: 'Name HH',
-                symbol: 'HH',
-                image_url: 'url HH',
-                total_supply: 10,
-                description: 'Description HH',
-              },
-              description: 'Description 2574',
-              image_original_url: 'image/2574.png',
-              name: 'ID 2574',
-              token_id: '2574',
-            },
-          ],
-        },
-      })
+      .persist(true)
   })
 
   afterEach(() => {
@@ -208,7 +102,7 @@ describe('AssetsDetectionController', () => {
     nock.cleanAll()
   })
 
-  it('should poll and detect assets on interval while on mainnet', () =>
+  it('should poll and detect assets on interval while on mainnet, binance net, matic mainnet and matic testnet', () =>
     new Promise((resolve) => {
       const clock = sandbox.useFakeTimers()
       const localNetwork = new NetworkController()
@@ -224,6 +118,15 @@ describe('AssetsDetectionController', () => {
       sandbox.assert.calledOnce(mockCollectibles)
       clock.tick(60000)
       sandbox.assert.calledTwice(mockCollectibles)
+      localNetwork.setProviderType(BSC_MAINNET)
+      clock.tick(60000)
+      sandbox.assert.calledThrice(mockCollectibles)
+      localNetwork.setProviderType(MATIC)
+      clock.tick(60000)
+      sandbox.assert.callCount(mockCollectibles, 4)
+      localNetwork.setProviderType(MUMBAI)
+      clock.tick(60000)
+      sandbox.assert.callCount(mockCollectibles, 5)
       mockCollectibles.restore()
       resolve()
     }))
@@ -235,7 +138,7 @@ describe('AssetsDetectionController', () => {
     assert(assetsDetection.isMainnet() === false)
   })
 
-  it('should not autodetect while not on mainnet', () =>
+  it('should not autodetect while not on covalent supported networks(ie. bsc, matic, mainnet, matic mumbai)', () =>
     new Promise((resolve) => {
       const clock = sandbox.useFakeTimers()
       const localNetwork = new NetworkController()
@@ -297,33 +200,85 @@ describe('AssetsDetectionController', () => {
       resolve()
     }))
 
-  it('should detect and add collectibles correctly', async () => {
+  it('should detect and add erc721 and erc1155 collectibles correctly', async () => {
     network.setProviderType(MAINNET)
     assetsDetection.selectedAddress = TEST_ADDRESS
     await assetsDetection.detectCollectibles()
-    assert.deepStrictEqual(assets.state.collectibles, [
+    const expectedCollectibles = [
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04gg',
         tokenId: '2577',
         name: 'ID 2577',
         image: 'url GG',
+        standard: 'erc721',
+        tokenBalance: '1',
         description: 'Description 2577',
+        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04gg_2577',
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04ii',
         tokenId: '2578',
         name: 'ID 2578',
         image: 'url II',
+        standard: 'erc721',
+        tokenBalance: '1',
         description: 'Description 2578',
+        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04ii_2578',
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04hh',
         tokenId: '2574',
         name: 'ID 2574',
         image: 'url HH',
+        standard: 'erc721',
+        tokenBalance: '1',
         description: 'Description 2574',
+        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04hh_2574',
       },
-    ])
+      {
+        address: '0x1d963688FE2209A98db35c67A041524822CF04jj',
+        tokenId: '2579',
+        name: 'ID 2579',
+        image: 'url GG',
+        standard: 'erc1155',
+        tokenBalance: '10',
+        description: 'Description 2579',
+        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04jj_2579',
+      },
+      {
+        address: '0x1d963688FE2209A98db35c67A041524822CF04kk',
+        tokenId: '2580',
+        name: 'ID 2580',
+        image: 'url II',
+        standard: 'erc1155',
+        tokenBalance: '10',
+        description: 'Description 2580',
+        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04kk_2580',
+      },
+      {
+        address: '0x1d963688FE2209A98db35c67A041524822CF04ll',
+        tokenId: '2581',
+        name: 'ID 2581',
+        image: 'url HH',
+        standard: 'erc1155',
+        tokenBalance: '1',
+        description: 'Description 2581',
+        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04ll_2581',
+      },
+    ]
+    assert.deepStrictEqual(assets.state.collectibles, expectedCollectibles)
+    network.setProviderType(MUMBAI)
+    assert.deepStrictEqual(assets.state.collectibles, [])
+    await assetsDetection.detectCollectibles()
+    assert.deepStrictEqual(assets.state.collectibles, expectedCollectibles)
+    network.setProviderType(MATIC)
+    assert.deepStrictEqual(assets.state.collectibles, [])
+    await assetsDetection.detectCollectibles()
+    assert.deepStrictEqual(assets.state.collectibles, expectedCollectibles)
+    network.setProviderType(BSC_MAINNET)
+    assert.deepStrictEqual(assets.state.collectibles, [])
+    await assetsDetection.detectCollectibles()
+    assert.deepStrictEqual(assets.state.collectibles, expectedCollectibles)
   })
 
   it('should not detect and add collectibles if there is no selectedAddress', async () => {

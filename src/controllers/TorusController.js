@@ -151,23 +151,23 @@ export default class TorusController extends EventEmitter {
       }
     })
 
+    this.assetContractController = new AssetContractController({
+      provider: this.provider,
+    })
+
     // Asset controllers
     this.assetController = new AssetController({
       network: this.networkController,
       provider: this.provider,
-      getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
-    })
-
-    this.assetContractController = new AssetContractController({
-      provider: this.provider,
+      getNftMetadata: this.prefsController.getNftMetadata.bind(this.prefsController),
+      assetContractController: this.assetContractController,
     })
 
     this.assetDetectionController = new AssetDetectionController({
       network: this.networkController,
       provider: this.provider,
       assetController: this.assetController,
-      assetContractController: this.assetContractController,
-      getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
+      getCovalentNfts: this.prefsController.getCovalentNfts.bind(this.prefsController),
     })
 
     this.networkController.lookupNetwork()

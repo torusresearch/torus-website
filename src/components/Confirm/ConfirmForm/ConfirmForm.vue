@@ -38,7 +38,12 @@
       <v-layout mx-6 my-4 wrap>
         <v-flex xs3 class="pt-3">
           <div class="caption">
-            {{ t('walletTransfer.totalCost') }}
+            {{
+              contractType === CONTRACT_TYPE_ERC721 ||
+              (contractType === CONTRACT_TYPE_ERC1155 && transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+                ? t('walletTransfer.collectibleId')
+                : t('walletTransfer.totalCost')
+            }}
           </div>
         </v-flex>
         <v-flex xs9>
@@ -329,6 +334,7 @@ import {
   CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
   SEND_ETHER_ACTION_KEY,
@@ -430,6 +436,8 @@ export default {
       userInfo: {},
       contractType: CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
+      CONTRACT_TYPE_ERC721,
+      CONTRACT_TYPE_ERC1155,
       nonce: -1,
       decryptedData: {},
       encryptedMessage: '',
@@ -555,6 +563,7 @@ export default {
     },
   },
   mounted() {
+    window.$crisp.push(['do', 'chat:hide'])
     this.updateConfirmModal()
   },
   methods: {
@@ -594,19 +603,23 @@ export default {
         }
         // Get ABI for method
         let txDataParameters = ''
-        if (contractParams.erc721) {
-          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
+        if (contractParams.erc1155) {
+          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory.toLowerCase()) || ''
+          this.contractType = CONTRACT_TYPE_ERC1155
+        } else if (contractParams.erc721) {
+          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory.toLowerCase()) || ''
           this.contractType = CONTRACT_TYPE_ERC721
         } else if (contractParams.erc20) {
-          txDataParameters = tokenABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          txDataParameters = tokenABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory.toLowerCase()) || ''
           this.contractType = CONTRACT_TYPE_ERC20
         }
+
         // Get Params from method type ABI
         let amountTo
         let amountValue
         if (methodParams && Array.isArray(methodParams)) {
           if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
-            ;[amountTo, amountValue] = methodParams || []
+            ;[, amountTo, amountValue] = methodParams || []
           } else [amountTo, amountValue] = methodParams || []
         }
         log.info(methodParams, 'params')
@@ -645,9 +658,9 @@ export default {
           this.isNonFungibleToken = true
           let assetDetails = {}
           try {
-            const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
+            const url = `https://api.covalenthq.com/v1/${this.network.chainId}/tokens/${checkSummedTo}/nft_metadata/${this.amountValue}/`
             assetDetails = await get(
-              `${config.api}/opensea?url=${url}`,
+              `${config.api}/covalent?url=${url}`,
               {
                 headers: {
                   Authorization: `Bearer ${jwtToken}`,
@@ -655,9 +668,33 @@ export default {
               },
               { useAPIKey: true }
             )
+            const nftData = assetDetails.data?.data?.items[0]?.nftData[0]?.externalData
             this.assetDetails = {
-              name: assetDetails.data.name || '',
-              logo: assetDetails.data.image_thumbnail_url || '',
+              name: nftData?.name || '',
+              logo: nftData?.image || '',
+            }
+          } catch (error) {
+            log.info(error)
+          }
+        } else if (methodParams && contractParams.erc1155) {
+          log.info(methodParams, contractParams)
+          this.isNonFungibleToken = true
+          let assetDetails = {}
+          try {
+            const url = `https://api.covalenthq.com/v1/${this.network.chainId}/tokens/${checkSummedTo}/nft_metadata/${this.amountValue}`
+            assetDetails = await get(
+              `${config.api}/covalent?url=${url}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${jwtToken}`,
+                },
+              },
+              { useAPIKey: true }
+            )
+            const nftData = assetDetails.data?.data?.items[0]?.nftData[0]?.externalData
+            this.assetDetails = {
+              name: nftData?.name || '',
+              logo: nftData?.image || '',
             }
           } catch (error) {
             log.info(error)
@@ -684,10 +721,12 @@ export default {
         if (reason) {
           this.errorMsg = reason
           this.canShowError = true
+          window.$crisp.push(['do', 'chat:show'])
         }
         if (this.balance.lt(ethCost) && !this.canShowError) {
           this.errorMsg = 'dappTransfer.insufficientFunds'
           this.topUpErrorShow = true
+          window.$crisp.push(['do', 'chat:show'])
         }
       }
       this.type = type // type of tx
@@ -780,6 +819,7 @@ export default {
       if (this.balance.lt(ethCost) && !this.canShowError) {
         this.errorMsg = 'dappTransfer.insufficientFunds'
         this.topUpErrorShow = true
+        window.$crisp.push(['do', 'chat:show'])
       }
     },
     async decryptInline() {

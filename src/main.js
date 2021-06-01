@@ -2,9 +2,9 @@ import './plugins/bigint'
 import './registerServiceWorker'
 import './reset.css'
 
+import VueGtm from '@gtm-support/vue2-gtm'
 import log from 'loglevel'
 import Vue from 'vue'
-import VueGtm from 'vue-gtm'
 
 import App from './App.vue'
 import { vuetify } from './plugins'

@@ -19,7 +19,7 @@
               !(
                 (transaction.type === CONTRACT_TYPE_ERC20 && transaction.actionIcon !== 'n/a') ||
                 transaction.action === ACTIVITY_ACTION_TOPUP ||
-                (transaction.type === CONTRACT_TYPE_ERC721 && transaction.actionIcon !== 'n/a') ||
+                ((transaction.type === CONTRACT_TYPE_ERC721 || transaction.type === CONTRACT_TYPE_ERC1155) && transaction.actionIcon !== 'n/a') ||
                 transaction.type === CONTRACT_TYPE_ETH
               ),
           }"
@@ -49,15 +49,20 @@
             width="36"
           />
           <img
-            v-else-if="transaction.type === CONTRACT_TYPE_ERC721 && transaction.actionIcon !== 'n/a'"
+            v-else-if="(transaction.type === CONTRACT_TYPE_ERC721 || transaction.type === CONTRACT_TYPE_ERC1155) && transaction.actionIcon !== 'n/a'"
             :src="transaction.actionIcon"
             class="mr-3 ml-1"
             height="36"
             large
             :alt="`${transaction.type_name} Icon`"
-            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+            onerror="if (!this.src.includes('images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
           />
-          <v-icon v-else-if="transaction.type === CONTRACT_TYPE_ERC721" class="float-left" size="24" color="torusBrand1">
+          <v-icon
+            v-else-if="transaction.type === CONTRACT_TYPE_ERC721 || transaction.type === CONTRACT_TYPE_ERC1155"
+            class="float-left"
+            size="24"
+            color="torusBrand1"
+          >
             $vuetify.icons.collectibles
           </v-icon>
           <img
@@ -102,7 +107,14 @@
       </v-flex>
       <v-flex class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4 order-1' : 'xs2 order-2'" px-4>
         <div class="caption text_1--text font-weight-medium">
-          <span v-if="transaction.type !== CONTRACT_TYPE_ERC721 && transaction.action === ACTIVITY_ACTION_SEND" class="error--text">-</span>
+          <span
+            v-if="
+              transaction.type !== CONTRACT_TYPE_ERC721 && transaction.type !== CONTRACT_TYPE_ERC1155 && transaction.action === ACTIVITY_ACTION_SEND
+            "
+            class="error--text"
+          >
+            -
+          </span>
           {{ transaction.totalAmountString }}
         </div>
         <div class="info text_2--text font-weight-light">{{ transaction.currencyAmountString }}</div>
@@ -139,7 +151,7 @@
               <span>{{ transaction.action === ACTIVITY_ACTION_SEND ? transaction.to : transaction.from }}</span>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721">
+          <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721 && transaction.type !== CONTRACT_TYPE_ERC1155">
             <v-list-item-content class="details-label text_1--text">
               <div class="d-flex">
                 <span>{{ t('walletActivity.rate') }}</span>
@@ -156,7 +168,7 @@
               </span>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721">
+          <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721 && transaction.type !== CONTRACT_TYPE_ERC1155">
             <v-list-item-content class="details-label text_1--text">
               <div class="d-flex">
                 <span>{{ t('walletActivity.amount') }}</span>
@@ -210,6 +222,7 @@ import {
   CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
   TOKEN_METHOD_APPROVE,
@@ -240,6 +253,7 @@ export default {
       CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721,
+      CONTRACT_TYPE_ERC1155,
       TOKEN_METHOD_APPROVE,
       DEPLOY_CONTRACT_ACTION_KEY,
       CONTRACT_INTERACTION_KEY,

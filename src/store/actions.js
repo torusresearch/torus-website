@@ -76,6 +76,7 @@ const oauthStream = communicationMux.getStream('oauth')
 const userInfoStream = communicationMux.getStream('user_info')
 const providerChangeStream = communicationMux.getStream('provider_change')
 const widgetStream = communicationMux.getStream('widget')
+const windowStream = communicationMux.getStream('window')
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
@@ -171,11 +172,11 @@ export default {
   async forceFetchTokens({ state }) {
     detectTokensController.refreshTokenBalances()
     assetDetectionController.restartAssetDetection()
-    const { selectedAddress } = state
+    const { selectedAddress, networkType } = state
     try {
-      const response = await prefsController.getEtherScanTokenBalances(selectedAddress)
-      const { data } = response
-      detectTokensController.detectEtherscanTokenBalance(data, selectedAddress)
+      const response = await prefsController.getCovalentTokenBalances(selectedAddress, networkType.chainId)
+      const data = response?.data?.items || []
+      detectTokensController.detectCovalentTokenBalance(data, selectedAddress, networkType)
     } catch {
       log.error('etherscan balance fetch failed')
     }
@@ -341,6 +342,7 @@ export default {
   },
   async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint }) {
     try {
+      commit('setLoginInProgress', true)
       // This is to maintain backward compatibility
       const currentVeriferConfig = state.embedState.loginConfig[verifier]
       // const locale = vuetify.framework.lang.current
@@ -372,6 +374,7 @@ export default {
       })
       const { keys, userInfo, postboxKey } = await loginHandler.handleLoginWindow()
       // Get all open login results
+      userInfo.verifier = verifier
       commit('setUserInfo', userInfo)
       commit('setPostboxKey', postboxKey)
       await dispatch('handleLogin', {
@@ -383,7 +386,14 @@ export default {
       log.error(error)
       oauthStream.write({ err: { message: error.message } })
       commit('setOAuthModalStatus', false)
+      if (preopenInstanceId)
+        windowStream.write({
+          preopenInstanceId,
+          close: true,
+        })
       throw error
+    } finally {
+      commit('setLoginInProgress', false)
     }
   },
   subscribeToControllers() {

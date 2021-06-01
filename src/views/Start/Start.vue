@@ -2,11 +2,7 @@
   <v-container fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <!-- <BeatLoader
-          margin="24px 4px 0"
-          size="12px"
-          :color="$vuetify.theme.dark ? $vuetify.theme.themes.dark.torusBrand1 : $vuetify.theme.themes.light.torusBrand1"
-        /> -->
+        <BoxLoader />
       </v-flex>
     </v-layout>
   </v-container>
@@ -14,14 +10,14 @@
 
 <script>
 import log from 'loglevel'
-// import BeatLoader from 'vue-spinner/src/BeatLoader'
 import { mapState } from 'vuex'
 
+import BoxLoader from '../../components/helpers/BoxLoader'
 import { getOpenLoginInstance } from '../../openlogin'
 
 export default {
   name: 'Start',
-  // components: { BeatLoader },
+  components: { BoxLoader },
   computed: {
     ...mapState({
       loginConfig: (state) => state.embedState.loginConfig,

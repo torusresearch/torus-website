@@ -46,7 +46,12 @@ export const MUMBAI_CHAIN_ID = '0x13881'
 export const BSC_MAINNET_CHAIN_ID = '0x38'
 export const BSC_TESTNET_CHAIN_ID = '0x61'
 export const XDAI_CHAIN_ID = '0x64'
-
+export const NFT_SUPPORTED_NETWORKS = {
+  [MATIC]: MATIC_CODE,
+  [MUMBAI]: MUMBAI_CODE,
+  [BSC_MAINNET]: BSC_MAINNET_CODE,
+  [MAINNET]: MAINNET_CODE,
+}
 export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
 export const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
 export const KOVAN_DISPLAY_NAME = 'Kovan Test Network'
@@ -60,10 +65,10 @@ export const BSC_MAINNET_DISPLAY_NAME = 'Binance Smart Chain Mainnet'
 export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
 export const XDAI_DISPLAY_NAME = 'xDai'
 
-export const MATIC_URL = 'https://rpc-mainnet.matic.network'
-export const MATIC_BLOCK_EXPLORER = 'https://explorer.matic.network'
+export const MATIC_URL = 'https://rpc-mainnet.maticvigil.com'
+export const MATIC_BLOCK_EXPLORER = 'https://explorer-mainnet.maticvigil.com'
 
-export const MUMBAI_URL = 'https://rpc-mumbai.matic.today'
+export const MUMBAI_URL = 'https://rpc-mumbai.maticvigil.com'
 export const MUMBAI_BLOCK_EXPLORER = 'https://mumbai-explorer.matic.today'
 
 export const XDAI_URL = 'https://rpc.xdaichain.com'
@@ -104,6 +109,9 @@ export const DEPLOY_CONTRACT_ACTION_KEY = 'contractDeployment'
 export const CONTRACT_INTERACTION_KEY = 'contractInteraction'
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+export const ERC1155_INTERFACE_ID = '0xd9b67a26'
+export const ERC721_INTERFACE_ID = '0x80ac58cd'
+export const ERC1155METADATA_INTERFACE_ID = '0x0e89341c'
 export const ERC721METADATA_INTERFACE_ID = '0x5b5e139f'
 export const ERC721ENUMERABLE_INTERFACE_ID = '0x780e9d63'
 export const SINGLE_CALL_BALANCES_ADDRESS = '0xb1f8e55c7f64d203c1400b9d8555d050f94adf39'
@@ -118,6 +126,7 @@ export const USER_INFO_REQUEST_NEW = 'user_info_request_new'
 export const CONTRACT_TYPE_ETH = 'eth'
 export const CONTRACT_TYPE_ERC20 = 'erc20'
 export const CONTRACT_TYPE_ERC721 = 'erc721'
+export const CONTRACT_TYPE_ERC1155 = 'erc1155'
 
 export const getInfuraBlockExplorerUrl = (network) => {
   if (network === MAINNET) return 'https://etherscan.io'

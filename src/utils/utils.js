@@ -19,6 +19,7 @@ import {
   BSC_TESTNET_CODE,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC1155,
   DISCORD,
   EMAIL_PASSWORD,
   ENVIRONMENT_TYPE_FULLSCREEN,
@@ -391,14 +392,14 @@ export const paymentProviders = {
     line1: 'Credit/ Debit Card',
     line2: '5% or 10 USD',
     line3: '$20,000/day, $50,000/mo',
-    line4: 'ETH',
+    line4: 'ETH, BNB',
     status: ACTIVE,
     logoExtension: PNG,
     supportPage: 'https://www.simplex.com/support/',
     minOrderValue: 50,
     maxOrderValue: 20000,
     validCurrencies: ['USD', 'EUR'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
+    validCryptoCurrencies: ['ETH', 'BNB'],
     includeFees: true,
     api: true,
     enforceMax: true,
@@ -541,7 +542,7 @@ export function selectChainId(network, store) {
   return standardNetworkId[network] || networkId.toString().startsWith('0x') ? networkId : `0x${Number.parseInt(networkId, 10).toString(16)}`
 }
 
-export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
+export const isMain = window.self === window.top
 
 export const getIFrameOrigin = () => {
   const originHref = window.location.ancestorOrigins?.length > 0 ? window.location.ancestorOrigins[0] : document.referrer
@@ -553,7 +554,6 @@ export const getIFrameOriginObject = () => {
     const url = new URL(getIFrameOrigin())
     return { href: url.href, hostname: url.hostname }
   } catch {
-    log.error('invalid url')
     return { href: window.location.href, hostname: window.location.hostname }
   }
 }
@@ -579,12 +579,13 @@ export const getUserLanguage = () => {
 
 export const formatPastTx = (x, lowerCaseSelectedAddress) => {
   let totalAmountString = ''
-  if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
+  if (x.type === CONTRACT_TYPE_ERC721 || x.type === CONTRACT_TYPE_ERC1155) totalAmountString = x.symbol
   else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol, true)
   else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.type_name, true)
   const currencyAmountString =
-    x.type === CONTRACT_TYPE_ERC721 || x.isEtherscan ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
-  log.info(x)
+    x.type === CONTRACT_TYPE_ERC721 || x.type === CONTRACT_TYPE_ERC1155 || x.isEtherscan
+      ? ''
+      : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
   const finalObject = {
     id: x.created_at.toString(),
     date: new Date(x.created_at),
@@ -780,4 +781,21 @@ export async function validateContractAddress(web3, address) {
     return true
   }
   return false
+}
+
+export async function validateImageUrl(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.src = url
+    if (img.complete) {
+      resolve(true)
+    } else {
+      img.addEventListener('load', () => {
+        resolve(true)
+      })
+      img.addEventListener('error', () => {
+        reject()
+      })
+    }
+  })
 }

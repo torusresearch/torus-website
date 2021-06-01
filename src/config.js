@@ -1,5 +1,3 @@
-import log from 'loglevel'
-
 import {
   APPLE,
   APPLE_LINKED_VERIFIER,
@@ -61,7 +59,6 @@ import {
 } from './utils/enums'
 
 const {
-  VUE_APP_BASE_ROUTE,
   VUE_APP_GOOGLE_CLIENT_ID,
   VUE_APP_APPLE_CLIENT_ID,
   VUE_APP_DISCORD_CLIENT_ID,
@@ -76,7 +73,6 @@ const {
   VUE_APP_HOSTED_EMAIL_PASSWORDLESS_CLIENT_ID,
   VUE_APP_WECHAT_CLIENT_ID,
   VUE_APP_KAKAO_CLIENT_ID,
-  VUE_APP_TKEY_ONLY,
   VUE_APP_HIDE_TOPUP,
   VUE_APP_INFURA_KEY,
   VUE_APP_ETH_TRANSFER_ONLY,
@@ -85,9 +81,7 @@ const {
   VUE_APP_PASSWORDLESS_DOMAIN,
 } = process.env
 
-log.info('baseurl', VUE_APP_BASE_ROUTE, 'is tkey', VUE_APP_TKEY_ONLY)
-
-const baseUrl = VUE_APP_BASE_ROUTE || 'https://localhost:4050'
+const baseUrl = window.location.origin
 
 const baseRoute = baseUrl + process.env.BASE_URL
 
