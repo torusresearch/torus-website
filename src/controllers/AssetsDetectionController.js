@@ -73,7 +73,7 @@ export default class AssetsDetectionController {
     try {
       if (NFT_SUPPORTED_NETWORKS[this.currentNetwork]) {
         response = await this.getCovalentNfts(this.collectibleApi)
-        const collectibles = response.data?.items || []
+        const collectibles = response.data?.data?.items || []
         return collectibles
       }
       return []
