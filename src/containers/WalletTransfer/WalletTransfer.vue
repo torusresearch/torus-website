@@ -794,10 +794,10 @@ export default {
     },
     moreThanZero(value) {
       if (this.contractType === CONTRACT_TYPE_ERC1155) {
-        return new BigNumber(value || '0').gt(new BigNumber('0')) || 'walletTransfer.invalidAmount'
+        return new BigNumber(value || '0').gte(new BigNumber('0')) || 'walletTransfer.invalidAmount'
       }
       if (this.selectedItem) {
-        return new BigNumber(value || '0').gt(new BigNumber('0')) || 'walletTransfer.invalidAmount'
+        return new BigNumber(value || '0').gte(new BigNumber('0')) || 'walletTransfer.invalidAmount'
       }
       return ''
     },

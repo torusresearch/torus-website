@@ -545,7 +545,8 @@ class PreferencesController extends EventEmitter {
   }
 
   async getCovalentTokenBalances(address, chainId) {
-    return this.api.get(`https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/`)
+    const api = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/`
+    return this.api.get(`${config.api}/covalent?url=${api}`, this.headers(), { useAPIKey: true })
   }
 
   async getBillboardContents() {
@@ -688,7 +689,7 @@ class PreferencesController extends EventEmitter {
 
   /* istanbul ignore next */
   async getCovalentNfts(api) {
-    return this.api.get(`${api}`)
+    return this.api.get(`${config.api}/covalent?url=${api}`, this.headers(), { useAPIKey: true })
   }
 
   async getNftMetadata(api) {
