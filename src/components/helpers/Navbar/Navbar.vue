@@ -122,9 +122,6 @@ export default {
   computed: {
     ...mapState(['userInfo', 'successMsg', 'errorMsg']),
     ...mapGetters(['getLogo']),
-    bannerColor() {
-      return this.$vuetify.theme.isDark ? this.$vuetify.theme.themes.dark.infoBanner : this.$vuetify.theme.themes.light.infoBanner
-    },
     lrcMsg() {
       if (process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc') {
         return 'navBar.lrcMsg'

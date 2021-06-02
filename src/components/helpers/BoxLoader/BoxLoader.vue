@@ -61,9 +61,8 @@ export default {
   methods: {
     spinnerStyle(n) {
       const delay = Math.random()
-      const primaryColor = this.$vuetify.theme.dark ? this.$vuetify.theme.themes.dark.torusBrand1 : this.$vuetify.theme.themes.light.torusBrand1
       return {
-        backgroundColor: this.color || primaryColor,
+        backgroundColor: this.color || this.$vuetify.theme.currentTheme.torusBrand1,
         height: this.size,
         width: this.size,
         margin: this.margin,
