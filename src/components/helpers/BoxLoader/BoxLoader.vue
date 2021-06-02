@@ -17,7 +17,7 @@ export default {
   props: {
     color: {
       type: String,
-      default: '#0364FF',
+      default: '',
     },
     size: {
       type: String,
@@ -51,7 +51,6 @@ export default {
   data() {
     return {
       showLoader: false,
-      accent: [1, 3, 5],
     }
   },
   mounted() {
@@ -62,8 +61,9 @@ export default {
   methods: {
     spinnerStyle(n) {
       const delay = Math.random()
+      const primaryColor = this.$vuetify.theme.dark ? this.$vuetify.theme.themes.dark.torusBrand1 : this.$vuetify.theme.themes.light.torusBrand1
       return {
-        backgroundColor: this.accent.includes(n) ? this.color : '#0364FF',
+        backgroundColor: this.color || primaryColor,
         height: this.size,
         width: this.size,
         margin: this.margin,
