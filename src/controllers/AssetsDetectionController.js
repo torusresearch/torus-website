@@ -109,11 +109,16 @@ export default class AssetsDetectionController {
     /* istanbul ignore if */
     const currentNetwork = this.network.getNetworkNameFromNetworkCode()
     this.currentNetwork = currentNetwork
-    const [covalentCollectibles, covalentCollectiblesMap] = await this.detectCollectiblesFromCovalent(currentNetwork)
     let finalArr = []
 
     if (this.isMainnet()) {
-      const [, openseaCollectiblesMap] = await this.detectCollectiblesFromOpensea()
+      const [openseaAssets, covalentAssets] = await Promise.all([
+        this.detectCollectiblesFromOpensea(),
+        this.detectCollectiblesFromCovalent(currentNetwork),
+      ])
+      const [covalentCollectibles, covalentCollectiblesMap] = covalentAssets
+      const [, openseaCollectiblesMap] = openseaAssets
+
       const openseaIndexes = Object.keys(openseaCollectiblesMap)
       if (openseaIndexes.length > 0) {
         Object.keys(openseaCollectiblesMap).forEach((x) => {
@@ -126,10 +131,11 @@ export default class AssetsDetectionController {
             finalArr.push(openseaCollectible)
           }
         })
+      } else {
+        finalArr = covalentCollectibles
       }
-    }
-
-    if (finalArr.length === 0) {
+    } else {
+      const [covalentCollectibles] = await this.detectCollectiblesFromCovalent(currentNetwork)
       finalArr = covalentCollectibles
     }
 
