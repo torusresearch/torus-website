@@ -32,10 +32,9 @@ module.exports = {
       // create a fresh pülugin instance with the new options and
       // replace the current one with it
       config.optimization.minimizer[0] = new TerserPlugin(options)
+    } else {
+      config.devtool = 'source-map'
     }
-    // else {
-    //   config.devtool = 'source-map'
-    // }
   },
   chainWebpack: (config) => {
     config.resolve.alias.set('bn.js', path.resolve(__dirname, 'node_modules/bn.js'))
@@ -52,7 +51,7 @@ module.exports = {
         .use(serviceWorkerIntegrityPlugin, ['index.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
         .after('workbox')
     } else {
-      // config.module.rule('sourcemap').test(/\.js$/).enforce('pre').use('source-map-loader').loader('source-map-loader').end()
+      config.module.rule('sourcemap').test(/\.js$/).enforce('pre').use('source-map-loader').loader('source-map-loader').end()
     }
   },
 
@@ -105,7 +104,7 @@ module.exports = {
   pluginOptions: {
     webpackBundleAnalyzer: {
       openAnalyzer: false,
-      // analyzerMode: 'disabled',
+      analyzerMode: 'disabled',
     },
   },
 }
