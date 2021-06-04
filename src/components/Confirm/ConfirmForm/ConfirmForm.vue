@@ -39,8 +39,9 @@
         <v-flex xs3 class="pt-3">
           <div class="caption">
             {{
-              contractType === CONTRACT_TYPE_ERC721 ||
-              (contractType === CONTRACT_TYPE_ERC1155 && transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+              ((contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155) &&
+                transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) ||
+              (isSpecialContract && TOKEN_METHOD_TRANSFER)
                 ? t('walletTransfer.collectibleId')
                 : t('walletTransfer.totalCost')
             }}
@@ -52,6 +53,7 @@
       </v-layout>
       <v-layout mx-6 my-4 wrap>
         <TransactionSpeedSelect
+          :nonce="nonce"
           :gas="gasEstimate"
           :display-amount="contractType === CONTRACT_TYPE_ERC20 ? amountValue : value"
           :active-gas-price-confirm="gasPrice"
@@ -59,6 +61,7 @@
           :currency-multiplier="currencyMultiplier"
           :currency-multiplier-eth="currencyMultiplier"
           :contract-type="contractType"
+          :network-ticker="network.ticker"
           :symbol="SEND_ETHER_ACTION_KEY === transactionCategory ? network.ticker : selectedToken"
           :is-confirm="true"
           :network-host="network.host"
@@ -321,14 +324,11 @@
 
 <script>
 import BigNumber from 'bignumber.js'
-import collectibleABI from 'human-standard-collectible-abi'
-import tokenABI from 'human-standard-token-abi'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
 import { mapActions, mapGetters } from 'vuex'
 import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
-import config from '../../../config'
 import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   CONTRACT_INTERACTION_KEY,
@@ -442,6 +442,7 @@ export default {
       decryptedData: {},
       encryptedMessage: '',
       showEncrypted: false,
+      isSpecialContract: false,
     }
   },
   computed: {
@@ -497,7 +498,7 @@ export default {
         case TOKEN_METHOD_TRANSFER_FROM:
           return `${this.amountDisplay(this.amountValue)} ${this.selectedToken}`
         case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
-          return `ID: ${this.amountValue}`
+          return `ID: ${this.amountValue} ${this.selectedToken}`
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
           return `${this.amountDisplay(this.value)} ${this.network.ticker}`
@@ -570,8 +571,7 @@ export default {
     ...mapActions(['decryptMessage']),
     async updateConfirmModal() {
       if (!this.currentConfirmModal) return
-      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, currencyData, network } =
-        this.currentConfirmModal || {}
+      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, currencyData, network } = this.currentConfirmModal || {}
       this.selectedCurrency = selectedCurrency
       this.currencyData = currencyData
       this.balance = new BigNumber(balance)
@@ -601,16 +601,19 @@ export default {
         if (value) {
           finalValue = new BigNumber(fromWei(value.toString()))
         }
-        // Get ABI for method
         let txDataParameters = ''
-        if (contractParams.erc1155) {
-          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory.toLowerCase()) || ''
+        if (contractParams.isSpecial && transactionCategory.toLowerCase() === TOKEN_METHOD_TRANSFER) {
+          txDataParameters = methodParams
+          this.contractType = CONTRACT_TYPE_ERC721
+          this.isSpecialContract = true
+        } else if (contractParams.erc1155) {
+          txDataParameters = methodParams
           this.contractType = CONTRACT_TYPE_ERC1155
         } else if (contractParams.erc721) {
-          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory.toLowerCase()) || ''
+          txDataParameters = methodParams
           this.contractType = CONTRACT_TYPE_ERC721
         } else if (contractParams.erc20) {
-          txDataParameters = tokenABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory.toLowerCase()) || ''
+          txDataParameters = methodParams
           this.contractType = CONTRACT_TYPE_ERC20
         }
 
@@ -656,52 +659,12 @@ export default {
         } else if (methodParams && contractParams.erc721) {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true
-          let assetDetails = {}
-          try {
-            const url = `https://api.covalenthq.com/v1/${this.network.chainId}/tokens/${checkSummedTo}/nft_metadata/${this.amountValue}/`
-            assetDetails = await get(
-              `${config.api}/covalent?url=${url}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${jwtToken}`,
-                },
-              },
-              { useAPIKey: true }
-            )
-            const nftData = assetDetails.data?.data?.items[0]?.nftData[0]?.externalData
-            this.assetDetails = {
-              name: nftData?.name || '',
-              logo: nftData?.image || '',
-            }
-          } catch (error) {
-            log.info(error)
-          }
         } else if (methodParams && contractParams.erc1155) {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true
-          let assetDetails = {}
-          try {
-            const url = `https://api.covalenthq.com/v1/${this.network.chainId}/tokens/${checkSummedTo}/nft_metadata/${this.amountValue}`
-            assetDetails = await get(
-              `${config.api}/covalent?url=${url}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${jwtToken}`,
-                },
-              },
-              { useAPIKey: true }
-            )
-            const nftData = assetDetails.data?.data?.items[0]?.nftData[0]?.externalData
-            this.assetDetails = {
-              name: nftData?.name || '',
-              logo: nftData?.image || '',
-            }
-          } catch (error) {
-            log.info(error)
-          }
         }
         this.currencyRateDate = this.getDate()
-        this.receiver = to // address of receiver
+        this.receiver = this.amountTo
         this.value = finalValue // value of eth sending
         this.dollarValue = significantDigits(finalValue.times(this.currencyMultiplier))
         this.gasPrice = gweiGasPrice // gas price in gwei
