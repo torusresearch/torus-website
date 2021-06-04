@@ -140,7 +140,6 @@
     "fibers": "^5.0.0",
     "ganache-core": "^2.13.2",
     "husky": "^6.0.0",
-    "isomorphic-fetch": "^3.0.0",
     "jsdom": "^16.6.0",
     "jsdom-global": "^3.0.2",
     "lint-staged": "^11.0.0",
