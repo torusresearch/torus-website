@@ -690,7 +690,7 @@ export default {
     this.updateFieldsBasedOnRoute()
 
     torus.nodeDetailManager
-      .getNodeDetails()
+      .getNodeDetails(false, true)
       .then((nodeDetails) => {
         log.info('fetched node details', nodeDetails)
         this.nodeDetails = nodeDetails
@@ -939,6 +939,11 @@ export default {
       throw new Error('Invalid Contract Type')
     },
     getNftTransferMethod(contractType, selectedAddress, toAddress, tokenId, value = 1) {
+      if (contractType === CONTRACT_TYPE_ERC721 && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase())) {
+        const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress)
+        return contractInstance.methods.transfer(toAddress, tokenId)
+      }
+
       if (contractType === CONTRACT_TYPE_ERC721) {
         const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
         return contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, tokenId)
@@ -1083,6 +1088,7 @@ export default {
       this.changeSelectedToCurrency(0)
     },
     async sendCoin() {
+      log.info('sending with gas price', this.activeGasPrice.toString())
       const toAddress = this.toEthAddress
       const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
       const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
@@ -1226,6 +1232,7 @@ export default {
       this.$router.go(-1)
     },
     updateTotalCost() {
+      log.info(this.activeGasPrice.toString(), 'acg price')
       if (this.displayAmount.isZero() || this.activeGasPrice === '') {
         this.totalCost = '0'
         this.convertedTotalCost = '0'
@@ -1244,6 +1251,8 @@ export default {
       if (this.isSendAll) {
         this.sendAll()
       }
+
+      log.info(this.activeGasPrice.toString(), 'acg price 2')
 
       const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
       const gasPriceInCurrency = gasPriceInEth.times(this.currencyMultiplier)

@@ -82,6 +82,7 @@ class PreferencesController extends EventEmitter {
     this.errorStore = new ObservableStore('')
     this.successStore = new ObservableStore('')
     this.billboardStore = new ObservableStore({})
+    this.announcementsStore = new ObservableStore({})
   }
 
   headers(address) {
@@ -697,6 +698,11 @@ class PreferencesController extends EventEmitter {
   }
 
   /* istanbul ignore next */
+  async getOpenSeaCollectibles(api) {
+    return this.api.get(`${config.api}/opensea?url=${api}`, this.headers(), { useAPIKey: true })
+  }
+
+  /* istanbul ignore next */
   async getTwitterId(payload) {
     const userId = await this.api.get(`${config.api}/twitter?screen_name=${payload.nick}`, this.headers(), { useAPIKey: true })
     return `${payload.typeOfLogin.toLowerCase()}|${userId.data.toString()}`
@@ -705,6 +711,34 @@ class PreferencesController extends EventEmitter {
   /* istanbul ignore next */
   async sendEmail(payload) {
     return this.api.post(`${config.api}/transaction/sendemail`, payload.emailObject, this.headers(), { useAPIKey: true })
+  }
+
+  async getAnnouncementsContents() {
+    try {
+      const { selectedAddress } = this.store.getState()
+      if (!selectedAddress) return
+      const resp = await this.api.get(`${config.api}/announcements`, this.headers(), { useAPIKey: true })
+      const announcements = resp.data.reduce((accumulator, announcement) => {
+        if (!accumulator[announcement.locale]) accumulator[announcement.locale] = []
+        accumulator[announcement.locale].push(announcement)
+        return accumulator
+      }, {})
+
+      if (announcements) this.announcementsStore.putState(announcements)
+    } catch (error) {
+      log.error(error)
+    }
+  }
+
+  hideAnnouncement(payload, announcements) {
+    const { id } = payload
+    const newAnnouncements = Object.keys(announcements).reduce((accumulator, key) => {
+      const filtered = announcements[key].filter((x) => x.id !== id)
+      accumulator[key] = filtered
+      return accumulator
+    }, {})
+
+    if (newAnnouncements) this.announcementsStore.putState(newAnnouncements)
   }
 }
 

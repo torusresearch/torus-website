@@ -1,4 +1,4 @@
-.header-container{  
+.header-container {
   .v-tab {
     text-transform: inherit;
     &.v-tab--active {
@@ -10,19 +10,13 @@
     cursor: pointer;
   }
 
-  .v-system-bar {
-    margin-top: 66px;
-    &.is-lrc {
-      margin-top: 90px;
-    }
+  .toast-container {
+    top: 66px;
+    position: absolute;
+    width: 100%;
+    left: 0;
     @media (max-width: 960px) {
-      margin-top: 58px;
-      &.is-lrc {
-        margin-top: 82px;
-      }
-    }
-    .v-icon {
-      -webkit-appearance: none;
+      top: 58px;
     }
   }
 }

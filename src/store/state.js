@@ -54,6 +54,7 @@ const initialState = {
   crashReport: true,
   locale: LOCALE_EN,
   billboard: {},
+  announcements: {},
   contacts: [],
   permissions: [],
   userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
