@@ -177,7 +177,7 @@ export default {
     const { selectedAddress, networkType } = state
     try {
       const response = await prefsController.getCovalentTokenBalances(selectedAddress, networkType.chainId)
-      const data = response?.data?.items || []
+      const data = response?.data?.data?.items || []
       detectTokensController.detectCovalentTokenBalance(data, selectedAddress, networkType)
     } catch {
       log.error('etherscan balance fetch failed')

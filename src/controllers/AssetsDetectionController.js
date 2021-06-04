@@ -3,6 +3,7 @@
  * Controller that passively polls on a set interval for assets auto detection
  */
 
+import deepmerge from 'deepmerge'
 import log from 'loglevel'
 
 import { BSC_MAINNET, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
@@ -15,8 +16,8 @@ export default class AssetsDetectionController {
     this.network = options.network
     this.assetController = options.assetController
     this.getCovalentNfts = options.getCovalentNfts
+    this.getOpenSeaCollectibles = options.getOpenSeaCollectibles
     this.currentNetwork = null
-    this.collectibleApi = null
   }
 
   restartAssetDetection() {
@@ -57,7 +58,10 @@ export default class AssetsDetectionController {
     }, interval)
   }
 
-  getOwnerCollectiblesApi(address) {
+  getOwnerCollectiblesApi(address, apiType = 'covalent') {
+    if (apiType === 'opensea') {
+      return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
+    }
     const chainId = NFT_SUPPORTED_NETWORKS[this.currentNetwork]
     if (chainId) {
       return `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
@@ -65,18 +69,22 @@ export default class AssetsDetectionController {
     return ''
   }
 
-  async getOwnerCollectibles() {
-    if (!this.collectibleApi) {
-      return []
-    }
+  async getOwnerCollectibles(apiType = 'covalent') {
+    const { selectedAddress } = this
+    const api = this.getOwnerCollectiblesApi(selectedAddress, apiType)
     let response
     try {
-      if (NFT_SUPPORTED_NETWORKS[this.currentNetwork]) {
-        response = await this.getCovalentNfts(this.collectibleApi)
-        const collectibles = response.data?.items || []
-        return collectibles
+      if (apiType === 'covalent') {
+        if (NFT_SUPPORTED_NETWORKS[this.currentNetwork]) {
+          response = await this.getCovalentNfts(api)
+          const collectibles = response.data?.data?.items || []
+          return collectibles
+        }
+        return []
       }
-      return []
+      response = await this.getOpenSeaCollectibles(api)
+      const collectibles = response.data.assets
+      return collectibles
     } catch (error) {
       log.error(error)
       return []
@@ -94,31 +102,60 @@ export default class AssetsDetectionController {
   }
 
   /**
-   * Triggers asset ERC721 token auto detection on mainnet
+   * Triggers asset ERC721/ERC1155 token auto detection
    * adding new collectibles and removing not owned collectibles
    */
   async detectCollectibles() {
     /* istanbul ignore if */
     const currentNetwork = this.network.getNetworkNameFromNetworkCode()
     this.currentNetwork = currentNetwork
-    const { selectedAddress } = this
-    this.collectibleApi = this.getOwnerCollectiblesApi(selectedAddress)
-    await this.detectCollectiblesFromCovalent(currentNetwork)
+    let finalArr = []
+
+    if (this.isMainnet()) {
+      const [openseaAssets, covalentAssets] = await Promise.all([
+        this.detectCollectiblesFromOpensea(),
+        this.detectCollectiblesFromCovalent(currentNetwork),
+      ])
+      const [covalentCollectibles, covalentCollectiblesMap] = covalentAssets
+      const [, openseaCollectiblesMap] = openseaAssets
+
+      const openseaIndexes = Object.keys(openseaCollectiblesMap)
+      if (openseaIndexes.length > 0) {
+        Object.keys(openseaCollectiblesMap).forEach((x) => {
+          const openseaCollectible = openseaCollectiblesMap[x]
+          const covalentCollectible = covalentCollectiblesMap[x]
+          if (covalentCollectible) {
+            const finalCollectible = deepmerge(covalentCollectible, openseaCollectible)
+            finalArr.push(finalCollectible)
+          } else {
+            finalArr.push(openseaCollectible)
+          }
+        })
+      } else {
+        finalArr = covalentCollectibles
+      }
+    } else {
+      const [covalentCollectibles] = await this.detectCollectiblesFromCovalent(currentNetwork)
+      finalArr = covalentCollectibles
+    }
+
+    await this.assetController.addCollectibles(finalArr, false)
   }
 
   async detectCollectiblesFromCovalent(network) {
     const { selectedAddress } = this
+    const collectibles = []
+    const collectiblesMap = {}
     /* istanbul ignore else */
     if (!selectedAddress) {
-      return
+      return [collectibles, collectiblesMap]
     }
     let protocolPrefix = 'ERC'
     if (network === BSC_MAINNET) {
       protocolPrefix = 'BEP'
     }
     this.assetController.setSelectedAddress(selectedAddress)
-    const apiCollectibles = await this.getOwnerCollectibles()
-    const collectibles = []
+    const apiCollectibles = await this.getOwnerCollectibles('covalent')
     for (const item of apiCollectibles) {
       if (item.type === 'nft') {
         let contractName = item.contract_name
@@ -127,7 +164,7 @@ export default class AssetsDetectionController {
         if (supports_erc.includes('erc1155')) {
           contractName = `${contractName} (${protocolPrefix}1155)`
           standard = CONTRACT_TYPE_ERC1155
-        } else if (supports_erc.includes('erc721')) {
+        } else {
           contractName = `${contractName} (${protocolPrefix}721)`
           standard = CONTRACT_TYPE_ERC721
         }
@@ -160,11 +197,67 @@ export default class AssetsDetectionController {
               },
             }
             collectibles.push(collectibleDetails)
+            const collectibleIndex = `${contractAddress.toLowerCase()}_${tokenID.toString()}`
+            collectiblesMap[collectibleIndex] = collectibleDetails
           }
         }
       }
     }
-    await this.assetController.addCollectibles(collectibles, false)
+    return [collectibles, collectiblesMap]
+  }
+
+  /**
+   * Triggers asset ERC721 token auto detection on mainnet
+   * adding new collectibles and removing not owned collectibles
+   */
+  async detectCollectiblesFromOpensea() {
+    const finalCollectibles = []
+    const collectiblesMap = {}
+    /* istanbul ignore if */
+    if (!this.isMainnet()) {
+      return [finalCollectibles, collectiblesMap]
+    }
+    const { selectedAddress } = this
+    /* istanbul ignore else */
+    if (!selectedAddress) {
+      return [finalCollectibles, collectiblesMap]
+    }
+    this.assetController.setSelectedAddress(selectedAddress)
+    const apiCollectibles = await this.getOwnerCollectibles('opensea')
+    for (const {
+      token_id: tokenID,
+      image_url: imageURL,
+      name,
+      description,
+      asset_contract: {
+        address: contractAddress,
+        name: contractName,
+        symbol: contractSymbol,
+        image_url: contractImage = '',
+        total_supply: contractSupply,
+        description: contractDescription,
+      },
+    } of apiCollectibles) {
+      const collectible = {
+        contractAddress,
+        tokenID: tokenID.toString(),
+        options: {
+          description,
+          image: imageURL || (contractImage || '').replace('=s60', '=s240'),
+          name: name || `${contractName}#${tokenID}`,
+          contractAddress,
+          contractName,
+          contractSymbol,
+          contractImage: (contractImage || '').replace('=s60', '=s240') || imageURL,
+          contractSupply,
+          contractDescription,
+        },
+      }
+      finalCollectibles.push(collectible)
+      const collectibleIndex = `${contractAddress.toLowerCase()}_${tokenID.toString()}`
+      collectiblesMap[collectibleIndex] = collectible
+    }
+    return [finalCollectibles, collectiblesMap]
   }
 }
 
