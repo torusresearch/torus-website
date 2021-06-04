@@ -292,7 +292,7 @@ export default class AssetController {
     if (isAddress(contractAddress)) _contractAddress = toChecksumAddress(contractAddress)
     else _contractAddress = contractAddress
 
-    if (contractName && contractSymbol && standard) {
+    if (contractName && standard) {
       normalizedContractInfo = {
         standard,
         address: _contractAddress,
