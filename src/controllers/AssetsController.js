@@ -226,18 +226,15 @@ export default class AssetController {
    * @param contractAddress - Hex address of the collectible contract
    * @returns - Promise resolving to the current collectible conract name, symbol and standard
    */
-  async getCollectibleContractInformationFromContract(contractAddress, standard) {
+  async getCollectibleContractInformationFromContract(contractAddress) {
     try {
-      if (standard === CONTRACT_TYPE_ERC721) {
-        const assetsContractController = this.assetContractController
-        const name = await assetsContractController.getAssetName(contractAddress)
-        const symbol = await assetsContractController.getAssetSymbol(contractAddress)
-        return { name, symbol, standard }
-      }
-      return { name: '', symbol: '', standard }
+      const assetsContractController = this.assetContractController
+      const name = await assetsContractController.getAssetName(contractAddress)
+      const symbol = await assetsContractController.getAssetSymbol(contractAddress)
+      return { name, symbol }
     } catch (error) {
       log.warn('unable to get info from contract', contractAddress, error)
-      return { name: '', symbol: '', standard }
+      return { name: '', symbol: '' }
     }
   }
 
