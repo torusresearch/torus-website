@@ -445,7 +445,7 @@ export default class AssetController {
       for (const [i, assetDetail] of allAssetPromises.entries()) {
         // first add contracts
         if (i < contractPromises.length) {
-          if (assetDetail.name && assetDetail.symbol) {
+          if (assetDetail.name) {
             newCollectibleContracts.push(assetDetail)
           }
         } else if (assetDetail.name && assetDetail.standard && assetDetail.tokenBalance) {
