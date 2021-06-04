@@ -1,6 +1,6 @@
 import { Integrations } from '@sentry/browser'
 import * as Sentry from '@sentry/vue'
-import LoglevelSentryPlugin from '@toruslabs/loglevel-sentry'
+import LoglevelSentryPlugin, { redactBreadcrumbData } from '@toruslabs/loglevel-sentry'
 import log from 'loglevel'
 
 function getSampleRate() {
@@ -23,6 +23,10 @@ export function installSentry(Vue) {
     integrations: [new Integrations.Breadcrumbs({ console: false })],
     sampleRate: getSampleRate(),
     normalizeDepth: 5,
+    beforeBreadcrumb(breadcrumb) {
+      breadcrumb.data = redactBreadcrumbData(breadcrumb.data)
+      return breadcrumb
+    },
   })
 
   const plugin = new LoglevelSentryPlugin(Sentry)
