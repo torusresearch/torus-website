@@ -1,8 +1,17 @@
-/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-console */
-import Ganache from 'ganache-core'
-import log from 'loglevel'
-import nock from 'nock'
+const nock = require('nock')
+const log = require('loglevel')
+const Ganache = require('ganache-core')
+
+const register = require('@babel/register').default
+
+register({
+  extensions: ['.js'],
+  rootMode: 'upward',
+  ignore: [/(node_module)/],
+  presets: [['@vue/cli-plugin-babel/preset', { useBuiltIns: 'entry' }]],
+  plugins: ['@babel/plugin-proposal-class-properties'],
+})
 
 nock.disableNetConnect()
 nock.enableNetConnect((host) => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
