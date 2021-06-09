@@ -24,8 +24,9 @@ export function installSentry(Vue) {
     sampleRate: getSampleRate(),
     normalizeDepth: 5,
     ignoreErrors: [
-      'TypeError: Failed to fetch', // Happen when user click 'X' on the browser (except Firefox)
-      'TypeError: NetworkError when attempting to fetch resource.', // Happen when user click 'X' on Firefox
+      // Happen when user click 'X' on the browser (ref https://forum.sentry.io/t/typeerror-failed-to-fetch-reported-over-and-overe/8447/2)
+      'TypeError: Failed to fetch', // All except Firefox
+      'TypeError: NetworkError when attempting to fetch resource.', // Firefox
     ],
     beforeBreadcrumb(breadcrumb) {
       breadcrumb.data = redactBreadcrumbData(breadcrumb.data)
