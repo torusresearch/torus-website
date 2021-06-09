@@ -41,7 +41,7 @@
             {{
               ((contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155) &&
                 transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) ||
-              (isSpecialContract && TOKEN_METHOD_TRANSFER)
+              (isSpecialContract && transactionCategory === TOKEN_METHOD_TRANSFER)
                 ? t('walletTransfer.collectibleId')
                 : t('walletTransfer.totalCost')
             }}
