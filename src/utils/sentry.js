@@ -23,6 +23,10 @@ export function installSentry(Vue) {
     integrations: [new Integrations.Breadcrumbs({ console: false })],
     sampleRate: getSampleRate(),
     normalizeDepth: 5,
+    ignoreErrors: [
+      'TypeError: Failed to fetch', // Happen when user click 'X' on the browser (except Firefox)
+      'TypeError: NetworkError when attempting to fetch resource.', // Happen when user click 'X' on Firefox
+    ],
     beforeBreadcrumb(breadcrumb) {
       breadcrumb.data = redactBreadcrumbData(breadcrumb.data)
       return breadcrumb
