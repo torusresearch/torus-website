@@ -3,6 +3,8 @@ import * as Sentry from '@sentry/vue'
 import LoglevelSentryPlugin, { redactBreadcrumbData } from '@toruslabs/loglevel-sentry'
 import log from 'loglevel'
 
+import { UserError } from './utils'
+
 function getSampleRate() {
   try {
     return Number.parseFloat(process.env.VUE_APP_SENTRY_SAMPLE_RATE)
@@ -23,6 +25,15 @@ export function installSentry(Vue) {
     integrations: [new Integrations.Breadcrumbs({ console: false })],
     sampleRate: getSampleRate(),
     normalizeDepth: 5,
+    ignoreErrors: [
+      // Happen when user click 'X' on the browser (ref https://forum.sentry.io/t/typeerror-failed-to-fetch-reported-over-and-overe/8447/2)
+      'TypeError: Failed to fetch', // All except Firefox
+      'TypeError: NetworkError when attempting to fetch resource.', // Firefox
+    ],
+    beforeSend(event, hint) {
+      if (hint.originalException && hint.originalException instanceof UserError) return null // Ignore errors by user
+      return event
+    },
     beforeBreadcrumb(breadcrumb) {
       breadcrumb.data = redactBreadcrumbData(breadcrumb.data)
       return breadcrumb
