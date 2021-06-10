@@ -437,6 +437,7 @@ import Resolution from '@unstoppabledomains/resolution'
 import BigNumber from 'bignumber.js'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
+import isEqual from 'lodash.isequal'
 import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { QrcodeStream } from 'vue-qrcode-reader'
@@ -566,6 +567,9 @@ export default {
     randomName() {
       return `torus-${torus.instanceId}`
     },
+    finalCollectibles() {
+      return this.collectibles || []
+    },
     finalBalancesArray() {
       return this.tokenBalances.finalBalancesArray || []
     },
@@ -674,14 +678,14 @@ export default {
 
     this.contactSelected = this.toAddress
 
-    this.$watch('collectibles', (newValue, oldValue) => {
-      if (newValue !== oldValue && newValue?.length > 0) {
+    this.$watch('finalCollectibles', (newValue, oldValue) => {
+      if (!isEqual(newValue, oldValue) && newValue?.length > 0) {
         this.updateFieldsBasedOnRoute()
       }
     })
 
     const tokensUnwatch = this.$watch('finalBalancesArray', (newValue, oldValue) => {
-      if (newValue !== oldValue && newValue?.length > 0) {
+      if (!isEqual(newValue, oldValue) && newValue?.length > 0) {
         this.updateFieldsBasedOnRoute()
         tokensUnwatch()
       }
@@ -958,7 +962,7 @@ export default {
     },
     async selectedItemChanged(address, tokenId) {
       const foundInBalances = this.finalBalancesArray.find((token) => token.tokenAddress.toLowerCase() === address.toLowerCase())
-      const foundInCollectibles = this.collectibles.find((token) => token.address.toLowerCase() === address.toLowerCase())
+      const foundInCollectibles = this.finalCollectibles.find((token) => token.address.toLowerCase() === address.toLowerCase())
       if (foundInBalances) {
         this.tokenAddress = foundInBalances.tokenAddress
         this.contractType = foundInBalances.erc20 ? CONTRACT_TYPE_ERC20 : CONTRACT_TYPE_ETH
@@ -1030,6 +1034,14 @@ export default {
           log.error(error)
         }
       }
+      if (
+        (this.contractType === CONTRACT_TYPE_ERC721 || (this.contractType === CONTRACT_TYPE_ERC1155 && this.assetSelected.tokenBalance === 1)) &&
+        !this.hasCustomGasLimit
+      ) {
+        this.gas = await this.calculateGas(toAddress)
+        this.updateTotalCost()
+      }
+
       return toAddress
     },
     async onTransferClick() {
@@ -1045,10 +1057,13 @@ export default {
           return
         }
         this.toEthAddress = toAddress
-        if (!this.hasCustomGasLimit) {
+        if (
+          (this.contractType !== CONTRACT_TYPE_ERC721 || (this.contractType === CONTRACT_TYPE_ERC1155 && this.assetSelected.tokenBalance > 1)) &&
+          !this.hasCustomGasLimit
+        ) {
           this.gas = await this.calculateGas(toAddress)
+          this.updateTotalCost()
         }
-        this.updateTotalCost()
         this.confirmDialog = true
       }
     },
