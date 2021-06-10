@@ -27,7 +27,8 @@ export function installSentry(Vue) {
     normalizeDepth: 5,
     ignoreErrors: [
       // Happen when user click 'X' on the browser (ref https://forum.sentry.io/t/typeerror-failed-to-fetch-reported-over-and-overe/8447/2)
-      'TypeError: Failed to fetch', // All except Firefox
+      'TypeError: Failed to fetch', // All except iOS and Firefox
+      'TypeError: cancelled', // iOS
       'TypeError: NetworkError when attempting to fetch resource.', // Firefox
     ],
     beforeSend(event, hint) {
