@@ -154,8 +154,7 @@ jobs:
       - run:
           name: 'Deploy Over SSH'
           command: |
-            ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh ubuntu@testing.tor.us "rm -rf ~/testing-torus-website/* && tar -zxf - -C ~/testing-torus-website/"
+            aws s3 cp dist/ s3://testing.tor.us --recursive
   build-lrc:
     <<: *job_common
     resource_class: large
@@ -182,8 +181,7 @@ jobs:
       - run:
           name: 'Deploy Over SSH'
           command: |
-            ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh ubuntu@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
+            aws s3 cp dist/ s3://lrc.tor.us --recursive
   # ------------------------
   # alpha configurations
   # ------------------------
