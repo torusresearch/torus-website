@@ -155,6 +155,7 @@ jobs:
           name: 'Deploy Over SSH'
           command: |
             aws s3 cp dist/ s3://testing.tor.us --recursive
+            aws cloudfront create-invalidation --distribution-id "$TORUS_TESTING_DISTRIBUTION_ID" --paths "/*"
   build-lrc:
     <<: *job_common
     resource_class: large
@@ -182,6 +183,7 @@ jobs:
           name: 'Deploy Over SSH'
           command: |
             aws s3 cp dist/ s3://lrc.tor.us --recursive
+            aws cloudfront create-invalidation --distribution-id "$TORUS_LRC_DISTRIBUTION_ID" --paths "/*"
   # ------------------------
   # alpha configurations
   # ------------------------
