@@ -154,8 +154,8 @@ jobs:
       - run:
           name: 'Deploy Over SSH'
           command: |
-            ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh ubuntu@testing.tor.us "rm -rf ~/testing-torus-website/* && tar -zxf - -C ~/testing-torus-website/"
+            aws s3 cp dist/ s3://testing.tor.us --recursive
+            aws cloudfront create-invalidation --distribution-id "$TORUS_TESTING_DISTRIBUTION_ID" --paths "/*"
   build-lrc:
     <<: *job_common
     resource_class: large
@@ -182,8 +182,8 @@ jobs:
       - run:
           name: 'Deploy Over SSH'
           command: |
-            ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh ubuntu@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
+            aws s3 cp dist/ s3://lrc.tor.us --recursive
+            aws cloudfront create-invalidation --distribution-id "$TORUS_LRC_DISTRIBUTION_ID" --paths "/*"
   # ------------------------
   # alpha configurations
   # ------------------------
@@ -289,6 +289,7 @@ workflows:
               only:
                 - develop
       - deploy-testing:
+          context: AWS
           requires:
             - build-testing
             - test-coverage
@@ -302,6 +303,7 @@ workflows:
               only:
                 - develop
       - deploy-lrc:
+          context: AWS
           requires:
             - build-lrc
             - test-coverage

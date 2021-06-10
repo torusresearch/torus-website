@@ -765,7 +765,7 @@ class TransactionController extends EventEmitter {
       contractParameters = tokenObject
     } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, checkSummedTo.toLowerCase())) {
       // For Cryptokitties
-      tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+      tokenMethodName = TOKEN_METHOD_TRANSFER
       contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
         ? erc721Contracts[checkSummedTo.toLowerCase()]
         : {}
