@@ -287,6 +287,7 @@ workflows:
               only:
                 - develop
       - deploy-testing:
+          context: AWS
           requires:
             - build-testing
             - test-coverage
@@ -300,6 +301,7 @@ workflows:
               only:
                 - develop
       - deploy-lrc:
+          context: AWS
           requires:
             - build-lrc
             - test-coverage
