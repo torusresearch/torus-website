@@ -2,6 +2,7 @@ import assert from 'assert'
 import nock from 'nock'
 import { createSandbox } from 'sinon'
 
+import config from '../../../src/config'
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
 import AssetsController from '../../../src/controllers/AssetsController'
 import AssetsDetectionController from '../../../src/controllers/AssetsDetectionController'
@@ -10,11 +11,13 @@ import PreferencesController from '../../../src/controllers/PreferencesControlle
 import { BSC_MAINNET, MAINNET, MATIC, MUMBAI } from '../../../src/utils/enums'
 import * as utils from '../../../src/utils/utils'
 import { userBalances } from '../../data/covalent-nft-data'
+import { openseaNfts } from '../../data/opensea-nft-data'
 
 const ROPSTEN = 'ropsten'
 const noop = () => {}
 const TEST_ADDRESS = '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'
-const COVALENT_API = 'https://api.covalenthq.com'
+const COVALENT_API = config.api
+const OPEN_SEA_API = config.api
 
 const testAccount = {
   key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
@@ -58,6 +61,7 @@ describe('AssetsDetectionController', () => {
       network,
       assetController: assets,
       getCovalentNfts: prefsController.getCovalentNfts.bind(prefsController),
+      getOpenSeaCollectibles: prefsController.getOpenSeaCollectibles.bind(prefsController),
     })
 
     // do it only if the method is not already wrapped
@@ -66,7 +70,7 @@ describe('AssetsDetectionController', () => {
     }
     // eth mainnet
     nock(COVALENT_API)
-      .get('/v1/1/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')
+      .get('/covalent?url=https://api.covalenthq.com/v1/1/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -74,7 +78,7 @@ describe('AssetsDetectionController', () => {
 
     // polygon
     nock(COVALENT_API)
-      .get('/v1/137/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')
+      .get('/covalent?url=https://api.covalenthq.com/v1/137/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -82,7 +86,7 @@ describe('AssetsDetectionController', () => {
 
     // polygon mumbai
     nock(COVALENT_API)
-      .get('/v1/80001/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')
+      .get('/covalent?url=https://api.covalenthq.com/v1/80001/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -90,9 +94,16 @@ describe('AssetsDetectionController', () => {
 
     // bsc mainnet
     nock(COVALENT_API)
-      .get('/v1/56/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false')
+      .get('/covalent?url=https://api.covalenthq.com/v1/56/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
+      })
+      .persist(true)
+
+    nock(OPEN_SEA_API)
+      .get(/opensea\?url=https:\/\/api.opensea.io\/api\/v1\/assets\?owner=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&limit=300/)
+      .reply(200, {
+        data: openseaNfts['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
       .persist(true)
   })
@@ -235,38 +246,37 @@ describe('AssetsDetectionController', () => {
         description: 'Description 2574',
         collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04hh_2574',
       },
+    ]
+
+    const expectedContracts = [
       {
-        address: '0x1d963688FE2209A98db35c67A041524822CF04jj',
-        tokenId: '2579',
-        name: 'ID 2579',
-        image: 'url GG',
-        standard: 'erc1155',
-        tokenBalance: '10',
-        description: 'Description 2579',
-        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04jj_2579',
+        standard: 'erc721',
+        address: '0x1d963688FE2209A98db35c67A041524822CF04gg',
+        description: 'Description GG',
+        logo: 'url GG',
+        name: 'Name GG',
+        symbol: 'GG',
       },
       {
-        address: '0x1d963688FE2209A98db35c67A041524822CF04kk',
-        tokenId: '2580',
-        name: 'ID 2580',
-        image: 'url II',
-        standard: 'erc1155',
-        tokenBalance: '10',
-        description: 'Description 2580',
-        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04kk_2580',
+        standard: 'erc721',
+        address: '0x1d963688FE2209A98db35c67A041524822CF04ii',
+        description: 'Description II',
+        logo: 'url II',
+        name: 'Name II',
+        symbol: 'II',
       },
       {
-        address: '0x1d963688FE2209A98db35c67A041524822CF04ll',
-        tokenId: '2581',
-        name: 'ID 2581',
-        image: 'url HH',
-        standard: 'erc1155',
-        tokenBalance: '1',
-        description: 'Description 2581',
-        collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04ll_2581',
+        standard: 'erc721',
+        address: '0x1d963688FE2209A98db35c67A041524822CF04hh',
+        description: 'Description HH',
+        logo: 'url HH',
+        name: 'Name HH',
+        symbol: 'HH',
       },
     ]
     assert.deepStrictEqual(assets.state.collectibles, expectedCollectibles)
+    assert.deepStrictEqual(assets.state.collectibleContracts, expectedContracts)
+
     network.setProviderType(MUMBAI)
     assert.deepStrictEqual(assets.state.collectibles, [])
     await assetsDetection.detectCollectibles()

@@ -36,73 +36,35 @@
 
       <AccountMenu></AccountMenu>
     </v-menu>
-    <!-- Wallet System Bar -->
-    <v-system-bar
-      v-show="successMsg"
-      fixed
-      :color="`success ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
-      :class="[`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`, lrcMsg ? 'is-lrc' : '']"
-    >
-      <div class="container d-flex align-center">
-        <v-spacer />
-        <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`">$vuetify.icons.check_circle</v-icon>
-        <span class="caption">
-          {{ capitalizeFirstLetter(t(successMsg)) }}
-        </span>
-        <v-spacer />
-        <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`" @click="clearMsg('SuccessMsg')">
-          $vuetify.icons.close
-        </v-icon>
-      </div>
-    </v-system-bar>
-    <v-system-bar
-      v-show="errorMsg"
-      fixed
-      :color="`error ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
-      :class="[`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`, lrcMsg ? 'is-lrc' : '']"
-    >
-      <div class="container d-flex align-center">
-        <v-spacer />
-        <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`">$vuetify.icons.info</v-icon>
-        <span class="caption">
-          {{ capitalizeFirstLetter(t(errorMsg)) }}
-        </span>
-        <v-spacer />
-        <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`" @click="clearMsg('ErrorMsg')">
-          $vuetify.icons.close
-        </v-icon>
-      </div>
-    </v-system-bar>
-    <!-- TKey System Bar -->
-    <v-system-bar
-      v-show="lrcMsg"
-      fixed
-      :color="`warning ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
-      :class="`${$vuetify.theme.dark ? 'white--text' : 'warning--text text--darken-1'}`"
-    >
-      <div class="container d-flex align-center">
-        <v-spacer />
-        <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'warning--text text--darken-1'}`">$vuetify.icons.info</v-icon>
-        <span class="caption">
-          {{ capitalizeFirstLetter(t(lrcMsg)) }}
-        </span>
-        <v-spacer />
-      </div>
-    </v-system-bar>
+    <div class="toast-container">
+      <SystemBar type="lrc" icon="info" :message="lrcMsg" />
+      <SystemBar
+        v-for="announcement in localeAnnouncements"
+        :key="announcement.id"
+        type="announcement"
+        :message="announcement.announcement"
+        icon="info"
+        @onClose="hideAnnouncement(announcement)"
+      />
+      <SystemBar type="success" :message="successMsg" icon="check_circle" @onClose="clearMsg('SuccessMsg')" />
+      <SystemBar type="error" :message="errorMsg" icon="alert" @onClose="clearMsg('ErrorMsg')" />
+    </div>
   </v-app-bar>
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { capitalizeFirstLetter } from '../../../utils/utils'
 import AccountMenu from '../../WalletAccount/AccountMenu'
 import LanguageSelector from '../LanguageSelector'
+import SystemBar from '../SystemBar'
 
 export default {
   components: {
     AccountMenu,
     LanguageSelector,
+    SystemBar,
   },
   props: {
     headerItems: {
@@ -120,8 +82,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userInfo', 'successMsg', 'errorMsg']),
+    ...mapState(['announcements', 'userInfo', 'successMsg', 'errorMsg']),
     ...mapGetters(['getLogo']),
+    localeAnnouncements() {
+      return this.announcements[this.$vuetify.lang.current] || []
+    },
     lrcMsg() {
       if (process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc') {
         return 'navBar.lrcMsg'
@@ -130,6 +95,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['hideAnnouncement']),
     capitalizeFirstLetter,
     clearMsg(statusMessage) {
       this.$store.commit(`set${statusMessage}`, '')

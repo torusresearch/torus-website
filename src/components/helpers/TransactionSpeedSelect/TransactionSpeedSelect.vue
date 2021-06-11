@@ -216,11 +216,12 @@ export default {
       activeGasPrice: new BigNumber('5'),
       averageGasPriceSpeed: 3.7,
       fastestGasPriceSpeed: 0.5,
+      isUpdating: false,
     }
   },
   watch: {
     resetSpeed(value) {
-      if (value) {
+      if (value && !this.isUpdating) {
         this.speedSelected = 'average'
         this.resetAdvanceOption()
       }
@@ -231,12 +232,13 @@ export default {
       }
     },
   },
-  mounted() {
-    this.setGasPrices()
+  async mounted() {
+    await this.setGasPrices()
   },
   methods: {
     async setGasPrices() {
       try {
+        this.isUpdating = true
         log.info('setting gas prices for ', this.networkHost)
         if (this.networkHost === MAINNET) {
           const resp = await fetch('https://ethgasstation.info/json/ethgasAPI.json', {
@@ -269,7 +271,6 @@ export default {
           this.averageGasPrice = new BigNumber(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
           this.fastestGasPrice = this.averageGasPrice.plus(new BigNumber('5'))
         }
-
         // Set selected gas price from confirm
         if (this.activeGasPriceConfirm) {
           this.setSelectedSpeed()
@@ -279,6 +280,8 @@ export default {
       } catch (error) {
         log.error(error)
         this.selectSpeed('average', this.averageGasPrice)
+      } finally {
+        this.isUpdating = false
       }
     },
     onSaveAdvanceOptions(details) {

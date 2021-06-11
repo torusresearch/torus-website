@@ -92,6 +92,8 @@ const networkToNameMap = {
   [GOERLI_CODE]: GOERLI_DISPLAY_NAME,
 }
 
+export class UserError extends Error {}
+
 export const getNetworkDisplayName = (key) => networkToNameMap[key]
 
 /**
@@ -408,14 +410,14 @@ export const paymentProviders = {
     line1: 'Credit/ Debit Card/ Apple Pay',
     line2: '4.5% or 5 USD',
     line3: '2,000€/day, 10,000€/mo',
-    line4: 'ETH, DAI, TUSD, USDC, USDT',
+    line4: 'ETH, DAI, TUSD, USDC, USDT, BNB, BUSD',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://help.moonpay.io/en/',
     minOrderValue: 24.99,
     maxOrderValue: 50000,
     validCurrencies: ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'SGD', 'RUB'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT', 'BNB_BSC', 'BUSD_BSC'],
     includeFees: true,
     api: true,
     enforceMax: false,

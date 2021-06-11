@@ -29,6 +29,7 @@ import { remove } from '../utils/httpHelpers'
 import { fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
 import {
   accountTrackerHandler,
+  announcemenstHandler,
   assetControllerHandler,
   billboardHandler,
   detectTokensControllerHandler,
@@ -127,6 +128,7 @@ export default {
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
+    resetStore(prefsController.announcementsStore, announcemenstHandler)
     await walletConnectController.disconnect()
     resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
@@ -175,7 +177,7 @@ export default {
     const { selectedAddress, networkType } = state
     try {
       const response = await prefsController.getCovalentTokenBalances(selectedAddress, networkType.chainId)
-      const data = response?.data?.items || []
+      const data = response?.data?.data?.items || []
       detectTokensController.detectCovalentTokenBalance(data, selectedAddress, networkType)
     } catch {
       log.error('etherscan balance fetch failed')
@@ -410,6 +412,7 @@ export default {
     prefsController.errorStore.subscribe(errorMessageHandler)
     prefsController.billboardStore.subscribe(billboardHandler)
     prefsController.store.subscribe(prefsControllerHandler)
+    prefsController.announcementsStore.subscribe(announcemenstHandler)
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
     walletConnectController.store.subscribe(walletConnectHandler)
     encryptionPublicKeyManager.store.subscribe(encryptionPublicKeyHandler)
@@ -462,6 +465,7 @@ export default {
     }
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
     prefsController.getBillboardContents()
+    prefsController.getAnnouncementsContents()
     // continue enable function
     if (calledFromEmbed) {
       setTimeout(() => {

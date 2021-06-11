@@ -18,7 +18,9 @@
               class="cryptocurrency-selector"
               outlined
               append-icon="$vuetify.icons.select"
-              :items="selectedProviderObj.validCryptoCurrencies"
+              :items="selectedCryptoCurrencies"
+              item-value="key"
+              item-text="displayValue"
               aria-label="Cryptocurrency Selector"
               @change="fetchQuote"
             ></v-select>
@@ -87,9 +89,9 @@
 
           <v-flex xs12 class="text-right">
             <div class="body-2">{{ t('walletTopUp.receive') }}</div>
-            <div class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrency }}</div>
+            <div class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrencyDisplay }}</div>
             <div class="description">
-              {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
+              {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrencyDisplay }} = {{ displayRateString }} {{ selectedCurrency }}
             </div>
 
             <div class="description mt-6">{{ t('walletTopUp.theProcess') }} 10 - 15 {{ t('walletTopUp.minSmall') }}.</div>
@@ -206,6 +208,15 @@ export default {
     displayRateString() {
       if (Number.parseFloat(this.currencyRate) !== 0) return significantDigits(1 / this.currencyRate)
       return 0
+    },
+    selectedCryptoCurrencies() {
+      return this.selectedProviderObj.validCryptoCurrencies.map((x) => ({
+        key: x,
+        displayValue: x.split('_')[0],
+      }))
+    },
+    selectedCryptoCurrencyDisplay() {
+      return this.selectedCryptoCurrency.split('_')[0]
     },
   },
   watch: {

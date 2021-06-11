@@ -437,6 +437,7 @@ import Resolution from '@unstoppabledomains/resolution'
 import BigNumber from 'bignumber.js'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
+import isEqual from 'lodash.isequal'
 import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { QrcodeStream } from 'vue-qrcode-reader'
@@ -566,6 +567,9 @@ export default {
     randomName() {
       return `torus-${torus.instanceId}`
     },
+    finalCollectibles() {
+      return this.collectibles || []
+    },
     finalBalancesArray() {
       return this.tokenBalances.finalBalancesArray || []
     },
@@ -674,14 +678,14 @@ export default {
 
     this.contactSelected = this.toAddress
 
-    this.$watch('collectibles', (newValue, oldValue) => {
-      if (newValue !== oldValue && newValue?.length > 0) {
+    this.$watch('finalCollectibles', (newValue, oldValue) => {
+      if (!isEqual(newValue, oldValue) && newValue?.length > 0) {
         this.updateFieldsBasedOnRoute()
       }
     })
 
     const tokensUnwatch = this.$watch('finalBalancesArray', (newValue, oldValue) => {
-      if (newValue !== oldValue && newValue?.length > 0) {
+      if (!isEqual(newValue, oldValue) && newValue?.length > 0) {
         this.updateFieldsBasedOnRoute()
         tokensUnwatch()
       }
@@ -690,7 +694,7 @@ export default {
     this.updateFieldsBasedOnRoute()
 
     torus.nodeDetailManager
-      .getNodeDetails()
+      .getNodeDetails(false, true)
       .then((nodeDetails) => {
         log.info('fetched node details', nodeDetails)
         this.nodeDetails = nodeDetails
@@ -939,6 +943,11 @@ export default {
       throw new Error('Invalid Contract Type')
     },
     getNftTransferMethod(contractType, selectedAddress, toAddress, tokenId, value = 1) {
+      if (contractType === CONTRACT_TYPE_ERC721 && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase())) {
+        const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress)
+        return contractInstance.methods.transfer(toAddress, tokenId)
+      }
+
       if (contractType === CONTRACT_TYPE_ERC721) {
         const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
         return contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, tokenId)
@@ -953,7 +962,7 @@ export default {
     },
     async selectedItemChanged(address, tokenId) {
       const foundInBalances = this.finalBalancesArray.find((token) => token.tokenAddress.toLowerCase() === address.toLowerCase())
-      const foundInCollectibles = this.collectibles.find((token) => token.address.toLowerCase() === address.toLowerCase())
+      const foundInCollectibles = this.finalCollectibles.find((token) => token.address.toLowerCase() === address.toLowerCase())
       if (foundInBalances) {
         this.tokenAddress = foundInBalances.tokenAddress
         this.contractType = foundInBalances.erc20 ? CONTRACT_TYPE_ERC20 : CONTRACT_TYPE_ETH
@@ -1025,6 +1034,14 @@ export default {
           log.error(error)
         }
       }
+      if (
+        (this.contractType === CONTRACT_TYPE_ERC721 || (this.contractType === CONTRACT_TYPE_ERC1155 && this.assetSelected.tokenBalance === 1)) &&
+        !this.hasCustomGasLimit
+      ) {
+        this.gas = await this.calculateGas(toAddress)
+        this.updateTotalCost()
+      }
+
       return toAddress
     },
     async onTransferClick() {
@@ -1040,10 +1057,13 @@ export default {
           return
         }
         this.toEthAddress = toAddress
-        if (!this.hasCustomGasLimit) {
+        if (
+          (this.contractType !== CONTRACT_TYPE_ERC721 || (this.contractType === CONTRACT_TYPE_ERC1155 && this.assetSelected.tokenBalance > 1)) &&
+          !this.hasCustomGasLimit
+        ) {
           this.gas = await this.calculateGas(toAddress)
+          this.updateTotalCost()
         }
-        this.updateTotalCost()
         this.confirmDialog = true
       }
     },
@@ -1083,6 +1103,7 @@ export default {
       this.changeSelectedToCurrency(0)
     },
     async sendCoin() {
+      log.info('sending with gas price', this.activeGasPrice.toString())
       const toAddress = this.toEthAddress
       const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
       const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
@@ -1226,6 +1247,7 @@ export default {
       this.$router.go(-1)
     },
     updateTotalCost() {
+      log.info(this.activeGasPrice.toString(), 'acg price')
       if (this.displayAmount.isZero() || this.activeGasPrice === '') {
         this.totalCost = '0'
         this.convertedTotalCost = '0'
@@ -1244,6 +1266,8 @@ export default {
       if (this.isSendAll) {
         this.sendAll()
       }
+
+      log.info(this.activeGasPrice.toString(), 'acg price 2')
 
       const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
       const gasPriceInCurrency = gasPriceInEth.times(this.currencyMultiplier)
