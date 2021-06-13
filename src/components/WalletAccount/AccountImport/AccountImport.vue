@@ -208,6 +208,8 @@ export default {
           .dispatch('importAccount', { keyData: [this.privateKey], strategy: 'Private Key' })
           .then((privKey) => {
             this.onClose()
+            this.privateKey = ''
+            this.showPrivateKey = false
             this.isLoadingPrivate = false
             this.informClients(privKey)
             this.$refs.privateKeyForm.resetValidation()
@@ -245,6 +247,9 @@ export default {
             .dispatch('importAccount', { keyData: [keyData, this.jsonPassword], strategy: 'JSON File' })
             .then((privKey) => {
               this.onClose()
+              this.keyStoreFileContents = ''
+              this.jsonPassword = ''
+              this.showJsonPassword = false
               this.isLoadingKeystore = false
               this.informClients(privKey)
               this.$refs.jsonFileForm.resetValidation()
@@ -261,6 +266,9 @@ export default {
               .dispatch('finishImportAccount', { privKey })
               .then((privateKey) => {
                 this.onClose()
+                this.keyStoreFileContents = ''
+                this.jsonPassword = ''
+                this.showJsonPassword = false
                 this.isLoadingKeystore = false
                 this.informClients(privateKey)
                 this.$refs.jsonFileForm.resetValidation()
