@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { safeatob } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
@@ -27,8 +28,10 @@ export default {
   async mounted() {
     try {
       const { verifier, state, skipTKey, ...rest } = this.$route.query
-      log.info('logging in with', verifier, state, skipTKey)
-      const openLogin = await getOpenLoginInstance(this.whiteLabel)
+      const stateParams = JSON.parse(safeatob(state))
+      log.info('logging in with', verifier, state, skipTKey, rest)
+      const whiteLabel = stateParams.whiteLabel ? stateParams.whiteLabel : this.whiteLabel
+      const openLogin = await getOpenLoginInstance(whiteLabel)
       await openLogin.login({
         loginProvider: this.loginConfig[verifier]?.loginProvider,
         getWalletKey: true,

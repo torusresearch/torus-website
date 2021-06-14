@@ -31,8 +31,19 @@ export default {
   },
   async mounted() {
     try {
+      const { hash } = this.$route
+      const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
+      const result = hashUrl.searchParams.get('result')
+      let { whiteLabel } = this
+
+      if (result) {
+        const resultParams = JSON.parse(safeatob(result))
+        const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
+        whiteLabel = appStateParams.whiteLabel ? appStateParams.whiteLabel : this.whiteLabel
+      }
+
       const torus = new Torus()
-      const openLogin = await getOpenLoginInstance(this.whiteLabel)
+      const openLogin = await getOpenLoginInstance(whiteLabel)
       const { state } = openLogin
       log.info(state, 'state')
       const allInfo = state.store.getStore()
