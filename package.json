@@ -86,7 +86,7 @@
     "register-service-worker": "^1.7.2",
     "single-call-balance-checker-abi": "^1.0.0",
     "swappable-obj-proxy": "^1.1.0",
-    "vue": "^2.6.13",
+    "vue": "^2.6.14",
     "vue-content-loader": "^0.2.3",
     "@gtm-support/vue2-gtm": "^1.0.0",
     "vue-json-pretty": "^1.8.0",
@@ -161,7 +161,7 @@
     "uglifyify": "^5.0.2",
     "vue-cli-plugin-vuetify": "^2.4.1",
     "vue-cli-plugin-webpack-bundle-analyzer": "~4.0.0",
-    "vue-template-compiler": "^2.6.13",
+    "vue-template-compiler": "^2.6.14",
     "vuetify-loader": "^1.7.2",
     "webpack": "^4.46.0",
     "worker-loader": "^3.0.8"
