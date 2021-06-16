@@ -108,7 +108,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/register": "^7.13.16",
-    "@sentry/cli": "^1.65.0",
+    "@sentry/cli": "^1.66.0",
     "@vue/cli-plugin-babel": "^4.5.13",
     "@vue/cli-plugin-eslint": "^4.5.13",
     "@vue/cli-plugin-pwa": "^5.0.0-beta.1",
