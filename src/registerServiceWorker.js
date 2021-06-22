@@ -1,6 +1,7 @@
 import log from 'loglevel'
 
 import generateIntegrity from './utils/integrity'
+import { isMain } from './utils/utils'
 
 const swIntegrity = 'SERVICE_WORKER_SHA_INTEGRITY' // string-replaced
 const serviceWorkerUrl = `${process.env.BASE_URL}service-worker.js`
@@ -113,7 +114,7 @@ function checkValidServiceWorker(swUrl, config) {
         navigator.serviceWorker.ready
           .then((registration) => registration.unregister())
           .then(() => {
-            window.location.reload()
+            if (isMain) window.location.reload()
           })
           .catch(log.error)
       } else {
@@ -154,9 +155,7 @@ if (
 
         if (waitingServiceWorker) {
           waitingServiceWorker.addEventListener('statechange', (event) => {
-            if (event?.target?.state === 'activated') {
-              window.location.reload()
-            }
+            if (event?.target?.state === 'activated' && isMain) window.location.reload()
           })
           waitingServiceWorker.postMessage({ type: 'SKIP_WAITING' })
         }

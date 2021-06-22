@@ -7,6 +7,7 @@ import deepmerge from 'deepmerge'
 import log from 'loglevel'
 
 import { BSC_MAINNET, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
+import { isMain } from '../utils/utils'
 
 const DEFAULT_INTERVAL = 60000
 export default class AssetsDetectionController {
@@ -53,9 +54,10 @@ export default class AssetsDetectionController {
     if (!interval) {
       return
     }
-    this._handle = setInterval(() => {
-      this.detectAssets()
-    }, interval)
+    if (isMain)
+      this._handle = setInterval(() => {
+        this.detectAssets()
+      }, interval)
   }
 
   getOwnerCollectiblesApi(address, apiType = 'covalent') {
