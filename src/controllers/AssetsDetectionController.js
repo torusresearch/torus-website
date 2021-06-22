@@ -173,32 +173,34 @@ export default class AssetsDetectionController {
         let contractFallbackLogo
         if (!!nft_data && nft_data.length > 0) {
           for (const [i, nft] of nft_data.entries()) {
-            const { token_id: tokenID, token_balance: tokenBalance, external_data } = nft
-            const name = external_data?.name
-            const description = external_data?.description
-            const imageURL = external_data?.image || '/images/nft-placeholder.svg'
-            if (i === 0) {
-              contractFallbackLogo = imageURL
+            const { token_id: tokenID, token_balance: tokenBalance, external_data, owner } = nft
+            if (owner && owner.toLowerCase() === this.selectedAddress.toLowerCase()) {
+              const name = external_data?.name
+              const description = external_data?.description
+              const imageURL = external_data?.image || '/images/nft-placeholder.svg'
+              if (i === 0) {
+                contractFallbackLogo = imageURL
+              }
+              const collectibleDetails = {
+                contractAddress,
+                tokenID: tokenID.toString(),
+                options: {
+                  contractName,
+                  contractSymbol,
+                  contractImage,
+                  contractFallbackLogo,
+                  standard,
+                  contractDescription: '', // covalent api doesn't provide contract description like opensea
+                  description,
+                  image: imageURL,
+                  name: name || `${contractName}#${tokenID}`,
+                  tokenBalance,
+                },
+              }
+              collectibles.push(collectibleDetails)
+              const collectibleIndex = `${contractAddress.toLowerCase()}_${tokenID.toString()}`
+              collectiblesMap[collectibleIndex] = collectibleDetails
             }
-            const collectibleDetails = {
-              contractAddress,
-              tokenID: tokenID.toString(),
-              options: {
-                contractName,
-                contractSymbol,
-                contractImage,
-                contractFallbackLogo,
-                standard,
-                contractDescription: '', // covalent api doesn't provide contract description like opensea
-                description,
-                image: imageURL,
-                name: name || `${contractName}#${tokenID}`,
-                tokenBalance,
-              },
-            }
-            collectibles.push(collectibleDetails)
-            const collectibleIndex = `${contractAddress.toLowerCase()}_${tokenID.toString()}`
-            collectiblesMap[collectibleIndex] = collectibleDetails
           }
         }
       }
