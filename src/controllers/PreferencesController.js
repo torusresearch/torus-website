@@ -22,7 +22,7 @@ import {
 } from '../utils/enums'
 import { notifyUser } from '../utils/notifications'
 import { setSentryEnabled } from '../utils/sentry'
-import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
+import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, isMain, storageAvailable } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 // By default, poll every 3 minutes
@@ -652,13 +652,14 @@ class PreferencesController extends EventEmitter {
     if (!interval) {
       return
     }
-    this._handle = setInterval(() => {
-      // call here
-      const storeSelectedAddress = this.store.getState().selectedAddress
-      if (!storeSelectedAddress) return
-      if (!this.state(storeSelectedAddress)?.jwtToken) return
-      this.sync(storeSelectedAddress)
-    }, interval)
+    if (isMain)
+      this._handle = setInterval(() => {
+        // call here
+        const storeSelectedAddress = this.store.getState().selectedAddress
+        if (!storeSelectedAddress) return
+        if (!this.state(storeSelectedAddress)?.jwtToken) return
+        this.sync(storeSelectedAddress)
+      }, interval)
   }
 
   async setUserBadge(payload) {
