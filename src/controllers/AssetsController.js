@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Asset Controller
  *
@@ -8,6 +9,7 @@ import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
+import erc721Contracts from '../assets/assets-map.json'
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
 import { get } from '../utils/httpHelpers'
 import { validateImageUrl } from '../utils/utils'
@@ -154,7 +156,13 @@ export default class AssetController {
    * @returns - Promise resolving to the current collectible name, balance, standard and image
    */
   async getCollectibleInformationFromTokenURI(contractAddress, tokenId) {
-    const interfaceStandard = await this.assetContractController.checkNftStandard(contractAddress)
+    const { standard: interfaceStandard, isSpecial } = await this.assetContractController.checkNftStandard(contractAddress)
+    if (isSpecial) {
+      const collectibleDetails = Object.prototype.hasOwnProperty.call(erc721Contracts, contractAddress.toLowerCase())
+        ? erc721Contracts[contractAddress.toLowerCase()]
+        : {}
+      return { image: collectibleDetails.logo, name: collectibleDetails.name, tokenBalance: 1, description: '', standard: interfaceStandard }
+    }
     const tokenURI = await this.getCollectibleTokenURI(contractAddress, tokenId, interfaceStandard)
     const object = await get(tokenURI)
     const image = Object.prototype.hasOwnProperty.call(object, 'image') ? 'image' : /* istanbul ignore next */ 'image_url'
@@ -207,7 +215,7 @@ export default class AssetController {
   async getCollectibleInfo(contractAddress, tokenId, detectFromApi) {
     try {
       if (detectFromApi) {
-        const info = await this.getCollectibleInfoFromApi(contractAddress, tokenId)
+        const info = await this.getCollectibleInfoFromApi(contractAddress.toLowerCase(), tokenId)
         if (info.name && info.image) {
           return info
         }
@@ -227,14 +235,16 @@ export default class AssetController {
    * @returns - Promise resolving to the current collectible conract name, symbol and standard
    */
   async getCollectibleContractInformationFromContract(contractAddress) {
+    let name = ''
+    let symbol = ''
     try {
       const assetsContractController = this.assetContractController
-      const name = await assetsContractController.getAssetName(contractAddress)
-      const symbol = await assetsContractController.getAssetSymbol(contractAddress)
+      name = await assetsContractController.getAssetName(contractAddress)
+      symbol = await assetsContractController.getAssetSymbol(contractAddress)
       return { name, symbol }
     } catch (error) {
       log.warn('unable to get info from contract', contractAddress, error)
-      return { name: '', symbol: '' }
+      return { name, symbol }
     }
   }
 
@@ -266,10 +276,10 @@ export default class AssetController {
    */
   async getCollectibleContractInformation(contractAddress, detectFromApi) {
     try {
-      const standard = await this.assetContractController.checkNftStandard(contractAddress)
+      const { standard } = await this.assetContractController.checkNftStandard(contractAddress)
       if (detectFromApi) {
-        const information = await this.getCollectibleContractInformationFromApi(contractAddress)
-        if (information.name && information.symbol) {
+        const information = await this.getCollectibleContractInformationFromApi(contractAddress.toLowerCase())
+        if (information.name) {
           return { ...information, standard }
         }
       }
@@ -291,7 +301,6 @@ export default class AssetController {
     let _contractAddress
     if (isAddress(contractAddress)) _contractAddress = toChecksumAddress(contractAddress)
     else _contractAddress = contractAddress
-
     if (contractName && standard) {
       normalizedContractInfo = {
         standard,
@@ -303,14 +312,15 @@ export default class AssetController {
       }
     } else {
       // fetch from api or smart contract
-      normalizedContractInfo = await this.getCollectibleContractInformation(contractAddress, detectFromApi)
+      normalizedContractInfo = await this.getCollectibleContractInformation(_contractAddress, detectFromApi)
       normalizedContractInfo.logo = normalizedContractInfo.logo ? normalizedContractInfo.logo : contractImage
       normalizedContractInfo.address = _contractAddress
       normalizedContractInfo.description = contractDescription || ''
     }
     if (!normalizedContractInfo.standard) {
       try {
-        normalizedContractInfo.standard = await this.assetContractController.checkNftStandard(contractAddress)
+        const { standard: _contractStandard } = await this.assetContractController.checkNftStandard(_contractAddress)
+        normalizedContractInfo.standard = _contractStandard
       } catch {
         // return empty obj if not able to get contract standard, which means provided address is invalid
         return {}
@@ -345,7 +355,9 @@ export default class AssetController {
       tokenBalance,
       collectibleIndex,
     }
-    if (!name || !image || !standard || !SUPPORTED_NFT_STANDARDS.has(standard)) {
+    normalizedCollectibleInfo.standard = standard || (await this.assetContractController.checkNftStandard(_contractAddress)).standard
+    const final_standard = normalizedCollectibleInfo.standard
+    if (!name || !image || !final_standard || !SUPPORTED_NFT_STANDARDS.has(final_standard)) {
       const collectibleInfo = await this.getCollectibleInfo(address, tokenID, detectFromApi)
       normalizedCollectibleInfo = { ...normalizedCollectibleInfo, ...collectibleInfo }
     }
