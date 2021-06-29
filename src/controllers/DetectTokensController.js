@@ -9,6 +9,7 @@ import { toChecksumAddress, toHex } from 'web3-utils'
 import TokenHandler from '../handlers/Token/TokenHandler'
 import contracts from '../utils/contractMetadata'
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET } from '../utils/enums'
+import { isMain } from '../utils/utils'
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
 
@@ -241,15 +242,16 @@ class DetectTokensController {
     if (!interval) {
       return
     }
-    this._handle = setInterval(() => {
-      this.detectNewTokens()
-      this.refreshTokenBalances()
-      if (this._preferencesStore) {
-        const userState = this._preferencesStore.getState()[this.selectedAddress]
-        const { customTokens = [] } = userState || {}
-        this.getCustomTokenBalances(customTokens)
-      }
-    }, interval)
+    if (isMain)
+      this._handle = setInterval(() => {
+        this.detectNewTokens()
+        this.refreshTokenBalances()
+        if (this._preferencesStore) {
+          const userState = this._preferencesStore.getState()[this.selectedAddress]
+          const { customTokens = [] } = userState || {}
+          this.getCustomTokenBalances(customTokens)
+        }
+      }, interval)
   }
 
   /**

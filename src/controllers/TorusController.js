@@ -14,6 +14,7 @@ import { toChecksumAddress } from 'web3-utils'
 
 import { version } from '../../package.json'
 import createRandomId from '../utils/random-id'
+import { isMain } from '../utils/utils'
 import AccountTracker from './AccountTracker'
 import AssetContractController from './AssetsContractController'
 import AssetController from './AssetsController'
@@ -349,9 +350,11 @@ export default class TorusController extends EventEmitter {
 
   setSelectedAccount(address) {
     this.prefsController.setSelectedAddress(address)
-    this.detectTokensController.startTokenDetection(address)
-    this.assetDetectionController.startAssetDetection(address)
-    this.walletConnectController.setSelectedAddress(address)
+    if (isMain) {
+      this.detectTokensController.startTokenDetection(address)
+      this.assetDetectionController.startAssetDetection(address)
+      this.walletConnectController.setSelectedAddress(address)
+    }
   }
 
   /**
