@@ -80,7 +80,7 @@ import { BroadcastChannel } from 'broadcast-channel'
 import { mapGetters } from 'vuex'
 
 import { ChangeProviderScreenLoader } from '../../content-loader'
-import { POPUP_LOADED, POPUP_RESULT, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
+import { POPUP_LOADED, POPUP_RESULT, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
@@ -122,7 +122,7 @@ export default {
       } = ev.data || {}
       this.origin = origin // origin of tx: website url
       this.network = network
-      this.type = type
+      this.type = type || SUPPORTED_NETWORK_TYPES[network.host] ? '' : RPC
       this.currentNetwork = currentNetwork
 
       this.$store.commit('setWhiteLabel', whiteLabel)
