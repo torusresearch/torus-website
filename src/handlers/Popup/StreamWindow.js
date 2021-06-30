@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/require-post-message-target-origin */
 import randomId from '@chaitanyapotti/random-id'
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
