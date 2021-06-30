@@ -44,9 +44,9 @@ export default {
             const result = {
               crypto: 0.201,
               fiat: 50,
-              cryptoPrice: 248.11277752218885,
-              cryptoPriceUsd: 173.41430400000002,
-              fxRate: 0.6989333871952302,
+              cryptoPrice: 248.112_777_522_188_85,
+              cryptoPriceUsd: 173.414_304_000_000_02,
+              fxRate: 0.698_933_387_195_230_2,
               total: 0.196,
               serviceCharge: 0.005,
               referralDiscount: 0,
@@ -55,7 +55,7 @@ export default {
               referralDiscountInXlp: 0,
               referralDiscountInUsd: 0,
               payoutServiceCharge: 0,
-              earnedXlp: 372.2036307846649,
+              earnedXlp: 372.203_630_784_664_9,
               processingTime: '5-30 minutes',
               currency: 'SGD',
             }
