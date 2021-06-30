@@ -17,6 +17,7 @@ import {
   ERC721ENUMERABLE_INTERFACE_ID,
   ERC721METADATA_INTERFACE_ID,
   ERC1155_INTERFACE_ID,
+  OLD_ERC721_LIST,
   SINGLE_CALL_BALANCES_ADDRESS,
 } from '../utils/enums'
 
@@ -65,14 +66,20 @@ export default class AssetContractController {
    * contract is not a valid nft contract
    */
   async checkNftStandard(address) {
+    // For Cryptokitties
+    if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, address.toLowerCase())) {
+      return { standard: CONTRACT_TYPE_ERC721, isSpecial: true }
+    }
+
     const isErc721 = await this.contractSupportsInterface(address, ERC721_INTERFACE_ID)
     if (isErc721) {
-      return CONTRACT_TYPE_ERC721
+      return { standard: CONTRACT_TYPE_ERC721, isSpecial: false }
     }
     const isErc1155 = await this.contractSupportsInterface(address, ERC1155_INTERFACE_ID)
     if (isErc1155) {
-      return CONTRACT_TYPE_ERC1155
+      return { standard: CONTRACT_TYPE_ERC1155, isSpecial: false }
     }
+
     throw new Error('Contract address does not support any valid nft standard')
   }
 

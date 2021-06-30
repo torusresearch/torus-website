@@ -46,7 +46,7 @@ describe('AssetsController', () => {
     assetsContract = new AssetsContractController({
       provider: network._providerProxy,
     })
-    sandbox.stub(assetsContract, 'checkNftStandard').returns('erc721')
+    sandbox.stub(assetsContract, 'checkNftStandard').returns({ standard: 'erc721' })
     assetsController = new AssetsController({
       selectedAddress: TEST_ADDRESS,
       assetContractController: assetsContract,

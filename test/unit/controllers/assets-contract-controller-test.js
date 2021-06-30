@@ -32,8 +32,8 @@ describe('AssetsContractController', () => {
   })
 
   it('should determine nft contract standard correctly', async () => {
-    const erc721Interface = await assetsContract.checkNftStandard(ERC721_ADDRESS)
-    const erc1155Interface = await assetsContract.checkNftStandard(ERC1155_ADDRESS)
+    const { standard: erc721Interface } = await assetsContract.checkNftStandard(ERC721_ADDRESS)
+    const { standard: erc1155Interface } = await assetsContract.checkNftStandard(ERC1155_ADDRESS)
     assert(erc721Interface === CONTRACT_TYPE_ERC721)
     assert(erc1155Interface === CONTRACT_TYPE_ERC1155)
     await assert.rejects(async () => {
