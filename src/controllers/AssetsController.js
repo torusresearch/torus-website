@@ -315,6 +315,8 @@ export default class AssetController {
       normalizedContractInfo.logo = normalizedContractInfo.logo ? normalizedContractInfo.logo : contractImage
       normalizedContractInfo.address = _contractAddress
       normalizedContractInfo.description = contractDescription || ''
+      normalizedContractInfo.name = normalizedContractInfo.name ? normalizedContractInfo.name : contractName
+      normalizedContractInfo.symbol = normalizedContractInfo.symbol ? normalizedContractInfo.symbol : contractSymbol
     }
     if (!normalizedContractInfo.standard) {
       try {
