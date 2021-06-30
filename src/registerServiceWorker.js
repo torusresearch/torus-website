@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/require-post-message-target-origin */
 import log from 'loglevel'
 
 import generateIntegrity from './utils/integrity'
