@@ -5,7 +5,7 @@ import config from '../config'
 import { isMain } from '../utils/utils'
 
 // every ten minutes
-const POLLING_INTERVAL = 600000
+const POLLING_INTERVAL = 600_000
 
 class CurrencyController {
   /**

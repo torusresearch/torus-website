@@ -788,7 +788,7 @@ export default {
           tokenImageUrl:
             this.contractType !== CONTRACT_TYPE_ERC721 || this.contractType !== this.CONTRACT_TYPE_ERC1155
               ? `${this.logosUrl}/${this.selectedItemDisplay.logo}`
-              : this.selectedItemDisplay.logo,
+              : this.selectedItemDisplay.image,
         }
         this.$store
           .dispatch('sendEmail', { emailObject })
