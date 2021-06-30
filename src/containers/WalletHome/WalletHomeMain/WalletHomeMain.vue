@@ -313,7 +313,7 @@ export default {
       return events
     },
     hasCustomToken() {
-      return this.filteredBalancesArray.filter((x) => !!x.customTokenId).length > 0
+      return this.filteredBalancesArray.some((x) => !!x.customTokenId)
     },
   },
   mounted() {

@@ -9,7 +9,7 @@ import log from 'loglevel'
 import { BSC_MAINNET, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
 import { isMain } from '../utils/utils'
 
-const DEFAULT_INTERVAL = 60000
+const DEFAULT_INTERVAL = 60_000
 export default class AssetsDetectionController {
   constructor(options) {
     this.interval = options.interval || DEFAULT_INTERVAL

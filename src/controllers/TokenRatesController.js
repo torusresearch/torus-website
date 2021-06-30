@@ -65,9 +65,9 @@ class TokenRatesController {
       return
     }
     this._tokensStore = tokensStore
-    this.tokens = Object.values(tokensStore.getState()).flatMap((x) => x)
+    this.tokens = Object.values(tokensStore.getState()).flat()
     tokensStore.subscribe((state) => {
-      this.tokens = Object.values(state).flatMap((x) => x)
+      this.tokens = Object.values(state).flat()
       // const tokenAddresses = tokens.map(x => x.tokenAddress)
       // const presentAddresses = (this._tokens && this._tokens.map(x => x.tokenAddress)) || []
       // if (tokenAddresses.sort().toString() !== presentAddresses.sort().toString()) this.tokens = tokens
