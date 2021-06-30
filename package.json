@@ -175,12 +175,8 @@
     "node": ">=12.0.0"
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.vue": [
-      "npm run lint:vue --",
-      "prettier --write"
-    ],
-    "*.{js,json,css,yaml,yml}": [
+    "*.{js,vue}": "eslint --cache --fix",
+    "*.{js,json,css,yaml,yml,vue}": [
       "prettier --write"
     ]
   },
