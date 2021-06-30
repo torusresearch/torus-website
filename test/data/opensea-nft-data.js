@@ -4,6 +4,7 @@ export const openseaNfts = {
     assets: [
       {
         asset_contract: {
+          schema_name: 'erc721',
           address: '0x1d963688FE2209A98db35c67A041524822CF04gg',
           name: 'Name GG',
           symbol: 'GG',
@@ -18,6 +19,7 @@ export const openseaNfts = {
       },
       {
         asset_contract: {
+          schema_name: 'erc721',
           address: '0x1d963688FE2209A98db35c67A041524822CF04ii',
           name: 'Name II',
           symbol: 'II',
@@ -32,6 +34,7 @@ export const openseaNfts = {
       },
       {
         asset_contract: {
+          schema_name: 'erc721',
           address: '0x1d963688FE2209A98db35c67A041524822CF04hh',
           name: 'Name HH',
           symbol: 'HH',
