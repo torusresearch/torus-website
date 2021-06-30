@@ -232,6 +232,7 @@ export default class AssetsDetectionController {
       name,
       description,
       asset_contract: {
+        schema_name: standard,
         address: contractAddress,
         name: contractName,
         symbol: contractSymbol,
@@ -244,6 +245,7 @@ export default class AssetsDetectionController {
         contractAddress,
         tokenID: tokenID.toString(),
         options: {
+          standard: standard?.toLowerCase(),
           description,
           image: imageURL || (contractImage || '').replace('=s60', '=s240'),
           name: name || `${contractName}#${tokenID}`,
