@@ -3,7 +3,7 @@ const nock = require('nock')
 const log = require('loglevel')
 const Ganache = require('ganache-core')
 
-console.log('requiring helpers for tests')
+console.log('requiring helpers for tests in mocha')
 
 nock.disableNetConnect()
 nock.enableNetConnect((host) => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
