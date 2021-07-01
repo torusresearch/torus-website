@@ -120,7 +120,7 @@ export default {
       return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
     },
     hasSeedPhraseAccount() {
-      return Object.keys(this.wallets).filter((address) => this.wallets[address].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE).length > 0
+      return Object.keys(this.wallets).some((address) => this.wallets[address].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
     },
   },
   methods: {

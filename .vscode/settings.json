@@ -24,6 +24,7 @@
       "sourceType": "module"
     },
     "rules": {
+      "unicorn/require-post-message-target-origin": 0,
       "unicorn/prefer-module": 0,
       "unicorn/prefer-node-protocol": 0,
       "unicorn/prefer-switch": 0,

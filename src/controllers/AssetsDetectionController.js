@@ -9,7 +9,7 @@ import log from 'loglevel'
 import { BSC_MAINNET, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
 import { isMain } from '../utils/utils'
 
-const DEFAULT_INTERVAL = 60000
+const DEFAULT_INTERVAL = 60_000
 export default class AssetsDetectionController {
   constructor(options) {
     this.interval = options.interval || DEFAULT_INTERVAL
@@ -162,20 +162,20 @@ export default class AssetsDetectionController {
       if (item.type === 'nft') {
         let contractName = item.contract_name
         let standard
-        const { logo_url, contract_address: contractAddress, contract_ticker_symbol: contractSymbol, nft_data, supports_erc } = item
-        if (supports_erc.includes('erc1155')) {
-          contractName = `${contractName} (${protocolPrefix}1155)`
-          standard = CONTRACT_TYPE_ERC1155
-        } else {
-          contractName = `${contractName} (${protocolPrefix}721)`
-          standard = CONTRACT_TYPE_ERC721
-        }
+        const { logo_url, contract_address: contractAddress, contract_ticker_symbol: contractSymbol, nft_data } = item
 
         const contractImage = logo_url
         let contractFallbackLogo
         if (!!nft_data && nft_data.length > 0) {
           for (const [i, nft] of nft_data.entries()) {
-            const { token_id: tokenID, token_balance: tokenBalance, external_data } = nft
+            const { token_id: tokenID, token_balance: tokenBalance, external_data, supports_erc } = nft
+            if (supports_erc.includes('erc1155')) {
+              contractName = `${contractName} (${protocolPrefix}1155)`
+              standard = CONTRACT_TYPE_ERC1155
+            } else {
+              contractName = `${contractName} (${protocolPrefix}721)`
+              standard = CONTRACT_TYPE_ERC721
+            }
             const name = external_data?.name
             const description = external_data?.description
             const imageURL = external_data?.image || '/images/nft-placeholder.svg'
@@ -232,6 +232,7 @@ export default class AssetsDetectionController {
       name,
       description,
       asset_contract: {
+        schema_name: standard,
         address: contractAddress,
         name: contractName,
         symbol: contractSymbol,
@@ -244,6 +245,7 @@ export default class AssetsDetectionController {
         contractAddress,
         tokenID: tokenID.toString(),
         options: {
+          standard: standard?.toLowerCase(),
           description,
           image: imageURL || (contractImage || '').replace('=s60', '=s240'),
           name: name || `${contractName}#${tokenID}`,
