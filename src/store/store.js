@@ -32,10 +32,10 @@ Vue.use(Vuex)
 
 let vuexPersist
 
-if (storageAvailable(isPwa ? 'localStorage' : 'sessionStorage')) {
+if (storageAvailable(isPwa || config.dappStorageKey ? 'localStorage' : 'sessionStorage')) {
   vuexPersist = new VuexPersistence({
-    key: 'torus-app',
-    storage: isPwa ? window.localStorage : window.sessionStorage,
+    key: config.dappStorageKey || 'torus-app',
+    storage: isPwa || config.dappStorageKey ? window.localStorage : window.sessionStorage,
     reducer: (state) => ({
       userInfo: state.userInfo,
       userInfoAccess: state.userInfoAccess,
