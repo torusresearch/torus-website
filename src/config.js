@@ -89,6 +89,10 @@ const redirectURI = `${baseUrl}/redirect`
 
 const LOGIN_DOMAIN = VUE_APP_LOGIN_DOMAIN
 
+const { hash } = window.location
+const hashUrl = new URL(`${baseUrl}?${hash.slice(1)}`)
+const dappStorageKey = hashUrl.searchParams.get('dappStorageKey')
+
 // no reddit for binance.tor.us
 
 // In Modal, show 6 by default (view more)
@@ -107,6 +111,8 @@ export default {
 
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
+
+  dappStorageKey,
 
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
