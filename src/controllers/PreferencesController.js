@@ -16,7 +16,10 @@ import {
   BADGES_COLLECTIBLE,
   BADGES_TOPUP,
   BADGES_TRANSACTION,
+  BSC_MAINNET,
   ERROR_TIME,
+  MAINNET,
+  MATIC,
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
@@ -58,6 +61,12 @@ const DEFAULT_ACCOUNT_STATE = {
   defaultPublicAddress: '',
   accountType: ACCOUNT_TYPE.NORMAL,
   customTokens: [],
+}
+
+const ETHERSCAN_NETWORK_MAP = {
+  [MATIC]: 'polygon_mainnet',
+  [BSC_MAINNET]: 'bsc_mainnet',
+  [MAINNET]: 'eth_mainnet',
 }
 
 class PreferencesController extends EventEmitter {
@@ -343,9 +352,9 @@ class PreferencesController extends EventEmitter {
     this.updateStore({ pastTransactions: pastTx }, address)
   }
 
-  async fetchEtherscanTx(address) {
+  async fetchEtherscanTx(address, network) {
     try {
-      const tx = await this.api.getEtherscanTransactions({ selectedAddress: address }, this.headers(address).headers)
+      const tx = await this.api.getEtherscanTransactions({ selectedAddress: address, selectedNetwork: network }, this.headers(address).headers)
       if (tx?.data) {
         this.emit('addEtherscanTransactions', tx.data)
       }
@@ -640,7 +649,10 @@ class PreferencesController extends EventEmitter {
     this.store.updateState({ selectedAddress: address })
     if (!Object.keys(this.store.getState()).includes(address)) return
     this.recalculatePastTx(address)
-    this.fetchEtherscanTx(address)
+    const selectedNetwork = this.network.getNetworkNameFromNetworkCode()
+    if (ETHERSCAN_NETWORK_MAP[selectedNetwork]) {
+      this.fetchEtherscanTx(address, ETHERSCAN_NETWORK_MAP[selectedNetwork])
+    }
     // this.sync()
   }
 
