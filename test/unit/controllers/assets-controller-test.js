@@ -32,17 +32,20 @@ describe('AssetsController', () => {
 
   beforeEach(async () => {
     network = new NetworkController()
-    prefsController = new PreferencesController()
-    sandbox.stub(prefsController, 'sync')
-    sandbox.stub(prefsController, 'createUser')
-    sandbox.stub(prefsController, 'storeUserLogin')
-    await prefsController.init({ address: testAccount.address, rehydrate: true, jwtToken: 'hello', dispatch: noop, commit: noop })
-    prefsController.setSelectedAddress(testAccount.address)
     const networkControllerProviderConfig = {
       getAccounts: noop,
     }
     network.initializeProvider(networkControllerProviderConfig)
     network.setProviderType('mainnet')
+    prefsController = new PreferencesController({
+      network,
+    })
+    sandbox.stub(prefsController, 'sync')
+    sandbox.stub(prefsController, 'createUser')
+    sandbox.stub(prefsController, 'storeUserLogin')
+    await prefsController.init({ address: testAccount.address, rehydrate: true, jwtToken: 'hello', dispatch: noop, commit: noop })
+    prefsController.setSelectedAddress(testAccount.address)
+
     assetsContract = new AssetsContractController({
       provider: network._providerProxy,
     })
