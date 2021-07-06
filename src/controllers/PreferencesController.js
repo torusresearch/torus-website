@@ -348,7 +348,8 @@ class PreferencesController extends EventEmitter {
     try {
       const tx = await this.api.getEtherscanTransactions({ selectedAddress: address, selectedNetwork: network }, this.headers(address).headers)
       if (tx?.data) {
-        this.emit('addEtherscanTransactions', tx.data)
+        const selectedNetwork = this.network.getNetworkNameFromNetworkCode()
+        this.emit('addEtherscanTransactions', tx.data, selectedNetwork)
       }
     } catch (error) {
       log.error('unable to fetch etherscan tx', error)
@@ -393,6 +394,16 @@ class PreferencesController extends EventEmitter {
     const state = this.state(selectedAddress)
     if (!state?.fetchedPastTx) return
     this.calculatePastTx(state.fetchedPastTx, selectedAddress)
+  }
+
+  refetchEtherscanTx(address) {
+    const selectedAddress = address || this.store.getState().selectedAddress
+    if (this.state(selectedAddress)?.jwtToken) {
+      const selectedNetwork = this.network.getNetworkNameFromNetworkCode()
+      if (ETHERSCAN_NETWORK_MAP[selectedNetwork]) {
+        this.fetchEtherscanTx(selectedAddress, ETHERSCAN_NETWORK_MAP[selectedNetwork])
+      }
+    }
   }
 
   /* istanbul ignore next */
