@@ -1,0 +1,31 @@
+.activity-details {
+  .v-list-item {
+    min-height: inherit;
+  }
+
+  .v-list-item__content {
+    padding: 4px 0;
+  }
+
+  .details-label {
+    width: 150px;
+  }
+  .amount-text {
+    div {
+      line-height: 1em;
+    }
+  }
+  .etherscan-lnk {
+    text-decoration: none;
+  }
+
+  &.isMobile {
+    .details-label {
+      padding-right: 4px;
+      width: 90px;
+    }
+    .details-value {
+      max-width: 150px;
+    }
+  }
+}
