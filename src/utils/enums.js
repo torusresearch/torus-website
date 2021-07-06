@@ -52,6 +52,11 @@ export const NFT_SUPPORTED_NETWORKS = {
   [BSC_MAINNET]: BSC_MAINNET_CODE,
   [MAINNET]: MAINNET_CODE,
 }
+export const ETHERSCAN_NETWORK_MAP = {
+  [MATIC]: 'polygon_mainnet',
+  [BSC_MAINNET]: 'bsc_mainnet',
+  [MAINNET]: 'eth_mainnet',
+}
 export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
 export const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
 export const KOVAN_DISPLAY_NAME = 'Kovan Test Network'

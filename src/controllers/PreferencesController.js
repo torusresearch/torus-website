@@ -16,10 +16,8 @@ import {
   BADGES_COLLECTIBLE,
   BADGES_TOPUP,
   BADGES_TRANSACTION,
-  BSC_MAINNET,
   ERROR_TIME,
-  MAINNET,
-  MATIC,
+  ETHERSCAN_NETWORK_MAP,
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
@@ -61,12 +59,6 @@ const DEFAULT_ACCOUNT_STATE = {
   defaultPublicAddress: '',
   accountType: ACCOUNT_TYPE.NORMAL,
   customTokens: [],
-}
-
-const ETHERSCAN_NETWORK_MAP = {
-  [MATIC]: 'polygon_mainnet',
-  [BSC_MAINNET]: 'bsc_mainnet',
-  [MAINNET]: 'eth_mainnet',
 }
 
 class PreferencesController extends EventEmitter {
