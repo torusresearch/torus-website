@@ -93,7 +93,7 @@ import {
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
-  ETHERSCAN_NETWORK_MAP,
+  ETHERSCAN_SUPPORTED_NETWORKS,
   MAINNET,
   TOKEN_METHOD_APPROVE,
 } from '../../utils/enums'
@@ -111,7 +111,7 @@ export default {
   computed: {
     ...mapState({
       pastTx: 'pastTransactions',
-      etherscanTx: (state) => (ETHERSCAN_NETWORK_MAP[state.networkType.host] ? state.etherscanTx : []),
+      etherscanTx: (state) => (ETHERSCAN_SUPPORTED_NETWORKS.has(state.networkType.host) ? state.etherscanTx : []),
       paymentTx: (state) => (state.networkType.host === MAINNET ? state.paymentTx : []),
       networkType: 'networkType',
     }),

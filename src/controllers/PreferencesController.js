@@ -17,7 +17,7 @@ import {
   BADGES_TOPUP,
   BADGES_TRANSACTION,
   ERROR_TIME,
-  ETHERSCAN_NETWORK_MAP,
+  ETHERSCAN_SUPPORTED_NETWORKS,
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
@@ -400,8 +400,8 @@ class PreferencesController extends EventEmitter {
     const selectedAddress = address || this.store.getState().selectedAddress
     if (this.state(selectedAddress)?.jwtToken) {
       const selectedNetwork = this.network.getNetworkNameFromNetworkCode()
-      if (ETHERSCAN_NETWORK_MAP[selectedNetwork]) {
-        this.fetchEtherscanTx(selectedAddress, ETHERSCAN_NETWORK_MAP[selectedNetwork])
+      if (ETHERSCAN_SUPPORTED_NETWORKS.has(selectedNetwork)) {
+        this.fetchEtherscanTx(selectedAddress, selectedNetwork)
       }
     }
   }
@@ -653,8 +653,8 @@ class PreferencesController extends EventEmitter {
     if (!Object.keys(this.store.getState()).includes(address)) return
     this.recalculatePastTx(address)
     const selectedNetwork = this.network.getNetworkNameFromNetworkCode()
-    if (ETHERSCAN_NETWORK_MAP[selectedNetwork]) {
-      this.fetchEtherscanTx(address, ETHERSCAN_NETWORK_MAP[selectedNetwork])
+    if (ETHERSCAN_SUPPORTED_NETWORKS.has(selectedNetwork)) {
+      this.fetchEtherscanTx(address, selectedNetwork)
     }
     // this.sync()
   }

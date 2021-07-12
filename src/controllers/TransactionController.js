@@ -21,6 +21,7 @@ import {
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
+  CONTRACT_TYPE_ETH,
   DEPLOY_CONTRACT_ACTION_KEY,
   GOERLI_CODE,
   KOVAN_CODE,
@@ -593,7 +594,7 @@ class TransactionController extends EventEmitter {
         tx.transaction_category = transactionCategory
 
         tx.type_image_link = contractParams.logo || tx.type_image_link
-        tx.type_name = tx.name || tx.tokenName
+        tx.type_name = tx.name || tx.tokenName || SUPPORTED_NETWORK_TYPES[network]?.ticker
 
         if (contractParams.erc1155) {
           tx.type = CONTRACT_TYPE_ERC1155
@@ -615,10 +616,10 @@ class TransactionController extends EventEmitter {
       const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
       const etherscanTransaction = {
         etherscanLink: getEtherScanHashLink(x.hash, network),
-        type: x.type || SUPPORTED_NETWORK_TYPES[network].ticker,
+        type: x.type || SUPPORTED_NETWORK_TYPES[network]?.ticker || CONTRACT_TYPE_ETH,
         type_image_link: x.type_image_link || 'n/a',
         type_name: x.type_name || 'n/a',
-        symbol: x.tokenSymbol || SUPPORTED_NETWORK_TYPES[network].ticker,
+        symbol: x.tokenSymbol || SUPPORTED_NETWORK_TYPES[network]?.ticker || 'ETH',
         token_id: x.tokenID || '',
         total_amount: totalAmount,
         created_at: x.timeStamp * 1000,
