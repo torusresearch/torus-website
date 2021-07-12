@@ -138,7 +138,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { mapState } from 'vuex'
 
-import { XANPOOL } from '../../../utils/enums'
+import { RAMPNETWORK, XANPOOL } from '../../../utils/enums'
 import { broadcastChannelOptions, formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
@@ -210,13 +210,24 @@ export default {
       return 0
     },
     selectedCryptoCurrencies() {
-      return this.selectedProviderObj.validCryptoCurrencies.map((x) => ({
-        key: x,
-        displayValue: x.split('_')[0],
-      }))
+      return this.selectedProviderObj.validCryptoCurrencies.map((x) => {
+        const splits = x.split('_')
+        let displayValue = splits[0]
+        if (this.selectedProvider === RAMPNETWORK && splits.length > 1) {
+          displayValue = splits[1]
+        }
+        return {
+          key: x,
+          displayValue,
+        }
+      })
     },
     selectedCryptoCurrencyDisplay() {
-      return this.selectedCryptoCurrency.split('_')[0]
+      const splits = this.selectedCryptoCurrency.split('_')
+      if (this.selectedProvider === RAMPNETWORK && splits.length > 1) {
+        return splits[1]
+      }
+      return splits[0]
     },
   },
   watch: {
