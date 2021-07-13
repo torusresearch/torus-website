@@ -172,7 +172,10 @@ export default {
     calculatedFinalTx() {
       let finalTx = [...this.paymentTx, ...this.pastTx, ...this.etherscanTx]
       finalTx = finalTx.reduce((accumulator, x) => {
-        const cancelTxs = finalTx.filter((tx) => x.id !== tx.id && tx.is_cancel && tx.nonce === x.nonce).sort((a, b) => b.date - a.date)
+        const failingList = new Set(['rejected', 'denied', 'unapproved', 'failed'])
+        const cancelTxs = finalTx
+          .filter((tx) => x.id !== tx.id && tx.is_cancel && tx.nonce === x.nonce && !failingList.has(tx.status))
+          .sort((a, b) => b.date - a.date)
         if (cancelTxs.length > 0) {
           x.hasCancel = true
           x.status = cancelTxs[0].status === 'confirmed' ? 'cancelled' : 'cancelling'

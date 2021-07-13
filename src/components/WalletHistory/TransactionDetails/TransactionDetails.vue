@@ -48,6 +48,7 @@
       @close="cancelTransactionModal = false"
       @cancelTransaction="cancelTransaction"
     />
+    <CancellationFailedModal :cancel-dialog="failedCancelModal" :transaction="transaction" @close="failedCancelModal = false" />
   </v-card>
 </template>
 
@@ -65,6 +66,7 @@ import {
   CONTRACT_TYPE_ERC1155,
 } from '../../../utils/enums'
 import { significantDigits } from '../../../utils/utils'
+import CancellationFailedModal from '../CancellationFailedModal'
 import CancellationModal from '../CancellationModal'
 import TransactionDetailsMore from '../TransactionDetailsMore'
 import TransactionImage from '../TransactionImage'
@@ -74,6 +76,7 @@ const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
 export default {
   components: {
     CancellationModal,
+    CancellationFailedModal,
     TransactionDetailsMore,
     TransactionImage,
   },
@@ -97,6 +100,7 @@ export default {
     return {
       showDetails: false,
       cancelTransactionModal: false,
+      failedCancelModal: false,
       ACTIVITY_ACTION_SEND,
       ACTIVITY_STATUS_SUCCESSFUL,
       ACTIVITY_STATUS_UNSUCCESSFUL,
@@ -123,6 +127,18 @@ export default {
       const txFee = gasCost.times(this.currencyMultiplier)
 
       return `${significantDigits(txFee, false, 2)} ${this.selectedCurrency}`
+    },
+  },
+  watch: {
+    transaction: {
+      handler(newVal, oldVal) {
+        // alert when cancel transaction fails
+        const failingList = new Set(['cancelling', 'cancelled'])
+        if (oldVal.status === 'cancelling' && !failingList.has(newVal.status)) {
+          this.failedCancelModal = true
+        }
+      },
+      deep: true,
     },
   },
   methods: {

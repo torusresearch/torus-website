@@ -59,7 +59,7 @@
           <div v-if="transaction.hasCancel" class="caption">
             <div class="text_1--text d-flex mb-2">
               <div class="details-label d-flex mr-6">
-                <span>{{ t('walletActivity.cancelButtonTooltip') }}</span>
+                <span>{{ t('walletActivity.cancelDate') }}</span>
                 <span class="ml-auto">:</span>
               </div>
               <div class="details-value">{{ transaction.cancelDateInitiated }}</div>
@@ -73,25 +73,32 @@
             </div> -->
           </div>
         </v-flex>
-        <v-flex v-if="transaction.etherscanLink || showCancel" xs12 sm6 class="text-right mt-4 mt-sm-0">
+        <v-flex v-if="transaction.etherscanLink || transaction.statusText === ACTIVITY_STATUS_PENDING" xs12 sm6 class="text-right mt-4 mt-sm-0">
           <v-layout :class="{ 'd-inline-flex': !$vuetify.breakpoint.xsOnly }">
             <v-flex>
               <v-tooltip top>
                 <template #activator="{ on }">
-                  <v-btn
-                    v-if="showCancel"
-                    class="text_2--text"
-                    :class="{ 'mr-2': !$vuetify.breakpoint.xsOnly }"
-                    :block="$vuetify.breakpoint.xsOnly"
-                    text
-                    v-on="on"
-                    @click.stop="showCancelTransaction"
-                  >
-                    {{ t('walletActivity.cancelButton') }}
-                  </v-btn>
+                  <span v-on="on">
+                    <v-btn
+                      v-if="transaction.statusText === ACTIVITY_STATUS_PENDING"
+                      class="text_2--text"
+                      :class="{ 'mr-2': !$vuetify.breakpoint.xsOnly }"
+                      :block="$vuetify.breakpoint.xsOnly"
+                      text
+                      :disabled="timeDiff < allowCancelTime"
+                      @click.stop="showCancelTransaction"
+                    >
+                      {{ t('walletActivity.cancelButton') }}
+                    </v-btn>
+                  </span>
                 </template>
                 <span>
-                  <div class="caption text_3--text text-justify">{{ t('walletActivity.cancelButtonTooltip') }} {{ cancellationFeeEstimate }}</div>
+                  <div v-if="timeDiff >= allowCancelTime" class="caption text_3--text text-justify">
+                    {{ t('walletActivity.cancelButtonTooltip') }} {{ cancellationFeeEstimate }}
+                  </div>
+                  <div v-else class="caption text_3--text text-justify">
+                    {{ t('walletActivity.cancelButtonTooltipDisabled') }} {{ allowCancelTime - timeDiff }}min
+                  </div>
                 </span>
               </v-tooltip>
             </v-flex>
@@ -147,16 +154,17 @@ export default {
       ACTIVITY_STATUS_PENDING,
       CONTRACT_TYPE_ERC721,
       CONTRACT_TYPE_ERC1155,
+      allowCancelTime: 8,
     }
   },
   computed: {
     ...mapState(['networkType']),
-    showCancel() {
+    timeDiff() {
       const transactionDate = new Date(this.transaction.date)
       const currentDate = new Date()
       const diff = Math.abs(transactionDate - currentDate) / 1000 / 60
 
-      return diff > 8 && this.transaction.statusText === ACTIVITY_STATUS_PENDING
+      return Math.floor(diff)
     },
   },
   methods: {
