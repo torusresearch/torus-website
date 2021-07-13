@@ -14,6 +14,7 @@ import Torus from '@toruslabs/torus.js'
 import { BroadcastChannel } from 'broadcast-channel'
 import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
+import { mapState } from 'vuex'
 
 import BoxLoader from '../../components/helpers/BoxLoader'
 import { getOpenLoginInstance } from '../../openlogin'
@@ -23,10 +24,26 @@ import { broadcastChannelOptions } from '../../utils/utils'
 export default {
   name: 'End',
   components: { BoxLoader },
+  computed: {
+    ...mapState({
+      whiteLabel: 'whiteLabel',
+    }),
+  },
   async mounted() {
     try {
+      const { hash } = this.$route
+      const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
+      const result = hashUrl.searchParams.get('result')
+      let { whiteLabel } = this
+
+      if (result) {
+        const resultParams = JSON.parse(safeatob(result))
+        const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
+        whiteLabel = appStateParams.whiteLabel ? appStateParams.whiteLabel : this.whiteLabel
+      }
+
       const torus = new Torus()
-      const openLogin = await getOpenLoginInstance()
+      const openLogin = await getOpenLoginInstance(whiteLabel)
       const { state } = openLogin
       log.info(state, 'state')
       const allInfo = state.store.getStore()
