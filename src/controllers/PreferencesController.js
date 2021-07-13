@@ -348,8 +348,7 @@ class PreferencesController extends EventEmitter {
     try {
       const tx = await this.api.getEtherscanTransactions({ selectedAddress: address, selectedNetwork: network }, this.headers(address).headers)
       if (tx?.data) {
-        const selectedNetwork = this.network.getNetworkNameFromNetworkCode()
-        this.emit('addEtherscanTransactions', tx.data, selectedNetwork)
+        this.emit('addEtherscanTransactions', tx.data, network)
       }
     } catch (error) {
       log.error('unable to fetch etherscan tx', error)
