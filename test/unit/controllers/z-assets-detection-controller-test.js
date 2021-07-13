@@ -40,7 +40,9 @@ describe('AssetsDetectionController', () => {
     network.initializeProvider(networkControllerProviderConfig)
     network.setProviderType(MAINNET)
 
-    prefsController = new PreferencesController()
+    prefsController = new PreferencesController({
+      network,
+    })
     sandbox.stub(prefsController, 'sync')
     sandbox.stub(prefsController, 'createUser')
     sandbox.stub(prefsController, 'storeUserLogin')
@@ -125,18 +127,18 @@ describe('AssetsDetectionController', () => {
 
       const assetCtrlr = new AssetsDetectionController({ network: localNetwork, selectedAddress: TEST_ADDRESS })
       const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
-      clock.tick(60000)
+      clock.tick(60_000)
       sandbox.assert.calledOnce(mockCollectibles)
-      clock.tick(60000)
+      clock.tick(60_000)
       sandbox.assert.calledTwice(mockCollectibles)
       localNetwork.setProviderType(BSC_MAINNET)
-      clock.tick(60000)
+      clock.tick(60_000)
       sandbox.assert.calledThrice(mockCollectibles)
       localNetwork.setProviderType(MATIC)
-      clock.tick(60000)
+      clock.tick(60_000)
       sandbox.assert.callCount(mockCollectibles, 4)
       localNetwork.setProviderType(MUMBAI)
-      clock.tick(60000)
+      clock.tick(60_000)
       sandbox.assert.callCount(mockCollectibles, 5)
       mockCollectibles.restore()
       resolve()
@@ -162,7 +164,7 @@ describe('AssetsDetectionController', () => {
       const assetCtrlr = new AssetsDetectionController({ network: localNetwork, selectedAddress: TEST_ADDRESS })
       assetCtrlr.selectedAddress = TEST_ADDRESS
       const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
-      clock.tick(60000)
+      clock.tick(60_000)
       sandbox.assert.notCalled(mockCollectibles)
       mockCollectibles.restore()
       resolve()
