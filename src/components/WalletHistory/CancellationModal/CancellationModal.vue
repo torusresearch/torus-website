@@ -40,21 +40,21 @@
               :ripple="false"
             />
             <label for="is-confirmed" class="text-caption is-confirmed-label">
-              I confirm that this request would incur a transaction fee of 1.4 USD.
+              {{ t('walletActivity.cancelModalDesc') }} {{ cancellationFeeEstimate }}.
             </label>
           </div>
-          <div class="ma-2 text-caption">The transaction fee will not be charged if this request is unsuccesful.</div>
+          <div class="ma-2 text-caption">{{ t('walletActivity.cancelModalNote') }}</div>
         </div>
       </v-card-text>
       <v-card-actions>
         <v-layout class="pb-4">
           <v-flex xs6>
-            <v-btn block text color="text_2" @click="close">Close</v-btn>
+            <v-btn block text color="text_2" @click="close">{{ t('walletActivity.cancelModalClose') }}</v-btn>
           </v-flex>
           <v-divider vertical></v-divider>
           <v-flex xs6>
-            <v-btn type="submit" color="torusBrand1" depressed block class="py-1 white--text">
-              {{ t('walletTransfer.confirm') }}
+            <v-btn color="torusBrand1" depressed block class="py-1 white--text" :disabled="!isConfirmed" @click="cancelTransaction">
+              {{ t('walletActivity.cancelModalConfirm') }}
             </v-btn>
           </v-flex>
         </v-layout>
@@ -64,8 +64,6 @@
 </template>
 
 <script>
-import log from 'loglevel'
-
 import { ACTIVITY_ACTION_SEND, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155 } from '../../../utils/enums'
 import TransactionImage from '../TransactionImage'
 
@@ -84,6 +82,10 @@ export default {
         return {}
       },
     },
+    cancellationFeeEstimate: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -96,7 +98,7 @@ export default {
   },
   methods: {
     cancelTransaction() {
-      log.info('cancelTransaction')
+      this.$emit('cancelTransaction')
     },
     close() {
       this.$emit('close')

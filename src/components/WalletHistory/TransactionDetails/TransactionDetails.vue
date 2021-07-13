@@ -34,23 +34,42 @@
       </v-flex>
     </v-layout>
     <v-divider v-if="$vuetify.breakpoint.xsOnly && showDetails" class="my-4"></v-divider>
-    <TransactionDetailsMore v-if="showDetails" :transaction="transaction" @showCancelTransaction="cancelTransactionModal = true" />
-    <CancellationModal :cancel-dialog="cancelTransactionModal" :transaction="transaction" @close="cancelTransactionModal = false" />
+    <TransactionDetailsMore
+      v-if="showDetails"
+      :transaction="transaction"
+      :cancellation-fee-estimate="cancellationFeeEstimate"
+      :cancellation-fee="cancellationFee"
+      @showCancelTransaction="cancelTransactionModal = true"
+    />
+    <CancellationModal
+      :cancel-dialog="cancelTransactionModal"
+      :transaction="transaction"
+      :cancellation-fee-estimate="cancellationFeeEstimate"
+      @close="cancelTransactionModal = false"
+      @cancelTransaction="cancelTransaction"
+    />
   </v-card>
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
+
 import config from '../../../config'
 import {
   ACTIVITY_ACTION_SEND,
+  ACTIVITY_STATUS_CANCELLED,
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
+  CANCEL_TRANSACTION_MULTIPLIER,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
 } from '../../../utils/enums'
+import { significantDigits } from '../../../utils/utils'
 import CancellationModal from '../CancellationModal'
 import TransactionDetailsMore from '../TransactionDetailsMore'
 import TransactionImage from '../TransactionImage'
+
+const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
 
 export default {
   components: {
@@ -65,6 +84,14 @@ export default {
         return {}
       },
     },
+    currencyMultiplier: {
+      type: BigNumber,
+      default: new BigNumber('0'),
+    },
+    selectedCurrency: {
+      type: String,
+      default: 'USD',
+    },
   },
   data() {
     return {
@@ -78,11 +105,35 @@ export default {
       logosUrl: config.logosUrl,
     }
   },
+  computed: {
+    cancellationFeeEstimate() {
+      const { gas, gasPrice } = this.transaction
+      const cancelMultiplier = new BigNumber(CANCEL_TRANSACTION_MULTIPLIER)
+      const gweiGasPrice = new BigNumber(gasPrice).times(cancelMultiplier).div(weiInGwei)
+      const gasCost = gweiGasPrice.times(new BigNumber(gas)).div(new BigNumber('10').pow(new BigNumber('9')))
+      const txFee = gasCost.times(this.currencyMultiplier)
+
+      return `${significantDigits(txFee, false, 2)} ${this.selectedCurrency}`
+    },
+    cancellationFee() {
+      if (!this.transaction.hasCancel) return ''
+      const { cancelGas: gas, cancelGasPrice: gasPrice } = this.transaction
+      const gweiGasPrice = new BigNumber(gasPrice).div(weiInGwei)
+      const gasCost = gweiGasPrice.times(new BigNumber(gas)).div(new BigNumber('10').pow(new BigNumber('9')))
+      const txFee = gasCost.times(this.currencyMultiplier)
+
+      return `${significantDigits(txFee, false, 2)} ${this.selectedCurrency}`
+    },
+  },
   methods: {
     getChipColor(status) {
       if (status === ACTIVITY_STATUS_SUCCESSFUL) return '#9BE8C7'
-      if (status === ACTIVITY_STATUS_UNSUCCESSFUL) return '#FEA29F'
+      if (status === ACTIVITY_STATUS_UNSUCCESSFUL || status === ACTIVITY_STATUS_CANCELLED) return '#FEA29F'
       return '#E0E0E0'
+    },
+    cancelTransaction() {
+      this.$emit('cancelTransaction', this.transaction)
+      this.cancelTransactionModal = false
     },
   },
 }

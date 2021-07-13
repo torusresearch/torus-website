@@ -9,7 +9,14 @@
       hide-default-footer
     >
       <template #default="props">
-        <TransactionDetails v-for="transaction in props.items" :key="transaction.transaction_hash || transaction.id" :transaction="transaction" />
+        <TransactionDetails
+          v-for="transaction in props.items"
+          :key="transaction.transaction_hash || transaction.id"
+          :transaction="transaction"
+          :currency-multiplier="currencyMultiplier"
+          :selected-currency="selectedCurrency"
+          @cancelTransaction="cancelTransaction"
+        />
       </template>
     </v-data-iterator>
 
@@ -26,6 +33,7 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 
 import { ACTIVITY_ACTION_ALL, ACTIVITY_PERIOD_ALL, ACTIVITY_PERIOD_MONTH_ONE, ACTIVITY_PERIOD_WEEK_ONE } from '../../../utils/enums'
@@ -49,6 +57,14 @@ export default {
     selectedPeriod: {
       type: String,
       default: '',
+    },
+    currencyMultiplier: {
+      type: BigNumber,
+      default: new BigNumber('0'),
+    },
+    selectedCurrency: {
+      type: String,
+      default: 'USD',
     },
   },
   data() {
@@ -127,6 +143,9 @@ export default {
       } else {
         this.expanded = [item]
       }
+    },
+    cancelTransaction(transaction) {
+      this.$emit('cancelTransaction', transaction)
     },
   },
 }

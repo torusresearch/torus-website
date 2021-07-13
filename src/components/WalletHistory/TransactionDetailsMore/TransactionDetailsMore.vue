@@ -56,33 +56,50 @@
       </div>
       <v-layout wrap class="mt-8">
         <v-flex xs12 sm6>
-          <div class="caption">
+          <div v-if="transaction.hasCancel" class="caption">
             <div class="text_1--text d-flex mb-2">
               <div class="details-label d-flex mr-6">
-                <span>Cancellation initiated on</span>
+                <span>{{ t('walletActivity.cancelButtonTooltip') }}</span>
                 <span class="ml-auto">:</span>
               </div>
-              <div class="details-value">14:42:45 - 29 Sep 2020</div>
+              <div class="details-value">{{ transaction.cancelDateInitiated }}</div>
             </div>
-            <div class="text_1--text d-flex mb-2">
+            <!-- <div class="text_1--text d-flex mb-2">
               <div class="details-label d-flex mr-6">
-                <span>Cancellation fee</span>
+                <span>Cancellation fee</span> 
                 <span class="ml-auto">:</span>
               </div>
-              <div class="details-value">1.4 USD</div>
-            </div>
+              <div class="details-value">{{ cancellationFee }}</div>
+            </div> -->
           </div>
         </v-flex>
         <v-flex v-if="transaction.etherscanLink || showCancel" xs12 sm6 class="text-right mt-4 mt-sm-0">
-          <v-layout>
+          <v-layout :class="{ 'd-inline-flex': !$vuetify.breakpoint.xsOnly }">
             <v-flex>
-              <v-btn v-if="showCancel" class="text_2--text" block text @click.stop="showCancelTransaction">Cancel Transaction</v-btn>
+              <v-tooltip top>
+                <template #activator="{ on }">
+                  <v-btn
+                    v-if="showCancel"
+                    class="text_2--text"
+                    :class="{ 'mr-2': !$vuetify.breakpoint.xsOnly }"
+                    :block="$vuetify.breakpoint.xsOnly"
+                    text
+                    v-on="on"
+                    @click.stop="showCancelTransaction"
+                  >
+                    {{ t('walletActivity.cancelButton') }}
+                  </v-btn>
+                </template>
+                <span>
+                  <div class="caption text_3--text text-justify">{{ t('walletActivity.cancelButtonTooltip') }} {{ cancellationFeeEstimate }}</div>
+                </span>
+              </v-tooltip>
             </v-flex>
             <v-flex>
               <v-btn
                 v-if="transaction.etherscanLink"
                 class="torus-btn1"
-                block
+                :block="$vuetify.breakpoint.xsOnly"
                 :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
                 :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
                 :href="transaction.etherscanLink"
@@ -114,6 +131,14 @@ export default {
       default() {
         return {}
       },
+    },
+    cancellationFeeEstimate: {
+      type: String,
+      default: '',
+    },
+    cancellationFee: {
+      type: String,
+      default: '',
     },
   },
   data() {

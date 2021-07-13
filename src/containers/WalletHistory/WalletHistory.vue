@@ -65,16 +65,25 @@
         </v-layout>
       </v-flex>
       <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'mt-6' : 'mt-7'">
-        <TxHistoryTable :selected-action="selectedAction" :selected-period="selectedPeriod" :transactions="calculatedFinalTx" />
+        <TxHistoryTable
+          :currency-multiplier="currencyMultiplier"
+          :selected-action="selectedAction"
+          :selected-period="selectedPeriod"
+          :transactions="calculatedFinalTx"
+          :selected-currency="selectedCurrency"
+          @cancelTransaction="cancelTransaction"
+        />
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
 import { mapState } from 'vuex'
 
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
+import torus from '../../torus'
 import {
   ACTIVITY_ACTION_ALL,
   ACTIVITY_ACTION_RECEIVE,
@@ -84,9 +93,12 @@ import {
   ACTIVITY_PERIOD_MONTH_ONE,
   ACTIVITY_PERIOD_MONTH_SIX,
   ACTIVITY_PERIOD_WEEK_ONE,
+  ACTIVITY_STATUS_CANCELLED,
+  ACTIVITY_STATUS_CANCELLING,
   ACTIVITY_STATUS_PENDING,
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
+  CANCEL_TRANSACTION_MULTIPLIER,
   CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
@@ -114,6 +126,8 @@ export default {
       etherscanTx: (state) => (ETHERSCAN_SUPPORTED_NETWORKS.has(state.networkType.host) ? state.etherscanTx : []),
       paymentTx: (state) => (state.networkType.host === MAINNET ? state.paymentTx : []),
       networkType: 'networkType',
+      selectedCurrency: 'selectedCurrency',
+      currencyData: 'currencyData',
     }),
     actionTypes() {
       return [
@@ -158,23 +172,37 @@ export default {
     calculatedFinalTx() {
       let finalTx = [...this.paymentTx, ...this.pastTx, ...this.etherscanTx]
       finalTx = finalTx.reduce((accumulator, x) => {
+        const cancelTxs = finalTx.filter((tx) => x.id !== tx.id && tx.is_cancel && tx.nonce === x.nonce).sort((a, b) => b.date - a.date)
+        if (cancelTxs.length > 0) {
+          x.hasCancel = true
+          x.status = cancelTxs[0].status === 'confirmed' ? 'cancelled' : 'cancelling'
+          x.cancelDateInitiated = `${this.formatTime(cancelTxs[0].date)} - ${formatDate(cancelTxs[0].date)}`
+          x.etherscanLink = cancelTxs[0].etherscanLink
+          x.cancelGas = cancelTxs[0].gas
+          x.cancelGasPrice = cancelTxs[0].gasPrice
+        }
+
         x.actionIcon = this.getIcon(x)
         x.actionText = this.getActionText(x)
-        x.statusText = this.getStatusText(x.status)
+        x.statusText = this.getStatusText(x)
         x.dateFormatted = formatDate(x.date)
         x.timeFormatted = this.formatTime(x.date)
-        if (x.etherscanLink === '' || accumulator.findIndex((y) => y.etherscanLink === x.etherscanLink) === -1) accumulator.push(x)
+        if (!x.is_cancel && (x.etherscanLink === '' || accumulator.findIndex((y) => y.etherscanLink === x.etherscanLink) === -1)) accumulator.push(x)
         return accumulator
       }, [])
       return finalTx.sort((a, b) => b.date - a.date) || []
+    },
+    currencyMultiplier() {
+      const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
+      return new BigNumber(currencyMultiplierNumber)
     },
   },
   mounted() {
     this.$vuetify.goTo(0)
   },
   methods: {
-    getStatusText(status) {
-      switch (status) {
+    getStatusText(currentTx) {
+      switch (currentTx.status) {
         case 'rejected':
         case 'denied':
         case 'unapproved':
@@ -189,6 +217,10 @@ export default {
         case 'submitted':
         case 'processing':
           return ACTIVITY_STATUS_PENDING
+        case 'cancelled':
+          return ACTIVITY_STATUS_CANCELLED
+        case 'cancelling':
+          return ACTIVITY_STATUS_CANCELLING
         default:
           return ''
       }
@@ -239,6 +271,19 @@ export default {
     },
     formatTime(time) {
       return new Date(time).toTimeString().slice(0, 8)
+    },
+    async cancelTransaction(transaction) {
+      const { from, gas, gasPrice, nonce } = transaction
+      const cancelGasPrice = gasPrice * CANCEL_TRANSACTION_MULTIPLIER
+      const sendingWei = 0
+      torus.web3.eth.sendTransaction({
+        from,
+        to: from,
+        value: `0x${sendingWei.toString(16)}`,
+        gas,
+        gasPrice: `0x${cancelGasPrice.toString(16)}`,
+        customNonceValue: nonce,
+      })
     },
   },
 }
