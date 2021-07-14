@@ -6,10 +6,16 @@
 import deepmerge from 'deepmerge'
 import log from 'loglevel'
 
-import { BSC_MAINNET, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, MATIC, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
+import {
+  BSC_MAINNET,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC1155,
+  MAINNET,
+  MATIC,
+  NFT_SUPPORTED_NETWORKS,
+  SUPPORTED_NFT_STANDARDS,
+} from '../utils/enums'
 import { isMain } from '../utils/utils'
-
-const SUPPORTED_NFT_STANDARDS = new Set([CONTRACT_TYPE_ERC1155, CONTRACT_TYPE_ERC721])
 
 const DEFAULT_INTERVAL = 60_000
 export default class AssetsDetectionController {
@@ -73,7 +79,7 @@ export default class AssetsDetectionController {
         return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
       }
       if (this.currentNetwork === MATIC) {
-        return `https://api.opensea.io/api/v2/assets/matic?owner=${address}`
+        return `https://api.opensea.io/api/v2/assets/matic?owner=${address}&limit=300`
       }
       return ''
     }
