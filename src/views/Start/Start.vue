@@ -18,7 +18,7 @@ import { getOpenLoginInstance } from '../../openlogin'
 export default {
   name: 'Start',
   components: { BoxLoader },
-  async mounted() {
+  async created() {
     try {
       const { loginProvider, state, skipTKey, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))

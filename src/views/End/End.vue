@@ -23,7 +23,7 @@ import { broadcastChannelOptions } from '../../utils/utils'
 export default {
   name: 'End',
   components: { BoxLoader },
-  async mounted() {
+  async created() {
     try {
       const { hash } = this.$route
       const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
