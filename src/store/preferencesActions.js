@@ -190,6 +190,7 @@ export default {
           network: state.networkType.host,
           transaction_hash: hash,
           transaction_category: transactionCategory,
+          is_cancel: txParams.is_cancel,
         }
         prefsController.patchNewTx(txObject, state.selectedAddress)
       }

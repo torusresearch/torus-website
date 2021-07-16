@@ -1,0 +1,31 @@
+.transaction-image {
+  width: 100%;
+}
+
+.icon-holder {
+  &.circle {
+    min-height: 40px;
+    min-width: 40px;
+    width: 40px;
+    background: #f6f5f7;
+    border-radius: 50%;
+    margin-right: 8px;
+    margin-left: 4px;
+    display: flex;
+    .v-icon {
+      margin: auto;
+    }
+  }
+  .v-icon {
+    margin-left: 8px;
+    margin-top: 2px;
+  }
+  img {
+    margin-left: 8px;
+    max-height: 50px;
+  }
+}
+
+.info {
+  font-size: 10px;
+}

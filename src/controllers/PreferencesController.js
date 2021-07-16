@@ -362,6 +362,16 @@ class PreferencesController extends EventEmitter {
     if (tx.status === 'submitted' || tx.status === 'confirmed') {
       if (duplicateIndex === -1 && tx.status === 'submitted') {
         // No duplicate found
+
+        // Check if has a cancel transaction
+        const duplicateNonce = storePastTx.filter(
+          (x) => x.from.toLowerCase() === address.toLowerCase() && x.nonce === tx.nonce && x.networkType === tx.network
+        )
+        if (duplicateNonce.length > 0) {
+          tx.is_cancel = true
+          formattedTx.is_cancel = true
+        }
+
         this.updateStore({ pastTransactions: [...storePastTx, formattedTx] }, address)
         this.postPastTx(tx, address)
         try {
@@ -370,6 +380,8 @@ class PreferencesController extends EventEmitter {
           log.error(error)
         }
       } else {
+        // avoid overriding is_cancel
+        formattedTx.is_cancel = storePastTx[duplicateIndex].is_cancel
         storePastTx[duplicateIndex] = formattedTx
         this.updateStore({ pastTransactions: [...storePastTx] }, address)
       }

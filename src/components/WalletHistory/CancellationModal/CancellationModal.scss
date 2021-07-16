@@ -1,0 +1,56 @@
+.cancel-transaction-modal {
+  .close-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .card-header {
+    background: #ffffff;
+    border-radius: 6px;
+    border: 1px solid #f5f5f5;
+    box-sizing: border-box;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+
+    .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      color: var(--v-text_1-base);
+    }
+  }
+  .transaction-details {
+    width: 100%;
+  }
+  .amount-container {
+    width: 120px;
+    text-align: right;
+  }
+
+  .info {
+    font-size: 10px;
+  }
+
+  .is-confirmed {
+    .v-icon__component {
+      color: var(--v-text_3-base);
+      caret-color: var(--v-text_3-base);
+    }
+  }
+
+  .text-caption {
+    line-height: 1em;
+  }
+
+  .is-confirmed-label {
+    cursor: pointer;
+    margin-top: 2px;
+  }
+
+  &.theme--dark {
+    .card-header {
+      border: 0;
+      background: #2f3136;
+      box-shadow: 0px 14px 28px rgba(0, 0, 0, 0.16);
+    }
+  }
+}
