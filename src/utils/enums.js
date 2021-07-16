@@ -128,6 +128,7 @@ export const CONTRACT_TYPE_ETH = 'eth'
 export const CONTRACT_TYPE_ERC20 = 'erc20'
 export const CONTRACT_TYPE_ERC721 = 'erc721'
 export const CONTRACT_TYPE_ERC1155 = 'erc1155'
+export const SUPPORTED_NFT_STANDARDS = new Set([CONTRACT_TYPE_ERC1155, CONTRACT_TYPE_ERC721])
 
 export const getInfuraBlockExplorerUrl = (network) => {
   if (network === MAINNET) return 'https://etherscan.io'
