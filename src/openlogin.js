@@ -12,7 +12,7 @@ export async function getOpenLoginInstance(whiteLabel) {
     return openLoginInstance
   }
   if (whiteLabel.theme) {
-    if (whiteLabel.theme.isDark) whiteLabelOpenLogin.dark = 'true'
+    if (whiteLabel.theme.isDark) whiteLabelOpenLogin.dark = true
     if (whiteLabel.theme.colors) {
       whiteLabelOpenLogin.theme = {
         primary: whiteLabel.theme.colors.torusBrand1,
