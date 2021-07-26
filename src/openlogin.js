@@ -1,5 +1,5 @@
+import OpenLogin from '@toruslabs/openlogin'
 import log from 'loglevel'
-import OpenLogin from 'openlogin'
 
 import config from './config'
 
