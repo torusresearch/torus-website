@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@chaitanyapotti/random-id": "^1.0.3",
-    "@metamask/contract-metadata": "^1.27.0",
+    "@metamask/contract-metadata": "^1.28.0",
     "@metamask/obs-store": "^6.0.2",
     "@metamask/safe-event-emitter": "^2.0.0",
     "@sentry/browser": "^6.10.0",
