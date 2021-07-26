@@ -1,6 +1,7 @@
 <template>
   <v-btn
     class="gmt-login text_2--text"
+    :aria-label="`login with ${verifier.name.toLowerCase()}`"
     :class="[{ active, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.name.toLowerCase()}`, { 'is-long': isLong }]"
     :type="buttonType"
     :block="block"
