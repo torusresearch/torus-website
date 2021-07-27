@@ -19,6 +19,9 @@ export async function getOpenLoginInstance(whiteLabel) {
       }
     }
   }
+  if (whiteLabel.logoDark) whiteLabelOpenLogin.logoDark = whiteLabel.logoDark
+  if (whiteLabel.logoLight) whiteLabelOpenLogin.logoLight = whiteLabel.logoLight
+  if (whiteLabel.defaultLanguage) whiteLabelOpenLogin.defaultLanguage = whiteLabel.defaultLanguage
   const openLogin = new OpenLogin({
     clientId: config.openLoginClientId,
     _iframeUrl: config.openLoginUrl,
