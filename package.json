@@ -37,7 +37,7 @@
     "@toruslabs/fetch-node-details": "^2.7.0",
     "@toruslabs/http-helpers": "^1.4.0",
     "@toruslabs/loglevel-sentry": "^2.7.1",
-    "@toruslabs/openlogin": "^0.9.2",
+    "@toruslabs/openlogin": "^0.9.3",
     "@toruslabs/openlogin-utils": "^0.9.2",
     "@toruslabs/torus.js": "^2.4.1",
     "@unstoppabledomains/resolution": "^4.0.2",
