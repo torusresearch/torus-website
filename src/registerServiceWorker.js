@@ -139,6 +139,12 @@ export function unregister() {
   }
 }
 
+if (navigator.userAgent.includes('Firefox')) {
+  // remove service worker for firefox
+  unregister()
+  return
+}
+
 if (
   'serviceWorker' in navigator &&
   (process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
