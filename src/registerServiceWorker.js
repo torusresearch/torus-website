@@ -141,7 +141,10 @@ export function unregister() {
 
 if (navigator.userAgent.includes('Firefox')) {
   // remove service worker for firefox
-  unregister()
+  navigator.serviceWorker
+    .getRegistrations()
+    .then((x) => x.map((y) => y.unregister()))
+    .catch((error) => log.error(error))
   return
 }
 
