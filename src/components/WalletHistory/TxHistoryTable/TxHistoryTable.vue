@@ -15,6 +15,7 @@
           :transaction="transaction"
           :currency-multiplier="currencyMultiplier"
           :selected-currency="selectedCurrency"
+          :cancel-gas-price="cancelGasPrice"
           @cancelTransaction="cancelTransaction"
         />
       </template>
@@ -65,6 +66,10 @@ export default {
     selectedCurrency: {
       type: String,
       default: 'USD',
+    },
+    cancelGasPrice: {
+      type: BigNumber,
+      default: new BigNumber('5'),
     },
   },
   data() {

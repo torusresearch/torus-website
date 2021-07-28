@@ -389,6 +389,10 @@ export function formatDate(inputDate) {
   return `${day} ${month} ${year}`
 }
 
+export function formatTime(time) {
+  return new Date(time).toTimeString().slice(0, 8)
+}
+
 export const paymentProviders = {
   [SIMPLEX]: {
     line1: 'Credit/ Debit Card',

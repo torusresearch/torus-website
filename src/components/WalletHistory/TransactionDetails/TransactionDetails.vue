@@ -61,7 +61,6 @@ import {
   ACTIVITY_STATUS_CANCELLED,
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
-  CANCEL_TRANSACTION_MULTIPLIER,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
 } from '../../../utils/enums'
@@ -95,6 +94,10 @@ export default {
       type: String,
       default: 'USD',
     },
+    cancelGasPrice: {
+      type: BigNumber,
+      default: new BigNumber('5'),
+    },
   },
   data() {
     return {
@@ -111,9 +114,8 @@ export default {
   },
   computed: {
     cancellationFeeEstimate() {
-      const { gas, gasPrice } = this.transaction
-      const cancelMultiplier = new BigNumber(CANCEL_TRANSACTION_MULTIPLIER)
-      const gweiGasPrice = new BigNumber(gasPrice).times(cancelMultiplier).div(weiInGwei)
+      const { gas } = this.transaction
+      const gweiGasPrice = this.cancelGasPrice
       const gasCost = gweiGasPrice.times(new BigNumber(gas)).div(new BigNumber('10').pow(new BigNumber('9')))
       const txFee = gasCost.times(this.currencyMultiplier)
 

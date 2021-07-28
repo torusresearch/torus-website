@@ -71,6 +71,7 @@
           :selected-period="selectedPeriod"
           :transactions="calculatedFinalTx"
           :selected-currency="selectedCurrency"
+          :cancel-gas-price="cancelGasPrice"
           @cancelTransaction="cancelTransaction"
         />
       </v-flex>
@@ -80,6 +81,7 @@
 
 <script>
 import BigNumber from 'bignumber.js'
+import log from 'loglevel'
 import { mapState } from 'vuex'
 
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
@@ -98,7 +100,6 @@ import {
   ACTIVITY_STATUS_PENDING,
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
-  CANCEL_TRANSACTION_MULTIPLIER,
   CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
@@ -109,7 +110,7 @@ import {
   MAINNET,
   TOKEN_METHOD_APPROVE,
 } from '../../utils/enums'
-import { formatDate } from '../../utils/utils'
+import { formatDate, formatTime } from '../../utils/utils'
 
 export default {
   name: 'WalletHistory',
@@ -118,6 +119,7 @@ export default {
     return {
       selectedAction: ACTIVITY_ACTION_ALL,
       selectedPeriod: ACTIVITY_PERIOD_ALL,
+      cancelGasPrice: new BigNumber(5),
     }
   },
   computed: {
@@ -172,24 +174,11 @@ export default {
     calculatedFinalTx() {
       let finalTx = [...this.paymentTx, ...this.pastTx, ...this.etherscanTx]
       finalTx = finalTx.reduce((accumulator, x) => {
-        const failingList = new Set(['rejected', 'denied', 'unapproved', 'failed'])
-        const cancelTxs = finalTx
-          .filter((tx) => x.id !== tx.id && tx.is_cancel && tx.nonce === x.nonce && !failingList.has(tx.status))
-          .sort((a, b) => b.date - a.date)
-        if (cancelTxs.length > 0) {
-          x.hasCancel = true
-          x.status = cancelTxs[0].status === 'confirmed' ? 'cancelled' : 'cancelling'
-          x.cancelDateInitiated = `${this.formatTime(cancelTxs[0].date)} - ${formatDate(cancelTxs[0].date)}`
-          x.etherscanLink = cancelTxs[0].etherscanLink
-          x.cancelGas = cancelTxs[0].gas
-          x.cancelGasPrice = cancelTxs[0].gasPrice
-        }
-
         x.actionIcon = this.getIcon(x)
         x.actionText = this.getActionText(x)
         x.statusText = this.getStatusText(x)
         x.dateFormatted = formatDate(x.date)
-        x.timeFormatted = this.formatTime(x.date)
+        x.timeFormatted = formatTime(x.date)
         if (!x.is_cancel && (x.etherscanLink === '' || accumulator.findIndex((y) => y.etherscanLink === x.etherscanLink) === -1)) accumulator.push(x)
         return accumulator
       }, [])
@@ -200,8 +189,36 @@ export default {
       return new BigNumber(currencyMultiplierNumber)
     },
   },
-  mounted() {
+  async mounted() {
     this.$vuetify.goTo(0)
+    let gasPrice = this.cancelGasPrice
+    try {
+      if (this.networkType.host === MAINNET) {
+        const resp = await fetch('https://ethgasstation.info/json/ethgasAPI.json', {
+          headers: {},
+          referrer: 'http://ethgasstation.info/json/',
+          referrerPolicy: 'no-referrer-when-downgrade',
+          body: null,
+          method: 'GET',
+          mode: 'cors',
+        })
+        const { fastest: fastestTimes10 } = await resp.json()
+        gasPrice = new BigNumber(fastestTimes10).div(new BigNumber('10'))
+      } else {
+        const recommended = await torus.web3.eth.getGasPrice()
+        gasPrice = new BigNumber(recommended).div(new BigNumber(10).pow(new BigNumber(9))).plus(new BigNumber('5'))
+      }
+      const percent10Extra = gasPrice.times(new BigNumber('1.1'))
+      // Add 5 to fastest recommended by transfer page
+      const plus5 = gasPrice.plus(new BigNumber('5'))
+      // 1 gwei -> 1.1 & 10 -> 1.1
+      // 50 gwei -> 55 & 60 -> 55
+      // 150 gwei -> 165 & 160 -> 160
+      // Increase by a Max of (5 gwei , 10%)
+      this.cancelGasPrice = percent10Extra.isGreaterThan(plus5) ? percent10Extra : plus5
+    } catch (error) {
+      log.error(error, 'unable to fetch gas price')
+    }
   },
   methods: {
     getStatusText(currentTx) {
@@ -272,19 +289,19 @@ export default {
       }
       return ''
     },
-    formatTime(time) {
-      return new Date(time).toTimeString().slice(0, 8)
-    },
     async cancelTransaction(transaction) {
-      const { from, gas, gasPrice, nonce } = transaction
-      const cancelGasPrice = gasPrice * CANCEL_TRANSACTION_MULTIPLIER
+      const { from, gas, nonce } = transaction
+      const { cancelGasPrice } = this
       const sendingWei = 0
-      torus.web3.eth.sendTransaction({
+      return torus.web3.eth.sendTransaction({
         from,
         to: from,
         value: `0x${sendingWei.toString(16)}`,
         gas,
-        gasPrice: `0x${cancelGasPrice.toString(16)}`,
+        gasPrice: `0x${cancelGasPrice
+          .times(new BigNumber(10).pow(new BigNumber(9)))
+          .dp(0, BigNumber.ROUND_DOWN)
+          .toString(16)}`,
         customNonceValue: nonce,
       })
     },

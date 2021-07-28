@@ -85,7 +85,6 @@
                       :class="{ 'mr-2': !$vuetify.breakpoint.xsOnly }"
                       :block="$vuetify.breakpoint.xsOnly"
                       text
-                      :disabled="timeDiff < allowCancelTime"
                       @click.stop="showCancelTransaction"
                     >
                       {{ t('walletActivity.cancelButton') }}
@@ -93,12 +92,7 @@
                   </span>
                 </template>
                 <span>
-                  <div v-if="timeDiff >= allowCancelTime" class="caption text_3--text text-justify">
-                    {{ t('walletActivity.cancelButtonTooltip') }} {{ cancellationFeeEstimate }}
-                  </div>
-                  <div v-else class="caption text_3--text text-justify">
-                    {{ t('walletActivity.cancelButtonTooltipDisabled') }} {{ allowCancelTime - timeDiff }}min
-                  </div>
+                  <div class="caption text_3--text text-justify">{{ t('walletActivity.cancelButtonTooltip') }} {{ cancellationFeeEstimate }}</div>
                 </span>
               </v-tooltip>
             </v-flex>
@@ -154,18 +148,10 @@ export default {
       ACTIVITY_STATUS_PENDING,
       CONTRACT_TYPE_ERC721,
       CONTRACT_TYPE_ERC1155,
-      allowCancelTime: 8,
     }
   },
   computed: {
     ...mapState(['networkType']),
-    timeDiff() {
-      const transactionDate = new Date(this.transaction.date)
-      const currentDate = new Date()
-      const diff = Math.abs(transactionDate - currentDate) / 1000 / 60
-
-      return Math.floor(diff)
-    },
   },
   methods: {
     showCancelTransaction() {
