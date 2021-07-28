@@ -9,7 +9,15 @@
       hide-default-footer
     >
       <template #default="props">
-        <TransactionDetails v-for="transaction in props.items" :key="transaction.transaction_hash || transaction.id" :transaction="transaction" />
+        <TransactionDetails
+          v-for="transaction in props.items"
+          :key="transaction.transaction_hash || transaction.id"
+          :transaction="transaction"
+          :currency-multiplier="currencyMultiplier"
+          :selected-currency="selectedCurrency"
+          :cancel-gas-price="cancelGasPrice"
+          @cancelTransaction="cancelTransaction"
+        />
       </template>
     </v-data-iterator>
 
@@ -26,6 +34,9 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
+import log from 'loglevel'
+
 import { ACTIVITY_ACTION_ALL, ACTIVITY_PERIOD_ALL, ACTIVITY_PERIOD_MONTH_ONE, ACTIVITY_PERIOD_WEEK_ONE } from '../../../utils/enums'
 import TransactionDetails from '../TransactionDetails'
 
@@ -47,6 +58,18 @@ export default {
     selectedPeriod: {
       type: String,
       default: '',
+    },
+    currencyMultiplier: {
+      type: BigNumber,
+      default: new BigNumber('0'),
+    },
+    selectedCurrency: {
+      type: String,
+      default: 'USD',
+    },
+    cancelGasPrice: {
+      type: BigNumber,
+      default: new BigNumber('5'),
     },
   },
   data() {
@@ -81,7 +104,7 @@ export default {
       const selectedAction = this.selectedAction === ACTIVITY_ACTION_ALL ? '' : this.selectedAction
       const regExAction = new RegExp(selectedAction, 'i')
 
-      return this.transactions.filter((item) => {
+      const transactions = this.transactions.filter((item) => {
         // GET Date Scope
         let isScoped = false
         if (this.selectedPeriod === ACTIVITY_PERIOD_ALL) {
@@ -104,6 +127,10 @@ export default {
         }
         return isScoped
       })
+
+      log.info('transactions', transactions)
+
+      return transactions
     },
   },
   methods: {
@@ -121,6 +148,9 @@ export default {
       } else {
         this.expanded = [item]
       }
+    },
+    cancelTransaction(transaction) {
+      this.$emit('cancelTransaction', transaction)
     },
   },
 }

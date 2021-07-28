@@ -389,6 +389,10 @@ export function formatDate(inputDate) {
   return `${day} ${month} ${year}`
 }
 
+export function formatTime(time) {
+  return new Date(time).toTimeString().slice(0, 8)
+}
+
 export const paymentProviders = {
   [SIMPLEX]: {
     line1: 'Credit/ Debit Card',
@@ -618,6 +622,10 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     input: x.input || '',
     contract_address: x.contract_address || '',
     token_id: x.token_id || '',
+    nonce: x.nonce || '',
+    is_cancel: !!x.is_cancel || false,
+    gas: x.gas || '',
+    gasPrice: x.gasPrice || '',
   }
   return finalObject
 }
