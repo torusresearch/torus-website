@@ -201,6 +201,8 @@ export const ACTIVITY_PERIOD_MONTH_SIX = 'walletActivity.lastSixMonts'
 export const ACTIVITY_STATUS_SUCCESSFUL = 'walletActivity.successful'
 export const ACTIVITY_STATUS_UNSUCCESSFUL = 'walletActivity.unsuccessful'
 export const ACTIVITY_STATUS_PENDING = 'walletActivity.pending'
+export const ACTIVITY_STATUS_CANCELLED = 'walletActivity.cancelled'
+export const ACTIVITY_STATUS_CANCELLING = 'walletActivity.cancelling'
 
 export const GOOGLE = 'google'
 export const FACEBOOK = 'facebook'
