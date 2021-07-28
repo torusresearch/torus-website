@@ -23,10 +23,21 @@ import { broadcastChannelOptions } from '../../utils/utils'
 export default {
   name: 'End',
   components: { BoxLoader },
-  async mounted() {
+  async created() {
     try {
+      const { hash } = this.$route
+      const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
+      const result = hashUrl.searchParams.get('result')
+      let whiteLabel = {}
+
+      if (result) {
+        const resultParams = JSON.parse(safeatob(result))
+        const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
+        whiteLabel = appStateParams.whiteLabel || {}
+      }
+
       const torus = new Torus()
-      const openLogin = await getOpenLoginInstance()
+      const openLogin = await getOpenLoginInstance(whiteLabel)
       const { state } = openLogin
       log.info(state, 'state')
       const allInfo = state.store.getStore()

@@ -25,12 +25,12 @@ import {
   DEPLOY_CONTRACT_ACTION_KEY,
   GOERLI_CODE,
   KOVAN_CODE,
-  MAINNET,
   MAINNET_CODE,
   OLD_ERC721_LIST,
   RINKEBY_CODE,
   ROPSTEN_CODE,
   SEND_ETHER_ACTION_KEY,
+  SUPPORTED_NETWORK_TYPES,
   TOKEN_METHOD_APPROVE,
   TOKEN_METHOD_TRANSFER,
   TOKEN_METHOD_TRANSFER_FROM,
@@ -39,7 +39,7 @@ import {
   TRANSACTION_TYPE_RETRY,
   TRANSACTION_TYPE_STANDARD,
 } from '../utils/enums'
-import { BnMultiplyByFraction, bnToHex, formatPastTx, hexToBn } from '../utils/utils'
+import { BnMultiplyByFraction, bnToHex, formatPastTx, getEtherScanHashLink, hexToBn } from '../utils/utils'
 import NonceTracker from './NonceTracker'
 import PendingTransactionTracker from './PendingTransactionTracker'
 import TransactionStateManager from './TransactionStateManager'
@@ -581,7 +581,7 @@ class TransactionController extends EventEmitter {
     this.txStateManager.updateTx(txMeta, 'transactions#setTxHash')
   }
 
-  async addEtherscanTransactions(txs) {
+  async addEtherscanTransactions(txs, network) {
     const lowerCaseSelectedAddress = this.getSelectedAddress()
 
     const transactionPromises = await Promise.all(
@@ -594,7 +594,7 @@ class TransactionController extends EventEmitter {
         tx.transaction_category = transactionCategory
 
         tx.type_image_link = contractParams.logo || tx.type_image_link
-        tx.type_name = tx.name || tx.tokenName
+        tx.type_name = tx.name || tx.tokenName || SUPPORTED_NETWORK_TYPES[network]?.ticker
 
         if (contractParams.erc1155) {
           tx.type = CONTRACT_TYPE_ERC1155
@@ -615,17 +615,18 @@ class TransactionController extends EventEmitter {
     const finalTxs = transactionPromises.reduce((accumulator, x) => {
       const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
       const etherscanTransaction = {
-        type: x.type || CONTRACT_TYPE_ETH,
+        etherscanLink: getEtherScanHashLink(x.hash, network),
+        type: x.type || SUPPORTED_NETWORK_TYPES[network]?.ticker || CONTRACT_TYPE_ETH,
         type_image_link: x.type_image_link || 'n/a',
         type_name: x.type_name || 'n/a',
-        symbol: x.tokenSymbol || 'ETH',
+        symbol: x.tokenSymbol || SUPPORTED_NETWORK_TYPES[network]?.ticker || 'ETH',
         token_id: x.tokenID || '',
         total_amount: totalAmount,
         created_at: x.timeStamp * 1000,
         from: x.from,
         to: x.to,
         transaction_hash: x.hash,
-        network: MAINNET,
+        network,
         status: x.txreceipt_status && x.txreceipt_status === '0' ? 'failed' : 'success',
         isEtherscan: true,
         input: x.input,

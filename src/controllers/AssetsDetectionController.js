@@ -6,7 +6,15 @@
 import deepmerge from 'deepmerge'
 import log from 'loglevel'
 
-import { BSC_MAINNET, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
+import {
+  BSC_MAINNET,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC1155,
+  MAINNET,
+  MATIC,
+  NFT_SUPPORTED_NETWORKS,
+  SUPPORTED_NFT_STANDARDS,
+} from '../utils/enums'
 import { isMain } from '../utils/utils'
 
 const DEFAULT_INTERVAL = 60_000
@@ -46,6 +54,10 @@ export default class AssetsDetectionController {
     return this.network.getNetworkNameFromNetworkCode() === MAINNET
   }
 
+  isMatic() {
+    return this.network.getNetworkNameFromNetworkCode() === MATIC
+  }
+
   /**
    * @type {Number}
    */
@@ -61,9 +73,17 @@ export default class AssetsDetectionController {
   }
 
   getOwnerCollectiblesApi(address, apiType = 'covalent') {
+    // from opensea
     if (apiType === 'opensea') {
-      return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
+      if (this.currentNetwork === MAINNET) {
+        return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
+      }
+      if (this.currentNetwork === MATIC) {
+        return `https://api.opensea.io/api/v2/assets/matic?owner=${address}&limit=300`
+      }
+      return ''
     }
+    // from covalent api
     const chainId = NFT_SUPPORTED_NETWORKS[this.currentNetwork]
     if (chainId) {
       return `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?nft=true&no-nft-fetch=false`
@@ -85,8 +105,15 @@ export default class AssetsDetectionController {
         return []
       }
       response = await this.getOpenSeaCollectibles(api)
-      const collectibles = response.data.assets
-      return collectibles
+      if (this.isMainnet()) {
+        const collectibles = response.data.assets
+        return collectibles
+      }
+      if (this.isMatic()) {
+        const collectibles = response.data.results
+        return collectibles
+      }
+      return []
     } catch (error) {
       log.error(error)
       return []
@@ -113,7 +140,7 @@ export default class AssetsDetectionController {
     this.currentNetwork = currentNetwork
     let finalArr = []
 
-    if (this.isMainnet()) {
+    if (this.isMainnet() || this.isMatic()) {
       const [openseaAssets, covalentAssets] = await Promise.all([
         this.detectCollectiblesFromOpensea(),
         this.detectCollectiblesFromCovalent(currentNetwork),
@@ -216,7 +243,7 @@ export default class AssetsDetectionController {
     const finalCollectibles = []
     const collectiblesMap = {}
     /* istanbul ignore if */
-    if (!this.isMainnet()) {
+    if (!this.isMainnet() && !this.isMatic()) {
       return [finalCollectibles, collectiblesMap]
     }
     const { selectedAddress } = this
@@ -241,25 +268,27 @@ export default class AssetsDetectionController {
         description: contractDescription,
       },
     } of apiCollectibles) {
-      const collectible = {
-        contractAddress,
-        tokenID: tokenID.toString(),
-        options: {
-          standard: standard?.toLowerCase(),
-          description,
-          image: imageURL || (contractImage || '').replace('=s60', '=s240'),
-          name: name || `${contractName}#${tokenID}`,
+      if (SUPPORTED_NFT_STANDARDS.has(standard?.toLowerCase())) {
+        const collectible = {
           contractAddress,
-          contractName,
-          contractSymbol,
-          contractImage: (contractImage || '').replace('=s60', '=s240') || imageURL,
-          contractSupply,
-          contractDescription,
-        },
+          tokenID: tokenID.toString(),
+          options: {
+            standard: standard?.toLowerCase(),
+            description,
+            image: imageURL || (contractImage || '').replace('=s60', '=s240'),
+            name: name || `${contractName}#${tokenID}`,
+            contractAddress,
+            contractName,
+            contractSymbol,
+            contractImage: (contractImage || '').replace('=s60', '=s240') || imageURL,
+            contractSupply,
+            contractDescription,
+          },
+        }
+        finalCollectibles.push(collectible)
+        const collectibleIndex = `${contractAddress.toLowerCase()}_${tokenID.toString()}`
+        collectiblesMap[collectibleIndex] = collectible
       }
-      finalCollectibles.push(collectible)
-      const collectibleIndex = `${contractAddress.toLowerCase()}_${tokenID.toString()}`
-      collectiblesMap[collectibleIndex] = collectible
     }
     return [finalCollectibles, collectiblesMap]
   }

@@ -1,4 +1,5 @@
 import randomId from '@chaitanyapotti/random-id'
+import { safebtoa } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import config from '../../config'
@@ -7,7 +8,7 @@ import PopupWithBcHandler from '../Popup/PopupWithBcHandler'
 class OpenLoginHandler {
   nonce = randomId()
 
-  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, jwtParameters, skipTKey }) {
+  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, jwtParameters, skipTKey, whiteLabel, loginProvider }) {
     this.clientId = clientId
     this.verifier = verifier
     this.preopenInstanceId = preopenInstanceId
@@ -15,16 +16,25 @@ class OpenLoginHandler {
     this.typeOfLogin = typeOfLogin
     this.jwtParameters = jwtParameters
     this.skipTKey = skipTKey
+    this.whiteLabel = whiteLabel
+    this.loginProvider = loginProvider
     this.setFinalUrl()
   }
 
   get state() {
+    log.info('check', {
+      instanceId: this.nonce,
+      verifier: this.verifier,
+      redirectToOpener: this.redirectToOpener || false,
+      whiteLabel: this.whiteLabel || '',
+    })
     return encodeURIComponent(
-      window.btoa(
+      safebtoa(
         JSON.stringify({
           instanceId: this.nonce,
           verifier: this.verifier,
           redirectToOpener: this.redirectToOpener || false,
+          whiteLabel: this.whiteLabel || '',
         })
       )
     )
@@ -32,8 +42,8 @@ class OpenLoginHandler {
 
   setFinalUrl() {
     const finalUrl = new URL(`${config.baseRoute}start`)
-    finalUrl.searchParams.append('verifier', this.verifier)
     finalUrl.searchParams.append('state', this.state)
+    finalUrl.searchParams.append('loginProvider', this.loginProvider)
     Object.keys(this.jwtParameters).forEach((x) => {
       if (this.jwtParameters[x]) finalUrl.searchParams.append(x, this.jwtParameters[x])
     })

@@ -523,7 +523,9 @@ describe('Preferences Controller', () => {
 
   it('should poll user with jwt & selected address', async () => {
     const clock = sandbox.useFakeTimers()
-    const prefsController = new PreferencesController({ interval: 100 })
+    network = new NetworkController()
+    network.initializeProvider(networkControllerProviderConfig)
+    const prefsController = new PreferencesController({ interval: 100, network })
     sandbox.stub(prefsController, 'storeUserLogin')
     await prefsController.init({ address: testAccount.address, jwtToken: 'hello', commit: noop, dispatch: noop })
     prefsController.setSelectedAddress(testAccount.address)

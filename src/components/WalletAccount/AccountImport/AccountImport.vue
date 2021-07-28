@@ -85,7 +85,7 @@
                       <HelpTooltip :title="t('accountMenu.uploadJsonTitle')" :description="t('accountMenu.uploadJsonDesc')"></HelpTooltip>
                     </v-flex>
                     <v-flex shrink>
-                      <v-btn outlined class="upload-button" color="torusBrand1" @click.prevent="$refs.keystoreUpload.click">
+                      <v-btn outlined class="upload-button" color="torusBrand1" @click.prevent="openFilePicker">
                         <v-icon left>$vuetify.icons.question</v-icon>
                         {{ t('accountMenu.upload') }}
                       </v-btn>
@@ -200,6 +200,9 @@ export default {
     },
   },
   methods: {
+    openFilePicker() {
+      this.$refs.keystoreUpload.click()
+    },
     importViaPrivateKey() {
       if (this.$refs.privateKeyForm.validate()) {
         this.isLoadingPrivate = true

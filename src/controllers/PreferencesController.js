@@ -17,6 +17,7 @@ import {
   BADGES_TOPUP,
   BADGES_TRANSACTION,
   ERROR_TIME,
+  ETHERSCAN_SUPPORTED_NETWORKS,
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
@@ -343,11 +344,11 @@ class PreferencesController extends EventEmitter {
     this.updateStore({ pastTransactions: pastTx }, address)
   }
 
-  async fetchEtherscanTx(address) {
+  async fetchEtherscanTx(address, network) {
     try {
-      const tx = await this.api.getEtherscanTransactions({ selectedAddress: address }, this.headers(address).headers)
+      const tx = await this.api.getEtherscanTransactions({ selectedAddress: address, selectedNetwork: network }, this.headers(address).headers)
       if (tx?.data) {
-        this.emit('addEtherscanTransactions', tx.data)
+        this.emit('addEtherscanTransactions', tx.data, network)
       }
     } catch (error) {
       log.error('unable to fetch etherscan tx', error)
@@ -392,6 +393,16 @@ class PreferencesController extends EventEmitter {
     const state = this.state(selectedAddress)
     if (!state?.fetchedPastTx) return
     this.calculatePastTx(state.fetchedPastTx, selectedAddress)
+  }
+
+  refetchEtherscanTx(address) {
+    const selectedAddress = address || this.store.getState().selectedAddress
+    if (this.state(selectedAddress)?.jwtToken) {
+      const selectedNetwork = this.network.getNetworkNameFromNetworkCode()
+      if (ETHERSCAN_SUPPORTED_NETWORKS.has(selectedNetwork)) {
+        this.fetchEtherscanTx(selectedAddress, selectedNetwork)
+      }
+    }
   }
 
   /* istanbul ignore next */
@@ -640,7 +651,10 @@ class PreferencesController extends EventEmitter {
     this.store.updateState({ selectedAddress: address })
     if (!Object.keys(this.store.getState()).includes(address)) return
     this.recalculatePastTx(address)
-    this.fetchEtherscanTx(address)
+    const selectedNetwork = this.network.getNetworkNameFromNetworkCode()
+    if (ETHERSCAN_SUPPORTED_NETWORKS.has(selectedNetwork)) {
+      this.fetchEtherscanTx(address, selectedNetwork)
+    }
     // this.sync()
   }
 

@@ -119,6 +119,7 @@ export default class TorusController extends EventEmitter {
       this.detectTokensController.restartTokenDetection()
       this.assetDetectionController.restartAssetDetection()
       this.prefsController.recalculatePastTx()
+      this.prefsController.refetchEtherscanTx()
       this.walletConnectController.updateSession()
     })
 
@@ -199,8 +200,8 @@ export default class TorusController extends EventEmitter {
       }, 50)
     }
 
-    this.prefsController.on('addEtherscanTransactions', (txs) => {
-      this.txController.addEtherscanTransactions(txs)
+    this.prefsController.on('addEtherscanTransactions', (txs, network) => {
+      this.txController.addEtherscanTransactions(txs, network)
     })
 
     this.walletConnectController = new WalletConnectController({
