@@ -41,11 +41,11 @@ import {
 } from '../utils/enums'
 import { BnMultiplyByFraction, bnToHex, formatPastTx, getEtherScanHashLink, hexToBn } from '../utils/utils'
 import NonceTracker from './NonceTracker'
-import PendingTransactionTracker from './PendingTransactionTracker'
-import TransactionStateManager from './TransactionStateManager'
+import PendingTransactionTracker from './transactions/PendingTransactionTracker'
+import TransactionStateManager from './transactions/TransactionStateManager'
+import TxGasUtil from './transactions/TxGasUtil'
+import * as txUtils from './transactions/txUtils'
 import cleanErrorStack from './utils/cleanErrorStack'
-import TxGasUtil from './utils/TxGasUtil'
-import * as txUtils from './utils/txUtils'
 
 const tokenABIDecoder = new AbiDecoder(tokenAbi)
 const collectibleABIDecoder = new AbiDecoder(collectibleAbi)

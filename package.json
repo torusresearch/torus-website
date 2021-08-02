@@ -73,6 +73,8 @@
     "json-rpc-middleware-stream": "^3.0.0",
     "jsonschema": "^1.4.0",
     "jwt-decode": "^3.1.2",
+    "lodash": "^4.17.21",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",
     "lodash.throttle": "^4.1.1",

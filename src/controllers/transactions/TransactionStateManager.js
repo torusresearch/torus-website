@@ -2,9 +2,9 @@ import { ObservableStore } from '@metamask/obs-store'
 import EventEmitter from '@metamask/safe-event-emitter'
 import log from 'loglevel'
 
-import createId from '../utils/random-id'
-import txStateHistoryHelper from './utils/tx-state-history-helper'
-import { getFinalStates, normalizeTxParams as normalizeTxParameters } from './utils/txUtils'
+import createId from '../../utils/random-id'
+import txStateHistoryHelper from './tx-state-history-helper'
+import { getFinalStates, normalizeTxParams as normalizeTxParameters } from './txUtils'
 /**
   TransactionStateManager is responsible for the state of a transaction and
   storing the transaction
@@ -28,7 +28,7 @@ import { getFinalStates, normalizeTxParams as normalizeTxParameters } from './ut
   @class
 */
 class TransactionStateManager extends EventEmitter {
-  constructor({ initState, txHistoryLimit, getNetwork }) {
+  constructor({ initState, txHistoryLimit, getNetwork, getCurrentChainId }) {
     super()
 
     this.store = new ObservableStore({
@@ -37,22 +37,52 @@ class TransactionStateManager extends EventEmitter {
     })
     this.txHistoryLimit = txHistoryLimit
     this.getNetwork = getNetwork
+    this.getCurrentChainId = getCurrentChainId
   }
 
   /**
     @param opts {object} - the object to use when overwriting defaults
     @returns {txMeta} the default txMeta object
   */
-  generateTxMeta(options) {
+  generateTxMeta(opts = {}) {
     const netId = this.getNetwork()
+    const chainId = this.getCurrentChainId()
     if (netId === 'loading') throw new Error('MetaMask is having trouble connecting to the network')
+    let dappSuggestedGasFees = null
+
+    // If we are dealing with a transaction suggested by a dapp and not
+    // an internally created metamask transaction, we need to keep record of
+    // the originally submitted gasParams.
+    // TODO: Maybe check origin here?
+    if (opts.txParams && typeof opts.origin === 'string' && opts.origin !== 'torus') {
+      if (typeof opts.txParams.gasPrice !== 'undefined') {
+        dappSuggestedGasFees = {
+          gasPrice: opts.txParams.gasPrice,
+        }
+      } else if (typeof opts.txParams.maxFeePerGas !== 'undefined' || typeof opts.txParams.maxPriorityFeePerGas !== 'undefined') {
+        dappSuggestedGasFees = {
+          maxPriorityFeePerGas: opts.txParams.maxPriorityFeePerGas,
+          maxFeePerGas: opts.txParams.maxFeePerGas,
+        }
+      }
+
+      if (typeof opts.txParams.gas !== 'undefined') {
+        dappSuggestedGasFees = {
+          ...dappSuggestedGasFees,
+          gas: opts.txParams.gas,
+        }
+      }
+    }
+
     return {
       id: createId(),
       time: Date.now(),
       status: 'unapproved',
       metamaskNetworkId: netId,
       loadingDefaults: true,
-      ...options,
+      chainId,
+      dappSuggestedGasFees,
+      ...opts,
     }
   }
 

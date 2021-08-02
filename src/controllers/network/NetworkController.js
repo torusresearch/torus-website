@@ -74,7 +74,7 @@ export default class NetworkController extends EventEmitter {
     const { type, rpcUrl, chainId, ticker, nickname } = this.getProviderConfig()
     this._configureProvider({ type, rpcUrl, chainId, ticker, nickname })
     this.lookupNetwork()
-    // return this._providerProxy
+    return this._providerProxy
   }
 
   /**
