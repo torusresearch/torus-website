@@ -20,7 +20,7 @@ import { createJsonRpcClient } from './createJsonRpcClient'
 import createMetamaskMiddleware from './createMetamaskMiddleware'
 
 // defaults and constants
-const defaultProviderConfig = { type: 'mainnet', ticker: ETH.toUpperCase(), chainId: MAINNET_CHAIN_ID }
+const defaultProviderConfig = { type: MAINNET, ticker: ETH.toUpperCase(), chainId: MAINNET_CHAIN_ID }
 const defaultNetworkDetailsState = {
   EIPS: { 1559: undefined },
 }
@@ -71,10 +71,10 @@ export default class NetworkController extends EventEmitter {
    */
   initializeProvider(providerParameters) {
     this._baseProviderParams = providerParameters
-    const { type, rpcUrl, chainId, ticker, nickname } = this.providerStore.getState()
+    const { type, rpcUrl, chainId, ticker, nickname } = this.getProviderConfig()
     this._configureProvider({ type, rpcUrl, chainId, ticker, nickname })
     this.lookupNetwork()
-    return this._providerProxy
+    // return this._providerProxy
   }
 
   /**
