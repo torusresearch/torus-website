@@ -24,7 +24,7 @@ import DecryptMessageManager from './DecryptMessageManager'
 import DetectTokensController from './DetectTokensController'
 import EncryptionPublicKeyManager from './EncryptionPublicKeyManager'
 import MessageManager from './MessageManager'
-import NetworkController from './NetworkController'
+import NetworkController from './network/NetworkController'
 import PermissionsController from './PermissionsController'
 import PersonalMessageManager from './PersonalMessageManager'
 import PreferencesController from './PreferencesController'
@@ -795,7 +795,7 @@ export default class TorusController extends EventEmitter {
    * @param {Function} cb - A callback function returning currency info.
    */
   async setCurrentCurrency(payload, callback) {
-    const { ticker } = this.networkController.getNetworkConfig()
+    const { ticker } = this.networkController.getProviderConfig()
     try {
       // if (payload.selectedCurrency !== 'ETH') {
       this.currencyController.setNativeCurrency(ticker)

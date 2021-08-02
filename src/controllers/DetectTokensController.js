@@ -70,7 +70,7 @@ class DetectTokensController {
   async detectNewTokens() {
     const userAddress = this.selectedAddress
     if (!userAddress) return
-    if (this.network.getNetworkNameFromNetworkCode() !== MAINNET) {
+    if (this.network.getNetworkIdentifier() !== MAINNET) {
       this.detectedTokensStore.updateState({ [userAddress]: [] })
       return
     }
@@ -131,7 +131,7 @@ class DetectTokensController {
             tokenAddress: toChecksumAddress(x.contract_address),
             balance: `0x${new BigNumber(x.balance).toString(16)}`,
             isCovalent: true,
-            network: this.network.getNetworkNameFromNetworkCode(),
+            network: this.network.getNetworkIdentifier(),
           })
         } else if (nonZeroTokens[index].isCovalent) {
           nonZeroTokens[index] = {
@@ -147,7 +147,7 @@ class DetectTokensController {
   async refreshTokenBalances() {
     const userAddress = this.selectedAddress
     if (userAddress === '') return
-    if (this.network.getNetworkNameFromNetworkCode() !== MAINNET) {
+    if (this.network.getNetworkIdentifier() !== MAINNET) {
       this.detectedTokensStore.updateState({ [userAddress]: [] })
       return
     }
@@ -178,7 +178,7 @@ class DetectTokensController {
     const userAddress = this.selectedAddress
     if (userAddress === '') return
     this.selectedCustomTokens = customTokens.map((x) => x.token_address)
-    const localNetwork = this.network.getNetworkNameFromNetworkCode()
+    const localNetwork = this.network.getNetworkIdentifier()
     const currentNetworkTokens = customTokens.reduce((acc, x) => {
       if (x.network === localNetwork) acc.push(x)
       return acc

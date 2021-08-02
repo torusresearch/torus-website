@@ -319,7 +319,7 @@ class PreferencesController extends EventEmitter {
     const lowerCaseSelectedAddress = address.toLowerCase()
     for (const x of txs) {
       if (
-        x.network === this.network.getNetworkNameFromNetworkCode() &&
+        x.network === this.network.getNetworkIdentifier() &&
         x.to &&
         x.from &&
         (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase())
@@ -437,7 +437,7 @@ class PreferencesController extends EventEmitter {
   refetchEtherscanTx(address) {
     const selectedAddress = address || this.store.getState().selectedAddress
     if (this.state(selectedAddress)?.jwtToken) {
-      const selectedNetwork = this.network.getNetworkNameFromNetworkCode()
+      const selectedNetwork = this.network.getNetworkIdentifier()
       if (ETHERSCAN_SUPPORTED_NETWORKS.has(selectedNetwork)) {
         this.fetchEtherscanTx(selectedAddress, selectedNetwork)
       }
@@ -690,7 +690,7 @@ class PreferencesController extends EventEmitter {
     this.store.updateState({ selectedAddress: address })
     if (!Object.keys(this.store.getState()).includes(address)) return
     this.recalculatePastTx(address)
-    const selectedNetwork = this.network.getNetworkNameFromNetworkCode()
+    const selectedNetwork = this.network.getNetworkIdentifier()
     if (ETHERSCAN_SUPPORTED_NETWORKS.has(selectedNetwork)) {
       this.fetchEtherscanTx(address, selectedNetwork)
     }

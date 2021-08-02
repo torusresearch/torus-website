@@ -135,7 +135,7 @@ export const getInfuraBlockExplorerUrl = (network) => {
   return `https://${network}.etherscan.io`
 }
 
-export const createNetwork = (host, networkName, chainId, blockExplorer, ticker, tickerName, logo) => ({
+export const createNetwork = (host, networkName, chainId, blockExplorer, ticker, tickerName, logo, rpcUrl) => ({
   host,
   networkName,
   chainId,
@@ -143,16 +143,26 @@ export const createNetwork = (host, networkName, chainId, blockExplorer, ticker,
   ticker,
   logo,
   tickerName,
+  rpcUrl,
 })
 
 export const SUPPORTED_NETWORK_TYPES = {
-  [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, getInfuraBlockExplorerUrl(MAINNET), 'ETH', 'Ethereum', 'eth.svg'),
-  [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE, getInfuraBlockExplorerUrl(RINKEBY), 'ETH', 'Ethereum', 'eth.svg'),
-  [KOVAN]: createNetwork(KOVAN, KOVAN_DISPLAY_NAME, KOVAN_CODE, getInfuraBlockExplorerUrl(KOVAN), 'ETH', 'Ethereum', 'eth.svg'),
-  [ROPSTEN]: createNetwork(ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE, getInfuraBlockExplorerUrl(ROPSTEN), 'ETH', 'Ethereum', 'eth.svg'),
-  [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE, getInfuraBlockExplorerUrl(GOERLI), 'ETH', 'Ethereum', 'eth.svg'),
-  [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE, '', 'ETH', 'Ethereum', 'eth.svg'),
-  [MATIC]: createNetwork(MATIC, MATIC_DISPLAY_NAME, MATIC_CODE, MATIC_BLOCK_EXPLORER, MATIC_TICKER, 'Matic Network Token', 'matic-network-logo.svg'),
+  [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, getInfuraBlockExplorerUrl(MAINNET), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE, getInfuraBlockExplorerUrl(RINKEBY), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [KOVAN]: createNetwork(KOVAN, KOVAN_DISPLAY_NAME, KOVAN_CODE, getInfuraBlockExplorerUrl(KOVAN), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [ROPSTEN]: createNetwork(ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE, getInfuraBlockExplorerUrl(ROPSTEN), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE, getInfuraBlockExplorerUrl(GOERLI), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE, '', 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [MATIC]: createNetwork(
+    MATIC,
+    MATIC_DISPLAY_NAME,
+    MATIC_CODE,
+    MATIC_BLOCK_EXPLORER,
+    MATIC_TICKER,
+    'Matic Network Token',
+    'matic-network-logo.svg',
+    MATIC_URL
+  ),
   [MUMBAI]: createNetwork(
     MUMBAI,
     MUMBAI_DISPLAY_NAME,
@@ -160,7 +170,8 @@ export const SUPPORTED_NETWORK_TYPES = {
     MUMBAI_BLOCK_EXPLORER,
     MATIC_TICKER,
     'Matic Network Token',
-    'matic-network-logo.svg'
+    'matic-network-logo.svg',
+    MUMBAI_URL
   ),
   [BSC_MAINNET]: createNetwork(
     BSC_MAINNET,
@@ -169,7 +180,8 @@ export const SUPPORTED_NETWORK_TYPES = {
     BSC_MAINNET_BLOCK_EXPLORER,
     BSC_TICKER,
     'Binance Coin',
-    'bnb.png'
+    'bnb.png',
+    BSC_MAINNET_URL
   ),
   [BSC_TESTNET]: createNetwork(
     BSC_TESTNET,
@@ -178,9 +190,10 @@ export const SUPPORTED_NETWORK_TYPES = {
     BSC_TESTNET_BLOCK_EXPLORER,
     BSC_TICKER,
     'Binance Coin',
-    'bnb.png'
+    'bnb.png',
+    BSC_TESTNET_URL
   ),
-  [XDAI]: createNetwork(XDAI, XDAI_DISPLAY_NAME, XDAI_CODE, XDAI_BLOCK_EXPLORER, XDAI_TICKER, 'xDai Network Token', 'xdai.svg'),
+  [XDAI]: createNetwork(XDAI, XDAI_DISPLAY_NAME, XDAI_CODE, XDAI_BLOCK_EXPLORER, XDAI_TICKER, 'xDai Network Token', 'xdai.svg', XDAI_URL),
 }
 
 export const WALLET_HEADERS_HOME = 'My Wallet'
@@ -478,3 +491,9 @@ export const FEATURES_PROVIDER_CHANGE_WINDOW = 'directories=0,titlebar=0,toolbar
 export const FEATURES_DEFAULT_WALLET_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=740,width=1315'
 export const FEATURES_DEFAULT_POPUP_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200'
 export const FEATURES_CONFIRM_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=450'
+
+export const TRANSACTION_ENVELOPE_TYPES = {
+  LEGACY: '0x0',
+  ACCESS_LIST: '0x1',
+  FEE_MARKET: '0x2',
+}
