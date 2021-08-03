@@ -134,7 +134,7 @@
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "eslint-plugin-switch-case": "^1.1.2",
     "eslint-plugin-unicorn": "^34.0.1",
-    "eslint-plugin-vue": "^7.14.0",
+    "eslint-plugin-vue": "^7.15.0",
     "eslint-plugin-vue-scoped-css": "^1.2.2",
     "express": "^4.17.1",
     "fibers": "^5.0.0",
