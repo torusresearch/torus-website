@@ -7,7 +7,7 @@
     >
       {{ t('login.signUpIn') }}
     </div> -->
-    <div :style="{ maxWidth: '372px' }">
+    <div>
       <LoginButton
         v-for="verifier in mainButtonsLong"
         :key="verifier.verifier"
@@ -20,12 +20,11 @@
         @click="triggerLogin(verifier.verifier)"
       />
     </div>
-    <v-layout wrap :style="{ maxWidth: '380px' }" mx-n1>
+    <v-layout class="buttons-container" wrap>
       <v-flex
         v-for="verifier in mainButtons"
         :key="verifier.verifier"
-        px-1
-        :class="!viewMoreOptions || isPopup || $vuetify.breakpoint.xsOnly ? 'xs4' : 'xs2'"
+        :class="[!viewMoreOptions || isPopup || $vuetify.breakpoint.xsOnly ? 'xs4' : 'xs2']"
       >
         <LoginButton
           :verifier="verifier"
@@ -36,15 +35,15 @@
         />
       </v-flex>
     </v-layout>
-    <div v-if="loginButtonsLong.length > 0" :style="{ maxWidth: '372px' }">
-      <div v-if="mainButtonsLong.length > 0 || mainButtons.length > 0" class="d-flex align-center mb-4 mt-2">
+    <div v-if="loginButtonsLong.length > 0">
+      <div v-if="mainButtonsLong.length > 0 || mainButtons.length > 0" class="d-flex or-container align-center">
         <v-divider />
         <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
-          <div class="body-2 text_2--text">{{ t('login.or') }}</div>
+          <div class="text_2--text">{{ t('login.or') }}</div>
         </div>
         <v-divider />
       </div>
-      <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="mb-2">
+      <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="buttons-bottom-container">
         <v-form
           v-if="verifier.verifier === HOSTED_EMAIL_PASSWORDLESS_VERIFIER"
           ref="passwordlessEmailForm"
@@ -53,7 +52,8 @@
         >
           <v-text-field
             v-model="passwordlessEmail"
-            class="passwordless-email mb-2"
+            :height="textFieldHeight"
+            class="passwordless-email"
             :rules="[rules.email]"
             :placeholder="t('login.enterYourEmail')"
             outlined
@@ -80,10 +80,10 @@
         />
       </div>
     </div>
-    <div class="d-flex align-center" :style="{ maxWidth: '372px' }">
+    <div class="d-flex align-center">
       <v-spacer></v-spacer>
-      <v-btn x-small :class="{ 'has-more': viewMoreOptions }" class="view-option-selector" @click="viewMoreOptions = !viewMoreOptions">
-        <span class="body-2">{{ viewMoreOptions ? t('dappLogin.viewLess') : t('dappLogin.viewMore') }}</span>
+      <v-btn :class="{ 'has-more': viewMoreOptions }" class="view-option-selector" @click="viewMoreOptions = !viewMoreOptions">
+        <span class="selector-text">{{ viewMoreOptions ? t('dappLogin.viewLess') : t('dappLogin.viewMore') }}</span>
         <v-icon>$vuetify.icons.select</v-icon>
       </v-btn>
     </div>
@@ -156,6 +156,11 @@ export default {
     },
     allActiveButtons() {
       return [...this.mainButtonsLong, ...this.mainButtons, ...this.loginButtonsLong]
+    },
+    textFieldHeight() {
+      if (this.$vuetify.breakpoint.height >= 1440) return '3.47vh'
+      if (this.$vuetify.breakpoint.height >= 1080) return '4.6vh'
+      return '40'
     },
   },
   watch: {

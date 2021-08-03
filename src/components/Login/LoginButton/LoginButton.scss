@@ -6,8 +6,8 @@
   border-radius: 6px;
   min-width: inherit;
   padding: 0;
-  margin-right: 7px;
-  margin-bottom: 7px;
+  margin-right: 4px;
+  margin-bottom: 8px;
   width: 56px;
   height: 56px;
   &.isDark {
@@ -30,6 +30,49 @@
     img + span,
     .v-icon + span {
       margin-left: 8px;
+    }
+  }
+}
+
+@media only screen and (min-height: 1080px) {
+  .v-btn:not(.v-btn--text):not(.v-btn--icon) {
+    height: 6.7vh;
+    margin-bottom: 0.8vh;
+    img,
+    ::v-deep .v-icon .v-icon__component {
+      width: 3.3vh;
+      height: 3.3vh;
+    }
+  }
+  .v-btn.is-long {
+    ::v-deep .v-btn__content {
+      font-size: 1.7vh;
+      line-height: 1.2em;
+      img + span,
+      .v-icon + span {
+        margin-left: 1.5vh;
+      }
+    }
+  }
+}
+@media only screen and (min-height: 1440px) {
+  .v-btn:not(.v-btn--text):not(.v-btn--icon) {
+    height: 5.5vh;
+    margin-bottom: 0.6vh;
+    img,
+    ::v-deep .v-icon .v-icon__component {
+      width: 3vh;
+      height: 3vh;
+    }
+  }
+  .v-btn.is-long {
+    ::v-deep .v-btn__content {
+      font-size: 2vh;
+      line-height: 1.2em;
+      img + span,
+      .v-icon + span {
+        margin-left: 1.25vh;
+      }
     }
   }
 }

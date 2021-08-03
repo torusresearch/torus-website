@@ -16,6 +16,8 @@
     box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
     border-radius: 6px;
     line-height: 0;
+    padding: 28px 24px;
+    margin-bottom: 20px;
 
     .close-btn {
       position: absolute;
@@ -23,7 +25,17 @@
       right: 0;
       color: #dfdfdf;
     }
-    .verifier-title {
+    .verifier-title1 {
+      font-weight: bold;
+      font-size: 1.5rem;
+      line-height: 1.75rem;
+      letter-spacing: 0;
+    }
+    .verifier-title2 {
+      font-weight: bold;
+      font-size: 1.125rem;
+      line-height: 1.3rem;
+      letter-spacing: 0;
       img {
         height: 18px;
         margin-bottom: -4px;
@@ -31,6 +43,11 @@
       }
       @include loginTypes();
     }
+  }
+
+  .buttons-holder {
+    margin-left: 24px;
+    margin-right: 24px;
   }
 
   .login-btn.v-btn:not(.v-btn--text):not(.v-btn--icon) {
@@ -76,13 +93,23 @@
 
   .footer-notes {
     font-size: 11px;
+    padding-left: 24px;
+    padding-right: 24px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     .privacy-learn-more {
       font-weight: bold;
       text-decoration: none;
     }
   }
   .footer-links {
+    padding-left: 24px;
+    padding-right: 24px;
     background: var(--v-torusGray4-base);
+    font-size: 0.75rem;
+    line-height: 0.875rem;
+    letter-spacing: 0;
+    font-weight: normal;
     .theme--light.v-divider {
       border-color: var(--v-text_2-base);
     }
@@ -127,6 +154,75 @@
 
     .footer-links {
       background: var(--v-torusBlack2-base);
+    }
+  }
+
+  @media only screen and (min-height: 1080px) {
+    .login-header {
+      padding: 2.6vh 2.7vh;
+      margin-bottom: 2.6vh;
+      .verifier-title1 {
+        font-size: 2.6vh;
+        line-height: 1.2em;
+      }
+      .verifier-title2 {
+        font-size: 2vh;
+        line-height: 1.2em;
+      }
+      .close-btn {
+        top: 0.9vh;
+        right: 0.9vh;
+      }
+    }
+
+    .buttons-holder {
+      margin-left: 2.6vh;
+      margin-right: 2.6vh;
+    }
+    .footer-notes {
+      padding-left: 2.6vh;
+      padding-right: 2.6vh;
+      margin-top: 2.6vh;
+      margin-bottom: 4.4vh;
+      font-size: 1.2vh;
+      line-height: 1.2em;
+    }
+    .footer-links {
+      padding: 1.6vh 2.6vh;
+      font-size: 1.3vh;
+      line-height: 1.2em;
+    }
+  }
+  @media only screen and (min-height: 1440px) {
+    .login-header {
+      padding: 2.5vh 2.4vh;
+      margin-bottom: 2.4vh;
+      .verifier-title1 {
+        font-size: 2.2vh;
+        line-height: 1.2em;
+      }
+      .verifier-title2 {
+        font-size: 1.6vh;
+        line-height: 1.2em;
+      }
+    }
+
+    .buttons-holder {
+      margin-left: 2.4vh;
+      margin-right: 2.4vh;
+    }
+    .footer-notes {
+      padding-left: 2.4vh;
+      padding-right: 2.4vh;
+      margin-top: 2.5vh;
+      margin-bottom: 2.5vh;
+      font-size: 1vh;
+      line-height: 1.2em;
+    }
+    .footer-links {
+      padding: 1vh 2.4vh;
+      font-size: 1vh;
+      line-height: 0.875em;
     }
   }
 }
