@@ -150,6 +150,13 @@ export const getInfuraBlockExplorerUrl = (network) => {
   if (network === MAINNET) return 'https://etherscan.io'
   return `https://${network}.etherscan.io`
 }
+export const NETWORK_TYPE_TO_ID_MAP = {
+  [ROPSTEN]: { networkId: ROPSTEN_CODE, chainId: ROPSTEN_CHAIN_ID },
+  [RINKEBY]: { networkId: RINKEBY_CODE, chainId: RINKEBY_CHAIN_ID },
+  [KOVAN]: { networkId: KOVAN_CODE, chainId: KOVAN_CHAIN_ID },
+  [GOERLI]: { networkId: GOERLI_CODE, chainId: GOERLI_CHAIN_ID },
+  [MAINNET]: { networkId: MAINNET_CODE, chainId: MAINNET_CHAIN_ID },
+}
 
 export const createNetwork = (host, networkName, chainId, blockExplorer, ticker, tickerName, logo, rpcUrl) => ({
   host,

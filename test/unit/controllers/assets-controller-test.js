@@ -29,14 +29,22 @@ describe('AssetsController', () => {
   let prefsController
   const sandbox = createSandbox()
   let validateImageUrlStub
-
+  
   beforeEach(async () => {
     network = new NetworkController()
     const networkControllerProviderConfig = {
       getAccounts: noop,
     }
+    const setProviderTypeAndWait = () =>
+      new Promise((resolve) => {
+        network.on('networkDidChange', () => {
+          resolve();
+        });
+        network.setProviderType('mainnet');
+      });
+    
     network.initializeProvider(networkControllerProviderConfig)
-    network.setProviderType('mainnet')
+    await setProviderTypeAndWait('mainnet')
     prefsController = new PreferencesController({
       network,
     })
