@@ -1,6 +1,6 @@
 /* eslint-disable */
 import assert from 'assert'
-import { createPendingNonceMiddleware, createPendingTxMiddleware } from '../../../src/controllers/utils/createMetamaskMiddleware'
+import { createPendingNonceMiddleware, createPendingTxMiddleware } from '../../../src/controllers/network/createMetamaskMiddleware'
 import { txMetaStub } from '../lib/network-stub'
 
 describe('PendingNonceMiddleware', function () {

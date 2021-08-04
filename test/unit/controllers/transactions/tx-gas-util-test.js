@@ -3,7 +3,7 @@ import assert from 'assert'
 import { Transaction } from 'ethereumjs-tx'
 
 import { hexToBn, bnToHex } from '../../../../src/utils/utils'
-import TxUtils from '../../../../src/controllers/utils/TxGasUtil'
+import TxUtils from '../../../../src/controllers/transactions/TxGasUtil'
 
 describe('txUtils', function () {
   let txUtils

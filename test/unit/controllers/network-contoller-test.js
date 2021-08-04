@@ -1,7 +1,7 @@
 /* eslint-disable */
 import assert from 'assert'
 import nock from 'nock'
-import NetworkController from '../../../src/controllers/NetworkController'
+import NetworkController from '../../../src/controllers/network/NetworkController'
 import { getNetworkDisplayName } from '../../../src/utils/utils'
 
 describe('NetworkController', function () {

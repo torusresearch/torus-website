@@ -1,13 +1,7 @@
-import clone from 'clone'
 import jsonDiffer from 'fast-json-patch'
+import { cloneDeep } from 'lodash'
 
 /** @module */
-export default {
-  generateHistoryEntry,
-  replayHistory,
-  snapshotFromTxMeta,
-  migrateFromSnapshotsToDiffs,
-}
 
 /**
   converts non-initial history entries into diffs
@@ -57,8 +51,8 @@ function generateHistoryEntry(previousState, newState, note) {
   @returns {Object}
 */
 function replayHistory(_shortHistory) {
-  const shortHistory = clone(_shortHistory)
-  return shortHistory.reduce((value, entry) => jsonDiffer.applyPatch(value, entry).newDocument)
+  const shortHistory = cloneDeep(_shortHistory)
+  return shortHistory.reduce((val, entry) => jsonDiffer.applyPatch(val, entry).newDocument)
 }
 
 /**
@@ -66,9 +60,9 @@ function replayHistory(_shortHistory) {
   @returns {Object} - a clone object of the txMeta with out history
 */
 function snapshotFromTxMeta(txMeta) {
-  // create txMeta snapshot for history
-  const snapshot = clone(txMeta)
-  // dont include previous history in this snapshot
-  delete snapshot.history
-  return snapshot
+  const shallow = { ...txMeta }
+  delete shallow.history
+  return cloneDeep(shallow)
 }
+
+export { generateHistoryEntry, migrateFromSnapshotsToDiffs, replayHistory, snapshotFromTxMeta }

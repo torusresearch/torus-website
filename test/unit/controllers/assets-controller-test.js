@@ -8,7 +8,7 @@ import config from '../../../src/config'
 import * as utils from '../../../src/utils/utils'
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
 import AssetsController from '../../../src/controllers/AssetsController'
-import NetworkController from '../../../src/controllers/NetworkController'
+import NetworkController from '../../../src/controllers/network/NetworkController'
 import PreferencesController from '../../../src/controllers/PreferencesController'
 
 const noop = () => {}

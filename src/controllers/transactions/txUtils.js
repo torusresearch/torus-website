@@ -1,13 +1,12 @@
 import { ethErrors } from 'eth-rpc-errors'
-import { addHexPrefix } from 'ethereumjs-util'
+import { addHexPrefix, isHexString } from 'ethereumjs-util'
 import { isAddress } from 'web3-utils'
 
-import { TRANSACTION_ENVELOPE_TYPES } from '../../utils/enums'
+import { TRANSACTION_ENVELOPE_TYPES, TRANSACTION_STATUSES } from '../../utils/enums'
 
 /**
 @module
 */
-export { getFinalStates, normalizeTxParameters as normalizeTxParams, validateFrom, validateRecipient, validateTxParameters as validateTxParams }
 
 // functions that handle normalizing of that key in txParams
 const normalizers = {
@@ -36,7 +35,7 @@ export function normalizeAndValidateTxParams(txParams, lowerCase = true) {
  * @param txParams {object}
  * @returns {object} normalized txParams
  */
-function normalizeTxParameters(txParameters, LowerCase) {
+export function normalizeTxParameters(txParameters, LowerCase) {
   // apply only keys in the normalizers
   const normalizedTxParameters = {}
   for (const key in normalizers) {
@@ -50,13 +49,19 @@ function normalizeTxParameters(txParameters, LowerCase) {
  * @param {Object} txParams - the tx params
  * @throws {Error} if the tx params contains invalid fields
  */
-export function validateTxParameters(txParams) {
+export function validateTxParameters(txParams, eip1559Compatibility = true) {
   if (!txParams || typeof txParams !== 'object' || Array.isArray(txParams)) {
     throw ethErrors.rpc.invalidParams('Invalid transaction params: must be an object.')
   }
   if (!txParams.to && !txParams.data) {
     throw ethErrors.rpc.invalidParams(
       'Invalid transaction params: must specify "data" for contract deployments, or "to" (and optionally "data") for all other types of transactions.'
+    )
+  }
+
+  if (isEIP1559Transaction({ txParams }) && !eip1559Compatibility) {
+    throw ethErrors.rpc.invalidParams(
+      'Invalid transaction params: params specify an EIP-1559 transaction but the current network does not support EIP-1559'
     )
   }
 
@@ -115,7 +120,7 @@ export function validateTxParameters(txParams) {
  * @throws {ethErrors.rpc.invalidParams} - throws if mutuallyExclusiveField is
  *  present in txParams.
  */
-function ensureMutuallyExclusiveFieldsNotProvided(txParams, fieldBeingValidated, mutuallyExclusiveField) {
+export function ensureMutuallyExclusiveFieldsNotProvided(txParams, fieldBeingValidated, mutuallyExclusiveField) {
   if (typeof txParams[mutuallyExclusiveField] !== 'undefined') {
     throw ethErrors.rpc.invalidParams(
       `Invalid transaction params: specified ${fieldBeingValidated} but also included ${mutuallyExclusiveField}, these cannot be mixed`
@@ -130,7 +135,7 @@ function ensureMutuallyExclusiveFieldsNotProvided(txParams, fieldBeingValidated,
  * @param {string} field - the current field being validated
  * @throws {ethErrors.rpc.invalidParams} - throws if field is not a string
  */
-function ensureFieldIsString(txParams, field) {
+export function ensureFieldIsString(txParams, field) {
   if (typeof txParams[field] !== 'string') {
     throw ethErrors.rpc.invalidParams(`Invalid transaction params: ${field} is not a string. got: (${txParams[field]})`)
   }
@@ -172,7 +177,7 @@ function ensureProperTransactionEnvelopeTypeProvided(txParams, field) {
  * validates the from field in  txParams
  * @param txParams {object}
  */
-function validateFrom(txParams) {
+export function validateFrom(txParams) {
   if (!(typeof txParams.from === 'string')) {
     throw ethErrors.rpc.invalidParams(`Invalid "from" address "${txParams.from}": not a string.`)
   }
@@ -185,7 +190,7 @@ function validateFrom(txParams) {
  * validates the to field in  txParams
  * @param txParams {object}
  */
-function validateRecipient(txParameters) {
+export function validateRecipient(txParameters) {
   if (txParameters.to === '0x' || txParameters.to === null) {
     if (txParameters.data) {
       delete txParameters.to
@@ -201,11 +206,46 @@ function validateRecipient(txParameters) {
 /**
  * @returns an {array} of states that can be considered final
  */
-function getFinalStates() {
+export function getFinalStates() {
   return [
-    'rejected', // the user has responded no!
-    'confirmed', // the tx has been included in a block.
-    'failed', // the tx failed for some reason, included on tx data.
-    'dropped', // the tx nonce was already used
+    TRANSACTION_STATUSES.REJECTED, // the user has responded no!
+    TRANSACTION_STATUSES.CONFIRMED, // the tx has been included in a block.
+    TRANSACTION_STATUSES.FAILED, // the tx failed for some reason, included on tx data.
+    TRANSACTION_STATUSES.DROPPED, // the tx nonce was already used
   ]
+}
+
+export function transactionMatchesNetwork(transaction, chainId, networkId) {
+  if (typeof transaction.chainId !== 'undefined') {
+    return transaction.chainId === chainId
+  }
+  return transaction.metamaskNetworkId === networkId
+}
+
+/**
+ * Determines if the maxFeePerGas and maxPriorityFeePerGas fields are supplied
+ * and valid inputs. This will return false for non hex string inputs.
+ * @param {import("../constants/transaction").TransactionMeta} transaction -
+ *  the transaction to check
+ * @returns {boolean} true if transaction uses valid EIP1559 fields
+ */
+export function isEIP1559Transaction(transaction) {
+  return isHexString(transaction?.txParams?.maxFeePerGas) && isHexString(transaction?.txParams?.maxPriorityFeePerGas)
+}
+
+/**
+ * Determine if the maxFeePerGas and maxPriorityFeePerGas fields are not
+ * supplied and that the gasPrice field is valid if it is provided. This will
+ * return false if gasPrice is a non hex string.
+ * @param {import("../constants/transaction").TransactionMeta} transaction -
+ *  the transaction to check
+ * @returns {boolean} true if transaction uses valid Legacy fields OR lacks
+ *  EIP1559 fields
+ */
+export function isLegacyTransaction(transaction) {
+  return (
+    typeof transaction.txParams.maxFeePerGas === 'undefined' &&
+    typeof transaction.txParams.maxPriorityFeePerGas === 'undefined' &&
+    (typeof transaction.txParams.gasPrice === 'undefined' || isHexString(transaction.txParams.gasPrice))
+  )
 }

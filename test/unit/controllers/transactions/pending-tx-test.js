@@ -1,7 +1,7 @@
 /* eslint-disable */
 import assert from 'assert'
 import { createTestProviderTools } from '../../../stub/provider'
-import PendingTransactionTracker from '../../../../src/controllers/PendingTransactionTracker'
+import PendingTransactionTracker from '../../../../src/controllers/transactions/PendingTransactionTracker'
 import MockTxGen from '../../lib/mock-tx-gen'
 import sinon from 'sinon'
 

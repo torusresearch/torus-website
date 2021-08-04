@@ -1,10 +1,12 @@
 import { ObservableStore } from '@metamask/obs-store'
 import EventEmitter from '@metamask/safe-event-emitter'
+import { keyBy, mapValues, omitBy, pickBy, sortBy } from 'lodash'
 import log from 'loglevel'
 
+import { TRANSACTION_STATUSES } from '../../utils/enums'
 import createId from '../../utils/random-id'
-import txStateHistoryHelper from './tx-state-history-helper'
-import { getFinalStates, normalizeTxParams as normalizeTxParameters } from './txUtils'
+import { generateHistoryEntry, replayHistory, snapshotFromTxMeta } from './tx-state-history-helper'
+import { getFinalStates, normalizeAndValidateTxParams, transactionMatchesNetwork } from './txUtils'
 /**
   TransactionStateManager is responsible for the state of a transaction and
   storing the transaction
@@ -87,63 +89,68 @@ class TransactionStateManager extends EventEmitter {
   }
 
   /**
-    @returns {array} of txMetas that have been filtered for only the current network
-  */
-  getTxList() {
-    const network = this.getNetwork()
-    const fullTxList = this.getFullTxList()
-    return fullTxList.filter((txMeta) => txMeta.metamaskNetworkId === network)
-  }
-
-  /**
-    @returns {array} of all the txMetas in store
-  */
-  getFullTxList() {
-    return this.store.getState().transactions
-  }
-
-  /**
-    @returns {array} the tx list whos status is unapproved
-  */
+   * Get an object containing all unapproved transactions for the current
+   * network. This is the only transaction fetching method that returns an
+   * object, so it doesn't use getTransactions like everything else.
+   *
+   * @returns {Record<string, TransactionMeta>} Unapproved transactions keyed
+   *  by id
+   */
   getUnapprovedTxList() {
-    const txList = this.getTxsByMetaData('status', 'unapproved')
-    return txList.reduce((result, tx) => {
-      result[tx.id] = tx
-      return result
-    }, {})
+    const chainId = this.getCurrentChainId()
+    const network = this.getNetwork()
+    return pickBy(
+      this.store.getState().transactions,
+      (transaction) => transaction.status === TRANSACTION_STATUSES.UNAPPROVED && transactionMatchesNetwork(transaction, chainId, network)
+    )
   }
 
   /**
-    @param [address] {string} - hex prefixed address to sort the txMetas for [optional]
-    @returns {array} the tx list whos status is approved if no address is provide
-    returns all txMetas who's status is approved for the current network
-  */
+   * Get all approved transactions for the current network. If an address is
+   * provided, the list will be further refined to only those transactions
+   * originating from the supplied address.
+   *
+   * @param {string} [address] - hex prefixed address to find transactions for.
+   * @returns {TransactionMeta[]} the filtered list of transactions
+   */
   getApprovedTransactions(address) {
-    const options = { status: 'approved' }
-    if (address) options.from = address
-    return this.getFilteredTxList(options)
+    const searchCriteria = { status: TRANSACTION_STATUSES.APPROVED }
+    if (address) {
+      searchCriteria.from = address
+    }
+    return this.getTransactions({ searchCriteria })
   }
 
   /**
-    @param [address] {string} - hex prefixed address to sort the txMetas for [optional]
-    @returns {array} the tx list whos status is submitted if no address is provide
-    returns all txMetas who's status is submitted for the current network
-  */
+   * Get all pending transactions for the current network. If an address is
+   * provided, the list will be further refined to only those transactions
+   * originating from the supplied address.
+   *
+   * @param {string} [address] - hex prefixed address to find transactions for.
+   * @returns {TransactionMeta[]} the filtered list of transactions
+   */
   getPendingTransactions(address) {
-    const options = { status: 'submitted' }
-    if (address) options.from = address
-    return this.getFilteredTxList(options)
+    const searchCriteria = { status: TRANSACTION_STATUSES.SUBMITTED }
+    if (address) {
+      searchCriteria.from = address
+    }
+    return this.getTransactions({ searchCriteria })
   }
 
   /**
-    @param [address] {string} - hex prefixed address to sort the txMetas for [optional]
-    @returns {array} the tx list whos status is confirmed if no address is provide
-    returns all txMetas who's status is confirmed for the current network
-  */
+   * Get all confirmed transactions for the current network. If an address is
+   * provided, the list will be further refined to only those transactions
+   * originating from the supplied address.
+   *
+   * @param {string} [address] - hex prefixed address to find transactions for.
+   * @returns {TransactionMeta[]} the filtered list of transactions
+   */
   getConfirmedTransactions(address) {
-    const options = { status: 'confirmed' }
-    if (address) options.from = address
-    return this.getFilteredTxList(options)
+    const searchCriteria = { status: TRANSACTION_STATUSES.CONFIRMED }
+    if (address) {
+      searchCriteria.from = address
+    }
+    return this.getTransactions({ searchCriteria })
   }
 
   /**
@@ -155,9 +162,9 @@ class TransactionStateManager extends EventEmitter {
     @param txMeta {Object}
     @returns {object} the txMeta
   */
-  addTx(txMeta) {
+  addTransaction(txMeta) {
     if (txMeta.txParams) {
-      this.normalizeAndValidateTxParams(txMeta.txParams)
+      txMeta.txParams = normalizeAndValidateTxParams(txMeta.txParams, false)
     }
     this.once(`${txMeta.id}:signed`, () => {
       this.removeAllListeners(`${txMeta.id}:rejected`)
@@ -168,32 +175,49 @@ class TransactionStateManager extends EventEmitter {
     // initialize history
     txMeta.history = []
     // capture initial snapshot of txMeta for history
-    const snapshot = txStateHistoryHelper.snapshotFromTxMeta(txMeta)
+    const snapshot = snapshotFromTxMeta(txMeta)
     txMeta.history.push(snapshot)
 
-    const transactions = this.getFullTxList()
-    const txCount = transactions.length
+    const transactions = this.getTransactions({
+      filterToCurrentNetwork: false,
+    })
     const { txHistoryLimit } = this
 
-    // checks if the length of the tx history is
-    // longer then desired persistence limit
-    // and then if it is removes only confirmed
-    // or rejected tx's.
-    // not tx's that are pending or unapproved
-    if (txCount > txHistoryLimit - 1) {
-      const index = transactions.findIndex((metaTx) => getFinalStates().includes(metaTx.status))
-      if (index !== -1) {
-        transactions.splice(index, 1)
-      }
-    }
-    const newTxIndex = transactions.findIndex((currentTxMeta) => currentTxMeta.time > txMeta.time)
+    // checks if the length of the tx history is longer then desired persistence
+    // limit and then if it is removes the oldest confirmed or rejected tx.
+    // Pending or unapproved transactions will not be removed by this
+    // operation. For safety of presenting a fully functional transaction UI
+    // representation, this function will not break apart transactions with the
+    // same nonce, per network. Not accounting for transactions of the same
+    // nonce and network combo can result in confusing or broken experiences
+    // in the UI.
+    //
+    // TODO: we are already limiting what we send to the UI, and in the future
+    // we will send UI only collected groups of transactions *per page* so at
+    // some point in the future, this persistence limit can be adjusted. When
+    // we do that I think we should figure out a better storage solution for
+    // transaction history entries.
+    const nonceNetworkSet = new Set()
 
-    if (newTxIndex === -1) {
-      transactions.push(txMeta)
-    } else {
-      transactions.splice(newTxIndex, 0, txMeta)
-    }
-    this._saveTxList(transactions)
+    const txsToDelete = transactions
+      .reverse()
+      .filter((tx) => {
+        const { nonce } = tx.txParams
+        const { chainId, metamaskNetworkId, status } = tx
+        const key = `${nonce}-${chainId ?? metamaskNetworkId}`
+        if (nonceNetworkSet.has(key)) {
+          return false
+        }
+        if (nonceNetworkSet.size < txHistoryLimit - 1 || getFinalStates().includes(status) === false) {
+          nonceNetworkSet.add(key)
+          return false
+        }
+        return true
+      })
+      .map((tx) => tx.id)
+
+    this._deleteTransactions(txsToDelete)
+    this._addTransactionsToState([txMeta])
     return txMeta
   }
 
@@ -202,9 +226,9 @@ class TransactionStateManager extends EventEmitter {
     @returns {object} the txMeta who matches the given id if none found
     for the network returns undefined
   */
-  getTx(txId) {
-    const txMeta = this.getTxsByMetaData('id', txId)[0]
-    return txMeta
+  getTransaction(txId) {
+    const { transactions } = this.store.getState()
+    return transactions[txId]
   }
 
   /**
@@ -212,130 +236,109 @@ class TransactionStateManager extends EventEmitter {
     @param txMeta {Object} - the txMeta to update
     @param [note] {string} - a note about the update for history
   */
-  updateTx(txMeta, note) {
+  updateTransaction(txMeta, note) {
     // validate txParams
     if (txMeta.txParams) {
-      this.normalizeAndValidateTxParams(txMeta.txParams)
+      txMeta.txParams = normalizeAndValidateTxParams(txMeta.txParams, false)
     }
 
     // create txMeta snapshot for history
-    const currentState = txStateHistoryHelper.snapshotFromTxMeta(txMeta)
+    const currentState = snapshotFromTxMeta(txMeta)
     // recover previous tx state obj
-    const previousState = txStateHistoryHelper.replayHistory(txMeta.history)
+    const previousState = replayHistory(txMeta.history)
     // generate history entry and add to history
-    const entry = txStateHistoryHelper.generateHistoryEntry(previousState, currentState, note)
-    txMeta.history.push(entry)
+    const entry = generateHistoryEntry(previousState, currentState, note)
+    if (entry.length > 0) {
+      txMeta.history.push(entry)
+    }
 
     // commit txMeta to state
     const txId = txMeta.id
-    const txList = this.getFullTxList()
-    const index = txList.findIndex((txData) => txData.id === txId)
-    txList[index] = txMeta
-    this._saveTxList(txList)
+    this.store.updateState({
+      transactions: {
+        ...this.store.getState().transactions,
+        [txId]: txMeta,
+      },
+    })
   }
 
-  normalizeAndValidateTxParams(txParameters) {
-    if (typeof txParameters.data === 'undefined') {
-      delete txParameters.data
-    }
-    const modifiedTxParameters = normalizeTxParameters(txParameters, false)
-    this.validateTxParams(modifiedTxParameters)
-  }
+  getTransactions({ searchCriteria = {}, initialList = undefined, filterToCurrentNetwork = true, limit = undefined } = {}) {
+    const chainId = this.getCurrentChainId()
+    const network = this.getNetwork()
+    // searchCriteria is an object that might have values that aren't predicate
+    // methods. When providing any other value type (string, number, etc), we
+    // consider this shorthand for "check the value at key for strict equality
+    // with the provided value". To conform this object to be only methods, we
+    // mapValues (lodash) such that every value on the object is a method that
+    // returns a boolean.
+    const predicateMethods = mapValues(searchCriteria, (predicate) => (typeof predicate === 'function' ? predicate : (v) => v === predicate))
 
-  /**
-    merges txParams obj onto txMeta.txParams
-    use extend to ensure that all fields are filled
-    @param txId {number} - the id of the txMeta
-    @param txParams {object} - the updated txParams
-  */
-  updateTxParams(txId, txParameters) {
-    const txMeta = this.getTx(txId)
-    txMeta.txParams = { ...txMeta.txParams, ...txParameters }
-    this.updateTx(txMeta, 'txStateManager#updateTxParams')
-  }
+    // If an initial list is provided we need to change it back into an object
+    // first, so that it matches the shape of our state. This is done by the
+    // lodash keyBy method. This is the edge case for this method, typically
+    // initialList will be undefined.
+    const transactionsToFilter = initialList ? keyBy(initialList, 'id') : this.store.getState().transactions
 
-  /**
-    validates txParams members by type
-    @param txParams {object} - txParams to validate
-  */
-  validateTxParams(txParameters) {
-    Object.keys(txParameters).forEach((key) => {
-      const value = txParameters[key]
-      // validate types
-      switch (key) {
-        case 'chainId':
-          if (typeof value !== 'number' && typeof value !== 'string') {
-            throw new TypeError(`${key} in txParams is not a Number or hex string. got: (${value})`)
+    // Combine sortBy and pickBy to transform our state object into an array of
+    // matching transactions that are sorted by time.
+    const filteredTransactions = sortBy(
+      pickBy(transactionsToFilter, (transaction) => {
+        // default matchesCriteria to the value of transactionMatchesNetwork
+        // when filterToCurrentNetwork is true.
+        if (filterToCurrentNetwork && transactionMatchesNetwork(transaction, chainId, network) === false) {
+          return false
+        }
+        // iterate over the predicateMethods keys to check if the transaction
+        // matches the searchCriteria
+        for (const [key, predicate] of Object.entries(predicateMethods)) {
+          // We return false early as soon as we know that one of the specified
+          // search criteria do not match the transaction. This prevents
+          // needlessly checking all criteria when we already know the criteria
+          // are not fully satisfied. We check both txParams and the base
+          // object as predicate keys can be either.
+          if (key in transaction.txParams) {
+            if (predicate(transaction.txParams[key]) === false) {
+              return false
+            }
+          } else if (predicate(transaction[key]) === false) {
+            return false
           }
-          break
-        default:
-          if (typeof value !== 'string') throw new Error(`${key} in txParams is not a string. got: (${value})`)
-          break
+        }
+
+        return true
+      }),
+      'time'
+    )
+    if (limit !== undefined) {
+      // We need to have all transactions of a given nonce in order to display
+      // necessary details in the UI. We use the size of this set to determine
+      // whether we have reached the limit provided, thus ensuring that all
+      // transactions of nonces we include will be sent to the UI.
+      const nonces = new Set()
+      const txs = []
+      // By default, the transaction list we filter from is sorted by time ASC.
+      // To ensure that filtered results prefers the newest transactions we
+      // iterate from right to left, inserting transactions into front of a new
+      // array. The original order is preserved, but we ensure that newest txs
+      // are preferred.
+      for (let i = filteredTransactions.length - 1; i > -1; i -= 1) {
+        const txMeta = filteredTransactions[i]
+        const { nonce } = txMeta.txParams
+        if (!nonces.has(nonce)) {
+          if (nonces.size < limit) {
+            nonces.add(nonce)
+          } else {
+            // eslint-disable-next-line no-continue
+            continue
+          }
+        }
+        // Push transaction into the beginning of our array to ensure the
+        // original order is preserved.
+        txs.unshift(txMeta)
       }
-    })
-  }
-
-  /**
-  @param opts {object} -  an object of fields to search for eg:<br>
-  let <code>thingsToLookFor = {<br>
-    to: '0x0..',<br>
-    from: '0x0..',<br>
-    status: 'signed',<br>
-    err: undefined,<br>
-  }<br></code>
-  @param [initialList=this.getTxList()]
-  @returns a {array} of txMeta with all
-  options matching
-  */
-  /*
-  ****************HINT****************
-  | `err: undefined` is like looking |
-  | for a tx with no err             |
-  | so you can also search txs that  |
-  | dont have something as well by   |
-  | setting the value as undefined   |
-  ************************************
-
-  this is for things like filtering a the tx list
-  for only tx's from 1 account
-  or for filltering for all txs from one account
-  and that have been 'confirmed'
-  */
-  getFilteredTxList(options, initialList) {
-    let filteredTxList = initialList
-    Object.keys(options).forEach((key) => {
-      filteredTxList = this.getTxsByMetaData(key, options[key], filteredTxList)
-    })
-    return filteredTxList
-  }
-
-  /**
-
-    @param key {string} - the key to check
-    @param value - the value your looking for can also be a function that returns a bool
-    @param [txList=this.getTxList()] {array} - the list to search. default is the txList
-    from txStateManager#getTxList
-    @returns {array} a list of txMetas who matches the search params
-  */
-  getTxsByMetaData(key, value, txList = this.getTxList()) {
-    const filter = typeof value === 'function' ? value : (v) => v === value
-    return txList.filter((txMeta) => {
-      if (key in txMeta.txParams) {
-        return filter(txMeta.txParams[key])
-      }
-      return filter(txMeta[key])
-    })
-  }
-
-  // get::set status
-
-  /**
-    @param txId {number} - the txMeta Id
-    @return {string} the status of the tx.
-  */
-  getTxStatus(txId) {
-    const txMeta = this.getTx(txId)
-    return txMeta.status
+      return txs
+    }
+    return filteredTransactions
   }
 
   /**
@@ -343,8 +346,8 @@ class TransactionStateManager extends EventEmitter {
     @param txId {number} - the txMeta Id
   */
   setTxStatusRejected(txId) {
-    this._setTxStatus(txId, 'rejected')
-    this._removeTx(txId)
+    this._setTransactionStatus(txId, TRANSACTION_STATUSES.REJECTED)
+    this._deleteTransaction(txId)
   }
 
   /**
@@ -352,7 +355,7 @@ class TransactionStateManager extends EventEmitter {
     @param txId {number} - the txMeta Id
   */
   setTxStatusUnapproved(txId) {
-    this._setTxStatus(txId, 'unapproved')
+    this._setTransactionStatus(txId, TRANSACTION_STATUSES.UNAPPROVED)
   }
 
   /**
@@ -360,7 +363,7 @@ class TransactionStateManager extends EventEmitter {
     @param txId {number} - the txMeta Id
   */
   setTxStatusApproved(txId) {
-    this._setTxStatus(txId, 'approved')
+    this._setTransactionStatus(txId, TRANSACTION_STATUSES.APPROVED)
   }
 
   /**
@@ -368,7 +371,7 @@ class TransactionStateManager extends EventEmitter {
     @param txId {number} - the txMeta Id
   */
   setTxStatusSigned(txId) {
-    this._setTxStatus(txId, 'signed')
+    this._setTransactionStatus(txId, TRANSACTION_STATUSES.SIGNED)
   }
 
   /**
@@ -377,45 +380,47 @@ class TransactionStateManager extends EventEmitter {
     @param txId {number} - the txMeta Id
   */
   setTxStatusSubmitted(txId) {
-    const txMeta = this.getTx(txId)
+    const txMeta = this.getTransaction(txId)
     txMeta.submittedTime = Date.now()
-    this.updateTx(txMeta, 'txStateManager - add submitted time stamp')
-    this._setTxStatus(txId, 'submitted')
+    this.updateTransaction(txMeta, 'txStateManager - add submitted time stamp')
+    this._setTransactionStatus(txId, TRANSACTION_STATUSES.SUBMITTED)
   }
 
   /**
-    should update the status of the tx to 'confirmed'.
-    @param txId {number} - the txMeta Id
-  */
+   * Update status of the TransactionMeta with provided id to 'confirmed'
+   *
+   * @param {number} txId - the target TransactionMeta's Id
+   */
   setTxStatusConfirmed(txId) {
-    this._setTxStatus(txId, 'confirmed')
+    this._setTransactionStatus(txId, TRANSACTION_STATUSES.CONFIRMED)
   }
 
   /**
-    should update the status of the tx to 'dropped'.
-    @param txId {number} - the txMeta Id
-  */
+   * Update status of the TransactionMeta with provided id to 'dropped'
+   *
+   * @param {number} txId - the target TransactionMeta's Id
+   */
   setTxStatusDropped(txId) {
-    this._setTxStatus(txId, 'dropped')
+    this._setTransactionStatus(txId, TRANSACTION_STATUSES.DROPPED)
   }
 
   /**
     should update the status of the tx to 'failed'.
     and put the error on the txMeta
     @param txId {number} - the txMeta Id
-    @param err {erroObject} - error object
+    @param error_ {errorObject} - error object
   */
   setTxStatusFailed(txId, error_) {
-    const error = !error_ ? new Error('Internal metamask failure') : error_
+    const error = !error_ ? new Error('Internal torus failure') : error_
 
-    const txMeta = this.getTx(txId)
+    const txMeta = this.getTransaction(txId)
     txMeta.err = {
       message: error.toString(),
       rpc: error.value,
       stack: error.stack,
     }
-    this.updateTx(txMeta, 'transactions:tx-state-manager#fail - add error')
-    this._setTxStatus(txId, 'failed')
+    this.updateTransaction(txMeta, 'transactions:tx-state-manager#fail - add error')
+    this._setTransactionStatus(txId, TRANSACTION_STATUSES.FAILED)
   }
 
   /**
@@ -425,14 +430,26 @@ class TransactionStateManager extends EventEmitter {
   */
   wipeTransactions(address) {
     // network only tx
-    const txs = this.getFullTxList()
+    const { transactions } = this.store.getState()
     const network = this.getNetwork()
-
-    // Filter out the ones from the current account and network
-    const otherAccountTxs = txs.filter((txMeta) => !(txMeta.txParams.from === address && txMeta.metamaskNetworkId === network))
+    const chainId = this.getCurrentChainId()
 
     // Update state
-    this._saveTxList(otherAccountTxs)
+    this.store.updateState({
+      transactions: omitBy(
+        transactions,
+        (transaction) => transaction.txParams.from === address && transactionMatchesNetwork(transaction, chainId, network)
+      ),
+    })
+  }
+
+  /**
+   * Filters out the unapproved transactions from state
+   */
+  clearUnapprovedTxs() {
+    this.store.updateState({
+      transactions: omitBy(this.store.getState().transactions, (transaction) => transaction.status === TRANSACTION_STATUSES.UNAPPROVED),
+    })
   }
   //
   //           PRIVATE METHODS
@@ -456,41 +473,71 @@ class TransactionStateManager extends EventEmitter {
     @emits ${txMeta.id}:finished - if it is a finished state. Passes the txMeta
     @emits update:badge
   */
-  _setTxStatus(txId, status) {
-    const txMeta = this.getTx(txId)
+  _setTransactionStatus(txId, status) {
+    const txMeta = this.getTransaction(txId)
 
     if (!txMeta) {
       return
     }
 
     txMeta.status = status
-    setTimeout(() => {
-      try {
-        this.updateTx(txMeta, `txStateManager: setting status to ${status}`)
-        this.emit(`${txMeta.id}:${status}`, txId)
-        this.emit('tx:status-update', txId, status)
-        if (['submitted', 'rejected', 'failed'].includes(status)) {
-          this.emit(`${txMeta.id}:finished`, txMeta)
-        }
-        this.emit('update:badge')
-      } catch (error) {
-        log.error(error)
+    try {
+      this.updateTransaction(txMeta, `txStateManager: setting status to ${status}`)
+      this.emit(`${txMeta.id}:${status}`, txId)
+      this.emit('tx:status-update', txId, status)
+      if ([TRANSACTION_STATUSES.SUBMITTED, TRANSACTION_STATUSES.REJECTED, TRANSACTION_STATUSES.FAILED].includes(status)) {
+        this.emit(`${txMeta.id}:finished`, txMeta)
       }
+      this.emit('update:bagde')
+    } catch (error) {
+      log.error(error)
+    }
+  }
+
+  /**
+   * Adds one or more transactions into state. This is not intended for
+   * external use.
+   *
+   * @private
+   * @param {TransactionMeta[]} transactions - the list of transactions to save
+   */
+  _addTransactionsToState(transactions) {
+    this.store.updateState({
+      transactions: transactions.reduce((result, newTx) => {
+        result[newTx.id] = newTx
+        return result
+      }, this.store.getState().transactions),
     })
   }
 
   /**
-    Saves the new/updated txList.
-    @param transactions {array} - the list of transactions to save
-  */
-  // Function is intended only for internal use
-  _saveTxList(transactions) {
-    this.store.updateState({ transactions })
+   * removes one transaction from state. This is not intended for external use.
+   *
+   * @private
+   * @param {number} targetTransactionId - the transaction to delete
+   */
+  _deleteTransaction(targetTransactionId) {
+    const { transactions } = this.store.getState()
+    delete transactions[targetTransactionId]
+    this.store.updateState({
+      transactions,
+    })
   }
 
-  _removeTx(txId) {
-    const transactionList = this.getFullTxList()
-    this._saveTxList(transactionList.filter((txMeta) => txMeta.id !== txId))
+  /**
+   * removes multiple transaction from state. This is not intended for external use.
+   *
+   * @private
+   * @param {number[]} targetTransactionIds - the transactions to delete
+   */
+  _deleteTransactions(targetTransactionIds) {
+    const { transactions } = this.store.getState()
+    targetTransactionIds.forEach((transactionId) => {
+      delete transactions[transactionId]
+    })
+    this.store.updateState({
+      transactions,
+    })
   }
 }
 

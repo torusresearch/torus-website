@@ -1,7 +1,7 @@
 /* eslint-disable */
 import assert from 'assert'
-import TxStateManager from '../../../../src/controllers/TransactionStateManager'
-import txStateHistoryHelper from '../../../../src/controllers/utils/tx-state-history-helper'
+import TxStateManager from '../../../../src/controllers/transactions/TransactionStateManager'
+import txStateHistoryHelper from '../../../../src/controllers/transactions/tx-state-history-helper'
 
 const noop = () => true
 

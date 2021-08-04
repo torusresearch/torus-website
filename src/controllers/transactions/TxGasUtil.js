@@ -1,7 +1,6 @@
-/* eslint-disable require-atomic-updates */
 import { addHexPrefix } from 'ethereumjs-util'
 import EthQuery from 'ethjs-query'
-import cloneDeep from 'lodash.clonedeep'
+import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 
 import { BnMultiplyByFraction, bnToHex, hexToBn } from '../../utils/utils'

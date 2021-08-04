@@ -1,7 +1,7 @@
 import randomId from '@chaitanyapotti/random-id'
-import clone from 'clone'
 import deepmerge from 'deepmerge'
 import { BN } from 'ethereumjs-util'
+import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 
@@ -104,7 +104,7 @@ if (prefsController) {
   prefsController.metadataStore.subscribe(metadataHandler)
 }
 function resetStore(store, handler, initState) {
-  if (initState) store.putState(clone(initState))
+  if (initState) store.putState(cloneDeep(initState))
   store.unsubscribe(handler)
 }
 

@@ -1,4 +1,4 @@
-import clone from 'clone'
+import { cloneDeep } from 'lodash'
 
 import config from '../config'
 import {
@@ -62,7 +62,7 @@ const initialState = {
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },
   embedState: {
-    loginConfig: clone(config.loginConfig),
+    loginConfig: cloneDeep(config.loginConfig),
     isOAuthModalVisible: false,
     buttonPosition: 'bottom-left',
     torusWidgetVisibility: true,

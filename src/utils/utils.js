@@ -70,6 +70,7 @@ import {
   SIMPLEX,
   SUPPORTED_NETWORK_TYPES,
   SVG,
+  TEST_CHAINS,
   THEME_DARK_BLACK_NAME,
   TWITTER,
   WECHAT,
@@ -789,4 +790,21 @@ export async function validateImageUrl(url) {
       })
     }
   })
+}
+
+export function getChainType(chainId) {
+  if (chainId === MAINNET_CHAIN_ID) {
+    return 'mainnet'
+  }
+  if (TEST_CHAINS.includes(chainId)) {
+    return 'testnet'
+  }
+  return 'custom'
+}
+
+export const GAS_LIMITS = {
+  // maximum gasLimit of a simple send
+  SIMPLE: addHexPrefix((21_000).toString(16)),
+  // a base estimate for token transfers.
+  BASE_TOKEN_ESTIMATE: addHexPrefix((100_000).toString(16)),
 }

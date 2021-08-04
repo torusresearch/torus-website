@@ -2,7 +2,7 @@
 import assert from 'assert'
 
 import TypedMessageManager from '../../../src/controllers/TypedMessageManager'
-import NetworkController from '../../../src/controllers/NetworkController'
+import NetworkController from '../../../src/controllers/network/NetworkController'
 
 describe('Personal Message Manager', () => {
   let messageManager

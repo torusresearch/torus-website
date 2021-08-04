@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="type === TX_TRANSACTION">
+    <template v-if="type === TRANSACTION_TYPES.STANDARD_TRANSACTION">
       <v-layout pa-6 class="elevation-1">
         <v-flex text-center xs12>
           <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
@@ -11,8 +11,14 @@
         <v-flex xs12>
           <NetworkDisplay :minimal="true" class="mb-4" :store-network-type="network"></NetworkDisplay>
         </v-flex>
-        <v-flex v-if="transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM || transactionCategory === TOKEN_METHOD_APPROVE" xs12>
-          <v-flex v-if="transactionCategory === TOKEN_METHOD_APPROVE" xs12 mb-2>
+        <v-flex
+          v-if="
+            transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM ||
+            transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE
+          "
+          xs12
+        >
+          <v-flex v-if="transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE" xs12 mb-2>
             <span class="headline text_2--text">
               {{ `${t('dappPermission.allow')} ${origin.hostname} ${t('dappTransfer.toSpend')} ${selectedToken} ${t('dappTransfer.onYourBehalf')}?` }}
             </span>
@@ -23,12 +29,19 @@
         </v-flex>
         <v-flex v-else xs12>
           <ShowToolTip
-            v-if="[TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(transactionCategory) >= 0"
+            v-if="
+              [TRANSACTION_TYPES.TOKEN_METHOD_APPROVE, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM].indexOf(
+                transactionCategory
+              ) >= 0
+            "
             :address="amountTo"
           >
             <div class="caption">{{ t('dappTransfer.to') }}: {{ amountTo }}</div>
           </ShowToolTip>
-          <ShowToolTip v-else-if="[SEND_ETHER_ACTION_KEY, CONTRACT_INTERACTION_KEY].indexOf(transactionCategory) >= 0" :address="receiver">
+          <ShowToolTip
+            v-else-if="[TRANSACTION_TYPES.SENT_ETHER, TRANSACTION_TYPES.CONTRACT_INTERACTION].indexOf(transactionCategory) >= 0"
+            :address="receiver"
+          >
             <div class="caption">{{ t('dappTransfer.to') }}: {{ receiver }}</div>
           </ShowToolTip>
           <div v-else class="caption">{{ t('dappTransfer.to') }}: {{ displayAmountTo }}</div>
@@ -40,8 +53,8 @@
           <div class="caption">
             {{
               ((contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155) &&
-                transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) ||
-              (isSpecialContract && transactionCategory === TOKEN_METHOD_TRANSFER)
+                transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) ||
+              (isSpecialContract && transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER)
                 ? t('walletTransfer.collectibleId')
                 : t('walletTransfer.totalCost')
             }}
@@ -62,7 +75,7 @@
           :currency-multiplier-eth="currencyMultiplier"
           :contract-type="contractType"
           :network-ticker="network.ticker"
-          :symbol="SEND_ETHER_ACTION_KEY === transactionCategory ? network.ticker : selectedToken"
+          :symbol="TRANSACTION_TYPES.SENT_ETHER === transactionCategory ? network.ticker : selectedToken"
           :is-confirm="true"
           :network-host="network.host"
           @onSelectSpeed="onSelectSpeed"
@@ -76,7 +89,7 @@
         <v-flex xs9>
           <v-text-field
             :value="`${costOfTransaction} ${
-              isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + network.ticker : ''
+              isOtherToken && transactionCategory !== TRANSACTION_TYPES.TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + network.ticker : ''
             }`"
             :hint="costOfTransactionConverted"
             outlined
@@ -147,7 +160,7 @@
             {{ t('dappTransfer.pleaseTopup3') }}
           </div>
         </v-flex>
-        <v-flex v-if="transactionCategory === TOKEN_METHOD_APPROVE" xs12 mb-4>
+        <v-flex v-if="transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE" xs12 mb-4>
           <div class="caption error--text">{{ `${t('dappTransfer.byConfirming1')} ${displayAmountValue} ${t('dappTransfer.byConfirming2')}.` }}</div>
         </v-flex>
         <v-flex xs12 mt-4>
@@ -176,7 +189,11 @@
 
     <template
       v-if="
-        type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE || type === TX_GET_ENCRYPTION_KEY || type === TX_ETH_DECRYPT
+        type === TX_PERSONAL_MESSAGE ||
+        type === TX_MESSAGE ||
+        type === TX_TYPED_MESSAGE ||
+        type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY ||
+        type === MESSAGE_TYPE.ETH_DECRYPT
       "
     >
       <v-layout py-6 class="elevation-1">
@@ -184,21 +201,21 @@
           <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
           <div class="display-1 text_2--text">
             {{
-              type === TX_GET_ENCRYPTION_KEY
+              type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY
                 ? t('dappProvider.encryptionRequest')
-                : type === TX_ETH_DECRYPT
+                : type === MESSAGE_TYPE.ETH_DECRYPT
                 ? t('dappProvider.decryptionRequest')
                 : t('dappTransfer.permission')
             }}
           </div>
         </v-flex>
       </v-layout>
-      <v-layout v-if="type === TX_GET_ENCRYPTION_KEY" wrap my-10>
+      <v-layout v-if="type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY" wrap my-10>
         <v-flex xs12 mx-6>
           <div class="text_2--text headline">{{ t('dappProvider.allowCompose').replace(/\{dappname\}/gi, origin.hostname) }}</div>
         </v-flex>
       </v-layout>
-      <v-layout v-if="type === TX_ETH_DECRYPT" wrap my-10>
+      <v-layout v-if="type === MESSAGE_TYPE.ETH_DECRYPT" wrap my-10>
         <v-flex xs12 mx-6>
           <div class="text_2--text headline">{{ t('dappProvider.allowRead').replace(/\{dappname\}/gi, origin.hostname) }}</div>
         </v-flex>
@@ -229,7 +246,7 @@
           </v-card>
         </v-flex>
       </v-layout>
-      <v-layout v-if="type === TX_ETH_DECRYPT" mx-6 my-6 wrap>
+      <v-layout v-if="type === MESSAGE_TYPE.ETH_DECRYPT" mx-6 my-6 wrap>
         <v-flex xs12 mb-2>
           <v-card v-if="showEncrypted" flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
@@ -256,7 +273,7 @@
           </ShowToolTip>
         </v-flex>
       </v-layout>
-      <v-layout v-if="type !== TX_GET_ENCRYPTION_KEY && type !== TX_ETH_DECRYPT" wrap>
+      <v-layout v-if="type !== MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY && type !== MESSAGE_TYPE.ETH_DECRYPT" wrap>
         <v-flex xs12 mt-0 mb-2 mx-6>
           <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
@@ -307,12 +324,12 @@
           <v-layout mx-n2>
             <v-flex xs6 px-2>
               <v-btn block text large class="text_2--text" @click="triggerDeny">
-                {{ type === TX_ETH_DECRYPT || type === TX_ETH_DECRYPT ? t('dappProvider.deny') : t('dappProvider.cancel') }}
+                {{ type === MESSAGE_TYPE.ETH_DECRYPT || type === MESSAGE_TYPE.ETH_DECRYPT ? t('dappProvider.deny') : t('dappProvider.cancel') }}
               </v-btn>
             </v-flex>
             <v-flex xs6 px-2>
               <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
-                {{ type === TX_ETH_DECRYPT || type === TX_ETH_DECRYPT ? t('dappProvider.allow') : t('dappProvider.confirm') }}
+                {{ type === MESSAGE_TYPE.ETH_DECRYPT || type === MESSAGE_TYPE.ETH_DECRYPT ? t('dappProvider.allow') : t('dappProvider.confirm') }}
               </v-btn>
             </v-flex>
           </v-layout>
@@ -330,23 +347,12 @@ import { mapActions, mapGetters } from 'vuex'
 import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
 import {
-  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
-  CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
-  DEPLOY_CONTRACT_ACTION_KEY,
-  SEND_ETHER_ACTION_KEY,
-  TOKEN_METHOD_APPROVE,
-  TOKEN_METHOD_TRANSFER,
-  TOKEN_METHOD_TRANSFER_FROM,
-  TX_ETH_DECRYPT,
-  TX_GET_ENCRYPTION_KEY,
-  TX_MESSAGE,
-  TX_PERSONAL_MESSAGE,
-  TX_TRANSACTION,
-  TX_TYPED_MESSAGE,
+  MESSAGE_TYPE,
+  TRANSACTION_TYPES,
 } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
 import { addressSlicer, isMain, significantDigits } from '../../../utils/utils'
@@ -421,18 +427,8 @@ export default {
       channel: '',
       selectedCurrency: '',
       currencyData: {},
-      COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
-      TOKEN_METHOD_APPROVE,
-      TOKEN_METHOD_TRANSFER,
-      TOKEN_METHOD_TRANSFER_FROM,
-      SEND_ETHER_ACTION_KEY,
-      CONTRACT_INTERACTION_KEY,
-      TX_TRANSACTION,
-      TX_TYPED_MESSAGE,
-      TX_PERSONAL_MESSAGE,
-      TX_MESSAGE,
-      TX_GET_ENCRYPTION_KEY,
-      TX_ETH_DECRYPT,
+      TRANSACTION_TYPES,
+      MESSAGE_TYPE,
       userInfo: {},
       contractType: CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
@@ -449,23 +445,23 @@ export default {
     ...mapGetters(['getLogo']),
     header() {
       switch (this.transactionCategory) {
-        case DEPLOY_CONTRACT_ACTION_KEY:
+        case TRANSACTION_TYPES.DEPLOY_CONTRACT:
           // return 'Contract Deployment'
           return this.t('dappTransfer.deploy')
-        case CONTRACT_INTERACTION_KEY:
+        case TRANSACTION_TYPES.CONTRACT_INTERACTION:
           return this.getHeaderByDapp()
-        case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
+        case TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           // return 'ERC721 SafeTransferFrom'
           return this.t('dappTransfer.collectibleSafe')
-        case TOKEN_METHOD_APPROVE:
+        case TRANSACTION_TYPES.TOKEN_METHOD_APPROVE:
           // return 'ERC20 Approve'
           return this.t('dappTransfer.approve')
-        case TOKEN_METHOD_TRANSFER:
-        case SEND_ETHER_ACTION_KEY:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER:
+        case TRANSACTION_TYPES.SENT_ETHER:
           // return 'ERC2O Transfer'
           // return 'Send Ether'
           return this.t('dappTransfer.transfer')
-        case TOKEN_METHOD_TRANSFER_FROM:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM:
           // return 'ERC2O Transfer From'
           return this.t('dappTransfer.transferFrom')
         default:
@@ -474,18 +470,18 @@ export default {
       }
     },
     isLightHeader() {
-      return [DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].includes(this.transactionCategory)
+      return [TRANSACTION_TYPES.DEPLOY_CONTRACT, TRANSACTION_TYPES.CONTRACT_INTERACTION].includes(this.transactionCategory)
     },
     displayAmountTo() {
       switch (this.transactionCategory) {
-        case TOKEN_METHOD_APPROVE:
-        case TOKEN_METHOD_TRANSFER:
-        case TOKEN_METHOD_TRANSFER_FROM:
+        case TRANSACTION_TYPES.TOKEN_METHOD_APPROVE:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM:
           return `${this.t('dappTransfer.to')}: ${this.slicedAddress(this.amountTo)}`
-        case SEND_ETHER_ACTION_KEY:
-        case CONTRACT_INTERACTION_KEY:
+        case TRANSACTION_TYPES.SENT_ETHER:
+        case TRANSACTION_TYPES.CONTRACT_INTERACTION:
           return `${this.t('dappTransfer.to')}: ${this.slicedAddress(this.receiver)}`
-        case DEPLOY_CONTRACT_ACTION_KEY:
+        case TRANSACTION_TYPES.DEPLOY_CONTRACT:
           return this.t('dappTransfer.newContract')
         default:
           return this.t('dappTransfer.transactionRequest')
@@ -493,16 +489,16 @@ export default {
     },
     displayAmountValue() {
       switch (this.transactionCategory) {
-        case TOKEN_METHOD_APPROVE:
-        case TOKEN_METHOD_TRANSFER:
-        case TOKEN_METHOD_TRANSFER_FROM:
+        case TRANSACTION_TYPES.TOKEN_METHOD_APPROVE:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM:
           return `${this.amountDisplay(this.amountValue)} ${this.selectedToken}`
-        case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
+        case TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           return `ID: ${this.amountValue} ${this.selectedToken}`
-        case SEND_ETHER_ACTION_KEY:
-        case CONTRACT_INTERACTION_KEY:
+        case TRANSACTION_TYPES.SENT_ETHER:
+        case TRANSACTION_TYPES.CONTRACT_INTERACTION:
           return `${this.amountDisplay(this.value)} ${this.network.ticker}`
-        case DEPLOY_CONTRACT_ACTION_KEY:
+        case TRANSACTION_TYPES.DEPLOY_CONTRACT:
           return this.t('dappTransfer.notApplicable')
         default:
           return this.t('dappTransfer.transactionRequest')
@@ -510,32 +506,34 @@ export default {
     },
     displayAmountConverted() {
       switch (this.transactionCategory) {
-        case TOKEN_METHOD_APPROVE:
-        case TOKEN_METHOD_TRANSFER:
-        case TOKEN_METHOD_TRANSFER_FROM:
+        case TRANSACTION_TYPES.TOKEN_METHOD_APPROVE:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM:
           return `~ ${significantDigits(this.amountTokenValueConverted)} ${this.selectedCurrency}`
-        case SEND_ETHER_ACTION_KEY:
-        case CONTRACT_INTERACTION_KEY:
+        case TRANSACTION_TYPES.SENT_ETHER:
+        case TRANSACTION_TYPES.CONTRACT_INTERACTION:
           return `~ ${this.dollarValue} ${this.selectedCurrency}`
-        case DEPLOY_CONTRACT_ACTION_KEY:
+        case TRANSACTION_TYPES.DEPLOY_CONTRACT:
           return ''
         default:
           return ''
       }
     },
     costOfTransaction() {
-      if ([TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)) {
+      if ([TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)) {
         return `${this.displayAmountValue}`
       }
       return `${this.totalEthCostDisplay} ${this.network.ticker}`
     },
     isOtherToken() {
-      return [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)
+      return [TRANSACTION_TYPES.TOKEN_METHOD_APPROVE, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM].includes(
+        this.transactionCategory
+      )
       // `+ ${significantDigits(this.gasCost)}`
     },
     costOfTransactionConverted() {
       let cost = this.totalUsdCost
-      if (this.transactionCategory !== TOKEN_METHOD_APPROVE) cost += this.amountTokenValueConverted.toNumber()
+      if (this.transactionCategory !== TRANSACTION_TYPES.TOKEN_METHOD_APPROVE) cost += this.amountTokenValueConverted.toNumber()
 
       const totalCost = this.isOtherToken ? significantDigits(cost, false, 5) : this.totalUsdCost
       return `~ ${totalCost} ${this.selectedCurrency}`
@@ -577,12 +575,12 @@ export default {
       this.balance = new BigNumber(balance)
       log.info({ msgParams, txParams })
       this.origin = origin || this.origin
-      if (type === TX_ETH_DECRYPT) {
+      if (type === MESSAGE_TYPE.ETH_DECRYPT) {
         const { msgParams: { data, from } = {}, id = '' } = msgParams || {}
         this.id = id
         this.message = data
         this.sender = from
-      } else if (type !== TX_TRANSACTION) {
+      } else if (type !== TRANSACTION_TYPES.STANDARD_TRANSACTION) {
         const { msgParams: { message, typedMessages } = {}, id = '' } = msgParams || {}
         let finalTypedMessages = typedMessages
         try {
@@ -602,7 +600,7 @@ export default {
           finalValue = new BigNumber(fromWei(value.toString()))
         }
         let txDataParameters = ''
-        if (contractParams.isSpecial && transactionCategory.toLowerCase() === TOKEN_METHOD_TRANSFER) {
+        if (contractParams.isSpecial && transactionCategory.toLowerCase() === TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER) {
           txDataParameters = methodParams
           this.contractType = CONTRACT_TYPE_ERC721
           this.isSpecialContract = true
@@ -621,7 +619,10 @@ export default {
         let amountTo
         let amountValue
         if (methodParams && Array.isArray(methodParams)) {
-          if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
+          if (
+            transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM ||
+            transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+          ) {
             ;[, amountTo, amountValue] = methodParams || []
           } else [amountTo, amountValue] = methodParams || []
         }

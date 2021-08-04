@@ -6,15 +6,8 @@ import Common from 'ethereumjs-common'
 import { Transaction as EthTx } from 'ethereumjs-tx'
 import { ObservableStore } from '@metamask/obs-store'
 import sinon from 'sinon'
-import TransactionController from '../../../../src/controllers/TransactionController'
-import {
-  TOKEN_METHOD_APPROVE,
-  TOKEN_METHOD_TRANSFER,
-  SEND_ETHER_ACTION_KEY,
-  DEPLOY_CONTRACT_ACTION_KEY,
-  CONTRACT_INTERACTION_KEY,
-  TRANSACTION_TYPE_RETRY,
-} from '../../../../src/utils/enums'
+import TransactionController from '../../../../src/controllers/transactions/TransactionController'
+import { TRANSACTION_TYPES } from '../../../../src/utils/enums'
 
 import { createTestProviderTools, getTestAccounts } from '../../../stub/provider'
 
@@ -216,7 +209,6 @@ describe('Transaction Controller', function () {
         .addUnapprovedTransaction({ from: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' })
         .then(() => {
           assert.fail('transaction should not have been added')
-          done()
         })
         .catch(() => {
           assert.ok('pass')
@@ -626,17 +618,21 @@ describe('Transaction Controller', function () {
         to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
         data: '',
       })
-      assert.deepStrictEqual(result, { transactionCategory: SEND_ETHER_ACTION_KEY, getCodeResponse: '0x', methodParams: {}, contractParams: {} })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.SENT_ETHER,
+        getCodeResponse: '0x',
+        methodParams: {},
+        contractParams: {},
+      })
     })
 
     it('should return a token transfer transactionCategory when data is for the respective method call', async function () {
       const result = await txController._determineTransactionCategory({
         to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-        data:
-          '0xa9059cbb0000000000000000000000002f318C334780961FB129D2a6c30D0763d9a5C970000000000000000000000000000000000000000000000000000000000000000a',
+        data: '0xa9059cbb0000000000000000000000002f318C334780961FB129D2a6c30D0763d9a5C970000000000000000000000000000000000000000000000000000000000000000a',
       })
       assert.deepStrictEqual(result, {
-        transactionCategory: TOKEN_METHOD_TRANSFER,
+        transactionCategory: TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER,
         getCodeResponse: undefined,
         methodParams: [
           { name: '_to', value: '0x2f318c334780961fb129d2a6c30d0763d9a5c970', type: 'address' },
@@ -649,11 +645,10 @@ describe('Transaction Controller', function () {
     it('should return a token approve transactionCategory when data is for the respective method call', async function () {
       const result = await txController._determineTransactionCategory({
         to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-        data:
-          '0x095ea7b30000000000000000000000002f318C334780961FB129D2a6c30D0763d9a5C9700000000000000000000000000000000000000000000000000000000000000005',
+        data: '0x095ea7b30000000000000000000000002f318C334780961FB129D2a6c30D0763d9a5C9700000000000000000000000000000000000000000000000000000000000000005',
       })
       assert.deepStrictEqual(result, {
-        transactionCategory: TOKEN_METHOD_APPROVE,
+        transactionCategory: TRANSACTION_TYPES.TOKEN_METHOD_APPROVE,
         getCodeResponse: undefined,
         methodParams: [
           { name: '_spender', value: '0x2f318c334780961fb129d2a6c30d0763d9a5c970', type: 'address' },
@@ -669,7 +664,7 @@ describe('Transaction Controller', function () {
         data: '0xabd',
       })
       assert.deepStrictEqual(result, {
-        transactionCategory: DEPLOY_CONTRACT_ACTION_KEY,
+        transactionCategory: TRANSACTION_TYPES.DEPLOY_CONTRACT,
         getCodeResponse: undefined,
         contractParams: {},
         methodParams: {},
@@ -681,7 +676,12 @@ describe('Transaction Controller', function () {
         to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
         data: '0xabd',
       })
-      assert.deepStrictEqual(result, { transactionCategory: SEND_ETHER_ACTION_KEY, getCodeResponse: '0x', contractParams: {}, methodParams: {} })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.SENT_ETHER,
+        getCodeResponse: '0x',
+        contractParams: {},
+        methodParams: {},
+      })
     })
 
     it('should return a simple send transactionCategory with a null getCodeResponse when to is truthy and there is data and but getCode returns an error', async function () {
@@ -689,7 +689,12 @@ describe('Transaction Controller', function () {
         to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
         data: '0xabd',
       })
-      assert.deepStrictEqual(result, { transactionCategory: SEND_ETHER_ACTION_KEY, getCodeResponse: '0x', contractParams: {}, methodParams: {} })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.SENT_ETHER,
+        getCodeResponse: '0x',
+        contractParams: {},
+        methodParams: {},
+      })
     })
 
     it('should return a contract interaction transactionCategory with the correct getCodeResponse when to is truthy and there is data and it is not a token transaction', async function () {
@@ -722,7 +727,12 @@ describe('Transaction Controller', function () {
         to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
         data: 'abd',
       })
-      assert.deepStrictEqual(result, { transactionCategory: CONTRACT_INTERACTION_KEY, getCodeResponse: '0x0a', contractParams: {}, methodParams: {} })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.CONTRACT_INTERACTION,
+        getCodeResponse: '0x0a',
+        contractParams: {},
+        methodParams: {},
+      })
     })
 
     it('should return a contract interaction transactionCategory with the correct getCodeResponse when to is a contract address and data is falsey', async function () {
@@ -755,7 +765,12 @@ describe('Transaction Controller', function () {
         to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
         data: '',
       })
-      assert.deepStrictEqual(result, { transactionCategory: CONTRACT_INTERACTION_KEY, getCodeResponse: '0x0a', contractParams: {}, methodParams: {} })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.CONTRACT_INTERACTION,
+        getCodeResponse: '0x0a',
+        contractParams: {},
+        methodParams: {},
+      })
     })
   })
 

@@ -4,7 +4,7 @@ import nock from 'nock'
 import sinon from 'sinon'
 
 import PreferencesController from '../../../src/controllers/PreferencesController'
-import NetworkController from '../../../src/controllers/NetworkController'
+import NetworkController from '../../../src/controllers/network/NetworkController'
 import { ACCOUNT_TYPE, THEME_LIGHT_BLUE_NAME } from '../../../src/utils/enums'
 import config from '../../../src/config'
 

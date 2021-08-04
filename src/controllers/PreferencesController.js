@@ -1,8 +1,8 @@
 import { ObservableStore } from '@metamask/obs-store'
 import EventEmitter from '@metamask/safe-event-emitter'
-import clone from 'clone'
 import deepmerge from 'deepmerge'
 import { hashPersonalMessage } from 'ethereumjs-util'
+import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import Web3 from 'web3'
 
@@ -305,7 +305,7 @@ class PreferencesController extends EventEmitter {
 
   updateStore(newPartialState, address) {
     const selectedAddress = address || this.store.getState().selectedAddress
-    const currentState = this.state(selectedAddress) || clone(DEFAULT_ACCOUNT_STATE)
+    const currentState = this.state(selectedAddress) || cloneDeep(DEFAULT_ACCOUNT_STATE)
     const mergedState = deepmerge(currentState, newPartialState, { arrayMerge: overwriteMerge })
     this.store.updateState({
       [selectedAddress]: mergedState,
