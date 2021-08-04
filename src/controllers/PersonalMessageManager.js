@@ -4,6 +4,8 @@ import { addHexPrefix, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import log from 'loglevel'
 
+import { MESSAGE_TYPE } from '../utils/enums'
+
 const hexRe = /^[\dA-Fa-f]+$/g
 
 /**
@@ -122,7 +124,7 @@ export default class PersonalMessageManager extends EventEmitter {
       msgParams: messageParameters,
       time,
       status: 'unapproved',
-      type: 'personal_sign',
+      type: MESSAGE_TYPE.PERSONAL_SIGN,
     }
     this.addMsg(messageData)
 

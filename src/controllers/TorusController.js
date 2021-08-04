@@ -36,7 +36,7 @@ import ComposableObservableStore from './utils/ComposableObservableStore'
 import createLoggerMiddleware from './utils/createLoggerMiddleware'
 import createOriginMiddleware from './utils/createOriginMiddleware'
 import nodeify from './utils/nodeify'
-import WalletConnectController from './WalletConnectController'
+import WalletConnectController from './walletconnect/WalletConnectController'
 
 EventEmitter.defaultMaxListeners = 100
 
