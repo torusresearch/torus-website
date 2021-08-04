@@ -913,7 +913,7 @@ export default class TorusController extends EventEmitter {
       const buff = Buffer.from(stripped, 'hex')
       cleanMessageParameters.data = JSON.parse(buff.toString('utf8'))
 
-      const rawMess = this.keyringController.decryptMessage(cleanMessageParameters, address)
+      const rawMess = this.keyringController.decryptMessage(cleanMessageParameters.data, address)
       this.decryptMessageManager.setMsgStatusDecrypted(messageId, rawMess)
       this.getState()
       return
@@ -936,7 +936,7 @@ export default class TorusController extends EventEmitter {
     const buff = Buffer.from(stripped, 'hex')
     msgParams.data = JSON.parse(buff.toString('utf8'))
 
-    return this.keyringController.decryptMessage(msgParams, address)
+    return this.keyringController.decryptMessage(msgParams.data, address)
   }
 
   /**

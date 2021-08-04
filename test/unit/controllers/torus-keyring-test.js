@@ -379,7 +379,7 @@ describe('torus-keyring', () => {
     const msg = 'Encryption works!!!'
     const encryptionKey = keyringController.signEncryptionPublicKey(testAccount.address)
     const messageEncrypted = encrypt(encryptionKey, { data: msg }, 'x25519-xsalsa20-poly1305')
-    const decrypted = keyringController.decryptMessage({ data: messageEncrypted }, testAccount.address)
+    const decrypted = keyringController.decryptMessage(messageEncrypted, testAccount.address)
     assert.strictEqual(msg, decrypted)
   })
 })
