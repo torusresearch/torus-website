@@ -1,5 +1,5 @@
 <template>
-  <v-flex xs10 sm12 ml-auto mr-auto>
+  <v-flex class="login-buttons" :class="{ 'is-popup': isPopup }" xs10 sm12 ml-auto mr-auto>
     <!-- <div
       v-if="(mainButtonsLong.length > 0 || mainButtons.length > 0) && !$vuetify.breakpoint.xsOnly && !isPopup"
       class="headline font-weight-regular mb-2"
@@ -7,7 +7,7 @@
     >
       {{ t('login.signUpIn') }}
     </div> -->
-    <div>
+    <div :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
       <LoginButton
         v-for="verifier in mainButtonsLong"
         :key="verifier.verifier"
@@ -20,7 +20,7 @@
         @click="triggerLogin(verifier.verifier)"
       />
     </div>
-    <v-layout class="buttons-container" wrap>
+    <v-layout class="buttons-container" wrap :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
       <v-flex
         v-for="verifier in mainButtons"
         :key="verifier.verifier"
@@ -35,7 +35,7 @@
         />
       </v-flex>
     </v-layout>
-    <div v-if="loginButtonsLong.length > 0">
+    <div v-if="loginButtonsLong.length > 0" :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
       <div v-if="mainButtonsLong.length > 0 || mainButtons.length > 0" class="d-flex or-container align-center">
         <v-divider />
         <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
@@ -80,7 +80,7 @@
         />
       </div>
     </div>
-    <div class="d-flex align-center">
+    <div class="d-flex align-center" :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
       <v-spacer></v-spacer>
       <v-btn :class="{ 'has-more': viewMoreOptions }" class="view-option-selector" @click="viewMoreOptions = !viewMoreOptions">
         <span class="selector-text">{{ viewMoreOptions ? t('dappLogin.viewLess') : t('dappLogin.viewMore') }}</span>

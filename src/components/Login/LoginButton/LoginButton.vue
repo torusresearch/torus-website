@@ -2,7 +2,7 @@
   <v-btn
     class="gmt-login text_2--text"
     :aria-label="`login with ${verifier.name.toLowerCase()}`"
-    :class="[{ active, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.name.toLowerCase()}`, { 'is-long': isLong }]"
+    :class="[{ active, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.name.toLowerCase()}`, { 'is-long': isLong }, { 'is-popup': isPopup }]"
     :type="buttonType"
     :block="block"
     :disabled="disabled"
