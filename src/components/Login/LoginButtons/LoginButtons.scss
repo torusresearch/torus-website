@@ -5,6 +5,12 @@
   background: var(--v-torusGray4-base);
   box-shadow: none;
   color: var(--v-text_2-base);
+  .selector-text {
+    font-size: 0.875rem;
+    font-weight: 400;
+    letter-spacing: 0.0178571429em;
+    line-height: 1.25rem;
+  }
   &.has-more {
     .v-icon {
       transform: rotate(-180deg);
@@ -16,7 +22,22 @@
   }
 }
 
+.buttons-container {
+  margin-left: -4px;
+  margin-right: -4px;
+  .flex {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+}
+
+.buttons-bottom-container {
+  margin-bottom: 8px;
+}
+
 .v-input.passwordless-email {
+  margin-bottom: 8px;
+  margin-top: 16px;
   ::v-deep .v-input__control {
     .v-text-field__details {
       display: none;
@@ -27,6 +48,117 @@
       .v-text-field__details {
         display: block;
         margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.or-container {
+  margin-top: 8px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+@media only screen and (min-height: 1080px) {
+  .or-container {
+    margin-top: 0.3vh;
+    margin-bottom: 0.8vh;
+    font-size: 1.5vh;
+    line-height: 1.2em;
+  }
+  .buttons-container {
+    margin-left: -0.4vh;
+    margin-right: -0.4vh;
+    .flex {
+      padding-left: 0.4vh;
+      padding-right: 0.4vh;
+    }
+  }
+  .buttons-bottom-container {
+    margin-bottom: 1.6vh;
+  }
+  .v-input.passwordless-email {
+    margin-bottom: 0.8vh;
+    margin-top: 1.6vh;
+    ::v-deep .v-input__control {
+      .v-input__slot input {
+        font-size: 1.7vh;
+        padding-left: 2.5vh;
+        padding-right: 2.5vh;
+      }
+    }
+    &.error--text {
+      ::v-deep .v-input__control {
+        .v-messages {
+          font-size: 1.3vh;
+          .v-messages__message {
+            line-height: 1.2em;
+          }
+        }
+      }
+    }
+  }
+  .v-btn.view-option-selector:not(.v-btn--text):not(.v-btn--icon):not(.v-btn--round) {
+    height: 2.7vh;
+    border-radius: 1.35vh;
+    padding-left: 1.35vh;
+    padding-right: 1.35vh;
+    .selector-text {
+      font-size: 1.5vh;
+      line-height: 1.2em;
+    }
+    .v-icon {
+      margin-left: 0.5vh;
+      ::v-deep svg {
+        height: 2vh;
+      }
+    }
+  }
+}
+
+@media only screen and (min-height: 1440px) {
+  .or-container {
+    margin-top: 0.3vh;
+    margin-bottom: 0.8vh;
+    font-size: 1.3vh;
+    line-height: 1.2em;
+  }
+  .buttons-container {
+    margin-left: -0.3vh;
+    margin-right: -0.3vh;
+    .flex {
+      padding-left: 0.3vh;
+      padding-right: 0.3vh;
+    }
+  }
+  .buttons-bottom-container {
+    margin-bottom: 1.6vh;
+  }
+  .v-input.passwordless-email {
+    margin-bottom: 0.6vh;
+    margin-top: 1.2vh;
+    ::v-deep .v-input__control {
+      .v-input__slot input {
+        font-size: 1.5vh;
+        padding-left: 2.5vh;
+        padding-right: 2.5vh;
+      }
+    }
+  }
+  .v-btn.view-option-selector:not(.v-btn--text):not(.v-btn--icon):not(.v-btn--round) {
+    height: 2.5vh;
+    border-radius: 1.25vh;
+    padding-left: 1.25vh;
+    padding-right: 1.25vh;
+    .selector-text {
+      font-size: 1.3vh;
+      line-height: 1.2em;
+    }
+    .v-icon {
+      margin-left: 0.5vh;
+      ::v-deep svg {
+        height: 2vh;
       }
     }
   }

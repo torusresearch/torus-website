@@ -1,21 +1,21 @@
 <template>
   <v-layout>
     <v-flex xs12 text-center>
-      <v-dialog class="login-dialog-modal" :value="loginDialog && showModal" max-width="375" persistent>
+      <v-dialog class="login-dialog-modal" :value="loginDialog && showModal" :max-width="dialogMaxWidth" persistent>
         <v-card class="login-dialog-container">
-          <div class="login-header px-6 py-8 mb-5">
+          <div class="login-header">
             <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="closeDialog">
-              <v-icon>$vuetify.icons.close</v-icon>
+              <v-icon :size="closeBtnSize">$vuetify.icons.close</v-icon>
             </v-btn>
-            <div class="display-1 text_2--text">
+            <div class="verifier-title1 text_2--text">
               <span>{{ t('dappLogin.signIn') }}</span>
             </div>
-            <div class="headline verifier-title font-weight-regular text_2--text">
+            <div class="verifier-title2 font-weight-regular text_2--text">
               <LoginTitleDapp v-if="$vuetify.breakpoint.xsOnly && activeMobileButton" :active-button-details="activeMobileButtonDetails" />
               <LoginTitleDapp v-if="!$vuetify.breakpoint.xsOnly && activeButton" :active-button-details="activeButtonDetails" />
             </div>
           </div>
-          <div class="mx-sm-6">
+          <div class="buttons-holder">
             <LoginButtons
               :login-buttons-array="loginButtonsArray"
               :is-popup="true"
@@ -27,8 +27,8 @@
           </div>
           <div
             v-if="!canHideDisclaimer1 && !viewMoreOptions && thirdPartyAuthenticators.length > 0"
-            class="text_3--text px-6 footer-notes mt-5"
-            :class="$vuetify.breakpoint.xsOnly ? 'pb-13' : 'mb-4'"
+            class="text_3--text footer-notes"
+            :class="$vuetify.breakpoint.xsOnly ? 'pb-13' : ''"
           >
             <span>{{ t('dappLogin.termsAuth01') }}</span>
             <br />
@@ -42,7 +42,7 @@
               {{ t('dappLogin.termsLearnMore') }}
             </a>
           </div>
-          <div class="d-flex justify-center caption footer-links pt-3 pb-4 px-6" :class="{ smallScreen: $vuetify.breakpoint.width < 385 }">
+          <div class="d-flex justify-center footer-links pt-3 pb-4" :class="{ smallScreen: $vuetify.breakpoint.width < 385 }">
             <div>
               <a class="text-decoration-none text_2--text" :href="tncLink" target="_blank" rel="noreferrer noopener">
                 {{ t('dappLogin.termsConditions') }}
@@ -139,6 +139,16 @@ export default {
     },
     thirdPartyAuthenticators() {
       return thirdPartyAuthenticators(this.loginConfig)
+    },
+    dialogMaxWidth() {
+      if (this.$vuetify.breakpoint.height >= 1440) return '35vh'
+      if (this.$vuetify.breakpoint.height >= 1080) return '42vh'
+      return '375px'
+    },
+    closeBtnSize() {
+      if (this.$vuetify.breakpoint.height >= 1440) return '2.6vh'
+      if (this.$vuetify.breakpoint.height >= 1080) return '2.6vh'
+      return '24px'
     },
   },
   methods: {
