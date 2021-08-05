@@ -70,7 +70,7 @@ export default class TorusController extends EventEmitter {
     this.blockTracker = this.networkController.getProviderAndBlockTracker().blockTracker
 
     this.gasFeeController = new GasFeeController({
-      interval: 10_000,
+      interval: 30_000,
       getProvider: () => this.networkController.getProviderAndBlockTracker().provider,
       getCurrentNetworkEIP1559Compatibility: this.networkController.getEIP1559Compatibility.bind(this.networkController),
       getCurrentAccountEIP1559Compatibility: this.getCurrentAccountEIP1559Compatibility.bind(this),
@@ -88,11 +88,6 @@ export default class TorusController extends EventEmitter {
     })
     this.currencyController.updateConversionRate()
     this.currencyController.scheduleConversionInterval()
-
-    this.tokenRatesController = new TokenRatesController({
-      currency: this.currencyController.store,
-      tokensStore: this.detectTokensController.detectedTokensStore,
-    })
 
     this.accountTracker = new AccountTracker({
       provider: this.provider,
@@ -112,11 +107,6 @@ export default class TorusController extends EventEmitter {
     // key mgmt
     this.keyringController = new KeyringController()
 
-    this.permissionsController = new PermissionsController({
-      getKeyringAccounts: this.keyringController.getAccounts.bind(this.keyringController),
-      setSiteMetadata: this.prefsController.setSiteMetadata.bind(this.prefsController),
-    })
-
     this.prefsController = new PreferencesController({
       network: this.networkController,
       provider: this.provider,
@@ -124,11 +114,21 @@ export default class TorusController extends EventEmitter {
       storeDispatch: this.opts.storeDispatch,
     })
 
+    this.permissionsController = new PermissionsController({
+      getKeyringAccounts: this.keyringController.getAccounts.bind(this.keyringController),
+      setSiteMetadata: this.prefsController.setSiteMetadata.bind(this.prefsController),
+    })
+
     // detect tokens controller
     this.detectTokensController = new DetectTokensController({
       network: this.networkController,
       provider: this.provider,
       preferencesStore: this.prefsController.store,
+    })
+
+    this.tokenRatesController = new TokenRatesController({
+      currency: this.currencyController.store,
+      tokensStore: this.detectTokensController.detectedTokensStore,
     })
 
     // ensure accountTracker updates balances after network change
@@ -142,8 +142,6 @@ export default class TorusController extends EventEmitter {
       this.gasFeeController.onNetworkStateChange()
     })
 
-    this.publicConfigStore = this.initPublicConfigStore()
-
     // tx mgmt
     this.txController = new TransactionController({
       getProviderConfig: this.networkController.getProviderConfig.bind(this.networkController),
@@ -151,7 +149,7 @@ export default class TorusController extends EventEmitter {
       getCurrentAccountEIP1559Compatibility: this.getCurrentAccountEIP1559Compatibility.bind(this),
       networkStore: this.networkController.networkStore,
       getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController),
-      preferencesStore: this.preferencesController.store,
+      preferencesStore: this.prefsController.store,
       txHistoryLimit: 40,
       // signs ethTx
       signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
@@ -223,6 +221,8 @@ export default class TorusController extends EventEmitter {
       GasFeeController: this.gasFeeController.store,
     })
     this.memStore.subscribe(this.sendUpdate.bind(this))
+
+    this.publicConfigStore = this.initPublicConfigStore()
 
     if (typeof options.rehydrate === 'function') {
       setTimeout(() => {
@@ -367,7 +367,11 @@ export default class TorusController extends EventEmitter {
   // =============================================================================
 
   async initTorusKeyring(keyArray, addresses) {
-    await Promise.all([this.keyringController.deserialize(keyArray), this.accountTracker.syncWithAddresses(addresses)])
+    await Promise.all([
+      this.keyringController.deserialize(keyArray),
+      this.accountTracker.syncWithAddresses(addresses),
+      this.gasFeeController.getGasFeeEstimatesAndStartPolling(),
+    ])
     this.notifyAllConnections({
       method: NOTIFICATION_NAMES.unlockStateChanged,
       params: {
@@ -732,7 +736,7 @@ export default class TorusController extends EventEmitter {
    * @returns {boolean} true if the keyring type supports EIP-1559
    */
   async getCurrentAccountEIP1559Compatibility(fromAddress) {
-    const address = fromAddress || this.preferencesController.store.getState().selectedAddress
+    const address = fromAddress || this.prefsController.store.getState().selectedAddress
     return !!address
   }
 
