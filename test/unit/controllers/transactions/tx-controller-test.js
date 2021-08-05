@@ -562,24 +562,21 @@ describe('Transaction Controller', function () {
     });
   })
 
-  describe.only('_getDefaultGasFees', function () {
+  describe('_getDefaultGasFees', function () {
     let getGasFeeStub;
 
     beforeEach(function () {
-      // getGasFeeStub = sinon.stub(txController, '_getEIP1559GasFeeEstimates');
+      getGasFeeStub = sinon.stub(txController, '_getEIP1559GasFeeEstimates');
     });
 
     afterEach(function () {
-      // getGasFeeStub.restore();
+      getGasFeeStub.restore();
     });
 
-    it.only('should return the correct fee data when the gas estimate type is FEE_MARKET', async function () {
+    it('should return the correct fee data when the gas estimate type is FEE_MARKET', async function () {
       const EXPECTED_MAX_FEE_PER_GAS = '12a05f200';
       const EXPECTED_MAX_PRIORITY_FEE_PER_GAS = '77359400';
-
-      sinon
-      .stub(txController, '_getEIP1559GasFeeEstimates')
-      .callsFake(() => ({
+      getGasFeeStub.callsFake(() => ({
         gasFeeEstimates: {
           medium: {
             suggestedMaxPriorityFeePerGas: '2',
@@ -588,15 +585,6 @@ describe('Transaction Controller', function () {
         },
         gasEstimateType: GAS_ESTIMATE_TYPES.FEE_MARKET,
       }));
-      // getGasFeeStub.callsFake(() => ({
-      //   gasFeeEstimates: {
-      //     medium: {
-      //       suggestedMaxPriorityFeePerGas: '2',
-      //       suggestedMaxFeePerGas: '5',
-      //     },
-      //   },
-      //   gasEstimateType: GAS_ESTIMATE_TYPES.FEE_MARKET,
-      // }));
 
       const defaultGasFees = await txController._getDefaultGasFees(
         { txParams: {} },
@@ -646,36 +634,36 @@ describe('Transaction Controller', function () {
     });
   });
 
-  describe('#addTx', function () {
-    it('should emit updates', function (done) {
-      const txMeta = {
-        id: '1',
-        status: 'unapproved',
-        metamaskNetworkId: currentNetworkId,
-        txParams: {},
-      }
+  // describe('#addTx', function () {
+  //   it('should emit updates', function (done) {
+  //     const txMeta = {
+  //       id: '1',
+  //       status: 'unapproved',
+  //       metamaskNetworkId: currentNetworkId,
+  //       txParams: {},
+  //     }
 
-      const eventNames = ['update:badge', '1:unapproved']
-      const listeners = []
-      eventNames.forEach((eventName) => {
-        listeners.push(
-          new Promise((resolve) => {
-            txController.once(eventName, (arg) => {
-              resolve(arg)
-            })
-          })
-        )
-      })
-      Promise.all(listeners)
-        .then((returnValues) => {
-          assert.deepStrictEqual(returnValues.pop(), txMeta, 'last event 1:unapproved should return txMeta')
-          done()
-        })
-        .catch(done)
-      txController.addTx(txMeta)
-    })
+  //     const eventNames = ['update:badge', '1:unapproved']
+  //     const listeners = []
+  //     eventNames.forEach((eventName) => {
+  //       listeners.push(
+  //         new Promise((resolve) => {
+  //           txController.once(eventName, (arg) => {
+  //             resolve(arg)
+  //           })
+  //         })
+  //       )
+  //     })
+  //     Promise.all(listeners)
+  //       .then((returnValues) => {
+  //         assert.deepStrictEqual(returnValues.pop(), txMeta, 'last event 1:unapproved should return txMeta')
+  //         done()
+  //       })
+  //       .catch(done)
+  //     txController.addTx(txMeta)
+  //   })
     
-  })
+  // })
 
   // describe('#approveTransaction', function () {
   //   it('does not overwrite set values', function (done) {
