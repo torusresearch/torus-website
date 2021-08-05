@@ -337,6 +337,53 @@ class TransactionController extends EventEmitter {
   }
 
   /**
+    Creates a new txMeta with the same txParams as the original
+    to allow the user to resign the transaction with a higher gas values
+    @param  originalTxId {number} - the id of the txMeta that
+    you want to attempt to retry
+    * @param {CustomGasSettings} [customGasSettings] - optional customGasSettings overrides to use for gas
+    *  params instead of allowing this method to generate them
+    @return {txMeta}
+  */
+
+  async retryTransaction(originalTxId, customGasSettings) {
+    const originalTxMeta = this.txStateManager.getTransaction(originalTxId)
+    const { txParams } = originalTxMeta
+
+    let txMeta
+    if (customGasSettings) {
+      const { previousGasParams, newGasParams } = this.generateNewGasParams(originalTxMeta, {
+        ...customGasSettings,
+        gasLimit: customGasSettings.gasLimit || GAS_LIMITS.SIMPLE,
+      })
+
+      txMeta = this.txStateManager.generateTxMeta({
+        txParams: {
+          ...txParams,
+          ...newGasParams,
+        },
+        previousGasParams,
+        loadingDefaults: false,
+        status: TRANSACTION_STATUSES.UNAPPROVED,
+        type: TRANSACTION_TYPES.RETRY,
+      })
+    } else {
+      txMeta = this.txStateManager.generateTxMeta({
+        txParams: {
+          ...txParams,
+        },
+        loadingDefaults: false,
+        status: TRANSACTION_STATUSES.UNAPPROVED,
+        type: TRANSACTION_TYPES.RETRY,
+      })
+    }
+
+    this.addTransaction(txMeta)
+    this.emit('newUnapprovedTx', txMeta)
+    return txMeta
+  }
+
+  /**
   adds the tx gas defaults: gas && gasPrice
   @param txMeta {Object} - the txMeta object
   @returns {Promise<object>} resolves with txMeta

@@ -2,23 +2,27 @@
 import assert from 'assert'
 import * as txUtils from '../../../../src/controllers/transactions/txUtils'
 
+const VALID_ADDRESS = '0x0000000000000000000000000000000000000000';
+
 describe('txUtils', function () {
   describe('#validateTxParams', function () {
     it('does not throw for positive values', function () {
       const sample = {
         from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+        to: VALID_ADDRESS,
         value: '0x01',
       }
-      txUtils.validateTxParams(sample)
+      txUtils.validateTxParameters(sample)
     })
 
     it('returns error for negative values', function () {
       const sample = {
         from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+        to: VALID_ADDRESS,
         value: '-0x01',
       }
       try {
-        txUtils.validateTxParams(sample)
+        txUtils.validateTxParameters(sample)
       } catch (err) {
         assert.ok(err, 'error')
       }
@@ -35,7 +39,7 @@ describe('txUtils', function () {
         random: 'hello world',
       }
 
-      let normalizedTxParams = txUtils.normalizeTxParams(txParams)
+      let normalizedTxParams = txUtils.normalizeTxParameters(txParams)
 
       assert(!normalizedTxParams.chainId, 'their should be no chainId')
       assert(!normalizedTxParams.to, 'their should be no to address if null')
@@ -44,7 +48,7 @@ describe('txUtils', function () {
       assert(!('random' in normalizedTxParams), 'their should be no random key in normalizedTxParams')
 
       txParams.to = 'a7df1beDBF813f57096dF77FCd515f0B3900e402'
-      normalizedTxParams = txUtils.normalizeTxParams(txParams)
+      normalizedTxParams = txUtils.normalizeTxParameters(txParams)
       assert.strictEqual(normalizedTxParams.to.slice(0, 2), '0x', 'to should be hexPrefixd')
     })
   })
@@ -53,7 +57,7 @@ describe('txUtils', function () {
     it('removes recipient for txParams with 0x when contract data is provided', function () {
       const zeroRecipientandDataTxParams = {
         from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
-        to: '0x',
+        to: VALID_ADDRESS,
         data: 'bytecode',
       }
       const sanitizedTxParams = txUtils.validateRecipient(zeroRecipientandDataTxParams)
@@ -63,7 +67,7 @@ describe('txUtils', function () {
     it('should error when recipient is 0x', function () {
       const zeroRecipientTxParams = {
         from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
-        to: '0x',
+        to: VALID_ADDRESS,
       }
       assert.throws(
         () => {

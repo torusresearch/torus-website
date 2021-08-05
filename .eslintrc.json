@@ -125,6 +125,8 @@
     "document": "readonly",
     "fetch": "readonly",
     "it": "readonly",
+    "before": "readonly",
+    "after": "readonly",
     "beforeEach": "readonly",
     "afterEach": "readonly",
     "describe": "readonly",

@@ -2,8 +2,7 @@
 import assert from 'assert'
 import EventEmitter from 'events'
 import { toBuffer } from 'ethereumjs-util'
-// import Common from 'ethereumjs-common'
-// import { Transaction as EthTx } from 'ethereumjs-tx'
+import Common from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx';
 
 import { ObservableStore } from '@metamask/obs-store'
@@ -12,6 +11,8 @@ import TransactionController from '../../../../src/controllers/transactions/Tran
 import { TRANSACTION_TYPES, TRANSACTION_STATUSES, GAS_ESTIMATE_TYPES } from '../../../../src/utils/enums'
 
 import { createTestProviderTools, getTestAccounts } from '../../../stub/provider'
+const MILLISECOND = 1;
+const SECOND = MILLISECOND * 1000;
 
 const noop = () => true
 const currentNetworkId = '42';
@@ -634,317 +635,470 @@ describe('Transaction Controller', function () {
     });
   });
 
-  // describe('#addTx', function () {
-  //   it('should emit updates', function (done) {
-  //     const txMeta = {
-  //       id: '1',
-  //       status: 'unapproved',
-  //       metamaskNetworkId: currentNetworkId,
-  //       txParams: {},
-  //     }
+  describe('#addTx', function () {
+    it('should emit updates', function (done) {
+      const txMeta = {
+        id: '1',
+        status: 'unapproved',
+        metamaskNetworkId: currentNetworkId,
+        txParams: {
+          to: VALID_ADDRESS,
+          from: VALID_ADDRESS_TWO,
+        },
+      }
 
-  //     const eventNames = ['update:badge', '1:unapproved']
-  //     const listeners = []
-  //     eventNames.forEach((eventName) => {
-  //       listeners.push(
-  //         new Promise((resolve) => {
-  //           txController.once(eventName, (arg) => {
-  //             resolve(arg)
-  //           })
-  //         })
-  //       )
-  //     })
-  //     Promise.all(listeners)
-  //       .then((returnValues) => {
-  //         assert.deepStrictEqual(returnValues.pop(), txMeta, 'last event 1:unapproved should return txMeta')
-  //         done()
-  //       })
-  //       .catch(done)
-  //     txController.addTx(txMeta)
-  //   })
+      const eventNames = ['update:badge', '1:unapproved']
+      const listeners = []
+      eventNames.forEach((eventName) => {
+        listeners.push(
+          new Promise((resolve) => {
+            txController.once(eventName, (arg) => {
+              resolve(arg)
+            })
+          })
+        )
+      })
+      Promise.all(listeners)
+        .then((returnValues) => {
+          assert.deepStrictEqual(returnValues.pop(), txMeta, 'last event 1:unapproved should return txMeta')
+          done()
+        })
+        .catch(done)
+      txController.addTransaction(txMeta)
+    })
     
-  // })
+  })
 
-  // describe('#approveTransaction', function () {
-  //   it('does not overwrite set values', function (done) {
-  //     const originalValue = '0x01'
-  //     const txMeta = {
-  //       id: '1',
-  //       status: 'unapproved',
-  //       metamaskNetworkId: currentNetworkId,
-  //       txParams: {
-  //         nonce: originalValue,
-  //         gas: originalValue,
-  //         gasPrice: originalValue,
-  //       },
-  //     }
-  //     this.timeout(15000)
-  //     const wrongValue = '0x05'
+  describe('#approveTransaction', function () {
+    it('does not overwrite set values', async function () {
+      const originalValue = '0x01';
+      const txMeta = {
+        id: '1',
+        status: TRANSACTION_STATUSES.UNAPPROVED,
+        metamaskNetworkId: currentNetworkId,
+        txParams: {
+          to: VALID_ADDRESS_TWO,
+          from: VALID_ADDRESS,
+          nonce: originalValue,
+          gas: originalValue,
+          gasPrice: originalValue,
+        },
+      };
+      // eslint-disable-next-line @babel/no-invalid-this
+      this.timeout(SECOND * 15);
+      const wrongValue = '0x05';
 
-  //     txController.addTx(txMeta)
-  //     providerResultStub.eth_gasPrice = wrongValue
-  //     providerResultStub.eth_estimateGas = '0x5209'
+      txController.addTransaction(txMeta);
+      providerResultStub.eth_gasPrice = wrongValue;
+      providerResultStub.eth_estimateGas = '0x5209';
 
-  //     const signStub = sinon.stub(txController, 'signTransaction').callsFake(() => Promise.resolve())
+      const signStub = sinon
+        .stub(txController, 'signTransaction')
+        .callsFake(() => Promise.resolve());
 
-  //     const pubStub = sinon.stub(txController, 'publishTransaction').callsFake(() => {
-  //       txController.setTxHash('1', originalValue)
-  //       txController.txStateManager.setTxStatusSubmitted('1')
-  //     })
+      const pubStub = sinon
+        .stub(txController, 'publishTransaction')
+        .callsFake(() => {
+          txController.setTxHash('1', originalValue);
+          txController.txStateManager.setTxStatusSubmitted('1');
+        });
 
-  //     txController
-  //       .approveTransaction(txMeta.id)
-  //       .then(() => {
-  //         const result = txController.txStateManager.getTx(txMeta.id)
-  //         const params = result.txParams
+      await txController.approveTransaction(txMeta.id);
+      const result = txController.txStateManager.getTransaction(txMeta.id);
+      const params = result.txParams;
 
-  //         assert.strictEqual(params.gas, originalValue, 'gas unmodified')
-  //         assert.strictEqual(params.gasPrice, originalValue, 'gas price unmodified')
-  //         assert.strictEqual(result.hash, originalValue, `hash was set \n got: ${result.hash} \n expected: ${originalValue}`)
-  //         assert.strictEqual(result.status, 'submitted', 'Should have reached the submitted status.')
-  //         signStub.restore()
-  //         pubStub.restore()
-  //         done()
-  //       })
-  //       .catch(done)
-  //   })
-  // })
+      assert.equal(params.gas, originalValue, 'gas unmodified');
+      assert.equal(params.gasPrice, originalValue, 'gas price unmodified');
+      assert.equal(result.hash, originalValue);
+      assert.equal(
+        result.status,
+        TRANSACTION_STATUSES.SUBMITTED,
+        'should have reached the submitted status.',
+      );
+      signStub.restore();
+      pubStub.restore();
+    });
+  });
 
-  // describe('#approveTransaction:custom nonce', function () {
-  //   it('update nonce with custom nonce', function (done) {
-  //     const originalValue = '0x01'
-  //     const originalNonceValue = '0x02'
-  //     const txMeta = {
-  //       id: '1',
-  //       status: 'unapproved',
-  //       metamaskNetworkId: currentNetworkId,
-  //       txParams: {
-  //         nonce: originalValue,
-  //         customNonceValue: originalNonceValue,
-  //         gas: originalValue,
-  //         gasPrice: originalValue,
-  //       },
-  //     }
-  //     this.timeout(15000)
+  describe('#approveTransaction:custom nonce', function () {
+    it('update nonce with custom nonce', function (done) {
+      const originalValue = '0x01'
+      const originalNonceValue = '0x02'
+      const txMeta = {
+        id: '1',
+        status: 'unapproved',
+        metamaskNetworkId: currentNetworkId,
+        txParams: {
+          to: VALID_ADDRESS_TWO,
+          from: VALID_ADDRESS,
+          nonce: originalValue,
+          customNonceValue: originalNonceValue,
+          gas: originalValue,
+          gasPrice: originalValue,
+        },
+      }
+      this.timeout(15000)
 
-  //     txController.addTx(txMeta)
-  //     providerResultStub.eth_estimateGas = '0x5209'
+      txController.addTransaction(txMeta)
+      providerResultStub.eth_estimateGas = '0x5209'
 
-  //     const signStub = sinon.stub(txController, 'signTransaction').callsFake(() => Promise.resolve())
+      const signStub = sinon.stub(txController, 'signTransaction').callsFake(() => Promise.resolve())
 
-  //     const pubStub = sinon.stub(txController, 'publishTransaction').callsFake(() => {
-  //       txController.setTxHash('1', originalValue)
-  //       txController.txStateManager.setTxStatusSubmitted('1')
-  //     })
+      const pubStub = sinon.stub(txController, 'publishTransaction').callsFake(() => {
+        txController.setTxHash('1', originalValue)
+        txController.txStateManager.setTxStatusSubmitted('1')
+      })
 
-  //     txController
-  //       .approveTransaction(txMeta.id)
-  //       .then(() => {
-  //         const result = txController.txStateManager.getTx(txMeta.id)
-  //         const params = result.txParams
+      txController
+        .approveTransaction(txMeta.id)
+        .then(() => {
+          const result = txController.txStateManager.getTransaction(txMeta.id)
+          const params = result.txParams
 
-  //         assert.strictEqual(parseInt(params.nonce), parseInt(originalNonceValue), 'nonce should change to customNonceValue')
-  //         signStub.restore()
-  //         pubStub.restore()
-  //         done()
-  //       })
-  //       .catch(done)
-  //   })
-  // })
+          assert.strictEqual(parseInt(params.nonce), parseInt(originalNonceValue), 'nonce should change to customNonceValue')
+          signStub.restore()
+          pubStub.restore()
+          done()
+        })
+        .catch(done)
+    })
+  })
 
-  // describe('#sign replay-protected tx', function () {
-  //   it('prepares a tx with the chainId set', function (done) {
-  //     txController.addTx({ id: '1', status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams: {} }, noop)
-  //     txController
-  //       .signTransaction('1')
-  //       .then((rawTx) => {
-  //         const ethTx = new EthTx(toBuffer(rawTx), { chain: currentNetworkId })
-  //         assert.strictEqual(ethTx.getChainId(), currentNetworkId)
-  //         done()
-  //       })
-  //       .catch(done)
-  //   })
+  describe('#sign replay-protected tx', function () {
+    it('prepares a tx with the chainId set', function (done) {
+      txController.addTransaction({ id: '1', status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams: {
+        to: VALID_ADDRESS,
+        from: VALID_ADDRESS_TWO,
+      } }, noop)
+      txController
+        .signTransaction('1')
+        .then((rawTx) => {
+          const ethTx = TransactionFactory.fromSerializedData(toBuffer(rawTx));
+          assert.equal(ethTx.common.chainIdBN().toNumber(), 42);
+          done()
+        })
+        .catch(done)
+    })
 
-  //   it('prepares a tx with the custom chainId set', function (done) {
-  //     txController.addTx({ id: '1', status: 'unapproved', metamaskNetworkId: 100, txParams: {} }, noop)
-  //     txController.networkStore.putState(100)
-  //     txController
-  //       .signTransaction('1')
-  //       .then((rawTx) => {
-  //         const chain = Common.forCustomChain(
-  //           1,
-  //           {
-  //             chainId: 100,
-  //             url: 'https://xdai.poanetwork.dev',
-  //           },
-  //           'istanbul'
-  //         )
-  //         const ethTx = new EthTx(toBuffer(rawTx), { common: chain })
-  //         assert.strictEqual(ethTx.getChainId(), 100)
-  //         done()
-  //       })
-  //       .catch(done)
-  //   })
-  // })
+    it('prepares a tx with the custom chainId set', function (done) {
+      txController.addTransaction({ id: '1', status: 'unapproved', metamaskNetworkId: 100, txParams: {  
+        to: VALID_ADDRESS,
+        from: VALID_ADDRESS_TWO
+      }}, noop)
+      txController.networkStore.putState(100)
+      txController
+        .signTransaction('1')
+        .then((rawTx) => {
+          const common = Common.custom({
+            chainId: 100,
+            networkId: 100,
+          })
+          const ethTx = TransactionFactory.fromSerializedData(toBuffer(rawTx) , { common });
+          assert.equal(ethTx.common.chainIdBN().toNumber(), 100);
+          done()
+        })
+        .catch(done)
+    })
+  })
 
-  // describe('#updateAndApproveTransaction', function () {
-  //   it('should update and approve transactions', async function () {
-  //     const txMeta = {
-  //       id: 1,
-  //       status: 'unapproved',
-  //       txParams: {
-  //         from: fromAccount.address,
-  //         to: '0x1678a085c290ebd122dc42cba69373b5953b831d',
-  //         gasPrice: '0x77359400',
-  //         gas: '0x7b0d',
-  //         nonce: '0x4b',
-  //       },
-  //       metamaskNetworkId: currentNetworkId,
-  //     }
-  //     txController.txStateManager.addTx(txMeta)
-  //     const approvalPromise = txController.updateAndApproveTransaction(txMeta)
-  //     const tx = txController.txStateManager.getTx(1)
-  //     assert.strictEqual(tx.status, 'approved')
-  //     await approvalPromise
-  //   })
-  // })
+  describe('#updateAndApproveTransaction', function () {
+    it('should update and approve transactions', async function () {
+      const txMeta = {
+        id: 1,
+        status: TRANSACTION_STATUSES.UNAPPROVED,
+        txParams: {
+          from: fromAccount.address,
+          to: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+          gasPrice: '0x77359400',
+          gas: '0x7b0d',
+          nonce: '0x4b',
+        },
+        metamaskNetworkId: currentNetworkId,
+      };
+      txController.txStateManager.addTransaction(txMeta);
+      const approvalPromise = txController.updateAndApproveTransaction(txMeta);
+      const tx = txController.txStateManager.getTransaction(1);
+      assert.equal(tx.status, TRANSACTION_STATUSES.APPROVED);
+      await approvalPromise;
+    })
+  })
 
-  // describe('#getChainId', function () {
-  //   it('returns 0 when the chainId is NaN', function () {
-  //     txController.networkStore = new ObservableStore(NaN)
-  //     assert.strictEqual(txController.getChainId(), 0)
-  //   })
-  // })
+  describe('#getChainId', function () {
+    it('returns 0 when the chainId is NaN', function () {
+      txController.networkStore = new ObservableStore('loading');
+      assert.equal(txController.getChainId(), 0);
+    });
+  });
 
-  // describe('#cancelTransaction', function () {
-  //   it('should emit a status change to rejected', function (done) {
-  //     txController.txStateManager._saveTxList([
-  //       { id: 0, status: 'unapproved', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
-  //       { id: 1, status: 'rejected', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
-  //       { id: 2, status: 'approved', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
-  //       { id: 3, status: 'signed', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
-  //       { id: 4, status: 'submitted', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
-  //       { id: 5, status: 'confirmed', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
-  //       { id: 6, status: 'failed', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
-  //     ])
 
-  //     txController.once('tx:status-update', (txId, status) => {
-  //       try {
-  //         assert.strictEqual(status, 'rejected', 'status should e rejected')
-  //         assert.strictEqual(txId, 0, 'id should e 0')
-  //         done()
-  //       } catch (e) {
-  //         done(e)
-  //       }
-  //     })
+  describe('#cancelTransaction', function () {
+    it('should emit a status change to rejected', function (done) {
+      txController.txStateManager._addTransactionsToState([
+        {
+          id: 0,
+          status: TRANSACTION_STATUSES.UNAPPROVED,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+        },
+        {
+          id: 1,
+          status: TRANSACTION_STATUSES.REJECTED,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+        },
+        {
+          id: 2,
+          status: TRANSACTION_STATUSES.APPROVED,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+        },
+        {
+          id: 3,
+          status: TRANSACTION_STATUSES.SIGNED,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+        },
+        {
+          id: 4,
+          status: TRANSACTION_STATUSES.SUBMITTED,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+        },
+        {
+          id: 5,
+          status: TRANSACTION_STATUSES.CONFIRMED,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+        },
+        {
+          id: 6,
+          status: TRANSACTION_STATUSES.FAILED,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+        },
+      ]);
 
-  //     txController.cancelTransaction(0)
-  //   })
-  // })
+      txController.once('tx:status-update', (txId, status) => {
+        try {
+          assert.equal(
+            status,
+            TRANSACTION_STATUSES.REJECTED,
+            'status should be rejected',
+          );
+          assert.equal(txId, 0, 'id should e 0');
+          done();
+        } catch (e) {
+          done(e);
+        }
+      });
 
-  // describe('#createSpeedUpTransaction', function () {
-  //   let addTxSpy
-  //   let approveTransactionSpy
-  //   let txParams
-  //   let expectedTxParams
+      txController.cancelTransaction(0);
+    });
+  });
 
-  //   beforeEach(function () {
-  //     addTxSpy = sinon.spy(txController, 'addTx')
-  //     approveTransactionSpy = sinon.spy(txController, 'approveTransaction')
+  describe('#createSpeedUpTransaction', function () {
+    let addTransactionSpy;
+    let approveTransactionSpy;
+    let txParams;
+    let expectedTxParams;
 
-  //     txParams = {
-  //       nonce: '0x00',
-  //       from: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-  //       to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-  //       gas: '0x5209',
-  //       gasPrice: '0xa',
-  //     }
-  //     txController.txStateManager._saveTxList([{ id: 1, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] }])
+    beforeEach(function () {
+      addTransactionSpy = sinon.spy(txController, 'addTransaction');
+      approveTransactionSpy = sinon.spy(txController, 'approveTransaction');
 
-  //     expectedTxParams = Object.assign({}, txParams, { gasPrice: '0xb' })
-  //   })
+      txParams = {
+        nonce: '0x00',
+        from: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        gas: '0x5209',
+        gasPrice: '0xa',
+      };
+      txController.txStateManager._addTransactionsToState([
+        {
+          id: 1,
+          status: TRANSACTION_STATUSES.SUBMITTED,
+          metamaskNetworkId: currentNetworkId,
+          txParams,
+          history: [{}],
+        },
+      ]);
 
-  //   afterEach(function () {
-  //     addTxSpy.restore()
-  //     approveTransactionSpy.restore()
-  //   })
+      expectedTxParams = { ...txParams, gasPrice: '0xb' };
+    });
 
-  //   it('should call this.addTx and this.approveTransaction with the expected args', async function () {
-  //     await txController.createSpeedUpTransaction(1)
-  //     assert.strictEqual(addTxSpy.callCount, 1)
+    afterEach(function () {
+      addTransactionSpy.restore();
+      approveTransactionSpy.restore();
+    });
 
-  //     const addTxArgs = addTxSpy.getCall(0).args[0]
-  //     assert.deepStrictEqual(addTxArgs.txParams, expectedTxParams)
+    it('should call this.addTransaction and this.approveTransaction with the expected args', async function () {
+      await txController.createSpeedUpTransaction(1);
+      assert.equal(addTransactionSpy.callCount, 1);
 
-  //     const { lastGasPrice, type } = addTxArgs
-  //     assert.deepStrictEqual(
-  //       { lastGasPrice, type },
-  //       {
-  //         lastGasPrice: '0xa',
-  //         type: TRANSACTION_TYPE_RETRY,
-  //       }
-  //     )
-  //   })
+      const addTransactionArgs = addTransactionSpy.getCall(0).args[0];
+      assert.deepEqual(addTransactionArgs.txParams, expectedTxParams);
 
-  //   it('should call this.approveTransaction with the id of the returned tx', async function () {
-  //     const result = await txController.createSpeedUpTransaction(1)
-  //     assert.strictEqual(approveTransactionSpy.callCount, 1)
+      const { previousGasParams, type } = addTransactionArgs;
+      assert.deepEqual(
+        { gasPrice: previousGasParams.gasPrice, type },
+        {
+          gasPrice: '0xa',
+          type: TRANSACTION_TYPES.RETRY,
+        },
+      );
+    });
 
-  //     const approveTransactionArg = approveTransactionSpy.getCall(0).args[0]
-  //     assert.strictEqual(result.id, approveTransactionArg)
-  //   })
+    it('should call this.approveTransaction with the id of the returned tx', async function () {
+      const result = await txController.createSpeedUpTransaction(1);
+      assert.equal(approveTransactionSpy.callCount, 1);
 
-  //   it('should return the expected txMeta', async function () {
-  //     const result = await txController.createSpeedUpTransaction(1)
+      const approveTransactionArg = approveTransactionSpy.getCall(0).args[0];
+      assert.equal(result.id, approveTransactionArg);
+    });
 
-  //     assert.deepStrictEqual(result.txParams, expectedTxParams)
+    it('should return the expected txMeta', async function () {
+      const result = await txController.createSpeedUpTransaction(1);
 
-  //     const { lastGasPrice, type } = result
-  //     assert.deepStrictEqual(
-  //       { lastGasPrice, type },
-  //       {
-  //         lastGasPrice: '0xa',
-  //         type: TRANSACTION_TYPE_RETRY,
-  //       }
-  //     )
-  //   })
-  // })
+      assert.deepEqual(result.txParams, expectedTxParams);
 
-  // describe('#publishTransaction', function () {
-  //   let hash, txMeta
-  //   beforeEach(function () {
-  //     hash = '0x2a5523c6fa98b47b7d9b6c8320179785150b42a16bcff36b398c5062b65657e8'
-  //     txMeta = {
-  //       id: 1,
-  //       status: 'unapproved',
-  //       txParams: {},
-  //       metamaskNetworkId: currentNetworkId,
-  //     }
-  //     providerResultStub.eth_sendRawTransaction = hash
-  //   })
+      const { previousGasParams, type } = result;
+      assert.deepEqual(
+        { gasPrice: previousGasParams.gasPrice, type },
+        {
+          gasPrice: '0xa',
+          type: TRANSACTION_TYPES.RETRY,
+        },
+      );
+    });
+  });
 
-  //   it('should publish a tx, updates the rawTx when provided a one', async function () {
-  //     const rawTx = '0x477b2e6553c917af0db0388ae3da62965ff1a184558f61b749d1266b2e6d024c'
-  //     txController.txStateManager.addTx(txMeta)
-  //     await txController.publishTransaction(txMeta.id, rawTx)
-  //     const publishedTx = txController.txStateManager.getTx(1)
-  //     assert.strictEqual(publishedTx.hash, hash)
-  //     assert.strictEqual(publishedTx.status, 'submitted')
-  //   })
+  describe('#signTransaction', function () {
+    let fromTxDataSpy;
 
-  //   it('should ignore the error "Transaction Failed: known transaction" and be as usual', async function () {
-  //     providerResultStub['eth_sendRawTransaction'] = async (_, __, ___, end) => {
-  //       end('Transaction Failed: known transaction')
-  //     }
-  //     const rawTx =
-  //       '0xf86204831e848082520894f231d46dd78806e1dd93442cf33c7671f853874880802ca05f973e540f2d3c2f06d3725a626b75247593cb36477187ae07ecfe0a4db3cf57a00259b52ee8c58baaa385fb05c3f96116e58de89bcc165cb3bfdfc708672fed8a'
-  //     txController.txStateManager.addTx(txMeta)
-  //     await txController.publishTransaction(txMeta.id, rawTx)
-  //     const publishedTx = txController.txStateManager.getTx(1)
-  //     assert.strictEqual(publishedTx.hash, '0x2cc5a25744486f7383edebbf32003e5a66e18135799593d6b5cdd2bb43674f09')
-  //     assert.strictEqual(publishedTx.status, 'submitted')
-  //   })
-  // })
+    beforeEach(function () {
+      fromTxDataSpy = sinon.spy(TransactionFactory, 'fromTxData');
+    });
+
+    afterEach(function () {
+      fromTxDataSpy.restore();
+    });
+
+    it('sets txParams.type to 0x0 (non-EIP-1559)', async function () {
+      txController.txStateManager._addTransactionsToState([
+        {
+          status: TRANSACTION_STATUSES.UNAPPROVED,
+          id: 1,
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+          txParams: {
+            from: VALID_ADDRESS_TWO,
+            to: VALID_ADDRESS,
+            gasPrice: '0x77359400',
+            gas: '0x7b0d',
+            nonce: '0x4b',
+          },
+        },
+      ]);
+      await txController.signTransaction('1');
+      assert.equal(fromTxDataSpy.getCall(0).args[0].type, '0x0');
+    });
+
+    it('sets txParams.type to 0x2 (EIP-1559)', async function () {
+      const eip1559CompatibilityStub = sinon
+        .stub(txController, 'getEIP1559Compatibility')
+        .returns(true);
+      txController.txStateManager._addTransactionsToState([
+        {
+          status: TRANSACTION_STATUSES.UNAPPROVED,
+          id: 2,
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+          txParams: {
+            from: VALID_ADDRESS_TWO,
+            to: VALID_ADDRESS,
+            maxFeePerGas: '0x77359400',
+            maxPriorityFeePerGas: '0x77359400',
+            gas: '0x7b0d',
+            nonce: '0x4b',
+          },
+        },
+      ]);
+      await txController.signTransaction('2');
+      assert.equal(fromTxDataSpy.getCall(0).args[0].type, '0x2');
+      eip1559CompatibilityStub.restore();
+    });
+  });
+
+  describe('#publishTransaction', function () {
+    let hash, txMeta
+    beforeEach(function () {
+      hash = '0x2a5523c6fa98b47b7d9b6c8320179785150b42a16bcff36b398c5062b65657e8'
+      txMeta = {
+        id: 1,
+        status: 'unapproved',
+        txParams: {
+          from: VALID_ADDRESS_TWO,
+          to: VALID_ADDRESS,
+        },
+        metamaskNetworkId: currentNetworkId,
+      }
+      providerResultStub.eth_sendRawTransaction = hash
+    })
+
+    it('should publish a tx, updates the rawTx when provided a one', async function () {
+      const rawTx =
+        '0x477b2e6553c917af0db0388ae3da62965ff1a184558f61b749d1266b2e6d024c';
+      txController.txStateManager.addTransaction(txMeta);
+      await txController.publishTransaction(txMeta.id, rawTx);
+      const publishedTx = txController.txStateManager.getTransaction(1);
+      assert.equal(publishedTx.hash, hash);
+      assert.equal(publishedTx.status, TRANSACTION_STATUSES.SUBMITTED);
+    });
+
+    it('should ignore the error "Transaction Failed: known transaction" and be as usual', async function () {
+      providerResultStub.eth_sendRawTransaction = async (_, __, ___, end) => {
+        end('Transaction Failed: known transaction');
+      };
+      const rawTx =
+        '0xf86204831e848082520894f231d46dd78806e1dd93442cf33c7671f853874880802ca05f973e540f2d3c2f06d3725a626b75247593cb36477187ae07ecfe0a4db3cf57a00259b52ee8c58baaa385fb05c3f96116e58de89bcc165cb3bfdfc708672fed8a';
+      txController.txStateManager.addTransaction(txMeta);
+      await txController.publishTransaction(txMeta.id, rawTx);
+      const publishedTx = txController.txStateManager.getTransaction(1);
+      assert.equal(
+        publishedTx.hash,
+        '0x2cc5a25744486f7383edebbf32003e5a66e18135799593d6b5cdd2bb43674f09',
+      );
+      assert.equal(publishedTx.status, TRANSACTION_STATUSES.SUBMITTED);
+    });
+  })
 
   // describe('#retryTransaction', function () {
   //   it('should create a new txMeta with the same txParams as the original one but with a higher gasPrice', function (done) {
@@ -955,7 +1109,7 @@ describe('Transaction Controller', function () {
   //       to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
   //       data: '0x0',
   //     }
-  //     txController.txStateManager._saveTxList([{ id: 1, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] }])
+  //     txController.txStateManager._addTransactionsToState([{ id: 1, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] }])
   //     txController
   //       .retryTransaction(1)
   //       .then((txMeta) => {
@@ -972,203 +1126,369 @@ describe('Transaction Controller', function () {
   //   })
   // })
 
-  // describe('#_markNonceDuplicatesDropped', function () {
-  //   it('should mark all nonce duplicates as dropped without marking the confirmed transaction as dropped', function () {
-  //     txController.txStateManager._saveTxList([
-  //       { id: 1, status: 'confirmed', metamaskNetworkId: currentNetworkId, history: [{}], txParams: { nonce: '0x01' } },
-  //       { id: 2, status: 'submitted', metamaskNetworkId: currentNetworkId, history: [{}], txParams: { nonce: '0x01' } },
-  //       { id: 3, status: 'submitted', metamaskNetworkId: currentNetworkId, history: [{}], txParams: { nonce: '0x01' } },
-  //       { id: 4, status: 'submitted', metamaskNetworkId: currentNetworkId, history: [{}], txParams: { nonce: '0x01' } },
-  //       { id: 5, status: 'submitted', metamaskNetworkId: currentNetworkId, history: [{}], txParams: { nonce: '0x01' } },
-  //       { id: 6, status: 'submitted', metamaskNetworkId: currentNetworkId, history: [{}], txParams: { nonce: '0x01' } },
-  //       { id: 7, status: 'submitted', metamaskNetworkId: currentNetworkId, history: [{}], txParams: { nonce: '0x01' } },
-  //     ])
-  //     txController._markNonceDuplicatesDropped(1)
-  //     const confirmedTx = txController.txStateManager.getTx(1)
-  //     const droppedTxs = txController.txStateManager.getFilteredTxList({ nonce: '0x01', status: 'dropped' })
-  //     assert.strictEqual(confirmedTx.status, 'confirmed', 'the confirmedTx should remain confirmed')
-  //     assert.strictEqual(droppedTxs.length, 6, 'their should be 6 dropped txs')
-  //   })
-  // })
+  describe('#_markNonceDuplicatesDropped', function () {
+    it('should mark all nonce duplicates as dropped without marking the confirmed transaction as dropped', function () {
+      txController.txStateManager._addTransactionsToState([
+        {
+          id: 1,
+          status: TRANSACTION_STATUSES.CONFIRMED,
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+          txParams: {
+            to: VALID_ADDRESS_TWO,
+            from: VALID_ADDRESS,
+            nonce: '0x01',
+          },
+        },
+        {
+          id: 2,
+          status: TRANSACTION_STATUSES.SUBMITTED,
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+          txParams: {
+            to: VALID_ADDRESS_TWO,
+            from: VALID_ADDRESS,
+            nonce: '0x01',
+          },
+        },
+        {
+          id: 3,
+          status: TRANSACTION_STATUSES.SUBMITTED,
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+          txParams: {
+            to: VALID_ADDRESS_TWO,
+            from: VALID_ADDRESS,
+            nonce: '0x01',
+          },
+        },
+        {
+          id: 4,
+          status: TRANSACTION_STATUSES.SUBMITTED,
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+          txParams: {
+            to: VALID_ADDRESS_TWO,
+            from: VALID_ADDRESS,
+            nonce: '0x01',
+          },
+        },
+        {
+          id: 5,
+          status: TRANSACTION_STATUSES.SUBMITTED,
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+          txParams: {
+            to: VALID_ADDRESS_TWO,
+            from: VALID_ADDRESS,
+            nonce: '0x01',
+          },
+        },
+        {
+          id: 6,
+          status: TRANSACTION_STATUSES.SUBMITTED,
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+          txParams: {
+            to: VALID_ADDRESS_TWO,
+            from: VALID_ADDRESS,
+            nonce: '0x01',
+          },
+        },
+        {
+          id: 7,
+          status: TRANSACTION_STATUSES.SUBMITTED,
+          metamaskNetworkId: currentNetworkId,
+          history: [{}],
+          txParams: {
+            to: VALID_ADDRESS_TWO,
+            from: VALID_ADDRESS,
+            nonce: '0x01',
+          },
+        },
+      ]);
+      txController._markNonceDuplicatesDropped(1);
+      const confirmedTx = txController.txStateManager.getTransaction(1);
+      const droppedTxs = txController.txStateManager.getTransactions({
+        searchCriteria: {
+          nonce: '0x01',
+          status: TRANSACTION_STATUSES.DROPPED,
+        },
+      });
+      assert.equal(
+        confirmedTx.status,
+        TRANSACTION_STATUSES.CONFIRMED,
+        'the confirmedTx should remain confirmed',
+      );
+      assert.equal(droppedTxs.length, 6, 'their should be 6 dropped txs');
+    });
+  });
 
-  // describe('#_determineTransactionCategory', function () {
-  //   it('should return a simple send transactionCategory when to is truthy but data is falsey', async function () {
-  //     const result = await txController._determineTransactionCategory({
-  //       to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-  //       data: '',
-  //     })
-  //     assert.deepStrictEqual(result, {
-  //       transactionCategory: TRANSACTION_TYPES.SENT_ETHER,
-  //       getCodeResponse: '0x',
-  //       methodParams: {},
-  //       contractParams: {},
-  //     })
-  //   })
+  describe('#_determineTransactionCategory', function () {
+    it('should return a simple send transactionCategory when to is truthy but data is falsey', async function () {
+      const result = await txController._determineTransactionCategory({
+        to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        data: '',
+      })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.SENT_ETHER,
+        getCodeResponse: '0x',
+        methodParams: {},
+        contractParams: {},
+      })
+    })
 
-  //   it('should return a token transfer transactionCategory when data is for the respective method call', async function () {
-  //     const result = await txController._determineTransactionCategory({
-  //       to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-  //       data: '0xa9059cbb0000000000000000000000002f318C334780961FB129D2a6c30D0763d9a5C970000000000000000000000000000000000000000000000000000000000000000a',
-  //     })
-  //     assert.deepStrictEqual(result, {
-  //       transactionCategory: TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER,
-  //       getCodeResponse: undefined,
-  //       methodParams: [
-  //         { name: '_to', value: '0x2f318c334780961fb129d2a6c30d0763d9a5c970', type: 'address' },
-  //         { name: '_value', value: '10', type: 'uint256' },
-  //       ],
-  //       contractParams: { erc20: true, symbol: 'ERC20' },
-  //     })
-  //   })
+    it('should return a token transfer transactionCategory when data is for the respective method call', async function () {
+      const result = await txController._determineTransactionCategory({
+        to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        data: '0xa9059cbb0000000000000000000000002f318C334780961FB129D2a6c30D0763d9a5C970000000000000000000000000000000000000000000000000000000000000000a',
+      })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER,
+        getCodeResponse: undefined,
+        methodParams: [
+          { name: '_to', value: '0x2f318c334780961fb129d2a6c30d0763d9a5c970', type: 'address' },
+          { name: '_value', value: '10', type: 'uint256' },
+        ],
+        contractParams: { erc20: true, symbol: 'ERC20' },
+      })
+    })
 
-  //   it('should return a token approve transactionCategory when data is for the respective method call', async function () {
-  //     const result = await txController._determineTransactionCategory({
-  //       to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-  //       data: '0x095ea7b30000000000000000000000002f318C334780961FB129D2a6c30D0763d9a5C9700000000000000000000000000000000000000000000000000000000000000005',
-  //     })
-  //     assert.deepStrictEqual(result, {
-  //       transactionCategory: TRANSACTION_TYPES.TOKEN_METHOD_APPROVE,
-  //       getCodeResponse: undefined,
-  //       methodParams: [
-  //         { name: '_spender', value: '0x2f318c334780961fb129d2a6c30d0763d9a5c970', type: 'address' },
-  //         { name: '_value', value: '5', type: 'uint256' },
-  //       ],
-  //       contractParams: { erc20: true, symbol: 'ERC20' },
-  //     })
-  //   })
+    it('should return a token approve transactionCategory when data is for the respective method call', async function () {
+      const result = await txController._determineTransactionCategory({
+        to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        data: '0x095ea7b30000000000000000000000002f318C334780961FB129D2a6c30D0763d9a5C9700000000000000000000000000000000000000000000000000000000000000005',
+      })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.TOKEN_METHOD_APPROVE,
+        getCodeResponse: undefined,
+        methodParams: [
+          { name: '_spender', value: '0x2f318c334780961fb129d2a6c30d0763d9a5c970', type: 'address' },
+          { name: '_value', value: '5', type: 'uint256' },
+        ],
+        contractParams: { erc20: true, symbol: 'ERC20' },
+      })
+    })
 
-  //   it('should return a contract deployment transactionCategory when to is falsey and there is data', async function () {
-  //     const result = await txController._determineTransactionCategory({
-  //       to: '',
-  //       data: '0xabd',
-  //     })
-  //     assert.deepStrictEqual(result, {
-  //       transactionCategory: TRANSACTION_TYPES.DEPLOY_CONTRACT,
-  //       getCodeResponse: undefined,
-  //       contractParams: {},
-  //       methodParams: {},
-  //     })
-  //   })
+    it('should return a contract deployment transactionCategory when to is falsey and there is data', async function () {
+      const result = await txController._determineTransactionCategory({
+        to: '',
+        data: '0xabd',
+      })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.DEPLOY_CONTRACT,
+        getCodeResponse: undefined,
+        contractParams: {},
+        methodParams: {},
+      })
+    })
 
-  //   it('should return a simple send transactionCategory with a 0x getCodeResponse when there is data and but the to address is not a contract address', async function () {
-  //     const result = await txController._determineTransactionCategory({
-  //       to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
-  //       data: '0xabd',
-  //     })
-  //     assert.deepStrictEqual(result, {
-  //       transactionCategory: TRANSACTION_TYPES.SENT_ETHER,
-  //       getCodeResponse: '0x',
-  //       contractParams: {},
-  //       methodParams: {},
-  //     })
-  //   })
+    it('should return a simple send transactionCategory with a 0x getCodeResponse when there is data and but the to address is not a contract address', async function () {
+      const result = await txController._determineTransactionCategory({
+        to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
+        data: '0xabd',
+      })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.SENT_ETHER,
+        getCodeResponse: '0x',
+        contractParams: {},
+        methodParams: {},
+      })
+    })
 
-  //   it('should return a simple send transactionCategory with a null getCodeResponse when to is truthy and there is data and but getCode returns an error', async function () {
-  //     const result = await txController._determineTransactionCategory({
-  //       to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-  //       data: '0xabd',
-  //     })
-  //     assert.deepStrictEqual(result, {
-  //       transactionCategory: TRANSACTION_TYPES.SENT_ETHER,
-  //       getCodeResponse: '0x',
-  //       contractParams: {},
-  //       methodParams: {},
-  //     })
-  //   })
+    it('should return a simple send transactionCategory with a null getCodeResponse when to is truthy and there is data and but getCode returns an error', async function () {
+      const result = await txController._determineTransactionCategory({
+        to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        data: '0xabd',
+      })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.SENT_ETHER,
+        getCodeResponse: '0x',
+        contractParams: {},
+        methodParams: {},
+      })
+    })
 
-  //   it('should return a contract interaction transactionCategory with the correct getCodeResponse when to is truthy and there is data and it is not a token transaction', async function () {
-  //     const _providerResultStub = {
-  //       // 1 gwei
-  //       eth_gasPrice: '0x0de0b6b3a7640000',
-  //       // by default, all accounts are external accounts (not contracts)
-  //       eth_getCode: '0xa',
-  //     }
-  //     const _provider = createTestProviderTools({ scaffold: _providerResultStub }).provider
-  //     const _fromAccount = getTestAccounts()[0]
-  //     const _blockTrackerStub = new EventEmitter()
-  //     _blockTrackerStub.getCurrentBlock = noop
-  //     _blockTrackerStub.getLatestBlock = noop
-  //     const _txController = new TransactionController({
-  //       provider: _provider,
-  //       getGasPrice: function () {
-  //         return '0xee6b2800'
-  //       },
-  //       networkStore: new ObservableStore(currentNetworkId),
-  //       txHistoryLimit: 10,
-  //       blockTracker: _blockTrackerStub,
-  //       signTransaction: (ethTx) =>
-  //         new Promise((resolve) => {
-  //           ethTx.sign(_fromAccount.key)
-  //           resolve()
-  //         }),
-  //     })
-  //     const result = await _txController._determineTransactionCategory({
-  //       to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
-  //       data: 'abd',
-  //     })
-  //     assert.deepStrictEqual(result, {
-  //       transactionCategory: TRANSACTION_TYPES.CONTRACT_INTERACTION,
-  //       getCodeResponse: '0x0a',
-  //       contractParams: {},
-  //       methodParams: {},
-  //     })
-  //   })
+    it('should return a contract interaction transactionCategory with the correct getCodeResponse when to is truthy and there is data and it is not a token transaction', async function () {
+      const _providerResultStub = {
+        // 1 gwei
+        eth_gasPrice: '0x0de0b6b3a7640000',
+        // by default, all accounts are external accounts (not contracts)
+        eth_getCode: '0xa',
+      }
+      const _provider = createTestProviderTools({ scaffold: _providerResultStub }).provider
+      const _fromAccount = getTestAccounts()[0]
+      const _blockTrackerStub = new EventEmitter()
+        _blockTrackerStub.getCurrentBlock = noop
+        _blockTrackerStub.getLatestBlock = noop
+        const _txController = new TransactionController({
+          provider: _provider,
+          getGasPrice: function () {
+            return '0xee6b2800'
+          },
+          networkStore: new ObservableStore(currentNetworkId),
+          getCurrentNetworkEIP1559Compatibility: () => Promise.resolve(false),
+          getCurrentAccountEIP1559Compatibility: () => false,
+          txHistoryLimit: 10,
+          blockTracker: _blockTrackerStub,
+          signTransaction: (ethTx) =>
+            new Promise((resolve) => {
+              resolve(ethTx.sign(_fromAccount.key));
+            }),
+          getProviderConfig: () => providerConfig,
+          getPermittedAccounts: () => undefined,
+          getCurrentChainId: () => currentChainId,
+          getParticipateInMetrics: () => false,
+          trackMetaMetricsEvent: () => undefined,
+          getEIP1559GasFeeEstimates: () => undefined,
+      })
+      const result = await _txController._determineTransactionCategory({
+        to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
+        data: 'abd',
+      })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.CONTRACT_INTERACTION,
+        getCodeResponse: '0x0a',
+        contractParams: {},
+        methodParams: {},
+      })
+    })
 
-  //   it('should return a contract interaction transactionCategory with the correct getCodeResponse when to is a contract address and data is falsey', async function () {
-  //     const _providerResultStub = {
-  //       // 1 gwei
-  //       eth_gasPrice: '0x0de0b6b3a7640000',
-  //       // by default, all accounts are external accounts (not contracts)
-  //       eth_getCode: '0xa',
-  //     }
-  //     const _provider = createTestProviderTools({ scaffold: _providerResultStub }).provider
-  //     const _fromAccount = getTestAccounts()[0]
-  //     const _blockTrackerStub = new EventEmitter()
-  //     _blockTrackerStub.getCurrentBlock = noop
-  //     _blockTrackerStub.getLatestBlock = noop
-  //     const _txController = new TransactionController({
-  //       provider: _provider,
-  //       getGasPrice: function () {
-  //         return '0xee6b2800'
-  //       },
-  //       networkStore: new ObservableStore(currentNetworkId),
-  //       txHistoryLimit: 10,
-  //       blockTracker: _blockTrackerStub,
-  //       signTransaction: (ethTx) =>
-  //         new Promise((resolve) => {
-  //           ethTx.sign(_fromAccount.key)
-  //           resolve()
-  //         }),
-  //     })
-  //     const result = await _txController._determineTransactionCategory({
-  //       to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
-  //       data: '',
-  //     })
-  //     assert.deepStrictEqual(result, {
-  //       transactionCategory: TRANSACTION_TYPES.CONTRACT_INTERACTION,
-  //       getCodeResponse: '0x0a',
-  //       contractParams: {},
-  //       methodParams: {},
-  //     })
-  //   })
-  // })
+    it('should return a contract interaction transactionCategory with the correct getCodeResponse when to is a contract address and data is falsey', async function () {
+      const _providerResultStub = {
+        // 1 gwei
+        eth_gasPrice: '0x0de0b6b3a7640000',
+        // by default, all accounts are external accounts (not contracts)
+        eth_getCode: '0xa',
+      }
+      const _provider = createTestProviderTools({ scaffold: _providerResultStub }).provider
+      const _fromAccount = getTestAccounts()[0]
+      const _blockTrackerStub = new EventEmitter()
+      _blockTrackerStub.getCurrentBlock = noop
+      _blockTrackerStub.getLatestBlock = noop
+      const _txController = new TransactionController({
+        provider: _provider,
+        getGasPrice: function () {
+          return '0xee6b2800'
+        },
+        networkStore: new ObservableStore(currentNetworkId),
+        getCurrentNetworkEIP1559Compatibility: () => Promise.resolve(false),
+        getCurrentAccountEIP1559Compatibility: () => false,
+        txHistoryLimit: 10,
+        blockTracker: _blockTrackerStub,
+        signTransaction: (ethTx) =>
+          new Promise((resolve) => {
+            resolve(ethTx.sign(_fromAccount.key));
+          }),
+        getProviderConfig: () => providerConfig,
+        getPermittedAccounts: () => undefined,
+        getCurrentChainId: () => currentChainId,
+        getParticipateInMetrics: () => false,
+        trackMetaMetricsEvent: () => undefined,
+        getEIP1559GasFeeEstimates: () => undefined,
+      })
+      const result = await _txController._determineTransactionCategory({
+        to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
+        data: '',
+      })
+      assert.deepStrictEqual(result, {
+        transactionCategory: TRANSACTION_TYPES.CONTRACT_INTERACTION,
+        getCodeResponse: '0x0a',
+        contractParams: {},
+        methodParams: {},
+      })
+    })
+  })
 
-  // describe('#getPendingTransactions', function () {
-  //   it('should show only submitted and approved transactions as pending transasction', function () {
-  //     txController.txStateManager._saveTxList([
-  //       { id: 1, status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams: {} },
-  //       { id: 2, status: 'rejected', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] },
-  //       { id: 3, status: 'approved', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] },
-  //       { id: 4, status: 'signed', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] },
-  //       { id: 5, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] },
-  //       { id: 6, status: 'confirmed', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] },
-  //       { id: 7, status: 'failed', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] },
-  //     ])
+  describe('#getPendingTransactions', function () {
+    it('should show only submitted and approved transactions as pending transaction', function () {
+      txController.txStateManager._addTransactionsToState([
+        {
+          id: 1,
+          status: TRANSACTION_STATUSES.UNAPPROVED,
+          metamaskNetworkId: currentNetworkId,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+        },
+        {
+          id: 2,
+          status: TRANSACTION_STATUSES.REJECTED,
+          metamaskNetworkId: currentNetworkId,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          history: [{}],
+        },
+        {
+          id: 3,
+          status: TRANSACTION_STATUSES.APPROVED,
+          metamaskNetworkId: currentNetworkId,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          history: [{}],
+        },
+        {
+          id: 4,
+          status: TRANSACTION_STATUSES.SIGNED,
+          metamaskNetworkId: currentNetworkId,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          history: [{}],
+        },
+        {
+          id: 5,
+          status: TRANSACTION_STATUSES.SUBMITTED,
+          metamaskNetworkId: currentNetworkId,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          history: [{}],
+        },
+        {
+          id: 6,
+          status: TRANSACTION_STATUSES.CONFIRMED,
+          metamaskNetworkId: currentNetworkId,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          history: [{}],
+        },
+        {
+          id: 7,
+          status: TRANSACTION_STATUSES.FAILED,
+          metamaskNetworkId: currentNetworkId,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+          history: [{}],
+        },
+      ]);
 
-  //     assert(txController.pendingTxTracker.getPendingTransactions().length, 2)
-  //     const states = txController.pendingTxTracker.getPendingTransactions().map((tx) => tx.status)
-  //     assert(states.includes('approved'), 'includes approved')
-  //     assert(states.includes('submitted'), 'includes submitted')
-  //   })
-  // })
+      assert.equal(
+        txController.pendingTxTracker.getPendingTransactions().length,
+        2,
+      );
+      const states = txController.pendingTxTracker
+        .getPendingTransactions()
+        .map((tx) => tx.status);
+      assert.ok(
+        states.includes(TRANSACTION_STATUSES.APPROVED),
+        'includes approved',
+      );
+      assert.ok(
+        states.includes(TRANSACTION_STATUSES.SUBMITTED),
+        'includes submitted',
+      );
+    });
+  });
 })

@@ -182,7 +182,7 @@ class PendingTransactionTracker extends EventEmitter {
     @returns {boolean}
   */
 
-  async _checkIftxWasDropped(txMeta) {
+  async _checkIfTxWasDropped(txMeta) {
     const {
       hash: txHash,
       txParams: { nonce, from },
