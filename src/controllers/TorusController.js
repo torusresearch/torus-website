@@ -239,6 +239,9 @@ export default class TorusController extends EventEmitter {
       network: this.networkController,
     })
 
+    this.updateAndApproveTransaction = this.txController.updateAndApproveTransaction.bind(this.txController)
+    this.cancelTransaction = this.txController.cancelTransaction.bind(this.txController)
+
     this.engine = null
   }
 
