@@ -41,9 +41,9 @@ const toNormalizedDenomination = {
   ETH: (bigNumber) => bigNumber.div(BIG_NUMBER_ETH_MULTIPLIER),
 }
 const toSpecifiedDenomination = {
-  WEI: (bigNumber) => bigNumber.times(BIG_NUMBER_WEI_MULTIPLIER).round(),
-  GWEI: (bigNumber) => bigNumber.times(BIG_NUMBER_GWEI_MULTIPLIER).round(9),
-  ETH: (bigNumber) => bigNumber.times(BIG_NUMBER_ETH_MULTIPLIER).round(9),
+  WEI: (bigNumber) => bigNumber.times(BIG_NUMBER_WEI_MULTIPLIER).dp(0, BigNumber.ROUND_UP),
+  GWEI: (bigNumber) => bigNumber.times(BIG_NUMBER_GWEI_MULTIPLIER).dp(9, BigNumber.ROUND_UP),
+  ETH: (bigNumber) => bigNumber.times(BIG_NUMBER_ETH_MULTIPLIER).dp(9, BigNumber.ROUND_UP),
 }
 const baseChange = {
   hex: (n) => n.toString(16),
@@ -114,11 +114,11 @@ const converter = ({
   }
 
   if (numberOfDecimals) {
-    convertedValue = convertedValue.round(numberOfDecimals, BigNumber.ROUND_HALF_DOWN)
+    convertedValue = convertedValue.dp(numberOfDecimals, BigNumber.ROUND_HALF_DOWN)
   }
 
   if (roundDown) {
-    convertedValue = convertedValue.round(roundDown, BigNumber.ROUND_DOWN)
+    convertedValue = convertedValue.dp(roundDown, BigNumber.ROUND_DOWN)
   }
 
   if (toNumericBase) {
@@ -260,6 +260,15 @@ function decGWEIToHexWEI(decGWEI) {
   })
 }
 
+function hexWEIToDecGWEI(decGWEI) {
+  return conversionUtil(decGWEI, {
+    fromNumericBase: 'hex',
+    toNumericBase: 'dec',
+    fromDenomination: 'WEI',
+    toDenomination: 'GWEI',
+  })
+}
+
 export {
   addCurrencies,
   conversionGreaterThan,
@@ -269,6 +278,7 @@ export {
   conversionMax,
   conversionUtil,
   decGWEIToHexWEI,
+  hexWEIToDecGWEI,
   multiplyCurrencies,
   subtractCurrencies,
   toNegative,

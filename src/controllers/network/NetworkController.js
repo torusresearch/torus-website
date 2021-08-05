@@ -71,8 +71,12 @@ export default class NetworkController extends EventEmitter {
    */
   initializeProvider(providerParameters) {
     this._baseProviderParams = providerParameters
-    const { type, rpcUrl, chainId, ticker, nickname } = this.getProviderConfig()
-    this._configureProvider({ type, rpcUrl, chainId, ticker, nickname })
+    const { type, rpcUrl, chainId, ticker, nickname, host } = this.getProviderConfig()
+    let finalType = type || host
+    if (!SUPPORTED_NETWORK_TYPES[finalType]) {
+      finalType = RPC
+    }
+    this._configureProvider({ type: finalType, rpcUrl: rpcUrl || host, chainId, ticker, nickname })
     this.lookupNetwork()
     return this._providerProxy
   }
@@ -132,8 +136,6 @@ export default class NetworkController extends EventEmitter {
   getNetworkState() {
     return this.networkStore.getState()
   }
-
-  // TODO: check networkConfig usage
 
   /**
    * Set network state

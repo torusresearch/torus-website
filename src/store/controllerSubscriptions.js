@@ -28,6 +28,7 @@ to "loading" at times in the inpage API
 
 if (torus) {
   torus.torusController.networkController.networkStore.subscribe((state) => {
+    // TODO: get eip 1559 support + chainId from here to put into state.js
     getStore().dispatch('updateNetworkId', { networkId: state })
   })
 }

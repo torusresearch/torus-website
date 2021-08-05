@@ -78,7 +78,6 @@
     "obj-multiplex": "^1.0.0",
     "pify": "^5.0.0",
     "post-message-stream": "^3.0.0",
-    "promise-to-callback": "^1.0.0",
     "pump": "^3.0.0",
     "readable-stream": "^3.6.0",
     "register-service-worker": "^1.7.2",

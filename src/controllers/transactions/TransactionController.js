@@ -807,7 +807,6 @@ class TransactionController extends EventEmitter {
     this.txStateManager.updateTransaction(txMeta, 'transactions#setTxHash')
   }
 
-  // TODO: check this method
   async addEtherscanTransactions(txs, network) {
     const lowerCaseSelectedAddress = this.getSelectedAddress()
 
