@@ -192,7 +192,6 @@ class GasFeeController {
    * This stops any active polling.
    */
   destroy() {
-    super.destroy()
     this.stopPolling()
   }
 

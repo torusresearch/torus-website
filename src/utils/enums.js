@@ -1,3 +1,5 @@
+import { addHexPrefix } from 'ethereumjs-util'
+
 export const ETH = 'eth'
 
 export const PLATFORM_BRAVE = 'Brave'
@@ -556,3 +558,13 @@ export const CHAIN_ID_TO_GAS_LIMIT_BUFFER_MAP = {
 }
 
 export const TEST_CHAINS = [ROPSTEN_CHAIN_ID, RINKEBY_CHAIN_ID, GOERLI_CHAIN_ID, KOVAN_CHAIN_ID]
+
+const TWENTY_ONE_THOUSAND = 21_000
+const ONE_HUNDRED_THOUSAND = 100_000
+
+export const GAS_LIMITS = {
+  // maximum gasLimit of a simple send
+  SIMPLE: addHexPrefix(TWENTY_ONE_THOUSAND.toString(16)),
+  // a base estimate for token transfers.
+  BASE_TOKEN_ESTIMATE: addHexPrefix(ONE_HUNDRED_THOUSAND.toString(16)),
+}

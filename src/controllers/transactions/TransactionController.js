@@ -297,7 +297,7 @@ class TransactionController extends EventEmitter {
     } else {
       // Assert that the origin has permissions to initiate transactions from
       // the specified address
-      const permittedAddresses = new Set([await this.getSelectedAddress()])
+      const permittedAddresses = new Set([this.getSelectedAddress().toLowerCase()])
       if (!permittedAddresses.has(normalizedTxParameters.from)) {
         throw ethErrors.provider.unauthorized({ data: { origin: request.origin }, message: 'Unauthorized origin' })
       }
@@ -333,6 +333,53 @@ class TransactionController extends EventEmitter {
     // save txMeta
     this.txStateManager.updateTransaction(txMeta, 'Added new unapproved transaction.')
 
+    return txMeta
+  }
+
+  /**
+    Creates a new txMeta with the same txParams as the original
+    to allow the user to resign the transaction with a higher gas values
+    @param  originalTxId {number} - the id of the txMeta that
+    you want to attempt to retry
+    * @param {CustomGasSettings} [customGasSettings] - optional customGasSettings overrides to use for gas
+    *  params instead of allowing this method to generate them
+    @return {txMeta}
+  */
+
+  async retryTransaction(originalTxId, customGasSettings) {
+    const originalTxMeta = this.txStateManager.getTransaction(originalTxId)
+    const { txParams } = originalTxMeta
+
+    let txMeta
+    if (customGasSettings) {
+      const { previousGasParams, newGasParams } = this.generateNewGasParams(originalTxMeta, {
+        ...customGasSettings,
+        gasLimit: customGasSettings.gasLimit || GAS_LIMITS.SIMPLE,
+      })
+
+      txMeta = this.txStateManager.generateTxMeta({
+        txParams: {
+          ...txParams,
+          ...newGasParams,
+        },
+        previousGasParams,
+        loadingDefaults: false,
+        status: TRANSACTION_STATUSES.UNAPPROVED,
+        type: TRANSACTION_TYPES.RETRY,
+      })
+    } else {
+      txMeta = this.txStateManager.generateTxMeta({
+        txParams: {
+          ...txParams,
+        },
+        loadingDefaults: false,
+        status: TRANSACTION_STATUSES.UNAPPROVED,
+        type: TRANSACTION_TYPES.RETRY,
+      })
+    }
+
+    this.addTransaction(txMeta)
+    this.emit('newUnapprovedTx', txMeta)
     return txMeta
   }
 
@@ -879,7 +926,7 @@ class TransactionController extends EventEmitter {
     this.getNetwork = () => this.networkStore.getState()
 
     /** @returns {string} the user selected address */
-    this.getSelectedAddress = () => this.preferencesStore.getState().selectedAddress
+    this.getSelectedAddress = () => this.preferencesStore.getState().selectedAddress || ''
 
     /** @returns {Array} transactions whos status is unapproved */
     this.getUnapprovedTxCount = () => Object.keys(this.txStateManager.getUnapprovedTxList()).length

@@ -1,113 +1,22 @@
 /* eslint-disable */
 import assert from 'assert'
+import BN from 'bn.js';
 import { createTestProviderTools } from '../../../stub/provider'
 import PendingTransactionTracker from '../../../../src/controllers/transactions/PendingTransactionTracker'
 import MockTxGen from '../../lib/mock-tx-gen'
+import { TRANSACTION_STATUSES } from '../../../../src/utils/enums'
+
 import sinon from 'sinon'
 
 describe('PendingTransactionTracker', function () {
-  let pendingTxTracker, txMeta, txMetaNoHash, providerResultStub, provider, txMeta3, txList, knownErrors
-  this.timeout(10000)
-
-  beforeEach(function () {
-    txMeta = {
-      id: 1,
-      hash: '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
-      status: 'signed',
-      txParams: {
-        from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
-        nonce: '0x1',
-        value: '0xfffff',
-      },
-      history: [{}],
-      rawTx:
-        '0xf86c808504a817c800827b0d940c62bb85faa3311a998d3aba8098c1235c564966880de0b6b3a7640000802aa08ff665feb887a25d4099e40e11f0fef93ee9608f404bd3f853dd9e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
-    }
-    txMetaNoHash = {
-      id: 2,
-      history: [{}],
-      status: 'submitted',
-      txParams: { from: '0x1678a085c290ebd122dc42cba69373b5953b831d' },
-    }
-
-    providerResultStub = {}
-    provider = createTestProviderTools({ scaffold: providerResultStub }).provider
-
-    pendingTxTracker = new PendingTransactionTracker({
-      provider,
-      nonceTracker: {
-        getGlobalLock: async () => {
-          return { releaseLock: () => {} }
-        },
-      },
-      getPendingTransactions: () => {
-        return []
-      },
-      getCompletedTransactions: () => {
-        return []
-      },
-      publishTransaction: () => {},
-      confirmTransaction: () => {},
-    })
-
-    pendingTxTracker._getBlock = (blockNumber) => {
-      return { number: blockNumber, transactions: [] }
-    }
-  })
-
-  describe('_checkPendingTx state management', function () {
-    it('should emit dropped if another tx with the same nonce succeeds', async function () {
-      const txGen = new MockTxGen()
-
-      txGen.generate(
-        {
-          id: '456',
-          value: '0x01',
-          hash: '0xbad',
-          status: 'confirmed',
-        },
-        { count: 1, fromNonce: '0x01' }
-      )
-
-      const pending = txGen.generate(
-        {
-          id: '123',
-          value: '0x02',
-          hash: '0x2a919d2512ec963f524bfd9730fb66b6d5a2e399d1dd957abb5e2b544a12644b',
-          status: 'submitted',
-        },
-        { count: 1, fromNonce: '0x01' }
-      )[0]
-
-      const stub = sinon.stub(pendingTxTracker, 'getCompletedTransactions').returns(txGen.txs)
-
-      const spy = sinon.spy()
-      pendingTxTracker.on('tx:dropped', (txId) => {
-        assert.strictEqual(txId, pending.id, 'should fail the pending tx')
-        spy(txId)
-      })
-
-      await pendingTxTracker._checkPendingTx(pending)
-
-      assert.ok(spy.calledWith(pending.id), 'tx dropped should be emitted')
-      stub.restore()
-    })
-  })
-
-  describe('#_checkPendingTx', function () {
-    it("should emit 'tx:failed' if the txMeta does not have a hash", function (done) {
-      pendingTxTracker.once('tx:failed', (txId) => {
-        assert(txId, txMetaNoHash.id, 'should pass txId')
-        done()
-      })
-      pendingTxTracker._checkPendingTx(txMetaNoHash)
-    })
-
-    it('should emit tx:dropped with the txMetas id only after the fourth call', function (done) {
+    let pendingTxTracker, txMeta, providerResultStub, provider, txMeta3, txList
+    this.timeout(10000)
+  
+    beforeEach(function () {
       txMeta = {
         id: 1,
         hash: '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
-        status: 'submitted',
+        status: 'signed',
         txParams: {
           from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
           nonce: '0x1',
@@ -117,329 +26,897 @@ describe('PendingTransactionTracker', function () {
         rawTx:
           '0xf86c808504a817c800827b0d940c62bb85faa3311a998d3aba8098c1235c564966880de0b6b3a7640000802aa08ff665feb887a25d4099e40e11f0fef93ee9608f404bd3f853dd9e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
       }
-
-      let counter = 0
-      providerResultStub['eth_getTransactionCount'] = '0x02'
-      providerResultStub['eth_getTransactionReceipt'] = {}
-      pendingTxTracker.once('tx:dropped', (id) => {
-        if (id === txMeta.id) {
-          delete providerResultStub['eth_getTransactionCount']
-          delete providerResultStub['eth_getTransactionReceipt']
-          if (counter === 3) {
-            return done()
-          } else {
-            return done(new Error(`Counter does not equal 3 got ${counter} instead`))
-          }
-        } else {
-          done(new Error('wrong tx Id'))
-        }
+      // txMetaNoHash = {
+      //   id: 2,
+      //   history: [{}],
+      //   status: 'submitted',
+      //   txParams: { from: '0x1678a085c290ebd122dc42cba69373b5953b831d' },
+      // }
+  
+      providerResultStub = {}
+      provider = createTestProviderTools({ scaffold: providerResultStub }).provider
+  
+      pendingTxTracker = new PendingTransactionTracker({
+        provider,
+        nonceTracker: {
+          getGlobalLock: async () => {
+            return { releaseLock: () => {} }
+          },
+        },
+        getPendingTransactions: () => {
+          return []
+        },
+        getCompletedTransactions: () => {
+          return []
+        },
+        publishTransaction: () => {},
+        confirmTransaction: () => {},
       })
-
-      pendingTxTracker
-        ._checkPendingTx(txMeta)
-        .then(() => {
-          ++counter
-          pendingTxTracker._checkPendingTx(txMeta).then(() => {
-            ++counter
-            pendingTxTracker._checkPendingTx(txMeta).then(() => {
-              ++counter
-              pendingTxTracker._checkPendingTx(txMeta)
-            })
+  
+      pendingTxTracker._getBlock = (blockNumber) => {
+        return { number: blockNumber, transactions: [] }
+      }
+    })
+  
+    describe('_checkPendingTx state management', function () {
+      it('should emit dropped if another tx with the same nonce succeeds', async function () {
+        const txGen = new MockTxGen()
+  
+        txGen.generate(
+          {
+            id: '456',
+            value: '0x01',
+            hash: '0xbad',
+            status: 'confirmed',
+          },
+          { count: 1, fromNonce: '0x01' }
+        )
+  
+        const pending = txGen.generate(
+          {
+            id: '123',
+            value: '0x02',
+            hash: '0x2a919d2512ec963f524bfd9730fb66b6d5a2e399d1dd957abb5e2b544a12644b',
+            status: 'submitted',
+          },
+          { count: 1, fromNonce: '0x01' }
+        )[0]
+  
+        const stub = sinon.stub(pendingTxTracker, 'getCompletedTransactions').returns(txGen.txs)
+  
+        const spy = sinon.spy()
+        pendingTxTracker.on('tx:dropped', (txId) => {
+          assert.strictEqual(txId, pending.id, 'should fail the pending tx')
+          spy(txId)
+        })
+  
+        await pendingTxTracker._checkPendingTx(pending)
+  
+        assert.ok(spy.calledWith(pending.id), 'tx dropped should be emitted')
+        stub.restore()
+      })
+    })
+  
+  
+    describe('#_checkPendingTxs', function () {
+      it("should warp all txMeta's in #updatePendingTxs", function (done) {
+        const txMeta2 = (txMeta3 = txMeta)
+        txMeta2.id = 2
+        txMeta3.id = 3
+        txList = [txMeta, txMeta2, txMeta3].map((tx) => {
+          tx.processed = new Promise((resolve) => {
+            tx.resolve = resolve
           })
+          return tx
         })
-        .catch(done)
-    })
-
-    it('should should return if query does not return txParams', function () {
-      providerResultStub.eth_getTransactionByHash = null
-      pendingTxTracker._checkPendingTx(txMeta)
-    })
-  })
-
-  describe('#_checkPendingTxs', function () {
-    it("should warp all txMeta's in #updatePendingTxs", function (done) {
-      const txMeta2 = (txMeta3 = txMeta)
-      txMeta2.id = 2
-      txMeta3.id = 3
-      txList = [txMeta, txMeta2, txMeta3].map((tx) => {
-        tx.processed = new Promise((resolve) => {
-          tx.resolve = resolve
-        })
-        return tx
-      })
-      pendingTxTracker.getPendingTransactions = () => txList
-      pendingTxTracker._checkPendingTx = (tx) => {
-        tx.resolve(tx)
-      }
-      Promise.all(txList.map((tx) => tx.processed))
-        .then(() => done())
-        .catch(done)
-
-      pendingTxTracker.updatePendingTxs()
-    })
-  })
-
-  describe('#resubmitPendingTxs', function () {
-    const blockNumberStub = '0x0'
-    beforeEach(function () {
-      const txMeta2 = (txMeta3 = txMeta)
-      txList = [txMeta, txMeta2, txMeta3].map((tx) => {
-        tx.processed = new Promise((resolve) => {
-          tx.resolve = resolve
-        })
-        return tx
-      })
-    })
-
-    it('should return if no pending transactions', function () {
-      pendingTxTracker.resubmitPendingTxs()
-    })
-    it("should call #_resubmitTx for all pending tx's", function (done) {
-      pendingTxTracker.getPendingTransactions = () => txList
-      pendingTxTracker._resubmitTx = async (tx) => {
-        tx.resolve(tx)
-      }
-      Promise.all(txList.map((tx) => tx.processed))
-        .then(() => done())
-        .catch(done)
-      pendingTxTracker.resubmitPendingTxs(blockNumberStub)
-    })
-    it("should not emit 'tx:failed' if the txMeta throws a known txError", function (done) {
-      knownErrors = [
-        // geth
-        '     Replacement transaction Underpriced            ',
-        '       known transaction',
-        // parity
-        'Gas price too low to replace     ',
-        '     transaction with the sAme hash was already imported',
-        // other
-        '       gateway timeout',
-        '         noncE too low       ',
-      ]
-      const enoughForAllErrors = txList.concat(txList)
-
-      pendingTxTracker.on('tx:failed', (_, err) => done(err))
-
-      pendingTxTracker.getPendingTransactions = () => enoughForAllErrors
-      pendingTxTracker._resubmitTx = async (tx) => {
-        tx.resolve()
-        throw new Error(knownErrors.pop())
-      }
-      Promise.all(txList.map((tx) => tx.processed))
-        .then(() => done())
-        .catch(done)
-
-      pendingTxTracker.resubmitPendingTxs(blockNumberStub)
-    })
-    it("should emit 'tx:warning' if it encountered a real error", function (done) {
-      pendingTxTracker.once('tx:warning', (txMeta, err) => {
-        if (err.message === 'im some real error') {
-          const matchingTx = txList.find((tx) => tx.id === txMeta.id)
-          matchingTx.resolve()
-        } else {
-          done(err)
+        pendingTxTracker.getPendingTransactions = () => txList
+        pendingTxTracker._checkPendingTx = (tx) => {
+          tx.resolve(tx)
         }
-      })
-
-      pendingTxTracker.getPendingTransactions = () => txList
-      pendingTxTracker._resubmitTx = async () => {
-        throw new TypeError('im some real error')
-      }
-      Promise.all(txList.map((tx) => tx.processed))
-        .then(() => done())
-        .catch(done)
-
-      pendingTxTracker.resubmitPendingTxs(blockNumberStub)
-    })
-  })
-  describe('#_resubmitTx', function () {
-    const mockFirstRetryBlockNumber = '0x1'
-    let txMetaToTestExponentialBackoff, enoughBalance
-
-    beforeEach(function () {
-      pendingTxTracker.getBalance = (address) => {
-        assert.strictEqual(address, txMeta.txParams.from, 'Should pass the address')
-        return enoughBalance
-      }
-      pendingTxTracker.publishTransaction = async (rawTx) => {
-        assert.strictEqual(rawTx, txMeta.rawTx, 'Should pass the rawTx')
-      }
-      pendingTxTracker.approveTransaction = async () => {}
-      sinon.spy(pendingTxTracker, 'publishTransaction')
-
-      txMetaToTestExponentialBackoff = Object.assign({}, txMeta, {
-        retryCount: 4,
-        firstRetryBlockNumber: mockFirstRetryBlockNumber,
+        Promise.all(txList.map((tx) => tx.processed))
+          .then(() => done())
+          .catch(done)
+  
+        pendingTxTracker.updatePendingTxs()
       })
     })
+ 
+    describe('#resubmitPendingTxs', function () {
+      it('should return early if there are no pending transactions', async function () {
+        const getPendingTransactions = sinon.stub().returns([]);
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions,
+          getCompletedTransactions: sinon.stub().returns([]),
+          approveTransaction: sinon.spy(),
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+        const resubmitTx = sinon.stub(pendingTxTracker, '_resubmitTx').rejects();
+        const warningListener = sinon.spy();
 
-    afterEach(function () {
-      pendingTxTracker.publishTransaction.restore()
-    })
+        pendingTxTracker.on('tx:warning', warningListener);
+        await pendingTxTracker.resubmitPendingTxs('0x1');
 
-    it('should publish the transaction', function (done) {
-      enoughBalance = '0x100000'
+        assert.ok(
+          getPendingTransactions.calledOnceWithExactly(),
+          'should call getPendingTransaction',
+        );
+        assert.ok(resubmitTx.notCalled, 'should NOT call _resubmitTx');
+        assert.ok(warningListener.notCalled, "should NOT emit 'tx:warning'");
+      });
 
-      // Stubbing out current account state:
-      // Adding the fake tx:
-      pendingTxTracker
-        ._resubmitTx(txMeta)
-        .then(() => done())
-        .catch((err) => {
-          assert.ifError(err, 'should not throw an error')
-          done(err)
-        })
+      it('should resubmit each pending transaction', async function () {
+        const getPendingTransactions = sinon.stub().returns([
+          {
+            id: 1,
+          },
+          {
+            id: 2,
+          },
+        ]);
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions,
+          getCompletedTransactions: sinon.stub().returns([]),
+          approveTransaction: sinon.spy(),
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+        const resubmitTx = sinon.stub(pendingTxTracker, '_resubmitTx').resolves();
+        const warningListener = sinon.spy();
 
-      assert.strictEqual(pendingTxTracker.publishTransaction.callCount, 1, 'Should call publish transaction')
-    })
+        pendingTxTracker.on('tx:warning', warningListener);
+        await pendingTxTracker.resubmitPendingTxs('0x1');
 
-    it('should not publish the transaction if the limit of retries has been exceeded', function (done) {
-      enoughBalance = '0x100000'
-      const mockLatestBlockNumber = '0x5'
+        assert.ok(
+          getPendingTransactions.calledOnceWithExactly(),
+          'should call getPendingTransaction',
+        );
+        assert.ok(resubmitTx.calledTwice, 'should call _resubmitTx');
+        assert.ok(warningListener.notCalled, "should NOT emit 'tx:warning'");
+      });
 
-      pendingTxTracker
-        ._resubmitTx(txMetaToTestExponentialBackoff, mockLatestBlockNumber)
-        .then(() => done())
-        .catch((err) => {
-          assert.ifError(err, 'should not throw an error')
-          done(err)
-        })
+      it("should NOT emit 'tx:warning' for known failed resubmission", async function () {
+        const getPendingTransactions = sinon.stub().returns([
+          {
+            id: 1,
+          },
+        ]);
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions,
+          getCompletedTransactions: sinon.stub().returns([]),
+          approveTransaction: sinon.spy(),
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+        const resubmitTx = sinon
+          .stub(pendingTxTracker, '_resubmitTx')
+          .rejects({ message: 'known transaction' });
+        const warningListener = sinon.spy();
 
-      assert.strictEqual(pendingTxTracker.publishTransaction.callCount, 0, 'Should NOT call publish transaction')
-    })
+        pendingTxTracker.on('tx:warning', warningListener);
+        await pendingTxTracker.resubmitPendingTxs('0x1');
 
-    it('should publish the transaction if the number of blocks since last retry exceeds the last set limit', function (done) {
-      enoughBalance = '0x100000'
-      const mockLatestBlockNumber = '0x11'
+        assert.ok(
+          getPendingTransactions.calledOnceWithExactly(),
+          'should call getPendingTransaction',
+        );
+        assert.ok(resubmitTx.calledOnce, 'should call _resubmitTx');
+        assert.ok(warningListener.notCalled, "should NOT emit 'tx:warning'");
+      });
 
-      pendingTxTracker
-        ._resubmitTx(txMetaToTestExponentialBackoff, mockLatestBlockNumber)
-        .then(() => done())
-        .catch((err) => {
-          assert.ifError(err, 'should not throw an error')
-          done(err)
-        })
+      it("should emit 'tx:warning' for unknown failed resubmission", async function () {
+        const getPendingTransactions = sinon.stub().returns([
+          {
+            id: 1,
+          },
+        ]);
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions,
+          getCompletedTransactions: sinon.stub().returns([]),
+          approveTransaction: sinon.spy(),
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+        const resubmitTx = sinon
+          .stub(pendingTxTracker, '_resubmitTx')
+          .rejects({ message: 'who dis' });
+        const warningListener = sinon.spy();
 
-      assert.strictEqual(pendingTxTracker.publishTransaction.callCount, 1, 'Should call publish transaction')
-    })
+        pendingTxTracker.on('tx:warning', warningListener);
+        await pendingTxTracker.resubmitPendingTxs('0x1');
 
-    it('should call opts.approveTransaction with the id if the tx is not signed', async function () {
-      const stubTx = {
-        id: 40,
-      }
-      const approveMock = sinon.stub(pendingTxTracker, 'approveTransaction')
+        assert.ok(
+          getPendingTransactions.calledOnceWithExactly(),
+          'should call getPendingTransaction',
+        );
+        assert.ok(resubmitTx.calledOnce, 'should call _resubmitTx');
+        assert.ok(warningListener.calledOnce, "should emit 'tx:warning'");
+      });
+    });
 
-      pendingTxTracker._resubmitTx(stubTx)
-
-      assert.ok(approveMock.called)
-      approveMock.restore()
-    })
-  })
-
-  describe('#_checkIftxWasDropped', function () {
-    const txMeta = {
-      id: 1,
-      hash: '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
-      status: 'submitted',
-      txParams: {
-        from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
-        nonce: '0x1',
-        value: '0xfffff',
-      },
-      rawTx:
-        '0xf86c808504a817c800827b0d940c62bb85faa3311a998d3aba8098c1235c564966880de0b6b3a7640000802aa08ff665feb887a25d4099e40e11f0fef93ee9608f404bd3f853dd9e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
-    }
-    it('should return false when the nonce is the suggested network nonce', function (done) {
-      providerResultStub['eth_getTransactionCount'] = '0x01'
-      providerResultStub['eth_getTransactionReceipt'] = {}
-      pendingTxTracker
-        ._checkIftxWasDropped(txMeta, {})
-        .then((dropped) => {
-          assert(!dropped, 'should be false')
-          done()
-        })
-        .catch(done)
-    })
-
-    it('should return true when the network nonce is higher then the txMeta nonce', function (done) {
-      providerResultStub['eth_getTransactionCount'] = '0x02'
-      providerResultStub['eth_getTransactionReceipt'] = {}
-      pendingTxTracker
-        ._checkIftxWasDropped(txMeta, {})
-        .then((dropped) => {
-          assert(dropped, 'should be true')
-          done()
-        })
-        .catch(done)
-    })
-  })
-
-  describe('#_checkIfNonceIsTaken', function () {
-    beforeEach(function () {
-      const confirmedTxList = [
-        {
+    describe('#updatePendingTxs', function () {
+      it('should call _checkPendingTx for each pending transaction', async function () {
+        const txMeta = {
           id: 1,
-          hash: '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
-          status: 'confirmed',
+          hash:
+            '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
+          status: TRANSACTION_STATUSES.SIGNED,
+          txParams: {
+            from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+            nonce: '0x1',
+            value: '0xfffff',
+          },
+          history: [{}],
+          rawTx:
+            '0xf86c808504a817c800827b0d940c62bb85faa3311a998d3aba8098c1235c564966880de0b6b3a7640000802aa08ff665feb887a25d4099e40e11f0fef93ee9608f404bd3f853dd9e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
+        };
+        const txList = [1, 2, 3].map((id) => ({ ...txMeta, id }));
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: async () => {
+              return { releaseLock: () => undefined };
+            },
+          },
+          getPendingTransactions: () => txList,
+          getCompletedTransactions: () => {
+            return [];
+          },
+          publishTransaction: () => undefined,
+          confirmTransaction: () => undefined,
+        });
+
+        const checkPendingTxStub = sinon
+          .stub(pendingTxTracker, '_checkPendingTx')
+          .resolves();
+        await pendingTxTracker.updatePendingTxs();
+
+        assert.ok(checkPendingTxStub.calledThrice);
+        assert.ok(
+          checkPendingTxStub.firstCall.calledWithExactly(
+            sinon.match.has('id', 1),
+          ),
+        );
+        assert.ok(
+          checkPendingTxStub.secondCall.calledWithExactly(
+            sinon.match.has('id', 2),
+          ),
+        );
+        assert.ok(
+          checkPendingTxStub.thirdCall.calledWithExactly(
+            sinon.match.has('id', 3),
+          ),
+        );
+      });
+    });
+
+    describe('#_resubmitTx', function () {
+      it('should publish a new transaction', async function () {
+        const txMeta = {
+          id: 1,
+          hash:
+            '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
+          status: TRANSACTION_STATUSES.SIGNED,
+          txParams: {
+            from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+            nonce: '0x1',
+            value: '0xfffff',
+          },
+          history: [{}],
+          rawTx:
+            '0xf86c808504a817c80086a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
+        };
+        const approveTransaction = sinon.spy();
+        const publishTransaction = sinon.spy();
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions: sinon.stub().returns([]),
+          approveTransaction,
+          publishTransaction,
+          confirmTransaction: sinon.spy(),
+        });
+
+        await pendingTxTracker._resubmitTx(txMeta);
+
+        assert.ok(
+          publishTransaction.calledOnceWithExactly(txMeta.rawTx),
+          'should call publish transaction with the rawTx',
+        );
+        assert.ok(
+          approveTransaction.notCalled,
+          'should NOT try to approve transaction',
+        );
+      });
+
+      it('should publish the given transaction if more than 2**retryCount blocks have passed', async function () {
+        const txMeta = {
+          id: 1,
+          hash:
+            '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
+          status: TRANSACTION_STATUSES.SIGNED,
+          txParams: {
+            from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+            nonce: '0x1',
+            value: '0xfffff',
+          },
+          history: [{}],
+          rawTx:
+            '0xf86c808504a817c800827b0d940c62bb85faa3311a996e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
+          retryCount: 4,
+          firstRetryBlockNumber: '0x1',
+        };
+        const approveTransaction = sinon.spy();
+        const publishTransaction = sinon.spy();
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions: sinon.stub().returns([]),
+          publishTransaction,
+          approveTransaction,
+          confirmTransaction: sinon.spy(),
+        });
+
+        await pendingTxTracker._resubmitTx(txMeta, '0x11' /* 16 */);
+
+        assert.ok(
+          publishTransaction.calledOnceWithExactly(txMeta.rawTx),
+          'should try to publish transaction',
+        );
+        assert.ok(
+          approveTransaction.notCalled,
+          'should NOT try to approve transaction',
+        );
+      });
+
+      it('should NOT publish the given transaction if fewer than 2**retryCount blocks have passed', async function () {
+        const txMeta = {
+          id: 1,
+          hash:
+            '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
+          status: TRANSACTION_STATUSES.SIGNED,
+          txParams: {
+            from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+            nonce: '0x1',
+            value: '0xfffff',
+          },
+          history: [{}],
+          rawTx:
+            '0xf86c808504a817c800827b0d940c62bb85faa3311a996e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
+          retryCount: 4,
+          firstRetryBlockNumber: '0x1',
+        };
+        const approveTransaction = sinon.spy();
+        const publishTransaction = sinon.spy();
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions: sinon.stub().returns([]),
+          publishTransaction,
+          approveTransaction,
+          confirmTransaction: sinon.spy(),
+        });
+
+        await pendingTxTracker._resubmitTx(txMeta, '0x5');
+
+        assert.ok(
+          publishTransaction.notCalled,
+          'should NOT try to publish transaction',
+        );
+        assert.ok(
+          approveTransaction.notCalled,
+          'should NOT try to approve transaction',
+        );
+      });
+
+      it('should call approveTransaction if the tx is not yet signed', async function () {
+        const approveTransaction = sinon.spy();
+        const publishTransaction = sinon.spy();
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions: sinon.stub().returns([]),
+          approveTransaction,
+          publishTransaction,
+          confirmTransaction: sinon.spy(),
+        });
+
+        await pendingTxTracker._resubmitTx({ id: 40 });
+
+        assert.ok(
+          approveTransaction.calledOnceWithExactly(40),
+          'should call approveTransaction with the tx ID',
+        );
+        assert.ok(
+          publishTransaction.notCalled,
+          'should NOT try to publish transaction',
+        );
+      });
+    });
+
+    describe('#_checkIfTxWasDropped', function () {
+      it('should return true when the given nonce is lower than the network nonce', async function () {
+        const nonceBN = new BN(2);
+
+        const pendingTxTracker = new PendingTransactionTracker({
+          query: {
+            getTransactionReceipt: sinon.stub(),
+            getTransactionCount: sinon.stub().resolves(nonceBN),
+          },
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions: sinon.stub().returns([]),
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+
+        pendingTxTracker.DROPPED_BUFFER_COUNT = 0;
+
+        assert.ok(
+          await pendingTxTracker._checkIfTxWasDropped({
+            id: 1,
+            hash:
+              '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
+            status: TRANSACTION_STATUSES.SUBMITTED,
+            txParams: {
+              from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+              nonce: '0x1',
+              value: '0xfffff',
+            },
+            rawTx: '0xf86c808504a817c800827b0d940c62bba0ea0d00cc9789d0d7ff1f471d',
+          }),
+        );
+      });
+
+      it('should return false when the given nonce is the network nonce', async function () {
+        const nonceBN = new BN(1);
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions: sinon.stub().returns([]),
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+
+        const dropped = await pendingTxTracker._checkIfTxWasDropped({
+          id: 1,
+          hash:
+            '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
+          status: TRANSACTION_STATUSES.SUBMITTED,
           txParams: {
             from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
             nonce: '0x1',
             value: '0xfffff',
           },
           rawTx:
-            '0xf86c808504a817c800827b0d940c62bb85faa3311a998d3aba8098c1235c564966880de0b6b3a7640000802aa08ff665feb887a25d4099e40e11f0fef93ee9608f404bd3f853dd9e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
-        },
-        {
-          id: 2,
-          hash: '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
-          status: 'confirmed',
-          txParams: {
-            from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
-            nonce: '0x2',
-            value: '0xfffff',
-          },
-          rawTx:
-            '0xf86c808504a817c800827b0d940c62bb85faa3311a998d3aba8098c1235c564966880de0b6b3a7640000802aa08ff665feb887a25d4099e40e11f0fef93ee9608f404bd3f853dd9e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
-        },
-      ]
-      pendingTxTracker.getCompletedTransactions = (address) => {
-        if (!address) {
-          throw new Error('unless behavior has changed #_checkIfNonceIsTaken needs a filtered list of transactions to see if the nonce is taken')
-        }
-        return confirmedTxList
-      }
-    })
+            '0xf86c808504a89e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
+        });
 
-    it('should return false if nonce has not been taken', function (done) {
-      pendingTxTracker
-        ._checkIfNonceIsTaken({
+        assert.ok(!dropped, 'should be false');
+      });
+    });
+
+    describe('#_checkIfNonceIsTaken', function () {
+      it('should return false if the given nonce is not taken', async function () {
+        const confirmedTxList = [
+          {
+            id: 1,
+            hash:
+              '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
+            status: TRANSACTION_STATUSES.CONFIRMED,
+            txParams: {
+              from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+              nonce: '0x1',
+              value: '0xfffff',
+            },
+            rawTx:
+              '0xf86c808504a817c800827b0d940c62bb85fa3320e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
+          },
+          {
+            id: 2,
+            hash:
+              '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
+            status: TRANSACTION_STATUSES.CONFIRMED,
+            txParams: {
+              from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+              nonce: '0x2',
+              value: '0xfffff',
+            },
+            rawTx:
+              '0xf86c808507a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
+          },
+        ];
+        const getCompletedTransactions = sinon.stub().returns(confirmedTxList);
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions,
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+
+        const taken = await pendingTxTracker._checkIfNonceIsTaken({
           txParams: {
             from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
             nonce: '0x3',
             value: '0xfffff',
           },
-        })
-        .then((taken) => {
-          assert.ok(!taken)
-          done()
-        })
-        .catch(done)
-    })
+        });
 
-    it('should return true if nonce has been taken', function (done) {
-      pendingTxTracker
-        ._checkIfNonceIsTaken({
+        assert.ok(
+          getCompletedTransactions.calledOnceWithExactly(
+            '0x1678a085c290ebd122dc42cba69373b5953b831d',
+          ),
+        );
+        assert.ok(!taken);
+      });
+
+      it('should return true if the nonce is taken', async function () {
+        const confirmedTxList = [
+          {
+            id: 1,
+            hash:
+              '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
+            status: TRANSACTION_STATUSES.CONFIRMED,
+            txParams: {
+              from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+              nonce: '0x1',
+              value: '0xfffff',
+            },
+            rawTx:
+              '0xf86c808504a817c80082ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
+          },
+          {
+            id: 2,
+            hash:
+              '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
+            status: TRANSACTION_STATUSES.CONFIRMED,
+            txParams: {
+              from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+              nonce: '0x2',
+              value: '0xfffff',
+            },
+            rawTx:
+              '0xf86c808504a817c800827b0d940c62bb760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
+          },
+        ];
+        const getCompletedTransactions = sinon.stub().returns(confirmedTxList);
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions,
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+
+        const taken = await pendingTxTracker._checkIfNonceIsTaken({
           txParams: {
             from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
             nonce: '0x2',
             value: '0xfffff',
           },
-        })
-        .then((taken) => {
-          assert.ok(taken)
-          done()
-        })
-        .catch(done)
-    })
-  })
+        });
+
+        assert.ok(
+          getCompletedTransactions.calledOnceWithExactly(
+            '0x1678a085c290ebd122dc42cba69373b5953b831d',
+          ),
+        );
+        assert.ok(taken);
+      });
+    });
+
+    describe('#_checkPendingTx', function () {
+      it("should emit 'tx:warning' if getTransactionReceipt rejects", async function () {
+        const txMeta = {
+          id: 1,
+          hash:
+            '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
+          status: TRANSACTION_STATUSES.SUBMITTED,
+          txParams: {
+            from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+            nonce: '0x1',
+            value: '0xfffff',
+          },
+          history: [{}],
+          rawTx: '0xf86c808504a817c80082471d',
+        };
+        const nonceBN = new BN(3);
+        const pendingTxTracker = new PendingTransactionTracker({
+          query: {
+            getTransactionReceipt: sinon.stub().rejects(),
+            getTransactionCount: sinon.stub().resolves(nonceBN),
+          },
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions: sinon.stub().returns([]),
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+        const listeners = {
+          confirmed: sinon.spy(),
+          dropped: sinon.spy(),
+          failed: sinon.spy(),
+          warning: sinon.spy(),
+        };
+  
+        pendingTxTracker.once('tx:confirmed', listeners.confirmed);
+        pendingTxTracker.once('tx:dropped', listeners.dropped);
+        pendingTxTracker.once('tx:failed', listeners.failed);
+        pendingTxTracker.once('tx:warning', listeners.warning);
+        await pendingTxTracker._checkPendingTx(txMeta);
+  
+        assert.ok(listeners.dropped.notCalled, "should not emit 'tx:dropped");
+        assert.ok(
+          listeners.confirmed.notCalled,
+          "should not emit 'tx:confirmed'",
+        );
+        assert.ok(listeners.failed.notCalled, "should not emit 'tx:failed'");
+        assert.ok(listeners.warning.calledOnce, "should emit 'tx:warning'");
+      });
+
+      it('should NOT emit anything if the tx is already not submitted', async function () {
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions: sinon.stub().returns([]),
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+        const listeners = {
+          confirmed: sinon.spy(),
+          dropped: sinon.spy(),
+          failed: sinon.spy(),
+          warning: sinon.spy(),
+        };
+
+        pendingTxTracker.once('tx:confirmed', listeners.confirmed);
+        pendingTxTracker.once('tx:dropped', listeners.dropped);
+        pendingTxTracker.once('tx:failed', listeners.failed);
+        pendingTxTracker.once('tx:warning', listeners.warning);
+        await pendingTxTracker._checkPendingTx({
+          status: TRANSACTION_STATUSES.CONFIRMED,
+          history: [{}],
+          txParams: { nonce: '0x1' },
+          id: '456',
+          value: '0x01',
+          hash: '0xbad',
+        });
+
+        assert.ok(listeners.failed.notCalled, "should not emit 'tx:failed'");
+        assert.ok(
+          listeners.confirmed.notCalled,
+          "should not emit 'tx:confirmed'",
+        );
+        assert.ok(listeners.dropped.notCalled, "should not emit 'tx:dropped'");
+        assert.ok(listeners.warning.notCalled, "should not emit 'tx:warning'");
+      });
+
+      it("should emit 'tx:failed' if the txMeta does NOT have a hash", async function () {
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions: sinon.stub().returns([]),
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+        const listeners = {
+          confirmed: sinon.spy(),
+          dropped: sinon.spy(),
+          failed: sinon.spy(),
+          warning: sinon.spy(),
+        };
+
+        pendingTxTracker.once('tx:confirmed', listeners.confirmed);
+        pendingTxTracker.once('tx:dropped', listeners.dropped);
+        pendingTxTracker.once('tx:failed', listeners.failed);
+        pendingTxTracker.once('tx:warning', listeners.warning);
+        await pendingTxTracker._checkPendingTx({
+          id: '2',
+          history: [{}],
+          status: TRANSACTION_STATUSES.SUBMITTED,
+          txParams: { from: '0x1678a085c290ebd122dc42cba69373b5953b831d' },
+        });
+
+        assert.ok(
+          listeners.failed.calledOnceWithExactly(
+            '2',
+            sinon.match.instanceOf(Error),
+          ),
+          "should pass txId to 'tx:failed' listener",
+        );
+        assert.ok(
+          listeners.confirmed.notCalled,
+          "should not emit 'tx:confirmed'",
+        );
+        assert.ok(listeners.dropped.notCalled, "should not emit 'tx:dropped'");
+        assert.ok(listeners.warning.notCalled, "should not emit 'tx:warning'");
+      });
+
+      it("should emit 'tx:dropped' if another tx with the same nonce succeeds", async function () {
+        const txs = [
+          {
+            status: TRANSACTION_STATUSES.CONFIRMED,
+            history: [{}],
+            txParams: { nonce: '0x1' },
+            id: '456',
+            value: '0x01',
+            hash: '0xbad',
+          },
+          {
+            status: TRANSACTION_STATUSES.SUBMITTED,
+            history: [{}],
+            txParams: { nonce: '0x1' },
+            id: '123',
+            value: '0x02',
+            hash:
+              '0x2a919d2512ec963f524bfd9730fb66b6d5a2e399d1dd957abb5e2b544a12644b',
+          },
+        ];
+        const pendingTxTracker = new PendingTransactionTracker({
+          provider,
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions: sinon.stub().returns(txs),
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+        const listeners = {
+          confirmed: sinon.spy(),
+          dropped: sinon.spy(),
+          failed: sinon.spy(),
+          warning: sinon.spy(),
+        };
+
+        pendingTxTracker.once('tx:confirmed', listeners.confirmed);
+        pendingTxTracker.once('tx:dropped', listeners.dropped);
+        pendingTxTracker.once('tx:failed', listeners.failed);
+        pendingTxTracker.once('tx:warning', listeners.warning);
+        await pendingTxTracker._checkPendingTx(txs[1]);
+
+        assert.ok(listeners.dropped.calledOnceWithExactly('123'));
+        assert.ok(
+          listeners.confirmed.notCalled,
+          "should not emit 'tx:confirmed'",
+        );
+        assert.ok(listeners.failed.notCalled, "should not emit 'tx:failed'");
+        assert.ok(listeners.warning.notCalled, "should not emit 'tx:warning'");
+      });
+
+      it("should emit 'tx:dropped' with the txMetas id only after the fourth call", async function () {
+        const nonceBN = new BN(2);
+        const txMeta = {
+          id: 1,
+          hash:
+            '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
+          status: TRANSACTION_STATUSES.SUBMITTED,
+          txParams: {
+            from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
+            nonce: '0x1',
+            value: '0xfffff',
+          },
+          history: [{}],
+          rawTx: '0xf86c808504a817c80082471d',
+        };
+        const pendingTxTracker = new PendingTransactionTracker({
+          query: {
+            getTransactionReceipt: sinon.stub().resolves(null),
+            getTransactionCount: sinon.stub().resolves(nonceBN),
+          },
+          nonceTracker: {
+            getGlobalLock: sinon.stub().resolves({
+              releaseLock: sinon.spy(),
+            }),
+          },
+          getPendingTransactions: sinon.stub().returns([]),
+          getCompletedTransactions: sinon.stub().returns([]),
+          publishTransaction: sinon.spy(),
+          confirmTransaction: sinon.spy(),
+        });
+        const listeners = {
+          confirmed: sinon.spy(),
+          dropped: sinon.spy(),
+          failed: sinon.spy(),
+          warning: sinon.spy(),
+        };
+  
+        pendingTxTracker.once('tx:confirmed', listeners.confirmed);
+        pendingTxTracker.once('tx:dropped', listeners.dropped);
+        pendingTxTracker.once('tx:failed', listeners.failed);
+        pendingTxTracker.once('tx:warning', listeners.warning);
+        await pendingTxTracker._checkPendingTx(txMeta);
+        await pendingTxTracker._checkPendingTx(txMeta);
+        await pendingTxTracker._checkPendingTx(txMeta);
+        await pendingTxTracker._checkPendingTx(txMeta);
+  
+        assert.ok(listeners.dropped.calledOnceWithExactly(1));
+        assert.ok(
+          listeners.confirmed.notCalled,
+          "should not emit 'tx:confirmed'",
+        );
+        assert.ok(listeners.failed.notCalled, "should not emit 'tx:failed'");
+        assert.ok(listeners.warning.notCalled, "should not emit 'tx:warning'");
+      });
+    });
 })

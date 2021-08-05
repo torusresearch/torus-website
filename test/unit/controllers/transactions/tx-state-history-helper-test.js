@@ -1,6 +1,6 @@
 /* eslint-disable */
 import assert from 'assert'
-import txStateHistoryHelper from '../../../../src/controllers/transactions/tx-state-history-helper'
+import { generateHistoryEntry, migrateFromSnapshotsToDiffs, replayHistory, snapshotFromTxMeta } from '../../../../src/controllers/transactions/tx-state-history-helper'
 import testVault from '../../../data/v17-long-history.json'
 
 describe('Transaction state history helper', () => {
@@ -13,7 +13,7 @@ describe('Transaction state history helper', () => {
           },
         },
       }
-      const output = txStateHistoryHelper.snapshotFromTxMeta(input)
+      const output = snapshotFromTxMeta(input)
       assert('foo' in output, 'has a foo key')
       assert('bar' in output.foo, 'has a bar key')
       assert('bam' in output.foo.bar, 'has a bar key')
@@ -22,7 +22,7 @@ describe('Transaction state history helper', () => {
 
     it('should remove the history key', () => {
       const input = { foo: 'bar', history: 'remembered' }
-      const output = txStateHistoryHelper.snapshotFromTxMeta(input)
+      const output = snapshotFromTxMeta(input)
       assert(typeof output.history, 'undefined', 'should remove history')
     })
   })
@@ -30,7 +30,7 @@ describe('Transaction state history helper', () => {
   describe('#migrateFromSnapshotsToDiffs', () => {
     it('migrates history to diffs and can recover original values', () => {
       testVault.data.TransactionController.transactions.forEach((tx, index) => {
-        const newHistory = txStateHistoryHelper.migrateFromSnapshotsToDiffs(tx.history)
+        const newHistory = migrateFromSnapshotsToDiffs(tx.history)
         newHistory.forEach((newEntry, index) => {
           if (index === 0) {
             assert.strictEqual(Array.isArray(newEntry), false, 'initial history item IS NOT a json patch obj')
@@ -39,7 +39,7 @@ describe('Transaction state history helper', () => {
           }
           const oldEntry = tx.history[index]
           const historySubset = newHistory.slice(0, index + 1)
-          const reconstructedValue = txStateHistoryHelper.replayHistory(historySubset)
+          const reconstructedValue = replayHistory(historySubset)
           assert.deepStrictEqual(oldEntry, reconstructedValue, 'was able to reconstruct old entry from diffs')
         })
       })
@@ -66,7 +66,7 @@ describe('Transaction state history helper', () => {
       const history = [initialState, diff1, diff2]
 
       const beforeStateSnapshot = JSON.stringify(initialState)
-      const latestState = txStateHistoryHelper.replayHistory(history)
+      const latestState = replayHistory(history)
       const afterStateSnapshot = JSON.stringify(initialState)
 
       assert.notStrictEqual(initialState, latestState, 'initial state is not the same obj as the latest state')
@@ -97,7 +97,7 @@ describe('Transaction state history helper', () => {
       }
 
       const before = Date.now()
-      const result = txStateHistoryHelper.generateHistoryEntry(previousState, nextState, note)
+      const result = generateHistoryEntry(previousState, nextState, note)
       const after = Date.now()
 
       assert.ok(Array.isArray(result))

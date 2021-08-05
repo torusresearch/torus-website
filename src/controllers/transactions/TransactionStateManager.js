@@ -50,7 +50,7 @@ class TransactionStateManager extends EventEmitter {
   generateTxMeta(opts = {}) {
     const netId = this.getNetwork()
     const chainId = this.getCurrentChainId()
-    if (netId === 'loading') throw new Error('MetaMask is having trouble connecting to the network')
+    if (netId === 'loading') throw new Error('Torus is having trouble connecting to the network')
     let dappSuggestedGasFees = null
 
     // If we are dealing with a transaction suggested by a dapp and not
