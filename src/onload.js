@@ -5,7 +5,7 @@ import Web3 from 'web3'
 
 import TorusController from './controllers/TorusController'
 import setupMultiplex from './controllers/utils/setupMultiplex'
-import { MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME } from './utils/enums'
+import { MAINNET, SUPPORTED_NETWORK_TYPES } from './utils/enums'
 import { getIFrameOrigin, isMain, isPwa, storageAvailable } from './utils/utils'
 // import store from './store'
 let storeReference
@@ -41,11 +41,7 @@ function onloadTorus(torus) {
     sessionData = storage.getItem('torus-app')
   }
 
-  const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || {
-    host: MAINNET,
-    chainId: MAINNET_CODE,
-    networkName: MAINNET_DISPLAY_NAME,
-  }
+  const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || SUPPORTED_NETWORK_TYPES[MAINNET]
 
   const torusController = new TorusController({
     sessionCachedNetwork,

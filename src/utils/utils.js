@@ -525,11 +525,6 @@ export const standardNetworkId = {
   [XDAI_CODE.toString()]: XDAI_CHAIN_ID,
 }
 
-export function selectChainId(network, store) {
-  const networkId = store.getState()
-  return standardNetworkId[network] || networkId.toString().startsWith('0x') ? networkId : `0x${Number.parseInt(networkId, 10).toString(16)}`
-}
-
 export const isMain = window.self === window.top
 
 export const getIFrameOrigin = () => {

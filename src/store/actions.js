@@ -135,7 +135,7 @@ export default {
     resetStore(encryptionPublicKeyManager.store, encryptionPublicKeyHandler)
     resetStore(decryptMessageManager.store, unapprovedDecryptMsgsHandler)
     assetDetectionController.stopAssetDetection()
-    torus.updateStaticData({ isUnlocked: false })
+    // torus.updateStaticData({ isUnlocked: false })
     if (isMain && selectedAddress) {
       router.push({ path: '/logout' }).catch(() => {})
       try {
@@ -315,12 +315,12 @@ export default {
     else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
   updateSelectedAddress(_, payload) {
-    torus.updateStaticData({ selectedAddress: payload.selectedAddress })
+    // torus.updateStaticData({ selectedAddress: payload.selectedAddress })
     torusController.setSelectedAccount(payload.selectedAddress)
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)
-    torus.updateStaticData({ networkId: payload.networkId })
+    // torus.updateStaticData({ networkId: payload.networkId })
   },
   async setProviderType({ commit, dispatch, state }, payload) {
     let networkType = payload.network
@@ -478,7 +478,7 @@ export default {
     }
     // TODO: deprecate rehydrate false for the next major version bump
     statusStream.write({ loggedIn: true, rehydrate: false, verifier })
-    torus.updateStaticData({ isUnlocked: true })
+    // torus.updateStaticData({ isUnlocked: true })
     dispatch('cleanupOAuth', { oAuthToken })
   },
   cleanupOAuth({ state }, payload) {
@@ -532,7 +532,7 @@ export default {
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
         if (Object.keys(wcConnectorSession).length > 0) dispatch('initWalletConnect', { session: wcConnectorSession })
         log.info('rehydrated wallet')
-        torus.updateStaticData({ isUnlocked: true })
+        // torus.updateStaticData({ isUnlocked: true })
       }
       commit('setRehydrationStatus', true)
     } catch (error) {
