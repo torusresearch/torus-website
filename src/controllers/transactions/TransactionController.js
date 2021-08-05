@@ -297,7 +297,7 @@ class TransactionController extends EventEmitter {
     } else {
       // Assert that the origin has permissions to initiate transactions from
       // the specified address
-      const permittedAddresses = new Set([await this.getSelectedAddress()])
+      const permittedAddresses = new Set([this.getSelectedAddress().toLowerCase()])
       if (!permittedAddresses.has(normalizedTxParameters.from)) {
         throw ethErrors.provider.unauthorized({ data: { origin: request.origin }, message: 'Unauthorized origin' })
       }
@@ -926,7 +926,7 @@ class TransactionController extends EventEmitter {
     this.getNetwork = () => this.networkStore.getState()
 
     /** @returns {string} the user selected address */
-    this.getSelectedAddress = () => this.preferencesStore.getState().selectedAddress
+    this.getSelectedAddress = () => this.preferencesStore.getState().selectedAddress || ''
 
     /** @returns {Array} transactions whos status is unapproved */
     this.getUnapprovedTxCount = () => Object.keys(this.txStateManager.getUnapprovedTxList()).length
