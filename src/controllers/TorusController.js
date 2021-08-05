@@ -13,7 +13,7 @@ import pump from 'pump'
 import { toChecksumAddress } from 'web3-utils'
 
 import { version } from '../../package.json'
-import { MAINNET_CHAIN_ID, TRANSACTION_STATUSES } from '../utils/enums'
+import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, TRANSACTION_STATUSES } from '../utils/enums'
 import createRandomId from '../utils/random-id'
 import { isMain } from '../utils/utils'
 import AccountTracker from './AccountTracker'
@@ -70,7 +70,7 @@ export default class TorusController extends EventEmitter {
     this.blockTracker = this.networkController.getProviderAndBlockTracker().blockTracker
 
     this.gasFeeController = new GasFeeController({
-      interval: 10_000,
+      interval: 30_000,
       getProvider: () => this.networkController.getProviderAndBlockTracker().provider,
       getCurrentNetworkEIP1559Compatibility: this.networkController.getEIP1559Compatibility.bind(this.networkController),
       getCurrentAccountEIP1559Compatibility: this.getCurrentAccountEIP1559Compatibility.bind(this),
@@ -88,11 +88,6 @@ export default class TorusController extends EventEmitter {
     })
     this.currencyController.updateConversionRate()
     this.currencyController.scheduleConversionInterval()
-
-    this.tokenRatesController = new TokenRatesController({
-      currency: this.currencyController.store,
-      tokensStore: this.detectTokensController.detectedTokensStore,
-    })
 
     this.accountTracker = new AccountTracker({
       provider: this.provider,
@@ -112,11 +107,6 @@ export default class TorusController extends EventEmitter {
     // key mgmt
     this.keyringController = new KeyringController()
 
-    this.permissionsController = new PermissionsController({
-      getKeyringAccounts: this.keyringController.getAccounts.bind(this.keyringController),
-      setSiteMetadata: this.prefsController.setSiteMetadata.bind(this.prefsController),
-    })
-
     this.prefsController = new PreferencesController({
       network: this.networkController,
       provider: this.provider,
@@ -124,11 +114,21 @@ export default class TorusController extends EventEmitter {
       storeDispatch: this.opts.storeDispatch,
     })
 
+    this.permissionsController = new PermissionsController({
+      getKeyringAccounts: this.keyringController.getAccounts.bind(this.keyringController),
+      setSiteMetadata: this.prefsController.setSiteMetadata.bind(this.prefsController),
+    })
+
     // detect tokens controller
     this.detectTokensController = new DetectTokensController({
       network: this.networkController,
       provider: this.provider,
       preferencesStore: this.prefsController.store,
+    })
+
+    this.tokenRatesController = new TokenRatesController({
+      currency: this.currencyController.store,
+      tokensStore: this.detectTokensController.detectedTokensStore,
     })
 
     // ensure accountTracker updates balances after network change
@@ -142,8 +142,6 @@ export default class TorusController extends EventEmitter {
       this.gasFeeController.onNetworkStateChange()
     })
 
-    this.publicConfigStore = this.initPublicConfigStore()
-
     // tx mgmt
     this.txController = new TransactionController({
       getProviderConfig: this.networkController.getProviderConfig.bind(this.networkController),
@@ -151,7 +149,7 @@ export default class TorusController extends EventEmitter {
       getCurrentAccountEIP1559Compatibility: this.getCurrentAccountEIP1559Compatibility.bind(this),
       networkStore: this.networkController.networkStore,
       getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController),
-      preferencesStore: this.preferencesController.store,
+      preferencesStore: this.prefsController.store,
       txHistoryLimit: 40,
       // signs ethTx
       signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
@@ -205,6 +203,9 @@ export default class TorusController extends EventEmitter {
       GasFeeController: this.gasFeeController.store,
     })
 
+    // ensure isClientOpenAndUnlocked is updated when memState updates
+    this.on('update', (memState) => this._onStateUpdate(memState))
+
     this.memStore = new ComposableObservableStore({
       NetworkController: this.networkController.store,
       AccountTracker: this.accountTracker.store,
@@ -221,6 +222,8 @@ export default class TorusController extends EventEmitter {
     })
     this.memStore.subscribe(this.sendUpdate.bind(this))
 
+    this.publicConfigStore = this.initPublicConfigStore()
+
     if (typeof options.rehydrate === 'function') {
       setTimeout(() => {
         options.rehydrate()
@@ -235,6 +238,8 @@ export default class TorusController extends EventEmitter {
       provider: this.provider,
       network: this.networkController,
     })
+
+    this.engine = null
   }
 
   /**
@@ -351,7 +356,8 @@ export default class TorusController extends EventEmitter {
    */
   getState() {
     return {
-      isInitialized: !!this.prefsController.store.getState().selectedAddress,
+      isUnlocked: this.isUnlocked(),
+      isInitialized: this.isUnlocked(),
       ...this.memStore.getFlatState(),
     }
   }
@@ -360,8 +366,19 @@ export default class TorusController extends EventEmitter {
   // KEYRING RELATED METHODS
   // =============================================================================
 
-  initTorusKeyring(keyArray, addresses) {
-    return Promise.all([this.keyringController.deserialize(keyArray), this.accountTracker.syncWithAddresses(addresses)])
+  async initTorusKeyring(keyArray, addresses) {
+    await Promise.all([
+      this.keyringController.deserialize(keyArray),
+      this.accountTracker.syncWithAddresses(addresses),
+      this.gasFeeController.getGasFeeEstimatesAndStartPolling(),
+    ])
+    this.notifyAllConnections({
+      method: NOTIFICATION_NAMES.unlockStateChanged,
+      params: {
+        isUnlocked: true,
+        accounts: [this.prefsController.store.getState().selectedAddress],
+      },
+    })
   }
 
   async addAccount(key, address) {
@@ -719,7 +736,7 @@ export default class TorusController extends EventEmitter {
    * @returns {boolean} true if the keyring type supports EIP-1559
    */
   async getCurrentAccountEIP1559Compatibility(fromAddress) {
-    const address = fromAddress || this.preferencesController.store.getState().selectedAddress
+    const address = fromAddress || this.prefsController.store.getState().selectedAddress
     return !!address
   }
 
@@ -841,6 +858,7 @@ export default class TorusController extends EventEmitter {
     const senderUrl = new URL(sender)
 
     const engine = this.setupProviderEngine({ origin: senderUrl.hostname, location: sender })
+    this.engine = engine
 
     // setup connection
     const providerStream = createEngineStream({ engine })
@@ -855,6 +873,7 @@ export default class TorusController extends EventEmitter {
             mid.destroy()
           }
         })
+        this.engine = null
         if (error) log.error(error)
       })
   }
@@ -921,6 +940,41 @@ export default class TorusController extends EventEmitter {
    */
   privateSendUpdate() {
     this.emit('update', this.getState())
+  }
+
+  /**
+   * Handle memory state updates.
+   * - Ensure isClientOpenAndUnlocked is updated
+   * - Notifies all connections with the new provider network state
+   *   - The external providers handle diffing the state
+   */
+  _onStateUpdate(newState) {
+    this.isClientOpenAndUnlocked = newState.isUnlocked
+    this.notifyAllConnections({
+      method: NOTIFICATION_NAMES.chainChanged,
+      params: this.getProviderNetworkState(newState),
+    })
+  }
+
+  /**
+   * Causes the RPC engines associated with all connections to emit a
+   * notification event with the given payload.
+   *
+   * If the "payload" parameter is a function, the payload for each connection
+   * will be the return value of that function called with the connection's
+   * origin.
+   *
+   * The caller is responsible for ensuring that only permitted notifications
+   * are sent.
+   *
+   * @param {any} payload - The event payload, or payload getter function.
+   */
+  notifyAllConnections(payload) {
+    const getPayload = typeof payload === 'function' ? (origin) => payload(origin) : () => payload
+
+    if (this.engine) {
+      this.engine.emit('notification', getPayload(origin))
+    }
   }
 
   isUnlocked() {

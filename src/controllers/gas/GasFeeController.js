@@ -54,7 +54,7 @@ class GasFeeController {
    *
    */
   constructor({
-    interval = 15_000,
+    interval = 30_000,
     fetchGasEstimates = defaultFetchGasEstimates,
     fetchEthGasPriceEstimate = defaultFetchEthGasPriceEstimate,
     fetchLegacyGasPriceEstimates = defaultFetchLegacyGasPriceEstimates,
@@ -128,6 +128,7 @@ class GasFeeController {
     }
     try {
       isEIP1559Compatible = await this.getEIP1559Compatibility()
+      log.info('eip1559', isEIP1559Compatible)
     } catch (error) {
       log.warn(error)
       isEIP1559Compatible = false

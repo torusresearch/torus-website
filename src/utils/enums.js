@@ -445,6 +445,8 @@ export const CAVEAT_NAMES = {
 
 export const NOTIFICATION_NAMES = {
   accountsChanged: 'wallet_accountsChanged',
+  unlockStateChanged: 'wallet_unlockStateChanged',
+  chainChanged: 'wallet_chainChanged',
 }
 
 export const LOG_IGNORE_METHODS = ['wallet_sendDomainMetadata']
