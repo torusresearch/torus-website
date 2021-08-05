@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { ObservableStore } from '@metamask/obs-store'
 import EventEmitter from '@metamask/safe-event-emitter'
 import { keyBy, mapValues, omitBy, pickBy, sortBy } from 'lodash'
@@ -34,7 +35,7 @@ class TransactionStateManager extends EventEmitter {
     super()
 
     this.store = new ObservableStore({
-      transactions: [],
+      transactions: {},
       ...initState,
     })
     this.txHistoryLimit = txHistoryLimit

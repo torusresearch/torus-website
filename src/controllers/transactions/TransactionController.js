@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable require-atomic-updates */
 import Common from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
@@ -431,8 +432,10 @@ class TransactionController extends EventEmitter {
 
     try {
       const { gasFeeEstimates, gasEstimateType } = await this._getEIP1559GasFeeEstimates()
+      console.log('gasEstimateType', gasEstimateType)
       if (eip1559Compatibility && gasEstimateType === GAS_ESTIMATE_TYPES.FEE_MARKET) {
         const { medium: { suggestedMaxPriorityFeePerGas, suggestedMaxFeePerGas } = {} } = gasFeeEstimates
+        console.log('gasEstimateType', suggestedMaxPriorityFeePerGas, suggestedMaxFeePerGas)
 
         if (suggestedMaxPriorityFeePerGas && suggestedMaxFeePerGas) {
           return {
@@ -454,6 +457,7 @@ class TransactionController extends EventEmitter {
         }
       }
     } catch (error) {
+      console.log(`error: ${error}`)
       log.error(error)
     }
 
@@ -800,7 +804,7 @@ class TransactionController extends EventEmitter {
     // Add the tx hash to the persisted meta-tx object
     const txMeta = this.txStateManager.getTransaction(txId)
     txMeta.hash = txHash
-    this.txStateManager.updateTx(txMeta, 'transactions#setTxHash')
+    this.txStateManager.updateTransaction(txMeta, 'transactions#setTxHash')
   }
 
   // TODO: check this method
