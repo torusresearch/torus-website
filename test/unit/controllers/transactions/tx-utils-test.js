@@ -2,7 +2,7 @@
 import assert from 'assert'
 import * as txUtils from '../../../../src/controllers/transactions/txUtils'
 
-const VALID_ADDRESS = '0x0000000000000000000000000000000000000000';
+const VALID_ADDRESS = '0xa7df1beDBF813f57096dF77FCd515f0B3900e402'
 
 describe('txUtils', function () {
   describe('#validateTxParams', function () {

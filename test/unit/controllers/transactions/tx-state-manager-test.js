@@ -939,7 +939,6 @@ describe('TransactionStateManager', () => {
       // at least enforce txParams. This is done in the transaction controller
       // before *calling* this method, but we should perhaps ensure that
       // txParams is provided and validated in this method.
-      // TODO: this test should fail.
       const generatedTransaction = txStateManager.generateTxMeta()
       assert.ok(generatedTransaction)
     })
@@ -1034,7 +1033,7 @@ describe('TransactionStateManager', () => {
       }
       const generatedTransaction = txStateManager.generateTxMeta({
         txParams,
-        origin: 'metamask',
+        origin: 'torus',
       })
       assert.ok(generatedTransaction)
       assert.strictEqual(generatedTransaction.dappSuggestedGasFees, null)
