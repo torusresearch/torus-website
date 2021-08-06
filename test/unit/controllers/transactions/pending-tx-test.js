@@ -34,7 +34,10 @@ describe('PendingTransactionTracker', function () {
       // }
   
       providerResultStub = {}
-      provider = createTestProviderTools({ scaffold: providerResultStub }).provider
+      provider = createTestProviderTools({ scaffold: providerResultStub,  
+        networkId: 1,
+        chainId: 1
+      }).provider
   
       pendingTxTracker = new PendingTransactionTracker({
         provider,
