@@ -239,8 +239,8 @@ export default class NetworkController extends EventEmitter {
   async setProviderType(type, rpcUrl = '', ticker = 'ETH', nickname = '') {
     assert.notStrictEqual(type, RPC, 'NetworkController - cannot call "setProviderType" with type \'rpc\'. use "setRpcTarget"')
     assert.ok(SUPPORTED_NETWORK_TYPES[type] !== undefined, `NetworkController - Unknown rpc type "${type}"`)
-    const { chainId } = SUPPORTED_NETWORK_TYPES[type]
-    const providerConfig = { type, rpcUrl, ticker, nickname, chainId }
+    const { chainId, ...rest } = SUPPORTED_NETWORK_TYPES[type]
+    const providerConfig = { type, rpcUrl, ticker, nickname, chainId, ...rest }
     this.setProviderConfig(providerConfig)
   }
 
