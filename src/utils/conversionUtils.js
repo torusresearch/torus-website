@@ -41,9 +41,9 @@ const toNormalizedDenomination = {
   ETH: (bigNumber) => bigNumber.div(BIG_NUMBER_ETH_MULTIPLIER),
 }
 const toSpecifiedDenomination = {
-  WEI: (bigNumber) => bigNumber.times(BIG_NUMBER_WEI_MULTIPLIER).dp(0, BigNumber.ROUND_UP),
-  GWEI: (bigNumber) => bigNumber.times(BIG_NUMBER_GWEI_MULTIPLIER).dp(9, BigNumber.ROUND_UP),
-  ETH: (bigNumber) => bigNumber.times(BIG_NUMBER_ETH_MULTIPLIER).dp(9, BigNumber.ROUND_UP),
+  WEI: (bigNumber) => bigNumber.times(BIG_NUMBER_WEI_MULTIPLIER).dp(0, BigNumber.ROUND_DOWN),
+  GWEI: (bigNumber) => bigNumber.times(BIG_NUMBER_GWEI_MULTIPLIER).dp(9, BigNumber.ROUND_DOWN),
+  ETH: (bigNumber) => bigNumber.times(BIG_NUMBER_ETH_MULTIPLIER).dp(9, BigNumber.ROUND_DOWN),
 }
 const baseChange = {
   hex: (n) => n.toString(16),
@@ -179,7 +179,7 @@ const addCurrencies = (a, b, options = {}) => {
     throw new Error('Must specify valid aBase and bBase')
   }
 
-  const value = getBigNumber(a, aBase).add(getBigNumber(b, bBase))
+  const value = getBigNumber(a, aBase).plus(getBigNumber(b, bBase))
 
   return converter({
     value,

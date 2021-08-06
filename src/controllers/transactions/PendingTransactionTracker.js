@@ -26,7 +26,7 @@ class PendingTransactionTracker extends EventEmitter {
   constructor(config) {
     super()
     this.droppedBuffer = {}
-    this.query = new EthQuery(config.provider)
+    this.query = config.query || new EthQuery(config.provider)
     this.nonceTracker = config.nonceTracker
     this.getPendingTransactions = config.getPendingTransactions
     this.getCompletedTransactions = config.getCompletedTransactions
@@ -182,7 +182,7 @@ class PendingTransactionTracker extends EventEmitter {
     @returns {boolean}
   */
 
-  async _checkIftxWasDropped(txMeta) {
+  async _checkIfTxWasDropped(txMeta) {
     const {
       hash: txHash,
       txParams: { nonce, from },
@@ -214,7 +214,7 @@ class PendingTransactionTracker extends EventEmitter {
     @returns {boolean}
   */
 
-  async _checkIfNonceIsTaken(txMeta) {
+  _checkIfNonceIsTaken(txMeta) {
     const address = txMeta.txParams.from
     const completed = this.getCompletedTransactions(address)
     return completed.some((otherMeta) => {
