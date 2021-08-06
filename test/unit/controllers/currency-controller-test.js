@@ -4,14 +4,12 @@ import nock from 'nock'
 
 import CurrencyController from '../../../src/controllers/CurrencyController'
 
-const noop = () => {}
 
 describe('currency-controller', () => {
   let currencyController
 
   beforeEach(() => {
     nock.cleanAll()
-    nock.disableNetConnect()
     currencyController = new CurrencyController()
   })
 

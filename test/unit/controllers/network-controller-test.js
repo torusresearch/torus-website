@@ -21,12 +21,12 @@ describe('NetworkController', () => {
       nock('https://rinkeby.infura.io').persist().post('/metamask').reply(200)
 
       networkController = new NetworkController()
-      setProviderTypeAndWait = () =>
+      setProviderTypeAndWait = (networkType) =>
         new Promise((resolve) => {
           networkController.on('networkDidChange', () => {
             resolve()
           })
-          networkController.setProviderType('mainnet')
+          networkController.setProviderType(networkType)
         })
 
       getLatestBlockStub = sandbox.stub(networkController, 'getLatestBlock').returns({})

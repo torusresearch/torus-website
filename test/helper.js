@@ -4,9 +4,22 @@ const log = require('loglevel')
 const Ganache = require('ganache-core')
 
 console.log('requiring helpers for tests in mocha')
+const allowedHosts = [
+  'localhost',
+  'rinkeby.infura.io:443',
+  'mainnet.infura.io:443',
+  'ropsten.infura.io:443',
+  'rpc-mumbai.maticvigil.com:443',
+  'rpc-mainnet.maticvigil.com:443',
+  'bsc-dataseed.binance.org:443',
+]
 
+const isNetConnectAllowed = (host) => {
+  const found = allowedHosts.find((validHost) => host.includes(validHost))
+  return !!found
+}
 nock.disableNetConnect()
-nock.enableNetConnect((host) => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
+nock.enableNetConnect((host) => isNetConnectAllowed(host))
 
 // catch rejections that are still unhandled when tests exit
 const unhandledRejections = new Map()

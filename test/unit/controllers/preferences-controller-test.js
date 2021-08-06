@@ -33,7 +33,6 @@ describe('Preferences Controller', () => {
 
   beforeEach(() => {
     nock.cleanAll()
-    nock.disableNetConnect()
     network = new NetworkController()
     network.initializeProvider(networkControllerProviderConfig)
     preferencesController = new PreferencesController({ signMessage: noop, network, provider: network.getProviderAndBlockTracker().provider })
