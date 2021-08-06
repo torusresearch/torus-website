@@ -14,13 +14,13 @@ describe('GasFeeController', () => {
   let getChainId
   const sandbox = createSandbox()
 
-  before(() => {
-    nock.disableNetConnect()
-  })
+  //   before(() => {
+  //     nock.disableNetConnect()
+  //   })
 
-  after(() => {
-    nock.enableNetConnect()
-  })
+  //   after(() => {
+  //     nock.enableNetConnect()
+  //   })
 
   beforeEach(() => {
     getChainId = () => '0x1'
