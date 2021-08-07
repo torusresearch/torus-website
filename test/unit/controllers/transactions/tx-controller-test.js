@@ -33,7 +33,7 @@ describe('Transaction Controller', function () {
       // by default, all accounts are external accounts (not contracts)
       eth_getCode: '0x',
     }
-    provider = createTestProviderTools({ scaffold: providerResultStub }).provider
+    provider = createTestProviderTools({ scaffold: providerResultStub, networkId: 1, chainId: 1 }).provider
     fromAccount = getTestAccounts()[0]
     const blockTrackerStub = new EventEmitter()
     blockTrackerStub.getCurrentBlock = noop
@@ -1268,7 +1268,7 @@ describe('Transaction Controller', function () {
         // by default, all accounts are external accounts (not contracts)
         eth_getCode: '0xa',
       }
-      const _provider = createTestProviderTools({ scaffold: _providerResultStub }).provider
+      const _provider = createTestProviderTools({ scaffold: _providerResultStub, networkId: 1, chainId: 1 }).provider
       const _fromAccount = getTestAccounts()[0]
       const _blockTrackerStub = new EventEmitter()
       _blockTrackerStub.getCurrentBlock = noop
@@ -1313,7 +1313,7 @@ describe('Transaction Controller', function () {
         // by default, all accounts are external accounts (not contracts)
         eth_getCode: '0xa',
       }
-      const _provider = createTestProviderTools({ scaffold: _providerResultStub }).provider
+      const _provider = createTestProviderTools({ scaffold: _providerResultStub, networkId: 1, chainId: 1 }).provider
       const _fromAccount = getTestAccounts()[0]
       const _blockTrackerStub = new EventEmitter()
       _blockTrackerStub.getCurrentBlock = noop

@@ -53,12 +53,9 @@ export default class TorusController extends EventEmitter {
     this.defaultMaxListeners = 100
     this.sendUpdate = debounce(this.privateSendUpdate.bind(this), 200)
     this.opts = options
-    const networkControllerOptions = {
-      provider: options.sessionCachedNetwork,
-    }
 
     this.store = new ComposableObservableStore()
-    this.networkController = new NetworkController(networkControllerOptions)
+    this.networkController = new NetworkController(options.initState.NetworkController)
 
     // this keeps track of how many "controllerStream" connections are open
     // the only thing that uses controller connections are open metamask UI instances

@@ -20,7 +20,6 @@ describe('DetectTokensController', () => {
 
   beforeEach(async () => {
     nock.cleanAll()
-    nock.disableNetConnect()
     nock('https://min-api.cryptocompare.com').get(/.*/).query(true).reply(200)
 
     network = new NetworkController()

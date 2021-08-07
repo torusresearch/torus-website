@@ -256,8 +256,17 @@ describe('PendingTransactionTracker', function () {
         rawTx:
           '0xf86c808504a817c800827b0d940c62bb85faa3311a998d3aba8098c1235c564966880de0b6b3a7640000802aa08ff665feb887a25d4099e40e11f0fef93ee9608f404bd3f853dd9e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d',
       }
-      const txList = [1, 2, 3].map((id) => ({ ...txMeta, id }))
-      const pendingTxTracker = new PendingTransactionTracker({
+      // txMetaNoHash = {
+      //   id: 2,
+      //   history: [{}],
+      //   status: 'submitted',
+      //   txParams: { from: '0x1678a085c290ebd122dc42cba69373b5953b831d' },
+      // }
+
+      providerResultStub = {}
+      provider = createTestProviderTools({ scaffold: providerResultStub, networkId: 1, chainId: 1 }).provider
+
+      pendingTxTracker = new PendingTransactionTracker({
         provider,
         nonceTracker: {
           getGlobalLock: async () => {

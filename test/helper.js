@@ -4,9 +4,14 @@ const log = require('loglevel')
 const Ganache = require('ganache-core')
 
 console.log('requiring helpers for tests in mocha')
+const allowedHosts = ['localhost', 'mainnet.infura.io:443']
 
+const isNetConnectAllowed = (host) => {
+  const found = allowedHosts.find((validHost) => host.includes(validHost))
+  return !!found
+}
 nock.disableNetConnect()
-nock.enableNetConnect((host) => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
+nock.enableNetConnect((host) => isNetConnectAllowed(host))
 
 // catch rejections that are still unhandled when tests exit
 const unhandledRejections = new Map()

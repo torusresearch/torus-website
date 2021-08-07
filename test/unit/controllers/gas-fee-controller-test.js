@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
 import assert from 'assert'
 import nock from 'nock'
-import { stub } from 'sinon'
+import { createSandbox, stub } from 'sinon'
 
 import GasFeeController from '../../../src/controllers/gas/GasFeeController'
 
@@ -13,14 +12,15 @@ describe('GasFeeController', () => {
   let getCurrentNetworkLegacyGasAPICompatibility
   let getIsEIP1559Compatible
   let getChainId
+  const sandbox = createSandbox()
 
-  before(() => {
-    nock.disableNetConnect()
-  })
+  //   before(() => {
+  //     nock.disableNetConnect()
+  //   })
 
-  after(() => {
-    nock.enableNetConnect()
-  })
+  //   after(() => {
+  //     nock.enableNetConnect()
+  //   })
 
   beforeEach(() => {
     getChainId = () => '0x1'
@@ -74,6 +74,7 @@ describe('GasFeeController', () => {
   afterEach(() => {
     nock.cleanAll()
     gasFeeController.destroy()
+    sandbox.reset()
   })
 
   it('should initialize', async () => {
@@ -81,67 +82,67 @@ describe('GasFeeController', () => {
   })
 
   it('should getGasFeeEstimatesAndStartPolling', async () => {
-    // assert.strictEqual(gasFeeController.state.gasFeeEstimates, {})
-    console.log('gasFeeController.state.gasFeeEstimates', gasFeeController.state.gasFeeEstimates)
-    const result = await gasFeeController.getGasFeeEstimatesAndStartPolling(undefined)
-    assert.strictEqual(result.length, 36)
-    console.log('gasFeeController.state.gasFeeEstimates', gasFeeController.state.gasFeeEstimates)
-    assert.ok('low' in gasFeeController.state.gasFeeEstimates)
-    assert.ok('medium' in gasFeeController.state.gasFeeEstimates)
-    assert.ok('high' in gasFeeController.state.gasFeeEstimates)
-    assert.ok('estimatedBaseFee' in gasFeeController.state.gasFeeEstimates)
+    sandbox.stub(gasFeeController, 'getCurrentAccountEIP1559Compatibility').returns(true)
+    assert.deepStrictEqual(gasFeeController.state.gasFeeEstimates, {})
+    await gasFeeController.getGasFeeEstimatesAndStartPolling(undefined)
+    assert('low' in gasFeeController.state.gasFeeEstimates)
+    assert('medium' in gasFeeController.state.gasFeeEstimates)
+    assert('high' in gasFeeController.state.gasFeeEstimates)
+    assert('estimatedBaseFee' in gasFeeController.state.gasFeeEstimates)
   })
 
   describe('when on any network supporting legacy gas estimation api', () => {
     it('should _fetchGasFeeEstimateData', async () => {
-      getCurrentNetworkLegacyGasAPICompatibility.mockImplementation(() => true)
-      getIsEIP1559Compatible.mockImplementation(() => Promise.resolve(false))
-      assert.strictEqual(gasFeeController.state.gasFeeEstimates, {})
+      sandbox.stub(gasFeeController, 'getCurrentNetworkLegacyGasAPICompatibility').returns(true)
+      sandbox.stub(gasFeeController, 'getCurrentNetworkEIP1559Compatibility').returns(() => Promise.resolve(false))
+      assert.deepStrictEqual(gasFeeController.state.gasFeeEstimates, {})
       const estimates = await gasFeeController._fetchGasFeeEstimateData()
-      assert.ok('gasFeeEstimates' in estimates)
+      assert('gasFeeEstimates' in estimates)
       assert.strictEqual(gasFeeController.state.gasFeeEstimates.high, '30')
     })
   })
 
   describe('getChainId', () => {
     it('should work with a number input', async () => {
-      getChainId.mockImplementation(() => 1)
-      getCurrentNetworkLegacyGasAPICompatibility.mockImplementation(() => true)
-      getIsEIP1559Compatible.mockImplementation(() => Promise.resolve(false))
-      assert.strictEqual(gasFeeController.state.gasFeeEstimates, {})
+      sandbox.stub(gasFeeController, 'getChainId').returns(1)
+      sandbox.stub(gasFeeController, 'getCurrentNetworkLegacyGasAPICompatibility').returns(true)
+      sandbox.stub(gasFeeController, 'getCurrentNetworkEIP1559Compatibility').returns(() => Promise.resolve(false))
+      assert.deepStrictEqual(gasFeeController.state.gasFeeEstimates, {})
       const estimates = await gasFeeController._fetchGasFeeEstimateData()
-      assert.ok('gasFeeEstimates' in estimates)
+      assert('gasFeeEstimates' in estimates)
       assert.strictEqual(gasFeeController.state.gasFeeEstimates.high, '30')
     })
 
     it('should work with a hexstring input', async () => {
-      getChainId.mockImplementation(() => '0x1')
-      getCurrentNetworkLegacyGasAPICompatibility.mockImplementation(() => true)
-      getIsEIP1559Compatible.mockImplementation(() => Promise.resolve(false))
-      assert.strictEqual(gasFeeController.state.gasFeeEstimates, {})
+      sandbox.stub(gasFeeController, 'getChainId').returns('0x1')
+      sandbox.stub(gasFeeController, 'getCurrentNetworkLegacyGasAPICompatibility').returns(true)
+      sandbox.stub(gasFeeController, 'getCurrentNetworkEIP1559Compatibility').returns(() => Promise.resolve(false))
+      assert.deepStrictEqual(gasFeeController.state.gasFeeEstimates, {})
       const estimates = await gasFeeController._fetchGasFeeEstimateData()
-      assert.ok('gasFeeEstimates' in estimates)
+      assert('gasFeeEstimates' in estimates)
       assert.strictEqual(gasFeeController.state.gasFeeEstimates.high, '30')
     })
 
     it('should work with a numeric string input', async () => {
-      getChainId.mockImplementation(() => '1')
-      getCurrentNetworkLegacyGasAPICompatibility.mockImplementation(() => true)
-      getIsEIP1559Compatible.mockImplementation(() => Promise.resolve(false))
-      assert.strictEqual(gasFeeController.state.gasFeeEstimates, {})
+      sandbox.stub(gasFeeController, 'getChainId').returns(1)
+      sandbox.stub(gasFeeController, 'getCurrentNetworkLegacyGasAPICompatibility').returns(true)
+      sandbox.stub(gasFeeController, 'getCurrentNetworkEIP1559Compatibility').returns(() => Promise.resolve(false))
+      assert.deepStrictEqual(gasFeeController.state.gasFeeEstimates, {})
       const estimates = await gasFeeController._fetchGasFeeEstimateData()
-      assert.ok('gasFeeEstimates' in estimates)
+      assert('gasFeeEstimates' in estimates)
       assert.strictEqual(gasFeeController.state.gasFeeEstimates.high, '30')
     })
   })
 
   describe('when on any network supporting EIP-1559', () => {
     it('should _fetchGasFeeEstimateData', async () => {
-      getCurrentNetworkLegacyGasAPICompatibility.mockImplementation(() => true)
-      assert.strictEqual(gasFeeController.state.gasFeeEstimates, {})
+      sandbox.stub(gasFeeController, 'getCurrentAccountEIP1559Compatibility').returns(true)
+      sandbox.stub(gasFeeController, 'getCurrentNetworkEIP1559Compatibility').returns(() => Promise.resolve(true))
+      sandbox.stub(gasFeeController, 'getCurrentNetworkLegacyGasAPICompatibility').returns(true)
+      assert.deepStrictEqual(gasFeeController.state.gasFeeEstimates, {})
       const estimates = await gasFeeController._fetchGasFeeEstimateData()
-      assert.ok('gasFeeEstimates' in estimates)
-      assert.ok('estimatedBaseFee' in gasFeeController.state.gasFeeEstimates)
+      assert('gasFeeEstimates' in estimates)
+      assert('estimatedBaseFee' in gasFeeController.state.gasFeeEstimates)
     })
   })
 })
