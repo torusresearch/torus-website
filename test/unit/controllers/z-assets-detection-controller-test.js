@@ -37,6 +37,7 @@ describe('AssetsDetectionController', () => {
     const networkControllerProviderConfig = {
       getAccounts: noop,
     }
+    sandbox.stub(network, 'getLatestBlock').returns({})
     network.initializeProvider(networkControllerProviderConfig)
     network.setProviderType(MAINNET)
 
@@ -122,6 +123,7 @@ describe('AssetsDetectionController', () => {
       const networkControllerProviderConfig = {
         getAccounts: noop,
       }
+      sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
 
@@ -158,6 +160,7 @@ describe('AssetsDetectionController', () => {
       const networkControllerProviderConfig = {
         getAccounts: noop,
       }
+      sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(ROPSTEN)
 
@@ -177,6 +180,7 @@ describe('AssetsDetectionController', () => {
       const networkControllerProviderConfig = {
         getAccounts: noop,
       }
+      sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
 
@@ -196,6 +200,7 @@ describe('AssetsDetectionController', () => {
       const networkControllerProviderConfig = {
         getAccounts: noop,
       }
+      sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
 
