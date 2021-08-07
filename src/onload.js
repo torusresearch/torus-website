@@ -45,6 +45,11 @@ function onloadTorus(torus) {
 
   const torusController = new TorusController({
     sessionCachedNetwork,
+    initState: {
+      NetworkController: {
+        provider: sessionCachedNetwork,
+      },
+    },
     showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
     unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
     showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
