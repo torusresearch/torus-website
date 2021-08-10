@@ -4,7 +4,6 @@ import nock from 'nock'
 
 import CurrencyController from '../../../src/controllers/CurrencyController'
 
-
 describe('currency-controller', () => {
   let currencyController
 

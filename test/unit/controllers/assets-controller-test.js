@@ -29,7 +29,7 @@ describe('AssetsController', () => {
   let prefsController
   const sandbox = createSandbox()
   let validateImageUrlStub
-  let setProviderTypeAndWait;
+  let setProviderTypeAndWait
   beforeEach(async () => {
     network = new NetworkController()
     const networkControllerProviderConfig = {
@@ -38,10 +38,10 @@ describe('AssetsController', () => {
     setProviderTypeAndWait = (networkType) =>
       new Promise((resolve) => {
         network.on('networkDidChange', () => {
-          resolve();
-        });
-        network.setProviderType(networkType);
-      });
+          resolve()
+        })
+        network.setProviderType(networkType)
+      })
     sandbox.stub(network, 'getLatestBlock').returns({})
     network.initializeProvider(networkControllerProviderConfig)
     await setProviderTypeAndWait('mainnet')

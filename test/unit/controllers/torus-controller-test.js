@@ -31,29 +31,29 @@ describe('MetaMaskController', () => {
     nock.cleanAll()
     nock.enableNetConnect((host) => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
     nock(TEST_GAS_FEE_API.replace('<chain_id>', '1'))
-    .get(/.+/u)
-    .reply(200, {
-      low: {
-        minWaitTimeEstimate: 60_000,
-        maxWaitTimeEstimate: 600_000,
-        suggestedMaxPriorityFeePerGas: '1',
-        suggestedMaxFeePerGas: '35',
-      },
-      medium: {
-        minWaitTimeEstimate: 15_000,
-        maxWaitTimeEstimate: 60_000,
-        suggestedMaxPriorityFeePerGas: '1.8',
-        suggestedMaxFeePerGas: '38',
-      },
-      high: {
-        minWaitTimeEstimate: 0,
-        maxWaitTimeEstimate: 15_000,
-        suggestedMaxPriorityFeePerGas: '2',
-        suggestedMaxFeePerGas: '50',
-      },
-      estimatedBaseFee: '28',
-    })
-    .persist()
+      .get(/.+/u)
+      .reply(200, {
+        low: {
+          minWaitTimeEstimate: 60_000,
+          maxWaitTimeEstimate: 600_000,
+          suggestedMaxPriorityFeePerGas: '1',
+          suggestedMaxFeePerGas: '35',
+        },
+        medium: {
+          minWaitTimeEstimate: 15_000,
+          maxWaitTimeEstimate: 60_000,
+          suggestedMaxPriorityFeePerGas: '1.8',
+          suggestedMaxFeePerGas: '38',
+        },
+        high: {
+          minWaitTimeEstimate: 0,
+          maxWaitTimeEstimate: 15_000,
+          suggestedMaxPriorityFeePerGas: '2',
+          suggestedMaxFeePerGas: '50',
+        },
+        estimatedBaseFee: '28',
+      })
+      .persist()
 
     nock(TEST_LEGACY_FEE_API.replace('<chain_id>', '0x1'))
       .get(/.+/u)
@@ -106,11 +106,11 @@ describe('MetaMaskController', () => {
     sandbox.stub(metamaskController.prefsController, 'sync')
     sandbox.stub(metamaskController.prefsController, 'createUser')
     sandbox.stub(metamaskController.networkController, 'getLatestBlock').callsFake(() => Promise.resolve({}))
-    sandbox.stub(metamaskController.gasFeeController,'fetchEthGasPriceEstimate').callsFake(() => Promise.resolve(
-      {
-        gasPrice: '10'
-      }
-    ))
+    sandbox.stub(metamaskController.gasFeeController, 'fetchEthGasPriceEstimate').callsFake(() =>
+      Promise.resolve({
+        gasPrice: '10',
+      })
+    )
     metamaskController.gasFeeController.legacyAPIEndpoint = TEST_LEGACY_FEE_API
     metamaskController.gasFeeController.EIP1559APIEndpoint = TEST_GAS_FEE_API
     await metamaskController.prefsController.init({ address: testAccount.address, rehydrate: true, jwtToken: 'hello', dispatch: noop, commit: noop })

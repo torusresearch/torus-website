@@ -2,7 +2,7 @@
 import assert from 'assert'
 import * as txUtils from '../../../../src/controllers/transactions/txUtils'
 
-const VALID_ADDRESS = '0xa7df1beDBF813f57096dF77FCd515f0B3900e402';
+const VALID_ADDRESS = '0xa7df1beDBF813f57096dF77FCd515f0B3900e402'
 
 describe('txUtils', function () {
   describe('#validateTxParams', function () {
@@ -57,7 +57,7 @@ describe('txUtils', function () {
     it('removes recipient for txParams with 0x when contract data is provided', function () {
       const zeroRecipientandDataTxParams = {
         from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
-        to: '0x',
+        to: VALID_ADDRESS,
         data: 'bytecode',
       }
       const sanitizedTxParams = txUtils.validateRecipient(zeroRecipientandDataTxParams)
@@ -67,7 +67,7 @@ describe('txUtils', function () {
     it('should error when recipient is 0x', function () {
       const zeroRecipientTxParams = {
         from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
-        to: '0x',
+        to: VALID_ADDRESS,
       }
       assert.throws(
         () => {

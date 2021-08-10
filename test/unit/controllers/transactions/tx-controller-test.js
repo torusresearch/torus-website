@@ -3,7 +3,7 @@ import assert from 'assert'
 import EventEmitter from 'events'
 import { toBuffer } from 'ethereumjs-util'
 import Common from '@ethereumjs/common'
-import { TransactionFactory } from '@ethereumjs/tx';
+import { TransactionFactory } from '@ethereumjs/tx'
 
 import { ObservableStore } from '@metamask/obs-store'
 import sinon from 'sinon'
@@ -11,18 +11,18 @@ import TransactionController from '../../../../src/controllers/transactions/Tran
 import { TRANSACTION_TYPES, TRANSACTION_STATUSES, GAS_ESTIMATE_TYPES, MAINNET } from '../../../../src/utils/enums'
 
 import { createTestProviderTools, getTestAccounts } from '../../../stub/provider'
-const MILLISECOND = 1;
-const SECOND = MILLISECOND * 1000;
+const MILLISECOND = 1
+const SECOND = MILLISECOND * 1000
 
 const noop = () => true
-const currentNetworkId = '42';
-const currentChainId = '0x2a';
+const currentNetworkId = '42'
+const currentChainId = '0x2a'
 const providerConfig = {
   type: 'kovan',
-};
+}
 
-const VALID_ADDRESS = '0x0000000000000000000000000000000000000000';
-const VALID_ADDRESS_TWO = '0x0000000000000000000000000000000000000001';
+const VALID_ADDRESS = '0x0000000000000000000000000000000000000000'
+const VALID_ADDRESS_TWO = '0x0000000000000000000000000000000000000001'
 describe('Transaction Controller', function () {
   let txController, provider, providerResultStub, fromAccount
 
@@ -33,10 +33,7 @@ describe('Transaction Controller', function () {
       // by default, all accounts are external accounts (not contracts)
       eth_getCode: '0x',
     }
-    provider = createTestProviderTools({ scaffold: providerResultStub,
-      networkId: 1,
-      chainId: 1
-    }).provider
+    provider = createTestProviderTools({ scaffold: providerResultStub, networkId: 1, chainId: 1 }).provider
     fromAccount = getTestAccounts()[0]
     const blockTrackerStub = new EventEmitter()
     blockTrackerStub.getCurrentBlock = noop
@@ -53,7 +50,7 @@ describe('Transaction Controller', function () {
       blockTracker: blockTrackerStub,
       signTransaction: (ethTx) =>
         new Promise((resolve) => {
-          resolve(ethTx.sign(fromAccount.key));
+          resolve(ethTx.sign(fromAccount.key))
         }),
       getProviderConfig: () => providerConfig,
       getPermittedAccounts: () => undefined,
@@ -108,9 +105,9 @@ describe('Transaction Controller', function () {
           },
           history: [{}],
         },
-      ]);
-      const unapprovedTxCount = txController.getUnapprovedTxCount();
-      assert.equal(unapprovedTxCount, 3, 'should be 3');
+      ])
+      const unapprovedTxCount = txController.getUnapprovedTxCount()
+      assert.equal(unapprovedTxCount, 3, 'should be 3')
     })
   })
 
@@ -147,19 +144,19 @@ describe('Transaction Controller', function () {
           },
           history: [{}],
         },
-      ]);
-      const pendingTxCount = txController.getPendingTxCount();
-      assert.equal(pendingTxCount, 3, 'should be 3');
+      ])
+      const pendingTxCount = txController.getPendingTxCount()
+      assert.equal(pendingTxCount, 3, 'should be 3')
     })
   })
 
   describe('#getConfirmedTransactions', function () {
     it('should return the number of confirmed txs', function () {
-      const address = '0xc684832530fcbddae4b4230a47e991ddcec2831d';
+      const address = '0xc684832530fcbddae4b4230a47e991ddcec2831d'
       const txParams = {
         from: address,
         to: '0xc684832530fcbddae4b4230a47e991ddcec2831d',
-      };
+      }
       txController.txStateManager._addTransactionsToState([
         {
           id: 0,
@@ -224,11 +221,8 @@ describe('Transaction Controller', function () {
           txParams,
           history: [{}],
         },
-      ]);
-      assert.equal(
-        txController.nonceTracker.getConfirmedTransactions(address).length,
-        3,
-      );
+      ])
+      assert.equal(txController.nonceTracker.getConfirmedTransactions(address).length, 3)
     })
   })
 
@@ -246,17 +240,15 @@ describe('Transaction Controller', function () {
         txParams,
         history: [{}],
       }
-      txController.txStateManager._addTransactionsToState([txMeta]);
+      txController.txStateManager._addTransactionsToState([txMeta])
       stub = sinon.stub(txController, 'addUnapprovedTransaction').callsFake(() => {
         txController.emit('newUnapprovedTx', txMeta)
-        return Promise.resolve(
-          txController.txStateManager.addTransaction(txMeta),
-        );
+        return Promise.resolve(txController.txStateManager.addTransaction(txMeta))
       })
     })
 
     afterEach(function () {
-      txController.txStateManager._addTransactionsToState([]);
+      txController.txStateManager._addTransactionsToState([])
       stub.restore()
     })
 
@@ -296,7 +288,7 @@ describe('Transaction Controller', function () {
 
   describe('#addUnapprovedTransaction', function () {
     const selectedAddress = '0x1678a085c290ebd122dc42cba69373b5953b831d'
-    const recipientAddress = '0xc42edfcc21ed14dda456aa0756c153f7985d8813';
+    const recipientAddress = '0xc42edfcc21ed14dda456aa0756c153f7985d8813'
 
     let getSelectedAddress
     beforeEach(function () {
@@ -308,7 +300,7 @@ describe('Transaction Controller', function () {
     })
 
     it('should add an unapproved transaction and return a valid txMeta', function (done) {
-      let getGasFeeStub = sinon.stub(txController, '_getEIP1559GasFeeEstimates');
+      let getGasFeeStub = sinon.stub(txController, '_getEIP1559GasFeeEstimates')
 
       getGasFeeStub.callsFake(() => ({
         gasFeeEstimates: {
@@ -318,10 +310,9 @@ describe('Transaction Controller', function () {
           },
         },
         gasEstimateType: GAS_ESTIMATE_TYPES.FEE_MARKET,
-      }));
+      }))
       txController
-        .addUnapprovedTransaction({ from: selectedAddress, to: recipientAddress
-        }, { origin: '' })
+        .addUnapprovedTransaction({ from: selectedAddress, to: recipientAddress }, { origin: '' })
         .then((txMeta) => {
           assert('id' in txMeta, 'should have a id')
           assert('time' in txMeta, 'should have a time stamp')
@@ -338,8 +329,7 @@ describe('Transaction Controller', function () {
           done()
         })
         .catch(done)
-        getGasFeeStub.restore()
-
+      getGasFeeStub.restore()
     })
 
     it('should emit newUnapprovedTx event and pass txMeta as the first argument', function (done) {
@@ -348,13 +338,12 @@ describe('Transaction Controller', function () {
         assert(txMetaFromEmit, 'txMeta is falsy')
         done()
       })
-      txController.addUnapprovedTransaction({ from: selectedAddress, to: recipientAddress
-      }, { origin: '' }).catch(done)
+      txController.addUnapprovedTransaction({ from: selectedAddress, to: recipientAddress }, { origin: '' }).catch(done)
     })
 
     it("should fail if the from address isn't the selected address", function (done) {
       txController
-        .addUnapprovedTransaction({ from: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2', to: recipientAddress },{ origin: '' })
+        .addUnapprovedTransaction({ from: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2', to: recipientAddress }, { origin: '' })
         .then(() => {
           assert.fail('transaction should not have been added')
         })
@@ -374,13 +363,15 @@ describe('Transaction Controller', function () {
 
     it('should fail if netId is loading', function (done) {
       txController.networkStore = new ObservableStore('loading')
-      txController.addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' }, { origin: '' }).catch((err) => {
-        if (err.message === 'Torus is having trouble connecting to the network') {
-          done()
-        } else {
-          done(err)
-        }
-      })
+      txController
+        .addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' }, { origin: '' })
+        .catch((err) => {
+          if (err.message === 'Torus is having trouble connecting to the network') {
+            done()
+          } else {
+            done(err)
+          }
+        })
     })
   })
 
@@ -397,7 +388,7 @@ describe('Transaction Controller', function () {
           },
           history: [{}],
         },
-      ]);
+      ])
       const txMeta = {
         id: 1,
         txParams: {
@@ -405,35 +396,25 @@ describe('Transaction Controller', function () {
           to: '0xc684832530fcbddae4b4230a47e991ddcec2831d',
         },
         history: [{}],
-      };
-      providerResultStub.eth_gasPrice = '4a817c800';
-      providerResultStub.eth_getBlockByNumber = { gasLimit: '47b784' };
-      providerResultStub.eth_estimateGas = '5209';
+      }
+      providerResultStub.eth_gasPrice = '4a817c800'
+      providerResultStub.eth_getBlockByNumber = { gasLimit: '47b784' }
+      providerResultStub.eth_estimateGas = '5209'
 
-      const txMetaWithDefaults = await txController.addTxGasDefaults(txMeta);
-      assert.ok(
-        txMetaWithDefaults.txParams.gasPrice,
-        'should have added the gas price',
-      );
-      assert.ok(
-        txMetaWithDefaults.txParams.gas,
-        'should have added the gas field',
-      );
+      const txMetaWithDefaults = await txController.addTxGasDefaults(txMeta)
+      assert.ok(txMetaWithDefaults.txParams.gasPrice, 'should have added the gas price')
+      assert.ok(txMetaWithDefaults.txParams.gas, 'should have added the gas field')
     })
     it('should add EIP1559 tx defaults', async function () {
-      const TEST_MAX_FEE_PER_GAS = '0x12a05f200';
-      const TEST_MAX_PRIORITY_FEE_PER_GAS = '0x77359400';
+      const TEST_MAX_FEE_PER_GAS = '0x12a05f200'
+      const TEST_MAX_PRIORITY_FEE_PER_GAS = '0x77359400'
 
-      const stub1 = sinon
-        .stub(txController, 'getEIP1559Compatibility')
-        .returns(true);
+      const stub1 = sinon.stub(txController, 'getEIP1559Compatibility').returns(true)
 
-      const stub2 = sinon
-        .stub(txController, '_getDefaultGasFees')
-        .callsFake(() => ({
-          maxFeePerGas: TEST_MAX_FEE_PER_GAS,
-          maxPriorityFeePerGas: TEST_MAX_PRIORITY_FEE_PER_GAS,
-        }));
+      const stub2 = sinon.stub(txController, '_getDefaultGasFees').callsFake(() => ({
+        maxFeePerGas: TEST_MAX_FEE_PER_GAS,
+        maxPriorityFeePerGas: TEST_MAX_PRIORITY_FEE_PER_GAS,
+      }))
 
       txController.txStateManager._addTransactionsToState([
         {
@@ -446,7 +427,7 @@ describe('Transaction Controller', function () {
           },
           history: [{}],
         },
-      ]);
+      ])
       const txMeta = {
         id: 1,
         txParams: {
@@ -454,36 +435,28 @@ describe('Transaction Controller', function () {
           to: '0xc684832530fcbddae4b4230a47e991ddcec2831d',
         },
         history: [{}],
-      };
-      providerResultStub.eth_getBlockByNumber = { gasLimit: '47b784' };
-      providerResultStub.eth_estimateGas = '5209';
+      }
+      providerResultStub.eth_getBlockByNumber = { gasLimit: '47b784' }
+      providerResultStub.eth_estimateGas = '5209'
 
-      const txMetaWithDefaults = await txController.addTxGasDefaults(txMeta);
+      const txMetaWithDefaults = await txController.addTxGasDefaults(txMeta)
 
-      assert.equal(
-        txMetaWithDefaults.txParams.maxFeePerGas,
-        TEST_MAX_FEE_PER_GAS,
-        'should have added the correct max fee per gas',
-      );
+      assert.equal(txMetaWithDefaults.txParams.maxFeePerGas, TEST_MAX_FEE_PER_GAS, 'should have added the correct max fee per gas')
       assert.equal(
         txMetaWithDefaults.txParams.maxPriorityFeePerGas,
         TEST_MAX_PRIORITY_FEE_PER_GAS,
-        'should have added the correct max priority fee per gas',
-      );
-      stub1.restore();
-      stub2.restore();
-    });
+        'should have added the correct max priority fee per gas'
+      )
+      stub1.restore()
+      stub2.restore()
+    })
 
     it('should add gasPrice as maxFeePerGas and maxPriorityFeePerGas if there are no sources of other fee data available', async function () {
-      const TEST_GASPRICE = '0x12a05f200';
+      const TEST_GASPRICE = '0x12a05f200'
 
-      const stub1 = sinon
-        .stub(txController, 'getEIP1559Compatibility')
-        .returns(true);
+      const stub1 = sinon.stub(txController, 'getEIP1559Compatibility').returns(true)
 
-      const stub2 = sinon
-        .stub(txController, '_getDefaultGasFees')
-        .callsFake(() => ({ gasPrice: TEST_GASPRICE }));
+      const stub2 = sinon.stub(txController, '_getDefaultGasFees').callsFake(() => ({ gasPrice: TEST_GASPRICE }))
 
       txController.txStateManager._addTransactionsToState([
         {
@@ -496,7 +469,7 @@ describe('Transaction Controller', function () {
           },
           history: [{}],
         },
-      ]);
+      ])
       const txMeta = {
         id: 1,
         txParams: {
@@ -504,38 +477,26 @@ describe('Transaction Controller', function () {
           to: '0xc684832530fcbddae4b4230a47e991ddcec2831d',
         },
         history: [{}],
-      };
-      providerResultStub.eth_getBlockByNumber = { gasLimit: '47b784' };
-      providerResultStub.eth_estimateGas = '5209';
+      }
+      providerResultStub.eth_getBlockByNumber = { gasLimit: '47b784' }
+      providerResultStub.eth_estimateGas = '5209'
 
-      const txMetaWithDefaults = await txController.addTxGasDefaults(txMeta);
+      const txMetaWithDefaults = await txController.addTxGasDefaults(txMeta)
 
-      assert.equal(
-        txMetaWithDefaults.txParams.maxFeePerGas,
-        TEST_GASPRICE,
-        'should have added the correct max fee per gas',
-      );
-      assert.equal(
-        txMetaWithDefaults.txParams.maxPriorityFeePerGas,
-        TEST_GASPRICE,
-        'should have added the correct max priority fee per gas',
-      );
-      stub1.restore();
-      stub2.restore();
-    });
+      assert.equal(txMetaWithDefaults.txParams.maxFeePerGas, TEST_GASPRICE, 'should have added the correct max fee per gas')
+      assert.equal(txMetaWithDefaults.txParams.maxPriorityFeePerGas, TEST_GASPRICE, 'should have added the correct max priority fee per gas')
+      stub1.restore()
+      stub2.restore()
+    })
 
     it('should not add gasPrice if the fee data is available from the dapp', async function () {
-      const TEST_GASPRICE = '0x12a05f200';
-      const TEST_MAX_FEE_PER_GAS = '0x12a05f200';
-      const TEST_MAX_PRIORITY_FEE_PER_GAS = '0x77359400';
+      const TEST_GASPRICE = '0x12a05f200'
+      const TEST_MAX_FEE_PER_GAS = '0x12a05f200'
+      const TEST_MAX_PRIORITY_FEE_PER_GAS = '0x77359400'
 
-      const stub1 = sinon
-        .stub(txController, 'getEIP1559Compatibility')
-        .returns(true);
+      const stub1 = sinon.stub(txController, 'getEIP1559Compatibility').returns(true)
 
-      const stub2 = sinon
-        .stub(txController, '_getDefaultGasFees')
-        .callsFake(() => ({ gasPrice: TEST_GASPRICE }));
+      const stub2 = sinon.stub(txController, '_getDefaultGasFees').callsFake(() => ({ gasPrice: TEST_GASPRICE }))
 
       txController.txStateManager._addTransactionsToState([
         {
@@ -550,7 +511,7 @@ describe('Transaction Controller', function () {
           },
           history: [{}],
         },
-      ]);
+      ])
       const txMeta = {
         id: 1,
         txParams: {
@@ -558,41 +519,37 @@ describe('Transaction Controller', function () {
           to: '0xc684832530fcbddae4b4230a47e991ddcec2831d',
         },
         history: [{}],
-      };
-      providerResultStub.eth_getBlockByNumber = { gasLimit: '47b784' };
-      providerResultStub.eth_estimateGas = '5209';
+      }
+      providerResultStub.eth_getBlockByNumber = { gasLimit: '47b784' }
+      providerResultStub.eth_estimateGas = '5209'
 
-      const txMetaWithDefaults = await txController.addTxGasDefaults(txMeta);
+      const txMetaWithDefaults = await txController.addTxGasDefaults(txMeta)
 
-      assert.equal(
-        txMetaWithDefaults.txParams.maxFeePerGas,
-        TEST_MAX_FEE_PER_GAS,
-        'should have added the correct max fee per gas',
-      );
+      assert.equal(txMetaWithDefaults.txParams.maxFeePerGas, TEST_MAX_FEE_PER_GAS, 'should have added the correct max fee per gas')
       assert.equal(
         txMetaWithDefaults.txParams.maxPriorityFeePerGas,
         TEST_MAX_PRIORITY_FEE_PER_GAS,
-        'should have added the correct max priority fee per gas',
-      );
-      stub1.restore();
-      stub2.restore();
-    });
+        'should have added the correct max priority fee per gas'
+      )
+      stub1.restore()
+      stub2.restore()
+    })
   })
 
   describe('_getDefaultGasFees', function () {
-    let getGasFeeStub;
+    let getGasFeeStub
 
     beforeEach(function () {
-      getGasFeeStub = sinon.stub(txController, '_getEIP1559GasFeeEstimates');
-    });
+      getGasFeeStub = sinon.stub(txController, '_getEIP1559GasFeeEstimates')
+    })
 
     afterEach(function () {
-      getGasFeeStub.restore();
-    });
+      getGasFeeStub.restore()
+    })
 
     it('should return the correct fee data when the gas estimate type is FEE_MARKET', async function () {
-      const EXPECTED_MAX_FEE_PER_GAS = '12a05f200';
-      const EXPECTED_MAX_PRIORITY_FEE_PER_GAS = '77359400';
+      const EXPECTED_MAX_FEE_PER_GAS = '12a05f200'
+      const EXPECTED_MAX_PRIORITY_FEE_PER_GAS = '77359400'
       getGasFeeStub.callsFake(() => ({
         gasFeeEstimates: {
           medium: {
@@ -601,55 +558,46 @@ describe('Transaction Controller', function () {
           },
         },
         gasEstimateType: GAS_ESTIMATE_TYPES.FEE_MARKET,
-      }));
+      }))
 
-      const defaultGasFees = await txController._getDefaultGasFees(
-        { txParams: {} },
-        true,
-      );
+      const defaultGasFees = await txController._getDefaultGasFees({ txParams: {} }, true)
 
       assert.deepEqual(defaultGasFees, {
         maxPriorityFeePerGas: EXPECTED_MAX_PRIORITY_FEE_PER_GAS,
         maxFeePerGas: EXPECTED_MAX_FEE_PER_GAS,
-      });
-    });
+      })
+    })
 
     it('should return the correct fee data when the gas estimate type is LEGACY', async function () {
-      const EXPECTED_GAS_PRICE = '77359400';
+      const EXPECTED_GAS_PRICE = '77359400'
 
       getGasFeeStub.callsFake(() => ({
         gasFeeEstimates: { medium: '2' },
         gasEstimateType: GAS_ESTIMATE_TYPES.LEGACY,
-      }));
+      }))
 
-      const defaultGasFees = await txController._getDefaultGasFees(
-        { txParams: {} },
-        false,
-      );
+      const defaultGasFees = await txController._getDefaultGasFees({ txParams: {} }, false)
 
       assert.deepEqual(defaultGasFees, {
         gasPrice: EXPECTED_GAS_PRICE,
-      });
-    });
+      })
+    })
 
     it('should return the correct fee data when the gas estimate type is ETH_GASPRICE', async function () {
-      const EXPECTED_GAS_PRICE = '77359400';
+      const EXPECTED_GAS_PRICE = '77359400'
 
       getGasFeeStub.callsFake(() => ({
         gasFeeEstimates: { gasPrice: '2' },
         gasEstimateType: GAS_ESTIMATE_TYPES.ETH_GASPRICE,
-      }));
+      }))
 
-      const defaultGasFees = await txController._getDefaultGasFees(
-        { txParams: {} },
-        false,
-      );
+      const defaultGasFees = await txController._getDefaultGasFees({ txParams: {} }, false)
 
       assert.deepEqual(defaultGasFees, {
         gasPrice: EXPECTED_GAS_PRICE,
-      });
-    });
-  });
+      })
+    })
+  })
 
   describe('#addTx', function () {
     it('should emit updates', function (done) {
@@ -682,12 +630,11 @@ describe('Transaction Controller', function () {
         .catch(done)
       txController.addTransaction(txMeta)
     })
-    
   })
 
   describe('#approveTransaction', function () {
     it('does not overwrite set values', async function () {
-      const originalValue = '0x01';
+      const originalValue = '0x01'
       const txMeta = {
         id: '1',
         status: TRANSACTION_STATUSES.UNAPPROVED,
@@ -699,42 +646,34 @@ describe('Transaction Controller', function () {
           gas: originalValue,
           gasPrice: originalValue,
         },
-      };
+      }
       // eslint-disable-next-line @babel/no-invalid-this
-      this.timeout(SECOND * 15);
-      const wrongValue = '0x05';
+      this.timeout(SECOND * 15)
+      const wrongValue = '0x05'
 
-      txController.addTransaction(txMeta);
-      providerResultStub.eth_gasPrice = wrongValue;
-      providerResultStub.eth_estimateGas = '0x5209';
+      txController.addTransaction(txMeta)
+      providerResultStub.eth_gasPrice = wrongValue
+      providerResultStub.eth_estimateGas = '0x5209'
 
-      const signStub = sinon
-        .stub(txController, 'signTransaction')
-        .callsFake(() => Promise.resolve());
+      const signStub = sinon.stub(txController, 'signTransaction').callsFake(() => Promise.resolve())
 
-      const pubStub = sinon
-        .stub(txController, 'publishTransaction')
-        .callsFake(() => {
-          txController.setTxHash('1', originalValue);
-          txController.txStateManager.setTxStatusSubmitted('1');
-        });
+      const pubStub = sinon.stub(txController, 'publishTransaction').callsFake(() => {
+        txController.setTxHash('1', originalValue)
+        txController.txStateManager.setTxStatusSubmitted('1')
+      })
 
-      await txController.approveTransaction(txMeta.id);
-      const result = txController.txStateManager.getTransaction(txMeta.id);
-      const params = result.txParams;
+      await txController.approveTransaction(txMeta.id)
+      const result = txController.txStateManager.getTransaction(txMeta.id)
+      const params = result.txParams
 
-      assert.equal(params.gas, originalValue, 'gas unmodified');
-      assert.equal(params.gasPrice, originalValue, 'gas price unmodified');
-      assert.equal(result.hash, originalValue);
-      assert.equal(
-        result.status,
-        TRANSACTION_STATUSES.SUBMITTED,
-        'should have reached the submitted status.',
-      );
-      signStub.restore();
-      pubStub.restore();
-    });
-  });
+      assert.equal(params.gas, originalValue, 'gas unmodified')
+      assert.equal(params.gasPrice, originalValue, 'gas price unmodified')
+      assert.equal(result.hash, originalValue)
+      assert.equal(result.status, TRANSACTION_STATUSES.SUBMITTED, 'should have reached the submitted status.')
+      signStub.restore()
+      pubStub.restore()
+    })
+  })
 
   describe('#approveTransaction:custom nonce', function () {
     it('update nonce with custom nonce', function (done) {
@@ -782,15 +721,23 @@ describe('Transaction Controller', function () {
 
   describe('#sign replay-protected tx', function () {
     it('prepares a tx with the chainId set', function (done) {
-      txController.addTransaction({ id: '1', status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams: {
-        to: VALID_ADDRESS,
-        from: VALID_ADDRESS_TWO,
-      } }, noop)
+      txController.addTransaction(
+        {
+          id: '1',
+          status: 'unapproved',
+          metamaskNetworkId: currentNetworkId,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+        },
+        noop
+      )
       txController
         .signTransaction('1')
         .then((rawTx) => {
-          const ethTx = TransactionFactory.fromSerializedData(toBuffer(rawTx));
-          assert.equal(ethTx.common.chainIdBN().toNumber(), 42);
+          const ethTx = TransactionFactory.fromSerializedData(toBuffer(rawTx))
+          assert.equal(ethTx.common.chainIdBN().toNumber(), 42)
           done()
         })
         .catch(done)
@@ -835,22 +782,21 @@ describe('Transaction Controller', function () {
           nonce: '0x4b',
         },
         metamaskNetworkId: currentNetworkId,
-      };
-      txController.txStateManager.addTransaction(txMeta);
-      const approvalPromise = txController.updateAndApproveTransaction(txMeta);
-      const tx = txController.txStateManager.getTransaction(1);
-      assert.equal(tx.status, TRANSACTION_STATUSES.APPROVED);
-      await approvalPromise;
+      }
+      txController.txStateManager.addTransaction(txMeta)
+      const approvalPromise = txController.updateAndApproveTransaction(txMeta)
+      const tx = txController.txStateManager.getTransaction(1)
+      assert.equal(tx.status, TRANSACTION_STATUSES.APPROVED)
+      await approvalPromise
     })
   })
 
   describe('#getChainId', function () {
     it('returns 0 when the chainId is NaN', function () {
-      txController.networkStore = new ObservableStore('loading');
-      assert.equal(txController.getChainId(), 0);
-    });
-  });
-
+      txController.networkStore = new ObservableStore('loading')
+      assert.equal(txController.getChainId(), 0)
+    })
+  })
 
   describe('#cancelTransaction', function () {
     it('should emit a status change to rejected', function (done) {
@@ -925,35 +871,31 @@ describe('Transaction Controller', function () {
           metamaskNetworkId: currentNetworkId,
           history: [{}],
         },
-      ]);
+      ])
 
       txController.once('tx:status-update', (txId, status) => {
         try {
-          assert.equal(
-            status,
-            TRANSACTION_STATUSES.REJECTED,
-            'status should be rejected',
-          );
-          assert.equal(txId, 0, 'id should e 0');
-          done();
+          assert.equal(status, TRANSACTION_STATUSES.REJECTED, 'status should be rejected')
+          assert.equal(txId, 0, 'id should e 0')
+          done()
         } catch (e) {
-          done(e);
+          done(e)
         }
-      });
+      })
 
-      txController.cancelTransaction(0);
-    });
-  });
+      txController.cancelTransaction(0)
+    })
+  })
 
   describe('#createSpeedUpTransaction', function () {
-    let addTransactionSpy;
-    let approveTransactionSpy;
-    let txParams;
-    let expectedTxParams;
+    let addTransactionSpy
+    let approveTransactionSpy
+    let txParams
+    let expectedTxParams
 
     beforeEach(function () {
-      addTransactionSpy = sinon.spy(txController, 'addTransaction');
-      approveTransactionSpy = sinon.spy(txController, 'approveTransaction');
+      addTransactionSpy = sinon.spy(txController, 'addTransaction')
+      approveTransactionSpy = sinon.spy(txController, 'approveTransaction')
 
       txParams = {
         nonce: '0x00',
@@ -961,7 +903,7 @@ describe('Transaction Controller', function () {
         to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
         gas: '0x5209',
         gasPrice: '0xa',
-      };
+      }
       txController.txStateManager._addTransactionsToState([
         {
           id: 1,
@@ -970,67 +912,67 @@ describe('Transaction Controller', function () {
           txParams,
           history: [{}],
         },
-      ]);
+      ])
 
-      expectedTxParams = { ...txParams, gasPrice: '0xb' };
-    });
+      expectedTxParams = { ...txParams, gasPrice: '0xb' }
+    })
 
     afterEach(function () {
-      addTransactionSpy.restore();
-      approveTransactionSpy.restore();
-    });
+      addTransactionSpy.restore()
+      approveTransactionSpy.restore()
+    })
 
     it('should call this.addTransaction and this.approveTransaction with the expected args', async function () {
-      await txController.createSpeedUpTransaction(1);
-      assert.equal(addTransactionSpy.callCount, 1);
+      await txController.createSpeedUpTransaction(1)
+      assert.equal(addTransactionSpy.callCount, 1)
 
-      const addTransactionArgs = addTransactionSpy.getCall(0).args[0];
-      assert.deepEqual(addTransactionArgs.txParams, expectedTxParams);
+      const addTransactionArgs = addTransactionSpy.getCall(0).args[0]
+      assert.deepEqual(addTransactionArgs.txParams, expectedTxParams)
 
-      const { previousGasParams, type } = addTransactionArgs;
+      const { previousGasParams, type } = addTransactionArgs
       assert.deepEqual(
         { gasPrice: previousGasParams.gasPrice, type },
         {
           gasPrice: '0xa',
           type: TRANSACTION_TYPES.RETRY,
-        },
-      );
-    });
+        }
+      )
+    })
 
     it('should call this.approveTransaction with the id of the returned tx', async function () {
-      const result = await txController.createSpeedUpTransaction(1);
-      assert.equal(approveTransactionSpy.callCount, 1);
+      const result = await txController.createSpeedUpTransaction(1)
+      assert.equal(approveTransactionSpy.callCount, 1)
 
-      const approveTransactionArg = approveTransactionSpy.getCall(0).args[0];
-      assert.equal(result.id, approveTransactionArg);
-    });
+      const approveTransactionArg = approveTransactionSpy.getCall(0).args[0]
+      assert.equal(result.id, approveTransactionArg)
+    })
 
     it('should return the expected txMeta', async function () {
-      const result = await txController.createSpeedUpTransaction(1);
+      const result = await txController.createSpeedUpTransaction(1)
 
-      assert.deepEqual(result.txParams, expectedTxParams);
+      assert.deepEqual(result.txParams, expectedTxParams)
 
-      const { previousGasParams, type } = result;
+      const { previousGasParams, type } = result
       assert.deepEqual(
         { gasPrice: previousGasParams.gasPrice, type },
         {
           gasPrice: '0xa',
           type: TRANSACTION_TYPES.RETRY,
-        },
-      );
-    });
-  });
+        }
+      )
+    })
+  })
 
   describe('#signTransaction', function () {
-    let fromTxDataSpy;
+    let fromTxDataSpy
 
     beforeEach(function () {
-      fromTxDataSpy = sinon.spy(TransactionFactory, 'fromTxData');
-    });
+      fromTxDataSpy = sinon.spy(TransactionFactory, 'fromTxData')
+    })
 
     afterEach(function () {
-      fromTxDataSpy.restore();
-    });
+      fromTxDataSpy.restore()
+    })
 
     it('sets txParams.type to 0x0 (non-EIP-1559)', async function () {
       txController.txStateManager._addTransactionsToState([
@@ -1047,15 +989,13 @@ describe('Transaction Controller', function () {
             nonce: '0x4b',
           },
         },
-      ]);
-      await txController.signTransaction('1');
-      assert.equal(fromTxDataSpy.getCall(0).args[0].type, '0x0');
-    });
+      ])
+      await txController.signTransaction('1')
+      assert.equal(fromTxDataSpy.getCall(0).args[0].type, '0x0')
+    })
 
     it('sets txParams.type to 0x2 (EIP-1559)', async function () {
-      const eip1559CompatibilityStub = sinon
-        .stub(txController, 'getEIP1559Compatibility')
-        .returns(true);
+      const eip1559CompatibilityStub = sinon.stub(txController, 'getEIP1559Compatibility').returns(true)
       txController.txStateManager._addTransactionsToState([
         {
           status: TRANSACTION_STATUSES.UNAPPROVED,
@@ -1071,12 +1011,12 @@ describe('Transaction Controller', function () {
             nonce: '0x4b',
           },
         },
-      ]);
-      await txController.signTransaction('2');
-      assert.equal(fromTxDataSpy.getCall(0).args[0].type, '0x2');
-      eip1559CompatibilityStub.restore();
-    });
-  });
+      ])
+      await txController.signTransaction('2')
+      assert.equal(fromTxDataSpy.getCall(0).args[0].type, '0x2')
+      eip1559CompatibilityStub.restore()
+    })
+  })
 
   describe('#publishTransaction', function () {
     let hash, txMeta
@@ -1095,30 +1035,26 @@ describe('Transaction Controller', function () {
     })
 
     it('should publish a tx, updates the rawTx when provided a one', async function () {
-      const rawTx =
-        '0x477b2e6553c917af0db0388ae3da62965ff1a184558f61b749d1266b2e6d024c';
-      txController.txStateManager.addTransaction(txMeta);
-      await txController.publishTransaction(txMeta.id, rawTx);
-      const publishedTx = txController.txStateManager.getTransaction(1);
-      assert.equal(publishedTx.hash, hash);
-      assert.equal(publishedTx.status, TRANSACTION_STATUSES.SUBMITTED);
-    });
+      const rawTx = '0x477b2e6553c917af0db0388ae3da62965ff1a184558f61b749d1266b2e6d024c'
+      txController.txStateManager.addTransaction(txMeta)
+      await txController.publishTransaction(txMeta.id, rawTx)
+      const publishedTx = txController.txStateManager.getTransaction(1)
+      assert.equal(publishedTx.hash, hash)
+      assert.equal(publishedTx.status, TRANSACTION_STATUSES.SUBMITTED)
+    })
 
     it('should ignore the error "Transaction Failed: known transaction" and be as usual', async function () {
       providerResultStub.eth_sendRawTransaction = async (_, __, ___, end) => {
-        end('Transaction Failed: known transaction');
-      };
+        end('Transaction Failed: known transaction')
+      }
       const rawTx =
-        '0xf86204831e848082520894f231d46dd78806e1dd93442cf33c7671f853874880802ca05f973e540f2d3c2f06d3725a626b75247593cb36477187ae07ecfe0a4db3cf57a00259b52ee8c58baaa385fb05c3f96116e58de89bcc165cb3bfdfc708672fed8a';
-      txController.txStateManager.addTransaction(txMeta);
-      await txController.publishTransaction(txMeta.id, rawTx);
-      const publishedTx = txController.txStateManager.getTransaction(1);
-      assert.equal(
-        publishedTx.hash,
-        '0x2cc5a25744486f7383edebbf32003e5a66e18135799593d6b5cdd2bb43674f09',
-      );
-      assert.equal(publishedTx.status, TRANSACTION_STATUSES.SUBMITTED);
-    });
+        '0xf86204831e848082520894f231d46dd78806e1dd93442cf33c7671f853874880802ca05f973e540f2d3c2f06d3725a626b75247593cb36477187ae07ecfe0a4db3cf57a00259b52ee8c58baaa385fb05c3f96116e58de89bcc165cb3bfdfc708672fed8a'
+      txController.txStateManager.addTransaction(txMeta)
+      await txController.publishTransaction(txMeta.id, rawTx)
+      const publishedTx = txController.txStateManager.getTransaction(1)
+      assert.equal(publishedTx.hash, '0x2cc5a25744486f7383edebbf32003e5a66e18135799593d6b5cdd2bb43674f09')
+      assert.equal(publishedTx.status, TRANSACTION_STATUSES.SUBMITTED)
+    })
   })
 
   describe('#retryTransaction', function () {
@@ -1227,23 +1163,19 @@ describe('Transaction Controller', function () {
             nonce: '0x01',
           },
         },
-      ]);
-      txController._markNonceDuplicatesDropped(1);
-      const confirmedTx = txController.txStateManager.getTransaction(1);
+      ])
+      txController._markNonceDuplicatesDropped(1)
+      const confirmedTx = txController.txStateManager.getTransaction(1)
       const droppedTxs = txController.txStateManager.getTransactions({
         searchCriteria: {
           nonce: '0x01',
           status: TRANSACTION_STATUSES.DROPPED,
         },
-      });
-      assert.equal(
-        confirmedTx.status,
-        TRANSACTION_STATUSES.CONFIRMED,
-        'the confirmedTx should remain confirmed',
-      );
-      assert.equal(droppedTxs.length, 6, 'their should be 6 dropped txs');
-    });
-  });
+      })
+      assert.equal(confirmedTx.status, TRANSACTION_STATUSES.CONFIRMED, 'the confirmedTx should remain confirmed')
+      assert.equal(droppedTxs.length, 6, 'their should be 6 dropped txs')
+    })
+  })
 
   describe('#_determineTransactionCategory', function () {
     it('should return a simple send transactionCategory when to is truthy but data is falsey', async function () {
@@ -1337,33 +1269,31 @@ describe('Transaction Controller', function () {
         // by default, all accounts are external accounts (not contracts)
         eth_getCode: '0xa',
       }
-      const _provider = createTestProviderTools({ scaffold: _providerResultStub,  
-        networkId: 1,
-        chainId: 1 }).provider
+      const _provider = createTestProviderTools({ scaffold: _providerResultStub, networkId: 1, chainId: 1 }).provider
       const _fromAccount = getTestAccounts()[0]
       const _blockTrackerStub = new EventEmitter()
-        _blockTrackerStub.getCurrentBlock = noop
-        _blockTrackerStub.getLatestBlock = noop
-        const _txController = new TransactionController({
-          provider: _provider,
-          getGasPrice: function () {
-            return '0xee6b2800'
-          },
-          networkStore: new ObservableStore(currentNetworkId),
-          getCurrentNetworkEIP1559Compatibility: () => Promise.resolve(false),
-          getCurrentAccountEIP1559Compatibility: () => false,
-          txHistoryLimit: 10,
-          blockTracker: _blockTrackerStub,
-          signTransaction: (ethTx) =>
-            new Promise((resolve) => {
-              resolve(ethTx.sign(_fromAccount.key));
-            }),
-          getProviderConfig: () => providerConfig,
-          getPermittedAccounts: () => undefined,
-          getCurrentChainId: () => currentChainId,
-          getParticipateInMetrics: () => false,
-          trackMetaMetricsEvent: () => undefined,
-          getEIP1559GasFeeEstimates: () => undefined,
+      _blockTrackerStub.getCurrentBlock = noop
+      _blockTrackerStub.getLatestBlock = noop
+      const _txController = new TransactionController({
+        provider: _provider,
+        getGasPrice: function () {
+          return '0xee6b2800'
+        },
+        networkStore: new ObservableStore(currentNetworkId),
+        getCurrentNetworkEIP1559Compatibility: () => Promise.resolve(false),
+        getCurrentAccountEIP1559Compatibility: () => false,
+        txHistoryLimit: 10,
+        blockTracker: _blockTrackerStub,
+        signTransaction: (ethTx) =>
+          new Promise((resolve) => {
+            resolve(ethTx.sign(_fromAccount.key))
+          }),
+        getProviderConfig: () => providerConfig,
+        getPermittedAccounts: () => undefined,
+        getCurrentChainId: () => currentChainId,
+        getParticipateInMetrics: () => false,
+        trackMetaMetricsEvent: () => undefined,
+        getEIP1559GasFeeEstimates: () => undefined,
       })
       const result = await _txController._determineTransactionCategory({
         to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
@@ -1384,8 +1314,7 @@ describe('Transaction Controller', function () {
         // by default, all accounts are external accounts (not contracts)
         eth_getCode: '0xa',
       }
-      const _provider = createTestProviderTools({ scaffold: _providerResultStub, networkId: 1,
-        chainId: 1}).provider
+      const _provider = createTestProviderTools({ scaffold: _providerResultStub, networkId: 1, chainId: 1 }).provider
       const _fromAccount = getTestAccounts()[0]
       const _blockTrackerStub = new EventEmitter()
       _blockTrackerStub.getCurrentBlock = noop
@@ -1402,7 +1331,7 @@ describe('Transaction Controller', function () {
         blockTracker: _blockTrackerStub,
         signTransaction: (ethTx) =>
           new Promise((resolve) => {
-            resolve(ethTx.sign(_fromAccount.key));
+            resolve(ethTx.sign(_fromAccount.key))
           }),
         getProviderConfig: () => providerConfig,
         getPermittedAccounts: () => undefined,
@@ -1496,23 +1425,12 @@ describe('Transaction Controller', function () {
           },
           history: [{}],
         },
-      ]);
+      ])
 
-      assert.equal(
-        txController.pendingTxTracker.getPendingTransactions().length,
-        2,
-      );
-      const states = txController.pendingTxTracker
-        .getPendingTransactions()
-        .map((tx) => tx.status);
-      assert.ok(
-        states.includes(TRANSACTION_STATUSES.APPROVED),
-        'includes approved',
-      );
-      assert.ok(
-        states.includes(TRANSACTION_STATUSES.SUBMITTED),
-        'includes submitted',
-      );
-    });
-  });
+      assert.equal(txController.pendingTxTracker.getPendingTransactions().length, 2)
+      const states = txController.pendingTxTracker.getPendingTransactions().map((tx) => tx.status)
+      assert.ok(states.includes(TRANSACTION_STATUSES.APPROVED), 'includes approved')
+      assert.ok(states.includes(TRANSACTION_STATUSES.SUBMITTED), 'includes submitted')
+    })
+  })
 })
