@@ -194,7 +194,7 @@ export default {
   },
   data() {
     return {
-      dialog: true,
+      dialog: false,
       showAdvance: false,
       maxPriorityFee: new BigNumber('0'),
       baseFee: '',
