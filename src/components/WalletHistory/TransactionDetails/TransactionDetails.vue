@@ -91,8 +91,8 @@
           <span>
             {{
               transaction.action === ACTIVITY_ACTION_SEND
-                ? `${t('walletActivity.to')} ${transaction.slicedTo}`
-                : `${t('walletActivity.from')} ${transaction.slicedFrom}`
+                ? `${t('walletActivity.to')} ${transaction.slicedToChecksummed}`
+                : `${t('walletActivity.from')} ${transaction.slicedFromChecksummed}`
             }}
           </span>
           <v-chip

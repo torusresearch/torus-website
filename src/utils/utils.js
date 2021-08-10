@@ -67,6 +67,10 @@ import {
   ROPSTEN_CHAIN_ID,
   ROPSTEN_CODE,
   ROPSTEN_DISPLAY_NAME,
+  RSK_MAINNET_CHAIN_ID,
+  RSK_MAINNET_CODE,
+  RSK_TESTNET_CHAIN_ID,
+  RSK_TESTNET_CODE,
   SIMPLEX,
   SUPPORTED_NETWORK_TYPES,
   SVG,
@@ -91,6 +95,8 @@ const networkToNameMap = {
   [KOVAN_CODE]: KOVAN_DISPLAY_NAME,
   [GOERLI_CODE]: GOERLI_DISPLAY_NAME,
 }
+
+const rskUtils = require('@rsksmart/rsk-utils')
 
 export class UserError extends Error {}
 
@@ -352,8 +358,11 @@ export const broadcastChannelOptions = {
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
-export function validateVerifierId(selectedTypeOfLogin, value) {
+export function validateVerifierId(selectedTypeOfLogin, value, chainId) {
   if (selectedTypeOfLogin === ETH) {
+    if (Number.parseInt(chainId, 10) === RSK_MAINNET_CODE || Number.parseInt(chainId, 10) === RSK_TESTNET_CODE) {
+      return isAddressByChainId(value, chainId) || 'walletSettings.invalidEth'
+    }
     return isAddress(value) || 'walletSettings.invalidEth'
   }
   if (selectedTypeOfLogin === GOOGLE) {
@@ -537,6 +546,8 @@ export const standardNetworkId = {
   [BSC_MAINNET_CODE.toString()]: BSC_MAINNET_CHAIN_ID,
   [BSC_TESTNET_CODE.toString()]: BSC_TESTNET_CHAIN_ID,
   [XDAI_CODE.toString()]: XDAI_CHAIN_ID,
+  [RSK_MAINNET_CODE.toString()]: RSK_MAINNET_CHAIN_ID,
+  [RSK_TESTNET_CODE.toString()]: RSK_TESTNET_CHAIN_ID,
 }
 
 export function selectChainId(network, store) {
@@ -679,6 +690,20 @@ export function generateAddressFromPrivateKey(privKey) {
   return toChecksumAddress(privateToAddress(Buffer.from(privKey, 'hex')).toString('hex'))
 }
 
+export function toChecksumAddressByChainId(address, chainId) {
+  if (Number.parseInt(chainId, 10) === RSK_MAINNET_CODE || Number.parseInt(chainId, 10) === RSK_TESTNET_CODE) {
+    return rskUtils.toChecksumAddress(address, chainId)
+  }
+  return toChecksumAddress(address)
+}
+
+export function isAddressByChainId(address, chainId) {
+  if (Number.parseInt(chainId, 10) === RSK_MAINNET_CODE || Number.parseInt(chainId, 10) === RSK_TESTNET_CODE) {
+    return rskUtils.isValidChecksumAddress(address, chainId)
+  }
+  return isAddress(address)
+}
+
 export function downloadItem(filename, text) {
   const element = document.createElement('a')
   element.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(text)}`)
@@ -773,9 +798,9 @@ export function getVerifierOptions() {
   }
 }
 
-export async function validateContractAddress(web3, address) {
-  if (isAddress(address)) {
-    const contractCode = await web3.eth.getCode(address)
+export async function validateContractAddress(web3, address, chainId) {
+  if (isAddressByChainId(address, chainId)) {
+    const contractCode = await web3.eth.getCode(address.toLowerCase())
     // user account address will return 0x for networks , except ganache returns 0x0
     if (contractCode === '0x' || contractCode === '0x0') {
       return false

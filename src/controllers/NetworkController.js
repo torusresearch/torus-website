@@ -46,6 +46,16 @@ import {
   RINKEBY,
   ROPSTEN,
   RPC,
+  RSK_MAINNET,
+  RSK_MAINNET_CODE,
+  RSK_MAINNET_DISPLAY_NAME,
+  RSK_MAINNET_TICKER,
+  RSK_MAINNET_URL,
+  RSK_TESTNET,
+  RSK_TESTNET_CODE,
+  RSK_TESTNET_DISPLAY_NAME,
+  RSK_TESTNET_TICKER,
+  RSK_TESTNET_URL,
   SUPPORTED_NETWORK_TYPES,
   XDAI,
   XDAI_CODE,
@@ -60,7 +70,7 @@ const defaultProviderConfig = { type: 'mainnet' }
 const defaultNetworkConfig = { ticker: 'ETH' }
 const networks = { networkList: {} }
 const INFURA_PROVIDER_TYPES = new Set([ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI])
-const TORUS_PROVIDER_TYPES = new Set([MATIC, MUMBAI, BSC_MAINNET, BSC_TESTNET, XDAI])
+const TORUS_PROVIDER_TYPES = new Set([MATIC, MUMBAI, BSC_MAINNET, BSC_TESTNET, XDAI, RSK_MAINNET, RSK_TESTNET])
 
 export default class NetworkController extends EventEmitter {
   /**
@@ -264,6 +274,20 @@ export default class NetworkController extends EventEmitter {
       this._configureStandardProvider({ rpcUrl: BSC_TESTNET_URL, chainId: BSC_TESTNET_CODE, ticker: BSC_TICKER, nickname: BSC_TESTNET_DISPLAY_NAME })
     } else if (type === XDAI) {
       this._configureStandardProvider({ rpcUrl: XDAI_URL, chainId: XDAI_CODE, ticker: XDAI_TICKER, nickname: XDAI_DISPLAY_NAME })
+    } else if (type === RSK_MAINNET) {
+      this._configureStandardProvider({
+        rpcUrl: RSK_MAINNET_URL,
+        chainId: RSK_MAINNET_CODE,
+        ticker: RSK_MAINNET_TICKER,
+        nickname: RSK_MAINNET_DISPLAY_NAME,
+      })
+    } else if (type === RSK_TESTNET) {
+      this._configureStandardProvider({
+        rpcUrl: RSK_TESTNET_URL,
+        chainId: RSK_TESTNET_CODE,
+        ticker: RSK_TESTNET_TICKER,
+        nickname: RSK_TESTNET_DISPLAY_NAME,
+      })
     } else if (type === 'rpc') {
       this._configureStandardProvider({ rpcUrl: rpcTarget, chainId, ticker, nickname })
     } else {

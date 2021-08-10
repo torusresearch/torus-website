@@ -32,6 +32,7 @@
     "@metamask/contract-metadata": "^1.27.0",
     "@metamask/obs-store": "^6.0.2",
     "@metamask/safe-event-emitter": "^2.0.0",
+    "@rsksmart/rsk-utils": "^1.1.0",
     "@sentry/browser": "^6.9.0",
     "@sentry/vue": "^6.9.0",
     "@toruslabs/fetch-node-details": "^2.7.0",

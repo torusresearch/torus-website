@@ -363,6 +363,9 @@ class PreferencesController extends EventEmitter {
       if (duplicateIndex === -1 && tx.status === 'submitted') {
         // No duplicate found
         this.updateStore({ pastTransactions: [...storePastTx, formattedTx] }, address)
+        // This is to avoid errors on server for non ETH checksum
+        tx.to = tx.to.toLowerCase()
+        tx.from = tx.from.toLowerCase()
         this.postPastTx(tx, address)
         try {
           notifyUser(formattedTx.etherscanLink)

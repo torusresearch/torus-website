@@ -30,10 +30,11 @@ class TokenRatesController {
     const nativeCurrency = this.currency ? this.currency.getState().nativeCurrency.toLowerCase() : 'eth'
     const uniqueTokens = [...new Set(this._tokens.map((token) => token.tokenAddress))]
     const pairs = uniqueTokens.join(',')
-    const query = `contract_addresses=${pairs}&vs_currencies=${nativeCurrency}`
+    const coin = nativeCurrency === 'rbtc' ? 'rootstock' : 'ethereum'
+    const query = nativeCurrency === 'rbtc' ? `contract_addresses=${pairs}&vs_currencies=btc` : `contract_addresses=${pairs}&vs_currencies=eth`
     if (uniqueTokens.length > 0) {
       try {
-        const response = await fetch(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
+        const response = await fetch(`https://api.coingecko.com/api/v3/simple/token_price/${coin}?${query}`)
         const prices = await response.json()
         uniqueTokens.forEach((token) => {
           const price = prices[token.toLowerCase()]

@@ -442,7 +442,7 @@ import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapGetters, mapState } from 'vuex'
-import { isAddress, toChecksumAddress } from 'web3-utils'
+import { toChecksumAddress } from 'web3-utils'
 
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import ComponentLoader from '../../components/helpers/ComponentLoader'
@@ -469,7 +469,16 @@ import {
   UNSTOPPABLE_DOMAINS,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
-import { apiStreamSupported, getEtherScanHashLink, getUserIcon, getVerifierOptions, significantDigits, validateVerifierId } from '../../utils/utils'
+import {
+  apiStreamSupported,
+  getEtherScanHashLink,
+  getUserIcon,
+  getVerifierOptions,
+  isAddressByChainId,
+  significantDigits,
+  toChecksumAddressByChainId,
+  validateVerifierId,
+} from '../../utils/utils'
 
 export default {
   name: 'WalletTransfer',
@@ -550,17 +559,17 @@ export default {
       currencyMultiplier: 'currencyMultiplier',
       contacts: 'filteredContacts',
     }),
-    ...mapState([
-      'selectedCurrency',
-      'weiBalanceLoaded',
-      'tokenDataLoaded',
-      'currencyData',
-      'tokenRates',
-      'selectedAddress',
-      'userInfo',
-      'networkType',
-      'wallet',
-    ]),
+    ...mapState({
+      selectedCurrency: 'selectedCurrency',
+      weiBalanceLoaded: 'weiBalanceLoaded',
+      tokenDataLoaded: 'tokenDataLoaded',
+      currencyData: 'currencyData',
+      tokenRates: 'tokenRates',
+      selectedAddress: (state) => toChecksumAddressByChainId(state.selectedAddress, state.networkId),
+      userInfo: 'userInfo',
+      networkType: 'networkType',
+      wallet: 'wallet',
+    }),
     verifierOptions() {
       return getVerifierOptions()
     },
@@ -588,8 +597,8 @@ export default {
       return this.collectibleSelected
     },
     selectedTokenAddress() {
-      if (this.tokenAddress === '0x' || !isAddress(this.tokenAddress)) return '0x'
-      return toChecksumAddress(this.tokenAddress)
+      if (this.tokenAddress === '0x' || !isAddressByChainId(this.tokenAddress, this.$store.state.networkId)) return '0x'
+      return toChecksumAddressByChainId(this.tokenAddress, this.$store.state.networkId)
     },
     getCurrencyTokenRate() {
       let tokenRateMultiplierNumber = 1
@@ -829,7 +838,7 @@ export default {
       let value = ''
       if (contact && typeof contact === 'string') value = contact
       else if (contact && contact.value) value = contact.value
-      return validateVerifierId(this.selectedVerifier, value)
+      return validateVerifierId(this.selectedVerifier, value, this.$store.state.networkId)
     },
     ensRule() {
       return this.selectedVerifier === ENS && this.ensError ? this.ensError : true
@@ -868,7 +877,7 @@ export default {
     },
     calculateGas(toAddress) {
       this.sendEthToContractError = false
-      if (isAddress(toAddress)) {
+      if (isAddressByChainId(toAddress, this.$store.state.networkId)) {
         // eslint-disable-next-line no-unused-vars
         return new Promise((resolve, reject) => {
           if (this.contractType === CONTRACT_TYPE_ETH) {
@@ -877,7 +886,7 @@ export default {
               .dp(0, BigNumber.ROUND_DOWN)
               .toString(16)}`
             torus.web3.eth
-              .estimateGas({ to: toAddress, value, from: this.selectedAddress })
+              .estimateGas({ to: toAddress.toLowerCase(), value, from: this.selectedAddress.toLowerCase() })
               .then((response) => {
                 let resolved = new BigNumber(response || '0')
                 if (!resolved.eq(new BigNumber('21000'))) {
@@ -897,7 +906,7 @@ export default {
               .dp(0, BigNumber.ROUND_DOWN)
               .toString(16)}`
             this.getTransferMethod(this.contractType, toAddress, value)
-              .estimateGas({ from: this.selectedAddress })
+              .estimateGas({ from: this.selectedAddress.toLowerCase() })
               .then((response) => {
                 log.info(response, 'gas')
                 resolve(new BigNumber(response || '0'))
@@ -908,7 +917,7 @@ export default {
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC721) {
             this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId)
-              .estimateGas({ from: this.selectedAddress })
+              .estimateGas({ from: this.selectedAddress.toLowerCase() })
               .then((response) => {
                 resolve(new BigNumber(response || '0'))
               })
@@ -920,7 +929,7 @@ export default {
             const val =
               Number.parseInt(this.assetSelected.tokenBalance, 10) === 1 ? new BigNumber(this.assetSelected.tokenBalance) : this.erc1155DisplayAmount
             this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val)
-              .estimateGas({ from: this.selectedAddress })
+              .estimateGas({ from: this.selectedAddress.toLowerCase() })
               .then((response) => {
                 resolve(new BigNumber(response || '0'))
               })
@@ -936,8 +945,8 @@ export default {
     getTransferMethod(contractType, toAddress, value) {
       // For support of older ERC721
       if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
-        const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress)
-        return contractInstance.methods.transfer(toAddress, value)
+        const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress.toLowerCase())
+        return contractInstance.methods.transfer(toAddress.toLowerCase(), value)
       }
 
       throw new Error('Invalid Contract Type')
@@ -996,8 +1005,8 @@ export default {
     async calculateEthAddress() {
       let toAddress
       log.info(this.toAddress, this.selectedVerifier)
-      if (isAddress(this.toAddress)) {
-        toAddress = toChecksumAddress(this.toAddress)
+      if (isAddressByChainId(this.toAddress, this.$store.state.networkId)) {
+        toAddress = toChecksumAddressByChainId(this.toAddress, this.$store.state.networkId)
       } else if (this.selectedVerifier === ENS) {
         try {
           const ethAddr = await this.getEnsAddress(this.toAddress)
@@ -1047,7 +1056,7 @@ export default {
     async onTransferClick() {
       if (this.$refs.form.validate()) {
         const toAddress = await this.calculateEthAddress()
-        if (!isAddress(toAddress)) {
+        if (!isAddressByChainId(toAddress, this.$store.state.networkId)) {
           // Show error body
           this.messageModalShow = true
           this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
@@ -1115,8 +1124,8 @@ export default {
         log.info(this.gas.toString())
         torus.web3.eth.sendTransaction(
           {
-            from: this.selectedAddress,
-            to: toAddress,
+            from: this.selectedAddress.toLowerCase(),
+            to: toAddress.toLowerCase(),
             value,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
@@ -1151,7 +1160,7 @@ export default {
           .toString(16)}`
         this.getTransferMethod(this.contractType, toAddress, value).send(
           {
-            from: this.selectedAddress,
+            from: this.selectedAddress.toLowerCase(),
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
             customNonceValue,
@@ -1181,7 +1190,7 @@ export default {
       } else if (this.contractType === CONTRACT_TYPE_ERC721) {
         this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId).send(
           {
-            from: this.selectedAddress,
+            from: this.selectedAddress.toLowerCase(),
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
             customNonceValue,
@@ -1212,7 +1221,7 @@ export default {
           Number.parseInt(this.assetSelected.tokenBalance, 10) === 1 ? new BigNumber(this.assetSelected.tokenBalance) : this.erc1155DisplayAmount
         this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val).send(
           {
-            from: this.selectedAddress,
+            from: this.selectedAddress.toLowerCase(),
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
             customNonceValue,
@@ -1314,7 +1323,7 @@ export default {
     onDecodeQr(result) {
       try {
         const qrUrl = new URL(result)
-        if (qrUrl.href.includes('ethereum:') && isAddress(qrUrl.pathname)) {
+        if ((qrUrl.href.includes('ethereum:') || qrUrl.href.includes('rsk:')) && isAddressByChainId(qrUrl.pathname, this.$store.state.networkId)) {
           this.toAddress = qrUrl.pathname
           this.selectedVerifier = ETH
           this.qrErrorMsg = ''
@@ -1328,7 +1337,7 @@ export default {
         }
       } catch {
         const parsedResult = result.replace('ethereum:', '')
-        if (isAddress(parsedResult)) {
+        if (isAddressByChainId(parsedResult, this.$store.state.networkId)) {
           this.selectedVerifier = ETH
           this.toAddress = parsedResult
           this.qrErrorMsg = ''

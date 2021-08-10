@@ -97,7 +97,7 @@ import {
   MAINNET,
   TOKEN_METHOD_APPROVE,
 } from '../../utils/enums'
-import { formatDate } from '../../utils/utils'
+import { addressSlicer, formatDate, toChecksumAddressByChainId } from '../../utils/utils'
 
 export default {
   name: 'WalletHistory',
@@ -163,6 +163,10 @@ export default {
         x.statusText = this.getStatusText(x.status)
         x.dateFormatted = formatDate(x.date)
         x.timeFormatted = this.formatTime(x.date)
+        x.to = toChecksumAddressByChainId(x.to, this.$store.state.networkId)
+        x.slicedToChecksummed = addressSlicer(x.to)
+        x.slicedFromChecksummed = addressSlicer(x.from)
+        x.from = toChecksumAddressByChainId(x.from, this.$store.state.networkId)
         if (x.etherscanLink === '' || accumulator.findIndex((y) => y.etherscanLink === x.etherscanLink) === -1) accumulator.push(x)
         return accumulator
       }, [])

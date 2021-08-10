@@ -4,12 +4,12 @@ import isEqual from 'lodash.isequal'
 import log from 'loglevel'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 import Web3 from 'web3'
-import { toChecksumAddress, toHex } from 'web3-utils'
+import { toHex } from 'web3-utils'
 
 import TokenHandler from '../handlers/Token/TokenHandler'
 import contracts from '../utils/contractMetadata'
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET } from '../utils/enums'
-import { isMain } from '../utils/utils'
+import { isMain, toChecksumAddressByChainId } from '../utils/utils'
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
 
@@ -128,7 +128,7 @@ class DetectTokensController {
             logo: networkConfig.logo,
             name: x.contract_name,
             symbol: x.contract_ticker_symbol,
-            tokenAddress: toChecksumAddress(x.contract_address),
+            tokenAddress: toChecksumAddressByChainId(x.contract_address, networkConfig.chainId),
             balance: `0x${new BigNumber(x.balance).toString(16)}`,
             isCovalent: true,
             network: this.network.getNetworkNameFromNetworkCode(),
@@ -200,7 +200,7 @@ class DetectTokensController {
             logo: 'eth.svg',
             name: tokenInstance.name,
             symbol: tokenInstance.symbol,
-            tokenAddress: toChecksumAddress(tokenInstance.address),
+            tokenAddress: toChecksumAddressByChainId(tokenInstance.address, this.$store.state.networkId),
             balance: `0x${balance}`,
             customTokenId: x.id,
             network: localNetwork,

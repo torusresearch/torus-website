@@ -239,7 +239,7 @@ export default {
       this.$store.dispatch('deleteContact', contactId)
     },
     toAddressRule(value) {
-      return validateVerifierId(this.selectedVerifier, value)
+      return validateVerifierId(this.selectedVerifier, value, this.$store.state.networkId)
     },
     validateContactForm() {
       if (this.$refs.addContactForm) this.$refs.addContactForm.validate()
