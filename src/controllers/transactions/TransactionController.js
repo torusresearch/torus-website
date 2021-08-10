@@ -346,38 +346,25 @@ class TransactionController extends EventEmitter {
     @return {txMeta}
   */
 
-  async retryTransaction(originalTxId, customGasSettings) {
+  async retryTransaction(originalTxId, customGasSettings = {}) {
     const originalTxMeta = this.txStateManager.getTransaction(originalTxId)
     const { txParams } = originalTxMeta
 
-    let txMeta
-    if (customGasSettings) {
-      const { previousGasParams, newGasParams } = this.generateNewGasParams(originalTxMeta, {
-        ...customGasSettings,
-        gasLimit: customGasSettings.gasLimit || GAS_LIMITS.SIMPLE,
-      })
+    const { previousGasParams, newGasParams } = this.generateNewGasParams(originalTxMeta, {
+      ...customGasSettings,
+      gasLimit: customGasSettings.gasLimit || GAS_LIMITS.SIMPLE,
+    })
 
-      txMeta = this.txStateManager.generateTxMeta({
-        txParams: {
-          ...txParams,
-          ...newGasParams,
-        },
-        previousGasParams,
-        loadingDefaults: false,
-        status: TRANSACTION_STATUSES.UNAPPROVED,
-        type: TRANSACTION_TYPES.RETRY,
-      })
-    } else {
-      txMeta = this.txStateManager.generateTxMeta({
-        txParams: {
-          ...txParams,
-        },
-        loadingDefaults: false,
-        status: TRANSACTION_STATUSES.UNAPPROVED,
-        type: TRANSACTION_TYPES.RETRY,
-      })
-    }
-
+    const txMeta = this.txStateManager.generateTxMeta({
+      txParams: {
+        ...txParams,
+        ...newGasParams,
+      },
+      previousGasParams,
+      loadingDefaults: false,
+      status: TRANSACTION_STATUSES.UNAPPROVED,
+      type: TRANSACTION_TYPES.RETRY,
+    })
     this.addTransaction(txMeta)
     this.emit('newUnapprovedTx', txMeta)
     return txMeta

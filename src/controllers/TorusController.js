@@ -745,10 +745,10 @@ export default class TorusController extends EventEmitter {
    * with higher gas.
    *
    * @param {string} txId - The ID of the transaction to speed up.
-   * @param {Function} cb - The callback function called with a full state update.
-   */
-  async retryTransaction(txId, gasPrice) {
-    await this.txController.retryTransaction(txId, gasPrice)
+   * @param {CustomGasSettings} [customGasSettings] - overrides to use for gas
+   *   params instead of allowing this method to generate them   */
+  async retryTransaction(txId, customGasSettings = {}) {
+    await this.txController.retryTransaction(txId, customGasSettings)
     const state = await this.getState()
     return state
   }
@@ -757,17 +757,18 @@ export default class TorusController extends EventEmitter {
    * Allows a user to attempt to cancel a previously submitted transaction by creating a new
    * transaction.
    * @param {number} originalTxId - the id of the txMeta that you want to attempt to cancel
-   * @param {string=} customGasPrice - the hex value to use for the cancel transaction
+   * @param {CustomGasSettings} [customGasSettings] - overrides to use for gas
+   *  params instead of allowing this method to generate them
    * @returns {object} MetaMask state
    */
-  async createCancelTransaction(originalTxId, customGasPrice) {
-    await this.txController.createCancelTransaction(originalTxId, customGasPrice)
+  async createCancelTransaction(originalTxId, customGasSettings) {
+    await this.txController.createCancelTransaction(originalTxId, customGasSettings)
     const state = await this.getState()
     return state
   }
 
-  async createSpeedUpTransaction(originalTxId, customGasPrice) {
-    await this.txController.createSpeedUpTransaction(originalTxId, customGasPrice)
+  async createSpeedUpTransaction(originalTxId, customGasSettings) {
+    await this.txController.createSpeedUpTransaction(originalTxId, customGasSettings)
     const state = await this.getState()
     return state
   }

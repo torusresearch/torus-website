@@ -796,29 +796,30 @@ describe('Transaction Controller', function () {
         .catch(done)
     })
 
-    // it('prepares a tx with the custom chainId set', function (done) {
-    //   txController.addTransaction({ id: '1', status: 'unapproved', metamaskNetworkId: 100, txParams: {  
-    //     to: VALID_ADDRESS,
-    //     from: VALID_ADDRESS_TWO
-    //   }}, noop)
-    //   txController.networkStore.putState(100)
-    //   txController
-    //     .signTransaction('1')
-    //     .then((rawTx) => {
-    //       const chain = Common.forCustomChain(
-    //         1,
-    //         {
-    //           chainId: 100,
-    //           url: 'https://xdai.poanetwork.dev',
-    //         },
-    //         'istanbul'
-    //       )
-    //       const ethTx = TransactionFactory.fromSerializedData(toBuffer(rawTx) , { common: chain });
-    //       assert.equal(ethTx.common.chainIdBN().toNumber(), 100);
-    //       done()
-    //     })
-    //     .catch(done)
-    // })
+    it('prepares a tx with the custom chainId set', function (done) {
+      txController.addTransaction({ id: '1', status: 'unapproved', metamaskNetworkId: 100, txParams: {  
+        to: VALID_ADDRESS,
+        from: VALID_ADDRESS_TWO
+      }}, noop)
+      txController.networkStore.putState(100)
+      txController
+        .signTransaction('1')
+        .then((rawTx) => {
+          const chain = Common.forCustomChain(
+            MAINNET,
+            {
+              networkId: 100,
+              chainId: 100,
+              url: 'https://xdai.poanetwork.dev',
+            },
+            'istanbul'
+          )
+          const ethTx = TransactionFactory.fromTxData(toBuffer(rawTx) , { common: chain });
+          assert.equal(ethTx.common.chainIdBN().toNumber(), 100);
+          done()
+        })
+        .catch(done)
+    })
   })
 
   describe('#updateAndApproveTransaction', function () {
@@ -1120,31 +1121,31 @@ describe('Transaction Controller', function () {
     });
   })
 
-  // describe('#retryTransaction', function () {
-  //   it('should create a new txMeta with the same txParams as the original one but with a higher gasPrice', function (done) {
-  //     const txParams = {
-  //       gasPrice: '0xee6b2800',
-  //       nonce: '0x00',
-  //       from: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-  //       to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-  //       data: '0x0',
-  //     }
-  //     txController.txStateManager._addTransactionsToState([{ id: 1, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] }])
-  //     txController
-  //       .retryTransaction(1)
-  //       .then((txMeta) => {
-  //         assert.strictEqual(txMeta.txParams.gasPrice, '0x10642ac00', 'gasPrice should have a %10 gasPrice bump')
-  //         assert.strictEqual(txMeta.txParams.nonce, txParams.nonce, 'nonce should be the same')
-  //         assert.strictEqual(txMeta.txParams.from, txParams.from, 'from should be the same')
-  //         assert.strictEqual(txMeta.txParams.to, txParams.to, 'to should be the same')
-  //         assert.strictEqual(txMeta.txParams.data, txParams.data, 'data should be the same')
-  //         assert.ok('lastGasPrice' in txMeta, 'should have the key `lastGasPrice`')
-  //         assert.strictEqual(txController.txStateManager.getTxList().length, 2)
-  //         done()
-  //       })
-  //       .catch(done)
-  //   })
-  // })
+  describe('#retryTransaction', function () {
+    it('should create a new txMeta with the same txParams as the original one but with a higher gasPrice', function (done) {
+      const txParams = {
+        gasPrice: '0xee6b2800',
+        nonce: '0x00',
+        from: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        data: '0x0',
+      }
+      txController.txStateManager._addTransactionsToState([{ id: 1, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] }])
+      txController
+        .retryTransaction(1)
+        .then((txMeta) => {
+          assert.strictEqual(txMeta.txParams.gasPrice, '0x10642ac00', 'gasPrice should have a %10 gasPrice bump')
+          assert.strictEqual(txMeta.txParams.nonce, txParams.nonce, 'nonce should be the same')
+          assert.strictEqual(txMeta.txParams.from, txParams.from, 'from should be the same')
+          assert.strictEqual(txMeta.txParams.to, txParams.to, 'to should be the same')
+          assert.strictEqual(txMeta.txParams.data, txParams.data, 'data should be the same')
+          assert.ok('previousGasParams' in txMeta, 'should have the key `lastGasPrice`')
+          assert.strictEqual(txController.txStateManager.getTransactions().length, 2)
+          done()
+        })
+        .catch(done)
+    })
+  })
 
   describe('#_markNonceDuplicatesDropped', function () {
     it('should mark all nonce duplicates as dropped without marking the confirmed transaction as dropped', function () {
