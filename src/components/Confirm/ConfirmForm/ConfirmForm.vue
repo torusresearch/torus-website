@@ -366,7 +366,7 @@ import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
 import { mapActions, mapGetters } from 'vuex'
-import { fromWei, toChecksumAddress } from 'web3-utils'
+import { fromWei } from 'web3-utils'
 
 import {
   CONTRACT_TYPE_ERC20,
@@ -375,11 +375,12 @@ import {
   CONTRACT_TYPE_ETH,
   GAS_ESTIMATE_TYPES,
   MESSAGE_TYPE,
+  RSK_MAINNET_CHAIN_ID,
   TRANSACTION_ENVELOPE_TYPES,
   TRANSACTION_TYPES,
 } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
-import { addressSlicer, bnGreaterThan, gasTiming, isMain, significantDigits } from '../../../utils/utils'
+import { addressSlicer, bnGreaterThan, gasTiming, isMain, significantDigits, toChecksumAddressByChainId } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import TransactionFee from '../../helpers/TransactionFee'
@@ -665,7 +666,7 @@ export default {
           } else [amountTo, amountValue] = methodParams || []
         }
         log.info(methodParams, 'params')
-        const checkSummedTo = toChecksumAddress(to)
+        const checkSummedTo = toChecksumAddressByChainId(to, network.chainId)
         const tokenObject = contractParams
         const decimals = new BigNumber(tokenObject.decimals || '0')
         this.userInfo = userInfo
@@ -683,10 +684,14 @@ export default {
           let tokenRateMultiplier = tokenRates[checkSummedTo.toLowerCase()]
           if (!tokenRateMultiplier) {
             const pairs = checkSummedTo
-            const query = `contract_addresses=${pairs}&vs_currencies=eth`
+            const query =
+              network.chainId === RSK_MAINNET_CHAIN_ID
+                ? `contract_addresses=${pairs}&vs_currencies=btc`
+                : `contract_addresses=${pairs}&vs_currencies=eth`
             let prices = {}
             try {
-              prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
+              const coin = network.chainId === RSK_MAINNET_CHAIN_ID ? 'rootstock' : 'ethereum'
+              prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/${coin}?${query}`)
               const lowerCheckSum = checkSummedTo.toLowerCase()
               tokenRateMultiplier = prices[lowerCheckSum] && prices[lowerCheckSum].eth ? prices[lowerCheckSum].eth : 0 // token price in eth
             } catch (error) {
