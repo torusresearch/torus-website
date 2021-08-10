@@ -61,13 +61,13 @@ describe('txUtils', function () {
         data: 'bytecode',
       }
       const sanitizedTxParams = txUtils.validateRecipient(zeroRecipientandDataTxParams)
-      assert.deepStrictEqual(sanitizedTxParams, { from: '0x1678a085c290ebd122dc42cba69373b5953b831d', data: 'bytecode' }, 'no recipient with 0x')
+      assert.deepStrictEqual(sanitizedTxParams, { to: VALID_ADDRESS, from: '0x1678a085c290ebd122dc42cba69373b5953b831d', data: 'bytecode' }, 'no recipient with 0x')
     })
 
     it('should error when recipient is 0x', function () {
       const zeroRecipientTxParams = {
         from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
-        to: VALID_ADDRESS,
+        to: '0x',
       }
       assert.throws(
         () => {
