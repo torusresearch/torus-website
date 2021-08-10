@@ -11,7 +11,7 @@
           :gas-fees="gasFees"
           :selected-currency="selectedCurrency"
           :currency-multiplier="currencyMultiplier"
-          @onSave="onSave"
+          @save="onSave"
         />
       </v-flex>
     </v-layout>
@@ -19,7 +19,7 @@
       <v-flex xs12 mb-1>
         <v-text-field
           outlined
-          :value="t('walletTransfer.fee-upto').replace(/{amount}/gi, maxTransactionFee)"
+          :value="t('walletTransfer.fee-upto').replace(/{amount}/gi, maxTransactionFeeEth)"
           disabled
           :hint="`*${t('walletTransfer.fee-max-transaction-hint')}`"
           persistent-hint
@@ -29,7 +29,7 @@
             <div class="d-flex caption">
               <div class="text-left mr-2">{{ message }}</div>
               <div class="ml-auto" :style="{ minWidth: '100px' }">
-                <div>~{{ maxTransactionFee }} {{ selectedCurrency }}</div>
+                <div>~{{ maxTransactionFeeConverted }}</div>
                 <div class="font-italic">{{ t('walletTransfer.fee-in').replace(/{time}/gi, `~${feeTime}`) }}</div>
               </div>
             </div>
@@ -42,7 +42,6 @@
 
 <script>
 import BigNumber from 'bignumber.js'
-import log from 'loglevel'
 
 import { significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
@@ -71,12 +70,12 @@ export default {
   },
   data() {
     return {
-      maxTransactionFee: '',
+      maxTransactionFeeEth: '',
     }
   },
   computed: {
     maxTransactionFeeConverted() {
-      const costConverted = this.currencyMultiplier.times(this.maxTransactionFee)
+      const costConverted = this.currencyMultiplier.times(this.maxTransactionFeeEth)
       return `${significantDigits(costConverted)} ${this.selectedCurrency}`
     },
     feeTime() {
@@ -85,20 +84,18 @@ export default {
     },
   },
   mounted() {
-    this.setMaxTransactionFee({
-      gas: this.gas,
-      maxPriorityFee: new BigNumber(this.gasFees.gasFeeEstimates[this.selectedSpeed].suggestedMaxPriorityFeePerGas),
-    })
+    const maxPriorityFee = new BigNumber(this.gasFees.gasFeeEstimates[this.selectedSpeed].suggestedMaxPriorityFeePerGas)
+    this.setMaxTransactionFee(this.gas, maxPriorityFee)
   },
   methods: {
     onSave(details) {
-      log.info('onSave', details)
-      this.setMaxTransactionFee(details)
+      this.setMaxTransactionFee(details.gas, details.maxTransactionFee)
+      this.$emit('save', details)
     },
-    setMaxTransactionFee({ gas, maxPriorityFee }) {
+    setMaxTransactionFee(gas, maxPriorityFee) {
       const gasPrice = new BigNumber(maxPriorityFee)
       const cost = gas.times(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
-      this.maxTransactionFee = significantDigits(cost)
+      this.maxTransactionFeeEth = significantDigits(cost)
     },
   },
 }

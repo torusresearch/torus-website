@@ -308,6 +308,7 @@
                 :nonce="nonce"
                 :selected-currency="selectedCurrency"
                 :currency-multiplier="currencyMultiplier"
+                @save="onTransferFeeSelect"
               />
               <TransactionSpeedSelect
                 v-else
@@ -471,6 +472,7 @@ import {
   CONTRACT_TYPE_ETH,
   ENS,
   ETH,
+  GAS_ESTIMATE_TYPES,
   GITHUB,
   GOOGLE,
   MESSAGE_MODAL_TYPE_FAIL,
@@ -678,7 +680,7 @@ export default {
     },
     isEip1559() {
       log.info('this.networkDetails', this.networkDetails)
-      return this.networkDetails.EIPS && this.networkDetails.EIPS['1559']
+      return this.networkDetails.EIPS && this.networkDetails.EIPS['1559'] && this.gasFees.gasEstimateType === GAS_ESTIMATE_TYPES.FEE_MARKET
     },
   },
   watch: {
@@ -1330,6 +1332,10 @@ export default {
       this.updateTotalCost()
 
       this.resetSpeed = false
+    },
+    onTransferFeeSelect(data) {
+      log.info('onTransferFeeSelect: ', data)
+      this.selectedSpeed = data.selectedSpeed
     },
     onDecodeQr(result) {
       try {

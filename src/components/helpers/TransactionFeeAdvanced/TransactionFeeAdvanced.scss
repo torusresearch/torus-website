@@ -34,6 +34,13 @@
     }
   }
 
+  .max-priority-fee:not(.error--text),
+  .max-transaction-fee:not(.error--text) {
+    ::v-deep .v-messages__message {
+      color: var(--v-warning-base);
+    }
+  }
+
   &.theme--dark {
     .card-header {
       border: 0;
