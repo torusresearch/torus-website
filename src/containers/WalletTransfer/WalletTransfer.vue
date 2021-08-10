@@ -303,7 +303,7 @@
               <TransactionFee
                 v-if="isEip1559"
                 :gas-fees="gasFees"
-                :selected-speed="selectedSpeed"
+                :selected-speed="selectedLondonSpeed"
                 :gas="gas"
                 :nonce="nonce"
                 :selected-currency="selectedCurrency"
@@ -341,7 +341,7 @@
                   large
                   depressed
                   color="torusBrand1"
-                  :disabled="!formValid || speedSelected === '' || selectedVerifier === ''"
+                  :disabled="onTransferClickDisabled"
                   class="px-8 white--text gmt-wallet-transfer"
                   @click="onTransferClick"
                 >
@@ -388,6 +388,7 @@
                     :item-balance="selectedItemBalance"
                     :contract-type="contractType"
                     :eth-balance="ethBalance"
+                    :is-eip1559="isEip1559"
                     @onClose="confirmDialog = false"
                     @onConfirm="sendCoin"
                   ></TransferConfirm>
@@ -556,7 +557,7 @@ export default {
       nonce: -1,
       camera: 'off',
       showQrScanner: false,
-      selectedSpeed: TRANSACTION_SPEED.MEDIUM,
+      selectedLondonSpeed: TRANSACTION_SPEED.MEDIUM,
     }
   },
   computed: {
@@ -681,6 +682,10 @@ export default {
     isEip1559() {
       log.info('this.networkDetails', this.networkDetails)
       return this.networkDetails.EIPS && this.networkDetails.EIPS['1559'] && this.gasFees.gasEstimateType === GAS_ESTIMATE_TYPES.FEE_MARKET
+    },
+    onTransferClickDisabled() {
+      if (this.isEip1559) return !this.formValid || this.selectedVerifier === ''
+      return !this.formValid || this.speedSelected === '' || this.selectedVerifier === ''
     },
   },
   watch: {
@@ -1335,7 +1340,13 @@ export default {
     },
     onTransferFeeSelect(data) {
       log.info('onTransferFeeSelect: ', data)
-      this.selectedSpeed = data.selectedSpeed
+      this.nonce = data.nonce || -1
+      this.activeGasPrice = data.activeGasPrice
+      this.selectedLondonSpeed = data.selectedLondonSpeed
+      this.activeGasPrice = data.maxTransactionFee
+      this.gas = data.gas
+      this.hasCustomGasLimit = true
+      this.updateTotalCost()
     },
     onDecodeQr(result) {
       try {

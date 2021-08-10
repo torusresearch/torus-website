@@ -86,7 +86,7 @@
       <v-flex xs12 mt-10>
         <div class="d-flex align-start">
           <div :style="{ lineHeight: '0px' }">
-            <span class="caption">{{ t('walletTransfer.transferFee') }}</span>
+            <span class="caption">{{ isEip1559 ? t('walletTransfer.fee-max-transaction') : t('walletTransfer.transferFee') }}</span>
           </div>
           <div class="ml-auto">
             <div class="caption text-right font-weight-medium">{{ transactionFee }} {{ selectedCurrency }}</div>
@@ -249,6 +249,10 @@ export default {
     contractType: {
       type: String,
       default: CONTRACT_TYPE_ETH,
+    },
+    isEip1559: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

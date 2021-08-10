@@ -326,11 +326,13 @@ export default {
       this.newSelectedSpeed = ''
     },
     save() {
-      const { newSelectedSpeed: selectedSpeed, newGas: gas, newNonce: nonce, maxPriorityFee, maxTransactionFee } = this
+      const { newSelectedSpeed: selectedSpeed, newGas: gas, newNonce, maxPriorityFee, maxTransactionFee } = this
+
+      const nonce = Number(newNonce.value || newNonce)
       this.$emit('save', {
         selectedSpeed,
         gas,
-        nonce,
+        nonce: Number.isNaN(nonce) ? 0 : nonce,
         maxPriorityFee,
         maxTransactionFee,
       })
