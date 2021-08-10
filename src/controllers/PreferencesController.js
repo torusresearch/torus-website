@@ -23,7 +23,7 @@ import {
 } from '../utils/enums'
 import { notifyUser } from '../utils/notifications'
 import { setSentryEnabled } from '../utils/sentry'
-import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, isMain, storageAvailable } from '../utils/utils'
+import { formatDate, formatPastTx, formatTime, getEthTxStatus, getIFrameOrigin, getUserLanguage, isMain, storageAvailable } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 // By default, poll every 3 minutes
@@ -341,7 +341,40 @@ class PreferencesController extends EventEmitter {
       if (lowerCaseSelectedAddress === element.from.toLowerCase() && finalObject.status && finalObject.status !== element.status)
         this.patchPastTx({ id: element.id, status: finalObject.status }, address)
     }
-    this.updateStore({ pastTransactions: pastTx }, address)
+
+    const finalTx = this.cancelTxCalculate(pastTx)
+
+    this.updateStore({ pastTransactions: finalTx }, address)
+  }
+
+  cancelTxCalculate(pastTx) {
+    const nonceMap = {}
+    for (const x of pastTx) {
+      if (!nonceMap[x.nonce]) nonceMap[x.nonce] = [x]
+      else {
+        nonceMap[x.nonce].push(x)
+      }
+    }
+
+    for (const [, value] of Object.entries(nonceMap)) {
+      // has duplicate
+      if (value.length > 1) {
+        // get latest and mark it as is_cancel
+        const latestTxs = value.sort((a, b) => b.date - a.date)
+        const latestCancelTx = latestTxs[0]
+        latestCancelTx.is_cancel = true
+        latestTxs.slice(1).forEach((x) => {
+          x.hasCancel = true
+          x.status = latestCancelTx.status === 'confirmed' ? 'cancelled' : 'cancelling'
+          x.cancelDateInitiated = `${formatTime(latestCancelTx.date)} - ${formatDate(latestCancelTx.date)}`
+          x.etherscanLink = latestCancelTx.etherscanLink
+          x.cancelGas = latestCancelTx.gas
+          x.cancelGasPrice = latestCancelTx.gasPrice
+        })
+      }
+    }
+
+    return pastTx
   }
 
   async fetchEtherscanTx(address, network) {
@@ -362,10 +395,13 @@ class PreferencesController extends EventEmitter {
     if (tx.status === 'submitted' || tx.status === 'confirmed') {
       if (duplicateIndex === -1 && tx.status === 'submitted') {
         // No duplicate found
-        this.updateStore({ pastTransactions: [...storePastTx, formattedTx] }, address)
-        // This is to avoid errors on server for non ETH checksum
+
+        const finalTx = this.cancelTxCalculate([...storePastTx, formattedTx])
+        tx.is_cancel = formattedTx.is_cancel
         tx.to = tx.to.toLowerCase()
         tx.from = tx.from.toLowerCase()
+
+        this.updateStore({ pastTransactions: finalTx }, address)
         this.postPastTx(tx, address)
         try {
           notifyUser(formattedTx.etherscanLink)
@@ -373,8 +409,10 @@ class PreferencesController extends EventEmitter {
           log.error(error)
         }
       } else {
+        // avoid overriding is_cancel
+        formattedTx.is_cancel = storePastTx[duplicateIndex].is_cancel
         storePastTx[duplicateIndex] = formattedTx
-        this.updateStore({ pastTransactions: [...storePastTx] }, address)
+        this.updateStore({ pastTransactions: this.cancelTxCalculate([...storePastTx]) }, address)
       }
     }
   }

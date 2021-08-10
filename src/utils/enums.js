@@ -145,6 +145,7 @@ export const CONTRACT_TYPE_ETH = 'eth'
 export const CONTRACT_TYPE_ERC20 = 'erc20'
 export const CONTRACT_TYPE_ERC721 = 'erc721'
 export const CONTRACT_TYPE_ERC1155 = 'erc1155'
+export const SUPPORTED_NFT_STANDARDS = new Set([CONTRACT_TYPE_ERC1155, CONTRACT_TYPE_ERC721])
 
 export const getInfuraBlockExplorerUrl = (network) => {
   if (network === MAINNET) return 'https://etherscan.io'
@@ -235,6 +236,8 @@ export const ACTIVITY_PERIOD_MONTH_SIX = 'walletActivity.lastSixMonts'
 export const ACTIVITY_STATUS_SUCCESSFUL = 'walletActivity.successful'
 export const ACTIVITY_STATUS_UNSUCCESSFUL = 'walletActivity.unsuccessful'
 export const ACTIVITY_STATUS_PENDING = 'walletActivity.pending'
+export const ACTIVITY_STATUS_CANCELLED = 'walletActivity.cancelled'
+export const ACTIVITY_STATUS_CANCELLING = 'walletActivity.cancelling'
 
 export const GOOGLE = 'google'
 export const FACEBOOK = 'facebook'

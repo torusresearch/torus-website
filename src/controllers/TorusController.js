@@ -38,6 +38,8 @@ import createOriginMiddleware from './utils/createOriginMiddleware'
 import nodeify from './utils/nodeify'
 import WalletConnectController from './WalletConnectController'
 
+EventEmitter.defaultMaxListeners = 100
+
 export default class TorusController extends EventEmitter {
   /**
    * @constructor

@@ -192,6 +192,7 @@ export default {
           network: state.networkType.host,
           transaction_hash: hash,
           transaction_category: transactionCategory,
+          is_cancel: txParams.is_cancel,
         }
         // prefsController.patchNewTx(txObject, toChecksumAddressByChainId(state.selectedAddress, state.networkId))
         prefsController.patchNewTx(txObject, state.selectedAddress)

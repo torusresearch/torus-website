@@ -1,6 +1,7 @@
 <template>
   <v-btn
     class="gmt-login text_2--text"
+    :aria-label="`login with ${verifier.name.toLowerCase()}`"
     :class="[{ active, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.name.toLowerCase()}`, { 'is-long': isLong }]"
     :type="buttonType"
     :block="block"
@@ -22,7 +23,7 @@
       :alt="`${verifier.name} Icon`"
     />
     <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark && buttonType !== 'submit'" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
-    <v-icon v-else-if="buttonType !== 'submit'" size="26" class="text_3--text">
+    <v-icon v-else-if="buttonType !== 'submit'" class="text_3--text">
       {{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}
     </v-icon>
     <span v-if="isLong">{{ formatDescription }}</span>
