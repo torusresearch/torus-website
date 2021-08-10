@@ -300,7 +300,17 @@
                   </template>
                 </v-text-field>
               </v-flex>
+              <TransactionFee
+                v-if="isEip1559"
+                :gas-fees="gasFees"
+                :selected-speed="selectedSpeed"
+                :gas="gas"
+                :nonce="nonce"
+                :selected-currency="selectedCurrency"
+                :currency-multiplier="currencyMultiplier"
+              />
               <TransactionSpeedSelect
+                v-else
                 :reset-speed="resetSpeed"
                 :symbol="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 ? selectedItem.symbol : networkType.ticker"
                 :contract-type="contractType"
@@ -448,6 +458,7 @@ import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import ComponentLoader from '../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../components/helpers/QuickAddress'
+import TransactionFee from '../../components/helpers/TransactionFee'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import AddContact from '../../components/WalletTransfer/AddContact'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
@@ -465,6 +476,7 @@ import {
   MESSAGE_MODAL_TYPE_FAIL,
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
+  TRANSACTION_SPEED,
   TWITTER,
   UNSTOPPABLE_DOMAINS,
 } from '../../utils/enums'
@@ -474,6 +486,7 @@ import { apiStreamSupported, getEtherScanHashLink, getUserIcon, getVerifierOptio
 export default {
   name: 'WalletTransfer',
   components: {
+    TransactionFee,
     TransactionSpeedSelect,
     MessageModal,
     QrcodeStream,
@@ -541,6 +554,7 @@ export default {
       nonce: -1,
       camera: 'off',
       showQrScanner: false,
+      selectedSpeed: TRANSACTION_SPEED.MEDIUM,
     }
   },
   computed: {
@@ -558,8 +572,10 @@ export default {
       'tokenRates',
       'selectedAddress',
       'userInfo',
+      'networkDetails',
       'networkType',
       'wallet',
+      'gasFees',
     ]),
     verifierOptions() {
       return getVerifierOptions()
@@ -659,6 +675,10 @@ export default {
     },
     apiStreamSupported() {
       return apiStreamSupported()
+    },
+    isEip1559() {
+      log.info('this.networkDetails', this.networkDetails)
+      return this.networkDetails.EIPS && this.networkDetails.EIPS['1559']
     },
   },
   watch: {

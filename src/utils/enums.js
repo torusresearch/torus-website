@@ -568,3 +568,9 @@ export const GAS_LIMITS = {
   // a base estimate for token transfers.
   BASE_TOKEN_ESTIMATE: addHexPrefix(ONE_HUNDRED_THOUSAND.toString(16)),
 }
+
+export const TRANSACTION_SPEED = {
+  LOW: 'low',
+  MEDIUM: 'medium',
+  HIGH: 'high',
+}

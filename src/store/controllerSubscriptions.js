@@ -1,3 +1,5 @@
+import log from 'loglevel'
+
 import torus from '../torus'
 import { capitalizeFirstLetter } from '../utils/utils'
 
@@ -27,7 +29,16 @@ to "loading" at times in the inpage API
  */
 
 if (torus) {
+  torus.torusController.gasFeeController.store.subscribe((state) => {
+    log.info('gasFee', state)
+    getStore().dispatch('updateGasFees', { gasFees: state })
+  })
+  torus.torusController.networkController.store.subscribe((state) => {
+    log.info('store', state)
+    getStore().dispatch('updateNetworkDetails', { networkDetails: state.networkDetails })
+  })
   torus.torusController.networkController.networkStore.subscribe((state) => {
+    log.info('state', state)
     // TODO: get eip 1559 support + chainId from here to put into state.js
     getStore().dispatch('updateNetworkId', { networkId: state })
   })

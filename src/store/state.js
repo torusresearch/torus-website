@@ -32,6 +32,8 @@ const initialState = {
   weiBalance: {}, // Account specific object
   networkId: 0,
   networkType: { host: MAINNET, chainId: MAINNET_CODE, networkName: MAINNET_DISPLAY_NAME },
+  networkDetails: {},
+  gasFees: {},
   currencyData: {},
   tokenData: {}, // Account specific object
   assets: {}, // Account specific object

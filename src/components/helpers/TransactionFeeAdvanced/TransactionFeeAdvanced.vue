@@ -1,0 +1,272 @@
+<template>
+  <v-dialog v-model="dialog" persistent width="375">
+    <template #activator="{ on }">
+      <a id="advance-option-link" class="float-right torusBrand1--text" v-on="on">{{ t('walletTransfer.fee-edit') }}</a>
+    </template>
+    <v-card class="advance-option">
+      <v-card-text class="pa-0">
+        <div class="card-header text-center py-10 px-5">
+          <div class="display-1 text_1--text font-weight-bold">{{ t('walletTransfer.fee-max-transaction') }}</div>
+          <v-btn class="close-btn" icon aria-label="Close Edit Transfer" title="Close Edit Transfer" @click="dialog = false">
+            <v-icon>$vuetify.icons.close</v-icon>
+          </v-btn>
+        </div>
+        <div class="px-6 py-4">
+          <div class="text-center">
+            <div class="title text_1--text mb-1">{{ t('walletTransfer.fee-edit-subtitle1') }}</div>
+            <div class="body-2 text_2--text">{{ t('walletTransfer.fee-edit-subtitle2') }}</div>
+          </div>
+          <v-divider class="my-4" />
+          <div>
+            <v-list class="speed-list">
+              <v-list-item
+                v-for="speed in speedList"
+                :key="speed.value"
+                :class="{ 'is-selected': speed.isSelected }"
+                @click="selectSpeed(speed.value)"
+              >
+                <v-list-item-icon class="align-self-center mr-3">
+                  <v-icon :class="speed.isSelected ? 'torusBrand1--text' : $vuetify.theme.isDark ? 'torusLight--text' : 'torusBlack--text'">
+                    $vuetify.icons.{{ speed.isSelected ? 'radioOn' : 'radioOff' }}
+                  </v-icon>
+                </v-list-item-icon>
+                <v-list-item-content class="py-2">
+                  <div class="d-flex align-center">
+                    <div class="body-2 font-weight-bold text_1--text speed-list_label">{{ speed.label }}</div>
+                    <div class="ml-4">
+                      <div class="body-2 font-weight-bold text_1--text">{{ t('walletTransfer.fee-upto').replace(/{amount}/gi, speed.amount) }}</div>
+                      <div class="body-2 text_2--text">{{ t('walletTransfer.fee-edit-in').replace(/{time}/gi, speed.time) }}</div>
+                    </div>
+                  </div>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </div>
+          <v-divider class="mt-4 mb-2" />
+          <div class="text-center mb-6">
+            <div class="body-2 text_2--text mb-3">{{ t('walletTransfer.fee-edit-or') }}</div>
+            <div>
+              <a class="body-2 torusBrand1--text text-decoration-none" @click="showAdvance = !showAdvance">
+                {{ showAdvance ? t('walletTransfer.fee-edit-adv-hide') : t('walletTransfer.fee-edit-adv-show') }}
+              </a>
+            </div>
+          </div>
+          <div v-if="showAdvance">
+            <div>
+              <div class="text-subtitle-2 mb-2">
+                {{ t('walletTransfer.fee-edit-gas-limit') }}
+                <HelpTooltip :title="t('walletTransfer.fee-edit-gas-limit')" :description="t('walletTransfer.fee-edit-gas-limit-desc')" />
+              </div>
+              <v-text-field :value="newGas" outlined type="number" @change="setGasLimit"></v-text-field>
+            </div>
+            <div>
+              <div class="text-subtitle-2 mb-2">
+                Nonce
+                <HelpTooltip title="Nonce" :description="t('walletTransfer.fee-edit-nonce-desc')" />
+              </div>
+              <v-combobox id="nonce" v-model="newNonce" outlined :items="nonceItems" :rules="[rules.validNonce]">
+                <template #item="props">
+                  {{ t(props.item.text) }}
+                </template>
+                <template #selection="{ item }">
+                  {{ item.text ? t(item.text) : item }}
+                </template>
+              </v-combobox>
+            </div>
+            <div>
+              <div class="text-subtitle-2 mb-2">
+                {{ t('walletTransfer.fee-edit-max') }}
+                <HelpTooltip :title="t('walletTransfer.fee-edit-max')" :description="t('walletTransfer.fee-edit-max-desc')" />
+              </div>
+              <v-text-field :value="maxPriorityFee" outlined type="number" @change="setMaxPriorityFee"></v-text-field>
+            </div>
+            <div>
+              <div class="text-subtitle-2 mb-2">
+                {{ t('walletTransfer.fee-edit-base-fee') }}
+                <HelpTooltip :title="t('walletTransfer.fee-edit-base-fee')" :description="t('walletTransfer.fee-edit-base-fee-desc')" />
+              </div>
+              <v-text-field :value="baseFee" outlined type="number" @change="setBaseFee"></v-text-field>
+            </div>
+            <div>
+              <div class="text-subtitle-2 mb-2">
+                {{ t('walletTransfer.fee-max-transaction') }}
+                <HelpTooltip :title="t('walletTransfer.fee-max-transaction')" :description="t('walletTransfer.fee-max-transaction-desc')" />
+              </div>
+              <v-text-field :value="maxTransactionFee" outlined type="number" disabled></v-text-field>
+            </div>
+          </div>
+        </div>
+      </v-card-text>
+      <v-card-actions class="pb-7 px-5">
+        <v-layout>
+          <v-flex xs-6>
+            <v-btn large block text color="text_2" @click="dialog = false">{{ t('walletTransfer.cancel') }}</v-btn>
+          </v-flex>
+          <v-flex xs-6>
+            <v-btn large color="torusBrand1" depressed block class="py-1 white--text" @click="save">{{ t('walletTransfer.save') }}</v-btn>
+          </v-flex>
+        </v-layout>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
+
+<script>
+import BigNumber from 'bignumber.js'
+import log from 'loglevel'
+
+import { TRANSACTION_SPEED } from '../../../utils/enums'
+import { significantDigits } from '../../../utils/utils'
+import HelpTooltip from '../HelpTooltip'
+
+export default {
+  components: {
+    HelpTooltip,
+  },
+  props: {
+    nonce: {
+      type: Number,
+      default: 0,
+    },
+    selectedSpeed: {
+      type: String,
+      default: '',
+    },
+    gas: { type: BigNumber, default: new BigNumber('0') },
+    gasFees: {
+      type: Object,
+      default() {
+        return {}
+      },
+    },
+    selectedCurrency: { type: String, default: 'USD' },
+    currencyMultiplier: {
+      type: BigNumber,
+      default: new BigNumber('0'),
+    },
+  },
+  data() {
+    return {
+      dialog: false,
+      showAdvance: false,
+      maxPriorityFee: '',
+      baseFee: new BigNumber('0'),
+      newSelectedSpeed: '',
+      newGas: new BigNumber('0'),
+      newNonce: 0,
+      nonceItems: [
+        {
+          text: 'walletTransfer.default',
+          value: 'default',
+        },
+      ],
+      rules: {
+        validNonce: (value) => {
+          if (value === null) return this.t('walletTransfer.invalidInput')
+          const newValue = Number(value.value || value)
+          if (Number.isNaN(newValue)) {
+            return value.value === 'default' || this.t('walletTransfer.invalidInput')
+          }
+          return newValue >= 0 || this.t('walletTransfer.invalidInput')
+        },
+      },
+    }
+  },
+  computed: {
+    speedList() {
+      return [
+        {
+          value: TRANSACTION_SPEED.HIGH,
+          label: this.t('walletTransfer.fee-edit-speed-high'),
+          amount: this.getFeeAmount(TRANSACTION_SPEED.HIGH),
+          time: this.getFeeTime(TRANSACTION_SPEED.HIGH),
+          isSelected: this.newSelectedSpeed === TRANSACTION_SPEED.HIGH,
+        },
+        {
+          value: TRANSACTION_SPEED.MEDIUM,
+          label: this.t('walletTransfer.fee-edit-speed-average'),
+          amount: this.getFeeAmount(TRANSACTION_SPEED.MEDIUM),
+          time: this.getFeeTime(TRANSACTION_SPEED.MEDIUM),
+          isSelected: this.newSelectedSpeed === TRANSACTION_SPEED.MEDIUM,
+        },
+        {
+          value: TRANSACTION_SPEED.LOW,
+          label: this.t('walletTransfer.fee-edit-speed-low'),
+          amount: this.getFeeAmount(TRANSACTION_SPEED.LOW),
+          time: this.getFeeTime(TRANSACTION_SPEED.LOW),
+          isSelected: this.newSelectedSpeed === TRANSACTION_SPEED.LOW,
+        },
+      ]
+    },
+    maxTransactionFee() {
+      return this.baseFee.plus(this.maxPriorityFee)
+    },
+  },
+  watch: {
+    dialog(value) {
+      if (value) {
+        this.updateDetails(this.selectedSpeed)
+      }
+    },
+  },
+  mounted() {
+    this.updateDetails(this.selectedSpeed)
+  },
+  methods: {
+    updateDetails(speed) {
+      log.info('this.gasFees', this.gasFees)
+      this.newSelectedSpeed = speed
+      this.newGas = this.gas
+      this.newNonce = this.nonce >= 0 ? this.nonce : this.nonceItems[0]
+
+      if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[speed])) return
+      this.baseFee = new BigNumber(this.gasFees.gasFeeEstimates.estimatedBaseFee)
+      this.maxPriorityFee = new BigNumber(this.gasFees.gasFeeEstimates[speed].suggestedMaxPriorityFeePerGas)
+    },
+    getFeeAmount(speed) {
+      if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[speed])) return ''
+
+      const gasPrice = new BigNumber(this.gasFees.gasFeeEstimates[speed].suggestedMaxFeePerGas)
+      const cost = this.gas.times(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
+      const costConverted = this.currencyMultiplier.times(cost)
+      return `${significantDigits(costConverted)} ${this.selectedCurrency}`
+    },
+    getFeeTime(speed) {
+      if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[speed])) return ''
+
+      const estTime = this.gasFees.gasFeeEstimates[speed].maxWaitTimeEstimate / 1000
+      return `${estTime} seconds`
+    },
+    selectSpeed(speed) {
+      this.updateDetails(speed)
+    },
+    setGasLimit(limit) {
+      log.info('setGasLimit', limit)
+      this.newGas = new BigNumber(limit)
+      this.newSelectedSpeed = ''
+    },
+    setMaxPriorityFee(fee) {
+      this.maxPriorityFee = new BigNumber(fee)
+      this.newSelectedSpeed = ''
+    },
+    setBaseFee(fee) {
+      this.baseFee = new BigNumber(fee)
+      this.newSelectedSpeed = ''
+    },
+    save() {
+      const { newSelectedSpeed: selectedSpeed, newGas: gas, newNonce: nonce, maxPriorityFee, baseFee } = this
+      this.$emit('onSave', {
+        selectedSpeed,
+        gas,
+        nonce,
+        maxPriorityFee,
+        baseFee,
+      })
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+@import 'TransactionFeeAdvanced.scss';
+</style>

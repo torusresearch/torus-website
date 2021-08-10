@@ -562,4 +562,10 @@ export default {
   decryptMessage(_, payload) {
     return torusController.decryptMessageInline(payload)
   },
+  updateNetworkDetails(context, payload) {
+    context.commit('setNetworkDetails', payload.networkDetails)
+  },
+  updateGasFees(context, payload) {
+    context.commit('setGasFees', payload.gasFees)
+  },
 }

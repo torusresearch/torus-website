@@ -189,9 +189,9 @@
 
     <template
       v-if="
-        type === TX_PERSONAL_MESSAGE ||
-        type === TX_MESSAGE ||
-        type === TX_TYPED_MESSAGE ||
+        type === MESSAGE_TYPE.PERSONAL_SIGN ||
+        type === MESSAGE_TYPE.ETH_SIGN ||
+        type === MESSAGE_TYPE.ETH_SIGN_TYPED_DATA ||
         type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY ||
         type === MESSAGE_TYPE.ETH_DECRYPT
       "
@@ -288,11 +288,11 @@
             <v-list-item class="pa-0">
               <v-list-item-content flat class="pa-1" :class="[$vuetify.theme.dark ? 'lighten-4' : 'background lighten-3']">
                 <v-card flat class="caption text-left pa-2 word-break typedMessageBox">
-                  <v-expansion-panels v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE">
+                  <v-expansion-panels v-if="type === MESSAGE_TYPE.PERSONAL_SIGN || type === TX_MESSAGE">
                     <p :class="$vuetify.theme.dark ? '' : 'text_2--text'" :style="{ 'text-align': 'left' }">{{ message }}</p>
                   </v-expansion-panels>
 
-                  <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && !Array.isArray(typedMessages)">
+                  <v-expansion-panels v-else-if="type === MESSAGE_TYPE.ETH_SIGN && !Array.isArray(typedMessages)">
                     <v-expansion-panel
                       v-for="(typedMessage, index) in typedMessages"
                       :key="index"
@@ -305,7 +305,7 @@
                     </v-expansion-panel>
                   </v-expansion-panels>
 
-                  <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && Array.isArray(typedMessages)">
+                  <v-expansion-panels v-else-if="type === MESSAGE_TYPE.ETH_SIGN && Array.isArray(typedMessages)">
                     <v-expansion-panel :class="$vuetify.theme.isDark ? 'dark--theme' : ''">
                       <v-expansion-panel-header>{{ t('dappTransfer.dataSmall') }}</v-expansion-panel-header>
                       <v-expansion-panel-content v-for="(typedMessage, index) in typedMessages" :key="index">
