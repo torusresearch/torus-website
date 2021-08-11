@@ -86,9 +86,11 @@ export default {
     gasFees(newValue, oldValue) {
       if (!isEqual(newValue, oldValue)) {
         const gasFeeEstimate = newValue.gasFeeEstimates
-        const maxPriorityFee = this.maxPriorityFee || gasFeeEstimate[this.selectedSpeed].suggestedMaxPriorityFeePerGas
-        this.feeTime = gasTiming(maxPriorityFee, newValue, this.t, 'walletTransfer.fee-edit-in')
-        this.setMaxTransactionFee(this.gas, maxPriorityFee, gasFeeEstimate.estimatedBaseFee)
+        if (this.selectedSpeed) {
+          const maxPriorityFee = gasFeeEstimate[this.selectedSpeed].suggestedMaxPriorityFeePerGas
+          this.feeTime = gasTiming(maxPriorityFee, newValue, this.t, 'walletTransfer.fee-edit-in')
+          this.setMaxTransactionFee(this.gas, maxPriorityFee, gasFeeEstimate.estimatedBaseFee)
+        }
       }
     },
   },

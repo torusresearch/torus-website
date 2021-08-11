@@ -333,7 +333,9 @@
               <v-flex v-else xs12 mb-6 class="text-right">
                 <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
-                <div class="caption text_2--text">{{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}</div>
+                <div class="caption text_2--text">
+                  {{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}
+                </div>
               </v-flex>
               <v-flex xs12 mt-3 class="text-right">
                 <v-btn
@@ -700,6 +702,9 @@ export default {
   watch: {
     selectedAddress(newValue, oldValue) {
       if (newValue !== oldValue && this.toEthAddress) this.calculateGas(this.toEthAddress)
+    },
+    gasFees(newValue, oldValue) {
+      if (!isEqual(newValue, oldValue) && this.isEip1559) this.updateTotalCost()
     },
   },
   mounted() {
@@ -1283,18 +1288,45 @@ export default {
       this.$router.go(-1)
     },
     updateTotalCost() {
-      log.info(this.activeGasPrice.toString(), 'acg price')
-      if (this.displayAmount.isZero() || this.activeGasPrice === '') {
+      if (this.isEip1559 && this.gasFees.gasFeeEstimates) {
+        // in case of custom gas limits, selectedLondonSpeed will be undefined
+        // and we should n't change if user's custom gas limit is better than
+        // suggestedMaxFeePerGas.
+        if (!this.selectedLondonSpeed && this.activeGasPrice) {
+          // checking for lowest gas price for worst case
+          const { suggestedMaxFeePerGas } = this.gasFees.gasFeeEstimates[TRANSACTION_SPEED.LOW]
+          // show warning if tx with  user custom gas limit is likely to fail,
+          // when suggestedMaxFeePerGas is more than user defined limit
+          if (new BigNumber(this.activeGasPrice).lt(new BigNumber(suggestedMaxFeePerGas))) {
+            // TODO: @lionell, show this as warning msg at correct place
+            this.sendAmountError = `This transaction is likely to fail as currently set gas price : ${this.activeGasPrice.toString()}
+            is less than average gas price: ${suggestedMaxFeePerGas.toString()} GWEI.`
+          } else {
+            this.sendAmountError = ''
+          }
+        }
+
+        if (this.selectedLondonSpeed) {
+          this.activeGasPrice = new BigNumber(this.gasFees.gasFeeEstimates[this.selectedLondonSpeed].suggestedMaxFeePerGas)
+          this.londonSpeedTiming = gasTiming(this.activeGasPrice, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+          if (this.displayAmount.isZero()) {
+            this.totalCost = '0'
+            this.convertedTotalCost = '0'
+            const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
+            this.gasPriceInCurrency = gasPriceInEth.times(this.currencyMultiplier)
+            return
+          }
+        }
+      } else if (!this.isEip1559 && this.displayAmount.isZero()) {
         this.totalCost = '0'
         this.convertedTotalCost = '0'
-
-        if (this.isEip1559 && this.activeGasPrice === '') {
-          this.activeGasPrice = new BigNumber(this.gasFees.gasFeeEstimates[this.selectedLondonSpeed].suggestedMaxFeePerGas)
-        }
         if (this.activeGasPrice !== '') {
           const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
           this.gasPriceInCurrency = gasPriceInEth.times(this.currencyMultiplier)
         }
+        return
+      }
+      if (this.activeGasPrice === '') {
         return
       }
 
@@ -1353,7 +1385,6 @@ export default {
     onTransferFeeSelect(data) {
       log.info('onTransferFeeSelect: ', data)
       this.nonce = data.nonce || -1
-      this.activeGasPrice = data.activeGasPrice
       this.selectedLondonSpeed = data.selectedSpeed
       this.activeGasPrice = data.maxTransactionFee
       this.londonSpeedTiming = gasTiming(data.maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')

@@ -98,7 +98,7 @@
                 :value="maxPriorityFee"
                 outlined
                 type="number"
-                :rules="[isValidMaxPriorityFee]"
+                :rules="[validateMaxPriorityFee]"
                 :hint="maxPriorityFeeHint"
                 persistent-hint
                 class="max-priority-fee"
@@ -125,7 +125,7 @@
                 outlined
                 type="number"
                 :hint="maxTransactionFeeHint"
-                :rules="[isValidMaxTransactionFee]"
+                :rules="[validateMaxTransactionFee]"
                 class="max-transaction-fee"
                 suffix="GWEI"
                 persistent-hint
@@ -160,12 +160,14 @@
 
 <script>
 import BigNumber from 'bignumber.js'
-import { isEqual } from 'lodash'
 import log from 'loglevel'
 
 import { TRANSACTION_SPEED } from '../../../utils/enums'
-import { gasTiming, significantDigits } from '../../../utils/utils'
+import { GAS_FORM_ERRORS, getGasFormErrorText } from '../../../utils/gas/utils'
+import { bnGreaterThan, bnLessThan, bnLessThanEqualTo, gasTiming, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
+
+const HIGH_FEE_WARNING_MULTIPLIER = 1.5
 
 export default {
   components: {
@@ -251,17 +253,12 @@ export default {
       ]
     },
     maxPriorityFeeHint() {
-      if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[TRANSACTION_SPEED.MEDIUM])) return ' '
-
-      const fee = new BigNumber(this.gasFees.gasFeeEstimates[TRANSACTION_SPEED.MEDIUM].suggestedMaxPriorityFeePerGas)
-      if (this.maxPriorityFee.lt(fee)) return `The average is ${fee}. Transaction might not be processed.`
-      return ' '
+      if (!this.gasFees.gasFeeEstimates) return ' '
+      return this.getCustomGasFeeWarnings()
     },
     maxTransactionFeeHint() {
-      if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[TRANSACTION_SPEED.MEDIUM])) return ' '
-      const fee = new BigNumber(this.gasFees.gasFeeEstimates[TRANSACTION_SPEED.MEDIUM].suggestedMaxFeePerGas)
-      if (this.maxTransactionFee.lt(fee)) return `The average is ${fee}. Transaction might not be processed.`
-      return ' '
+      if (!this.gasFees.gasFeeEstimates) return ' '
+      return this.getCustomGasFeeWarnings()
     },
     maxPriorityFeeConverted() {
       return this.convertEth(this.maxPriorityFee)
@@ -279,11 +276,6 @@ export default {
         this.updateDetails(this.selectedSpeed)
       }
     },
-    gasFees(newValue, oldValue) {
-      if (!isEqual(newValue, oldValue)) {
-        this.updateDetails(this.selectedSpeed)
-      }
-    },
   },
   mounted() {
     this.updateDetails(this.selectedSpeed)
@@ -294,19 +286,18 @@ export default {
       this.newSelectedSpeed = speed
       this.newGas = this.gas
       this.newNonce = this.nonce >= 0 ? this.nonce : this.nonceItems[0]
-      if (this.gasFees.gasFeeEstimates && this.maxPriorityFee) {
-        this.baseFee = this.gasFees.gasFeeEstimates.estimatedBaseFee
-        this.maxTransactionFee = new BigNumber(this.baseFee).plus(this.maxPriorityFee)
-      }
       if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[speed])) return
       this.baseFee = this.gasFees.gasFeeEstimates.estimatedBaseFee
       this.maxPriorityFee = new BigNumber(this.gasFees.gasFeeEstimates[speed].suggestedMaxPriorityFeePerGas)
       this.maxTransactionFee = new BigNumber(this.gasFees.gasFeeEstimates[speed].suggestedMaxFeePerGas)
     },
     getFeeAmount(speed) {
-      if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[speed])) return ''
-
-      const gasPrice = new BigNumber(this.gasFees.gasFeeEstimates[speed].suggestedMaxFeePerGas)
+      const gasFeeEstimate = this.gasFees.gasFeeEstimates
+      if (!(gasFeeEstimate && gasFeeEstimate[speed])) return ''
+      const maxPriorityFee = gasFeeEstimate[speed].suggestedMaxPriorityFeePerGas
+      const baseFeeBn = new BigNumber(gasFeeEstimate.estimatedBaseFee)
+      const maxPriorityFeeBn = new BigNumber(maxPriorityFee)
+      const gasPrice = baseFeeBn.plus(maxPriorityFeeBn)
       const cost = this.gas.times(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
       const costConverted = this.currencyMultiplier.times(cost)
       return `${significantDigits(costConverted)} ${this.selectedCurrency}`
@@ -326,13 +317,53 @@ export default {
     },
     setMaxPriorityFee(fee) {
       this.maxPriorityFee = new BigNumber(fee)
-      this.maxTransactionFee = new BigNumber(this.baseFee).plus(this.maxPriorityFee)
+      // this.maxTransactionFee = new BigNumber(this.baseFee).plus(this.maxPriorityFee)
       this.newSelectedSpeed = ''
     },
     setMaxTransactionFee(fee) {
       this.maxTransactionFee = new BigNumber(fee)
-      this.maxPriorityFee = new BigNumber(this.maxTransactionFee).minus(this.baseFee)
+      // this.maxPriorityFee = new BigNumber(this.maxTransactionFee).minus(this.baseFee)
       this.newSelectedSpeed = ''
+    },
+    validateMaxPriorityFee(value) {
+      const { gasFeeEstimates } = this.gasFees
+      if (bnLessThanEqualTo(value, 0)) {
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM)
+      }
+      if (bnLessThan(value, gasFeeEstimates?.low?.suggestedMaxPriorityFeePerGas)) {
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_TOO_LOW)
+      }
+      if (bnGreaterThan(value, this.maxTransactionFee)) {
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE)
+      }
+
+      return true
+    },
+    validateMaxTransactionFee(value) {
+      const { gasFeeEstimates } = this.gasFees
+
+      if (bnGreaterThan(this.maxPriorityFee, value)) {
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE)
+      }
+      if (bnLessThan(value, gasFeeEstimates?.low?.suggestedMaxFeePerGas)) {
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_TOO_LOW)
+      }
+
+      return true
+    },
+    getCustomGasFeeWarnings() {
+      const { gasFeeEstimates } = this.gasFees
+      if (
+        gasFeeEstimates?.high &&
+        bnGreaterThan(this.maxPriorityFee, gasFeeEstimates.high.suggestedMaxPriorityFeePerGas * HIGH_FEE_WARNING_MULTIPLIER)
+      ) {
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_HIGH_WARNING)
+      }
+
+      if (gasFeeEstimates?.high && bnGreaterThan(this.maxTransactionFee, gasFeeEstimates.high.suggestedMaxFeePerGas * HIGH_FEE_WARNING_MULTIPLIER)) {
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_HIGH_WARNING)
+      }
+      return ''
     },
     save() {
       const { newSelectedSpeed: selectedSpeed, newGas: gas, newNonce, maxPriorityFee, maxTransactionFee, baseFee } = this
@@ -347,24 +378,6 @@ export default {
         baseFee,
       })
       this.dialog = false
-    },
-    isValidMaxPriorityFee(value) {
-      if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[TRANSACTION_SPEED.LOW])) return true
-
-      const fee = new BigNumber(this.gasFees.gasFeeEstimates[TRANSACTION_SPEED.LOW].suggestedMaxPriorityFeePerGas)
-      const valueFinal = new BigNumber(value)
-      if (valueFinal.lt(fee)) return `The minimum is ${fee} for miners to process the transaction.`
-
-      return true
-    },
-    isValidMaxTransactionFee(value) {
-      if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[TRANSACTION_SPEED.LOW])) return true
-
-      const fee = new BigNumber(this.gasFees.gasFeeEstimates[TRANSACTION_SPEED.LOW].suggestedMaxFeePerGas)
-      const valueFinal = new BigNumber(value)
-      if (valueFinal.lt(fee)) return `This min is ${fee} for the transaction to be processed.`
-
-      return true
     },
     convertEth(amountInGwei) {
       const amountInEth = this.gas.times(amountInGwei.div(new BigNumber(10).pow(new BigNumber(9))))

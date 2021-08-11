@@ -830,3 +830,31 @@ function toHumanReadableTime(milliseconds = 1, t) {
   }
   return t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, Math.ceil(seconds / 60))
 }
+
+export function bnGreaterThan(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).gt(b, 10)
+}
+
+export function bnLessThan(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).lt(b, 10)
+}
+
+export function bnGreaterThanEqualTo(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).gte(b, 10)
+}
+
+export function bnLessThanEqualTo(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).lte(b, 10)
+}

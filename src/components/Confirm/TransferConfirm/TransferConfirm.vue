@@ -89,7 +89,7 @@
             <span class="caption">{{ isEip1559 ? t('walletTransfer.fee-max-transaction') : t('walletTransfer.transferFee') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="caption text-right font-weight-medium">{{ transactionFee }} {{ selectedCurrency }}</div>
+            <div class="caption text-right font-weight-medium">{{ `${transactionFeeEth} ETH` }}</div>
             <div class="caption-2 text-right">({{ `${isEip1559 ? londonSpeedTiming : `~ ${speedSelected} ${t('walletTransfer.minute')}`}` }})</div>
           </div>
         </div>
@@ -285,6 +285,9 @@ export default {
     },
     gasEstimateFailed() {
       return this.transactionFee.isZero()
+    },
+    transactionFeeConverted() {
+      return significantDigits(this.transactionFee)
     },
   },
   methods: {
