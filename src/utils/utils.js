@@ -811,8 +811,11 @@ export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
   if (Number(maxPriorityFeePerGas) >= Number(medium.suggestedMaxPriorityFeePerGas)) {
     // High+ is very likely, medium is likely
     if (Number(maxPriorityFeePerGas) < Number(high.suggestedMaxPriorityFeePerGas)) {
+      // medium
       return t(translateKey).replace(/{time}/gi, `< ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}`)
     }
+
+    // high
     return t(translateKey).replace(/{time}/gi, `< ${toHumanReadableTime(high.minWaitTimeEstimate, t)}`)
   }
 

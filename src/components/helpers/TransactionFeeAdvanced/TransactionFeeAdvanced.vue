@@ -57,7 +57,7 @@
                 {{ t('walletTransfer.fee-edit-gas-limit') }}
                 <HelpTooltip :title="t('walletTransfer.fee-edit-gas-limit')" :description="t('walletTransfer.fee-edit-gas-limit-desc')" />
               </div>
-              <v-text-field outlined :value="newGas" type="number" :rules="[rules.valid, rules.moreThanZero]" @change="setGasLimit" />
+              <v-text-field outlined :value="newGas" type="number" :rules="[rules.valid, rules.validMinimumGas]" @change="setGasLimit" />
             </div>
             <div>
               <div class="text-subtitle-2 mb-2">
@@ -72,6 +72,22 @@
                   {{ item.text ? t(item.text) : item }}
                 </template>
               </v-combobox>
+            </div>
+            <div>
+              <div class="text-subtitle-2 mb-2">
+                {{ t('walletTransfer.fee-edit-base-fee') }}
+                <HelpTooltip :title="t('walletTransfer.fee-edit-base-fee')" :description="t('walletTransfer.fee-edit-base-fee-desc')" />
+              </div>
+              <v-text-field :value="baseFee" outlined type="number" :hint="` `" persistent-hint suffix="GWEI" disabled>
+                <template #message="{ message }">
+                  <div class="d-flex caption">
+                    <div class="text-left mr-2">{{ message }}</div>
+                    <div class="ml-auto text-right" :style="{ minWidth: '100px' }">
+                      <div class="text_2--text">{{ baseFeeConverted }}</div>
+                    </div>
+                  </div>
+                </template>
+              </v-text-field>
             </div>
             <div>
               <div class="text-subtitle-2 mb-2">
@@ -94,22 +110,6 @@
                     <div class="text-left mr-2">{{ message }}</div>
                     <div class="ml-auto text-right" :style="{ minWidth: '100px' }">
                       <div class="text_2--text">{{ maxPriorityFeeConverted }}</div>
-                    </div>
-                  </div>
-                </template>
-              </v-text-field>
-            </div>
-            <div>
-              <div class="text-subtitle-2 mb-2">
-                {{ t('walletTransfer.fee-edit-base-fee') }}
-                <HelpTooltip :title="t('walletTransfer.fee-edit-base-fee')" :description="t('walletTransfer.fee-edit-base-fee-desc')" />
-              </div>
-              <v-text-field :value="baseFee" outlined type="number" :hint="` `" persistent-hint suffix="GWEI" disabled>
-                <template #message="{ message }">
-                  <div class="d-flex caption">
-                    <div class="text-left mr-2">{{ message }}</div>
-                    <div class="ml-auto text-right" :style="{ minWidth: '100px' }">
-                      <div class="text_2--text">{{ baseFeeConverted }}</div>
                     </div>
                   </div>
                 </template>
@@ -160,6 +160,7 @@
 
 <script>
 import BigNumber from 'bignumber.js'
+import { isEqual } from 'lodash'
 import log from 'loglevel'
 
 import { TRANSACTION_SPEED } from '../../../utils/enums'
@@ -209,6 +210,7 @@ export default {
         },
       ],
       rules: {
+        validMinimumGas: (value) => new BigNumber(value || '0').gte(new BigNumber('21000')) || this.t('walletTransfer.invalidAmount'),
         moreThanZero: (value) => new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount'),
         valid: (value) => !!value || this.t('walletTransfer.required'),
         validNonce: (value) => {
@@ -277,6 +279,11 @@ export default {
         this.updateDetails(this.selectedSpeed)
       }
     },
+    gasFees(newValue, oldValue) {
+      if (!isEqual(newValue, oldValue)) {
+        this.updateDetails(this.selectedSpeed)
+      }
+    },
   },
   mounted() {
     this.updateDetails(this.selectedSpeed)
@@ -287,7 +294,10 @@ export default {
       this.newSelectedSpeed = speed
       this.newGas = this.gas
       this.newNonce = this.nonce >= 0 ? this.nonce : this.nonceItems[0]
-
+      if (this.gasFees.gasFeeEstimates && this.maxPriorityFee) {
+        this.baseFee = this.gasFees.gasFeeEstimates.estimatedBaseFee
+        this.maxTransactionFee = new BigNumber(this.baseFee).plus(this.maxPriorityFee)
+      }
       if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[speed])) return
       this.baseFee = this.gasFees.gasFeeEstimates.estimatedBaseFee
       this.maxPriorityFee = new BigNumber(this.gasFees.gasFeeEstimates[speed].suggestedMaxPriorityFeePerGas)
@@ -325,7 +335,7 @@ export default {
       this.newSelectedSpeed = ''
     },
     save() {
-      const { newSelectedSpeed: selectedSpeed, newGas: gas, newNonce, maxPriorityFee, maxTransactionFee } = this
+      const { newSelectedSpeed: selectedSpeed, newGas: gas, newNonce, maxPriorityFee, maxTransactionFee, baseFee } = this
 
       const nonce = Number(newNonce.value || newNonce)
       this.$emit('save', {
@@ -334,6 +344,7 @@ export default {
         nonce: Number.isNaN(nonce) ? 0 : nonce,
         maxPriorityFee,
         maxTransactionFee,
+        baseFee,
       })
       this.dialog = false
     },
@@ -356,7 +367,7 @@ export default {
       return true
     },
     convertEth(amountInGwei) {
-      const amountInEth = amountInGwei.div(new BigNumber(10).pow(new BigNumber(9)))
+      const amountInEth = this.gas.times(amountInGwei.div(new BigNumber(10).pow(new BigNumber(9))))
       const converted = significantDigits(amountInEth.times(this.currencyMultiplier))
       return `~ ${converted} ${this.selectedCurrency}`
     },
