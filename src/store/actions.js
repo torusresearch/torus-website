@@ -511,6 +511,10 @@ export default {
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       const walletKeys = Object.keys(wallet)
       dispatch('subscribeToControllers')
+
+      if (selectedAddress && wallet[selectedAddress]) {
+        dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+      }
       await dispatch('initTorusKeyring', {
         keys: walletKeys.map((x) => {
           const { privateKey, accountType, seedPhrase } = wallet[x]
@@ -526,7 +530,6 @@ export default {
         rehydrate: true,
       })
       if (selectedAddress && wallet[selectedAddress]) {
-        dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
