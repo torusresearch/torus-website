@@ -30,7 +30,7 @@
               <div class="text-left mr-2">{{ message }}</div>
               <div class="ml-auto" :style="{ minWidth: '100px' }">
                 <div>~{{ maxTransactionFeeConverted }}</div>
-                <div class="font-italic">{{ t('walletTransfer.fee-in').replace(/{time}/gi, `~${feeTime}`) }}</div>
+                <div class="font-italic">{{ feeTime }}</div>
               </div>
             </div>
           </template>
@@ -43,7 +43,7 @@
 <script>
 import BigNumber from 'bignumber.js'
 
-import { significantDigits } from '../../../utils/utils'
+import { gasTiming, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
 import TransactionFeeAdvanced from '../TransactionFeeAdvanced'
 
@@ -71,6 +71,7 @@ export default {
   data() {
     return {
       maxTransactionFeeEth: '',
+      feeTime: '',
     }
   },
   computed: {
@@ -78,18 +79,16 @@ export default {
       const costConverted = this.currencyMultiplier.times(this.maxTransactionFeeEth)
       return `${significantDigits(costConverted)} ${this.selectedCurrency}`
     },
-    feeTime() {
-      const estTime = this.gasFees.gasFeeEstimates[this.selectedSpeed].maxWaitTimeEstimate / 1000
-      return `${estTime} seconds`
-    },
   },
   mounted() {
-    const maxPriorityFee = new BigNumber(this.gasFees.gasFeeEstimates[this.selectedSpeed].suggestedMaxPriorityFeePerGas)
-    this.setMaxTransactionFee(this.gas, maxPriorityFee)
+    const maxPriorityFee = this.gasFees.gasFeeEstimates[this.selectedSpeed].suggestedMaxPriorityFeePerGas
+    this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+    this.setMaxTransactionFee(this.gas, new BigNumber(maxPriorityFee))
   },
   methods: {
     onSave(details) {
       this.setMaxTransactionFee(details.gas, details.maxTransactionFee)
+      this.feeTime = gasTiming(details.maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
       this.$emit('save', details)
     },
     setMaxTransactionFee(gas, maxPriorityFee) {

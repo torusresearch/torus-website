@@ -803,3 +803,27 @@ export const GAS_LIMITS = {
   // a base estimate for token transfers.
   BASE_TOKEN_ESTIMATE: addHexPrefix((100_000).toString(16)),
 }
+
+export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
+  const {
+    gasFeeEstimates: { low, medium, high },
+  } = gasFees
+  if (Number(maxPriorityFeePerGas) >= Number(medium.suggestedMaxPriorityFeePerGas)) {
+    // High+ is very likely, medium is likely
+    if (Number(maxPriorityFeePerGas) < Number(high.suggestedMaxPriorityFeePerGas)) {
+      return t(translateKey).replace(/{time}/gi, `< ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}`)
+    }
+    return t(translateKey).replace(/{time}/gi, `< ${toHumanReadableTime(high.minWaitTimeEstimate, t)}`)
+  }
+
+  return t(translateKey).replace(/{time}/gi, `~ ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}`)
+}
+
+const SECOND_CUTOFF = 90
+function toHumanReadableTime(milliseconds = 1, t) {
+  const seconds = Math.ceil(milliseconds / 1000)
+  if (seconds <= SECOND_CUTOFF) {
+    return t('walletTransfer.fee-edit-time-sec').replace(/{time}/gi, seconds)
+  }
+  return t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, Math.ceil(seconds / 60))
+}

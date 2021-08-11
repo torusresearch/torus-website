@@ -35,7 +35,7 @@
                     <div class="body-2 font-weight-bold text_1--text speed-list_label">{{ speed.label }}</div>
                     <div class="ml-4">
                       <div class="body-2 font-weight-bold text_1--text">{{ t('walletTransfer.fee-upto').replace(/{amount}/gi, speed.amount) }}</div>
-                      <div class="body-2 text_2--text">{{ t('walletTransfer.fee-edit-in').replace(/{time}/gi, speed.time) }}</div>
+                      <div class="body-2 text_2--text">{{ speed.time }}</div>
                     </div>
                   </div>
                 </v-list-item-content>
@@ -163,7 +163,7 @@ import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 
 import { TRANSACTION_SPEED } from '../../../utils/enums'
-import { significantDigits } from '../../../utils/utils'
+import { gasTiming, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
 
 export default {
@@ -304,8 +304,7 @@ export default {
     getFeeTime(speed) {
       if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[speed])) return ''
 
-      const estTime = this.gasFees.gasFeeEstimates[speed].maxWaitTimeEstimate / 1000
-      return `${estTime} seconds`
+      return gasTiming(this.gasFees.gasFeeEstimates[speed].suggestedMaxPriorityFeePerGas, this.gasFees, this.t, 'walletTransfer.fee-edit-process-in')
     },
     selectSpeed(speed) {
       this.updateDetails(speed)

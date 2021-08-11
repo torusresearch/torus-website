@@ -389,6 +389,7 @@
                     :contract-type="contractType"
                     :eth-balance="ethBalance"
                     :is-eip1559="isEip1559"
+                    :london-speed-timing="londonSpeedTiming"
                     @onClose="confirmDialog = false"
                     @onConfirm="sendCoin"
                   ></TransferConfirm>
@@ -484,7 +485,15 @@ import {
   UNSTOPPABLE_DOMAINS,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
-import { apiStreamSupported, getEtherScanHashLink, getUserIcon, getVerifierOptions, significantDigits, validateVerifierId } from '../../utils/utils'
+import {
+  apiStreamSupported,
+  gasTiming,
+  getEtherScanHashLink,
+  getUserIcon,
+  getVerifierOptions,
+  significantDigits,
+  validateVerifierId,
+} from '../../utils/utils'
 
 export default {
   name: 'WalletTransfer',
@@ -525,7 +534,7 @@ export default {
       speedSelected: '',
       totalCost: '',
       totalCostBn: new BigNumber('0'),
-      timeTaken: '',
+      timeTaken: 0,
       convertedTotalCost: '',
       resetSpeed: false,
       hasCustomGasLimit: false,
@@ -558,6 +567,7 @@ export default {
       camera: 'off',
       showQrScanner: false,
       selectedLondonSpeed: TRANSACTION_SPEED.MEDIUM,
+      londonSpeedTiming: '',
     }
   },
   computed: {
@@ -680,7 +690,6 @@ export default {
       return apiStreamSupported()
     },
     isEip1559() {
-      log.info('this.networkDetails', this.networkDetails)
       return this.networkDetails.EIPS && this.networkDetails.EIPS['1559'] && this.gasFees.gasEstimateType === GAS_ESTIMATE_TYPES.FEE_MARKET
     },
     onTransferClickDisabled() {
@@ -1279,6 +1288,9 @@ export default {
         this.totalCost = '0'
         this.convertedTotalCost = '0'
 
+        if (this.isEip1559 && this.activeGasPrice === '') {
+          this.activeGasPrice = new BigNumber(this.gasFees.gasFeeEstimates[this.selectedLondonSpeed].suggestedMaxFeePerGas)
+        }
         if (this.activeGasPrice !== '') {
           const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
           this.gasPriceInCurrency = gasPriceInEth.times(this.currencyMultiplier)
@@ -1342,8 +1354,9 @@ export default {
       log.info('onTransferFeeSelect: ', data)
       this.nonce = data.nonce || -1
       this.activeGasPrice = data.activeGasPrice
-      this.selectedLondonSpeed = data.selectedLondonSpeed
+      this.selectedLondonSpeed = data.selectedSpeed
       this.activeGasPrice = data.maxTransactionFee
+      this.londonSpeedTiming = gasTiming(data.maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
       this.gas = data.gas
       this.hasCustomGasLimit = true
       this.updateTotalCost()

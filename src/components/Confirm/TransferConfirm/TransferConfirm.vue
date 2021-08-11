@@ -90,7 +90,7 @@
           </div>
           <div class="ml-auto">
             <div class="caption text-right font-weight-medium">{{ transactionFee }} {{ selectedCurrency }}</div>
-            <div class="caption-2 text-right">(~ {{ speedSelected }} {{ t('walletTransfer.minute') }})</div>
+            <div class="caption-2 text-right">({{ `${isEip1559 ? londonSpeedTiming : `~ ${speedSelected} ${t('walletTransfer.minute')}`}` }})</div>
           </div>
         </div>
         <div v-if="gasEstimateFailed" class="caption text-right mt-1">
@@ -253,6 +253,10 @@ export default {
     isEip1559: {
       type: Boolean,
       default: false,
+    },
+    londonSpeedTiming: {
+      type: String,
+      default: '',
     },
   },
   data() {
