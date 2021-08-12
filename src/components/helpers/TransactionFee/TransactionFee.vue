@@ -11,6 +11,8 @@
           :gas-fees="gasFees"
           :selected-currency="selectedCurrency"
           :currency-multiplier="currencyMultiplier"
+          :max-transaction-fee-old="maxTransactionFee"
+          :max-priority-fee-old="maxPriorityFee"
           @save="onSave"
         />
       </v-flex>
@@ -73,7 +75,8 @@ export default {
     return {
       maxTransactionFeeEth: '',
       feeTime: '',
-      maxPriorityFee: 0,
+      maxPriorityFee: new BigNumber(0),
+      maxTransactionFee: new BigNumber(0),
     }
   },
   computed: {
@@ -97,18 +100,25 @@ export default {
   mounted() {
     const gasFeeEstimate = this.gasFees.gasFeeEstimates
     const maxPriorityFee = gasFeeEstimate[this.selectedSpeed].suggestedMaxPriorityFeePerGas
+
+    this.maxTransactionFee = new BigNumber(gasFeeEstimate[this.selectedSpeed].suggestedMaxFeePerGas)
+    this.maxPriorityFee = new BigNumber(maxPriorityFee)
+
     this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
     this.setMaxTransactionFee(this.gas, maxPriorityFee, gasFeeEstimate.estimatedBaseFee)
   },
   methods: {
     onSave(details) {
       const maxPriorityFee = bnGreaterThan(details.customMaxPriorityFee, 0) ? details.customMaxPriorityFee : details.maxPriorityFee
+      // keep saved fees
+      this.maxTransactionFee = details.maxTransactionFee
+      this.maxPriorityFee = details.maxPriorityFee
+
       this.setMaxTransactionFee(details.gas, maxPriorityFee, details.baseFee, details.customMaxTransactionFee)
       this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
       this.$emit('save', details)
     },
     setMaxTransactionFee(gas, maxPriorityFee, baseFee, customMaxTxFee = null) {
-      this.maxPriorityFee = maxPriorityFee
       if (customMaxTxFee && bnGreaterThan(customMaxTxFee, 0)) {
         const cost = gas.times(customMaxTxFee).div(new BigNumber(10).pow(new BigNumber(9)))
         this.maxTransactionFeeEth = significantDigits(cost)
