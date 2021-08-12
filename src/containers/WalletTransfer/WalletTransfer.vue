@@ -635,7 +635,10 @@ export default {
       return `~ ${significantDigits(this.convertedTotalCost)} ${this.selectedCurrency}`
     },
     totalCostDisplay() {
-      return `~ ${significantDigits(this.totalCost, false, 6)} ${this.totalCostSuffix}`
+      if (this.contractType === CONTRACT_TYPE_ETH) {
+        return `~ ${significantDigits(this.totalCost, false, 6)} ${this.totalCostSuffix}`
+      }
+      return this.totalCost
     },
     currencyBalanceDisplay() {
       // = 390.00 USD
@@ -1378,7 +1381,7 @@ export default {
         this.totalCost = `${this.displayAmount.toString()} ${displayedCurrency} + ${significantDigits(
           this.getEthAmount(this.gas, this.activeGasPrice),
           false,
-          18
+          6
         )} ETH`
       }
 
