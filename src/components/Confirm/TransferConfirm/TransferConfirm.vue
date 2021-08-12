@@ -89,7 +89,7 @@
             <span class="caption">{{ isEip1559 ? t('walletTransfer.fee-max-transaction') : t('walletTransfer.transferFee') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="caption text-right font-weight-medium">{{ `${transactionFeeEth} ETH` }}</div>
+            <div class="caption text-right font-weight-medium">{{ `${transactionFeeEthDisplay} ETH` }}</div>
             <div class="caption-2 text-right">({{ `${isEip1559 ? londonSpeedTiming : `~ ${speedSelected} ${t('walletTransfer.minute')}`}` }})</div>
           </div>
         </div>
@@ -107,7 +107,7 @@
             <span class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="text-subtitle-2 text-right">{{ isNonFungibleToken ? `${transactionFeeEth} ETH` : totalCost }}</div>
+            <div class="text-subtitle-2 text-right">{{ isNonFungibleToken ? `${transactionFeeEthDisplay} ETH` : totalCost }}</div>
             <div class="caption-2 text-right">{{ isNonFungibleToken ? `${transactionFee} ${selectedCurrency}` : totalCostConverted }}</div>
             <div v-if="insufficientFunds" class="caption error--text">{{ t('walletTransfer.insufficient') }}</div>
           </div>
@@ -286,8 +286,8 @@ export default {
     gasEstimateFailed() {
       return this.transactionFee.isZero()
     },
-    transactionFeeConverted() {
-      return significantDigits(this.transactionFee)
+    transactionFeeEthDisplay() {
+      return significantDigits(this.transactionFeeEth, 6)
     },
   },
   methods: {

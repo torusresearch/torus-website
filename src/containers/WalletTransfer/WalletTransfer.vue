@@ -332,7 +332,7 @@
               </v-flex>
               <v-flex v-else xs12 mb-6 class="text-right">
                 <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
-                <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
+                <div class="headline text_2--text">{{ totalCost ? totalCostDisplay : `0 ${totalCostSuffix}` }}</div>
                 <div class="caption text_2--text">
                   {{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}
                 </div>
@@ -384,7 +384,7 @@
                     :transaction-fee-eth="getEthAmount(gas, activeGasPrice)"
                     :selected-currency="selectedCurrency"
                     :send-eth-to-contract-error="sendEthToContractError"
-                    :total-cost="`${totalCost || 0} ${totalCostSuffix}`"
+                    :total-cost="totalCost ? totalCostDisplay : `0 ${totalCostSuffix}`"
                     :total-cost-converted="convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}`"
                     :total-cost-bn="totalCostBn"
                     :item-balance="selectedItemBalance"
@@ -630,6 +630,9 @@ export default {
     },
     convertedTotalCostDisplay() {
       return `~ ${significantDigits(this.convertedTotalCost)} ${this.selectedCurrency}`
+    },
+    totalCostDisplay() {
+      return `~ ${significantDigits(this.totalCost, false, 6)} ${this.totalCostSuffix}`
     },
     currencyBalanceDisplay() {
       // = 390.00 USD
