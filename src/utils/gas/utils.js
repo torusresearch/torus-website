@@ -8,7 +8,6 @@ export const GAS_FORM_ERRORS = {
   GAS_PRICE_TOO_LOW: 'editGasPriceTooLow',
 }
 
-// todo: add to locales
 const messages = {
   editGasMaxFeeHigh: {
     message: 'walletTransfer.fee-error-maxfee-high',
@@ -32,8 +31,6 @@ const messages = {
     message: 'walletTransfer.fee-error-priorityfee-low',
   },
 }
-// todo: use translations
-// eslint-disable-next-line no-unused-vars
 export function getGasFormErrorText(type, t) {
   switch (type) {
     case GAS_FORM_ERRORS.MAX_PRIORITY_FEE_TOO_LOW:
