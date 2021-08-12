@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable require-atomic-updates */
 import Common from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
@@ -236,7 +235,12 @@ class TransactionController extends EventEmitter {
 
   async newUnapprovedTransaction(txParameters, options = {}) {
     log.debug(`MetaMaskController newUnapprovedTransaction ${JSON.stringify(txParameters)}`)
-    const initialTxMeta = await this.addUnapprovedTransaction(txParameters, options)
+    const txParams = { ...txParameters }
+    const eip1559Compatibility = await this.getEIP1559Compatibility()
+    if (eip1559Compatibility && txParams.gasPrice && txParams.maxPriorityFeePerGas && txParams.maxFeePerGas) {
+      delete txParams.gasPrice
+    }
+    const initialTxMeta = await this.addUnapprovedTransaction(txParams, options)
 
     // listen for tx completion (success, fail)
     return new Promise((resolve, reject) => {
@@ -265,10 +269,8 @@ class TransactionController extends EventEmitter {
   async addUnapprovedTransaction(txParameters, request) {
     // validate
     log.debug(`MetaMaskController addUnapprovedTransaction ${JSON.stringify(txParameters)}`)
-
     const normalizedTxParameters = txUtils.normalizeTxParameters(txParameters)
     const eip1559Compatibility = await this.getEIP1559Compatibility()
-
     txUtils.validateTxParameters(normalizedTxParameters, eip1559Compatibility)
 
     /**
@@ -479,10 +481,8 @@ class TransactionController extends EventEmitter {
 
     try {
       const { gasFeeEstimates, gasEstimateType } = await this._getEIP1559GasFeeEstimates()
-      console.log('gasEstimateType', gasEstimateType)
       if (eip1559Compatibility && gasEstimateType === GAS_ESTIMATE_TYPES.FEE_MARKET) {
         const { medium: { suggestedMaxPriorityFeePerGas, suggestedMaxFeePerGas } = {} } = gasFeeEstimates
-        console.log('gasEstimateType', suggestedMaxPriorityFeePerGas, suggestedMaxFeePerGas)
 
         if (suggestedMaxPriorityFeePerGas && suggestedMaxFeePerGas) {
           return {
@@ -504,7 +504,6 @@ class TransactionController extends EventEmitter {
         }
       }
     } catch (error) {
-      console.log(`error: ${error}`)
       log.error(error)
     }
 

@@ -489,6 +489,7 @@ import {
 import { get } from '../../utils/httpHelpers'
 import {
   apiStreamSupported,
+  bnGreaterThan,
   gasTiming,
   getEtherScanHashLink,
   getUserIcon,
@@ -531,6 +532,7 @@ export default {
       toggle_exclusive: 0,
       gas: new BigNumber('21000'),
       activeGasPrice: new BigNumber('0'),
+      customMaxPriorityFee: new BigNumber('0'),
       gasPriceInCurrency: new BigNumber('0'),
       isFastChecked: false,
       speedSelected: '',
@@ -1151,19 +1153,35 @@ export default {
       const toAddress = this.toEthAddress
       const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
       const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
+      let gasPriceParams = {}
+      if (this.isEip1559 && this.gasFees.gasFeeEstimates) {
+        const finalMaxPriorityFee = bnGreaterThan(this.customMaxPriorityFee, 0)
+          ? this.customMaxPriorityFee
+          : new BigNumber(this.gasFees.gasFeeEstimates[this.selectedLondonSpeed])
+        const finalMaxPriorityFeeHex = `0x${finalMaxPriorityFee.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
+        gasPriceParams = {
+          maxFeePerGas: fastGasPrice,
+          maxPriorityFeePerGas: finalMaxPriorityFeeHex,
+        }
+      } else {
+        gasPriceParams = {
+          gasPrice: fastGasPrice,
+        }
+      }
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value = `0x${this.amount
           .times(new BigNumber(10).pow(new BigNumber(18)))
           .dp(0, BigNumber.ROUND_DOWN)
           .toString(16)}`
         log.info(this.gas.toString())
+
         torus.web3.eth.sendTransaction(
           {
             from: this.selectedAddress,
             to: toAddress,
             value,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            gasPrice: fastGasPrice,
+            ...gasPriceParams,
             customNonceValue,
           },
           (error, transactionHash) => {
@@ -1197,7 +1215,7 @@ export default {
           {
             from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            gasPrice: fastGasPrice,
+            ...gasPriceParams,
             customNonceValue,
           },
           (error, transactionHash) => {
@@ -1227,7 +1245,7 @@ export default {
           {
             from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            gasPrice: fastGasPrice,
+            ...gasPriceParams,
             customNonceValue,
           },
           (error, transactionHash) => {
@@ -1258,7 +1276,7 @@ export default {
           {
             from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            gasPrice: fastGasPrice,
+            ...gasPriceParams,
             customNonceValue,
           },
           (error, transactionHash) => {
@@ -1295,7 +1313,7 @@ export default {
         // in case of custom gas limits, selectedLondonSpeed will be undefined
         // and we should n't change if user's custom gas limit is better than
         // suggestedMaxFeePerGas.
-        if (!this.selectedLondonSpeed && this.activeGasPrice) {
+        if (!this.selectedLondonSpeed && bnGreaterThan(this.activeGasPrice, 0)) {
           // checking for lowest gas price for worst case
           const { suggestedMaxFeePerGas } = this.gasFees.gasFeeEstimates[TRANSACTION_SPEED.LOW]
           // show warning if tx with  user custom gas limit is likely to fail,
@@ -1308,10 +1326,11 @@ export default {
             this.sendAmountError = ''
           }
         }
-
+        // update activeGasPrice for the default speed or speed which is selected by user
         if (this.selectedLondonSpeed) {
-          this.activeGasPrice = new BigNumber(this.gasFees.gasFeeEstimates[this.selectedLondonSpeed].suggestedMaxFeePerGas)
-          this.londonSpeedTiming = gasTiming(this.activeGasPrice, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+          const { suggestedMaxFeePerGas, suggestedMaxPriorityFeePerGas } = this.gasFees.gasFeeEstimates[this.selectedLondonSpeed]
+          this.activeGasPrice = new BigNumber(suggestedMaxFeePerGas)
+          this.londonSpeedTiming = gasTiming(suggestedMaxPriorityFeePerGas, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
           if (this.displayAmount.isZero()) {
             this.totalCost = '0'
             this.convertedTotalCost = '0'
@@ -1387,10 +1406,14 @@ export default {
     },
     onTransferFeeSelect(data) {
       log.info('onTransferFeeSelect: ', data)
+      const maxPriorityFee = bnGreaterThan(data.customMaxPriorityFee, 0) ? data.customMaxPriorityFee : data.maxPriorityFee
+      const maxTxFee = bnGreaterThan(data.customMaxTransactionFee, 0) ? data.customMaxTransactionFee : data.maxTransactionFee
+
       this.nonce = data.nonce || -1
       this.selectedLondonSpeed = data.selectedSpeed
-      this.activeGasPrice = data.maxTransactionFee
-      this.londonSpeedTiming = gasTiming(data.maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+      this.activeGasPrice = maxTxFee
+      this.customMaxPriorityFee = data.customMaxPriorityFee
+      this.londonSpeedTiming = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
       this.gas = data.gas
       this.hasCustomGasLimit = true
       this.updateTotalCost()

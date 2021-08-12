@@ -158,7 +158,7 @@ export default class TorusController extends EventEmitter {
 
     this.txController.on('tx:status-update', (txId, status) => {
       if (status === TRANSACTION_STATUSES.CONFIRMED || status === TRANSACTION_STATUSES.FAILED) {
-        const txMeta = this.txController.txStateManager.getTx(txId)
+        const txMeta = this.txController.txStateManager.getTransaction(txId)
         if (this.platform) {
           this.platform.showTransactionNotification(txMeta) // TODO: implement platform specific handlers
         }

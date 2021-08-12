@@ -200,10 +200,12 @@ export default {
       dialog: false,
       showAdvance: false,
       maxPriorityFee: new BigNumber('0'),
+      customMaxPriorityFee: new BigNumber('0'),
       baseFee: '',
       newSelectedSpeed: '',
       newGas: new BigNumber('0'),
       maxTransactionFee: new BigNumber('0'),
+      customTransactionFee: new BigNumber('0'),
       newNonce: 0,
       nonceItems: [
         {
@@ -317,12 +319,12 @@ export default {
     },
     setMaxPriorityFee(fee) {
       this.maxPriorityFee = new BigNumber(fee)
-      // this.maxTransactionFee = new BigNumber(this.baseFee).plus(this.maxPriorityFee)
+      this.customMaxPriorityFee = this.maxPriorityFee
       this.newSelectedSpeed = ''
     },
     setMaxTransactionFee(fee) {
       this.maxTransactionFee = new BigNumber(fee)
-      // this.maxPriorityFee = new BigNumber(this.maxTransactionFee).minus(this.baseFee)
+      this.customMaxTransactionFee = this.maxTransactionFee
       this.newSelectedSpeed = ''
     },
     validateMaxPriorityFee(value) {
@@ -366,7 +368,16 @@ export default {
       return ''
     },
     save() {
-      const { newSelectedSpeed: selectedSpeed, newGas: gas, newNonce, maxPriorityFee, maxTransactionFee, baseFee } = this
+      const {
+        newSelectedSpeed: selectedSpeed,
+        newGas: gas,
+        newNonce,
+        maxPriorityFee,
+        maxTransactionFee,
+        baseFee,
+        customMaxPriorityFee,
+        customMaxTransactionFee,
+      } = this
 
       const nonce = Number(newNonce.value || newNonce)
       this.$emit('save', {
@@ -375,6 +386,8 @@ export default {
         nonce: Number.isNaN(nonce) ? 0 : nonce,
         maxPriorityFee,
         maxTransactionFee,
+        customMaxPriorityFee,
+        customMaxTransactionFee,
         baseFee,
       })
       this.dialog = false
