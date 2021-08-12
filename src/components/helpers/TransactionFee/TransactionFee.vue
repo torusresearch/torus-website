@@ -102,7 +102,7 @@ export default {
   },
   methods: {
     onSave(details) {
-      this.setMaxTransactionFee(details.gas, details.maxTransactionFee, details.baseFee)
+      this.setMaxTransactionFee(details.gas, details.maxPriorityFee, details.baseFee)
       this.feeTime = gasTiming(details.maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
       this.$emit('save', details)
     },

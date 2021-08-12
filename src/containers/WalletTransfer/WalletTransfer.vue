@@ -450,6 +450,7 @@
 import randomId from '@chaitanyapotti/random-id'
 import Resolution from '@unstoppabledomains/resolution'
 import BigNumber from 'bignumber.js'
+import { deepClone } from 'fast-json-patch/lib/core'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import { isEqual } from 'lodash'
@@ -1157,7 +1158,7 @@ export default {
       if (this.isEip1559 && this.gasFees.gasFeeEstimates) {
         const finalMaxPriorityFee = bnGreaterThan(this.customMaxPriorityFee, 0)
           ? this.customMaxPriorityFee
-          : new BigNumber(this.gasFees.gasFeeEstimates[this.selectedLondonSpeed])
+          : new BigNumber(this.gasFees.gasFeeEstimates[this.selectedLondonSpeed].suggestedMaxPriorityFeePerGas)
         const finalMaxPriorityFeeHex = `0x${finalMaxPriorityFee.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
         gasPriceParams = {
           maxFeePerGas: fastGasPrice,
@@ -1173,39 +1174,37 @@ export default {
           .times(new BigNumber(10).pow(new BigNumber(18)))
           .dp(0, BigNumber.ROUND_DOWN)
           .toString(16)}`
-        log.info(this.gas.toString())
+        const txParams = {
+          from: this.selectedAddress,
+          to: toAddress,
+          value,
+          gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
+          ...gasPriceParams,
+          customNonceValue,
+        }
+        log.info(this.gas.toString(), txParams)
 
-        torus.web3.eth.sendTransaction(
-          {
-            from: this.selectedAddress,
-            to: toAddress,
-            value,
-            gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            ...gasPriceParams,
-            customNonceValue,
-          },
-          (error, transactionHash) => {
-            if (error) {
-              const regEx = /user denied transaction signature/i
-              if (!error.message.match(regEx)) {
-                this.messageModalShow = true
-                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
-              }
-              log.error(error)
-            } else {
-              // Send email to the user
-              this.sendEmail(this.selectedItem.symbol, transactionHash)
-              this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
-
+        torus.web3.eth.sendTransaction(txParams, (error, transactionHash) => {
+          if (error) {
+            const regEx = /user denied transaction signature/i
+            if (!error.message.match(regEx)) {
               this.messageModalShow = true
-              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+              this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+              this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+              this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
             }
+            log.error(error)
+          } else {
+            // Send email to the user
+            this.sendEmail(this.selectedItem.symbol, transactionHash)
+            this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
+
+            this.messageModalShow = true
+            this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+            this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
+            this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
           }
-        )
+        })
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
         const value = `0x${this.amount
           .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
@@ -1309,27 +1308,29 @@ export default {
       this.$router.go(-1)
     },
     updateTotalCost() {
-      if (this.isEip1559 && this.gasFees.gasFeeEstimates) {
+      const gasPriceEstimates = deepClone(this.gasFees.gasFeeEstimates)
+      if (this.isEip1559 && gasPriceEstimates) {
         // in case of custom gas limits, selectedLondonSpeed will be undefined
         // and we should n't change if user's custom gas limit is better than
-        // suggestedMaxFeePerGas.
+        // suggestedMaxPriorityFeePerGas + baseFee.
         if (!this.selectedLondonSpeed && bnGreaterThan(this.activeGasPrice, 0)) {
           // checking for lowest gas price for worst case
-          const { suggestedMaxFeePerGas } = this.gasFees.gasFeeEstimates[TRANSACTION_SPEED.LOW]
+          const { suggestedMaxPriorityFeePerGas } = gasPriceEstimates[TRANSACTION_SPEED.LOW]
           // show warning if tx with  user custom gas limit is likely to fail,
-          // when suggestedMaxFeePerGas is more than user defined limit
-          if (new BigNumber(this.activeGasPrice).lt(new BigNumber(suggestedMaxFeePerGas))) {
+          // when suggestedMaxPriorityFeePerGas + baseFee is more than user defined limit
+          const minFeeReq = new BigNumber(suggestedMaxPriorityFeePerGas).plus(new BigNumber(gasPriceEstimates.estimatedBaseFee))
+          if (new BigNumber(this.activeGasPrice).lt(minFeeReq)) {
             // TODO: @lionell, show this as warning msg at correct place
             this.sendAmountError = `This transaction is likely to fail as currently set gas price : ${this.activeGasPrice.toString()}
-            is less than average gas price: ${suggestedMaxFeePerGas.toString()} GWEI.`
+            is less than average gas price: ${minFeeReq.toString()} GWEI.`
           } else {
             this.sendAmountError = ''
           }
         }
         // update activeGasPrice for the default speed or speed which is selected by user
         if (this.selectedLondonSpeed) {
-          const { suggestedMaxFeePerGas, suggestedMaxPriorityFeePerGas } = this.gasFees.gasFeeEstimates[this.selectedLondonSpeed]
-          this.activeGasPrice = new BigNumber(suggestedMaxFeePerGas)
+          const { suggestedMaxPriorityFeePerGas } = gasPriceEstimates[this.selectedLondonSpeed]
+          this.activeGasPrice = new BigNumber(suggestedMaxPriorityFeePerGas).plus(new BigNumber(gasPriceEstimates.estimatedBaseFee))
           this.londonSpeedTiming = gasTiming(suggestedMaxPriorityFeePerGas, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
           if (this.displayAmount.isZero()) {
             this.totalCost = '0'

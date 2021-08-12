@@ -235,12 +235,8 @@ class TransactionController extends EventEmitter {
 
   async newUnapprovedTransaction(txParameters, options = {}) {
     log.debug(`MetaMaskController newUnapprovedTransaction ${JSON.stringify(txParameters)}`)
-    const txParams = { ...txParameters }
-    const eip1559Compatibility = await this.getEIP1559Compatibility()
-    if (eip1559Compatibility && txParams.gasPrice && txParams.maxPriorityFeePerGas && txParams.maxFeePerGas) {
-      delete txParams.gasPrice
-    }
-    const initialTxMeta = await this.addUnapprovedTransaction(txParams, options)
+
+    const initialTxMeta = await this.addUnapprovedTransaction(txParameters, options)
 
     // listen for tx completion (success, fail)
     return new Promise((resolve, reject) => {

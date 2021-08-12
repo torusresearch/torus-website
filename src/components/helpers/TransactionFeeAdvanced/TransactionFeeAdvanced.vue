@@ -147,10 +147,22 @@
       <v-card-actions class="pb-7 px-5">
         <v-layout>
           <v-flex xs-6>
-            <v-btn large block text color="text_2" @click="dialog = false">{{ t('walletTransfer.cancel') }}</v-btn>
+            <v-btn large block text color="text_2" @click="dialog = false">
+              {{ t('walletTransfer.cancel') }}
+            </v-btn>
           </v-flex>
           <v-flex xs-6>
-            <v-btn large color="torusBrand1" depressed block class="py-1 white--text" @click="save">{{ t('walletTransfer.save') }}</v-btn>
+            <v-btn
+              :disabled="errors.maxFeeErrors.length > 0 || errors.maxPriorityFeeErrors.length > 0"
+              large
+              color="torusBrand1"
+              depressed
+              block
+              class="py-1 white--text"
+              @click="save"
+            >
+              {{ t('walletTransfer.save') }}
+            </v-btn>
           </v-flex>
         </v-layout>
       </v-card-actions>
@@ -160,6 +172,7 @@
 
 <script>
 import BigNumber from 'bignumber.js'
+import { isEqual } from 'lodash'
 import log from 'loglevel'
 
 import { TRANSACTION_SPEED } from '../../../utils/enums'
@@ -202,7 +215,12 @@ export default {
       maxPriorityFee: new BigNumber('0'),
       customMaxPriorityFee: new BigNumber('0'),
       baseFee: '',
+      errors: {
+        maxFeeErrors: [],
+        maxPriorityFeeErrors: [],
+      },
       newSelectedSpeed: '',
+      oldSelectedSpeed: '', // last selected speed before user adds custom fee values
       newGas: new BigNumber('0'),
       maxTransactionFee: new BigNumber('0'),
       customTransactionFee: new BigNumber('0'),
@@ -278,20 +296,35 @@ export default {
         this.updateDetails(this.selectedSpeed)
       }
     },
+    gasFees(newValue, oldValue) {
+      if (!isEqual(newValue, oldValue)) {
+        this.updateDetails(this.newSelectedSpeed !== '' ? this.newSelectedSpeed : this.oldSelectedSpeed)
+      }
+    },
   },
   mounted() {
     this.updateDetails(this.selectedSpeed)
   },
   methods: {
     updateDetails(speed) {
-      log.info('this.gasFees', this.gasFees)
-      this.newSelectedSpeed = speed
+      log.info('this.gasFees', this.gasFees, this.customMaxTransactionFee)
+      // if custom values are not set only then update speed
+      // for custom values speed will fallback to oldSelectedSpeed gasEstimates
+      if (!bnGreaterThan(this.customMaxPriorityFee, 0) && !bnGreaterThan(this.customMaxTransactionFee, 0)) {
+        this.newSelectedSpeed = speed
+      }
       this.newGas = this.gas
       this.newNonce = this.nonce >= 0 ? this.nonce : this.nonceItems[0]
       if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[speed])) return
       this.baseFee = this.gasFees.gasFeeEstimates.estimatedBaseFee
-      this.maxPriorityFee = new BigNumber(this.gasFees.gasFeeEstimates[speed].suggestedMaxPriorityFeePerGas)
-      this.maxTransactionFee = new BigNumber(this.gasFees.gasFeeEstimates[speed].suggestedMaxFeePerGas)
+
+      // don't update to new values if custom fee values are added by user
+      this.maxPriorityFee = bnGreaterThan(this.customMaxPriorityFee, 0)
+        ? this.customMaxPriorityFee
+        : new BigNumber(this.gasFees.gasFeeEstimates[speed].suggestedMaxPriorityFeePerGas)
+      this.maxTransactionFee = bnGreaterThan(this.customMaxTransactionFee, 0)
+        ? this.customMaxTransactionFee
+        : new BigNumber(this.maxPriorityFee).plus(this.baseFee)
     },
     getFeeAmount(speed) {
       const gasFeeEstimate = this.gasFees.gasFeeEstimates
@@ -310,46 +343,72 @@ export default {
       return gasTiming(this.gasFees.gasFeeEstimates[speed].suggestedMaxPriorityFeePerGas, this.gasFees, this.t, 'walletTransfer.fee-edit-process-in')
     },
     selectSpeed(speed) {
+      // reset custom values if user is changing tx speed
+      this.customMaxPriorityFee = new BigNumber(0)
+      this.customMaxTransactionFee = new BigNumber(0)
       this.updateDetails(speed)
     },
     setGasLimit(limit) {
       log.info('setGasLimit', limit)
-      this.newGas = new BigNumber(limit)
-      this.newSelectedSpeed = ''
+      if (limit) {
+        this.newGas = new BigNumber(limit)
+        this.oldSelectedSpeed = this.newSelectedSpeed
+        this.newSelectedSpeed = ''
+      }
     },
     setMaxPriorityFee(fee) {
-      this.maxPriorityFee = new BigNumber(fee)
-      this.customMaxPriorityFee = this.maxPriorityFee
-      this.newSelectedSpeed = ''
+      log.info('fee', fee)
+      if (fee) {
+        this.maxPriorityFee = new BigNumber(fee)
+        this.customMaxPriorityFee = this.maxPriorityFee
+        const minFeeRequired = this.maxPriorityFee.plus(new BigNumber(this.baseFee))
+        if (bnLessThan(this.maxTransactionFee, minFeeRequired)) {
+          this.maxTransactionFee = minFeeRequired
+          this.customMaxTransactionFee = minFeeRequired
+        }
+        this.oldSelectedSpeed = this.newSelectedSpeed
+        this.newSelectedSpeed = ''
+      }
     },
     setMaxTransactionFee(fee) {
-      this.maxTransactionFee = new BigNumber(fee)
-      this.customMaxTransactionFee = this.maxTransactionFee
-      this.newSelectedSpeed = ''
+      if (fee) {
+        this.maxTransactionFee = new BigNumber(fee)
+        this.customMaxTransactionFee = this.maxTransactionFee
+        this.oldSelectedSpeed = this.newSelectedSpeed
+        this.newSelectedSpeed = ''
+      }
     },
     validateMaxPriorityFee(value) {
       const { gasFeeEstimates } = this.gasFees
+      if (!value || !value.toString()) {
+        this.errors.maxPriorityFeeErrors.push(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM)
+      }
       if (bnLessThanEqualTo(value, 0)) {
+        this.errors.maxPriorityFeeErrors.push(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM)
         return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM)
       }
       if (bnLessThan(value, gasFeeEstimates?.low?.suggestedMaxPriorityFeePerGas)) {
+        this.errors.maxPriorityFeeErrors.push(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_TOO_LOW)
         return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_TOO_LOW)
       }
       if (bnGreaterThan(value, this.maxTransactionFee)) {
+        this.errors.maxPriorityFeeErrors.push(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE)
         return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE)
       }
-
+      this.errors.maxPriorityFeeErrors = []
       return true
     },
     validateMaxTransactionFee(value) {
-      const { gasFeeEstimates } = this.gasFees
-
       if (bnGreaterThan(this.maxPriorityFee, value)) {
+        this.errors.maxFeeErrors.push(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE)
         return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE)
       }
-      if (bnLessThan(value, gasFeeEstimates?.low?.suggestedMaxFeePerGas)) {
+      if (bnLessThan(value, new BigNumber(this.maxPriorityFee).plus(new BigNumber(this.baseFee)))) {
+        this.errors.maxFeeErrors.push(GAS_FORM_ERRORS.MAX_FEE_TOO_LOW)
         return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_TOO_LOW)
       }
+      this.errors.maxFeeErrors = []
 
       return true
     },
