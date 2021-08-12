@@ -67,7 +67,7 @@ export default class TorusController extends EventEmitter {
     this.blockTracker = this.networkController.getProviderAndBlockTracker().blockTracker
 
     this.gasFeeController = new GasFeeController({
-      interval: 12_000,
+      interval: 15_000,
       getProvider: () => this.networkController.getProviderAndBlockTracker().provider,
       getCurrentNetworkEIP1559Compatibility: this.networkController.getEIP1559Compatibility.bind(this.networkController),
       getCurrentAccountEIP1559Compatibility: this.getCurrentAccountEIP1559Compatibility.bind(this),

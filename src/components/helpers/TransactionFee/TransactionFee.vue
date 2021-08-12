@@ -21,7 +21,7 @@
       <v-flex xs12 mb-1>
         <v-text-field
           outlined
-          :value="t('walletTransfer.fee-upto').replace(/{amount}/gi, maxTransactionFeeEth)"
+          :value="t('walletTransfer.fee-upto').replace(/{amount}/gi, maxFeeEthDisplay)"
           disabled
           :hint="`*${t('walletTransfer.fee-max-transaction-hint')}`"
           persistent-hint
@@ -80,6 +80,9 @@ export default {
     }
   },
   computed: {
+    maxFeeEthDisplay() {
+      return significantDigits(this.maxTransactionFeeEth, 6)
+    },
     maxTransactionFeeConverted() {
       const costConverted = this.currencyMultiplier.times(this.maxTransactionFeeEth)
       return `${significantDigits(costConverted)} ${this.selectedCurrency}`
@@ -111,8 +114,8 @@ export default {
     onSave(details) {
       const maxPriorityFee = bnGreaterThan(details.customMaxPriorityFee, 0) ? details.customMaxPriorityFee : details.maxPriorityFee
       // keep saved fees
-      this.maxTransactionFee = details.maxTransactionFee
-      this.maxPriorityFee = details.maxPriorityFee
+      this.maxTransactionFee = bnGreaterThan(details.customMaxTransactionFee, 0) ? details.customMaxTransactionFee : details.maxTransactionFee
+      this.maxPriorityFee = maxPriorityFee
 
       this.setMaxTransactionFee(details.gas, maxPriorityFee, details.baseFee, details.customMaxTransactionFee)
       this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
@@ -120,15 +123,13 @@ export default {
     },
     setMaxTransactionFee(gas, maxPriorityFee, baseFee, customMaxTxFee = null) {
       if (customMaxTxFee && bnGreaterThan(customMaxTxFee, 0)) {
-        const cost = gas.times(customMaxTxFee).div(new BigNumber(10).pow(new BigNumber(9)))
-        this.maxTransactionFeeEth = significantDigits(cost)
+        this.maxTransactionFeeEth = gas.times(customMaxTxFee).div(new BigNumber(10).pow(new BigNumber(9)))
         return
       }
       const baseFeeBn = new BigNumber(baseFee)
       const maxPriorityFeeBn = new BigNumber(maxPriorityFee)
       const gasPrice = baseFeeBn.plus(maxPriorityFeeBn)
-      const cost = gas.times(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
-      this.maxTransactionFeeEth = significantDigits(cost)
+      this.maxTransactionFeeEth = gas.times(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
     },
   },
 }

@@ -317,15 +317,15 @@ export default {
       log.info('this.gasFees', this.gasFees, this.customMaxTransactionFee)
       this.newGas = this.gas
       this.newNonce = this.nonce >= 0 ? this.nonce : this.nonceItems[0]
-      this.baseFee = this.gasFees.gasFeeEstimates.estimatedBaseFee
+      this.baseFee = this.gasFees.gasFeeEstimates?.estimatedBaseFee
       // if custom speed is not set, show advance options and set custom fees
       if (!speed) {
         this.showAdvance = true
         this.maxPriorityFee = this.maxPriorityFeeOld
         this.maxTransactionFee = this.maxTransactionFeeOld
       }
-      // if custom values are not set only then update speed
-      // for custom values speed will fallback to oldSelectedSpeed gasEstimates
+      // if custom values are not set only then update speed.
+      // For custom values speed will fallback to oldSelectedSpeed gasEstimates
       if (!bnGreaterThan(this.customMaxPriorityFee, 0) && !bnGreaterThan(this.customMaxTransactionFee, 0)) {
         this.newSelectedSpeed = speed
       }
@@ -387,6 +387,7 @@ export default {
       if (fee) {
         this.maxTransactionFee = new BigNumber(fee)
         this.customMaxTransactionFee = this.maxTransactionFee
+        this.customMaxPriorityFee = bnGreaterThan(this.customMaxPriorityFee, 0) ? this.customMaxPriorityFee : this.maxPriorityFee
         this.oldSelectedSpeed = this.newSelectedSpeed
         this.newSelectedSpeed = ''
       }
