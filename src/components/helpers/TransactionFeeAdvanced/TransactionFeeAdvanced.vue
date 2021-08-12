@@ -418,11 +418,11 @@ export default {
         gasFeeEstimates?.high &&
         bnGreaterThan(this.maxPriorityFee, gasFeeEstimates.high.suggestedMaxPriorityFeePerGas * HIGH_FEE_WARNING_MULTIPLIER)
       ) {
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_HIGH_WARNING)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_HIGH_WARNING, this.t)
       }
 
       if (gasFeeEstimates?.high && bnGreaterThan(this.maxTransactionFee, gasFeeEstimates.high.suggestedMaxFeePerGas * HIGH_FEE_WARNING_MULTIPLIER)) {
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_HIGH_WARNING)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_HIGH_WARNING, this.t)
       }
       return ''
     },

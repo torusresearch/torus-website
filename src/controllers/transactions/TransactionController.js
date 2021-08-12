@@ -24,6 +24,7 @@ import {
   CONTRACT_TYPE_ETH,
   GAS_ESTIMATE_TYPES,
   HARDFORKS,
+  INFURA_PROVIDER_TYPES,
   MAINNET,
   OLD_ERC721_LIST,
   RPC,
@@ -176,7 +177,7 @@ class TransactionController extends EventEmitter {
     // type will be one of our default network names or 'rpc'. the default
     // network names are sufficient configuration, simply pass the name as the
     // chain argument in the constructor.
-    if (type !== RPC) {
+    if (type !== RPC && INFURA_PROVIDER_TYPES.has(type)) {
       return new Common({
         chain: type,
         hardfork,
@@ -187,7 +188,7 @@ class TransactionController extends EventEmitter {
     // since we only support EVM compatible chains, and then override the
     // name, chainId and networkId properties. This is done using the
     // `forCustomChain` static method on the Common class.
-    const chainId = Number.parseInt(this._getCurrentChainId(), 16)
+    const chainId = this._getCurrentChainId()
     const networkId = this.networkStore.getState()
 
     const customChainParams = {
