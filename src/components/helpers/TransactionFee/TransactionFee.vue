@@ -44,7 +44,7 @@
 import BigNumber from 'bignumber.js'
 import { isEqual } from 'lodash'
 
-import { gasTiming, significantDigits } from '../../../utils/utils'
+import { bnGreaterThan, gasTiming, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
 import TransactionFeeAdvanced from '../TransactionFeeAdvanced'
 
@@ -102,12 +102,18 @@ export default {
   },
   methods: {
     onSave(details) {
-      this.setMaxTransactionFee(details.gas, details.maxPriorityFee, details.baseFee)
-      this.feeTime = gasTiming(details.maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+      const maxPriorityFee = bnGreaterThan(details.customMaxPriorityFee, 0) ? details.customMaxPriorityFee : details.maxPriorityFee
+      this.setMaxTransactionFee(details.gas, maxPriorityFee, details.baseFee, details.customMaxTransactionFee)
+      this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
       this.$emit('save', details)
     },
-    setMaxTransactionFee(gas, maxPriorityFee, baseFee) {
+    setMaxTransactionFee(gas, maxPriorityFee, baseFee, customMaxTxFee = null) {
       this.maxPriorityFee = maxPriorityFee
+      if (customMaxTxFee && bnGreaterThan(customMaxTxFee, 0)) {
+        const cost = gas.times(customMaxTxFee).div(new BigNumber(10).pow(new BigNumber(9)))
+        this.maxTransactionFeeEth = significantDigits(cost)
+        return
+      }
       const baseFeeBn = new BigNumber(baseFee)
       const maxPriorityFeeBn = new BigNumber(maxPriorityFee)
       const gasPrice = baseFeeBn.plus(maxPriorityFeeBn)
