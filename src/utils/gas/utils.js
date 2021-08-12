@@ -11,25 +11,25 @@ export const GAS_FORM_ERRORS = {
 // todo: add to locales
 const messages = {
   editGasMaxFeeHigh: {
-    message: 'Max transactionfee fee is higher than necessary',
+    message: 'walletTransfer.fee-error-maxfee-high',
   },
   editGasMaxFeeLow: {
-    message: 'Max transactionfee fee too low for network conditions',
+    message: 'walletTransfer.fee-error-maxfee-low',
   },
   editGasMaxFeePriorityImbalance: {
-    message: 'Max transactionfee cannot be lower than max priority fee',
+    message: 'walletTransfer.fee-error-maxfee-imbalance',
   },
   editGasMaxFeeTooltip: {
-    message: 'The max transactionfee fee is the most you’ll pay (base fee + priority fee).',
+    message: 'walletTransfer.fee-error-maxfee-tooltip',
   },
   editGasMaxPriorityFeeBelowMinimum: {
-    message: 'Max priority fee must be greater than 0 GWEI',
+    message: 'walletTransfer.fee-error-priorityfee-below',
   },
   editGasMaxPriorityFeeHigh: {
-    message: 'Max priority fee is higher than necessary. You may pay more than needed.',
+    message: 'walletTransfer.fee-error-priorityfee-high',
   },
   editGasMaxPriorityFeeLow: {
-    message: 'Max priority fee extremely low for network conditions',
+    message: 'walletTransfer.fee-error-priorityfee-low',
   },
 }
 // todo: use translations
@@ -37,19 +37,19 @@ const messages = {
 export function getGasFormErrorText(type, t) {
   switch (type) {
     case GAS_FORM_ERRORS.MAX_PRIORITY_FEE_TOO_LOW:
-      return messages.editGasMaxPriorityFeeLow.message
+      return t(messages.editGasMaxPriorityFeeLow.message)
     case GAS_FORM_ERRORS.MAX_FEE_TOO_LOW:
-      return messages.editGasMaxFeeLow.message
+      return t(messages.editGasMaxFeeLow.message)
     case GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM:
-      return messages.editGasMaxPriorityFeeBelowMinimum.message
+      return t(messages.editGasMaxPriorityFeeBelowMinimum.message)
     case GAS_FORM_ERRORS.MAX_PRIORITY_FEE_HIGH_WARNING:
-      return messages.editGasMaxPriorityFeeHigh.message
+      return t(messages.editGasMaxPriorityFeeHigh.message)
     case GAS_FORM_ERRORS.MAX_FEE_HIGH_WARNING:
-      return messages.editGasMaxFeeHigh.message
+      return t(messages.editGasMaxFeeHigh.message)
     case GAS_FORM_ERRORS.MAX_FEE_IMBALANCE:
-      return messages.editGasMaxFeePriorityImbalance.message
+      return t(messages.editGasMaxFeePriorityImbalance.message)
     case GAS_FORM_ERRORS.GAS_PRICE_TOO_LOW:
-      return messages.editGasPriceTooLow.message
+      return t(messages.editGasPriceTooLow.message)
     default:
       return ''
   }

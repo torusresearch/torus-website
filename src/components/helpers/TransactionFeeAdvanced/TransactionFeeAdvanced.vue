@@ -382,19 +382,19 @@ export default {
       const { gasFeeEstimates } = this.gasFees
       if (!value || !value.toString()) {
         this.errors.maxPriorityFeeErrors.push(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM)
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM, this.t)
       }
       if (bnLessThanEqualTo(value, 0)) {
         this.errors.maxPriorityFeeErrors.push(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM)
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM, this.t)
       }
       if (bnLessThan(value, gasFeeEstimates?.low?.suggestedMaxPriorityFeePerGas)) {
         this.errors.maxPriorityFeeErrors.push(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_TOO_LOW)
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_TOO_LOW)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_TOO_LOW, this.t)
       }
       if (bnGreaterThan(value, this.maxTransactionFee)) {
         this.errors.maxPriorityFeeErrors.push(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE)
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE, this.t)
       }
       this.errors.maxPriorityFeeErrors = []
       return true
@@ -402,11 +402,11 @@ export default {
     validateMaxTransactionFee(value) {
       if (bnGreaterThan(this.maxPriorityFee, value)) {
         this.errors.maxFeeErrors.push(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE)
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE, this.t)
       }
       if (bnLessThan(value, new BigNumber(this.maxPriorityFee).plus(new BigNumber(this.baseFee)))) {
         this.errors.maxFeeErrors.push(GAS_FORM_ERRORS.MAX_FEE_TOO_LOW)
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_TOO_LOW)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_TOO_LOW, this.t)
       }
       this.errors.maxFeeErrors = []
 

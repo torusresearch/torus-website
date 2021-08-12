@@ -54,9 +54,9 @@ Vue.use(VueGtm, {
 
 Vue.mixin({
   methods: {
-    t(data) {
+    t(data, ...params) {
       if (data === '') return data
-      const translated = vuetify.framework.lang.t(`$vuetify.${data}`)
+      const translated = vuetify.framework.lang.t(`$vuetify.${data}`, ...params)
       return translated.replace('$vuetify.', '')
     },
   },

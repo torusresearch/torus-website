@@ -337,6 +337,7 @@
                   {{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}
                 </div>
               </v-flex>
+              <v-flex v-if="transactionWarning" xs12 mt-3 class="text-right text-caption warning--text">{{ transactionWarning }}</v-flex>
               <v-flex xs12 mt-3 class="text-right">
                 <v-btn
                   id="wallet-transfer-submit"
@@ -573,6 +574,7 @@ export default {
       showQrScanner: false,
       selectedLondonSpeed: TRANSACTION_SPEED.MEDIUM,
       londonSpeedTiming: '',
+      transactionWarning: '',
     }
   },
   computed: {
@@ -1323,11 +1325,9 @@ export default {
           // when suggestedMaxPriorityFeePerGas + baseFee is more than user defined limit
           const minFeeReq = new BigNumber(suggestedMaxPriorityFeePerGas).plus(new BigNumber(gasPriceEstimates.estimatedBaseFee))
           if (new BigNumber(this.activeGasPrice).lt(minFeeReq)) {
-            // TODO: @lionell, show this as warning msg at correct place
-            this.sendAmountError = `This transaction is likely to fail as currently set gas price : ${this.activeGasPrice.toString()}
-            is less than average gas price: ${minFeeReq.toString()} GWEI.`
+            this.transactionWarning = this.t('walletTransfer.fee-error-likely-fail', this.activeGasPrice.toString(), minFeeReq.toString())
           } else {
-            this.sendAmountError = ''
+            this.transactionWarning = ''
           }
         }
         // update activeGasPrice for the default speed or speed which is selected by user
