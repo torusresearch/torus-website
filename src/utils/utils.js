@@ -71,6 +71,7 @@ import {
   SUPPORTED_NETWORK_TYPES,
   SVG,
   TEST_CHAINS,
+  TEST_CHAINS_NUMERIC_IDS,
   THEME_DARK_BLACK_NAME,
   TWITTER,
   WECHAT,
@@ -788,10 +789,10 @@ export async function validateImageUrl(url) {
 }
 
 export function getChainType(chainId) {
-  if (chainId === MAINNET_CHAIN_ID) {
+  if (chainId === MAINNET_CHAIN_ID || chainId === Number.parseInt(MAINNET_CHAIN_ID, 16)) {
     return 'mainnet'
   }
-  if (TEST_CHAINS.includes(chainId)) {
+  if (TEST_CHAINS.includes(chainId) || TEST_CHAINS_NUMERIC_IDS.includes(chainId)) {
     return 'testnet'
   }
   return 'custom'
@@ -857,4 +858,11 @@ export function bnLessThanEqualTo(a, b) {
     return null
   }
   return new BigNumber(a, 10).lte(b, 10)
+}
+
+export function bnEqualTo(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).isEqualTo(b, 10)
 }

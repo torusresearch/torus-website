@@ -534,7 +534,7 @@ export default {
       toggle_exclusive: 0,
       gas: new BigNumber('21000'),
       activeGasPrice: new BigNumber('0'),
-      customMaxPriorityFee: new BigNumber('0'),
+      activePriorityFee: new BigNumber('0'),
       gasPriceInCurrency: new BigNumber('0'),
       isFastChecked: false,
       speedSelected: '',
@@ -1160,10 +1160,8 @@ export default {
       const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
       const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
       let gasPriceParams = {}
-      if (this.isEip1559 && this.gasFees.gasFeeEstimates) {
-        const finalMaxPriorityFee = bnGreaterThan(this.customMaxPriorityFee, 0)
-          ? this.customMaxPriorityFee
-          : new BigNumber(this.gasFees.gasFeeEstimates[this.selectedLondonSpeed].suggestedMaxPriorityFeePerGas)
+      if (this.isEip1559) {
+        const finalMaxPriorityFee = this.activePriorityFee
         const finalMaxPriorityFeeHex = `0x${finalMaxPriorityFee.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
         gasPriceParams = {
           maxFeePerGas: fastGasPrice,
@@ -1334,6 +1332,7 @@ export default {
         if (this.selectedLondonSpeed) {
           const { suggestedMaxPriorityFeePerGas } = gasPriceEstimates[this.selectedLondonSpeed]
           this.activeGasPrice = new BigNumber(suggestedMaxPriorityFeePerGas).plus(new BigNumber(gasPriceEstimates.estimatedBaseFee))
+          this.activePriorityFee = new BigNumber(suggestedMaxPriorityFeePerGas)
           this.londonSpeedTiming = gasTiming(suggestedMaxPriorityFeePerGas, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
           if (this.displayAmount.isZero()) {
             this.totalCost = '0'
@@ -1416,7 +1415,7 @@ export default {
       this.nonce = data.nonce || -1
       this.selectedLondonSpeed = data.selectedSpeed
       this.activeGasPrice = maxTxFee
-      this.customMaxPriorityFee = data.customMaxPriorityFee
+      this.activePriorityFee = maxPriorityFee
       this.londonSpeedTiming = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
       this.gas = data.gas
       this.hasCustomGasLimit = true

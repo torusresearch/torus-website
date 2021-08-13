@@ -123,7 +123,6 @@ const VuexStore = new Vuex.Store({
         return
       }
       popupPayload.balance = fromWei(weiBalance.toString())
-
       if (request.isWalletConnectRequest && isMain) {
         const originObj = { href: '', hostname: '' }
         try {
@@ -224,11 +223,18 @@ function handleConfirm(ev) {
     let txMeta = unApprovedTransactions.find((x) => x.id === ev.data.id)
     log.info('STANDARD TX PARAMS:', txMeta)
 
-    if (ev.data.gasPrice || ev.data.gas || ev.data.customNonceValue) {
+    if (ev.data.gasPrice || (ev.data.maxPriorityFeePerGas && ev.data.maxFeePerGas) || ev.data.gas || ev.data.customNonceValue) {
       const newTxMeta = JSON.parse(JSON.stringify(txMeta))
       if (ev.data.gasPrice) {
         log.info('Changed gas price to:', ev.data.gasPrice)
         newTxMeta.txParams.gasPrice = ev.data.gasPrice
+      }
+      if (ev.data.maxPriorityFeePerGas && ev.data.maxFeePerGas) {
+        newTxMeta.txParams.maxPriorityFeePerGas = ev.data.maxPriorityFeePerGas
+        newTxMeta.txParams.maxFeePerGas = ev.data.maxFeePerGas
+      }
+      if (ev.data.txEnvelopeType) {
+        newTxMeta.txParams.type = ev.data.txEnvelopeType
       }
       if (ev.data.gas) {
         log.info('Changed gas limit to:', ev.data.gas)

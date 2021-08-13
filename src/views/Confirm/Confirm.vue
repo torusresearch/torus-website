@@ -74,11 +74,22 @@ export default {
     bc.postMessage({ data: { type: POPUP_LOADED, id: queryParameterId } })
   },
   methods: {
-    async triggerSign({ gasPrice, gas, customNonceValue, id }) {
+    async triggerSign({ gasPrice, gas, customNonceValue, id, maxFeePerGas, maxPriorityFeePerGas, txEnvelopeType }) {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
 
       await bc.postMessage({
-        data: { type: POPUP_RESULT, gasPrice, gas, id, txType: this.type, customNonceValue, approve: true },
+        data: {
+          type: POPUP_RESULT,
+          gasPrice,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          txEnvelopeType,
+          gas,
+          id,
+          txType: this.type,
+          customNonceValue,
+          approve: true,
+        },
       })
       bc.close()
     },

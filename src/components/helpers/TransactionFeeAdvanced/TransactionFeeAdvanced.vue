@@ -74,7 +74,7 @@
                   </template>
                 </v-combobox>
               </div>
-              <div>
+              <!-- <div>
                 <div class="text-subtitle-2 mb-2">
                   {{ t('walletTransfer.fee-edit-base-fee') }}
                   <HelpTooltip :title="t('walletTransfer.fee-edit-base-fee')" :description="t('walletTransfer.fee-edit-base-fee-desc')" />
@@ -89,7 +89,7 @@
                     </div>
                   </template>
                 </v-text-field>
-              </div>
+              </div> -->
               <div>
                 <div class="text-subtitle-2 mb-2">
                   {{ t('walletTransfer.fee-edit-max') }}
@@ -171,7 +171,7 @@ import log from 'loglevel'
 
 import { TRANSACTION_SPEED } from '../../../utils/enums'
 import { GAS_FORM_ERRORS, getGasFormErrorText } from '../../../utils/gas/utils'
-import { bnGreaterThan, bnLessThan, bnLessThanEqualTo, gasTiming, significantDigits } from '../../../utils/utils'
+import { bnEqualTo, bnGreaterThan, bnLessThan, bnLessThanEqualTo, gasTiming, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
 
 const HIGH_FEE_WARNING_MULTIPLIER = 1.5
@@ -189,7 +189,12 @@ export default {
       type: String,
       default: '',
     },
-    gas: { type: BigNumber, default: new BigNumber('0') },
+    gas: {
+      type: BigNumber,
+      default() {
+        return new BigNumber('0')
+      },
+    },
     gasFees: {
       type: Object,
       default() {
@@ -199,10 +204,22 @@ export default {
     selectedCurrency: { type: String, default: 'USD' },
     currencyMultiplier: {
       type: BigNumber,
-      default: new BigNumber('0'),
+      default() {
+        return new BigNumber('0')
+      },
     },
-    maxPriorityFeeOld: { type: BigNumber, default: new BigNumber('0') },
-    maxTransactionFeeOld: { type: BigNumber, default: new BigNumber('0') },
+    initialMaxPriorityFeePerGas: {
+      type: BigNumber,
+      default() {
+        return new BigNumber('0')
+      },
+    },
+    initialMaxFeePerGas: {
+      type: BigNumber,
+      default() {
+        return new BigNumber('0')
+      },
+    },
   },
   data() {
     return {
@@ -216,7 +233,7 @@ export default {
       oldSelectedSpeed: '', // last selected speed before user adds custom fee values
       newGas: new BigNumber('0'),
       maxTransactionFee: new BigNumber('0'),
-      customTransactionFee: new BigNumber('0'),
+      customMaxTransactionFee: new BigNumber('0'),
       newNonce: 0,
       nonceItems: [
         {
@@ -314,30 +331,74 @@ export default {
   },
   methods: {
     updateDetails(speed) {
-      log.info('this.gasFees', this.gasFees, this.customMaxTransactionFee)
+      log.info('this.gasFees', this.initialMaxFeePerGas.toString(), speed)
       this.newGas = this.gas
       this.newNonce = this.nonce >= 0 ? this.nonce : this.nonceItems[0]
       this.baseFee = this.gasFees.gasFeeEstimates?.estimatedBaseFee
-      // if custom speed is not set, show advance options and set custom fees
-      if (!speed) {
+      this.newSelectedSpeed = speed
+      if (speed) {
+        if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[speed])) return
+        // don't update to new values if custom fee values are added by user
+        this.maxPriorityFee = bnGreaterThan(this.customMaxPriorityFee, 0)
+          ? this.customMaxPriorityFee
+          : new BigNumber(this.gasFees.gasFeeEstimates[speed].suggestedMaxPriorityFeePerGas)
+        this.maxTransactionFee = bnGreaterThan(this.customMaxTransactionFee, 0)
+          ? this.customMaxTransactionFee
+          : new BigNumber(this.maxPriorityFee).plus(this.baseFee)
+      } else {
+        this.refreshCustomFeeParams()
+      }
+    },
+    /**
+     * This function is used update custom fee options as default fee params
+     * props which are sent by dapp initially. These options will be not be
+     * used once user will select speed or set custom fee values from advance options inputs.
+     *
+     */
+    refreshCustomFeeParams() {
+      /**
+       *
+       * Speed will be not available in two scenarios:-
+       *
+       * 1. Dapp has sent gas fee options in tx params.
+       * In this case initialMaxPriorityFeePerGas and initialMaxFeePerGas will be sent as props.
+       *
+       * 2. User has modified fee input values from advance options. In this case
+       * initialMaxPriorityFeePerGas and initialMaxFeePerGas should not be used if
+       * values of customMaxPriorityFee and customMaxTransactionFee are diff from them.
+       *
+       */
+      if (!this.newSelectedSpeed) {
         this.showAdvance = true
-        this.maxPriorityFee = this.maxPriorityFeeOld
-        this.maxTransactionFee = this.maxTransactionFeeOld
+        this.customMaxPriorityFee = this.getActivePriorityFeePerGas()
+        this.customMaxTransactionFee = this.getActiveMaxFeePerGas()
+        this.maxPriorityFee = this.customMaxPriorityFee
+        this.maxTransactionFee = this.customMaxTransactionFee
       }
-      // if custom values are not set only then update speed.
-      // For custom values speed will fallback to oldSelectedSpeed gasEstimates
-      if (!bnGreaterThan(this.customMaxPriorityFee, 0) && !bnGreaterThan(this.customMaxTransactionFee, 0)) {
-        this.newSelectedSpeed = speed
+    },
+    getActivePriorityFeePerGas() {
+      if (bnGreaterThan(this.initialMaxPriorityFeePerGas, 0)) {
+        if (bnGreaterThan(this.customMaxPriorityFee, 0) && !bnEqualTo(this.initialMaxPriorityFeePerGas, this.customMaxPriorityFee)) {
+          return this.customMaxPriorityFee
+        }
+        return this.initialMaxPriorityFeePerGas
       }
-      if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[speed])) return
-
-      // don't update to new values if custom fee values are added by user
-      this.maxPriorityFee = bnGreaterThan(this.customMaxPriorityFee, 0)
-        ? this.customMaxPriorityFee
-        : new BigNumber(this.gasFees.gasFeeEstimates[speed].suggestedMaxPriorityFeePerGas)
-      this.maxTransactionFee = bnGreaterThan(this.customMaxTransactionFee, 0)
-        ? this.customMaxTransactionFee
-        : new BigNumber(this.maxPriorityFee).plus(this.baseFee)
+      if (bnGreaterThan(this.customMaxPriorityFee, 0)) {
+        return this.customMaxPriorityFee
+      }
+      return this.maxPriorityFee()
+    },
+    getActiveMaxFeePerGas() {
+      if (bnGreaterThan(this.initialMaxFeePerGas, 0)) {
+        if (bnGreaterThan(this.customMaxTransactionFee, 0) && !bnEqualTo(this.initialMaxFeePerGas, this.customMaxTransactionFee)) {
+          return this.customMaxTransactionFee
+        }
+        return this.initialMaxFeePerGas
+      }
+      if (bnGreaterThan(this.customMaxTransactionFee, 0)) {
+        return this.customMaxTransactionFee
+      }
+      return this.maxTransactionFee()
     },
     getFeeAmount(speed) {
       const gasFeeEstimate = this.gasFees.gasFeeEstimates

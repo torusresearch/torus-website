@@ -85,7 +85,7 @@ export const XDAI_BLOCK_EXPLORER = 'https://blockscout.com/poa/xdai'
 export const BSC_MAINNET_URL = 'https://bsc-dataseed.binance.org'
 export const BSC_MAINNET_BLOCK_EXPLORER = 'https://bscscan.com'
 
-export const BSC_TESTNET_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545'
+export const BSC_TESTNET_URL = 'https://data-seed-prebsc-2-s3.binance.org:8545'
 export const BSC_TESTNET_BLOCK_EXPLORER = 'https://testnet.bscscan.com'
 
 export const MATIC_TICKER = 'MATIC'
@@ -560,6 +560,7 @@ export const CHAIN_ID_TO_GAS_LIMIT_BUFFER_MAP = {
 }
 
 export const TEST_CHAINS = [ROPSTEN_CHAIN_ID, RINKEBY_CHAIN_ID, GOERLI_CHAIN_ID, KOVAN_CHAIN_ID]
+export const TEST_CHAINS_NUMERIC_IDS = [ROPSTEN_CODE, RINKEBY_CODE, GOERLI_CODE, KOVAN_CODE]
 
 const TWENTY_ONE_THOUSAND = 21_000
 const ONE_HUNDRED_THOUSAND = 100_000

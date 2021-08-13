@@ -73,8 +73,8 @@
           :nonce="nonce"
           :selected-currency="selectedCurrency"
           :currency-multiplier="currencyMultiplier"
-          :max-transaction-fee-old="maxFeePerGas"
-          :max-priority-fee-old="maxPriorityFeePerGas"
+          :initial-max-fee-per-gas="initialMaxFeePerGas"
+          :initial-max-priority-fee-per-gas="initialMaxPriorityFeePerGas"
           :is-confirm="true"
           @save="onTransferFeeSelect"
         />
@@ -367,10 +367,11 @@ import {
   CONTRACT_TYPE_ETH,
   GAS_ESTIMATE_TYPES,
   MESSAGE_TYPE,
+  TRANSACTION_ENVELOPE_TYPES,
   TRANSACTION_TYPES,
 } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
-import { addressSlicer, gasTiming, isMain, significantDigits } from '../../../utils/utils'
+import { addressSlicer, bnGreaterThan, gasTiming, isMain, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import TransactionFee from '../../helpers/TransactionFee'
@@ -407,6 +408,7 @@ export default {
       origin: { href: '', hostname: '' },
       balance: new BigNumber('0'),
       gasPrice: new BigNumber('10'),
+      activePriorityFee: new BigNumber('0'),
       value: new BigNumber('0'),
       amountTo: '',
       amountValue: '',
@@ -458,8 +460,8 @@ export default {
       isSpecialContract: false,
       selectedLondonSpeed: '',
       londonSpeedTiming: '',
-      maxFeePerGas: new BigNumber(0),
-      maxPriorityFeePerGas: new BigNumber(0),
+      initialMaxFeePerGas: new BigNumber(0),
+      initialMaxPriorityFeePerGas: new BigNumber(0),
     }
   },
   computed: {
@@ -692,9 +694,9 @@ export default {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true
         }
-        this.maxFeePerGas = new BigNumber(maxFeePerGas).div(new BigNumber('10').pow(new BigNumber('9')))
-        this.maxPriorityFeePerGas = new BigNumber(maxPriorityFeePerGas).div(new BigNumber('10').pow(new BigNumber('9')))
-        log.info(this.maxFeePerGas.toString(), this.maxPriorityFeePerGas.toString(), 'fees')
+        this.initialMaxFeePerGas = new BigNumber(hexToNumber(maxFeePerGas)).div(weiInGwei)
+        this.initialMaxPriorityFeePerGas = new BigNumber(hexToNumber(maxPriorityFeePerGas)).div(weiInGwei)
+        this.activePriorityFee = this.initialMaxPriorityFeePerGas
         this.currencyRateDate = this.getDate()
         this.receiver = this.amountTo
         this.value = finalValue // value of eth sending
@@ -706,7 +708,7 @@ export default {
         this.txData = data // data hex
         this.txDataParams = txDataParameters !== '' ? JSON.stringify(txDataParameters, null, 2) : ''
         this.sender = sender // address of sender
-        this.gasCost = gweiGasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
+        this.gasCost = this.gasEstimate.times(gweiGasPrice).div(new BigNumber('10').pow(new BigNumber('9')))
         this.txFees = this.gasCost.times(this.currencyMultiplier)
         const ethCost = finalValue.plus(this.gasCost)
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
@@ -733,22 +735,39 @@ export default {
       const gasPriceHex = `0x${this.gasPrice.times(weiInGwei).toString(16)}`
       const gasHex = this.gasEstimate.eq(new BigNumber('0')) ? undefined : `0x${this.gasEstimate.toString(16)}`
       const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
-      if (this.isConfirmModal) {
-        this.$emit('triggerSign', {
-          id: this.id,
-          txType: this.type,
-          gasPrice: gasPriceHex,
-          gas: gasHex,
-          customNonceValue,
-          approve: true,
-        })
+
+      let gasPriceParams = {
+        gasPrice: gasPriceHex,
+      }
+      if (this.isEip1559) {
+        const finalMaxPriorityFee = this.activePriorityFee
+        const finalMaxPriorityFeeHex = `0x${finalMaxPriorityFee.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
+        gasPriceParams = {
+          maxFeePerGas: gasPriceHex,
+          maxPriorityFeePerGas: finalMaxPriorityFeeHex,
+        }
+      }
+      let params = {
+        id: this.id,
+        gas: gasHex,
+        customNonceValue,
+        ...gasPriceParams,
+      }
+      if (params.maxPriorityFeePerGas && params.maxFeePerGas) {
+        params.txEnvelopeType = TRANSACTION_ENVELOPE_TYPES.FEE_MARKET
       } else {
-        this.$emit('triggerSign', {
-          id: this.id,
-          gasPrice: gasPriceHex,
-          gas: gasHex,
-          customNonceValue,
-        })
+        params.txEnvelopeType = TRANSACTION_ENVELOPE_TYPES.LEGACY
+      }
+
+      if (this.isConfirmModal) {
+        params = {
+          ...params,
+          txType: this.type,
+          approve: true,
+        }
+        this.$emit('triggerSign', params)
+      } else {
+        this.$emit('triggerSign', params)
       }
     },
     triggerDeny() {
@@ -787,11 +806,18 @@ export default {
     },
     onTransferFeeSelect(data) {
       log.info('onTransferFeeSelect: ', data)
+      const maxPriorityFee = bnGreaterThan(data.customMaxPriorityFee, 0) ? data.customMaxPriorityFee : data.maxPriorityFee
+      const maxTxFee = bnGreaterThan(data.customMaxTransactionFee, 0) ? data.customMaxTransactionFee : data.maxTransactionFee
+      // at this point user has modified initial gas fee txParams
+      // so set it to zero.
+      this.initialMaxPriorityFeePerGas = new BigNumber(0)
+      this.initialMaxFeePerGas = new BigNumber(0)
       this.nonce = data.nonce || -1
-      this.gasPrice = data.gas
+      this.gasPrice = maxTxFee
+      this.activePriorityFee = maxPriorityFee
       this.selectedLondonSpeed = data.selectedSpeed
-      this.gasEstimate = data.maxTransactionFee
-      this.londonSpeedTiming = gasTiming(data.maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+      this.gasEstimate = data.gas
+      this.londonSpeedTiming = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
       this.hasCustomGasLimit = true
       this.calculateTransaction()
     },
@@ -814,7 +840,7 @@ export default {
       return this.t('dappTransfer.contractInteraction')
     },
     calculateTransaction() {
-      this.gasCost = this.gasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
+      this.gasCost = this.gasEstimate.times(this.gasPrice).div(new BigNumber('10').pow(new BigNumber('9')))
       this.txFees = this.gasCost.times(this.currencyMultiplier)
       const ethCost = this.value.plus(this.gasCost)
       this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0

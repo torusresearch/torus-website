@@ -13,8 +13,8 @@
           :gas-fees="gasFees"
           :selected-currency="selectedCurrency"
           :currency-multiplier="currencyMultiplier"
-          :max-transaction-fee-old="maxTransactionFee"
-          :max-priority-fee-old="maxPriorityFee"
+          :initial-max-fee-per-gas="initialMaxFeePerGas"
+          :initial-max-priority-fee-per-gas="initialMaxPriorityFeePerGas"
           @save="onSave"
         />
       </v-flex>
@@ -77,15 +77,25 @@ export default {
         return {}
       },
     },
-    maxTransactionFeeOld: { type: BigNumber, default: new BigNumber('0') },
-    maxPriorityFeeOld: { type: BigNumber, default: new BigNumber('0') },
+    initialMaxFeePerGas: {
+      type: BigNumber,
+      default() {
+        return new BigNumber('0')
+      },
+    },
+    initialMaxPriorityFeePerGas: {
+      type: BigNumber,
+      default() {
+        return new BigNumber('0')
+      },
+    },
   },
   data() {
     return {
       maxTransactionFeeEth: '',
       feeTime: '',
-      maxPriorityFee: new BigNumber(0),
-      maxTransactionFee: new BigNumber(0),
+      // maxPriorityFee: new BigNumber(0),
+      // maxTransactionFee: new BigNumber(0),
     }
   },
   computed: {
@@ -111,23 +121,19 @@ export default {
   },
   mounted() {
     const gasFeeEstimate = this.gasFees.gasFeeEstimates
-    if (this.selectedSpeed) {
-      this.maxTransactionFee = new BigNumber(gasFeeEstimate[this.selectedSpeed].suggestedMaxFeePerGas)
-      this.maxPriorityFee = gasFeeEstimate[this.selectedSpeed].suggestedMaxPriorityFeePerGas
-    } else {
-      this.maxTransactionFee = new BigNumber(this.maxTransactionFeeOld)
-      this.maxPriorityFee = new BigNumber(this.maxPriorityFeeOld)
+    let maxPriorityFee = new BigNumber(this.initialMaxPriorityFeePerGas)
+
+    // overide initial priority fee selected speed is available
+    if (this.selectedSpeed && gasFeeEstimate?.[this.selectedSpeed]) {
+      maxPriorityFee = new BigNumber(gasFeeEstimate[this.selectedSpeed].suggestedMaxPriorityFeePerGas)
     }
 
-    this.feeTime = gasTiming(this.maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
-    this.setMaxTransactionFee(this.gas, this.maxPriorityFee, gasFeeEstimate.estimatedBaseFee)
+    this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+    this.setMaxTransactionFee(this.gas, maxPriorityFee, gasFeeEstimate.estimatedBaseFee)
   },
   methods: {
     onSave(details) {
       const maxPriorityFee = bnGreaterThan(details.customMaxPriorityFee, 0) ? details.customMaxPriorityFee : details.maxPriorityFee
-      // keep saved fees
-      this.maxTransactionFee = bnGreaterThan(details.customMaxTransactionFee, 0) ? details.customMaxTransactionFee : details.maxTransactionFee
-      this.maxPriorityFee = maxPriorityFee
 
       this.setMaxTransactionFee(details.gas, maxPriorityFee, details.baseFee, details.customMaxTransactionFee)
       this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')

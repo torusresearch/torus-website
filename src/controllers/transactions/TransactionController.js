@@ -324,6 +324,8 @@ class TransactionController extends EventEmitter {
       this.txStateManager.updateTransaction(txMeta, 'Failed to calculate gas defaults.')
       throw error
     }
+    txMeta.txParams.type =
+      eip1559Compatibility && txUtils.isEIP1559Transaction(txMeta) ? TRANSACTION_ENVELOPE_TYPES.FEE_MARKET : TRANSACTION_ENVELOPE_TYPES.LEGACY
 
     this.emit('newUnapprovedTx', txMeta, request)
 
