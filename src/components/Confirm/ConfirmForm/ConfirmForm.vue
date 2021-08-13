@@ -65,7 +65,21 @@
         </v-flex>
       </v-layout>
       <v-layout mx-6 my-4 wrap>
+        <TransactionFee
+          v-if="isEip1559"
+          :gas-fees="gasFees"
+          :selected-speed="selectedLondonSpeed"
+          :gas="gasEstimate"
+          :nonce="nonce"
+          :selected-currency="selectedCurrency"
+          :currency-multiplier="currencyMultiplier"
+          :max-transaction-fee-old="maxFeePerGas"
+          :max-priority-fee-old="maxPriorityFeePerGas"
+          :is-confirm="true"
+          @save="onTransferFeeSelect"
+        />
         <TransactionSpeedSelect
+          v-else
           :nonce="nonce"
           :gas="gasEstimate"
           :display-amount="contractType === CONTRACT_TYPE_ERC20 ? amountValue : value"
@@ -288,7 +302,7 @@
             <v-list-item class="pa-0">
               <v-list-item-content flat class="pa-1" :class="[$vuetify.theme.dark ? 'lighten-4' : 'background lighten-3']">
                 <v-card flat class="caption text-left pa-2 word-break typedMessageBox">
-                  <v-expansion-panels v-if="type === MESSAGE_TYPE.PERSONAL_SIGN || type === TX_MESSAGE">
+                  <v-expansion-panels v-if="type === MESSAGE_TYPE.PERSONAL_SIGN">
                     <p :class="$vuetify.theme.dark ? '' : 'text_2--text'" :style="{ 'text-align': 'left' }">{{ message }}</p>
                   </v-expansion-panels>
 
@@ -343,7 +357,7 @@
 import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
 import {
@@ -351,13 +365,15 @@ import {
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
+  GAS_ESTIMATE_TYPES,
   MESSAGE_TYPE,
   TRANSACTION_TYPES,
 } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
-import { addressSlicer, isMain, significantDigits } from '../../../utils/utils'
+import { addressSlicer, gasTiming, isMain, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
+import TransactionFee from '../../helpers/TransactionFee'
 import TransactionSpeedSelect from '../../helpers/TransactionSpeedSelect'
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
@@ -366,6 +382,7 @@ export default {
   name: 'Confirm',
   components: {
     VueJsonPretty,
+    TransactionFee,
     TransactionSpeedSelect,
     NetworkDisplay,
     ShowToolTip,
@@ -439,10 +456,15 @@ export default {
       encryptedMessage: '',
       showEncrypted: false,
       isSpecialContract: false,
+      selectedLondonSpeed: '',
+      londonSpeedTiming: '',
+      maxFeePerGas: new BigNumber(0),
+      maxPriorityFeePerGas: new BigNumber(0),
     }
   },
   computed: {
     ...mapGetters(['getLogo']),
+    ...mapState(['gasFees']),
     header() {
       switch (this.transactionCategory) {
         case TRANSACTION_TYPES.DEPLOY_CONTRACT:
@@ -548,6 +570,9 @@ export default {
       const selectedToken = this.isOtherToken ? this.selectedToken : this.network.ticker
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
     },
+    isEip1559() {
+      return this.networkDetails.EIPS && this.networkDetails.EIPS['1559'] && this.gasFees.gasEstimateType === GAS_ESTIMATE_TYPES.FEE_MARKET
+    },
   },
   watch: {
     gasPrice(newGasPrice, oldGasPrice) {
@@ -569,10 +594,12 @@ export default {
     ...mapActions(['decryptMessage']),
     async updateConfirmModal() {
       if (!this.currentConfirmModal) return
-      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, currencyData, network } = this.currentConfirmModal || {}
+      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, currencyData, network, networkDetails } =
+        this.currentConfirmModal || {}
       this.selectedCurrency = selectedCurrency
       this.currencyData = currencyData
       this.balance = new BigNumber(balance)
+      this.networkDetails = networkDetails
       log.info({ msgParams, txParams })
       this.origin = origin || this.origin
       if (type === MESSAGE_TYPE.ETH_DECRYPT) {
@@ -594,7 +621,8 @@ export default {
       } else {
         let finalValue = new BigNumber('0')
         const { simulationFails, id, transactionCategory, methodParams, contractParams, txParams: txObject, userInfo } = txParams || {}
-        const { value, to, data, from: sender, gas, gasPrice } = txObject || {}
+        const { value, to, data, from: sender, gas, gasPrice, maxFeePerGas, maxPriorityFeePerGas } = txObject || {}
+        log.info(txParams, 'txParams')
         const { reason = '' } = simulationFails || {}
         if (value) {
           finalValue = new BigNumber(fromWei(value.toString()))
@@ -635,7 +663,7 @@ export default {
         this.id = id
         this.network = network
         this.transactionCategory = transactionCategory
-        const gweiGasPrice = new BigNumber(hexToNumber(gasPrice)).div(weiInGwei)
+        const gweiGasPrice = new BigNumber(hexToNumber(maxFeePerGas || gasPrice)).div(weiInGwei)
         // sending to who
         this.amountTo = amountTo ? amountTo.value : checkSummedTo
         // sending what value
@@ -664,6 +692,9 @@ export default {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true
         }
+        this.maxFeePerGas = new BigNumber(maxFeePerGas).div(new BigNumber('10').pow(new BigNumber('9')))
+        this.maxPriorityFeePerGas = new BigNumber(maxPriorityFeePerGas).div(new BigNumber('10').pow(new BigNumber('9')))
+        log.info(this.maxFeePerGas.toString(), this.maxPriorityFeePerGas.toString(), 'fees')
         this.currencyRateDate = this.getDate()
         this.receiver = this.amountTo
         this.value = finalValue // value of eth sending
@@ -752,6 +783,16 @@ export default {
         this.gasEstimate = this.gasEstimateDefault
         this.gasPrice = this.speedSelected === '' ? '' : this.gasPrice
       }
+      this.calculateTransaction()
+    },
+    onTransferFeeSelect(data) {
+      log.info('onTransferFeeSelect: ', data)
+      this.nonce = data.nonce || -1
+      this.gasPrice = data.gas
+      this.selectedLondonSpeed = data.selectedSpeed
+      this.gasEstimate = data.maxTransactionFee
+      this.londonSpeedTiming = gasTiming(data.maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+      this.hasCustomGasLimit = true
       this.calculateTransaction()
     },
     getDate() {

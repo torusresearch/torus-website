@@ -2,8 +2,10 @@
   <v-flex xs12 mb-3>
     <v-layout>
       <v-flex class="body-2 mb-2">
-        <span>{{ t('walletTransfer.fee-max-transaction') }}*</span>
-        <HelpTooltip :title="t('walletTransfer.fee-max-transaction')" :description="t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
+        <v-template v-if="!isConfirm">
+          <span>{{ t('walletTransfer.fee-max-transaction') }}*</span>
+          <HelpTooltip :title="t('walletTransfer.fee-max-transaction')" :description="t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
+        </v-template>
         <TransactionFeeAdvanced
           :gas="gas"
           :nonce="nonce"
@@ -17,8 +19,12 @@
         />
       </v-flex>
     </v-layout>
-    <v-layout align-center>
-      <v-flex xs12 mb-1>
+    <v-layout :class="isConfirm ? 'align-top' : 'align-center'">
+      <v-flex v-if="isConfirm" xs3 class="caption mt-2">
+        <span>{{ t('walletTransfer.fee-max-transaction') }}*</span>
+        <HelpTooltip :title="t('walletTransfer.fee-max-transaction')" :description="t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
+      </v-flex>
+      <v-flex mb-1 :class="[isConfirm ? 'xs9' : 'xs12']">
         <v-text-field
           outlined
           :value="t('walletTransfer.fee-upto').replace(/{amount}/gi, maxFeeEthDisplay)"
@@ -56,6 +62,7 @@ export default {
     TransactionFeeAdvanced,
   },
   props: {
+    isConfirm: { type: Boolean, default: false },
     nonce: { type: Number, default: 0 },
     selectedSpeed: { type: String, default: '' },
     selectedCurrency: { type: String, default: 'USD' },
@@ -70,6 +77,8 @@ export default {
         return {}
       },
     },
+    maxTransactionFeeOld: { type: BigNumber, default: new BigNumber('0') },
+    maxPriorityFeeOld: { type: BigNumber, default: new BigNumber('0') },
   },
   data() {
     return {
@@ -102,13 +111,16 @@ export default {
   },
   mounted() {
     const gasFeeEstimate = this.gasFees.gasFeeEstimates
-    const maxPriorityFee = gasFeeEstimate[this.selectedSpeed].suggestedMaxPriorityFeePerGas
+    if (this.selectedSpeed) {
+      this.maxTransactionFee = new BigNumber(gasFeeEstimate[this.selectedSpeed].suggestedMaxFeePerGas)
+      this.maxPriorityFee = gasFeeEstimate[this.selectedSpeed].suggestedMaxPriorityFeePerGas
+    } else {
+      this.maxTransactionFee = new BigNumber(this.maxTransactionFeeOld)
+      this.maxPriorityFee = new BigNumber(this.maxPriorityFeeOld)
+    }
 
-    this.maxTransactionFee = new BigNumber(gasFeeEstimate[this.selectedSpeed].suggestedMaxFeePerGas)
-    this.maxPriorityFee = new BigNumber(maxPriorityFee)
-
-    this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
-    this.setMaxTransactionFee(this.gas, maxPriorityFee, gasFeeEstimate.estimatedBaseFee)
+    this.feeTime = gasTiming(this.maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+    this.setMaxTransactionFee(this.gas, this.maxPriorityFee, gasFeeEstimate.estimatedBaseFee)
   },
   methods: {
     onSave(details) {
