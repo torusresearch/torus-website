@@ -89,7 +89,7 @@
             <span class="caption">{{ isEip1559 ? t('walletTransfer.fee-max-transaction') : t('walletTransfer.transferFee') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="caption text-right font-weight-medium">{{ `${transactionFeeEthDisplay} ETH` }}</div>
+            <div class="caption text-right font-weight-medium">{{ transactionFeeDisplay }} {{ selectedCurrency }}</div>
             <div class="caption-2 text-right">({{ `${isEip1559 ? londonSpeedTiming : `~ ${speedSelected} ${t('walletTransfer.minute')}`}` }})</div>
           </div>
         </div>
@@ -287,7 +287,10 @@ export default {
       return this.transactionFee.isZero()
     },
     transactionFeeEthDisplay() {
-      return significantDigits(this.transactionFeeEth, 6)
+      return significantDigits(this.transactionFeeEth, false, 6)
+    },
+    transactionFeeDisplay() {
+      return significantDigits(this.transactionFee)
     },
   },
   methods: {

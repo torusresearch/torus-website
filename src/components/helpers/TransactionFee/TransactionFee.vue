@@ -27,11 +27,11 @@
       <v-flex mb-1 :class="[isConfirm ? 'xs9' : 'xs12']">
         <v-text-field
           outlined
-          :value="t('walletTransfer.fee-upto').replace(/{amount}/gi, maxFeeEthDisplay)"
+          :value="t('walletTransfer.fee-upto').replace(/{amount}/gi, maxFeeDisplay)"
           disabled
           :hint="`*${t('walletTransfer.fee-max-transaction-hint')}`"
           persistent-hint
-          :suffix="`ETH`"
+          :suffix="toggleExclusive ? selectedCurrency : `ETH`"
         >
           <template #message="{ message }">
             <div class="d-flex caption">
@@ -63,6 +63,7 @@ export default {
   },
   props: {
     isConfirm: { type: Boolean, default: false },
+    toggleExclusive: { type: Number, default: 0 },
     nonce: { type: Number, default: 0 },
     selectedSpeed: { type: String, default: '' },
     selectedCurrency: { type: String, default: 'USD' },
@@ -99,10 +100,13 @@ export default {
     }
   },
   computed: {
-    maxFeeEthDisplay() {
-      return significantDigits(this.maxTransactionFeeEth, 6)
+    maxFeeDisplay() {
+      if (!this.toggleExclusive) return significantDigits(this.maxTransactionFeeEth, false, 6)
+      const costConverted = this.currencyMultiplier.times(this.maxTransactionFeeEth)
+      return significantDigits(costConverted)
     },
     maxTransactionFeeConverted() {
+      if (this.toggleExclusive) return `${significantDigits(this.maxTransactionFeeEth, false, 6)} ETH`
       const costConverted = this.currencyMultiplier.times(this.maxTransactionFeeEth)
       return `${significantDigits(costConverted)} ${this.selectedCurrency}`
     },

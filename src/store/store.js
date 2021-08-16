@@ -102,6 +102,7 @@ const VuexStore = new Vuex.Store({
         whiteLabel: state.whiteLabel,
         selectedAddress: state.selectedAddress,
         networkDetails: state.networkDetails,
+        gasFees: state.gasFees,
       }
       if (isTx) {
         const txParameters = payload

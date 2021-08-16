@@ -308,6 +308,7 @@
                 :nonce="nonce"
                 :selected-currency="selectedCurrency"
                 :currency-multiplier="currencyMultiplier"
+                :toggle-exclusive="toggle_exclusive"
                 @save="onTransferFeeSelect"
               />
               <TransactionSpeedSelect

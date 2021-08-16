@@ -51,6 +51,7 @@ export default {
         currencyData,
         network,
         networkDetails,
+        gasFees,
       } = ev.data || {}
       if (txParams && txParams.id.toString() !== queryParameterId) return
       this.type = type
@@ -67,6 +68,7 @@ export default {
         currencyData,
         network,
         networkDetails,
+        gasFees,
       }
       this.$store.commit('setWhiteLabel', whiteLabel)
       bc.close()

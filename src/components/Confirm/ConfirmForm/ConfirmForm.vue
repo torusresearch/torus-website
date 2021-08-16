@@ -357,7 +357,7 @@
 import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
 import {
@@ -466,7 +466,6 @@ export default {
   },
   computed: {
     ...mapGetters(['getLogo']),
-    ...mapState(['gasFees']),
     header() {
       switch (this.transactionCategory) {
         case TRANSACTION_TYPES.DEPLOY_CONTRACT:
@@ -596,13 +595,14 @@ export default {
     ...mapActions(['decryptMessage']),
     async updateConfirmModal() {
       if (!this.currentConfirmModal) return
-      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, currencyData, network, networkDetails } =
+      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, currencyData, network, networkDetails, gasFees } =
         this.currentConfirmModal || {}
       this.selectedCurrency = selectedCurrency
       this.currencyData = currencyData
       this.balance = new BigNumber(balance)
       this.networkDetails = networkDetails
-      log.info({ msgParams, txParams })
+      this.gasFees = gasFees
+      log.info({ msgParams, txParams, gasFees })
       this.origin = origin || this.origin
       if (type === MESSAGE_TYPE.ETH_DECRYPT) {
         const { msgParams: { data, from } = {}, id = '' } = msgParams || {}
