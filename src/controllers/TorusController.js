@@ -203,7 +203,7 @@ export default class TorusController extends EventEmitter {
     // ensure isClientOpenAndUnlocked is updated when memState updates
     this.on('update', (memState) => this._onStateUpdate(memState))
 
-    this.memStore = new ComposableObservableStore({
+    this.memStore = new ComposableObservableStore(null, {
       NetworkController: this.networkController.store,
       AccountTracker: this.accountTracker.store,
       TxController: this.txController.memStore,
