@@ -228,7 +228,7 @@ class DetectTokensController {
     this.detectNewTokens()
     if (this._preferencesStore) {
       const userState = this._preferencesStore.getState()[this.selectedAddress]
-      const { customTokens } = userState || {}
+      const { customTokens = [] } = userState || {}
       this.getCustomTokenBalances(customTokens)
     }
     this.interval = DEFAULT_INTERVAL
@@ -273,7 +273,7 @@ class DetectTokensController {
     preferencesStore.subscribe((state) => {
       const { selectedAddress } = state
       if (!selectedAddress) return
-      const { customTokens = [] } = state[selectedAddress]
+      const { customTokens = [] } = state[selectedAddress] || {}
       if (
         !isEqual(
           this.selectedCustomTokens,

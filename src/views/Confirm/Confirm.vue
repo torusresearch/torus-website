@@ -38,7 +38,20 @@ export default {
     this.channel = `torus_channel_${instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
-      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, whiteLabel, currencyData, network } = ev.data || {}
+      const {
+        type,
+        msgParams,
+        txParams,
+        origin,
+        balance,
+        selectedCurrency,
+        tokenRates,
+        jwtToken,
+        whiteLabel,
+        currencyData,
+        network,
+        networkDetails,
+      } = ev.data || {}
       if (txParams && txParams.id.toString() !== queryParameterId) return
       this.type = type
       this.currentConfirmModal = {
@@ -53,6 +66,7 @@ export default {
         whiteLabel,
         currencyData,
         network,
+        networkDetails,
       }
       this.$store.commit('setWhiteLabel', whiteLabel)
       bc.close()
@@ -60,11 +74,22 @@ export default {
     bc.postMessage({ data: { type: POPUP_LOADED, id: queryParameterId } })
   },
   methods: {
-    async triggerSign({ gasPrice, gas, customNonceValue, id }) {
+    async triggerSign({ gasPrice, gas, customNonceValue, id, maxFeePerGas, maxPriorityFeePerGas, txEnvelopeType }) {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
 
       await bc.postMessage({
-        data: { type: POPUP_RESULT, gasPrice, gas, id, txType: this.type, customNonceValue, approve: true },
+        data: {
+          type: POPUP_RESULT,
+          gasPrice,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          txEnvelopeType,
+          gas,
+          id,
+          txType: this.type,
+          customNonceValue,
+          approve: true,
+        },
       })
       bc.close()
     },

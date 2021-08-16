@@ -14,7 +14,7 @@ import { JsonRpcEngine, mergeMiddleware } from 'json-rpc-engine'
 import log from 'loglevel'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 
-import { ETH, GOERLI, KOVAN, LOCALHOST, MAINNET, MAINNET_CHAIN_ID, RINKEBY, ROPSTEN, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
+import { ETH, INFURA_PROVIDER_TYPES, LOCALHOST, MAINNET, MAINNET_CHAIN_ID, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 import { createInfuraClient } from './createInfuraClient'
 import { createJsonRpcClient } from './createJsonRpcClient'
 import createMetamaskMiddleware from './createMetamaskMiddleware'
@@ -24,8 +24,6 @@ const defaultProviderConfig = { type: MAINNET, ticker: ETH.toUpperCase(), chainI
 const defaultNetworkDetailsState = {
   EIPS: { 1559: undefined },
 }
-const INFURA_PROVIDER_TYPES = new Set([ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI])
-
 export default class NetworkController extends EventEmitter {
   /**
    * @constructor

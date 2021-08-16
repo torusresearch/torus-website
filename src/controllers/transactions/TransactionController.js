@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable require-atomic-updates */
 import Common from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
@@ -25,6 +24,7 @@ import {
   CONTRACT_TYPE_ETH,
   GAS_ESTIMATE_TYPES,
   HARDFORKS,
+  INFURA_PROVIDER_TYPES,
   MAINNET,
   OLD_ERC721_LIST,
   RPC,
@@ -177,7 +177,7 @@ class TransactionController extends EventEmitter {
     // type will be one of our default network names or 'rpc'. the default
     // network names are sufficient configuration, simply pass the name as the
     // chain argument in the constructor.
-    if (type !== RPC) {
+    if (type !== RPC && INFURA_PROVIDER_TYPES.has(type)) {
       return new Common({
         chain: type,
         hardfork,
@@ -188,7 +188,7 @@ class TransactionController extends EventEmitter {
     // since we only support EVM compatible chains, and then override the
     // name, chainId and networkId properties. This is done using the
     // `forCustomChain` static method on the Common class.
-    const chainId = Number.parseInt(this._getCurrentChainId(), 16)
+    const chainId = this._getCurrentChainId()
     const networkId = this.networkStore.getState()
 
     const customChainParams = {
@@ -236,6 +236,7 @@ class TransactionController extends EventEmitter {
 
   async newUnapprovedTransaction(txParameters, options = {}) {
     log.debug(`MetaMaskController newUnapprovedTransaction ${JSON.stringify(txParameters)}`)
+
     const initialTxMeta = await this.addUnapprovedTransaction(txParameters, options)
 
     // listen for tx completion (success, fail)
@@ -265,10 +266,8 @@ class TransactionController extends EventEmitter {
   async addUnapprovedTransaction(txParameters, request) {
     // validate
     log.debug(`MetaMaskController addUnapprovedTransaction ${JSON.stringify(txParameters)}`)
-
     const normalizedTxParameters = txUtils.normalizeTxParameters(txParameters)
     const eip1559Compatibility = await this.getEIP1559Compatibility()
-
     txUtils.validateTxParameters(normalizedTxParameters, eip1559Compatibility)
 
     /**
@@ -325,6 +324,8 @@ class TransactionController extends EventEmitter {
       this.txStateManager.updateTransaction(txMeta, 'Failed to calculate gas defaults.')
       throw error
     }
+    txMeta.txParams.type =
+      eip1559Compatibility && txUtils.isEIP1559Transaction(txMeta) ? TRANSACTION_ENVELOPE_TYPES.FEE_MARKET : TRANSACTION_ENVELOPE_TYPES.LEGACY
 
     this.emit('newUnapprovedTx', txMeta, request)
 
@@ -466,10 +467,8 @@ class TransactionController extends EventEmitter {
 
     try {
       const { gasFeeEstimates, gasEstimateType } = await this._getEIP1559GasFeeEstimates()
-      console.log('gasEstimateType', gasEstimateType)
       if (eip1559Compatibility && gasEstimateType === GAS_ESTIMATE_TYPES.FEE_MARKET) {
         const { medium: { suggestedMaxPriorityFeePerGas, suggestedMaxFeePerGas } = {} } = gasFeeEstimates
-        console.log('gasEstimateType', suggestedMaxPriorityFeePerGas, suggestedMaxFeePerGas)
 
         if (suggestedMaxPriorityFeePerGas && suggestedMaxFeePerGas) {
           return {
@@ -491,7 +490,6 @@ class TransactionController extends EventEmitter {
         }
       }
     } catch (error) {
-      console.log(`error: ${error}`)
       log.error(error)
     }
 

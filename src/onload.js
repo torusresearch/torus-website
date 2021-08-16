@@ -44,7 +44,6 @@ function onloadTorus(torus) {
   const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || SUPPORTED_NETWORK_TYPES[MAINNET]
 
   const torusController = new TorusController({
-    sessionCachedNetwork,
     initState: {
       NetworkController: {
         provider: sessionCachedNetwork,

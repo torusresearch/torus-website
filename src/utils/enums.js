@@ -58,6 +58,8 @@ export const NFT_SUPPORTED_NETWORKS = {
   [MAINNET]: MAINNET_CODE,
 }
 export const ETHERSCAN_SUPPORTED_NETWORKS = new Set([MATIC, BSC_MAINNET, MAINNET])
+export const INFURA_PROVIDER_TYPES = new Set([ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI])
+
 export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
 export const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
 export const KOVAN_DISPLAY_NAME = 'Kovan Test Network'
@@ -83,7 +85,7 @@ export const XDAI_BLOCK_EXPLORER = 'https://blockscout.com/poa/xdai'
 export const BSC_MAINNET_URL = 'https://bsc-dataseed.binance.org'
 export const BSC_MAINNET_BLOCK_EXPLORER = 'https://bscscan.com'
 
-export const BSC_TESTNET_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545'
+export const BSC_TESTNET_URL = 'https://data-seed-prebsc-2-s3.binance.org:8545'
 export const BSC_TESTNET_BLOCK_EXPLORER = 'https://testnet.bscscan.com'
 
 export const MATIC_TICKER = 'MATIC'
@@ -558,6 +560,7 @@ export const CHAIN_ID_TO_GAS_LIMIT_BUFFER_MAP = {
 }
 
 export const TEST_CHAINS = [ROPSTEN_CHAIN_ID, RINKEBY_CHAIN_ID, GOERLI_CHAIN_ID, KOVAN_CHAIN_ID]
+export const TEST_CHAINS_NUMERIC_IDS = [ROPSTEN_CODE, RINKEBY_CODE, GOERLI_CODE, KOVAN_CODE]
 
 const TWENTY_ONE_THOUSAND = 21_000
 const ONE_HUNDRED_THOUSAND = 100_000
@@ -567,4 +570,10 @@ export const GAS_LIMITS = {
   SIMPLE: addHexPrefix(TWENTY_ONE_THOUSAND.toString(16)),
   // a base estimate for token transfers.
   BASE_TOKEN_ESTIMATE: addHexPrefix(ONE_HUNDRED_THOUSAND.toString(16)),
+}
+
+export const TRANSACTION_SPEED = {
+  LOW: 'low',
+  MEDIUM: 'medium',
+  HIGH: 'high',
 }

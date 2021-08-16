@@ -65,7 +65,21 @@
         </v-flex>
       </v-layout>
       <v-layout mx-6 my-4 wrap>
+        <TransactionFee
+          v-if="isEip1559"
+          :gas-fees="gasFees"
+          :selected-speed="selectedLondonSpeed"
+          :gas="gasEstimate"
+          :nonce="nonce"
+          :selected-currency="selectedCurrency"
+          :currency-multiplier="currencyMultiplier"
+          :initial-max-fee-per-gas="initialMaxFeePerGas"
+          :initial-max-priority-fee-per-gas="initialMaxPriorityFeePerGas"
+          :is-confirm="true"
+          @save="onTransferFeeSelect"
+        />
         <TransactionSpeedSelect
+          v-else
           :nonce="nonce"
           :gas="gasEstimate"
           :display-amount="contractType === CONTRACT_TYPE_ERC20 ? amountValue : value"
@@ -189,9 +203,9 @@
 
     <template
       v-if="
-        type === TX_PERSONAL_MESSAGE ||
-        type === TX_MESSAGE ||
-        type === TX_TYPED_MESSAGE ||
+        type === MESSAGE_TYPE.PERSONAL_SIGN ||
+        type === MESSAGE_TYPE.ETH_SIGN ||
+        type === MESSAGE_TYPE.ETH_SIGN_TYPED_DATA ||
         type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY ||
         type === MESSAGE_TYPE.ETH_DECRYPT
       "
@@ -288,11 +302,11 @@
             <v-list-item class="pa-0">
               <v-list-item-content flat class="pa-1" :class="[$vuetify.theme.dark ? 'lighten-4' : 'background lighten-3']">
                 <v-card flat class="caption text-left pa-2 word-break typedMessageBox">
-                  <v-expansion-panels v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE">
+                  <v-expansion-panels v-if="type === MESSAGE_TYPE.PERSONAL_SIGN || type === MESSAGE_TYPE.ETH_SIGN">
                     <p :class="$vuetify.theme.dark ? '' : 'text_2--text'" :style="{ 'text-align': 'left' }">{{ message }}</p>
                   </v-expansion-panels>
 
-                  <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && !Array.isArray(typedMessages)">
+                  <v-expansion-panels v-else-if="type === MESSAGE_TYPE.ETH_SIGN_TYPED_DATA && !Array.isArray(typedMessages)">
                     <v-expansion-panel
                       v-for="(typedMessage, index) in typedMessages"
                       :key="index"
@@ -305,7 +319,7 @@
                     </v-expansion-panel>
                   </v-expansion-panels>
 
-                  <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && Array.isArray(typedMessages)">
+                  <v-expansion-panels v-else-if="type === MESSAGE_TYPE.ETH_SIGN_TYPED_DATA && Array.isArray(typedMessages)">
                     <v-expansion-panel :class="$vuetify.theme.isDark ? 'dark--theme' : ''">
                       <v-expansion-panel-header>{{ t('dappTransfer.dataSmall') }}</v-expansion-panel-header>
                       <v-expansion-panel-content v-for="(typedMessage, index) in typedMessages" :key="index">
@@ -343,7 +357,7 @@
 import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
 import {
@@ -351,13 +365,16 @@ import {
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
+  GAS_ESTIMATE_TYPES,
   MESSAGE_TYPE,
+  TRANSACTION_ENVELOPE_TYPES,
   TRANSACTION_TYPES,
 } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
-import { addressSlicer, isMain, significantDigits } from '../../../utils/utils'
+import { addressSlicer, bnGreaterThan, gasTiming, isMain, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
+import TransactionFee from '../../helpers/TransactionFee'
 import TransactionSpeedSelect from '../../helpers/TransactionSpeedSelect'
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
@@ -366,6 +383,7 @@ export default {
   name: 'Confirm',
   components: {
     VueJsonPretty,
+    TransactionFee,
     TransactionSpeedSelect,
     NetworkDisplay,
     ShowToolTip,
@@ -390,6 +408,7 @@ export default {
       origin: { href: '', hostname: '' },
       balance: new BigNumber('0'),
       gasPrice: new BigNumber('10'),
+      activePriorityFee: new BigNumber('0'),
       value: new BigNumber('0'),
       amountTo: '',
       amountValue: '',
@@ -439,10 +458,15 @@ export default {
       encryptedMessage: '',
       showEncrypted: false,
       isSpecialContract: false,
+      selectedLondonSpeed: '',
+      londonSpeedTiming: '',
+      initialMaxFeePerGas: new BigNumber(0),
+      initialMaxPriorityFeePerGas: new BigNumber(0),
     }
   },
   computed: {
     ...mapGetters(['getLogo']),
+    ...mapState(['gasFees']),
     header() {
       switch (this.transactionCategory) {
         case TRANSACTION_TYPES.DEPLOY_CONTRACT:
@@ -548,6 +572,9 @@ export default {
       const selectedToken = this.isOtherToken ? this.selectedToken : this.network.ticker
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
     },
+    isEip1559() {
+      return this.networkDetails.EIPS && this.networkDetails.EIPS['1559'] && this.gasFees.gasEstimateType === GAS_ESTIMATE_TYPES.FEE_MARKET
+    },
   },
   watch: {
     gasPrice(newGasPrice, oldGasPrice) {
@@ -569,10 +596,12 @@ export default {
     ...mapActions(['decryptMessage']),
     async updateConfirmModal() {
       if (!this.currentConfirmModal) return
-      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, currencyData, network } = this.currentConfirmModal || {}
+      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, currencyData, network, networkDetails } =
+        this.currentConfirmModal || {}
       this.selectedCurrency = selectedCurrency
       this.currencyData = currencyData
       this.balance = new BigNumber(balance)
+      this.networkDetails = networkDetails
       log.info({ msgParams, txParams })
       this.origin = origin || this.origin
       if (type === MESSAGE_TYPE.ETH_DECRYPT) {
@@ -594,7 +623,8 @@ export default {
       } else {
         let finalValue = new BigNumber('0')
         const { simulationFails, id, transactionCategory, methodParams, contractParams, txParams: txObject, userInfo } = txParams || {}
-        const { value, to, data, from: sender, gas, gasPrice } = txObject || {}
+        const { value, to, data, from: sender, gas, gasPrice, maxFeePerGas, maxPriorityFeePerGas } = txObject || {}
+        log.info(txParams, 'txParams')
         const { reason = '' } = simulationFails || {}
         if (value) {
           finalValue = new BigNumber(fromWei(value.toString()))
@@ -635,7 +665,7 @@ export default {
         this.id = id
         this.network = network
         this.transactionCategory = transactionCategory
-        const gweiGasPrice = new BigNumber(hexToNumber(gasPrice)).div(weiInGwei)
+        const gweiGasPrice = new BigNumber(hexToNumber(maxFeePerGas || gasPrice)).div(weiInGwei)
         // sending to who
         this.amountTo = amountTo ? amountTo.value : checkSummedTo
         // sending what value
@@ -664,6 +694,9 @@ export default {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true
         }
+        this.initialMaxFeePerGas = new BigNumber(hexToNumber(maxFeePerGas)).div(weiInGwei)
+        this.initialMaxPriorityFeePerGas = new BigNumber(hexToNumber(maxPriorityFeePerGas)).div(weiInGwei)
+        this.activePriorityFee = this.initialMaxPriorityFeePerGas
         this.currencyRateDate = this.getDate()
         this.receiver = this.amountTo
         this.value = finalValue // value of eth sending
@@ -675,7 +708,7 @@ export default {
         this.txData = data // data hex
         this.txDataParams = txDataParameters !== '' ? JSON.stringify(txDataParameters, null, 2) : ''
         this.sender = sender // address of sender
-        this.gasCost = gweiGasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
+        this.gasCost = this.gasEstimate.times(gweiGasPrice).div(new BigNumber('10').pow(new BigNumber('9')))
         this.txFees = this.gasCost.times(this.currencyMultiplier)
         const ethCost = finalValue.plus(this.gasCost)
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
@@ -702,22 +735,39 @@ export default {
       const gasPriceHex = `0x${this.gasPrice.times(weiInGwei).toString(16)}`
       const gasHex = this.gasEstimate.eq(new BigNumber('0')) ? undefined : `0x${this.gasEstimate.toString(16)}`
       const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
-      if (this.isConfirmModal) {
-        this.$emit('triggerSign', {
-          id: this.id,
-          txType: this.type,
-          gasPrice: gasPriceHex,
-          gas: gasHex,
-          customNonceValue,
-          approve: true,
-        })
+
+      let gasPriceParams = {
+        gasPrice: gasPriceHex,
+      }
+      if (this.isEip1559) {
+        const finalMaxPriorityFee = this.activePriorityFee
+        const finalMaxPriorityFeeHex = `0x${finalMaxPriorityFee.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
+        gasPriceParams = {
+          maxFeePerGas: gasPriceHex,
+          maxPriorityFeePerGas: finalMaxPriorityFeeHex,
+        }
+      }
+      let params = {
+        id: this.id,
+        gas: gasHex,
+        customNonceValue,
+        ...gasPriceParams,
+      }
+      if (params.maxPriorityFeePerGas && params.maxFeePerGas) {
+        params.txEnvelopeType = TRANSACTION_ENVELOPE_TYPES.FEE_MARKET
       } else {
-        this.$emit('triggerSign', {
-          id: this.id,
-          gasPrice: gasPriceHex,
-          gas: gasHex,
-          customNonceValue,
-        })
+        params.txEnvelopeType = TRANSACTION_ENVELOPE_TYPES.LEGACY
+      }
+
+      if (this.isConfirmModal) {
+        params = {
+          ...params,
+          txType: this.type,
+          approve: true,
+        }
+        this.$emit('triggerSign', params)
+      } else {
+        this.$emit('triggerSign', params)
       }
     },
     triggerDeny() {
@@ -754,6 +804,23 @@ export default {
       }
       this.calculateTransaction()
     },
+    onTransferFeeSelect(data) {
+      log.info('onTransferFeeSelect: ', data)
+      const maxPriorityFee = bnGreaterThan(data.customMaxPriorityFee, 0) ? data.customMaxPriorityFee : data.maxPriorityFee
+      const maxTxFee = bnGreaterThan(data.customMaxTransactionFee, 0) ? data.customMaxTransactionFee : data.maxTransactionFee
+      // at this point user has modified initial gas fee txParams
+      // so set it to zero.
+      this.initialMaxPriorityFeePerGas = new BigNumber(0)
+      this.initialMaxFeePerGas = new BigNumber(0)
+      this.nonce = data.nonce || -1
+      this.gasPrice = maxTxFee
+      this.activePriorityFee = maxPriorityFee
+      this.selectedLondonSpeed = data.selectedSpeed
+      this.gasEstimate = data.gas
+      this.londonSpeedTiming = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+      this.hasCustomGasLimit = true
+      this.calculateTransaction()
+    },
     getDate() {
       const currentDateTime = new Date()
       let hours = currentDateTime.getHours()
@@ -773,7 +840,7 @@ export default {
       return this.t('dappTransfer.contractInteraction')
     },
     calculateTransaction() {
-      this.gasCost = this.gasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
+      this.gasCost = this.gasEstimate.times(this.gasPrice).div(new BigNumber('10').pow(new BigNumber('9')))
       this.txFees = this.gasCost.times(this.currencyMultiplier)
       const ethCost = this.value.plus(this.gasCost)
       this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0

@@ -79,7 +79,7 @@ export default class AssetsDetectionController {
         return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
       }
       if (this.currentNetwork === MATIC) {
-        return `https://api.opensea.io/api/v2/assets/matic?owner=${address}&limit=300`
+        return `https://api.opensea.io/api/v2/assets/matic?owner_address=${address}&limit=300`
       }
       return ''
     }
