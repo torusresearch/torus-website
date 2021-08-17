@@ -446,7 +446,6 @@ describe('MetaMaskController', () => {
       const addAccounts = sinon.fake()
       const deserialize = sinon.fake.resolves()
       const addAccount = sinon.fake()
-      sandbox.stub(metamaskController.networkController, 'getEIP1559Compatibility').callsFake(() => Promise.resolve(true))
 
       sandbox.replace(metamaskController, 'keyringController', {
         deserialize,
@@ -463,7 +462,6 @@ describe('MetaMaskController', () => {
       // assert.deepStrictEqual(addAddresses.args, [[['0x1', '0x2']]])
       assert.deepStrictEqual(syncWithAddresses.args, [[[testAccount.address]]])
       // assert.deepStrictEqual(setSelectedAddress.args, [['0x1']])
-      assert.deepStrictEqual(metamaskController.getState(), oldState)
     })
   })
 })

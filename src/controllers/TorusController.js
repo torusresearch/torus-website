@@ -961,20 +961,15 @@ export default class TorusController extends EventEmitter {
    * Causes the RPC engines associated with all connections to emit a
    * notification event with the given payload.
    *
-   * If the "payload" parameter is a function, the payload for each connection
-   * will be the return value of that function called with the connection's
-   * origin.
-   *
    * The caller is responsible for ensuring that only permitted notifications
    * are sent.
    *
    * @param {any} payload - The event payload, or payload getter function.
    */
   notifyAllConnections(payload) {
-    const getPayload = typeof payload === 'function' ? (origin) => payload(origin) : () => payload
-
+    const getPayload = () => payload
     if (this.engine) {
-      this.engine.emit('notification', getPayload(origin))
+      this.engine.emit('notification', getPayload())
     }
   }
 
