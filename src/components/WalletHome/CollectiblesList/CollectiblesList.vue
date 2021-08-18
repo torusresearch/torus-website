@@ -1,5 +1,5 @@
 <template>
-  <v-layout v-if="collectibleBalances.length > 0" class="collectibles-tab-container mx-n4" wrap align-center>
+  <v-layout class="collectibles-tab-container mx-n4" wrap align-center :justify-center="collectibleBalances.length === 0">
     <v-flex v-for="(collectible, i) in collectibleBalances" :key="i" class="xs12 sm6 md4 lg3 px-4 mb-4">
       <v-card class="elevation-1">
         <v-list-item
@@ -25,51 +25,31 @@
         </v-list-item>
       </v-card>
     </v-flex>
-  </v-layout>
-  <div v-else class="d-flex collectibles-tab-container justify-center">
-    <div class="mb-4 explore-container" :class="$vuetify.breakpoint.xsOnly ? 'explore-container--mobile' : ''">
-      <v-card class="elevation-1 py-4 px-3">
-        <div class="d-flex mb-2 align-center">
-          <div class="mr-2">
-            <img
-              :width="localeSelected === LOCALE_JA ? 70 : 51"
-              :src="
-                require(`../../../assets/images/${localeSelected === LOCALE_JA ? 'miime' : 'opensea'}-logo${
-                  $vuetify.theme.isDark ? '-dark' : ''
-                }.svg`)
-              "
-              alt="Explore Opensea"
-            />
+    <v-flex class="xs12 sm6 md4 lg3 px-4 mb-4">
+      <v-card color="elevation-1">
+        <v-card-text class="pa-0">
+          <div class="d-flex align-center py-3 px-4 card-header elevation-1">
+            <div class="flex-grow-1 text-clamp-one text-center" :style="{ height: '25px' }">
+              <span class="caption text_1--text font-weight-bold">{{ t('homeAssets.didNotSee') }}</span>
+            </div>
           </div>
-          <div>
-            <div class="caption text_1--text font-weight-bold mb-1">{{ t('walletHome.exploreTitle') }}</div>
-            <div class="explore-details text_1--text">{{ t('walletHome.exploreSubtitle') }}</div>
+          <div class="text-center py-3 px-4" :style="{ lineHeight: '0' }">
+            <AddAsset />
           </div>
-        </div>
-        <div class="text-center">
-          <v-btn
-            large
-            class="torus-btn1 px-10"
-            :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
-            :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
-            :href="localeSelected === LOCALE_JA ? 'https://miime.io/' : 'https://opensea.io/'"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            {{ t('walletHome.explore') }}
-          </v-btn>
-        </div>
+        </v-card-text>
       </v-card>
-    </div>
-  </div>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 
 import { LOCALE_JA } from '../../../utils/enums'
+import AddAsset from '../AddAsset'
 
 export default {
+  components: { AddAsset },
   data: () => ({
     LOCALE_JA,
   }),
