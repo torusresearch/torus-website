@@ -49,6 +49,9 @@ export default {
   deleteCustomToken(_, payload) {
     return prefsController.deleteCustomToken(payload)
   },
+  addCustomNft(_, payload) {
+    return prefsController.addCustomNft(payload)
+  },
   async setDefaultPublicAddress({ state, dispatch }, payload) {
     const { wallet } = state
     await Promise.all(Object.keys(wallet).map((x) => prefsController.setDefaultPublicAddress(x, payload)))

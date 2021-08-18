@@ -470,6 +470,32 @@ describe('Preferences Controller', () => {
       assert.deepStrictEqual(preferencesController.state().customTokens, [])
     })
 
+    it('add custom nft', async () => {
+      await preferencesController.addCustomNft({
+        nft_address: '0xf0ee6b27b759c9893ce4f094b49ad28fd15a23e4',
+        network: 'rinkeby',
+        nft_name: 'ETHERMON',
+        nft_image_link: 'https://ethermon.ipfs.io/abcd.jpg',
+        nft_id: '10019029019901',
+        nft_contract_standard: 'ERC721',
+        description: 'test desc',
+        balance: 1,
+      })
+      assert(handleSuccessStub.calledOnce)
+      assert.deepStrictEqual(preferencesController.state().customNfts, [
+        {
+          description: 'test desc',
+          balance: 1,
+          nft_address: '0xf0ee6b27b759c9893ce4f094b49ad28fd15a23e4',
+          network: 'rinkeby',
+          nft_name: 'ETHERMON',
+          nft_image_link: 'https://ethermon.ipfs.io/abcd.jpg',
+          nft_id: '10019029019901',
+          nft_contract_standard: 'ERC721',
+          id: 1,
+        },
+      ])
+    })
     it('sets default address correctly', async () => {
       await preferencesController.setDefaultPublicAddress(testAccount.address, testAccount2.address)
       assert.strictEqual(preferencesController.state(testAccount.address).defaultPublicAddress, testAccount2.address)

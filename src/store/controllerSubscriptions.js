@@ -98,7 +98,7 @@ export function prefsControllerHandler(state) {
   const addressState = state[selectedAddress]
   Object.keys(addressState).forEach((x) => {
     if (x === 'jwtToken') getStore().commit('setJwtToken', { [selectedAddress]: addressState[x] })
-    else if (x !== 'fetchedPastTx' && x !== 'accountType' && x !== 'customTokens')
+    else if (x !== 'fetchedPastTx' && x !== 'accountType' && x !== 'customTokens' && x !== 'customNfts')
       getStore().commit(`set${capitalizeFirstLetter(x)}`, addressState[x])
   })
 }

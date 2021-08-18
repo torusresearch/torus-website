@@ -33,11 +33,11 @@
               </v-flex>
               <v-flex xs12>
                 <div class="body-2 mb-2">{{ t('homeAssets.tokenId') }}</div>
-                <v-text-field v-model="tokenId" :rules="[rules.required]" outlined></v-text-field>
+                <v-text-field v-model="tokenId" :rules="[rules.required]" outlined @change="setTokenId"></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <div class="body-2 mb-2">{{ t('homeAssets.tokenName') }}</div>
-                <v-text-field v-model="tokenName" :rules="[rules.required]" outlined></v-text-field>
+                <v-text-field v-model="nftName" :rules="[rules.required]" outlined></v-text-field>
               </v-flex>
 
               <v-flex xs12 mt-15>
@@ -118,47 +118,121 @@
 
 <script>
 import log from 'loglevel'
+import { mapActions, mapState } from 'vuex'
+
+import NftHandler, { getDisplayErrorMsg } from '../../../handlers/Token/NftHandler'
+import torus from '../../../torus'
+import { CONTRACT_TYPE_ERC721 } from '../../../utils/enums'
+import { getEtherScanAddressLink, validateContractAddress } from '../../../utils/utils'
 
 export default {
   props: {},
   data() {
     return {
+      isValidAddress: true,
       addAssetDialog: false,
       tab: 0,
       viewMore: false,
       addAssetFormValid: false,
       contractAddress: '',
       tokenId: '',
-      tokenName: '',
+      nftName: '',
+      nftDescription: '',
+      nftStandard: CONTRACT_TYPE_ERC721,
+      nftImageLink: '',
+      nftBalance: 1,
       rules: {
         required: (value) => !!value || this.t('walletSettings.required'),
       },
       assetInfo: {},
     }
   },
+  computed: {
+    ...mapState(['selectedAddress', 'networkType', 'assets']),
+    duplicateNftRule() {
+      if (!this.assets[this.selectedAddress]) return true
+      const found = this.assets[this.selectedAddress].find(
+        (nft) => nft.address.toLocaleLowerCase() === this.contractAddress.toLocaleLowerCase() && nft.tokenId.toString() === this.tokenId.toString()
+      )
+      return found ? this.t('homeNft.duplicateNft') : true
+    },
+    addressValidityRule() {
+      if (this.isValidAddress) return true
+      return this.t('homeToken.invalidContractAddress')
+    },
+  },
   methods: {
-    setContractAddress(value) {
+    ...mapActions(['addCustomNft']),
+    async populateNftDetails(contractAddress, tokenId) {
+      try {
+        this.currentNft = new NftHandler({ address: contractAddress, tokenId, userAddress: this.selectedAddress, web3: torus.web3 })
+        const { nftBalance, nftName, nftImageLink, decription, nftStandard } = await this.currentNft.getNftDetails()
+        this.nftName = nftName
+        this.nftImageLink = nftImageLink
+        this.decription = decription
+        this.nftStandard = nftStandard
+        this.nftBalance = `${nftBalance}`
+      } catch (error) {
+        let displayError = getDisplayErrorMsg(error)
+        if (displayError === null) {
+          displayError = 'Something went wrong'
+          log.error('error while populating custom nft details', error)
+        } else {
+          log.debug('error', displayError)
+        }
+        // todo: @lionell, need to show displayError
+      }
+    },
+    async setContractAddress(value) {
       this.contractAddress = value
+      // log.debug(await torus.web3.eth.getCode(value))
+      this.isValidAddress = await validateContractAddress(torus.web3, value)
+      if (this.isValidAddress && this.tokenId) {
+        try {
+          await this.populateNftDetails(value, this.tokenId)
+        } catch (error) {
+          log.error('Error while adding custom nft.', error)
+        }
+      }
+    },
+    async setTokenId(value) {
+      this.tokenId = value
+      this.isValidAddress = await validateContractAddress(torus.web3, this.contractAddress)
+      if (this.isValidAddress && !!value) {
+        try {
+          await this.populateNftDetails(this.contractAddress, value)
+        } catch (error) {
+          log.error('Error while adding custom nft.', error)
+        }
+      }
     },
     nextTab() {
       if (this.$refs.addAssetForm.validate()) {
         // fetch details
         this.assetInfo = {
-          id: '#48504412872145064436409815726759718',
-          address: '#48504412872145064436409815726759718',
-          name: '6ETH Crystal Coins',
-          image: 'https://lh3.googleusercontent.com/keEgYUeLeefxvHzZDUbLgIfCxqMqfD0bcT6nnbO5zLGZjlrSmWr7EWzguoT9fSXPxrKW6_PzEciUFu25pqIwMmzW',
-          explorerLink: 'https://blockchain.com-explorer-link/123ejuhy345087y68',
-          description: `6 ETH Crystal Coins. Pixel art inspired by retro coins tha6 ETH Crystal Coins.
-            Pixel art inspired by retro coins tha retro coins tha6 ETH Crystal Coins. Pixel art inspired
-            by retro coins thaystal Coins. Pixel art inspired by retro coins tha6 ETH Crystal Coins.
-            Pixel art inspired by retro coins tha retro coins tha6 ETH Crystal Coins. Pixel art inspired by retro coins tha.`,
+          id: `#${this.tokenId}`,
+          address: this.contractAddress,
+          name: this.nftName,
+          image: this.nftImageLink,
+          explorerLink: getEtherScanAddressLink(this.contractAddress, this.networkType.host),
+          description: this.nftDescription,
         }
         this.tab = 1
       }
     },
     addCollectible() {
       log.info(this.assetInfo)
+      const payload = {
+        nft_address: this.contractAddress,
+        network: this.networkType.host,
+        nft_name: this.nftName,
+        nft_id: this.tokenId,
+        nft_contract_standard: this.nftStandard.toUpperCase(),
+        nft_image_link: this.nftImageLink,
+        description: this.description,
+        nft_balance: this.nftBalance,
+      }
+      this.addCustomNft(payload)
       this.closeForm()
     },
     closeForm() {

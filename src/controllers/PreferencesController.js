@@ -59,6 +59,7 @@ const DEFAULT_ACCOUNT_STATE = {
   defaultPublicAddress: '',
   accountType: ACCOUNT_TYPE.NORMAL,
   customTokens: [],
+  customNfts: [],
 }
 
 class PreferencesController extends EventEmitter {
@@ -201,6 +202,7 @@ class PreferencesController extends EventEmitter {
           account_type,
           default_public_address,
           customTokens,
+          customNfts,
         } = user.data || {}
         let whiteLabelLocale
         let badgesCompletion = DEFAULT_BADGES_COMPLETION
@@ -239,6 +241,7 @@ class PreferencesController extends EventEmitter {
             accountType: account_type || ACCOUNT_TYPE.NORMAL,
             defaultPublicAddress: default_public_address || public_address,
             customTokens,
+            customNfts,
           },
           public_address
         )
@@ -658,6 +661,21 @@ class PreferencesController extends EventEmitter {
       this.handleSuccess('navBar.snackSuccessCustomTokenDelete')
     } catch {
       this.handleError('navBar.snackFailCustomTokenDelete')
+    }
+  }
+
+  async addCustomNft(payload) {
+    try {
+      // payload is { nft_address, network, nft_name, nft_id, nft_contract_standard, nft_image_link, description, balance }
+      const apiPayload = { ...payload }
+      delete apiPayload.description
+      delete apiPayload.balance
+      const response = await this.api.post(`${config.api}/customnft`, apiPayload, this.headers(), { useAPIKey: true })
+      const customNft = { ...payload, ...response.data }
+      this.updateStore({ customNfts: [...this.state().customNfts, customNft] })
+      this.handleSuccess('navBar.snackSuccessCustomNftAdd')
+    } catch {
+      this.handleError('navBar.snackFailCustomNftAdd')
     }
   }
 

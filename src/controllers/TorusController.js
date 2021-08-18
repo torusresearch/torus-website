@@ -171,6 +171,7 @@ export default class TorusController extends EventEmitter {
       network: this.networkController,
       provider: this.provider,
       assetController: this.assetController,
+      preferencesStore: this.prefsController.store,
       getCovalentNfts: this.prefsController.getCovalentNfts.bind(this.prefsController),
       getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
     })
