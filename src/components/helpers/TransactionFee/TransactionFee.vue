@@ -2,10 +2,10 @@
   <v-flex xs12 mb-3>
     <v-layout>
       <v-flex class="body-2 mb-2">
-        <v-template v-if="!isConfirm">
+        <span v-if="!isConfirm">
           <span>{{ t('walletTransfer.fee-max-transaction') }}*</span>
           <HelpTooltip :title="t('walletTransfer.fee-max-transaction')" :description="t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
-        </v-template>
+        </span>
         <TransactionFeeAdvanced
           :gas="gas"
           :nonce="nonce"
@@ -57,6 +57,7 @@ import HelpTooltip from '../HelpTooltip'
 import TransactionFeeAdvanced from '../TransactionFeeAdvanced'
 
 export default {
+  name: 'TransactionFee',
   components: {
     HelpTooltip,
     TransactionFeeAdvanced,
