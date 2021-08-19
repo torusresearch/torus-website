@@ -41,7 +41,7 @@
     "@toruslabs/openlogin": "^0.9.5",
     "@toruslabs/openlogin-utils": "^0.9.5",
     "@toruslabs/torus.js": "^2.4.1",
-    "@unstoppabledomains/resolution": "^5.0.0",
+    "@unstoppabledomains/resolution": "^5.0.1",
     "@walletconnect/core": "^1.5.2",
     "@walletconnect/iso-crypto": "^1.6.1",
     "assert": "^2.0.0",
