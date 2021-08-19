@@ -666,10 +666,14 @@ class PreferencesController extends EventEmitter {
 
   async addCustomNft(payload) {
     try {
-      // payload is { nft_address, network, nft_name, nft_id, nft_contract_standard, nft_image_link, description, balance }
-      const apiPayload = { ...payload }
-      delete apiPayload.description
-      delete apiPayload.balance
+      // payload is { nft_address, network, nft_name, nft_id, nft_contract_standard, nft_image_link, description, nft_balance }
+      const apiPayload = {
+        nft_address: payload.nft_address,
+        network: payload.network,
+        nft_name: payload.nft_name,
+        nft_id: payload.nft_id,
+        nft_contract_standard: payload.nft_contract_standard,
+      }
       const response = await this.api.post(`${config.api}/customnft`, apiPayload, this.headers(), { useAPIKey: true })
       const customNft = { ...payload, ...response.data }
       this.updateStore({ customNfts: [...this.state().customNfts, customNft] })

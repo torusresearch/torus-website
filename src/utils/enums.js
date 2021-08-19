@@ -135,6 +135,8 @@ export const getInfuraBlockExplorerUrl = (network) => {
   return `https://${network}.etherscan.io`
 }
 
+export const getIpfsEndpoint = (path) => `https://ipfs.infura.io:5001/api/v0/cat?arg=${path}`
+
 export const createNetwork = (host, networkName, chainId, blockExplorer, ticker, tickerName, logo) => ({
   host,
   networkName,

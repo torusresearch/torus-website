@@ -26,7 +26,7 @@
                 <div class="body-2 mb-2">{{ t('homeAssets.contractAddress') }}</div>
                 <v-text-field
                   :value="contractAddress"
-                  :rules="[rules.required, validateContractAddress]"
+                  :rules="[rules.required, addressValidityRule, duplicateNftRule, ownerShipRule]"
                   outlined
                   @change="setContractAddress"
                 ></v-text-field>
@@ -130,6 +130,7 @@ export default {
   data() {
     return {
       isValidAddress: true,
+      isOwner: true,
       addAssetDialog: false,
       tab: 0,
       viewMore: false,
@@ -152,7 +153,9 @@ export default {
     duplicateNftRule() {
       if (!this.assets[this.selectedAddress]) return true
       const found = this.assets[this.selectedAddress].find(
-        (nft) => nft.address.toLocaleLowerCase() === this.contractAddress.toLocaleLowerCase() && nft.tokenId.toString() === this.tokenId.toString()
+        (nft) =>
+          nft.address.toLocaleLowerCase() === this.contractAddress?.toLocaleLowerCase() &&
+          nft.assets.find((asset) => asset.tokenId.toString() === this.tokenId?.toString())
       )
       return found ? this.t('homeNft.duplicateNft') : true
     },
@@ -160,18 +163,25 @@ export default {
       if (this.isValidAddress) return true
       return this.t('homeToken.invalidContractAddress')
     },
+    ownerShipRule() {
+      if (this.isOwner) return true
+      return this.t('homeNft.invalidOwnership')
+    },
   },
   methods: {
     ...mapActions(['addCustomNft']),
     async populateNftDetails(contractAddress, tokenId) {
       try {
         this.currentNft = new NftHandler({ address: contractAddress, tokenId, userAddress: this.selectedAddress, web3: torus.web3 })
-        const { nftBalance, nftName, nftImageLink, decription, nftStandard } = await this.currentNft.getNftDetails()
-        this.nftName = nftName
-        this.nftImageLink = nftImageLink
-        this.decription = decription
-        this.nftStandard = nftStandard
-        this.nftBalance = `${nftBalance}`
+        this.isOwner = (await this.currentNft.fetchNftBalance()) > 0
+        if (this.isOwner) {
+          const { nftBalance, nftName, nftImageLink, decription, nftStandard } = await this.currentNft.getNftDetails()
+          this.nftName = nftName
+          this.nftImageLink = nftImageLink
+          this.decription = decription
+          this.nftStandard = nftStandard
+          this.nftBalance = `${nftBalance}`
+        }
       } catch (error) {
         let displayError = getDisplayErrorMsg(error)
         if (displayError === null) {
@@ -188,22 +198,14 @@ export default {
       // log.debug(await torus.web3.eth.getCode(value))
       this.isValidAddress = await validateContractAddress(torus.web3, value)
       if (this.isValidAddress && this.tokenId) {
-        try {
-          await this.populateNftDetails(value, this.tokenId)
-        } catch (error) {
-          log.error('Error while adding custom nft.', error)
-        }
+        await this.populateNftDetails(value, this.tokenId)
       }
     },
     async setTokenId(value) {
       this.tokenId = value
       this.isValidAddress = await validateContractAddress(torus.web3, this.contractAddress)
       if (this.isValidAddress && !!value) {
-        try {
-          await this.populateNftDetails(this.contractAddress, value)
-        } catch (error) {
-          log.error('Error while adding custom nft.', error)
-        }
+        await this.populateNftDetails(this.contractAddress, value)
       }
     },
     nextTab() {
@@ -239,10 +241,6 @@ export default {
       this.$refs.addAssetForm.reset()
       this.tab = 0
       this.addAssetDialog = false
-    },
-    validateContractAddress(value) {
-      log.info(value)
-      return true
     },
   },
 }

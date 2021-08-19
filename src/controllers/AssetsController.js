@@ -11,7 +11,7 @@ import { isAddress, toChecksumAddress } from 'web3-utils'
 import erc721Contracts from '../assets/assets-map.json'
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, NFT_SUPPORTED_NETWORKS, SUPPORTED_NFT_STANDARDS } from '../utils/enums'
 import { get } from '../utils/httpHelpers'
-import { validateImageUrl } from '../utils/utils'
+import { sanitizeNftImageUrl, sanitizeNftMetdataUrl } from '../utils/utils'
 
 const initStateObject = { allCollectibleContracts: {}, allCollectibles: {}, allTokens: {}, collectibleContracts: [], collectibles: [], tokens: [] }
 
@@ -161,7 +161,8 @@ export default class AssetController {
       return { image: collectibleDetails.logo, name: collectibleDetails.name, tokenBalance: 1, description: '', standard: interfaceStandard }
     }
     const tokenURI = await this.getCollectibleTokenURI(contractAddress, tokenId, interfaceStandard)
-    const object = await get(tokenURI)
+    const finalTokenMetaUri = await sanitizeNftMetdataUrl(tokenURI)
+    const object = await get(finalTokenMetaUri)
     const image = Object.prototype.hasOwnProperty.call(object, 'image') ? 'image' : /* istanbul ignore next */ 'image_url'
     const tokenBalance =
       interfaceStandard === CONTRACT_TYPE_ERC721
@@ -329,11 +330,7 @@ export default class AssetController {
       // fallback to asset image
       normalizedContractInfo.logo = assetImage
     } else {
-      try {
-        await validateImageUrl(normalizedContractInfo.logo)
-      } catch {
-        normalizedContractInfo.logo = assetImage
-      }
+      normalizedContractInfo.logo = await sanitizeNftImageUrl(normalizedContractInfo.logo)
     }
     return normalizedContractInfo
   }
@@ -355,7 +352,7 @@ export default class AssetController {
       collectibleIndex,
     }
     normalizedCollectibleInfo.standard = standard || (await this.assetContractController.checkNftStandard(_contractAddress)).standard
-    const final_standard = normalizedCollectibleInfo.standard
+    const final_standard = normalizedCollectibleInfo.standard?.toLowerCase()
     if (!name || !image || !final_standard || !SUPPORTED_NFT_STANDARDS.has(final_standard)) {
       const collectibleInfo = await this.getCollectibleInfo(address, tokenID, detectFromApi)
       normalizedCollectibleInfo = { ...normalizedCollectibleInfo, ...collectibleInfo }

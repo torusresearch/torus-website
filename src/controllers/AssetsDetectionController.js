@@ -101,21 +101,30 @@ export default class AssetsDetectionController {
             isSpecial: undefined,
             web3: this.web3,
           })
-          const balance = await tokenInstance.getUserBalance()
-          const finalDescription = x.description || (await tokenInstance.getNftMetadata()).decription
+          const balance = await tokenInstance.fetchNftBalance()
+          if (balance === 0) {
+            throw new Error('Nft not owned by user anymore')
+          }
+          let { description, nft_image_link, nft_name } = x
+          if (!description || !nft_image_link || !nft_name) {
+            const nftMetadata = await tokenInstance.getNftMetadata()
+            description = nftMetadata.decription
+            nft_image_link = nftMetadata.nftImageLink
+            nft_name = nftMetadata.nftName
+          }
           const collectible = {
             contractAddress: x.nft_address,
             tokenID: x.nft_id.toString(),
             options: {
-              contractName: x.nft_name,
-              contractSymbol: x.nft_name,
-              contractImage: x.nft_image_link,
-              contractFallbackLogo: x.nft_image_link, // fallback is handled by nft handler
-              standard: x.nft_contract_standard,
-              contractDescription: finalDescription,
-              description: finalDescription,
-              image: x.nft_image_link,
-              name: `${x.nft_name}#${x.nft_id}`,
+              contractName: nft_name,
+              contractSymbol: nft_name,
+              contractImage: nft_image_link,
+              contractFallbackLogo: nft_image_link, // fallback is handled by nft handler
+              standard: x.nft_contract_standard.toLowerCase(),
+              contractDescription: description,
+              description,
+              image: nft_image_link,
+              name: `${nft_name}#${x.nft_id}`,
               tokenBalance: balance,
             },
           }
