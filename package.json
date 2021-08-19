@@ -33,7 +33,7 @@
     "@metamask/contract-metadata": "^1.28.0",
     "@metamask/obs-store": "^6.0.2",
     "@metamask/safe-event-emitter": "^2.0.0",
-    "@sentry/browser": "^6.10.0",
+    "@sentry/browser": "^6.11.0",
     "@sentry/vue": "^6.10.0",
     "@toruslabs/fetch-node-details": "^2.7.0",
     "@toruslabs/http-helpers": "^1.4.0",
