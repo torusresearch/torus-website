@@ -157,15 +157,15 @@ export default {
           nft.address.toLocaleLowerCase() === this.contractAddress?.toLocaleLowerCase() &&
           nft.assets.find((asset) => asset.tokenId.toString() === this.tokenId?.toString())
       )
-      return found ? this.t('homeNft.duplicateNft') : true
+      return found ? this.t('homeAssets.duplicateNft') : true
     },
     addressValidityRule() {
       if (this.isValidAddress) return true
-      return this.t('homeToken.invalidContractAddress')
+      return this.t('homeAssets.invalidContractAddress')
     },
     ownerShipRule() {
       if (this.isOwner) return true
-      return this.t('homeNft.invalidOwnership')
+      return this.t('homeAssets.invalidOwnership')
     },
   },
   methods: {
@@ -173,14 +173,15 @@ export default {
     async populateNftDetails(contractAddress, tokenId) {
       try {
         this.currentNft = new NftHandler({ address: contractAddress, tokenId, userAddress: this.selectedAddress, web3: torus.web3 })
-        this.isOwner = (await this.currentNft.fetchNftBalance()) > 0
+        const balance = await this.currentNft.fetchNftBalance()
+        this.isOwner = balance > 0
         if (this.isOwner) {
-          const { nftBalance, nftName, nftImageLink, decription, nftStandard } = await this.currentNft.getNftDetails()
+          const { nftName, nftImageLink, decription, nftStandard } = await this.currentNft.getNftMetadata()
           this.nftName = nftName
           this.nftImageLink = nftImageLink
           this.decription = decription
           this.nftStandard = nftStandard
-          this.nftBalance = `${nftBalance}`
+          this.nftBalance = `${balance}`
         }
       } catch (error) {
         let displayError = getDisplayErrorMsg(error)

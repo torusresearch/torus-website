@@ -45,17 +45,6 @@ class NftHandler {
     this.isSpecial = isSpecial
   }
 
-  async getNftDetails() {
-    const { standard, isSpecial } = await this.checkNftStandard()
-    const { nftName, nftImageLink, decription } = await this.getNftMetadata(standard, isSpecial)
-    if (isSpecial) {
-      const { tokenId, address } = this
-      return { nftBalance: 1, nftName, tokenId, nftImageLink, decription, nftStandard: standard, address }
-    }
-    const nftBalance = await this.fetchNftBalance()
-    return { nftBalance, nftName, tokenId: this.tokenId, nftImageLink, decription, nftStandard: standard, address: this.address }
-  }
-
   async getNftMetadata(standard, isSpecial) {
     let _standard = standard
     let _isSpecial = isSpecial
@@ -71,12 +60,12 @@ class NftHandler {
       this.nftImageLink = await sanitizeNftImageUrl(collectibleDetails.logo)
       this.nftName = collectibleDetails.name
       this.decription = ''
-      const { nftName, nftImageLink, decription } = this
-      return { nftName, nftImageLink, decription }
+      const { nftName, nftImageLink, decription, nftStandard } = this
+      return { nftName, nftImageLink, decription, nftStandard }
     }
     if (this.nftImageLink && this.nftName) {
-      const { nftName, nftImageLink, decription } = this
-      return { nftName, nftImageLink, decription }
+      const { nftName, nftImageLink, decription, nftStandard } = this
+      return { nftName, nftImageLink, decription, nftStandard }
     }
     const tokenURI = await this.getCollectibleTokenURI(this.address, this.tokenId, _standard)
     const finalTokenMetaUri = await sanitizeNftMetdataUrl(tokenURI)
@@ -87,8 +76,8 @@ class NftHandler {
 
     this.nftName = await this.getAssetName()
     this.decription = Object.prototype.hasOwnProperty.call(object, 'description') ? object.description : ''
-    const { nftName, nftImageLink, decription } = this
-    return { nftName, nftImageLink, decription }
+    const { nftName, nftImageLink, decription, nftStandard } = this
+    return { nftName, nftImageLink, decription, nftStandard }
   }
 
   /**
