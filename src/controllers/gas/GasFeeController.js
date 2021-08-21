@@ -128,7 +128,7 @@ class GasFeeController {
     }
     try {
       isEIP1559Compatible = await this.getEIP1559Compatibility()
-      log.info('eip1559', isEIP1559Compatible)
+      log.info('eip1559 compatible', isEIP1559Compatible)
     } catch (error) {
       log.warn(error)
       isEIP1559Compatible = false
@@ -138,6 +138,7 @@ class GasFeeController {
 
     try {
       if (isEIP1559Compatible) {
+        // TODO: kovan is not working due to a bug in metamask api
         const estimates = await this.fetchGasEstimates(this.EIP1559APIEndpoint.replace('<chain_id>', `${chainId}`))
         const { suggestedMaxPriorityFeePerGas, suggestedMaxFeePerGas } = estimates.medium
         const estimatedGasFeeTimeBounds = this.getTimeEstimate(suggestedMaxPriorityFeePerGas, suggestedMaxFeePerGas)

@@ -331,7 +331,6 @@ export default {
   },
   methods: {
     updateDetails(speed) {
-      log.info('this.gasFees', this.initialMaxFeePerGas.toString(), speed)
       this.newGas = this.gas
       this.newNonce = this.nonce >= 0 ? this.nonce : this.nonceItems[0]
       this.baseFee = this.gasFees.gasFeeEstimates?.estimatedBaseFee

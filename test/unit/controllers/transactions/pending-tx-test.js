@@ -95,7 +95,7 @@ describe('PendingTransactionTracker', function () {
   })
 
   describe('#_checkPendingTxs', () => {
-    it("should warp all txMeta's in #updatePendingTxs", (done) => {
+    it("should wrap all txMeta's in #updatePendingTxs", (done) => {
       const txMeta2 = (txMeta3 = txMeta)
       txMeta2.id = 2
       txMeta3.id = 3
@@ -141,7 +141,7 @@ describe('PendingTransactionTracker', function () {
 
       assert.ok(getPendingTransactions.calledOnceWithExactly(), 'should call getPendingTransaction')
       assert.ok(resubmitTx.notCalled, 'should NOT call _resubmitTx')
-      assert.ok(warningListener.notCalled, 'should NOT emit \'tx:warning\'')
+      assert.ok(warningListener.notCalled, "should NOT emit 'tx:warning'")
     })
 
     it('should resubmit each pending transaction', async () => {
@@ -174,7 +174,7 @@ describe('PendingTransactionTracker', function () {
 
       assert.ok(getPendingTransactions.calledOnceWithExactly(), 'should call getPendingTransaction')
       assert.ok(resubmitTx.calledTwice, 'should call _resubmitTx')
-      assert.ok(warningListener.notCalled, 'should NOT emit \'tx:warning\'')
+      assert.ok(warningListener.notCalled, "should NOT emit 'tx:warning'")
     })
 
     it("should NOT emit 'tx:warning' for known failed resubmission", async () => {
@@ -204,7 +204,7 @@ describe('PendingTransactionTracker', function () {
 
       assert.ok(getPendingTransactions.calledOnceWithExactly(), 'should call getPendingTransaction')
       assert.ok(resubmitTx.calledOnce, 'should call _resubmitTx')
-      assert.ok(warningListener.notCalled, 'should NOT emit \'tx:warning\'')
+      assert.ok(warningListener.notCalled, "should NOT emit 'tx:warning'")
     })
 
     it("should emit 'tx:warning' for unknown failed resubmission", async () => {
@@ -234,7 +234,7 @@ describe('PendingTransactionTracker', function () {
 
       assert.ok(getPendingTransactions.calledOnceWithExactly(), 'should call getPendingTransaction')
       assert.ok(resubmitTx.calledOnce, 'should call _resubmitTx')
-      assert.ok(warningListener.calledOnce, 'should emit \'tx:warning\'')
+      assert.ok(warningListener.calledOnce, "should emit 'tx:warning'")
     })
   })
 
@@ -624,10 +624,10 @@ describe('PendingTransactionTracker', function () {
       pendingTxTracker.once('tx:warning', listeners.warning)
       await pendingTxTracker._checkPendingTx(txMeta)
 
-      assert.ok(listeners.dropped.notCalled, 'should not emit \'tx:dropped')
-      assert.ok(listeners.confirmed.notCalled, 'should not emit \'tx:confirmed\'')
-      assert.ok(listeners.failed.notCalled, 'should not emit \'tx:failed\'')
-      assert.ok(listeners.warning.calledOnce, 'should emit \'tx:warning\'')
+      assert.ok(listeners.dropped.notCalled, "should not emit 'tx:dropped")
+      assert.ok(listeners.confirmed.notCalled, "should not emit 'tx:confirmed'")
+      assert.ok(listeners.failed.notCalled, "should not emit 'tx:failed'")
+      assert.ok(listeners.warning.calledOnce, "should emit 'tx:warning'")
     })
 
     it('should NOT emit anything if the tx is already not submitted', async () => {
@@ -663,10 +663,10 @@ describe('PendingTransactionTracker', function () {
         hash: '0xbad',
       })
 
-      assert.ok(listeners.failed.notCalled, 'should not emit \'tx:failed\'')
-      assert.ok(listeners.confirmed.notCalled, 'should not emit \'tx:confirmed\'')
-      assert.ok(listeners.dropped.notCalled, 'should not emit \'tx:dropped\'')
-      assert.ok(listeners.warning.notCalled, 'should not emit \'tx:warning\'')
+      assert.ok(listeners.failed.notCalled, "should not emit 'tx:failed'")
+      assert.ok(listeners.confirmed.notCalled, "should not emit 'tx:confirmed'")
+      assert.ok(listeners.dropped.notCalled, "should not emit 'tx:dropped'")
+      assert.ok(listeners.warning.notCalled, "should not emit 'tx:warning'")
     })
 
     it("should emit 'tx:failed' if the txMeta does NOT have a hash", async () => {
@@ -700,10 +700,10 @@ describe('PendingTransactionTracker', function () {
         txParams: { from: '0x1678a085c290ebd122dc42cba69373b5953b831d' },
       })
 
-      assert.ok(listeners.failed.calledOnceWithExactly('2', sinon.match.instanceOf(Error)), 'should pass txId to \'tx:failed\' listener')
-      assert.ok(listeners.confirmed.notCalled, 'should not emit \'tx:confirmed\'')
-      assert.ok(listeners.dropped.notCalled, 'should not emit \'tx:dropped\'')
-      assert.ok(listeners.warning.notCalled, 'should not emit \'tx:warning\'')
+      assert.ok(listeners.failed.calledOnceWithExactly('2', sinon.match.instanceOf(Error)), "should pass txId to 'tx:failed' listener")
+      assert.ok(listeners.confirmed.notCalled, "should not emit 'tx:confirmed'")
+      assert.ok(listeners.dropped.notCalled, "should not emit 'tx:dropped'")
+      assert.ok(listeners.warning.notCalled, "should not emit 'tx:warning'")
     })
 
     it("should emit 'tx:dropped' if another tx with the same nonce succeeds", async () => {
@@ -751,9 +751,9 @@ describe('PendingTransactionTracker', function () {
       await pendingTxTracker._checkPendingTx(txs[1])
 
       assert.ok(listeners.dropped.calledOnceWithExactly('123'))
-      assert.ok(listeners.confirmed.notCalled, 'should not emit \'tx:confirmed\'')
-      assert.ok(listeners.failed.notCalled, 'should not emit \'tx:failed\'')
-      assert.ok(listeners.warning.notCalled, 'should not emit \'tx:warning\'')
+      assert.ok(listeners.confirmed.notCalled, "should not emit 'tx:confirmed'")
+      assert.ok(listeners.failed.notCalled, "should not emit 'tx:failed'")
+      assert.ok(listeners.warning.notCalled, "should not emit 'tx:warning'")
     })
 
     it("should emit 'tx:dropped' with the txMetas id only after the fourth call", async () => {
@@ -802,9 +802,9 @@ describe('PendingTransactionTracker', function () {
       await pendingTxTracker._checkPendingTx(txMeta)
 
       assert.ok(listeners.dropped.calledOnceWithExactly(1))
-      assert.ok(listeners.confirmed.notCalled, 'should not emit \'tx:confirmed\'')
-      assert.ok(listeners.failed.notCalled, 'should not emit \'tx:failed\'')
-      assert.ok(listeners.warning.notCalled, 'should not emit \'tx:warning\'')
+      assert.ok(listeners.confirmed.notCalled, "should not emit 'tx:confirmed'")
+      assert.ok(listeners.failed.notCalled, "should not emit 'tx:failed'")
+      assert.ok(listeners.warning.notCalled, "should not emit 'tx:warning'")
     })
   })
 })

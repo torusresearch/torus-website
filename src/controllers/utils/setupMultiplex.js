@@ -1,5 +1,5 @@
+import ObjectMultiplex from '@metamask/object-multiplex'
 import log from 'loglevel'
-import ObjectMultiplex from 'obj-multiplex'
 import pump from 'pump'
 
 function setupMultiplex(connectionStream) {

@@ -116,7 +116,7 @@ export default {
     gasFees(newValue, oldValue) {
       if (!isEqual(newValue, oldValue)) {
         const gasFeeEstimate = newValue.gasFeeEstimates
-        if (this.selectedSpeed) {
+        if (this.selectedSpeed && gasFeeEstimate[this.selectedSpeed]) {
           const maxPriorityFee = gasFeeEstimate[this.selectedSpeed].suggestedMaxPriorityFeePerGas
           this.feeTime = gasTiming(maxPriorityFee, newValue, this.t, 'walletTransfer.fee-edit-in')
           this.setMaxTransactionFee(this.gas, maxPriorityFee, gasFeeEstimate.estimatedBaseFee)

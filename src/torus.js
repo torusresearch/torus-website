@@ -2,7 +2,6 @@ import randomId from '@chaitanyapotti/random-id'
 import Torus from '@toruslabs/torus.js'
 import { hashPersonalMessage } from 'ethereumjs-util'
 
-import setupMultiplex from './controllers/utils/setupMultiplex'
 import onloadTorus from './onload'
 
 // Make this a class. Use ES6 class
@@ -10,7 +9,6 @@ class TorusExtended extends Torus {
   constructor() {
     super()
     this.instanceId = randomId()
-    this.setupMultiplex = setupMultiplex
     this.openLogin = null
   }
 

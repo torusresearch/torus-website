@@ -1,4 +1,4 @@
-import { ObservableStore, storeAsStream } from '@metamask/obs-store'
+// import { ObservableStore, storeAsStream } from '@metamask/obs-store'
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import { providerAsMiddleware } from 'eth-json-rpc-middleware'
@@ -9,7 +9,7 @@ import { JsonRpcEngine } from 'json-rpc-engine'
 import { createEngineStream } from 'json-rpc-middleware-stream'
 import { debounce } from 'lodash'
 import log from 'loglevel'
-import pump from 'pump'
+// import pump from 'pump'
 import { toChecksumAddress } from 'web3-utils'
 
 import { version } from '../../package.json'
@@ -38,7 +38,7 @@ import ComposableObservableStore from './utils/ComposableObservableStore'
 import createLoggerMiddleware from './utils/createLoggerMiddleware'
 import createOriginMiddleware from './utils/createOriginMiddleware'
 import createMethodMiddleware from './utils/methodMiddleware'
-import setupMultiplex from './utils/setupMultiplex'
+// import setupMultiplex from './utils/setupMultiplex'
 import WalletConnectController from './walletconnect/WalletConnectController'
 
 EventEmitter.defaultMaxListeners = 100
@@ -219,7 +219,7 @@ export default class TorusController extends EventEmitter {
     })
     this.memStore.subscribe(this.sendUpdate.bind(this))
 
-    this.publicConfigStore = this.initPublicConfigStore()
+    // this.publicConfigStore = this.initPublicConfigStore()
 
     if (typeof options.rehydrate === 'function') {
       setTimeout(() => {
@@ -286,34 +286,34 @@ export default class TorusController extends EventEmitter {
    * Constructor helper: initialize a public config store.
    * This store is used to make some config info available to Dapps synchronously.
    */
-  initPublicConfigStore() {
-    // get init state
-    const publicConfigStore = new ObservableStore()
+  // initPublicConfigStore() {
+  //   // get init state
+  //   const publicConfigStore = new ObservableStore()
 
-    const { networkController } = this
+  //   const { networkController } = this
 
-    // setup memStore subscription hooks
-    this.on('update', updatePublicConfigStore)
-    updatePublicConfigStore(this.getState())
+  //   // setup memStore subscription hooks
+  //   this.on('update', updatePublicConfigStore)
+  //   updatePublicConfigStore(this.getState())
 
-    function updatePublicConfigStore(memState) {
-      const chainId = networkController.getCurrentChainId()
-      if (memState.network !== 'loading') {
-        publicConfigStore.putState(selectPublicState(chainId, memState))
-      }
-    }
+  //   function updatePublicConfigStore(memState) {
+  //     const chainId = networkController.getCurrentChainId()
+  //     if (memState.network !== 'loading') {
+  //       publicConfigStore.putState(selectPublicState(chainId, memState))
+  //     }
+  //   }
 
-    // eslint-disable-next-line unicorn/consistent-function-scoping
-    function selectPublicState(chainId, { isUnlocked, network }) {
-      return {
-        isUnlocked,
-        chainId,
-        networkVersion: network,
-      }
-    }
+  //   // eslint-disable-next-line unicorn/consistent-function-scoping
+  //   function selectPublicState(chainId, { isUnlocked, network }) {
+  //     return {
+  //       isUnlocked,
+  //       chainId,
+  //       networkVersion: network,
+  //     }
+  //   }
 
-    return publicConfigStore
-  }
+  //   return publicConfigStore
+  // }
 
   /**
    * Gets relevant state for the provider of an external origin.
@@ -367,11 +367,7 @@ export default class TorusController extends EventEmitter {
   // =============================================================================
 
   async initTorusKeyring(keyArray, addresses) {
-    await Promise.all([
-      this.keyringController.deserialize(keyArray),
-      this.accountTracker.syncWithAddresses(addresses),
-      this.gasFeeController.getGasFeeEstimatesAndStartPolling(),
-    ])
+    await Promise.all([this.keyringController.deserialize(keyArray), this.accountTracker.syncWithAddresses(addresses)])
     this.notifyAllConnections({
       method: NOTIFICATION_NAMES.unlockStateChanged,
       params: {
@@ -392,6 +388,7 @@ export default class TorusController extends EventEmitter {
       this.detectTokensController.startTokenDetection(address)
       this.assetDetectionController.startAssetDetection(address)
       this.walletConnectController.setSelectedAddress(address)
+      this.gasFeeController.getGasFeeEstimatesAndStartPolling()
     }
   }
 
@@ -797,10 +794,10 @@ export default class TorusController extends EventEmitter {
    */
   setupUntrustedCommunication(connectionStream, originDomain) {
     // setup multiplexing
-    const mux = setupMultiplex(connectionStream)
+    // const mux = setupMultiplex(connectionStream)
     // connect features && for test cases
     this.setupProviderConnection(connectionStream, originDomain)
-    this.setupPublicConfig(mux.createStream('publicConfig'))
+    // this.setupPublicConfig(mux.createStream('publicConfig'))
   }
 
   /**
@@ -927,13 +924,13 @@ export default class TorusController extends EventEmitter {
    *
    * @param {*} outStream - The stream to provide public config over.
    */
-  setupPublicConfig(outStream) {
-    const configStream = storeAsStream(this.publicConfigStore)
-    pump(configStream, outStream, (error) => {
-      configStream.destroy()
-      if (error) log.error(error)
-    })
-  }
+  // setupPublicConfig(outStream) {
+  //   const configStream = storeAsStream(this.publicConfigStore)
+  //   pump(configStream, outStream, (error) => {
+  //     configStream.destroy()
+  //     if (error) log.error(error)
+  //   })
+  // }
 
   /**
    * A method for emitting the full MetaMask state to all registered listeners.

@@ -26,6 +26,7 @@
     }
   },
   "rules": {
+    "unicorn/prefer-obj": 0,
     "unicorn/require-post-message-target-origin": 0,
     "unicorn/prefer-module": 0,
     "unicorn/prefer-node-protocol": 0,

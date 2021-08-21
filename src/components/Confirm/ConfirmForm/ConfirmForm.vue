@@ -338,12 +338,20 @@
           <v-layout mx-n2>
             <v-flex xs6 px-2>
               <v-btn block text large class="text_2--text" @click="triggerDeny">
-                {{ type === MESSAGE_TYPE.ETH_DECRYPT || type === MESSAGE_TYPE.ETH_DECRYPT ? t('dappProvider.deny') : t('dappProvider.cancel') }}
+                {{
+                  type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY || type === MESSAGE_TYPE.ETH_DECRYPT
+                    ? t('dappProvider.deny')
+                    : t('dappProvider.cancel')
+                }}
               </v-btn>
             </v-flex>
             <v-flex xs6 px-2>
               <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
-                {{ type === MESSAGE_TYPE.ETH_DECRYPT || type === MESSAGE_TYPE.ETH_DECRYPT ? t('dappProvider.allow') : t('dappProvider.confirm') }}
+                {{
+                  type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY || type === MESSAGE_TYPE.ETH_DECRYPT
+                    ? t('dappProvider.allow')
+                    : t('dappProvider.confirm')
+                }}
               </v-btn>
             </v-flex>
           </v-layout>
@@ -694,8 +702,8 @@ export default {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true
         }
-        this.initialMaxFeePerGas = new BigNumber(hexToNumber(maxFeePerGas)).div(weiInGwei)
-        this.initialMaxPriorityFeePerGas = new BigNumber(hexToNumber(maxPriorityFeePerGas)).div(weiInGwei)
+        this.initialMaxFeePerGas = new BigNumber(hexToNumber(maxFeePerGas) || 0).div(weiInGwei)
+        this.initialMaxPriorityFeePerGas = new BigNumber(hexToNumber(maxPriorityFeePerGas) || 0).div(weiInGwei)
         this.activePriorityFee = this.initialMaxPriorityFeePerGas
         this.currencyRateDate = this.getDate()
         this.receiver = this.amountTo

@@ -452,10 +452,9 @@
 import randomId from '@chaitanyapotti/random-id'
 import Resolution from '@unstoppabledomains/resolution'
 import BigNumber from 'bignumber.js'
-import { deepClone } from 'fast-json-patch/lib/core'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
-import { isEqual } from 'lodash'
+import { cloneDeep, isEqual } from 'lodash'
 import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { QrcodeStream } from 'vue-qrcode-reader'
@@ -1312,7 +1311,7 @@ export default {
       this.$router.go(-1)
     },
     updateTotalCost() {
-      const gasPriceEstimates = deepClone(this.gasFees.gasFeeEstimates)
+      const gasPriceEstimates = cloneDeep(this.gasFees.gasFeeEstimates)
       if (this.isEip1559 && gasPriceEstimates) {
         // in case of custom gas limits, selectedLondonSpeed will be undefined
         // and we should n't change if user's custom gas limit is better than
