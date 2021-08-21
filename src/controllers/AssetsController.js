@@ -475,8 +475,8 @@ export default class AssetController {
       const networkType = this.network.getNetworkIdentifier()
 
       const addressCollectibles = allCollectibles[selectedAddress]
-      const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: finalCollectibles } }
-      const newAllCollectibles = { ...allCollectibles, ...{ [selectedAddress]: newAddressCollectibles } }
+      const newAddressCollectibles = { ...addressCollectibles, [networkType]: finalCollectibles }
+      const newAllCollectibles = { ...allCollectibles, [selectedAddress]: newAddressCollectibles }
 
       const addressCollectibleContracts = allCollectibleContracts[selectedAddress]
       const newAddressCollectibleContracts = {

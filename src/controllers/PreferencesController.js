@@ -716,7 +716,7 @@ class PreferencesController extends EventEmitter {
   }
 
   async setUserBadge(payload) {
-    const newBadgeCompletion = { ...this.state().badgesCompletion, ...{ [payload]: true } }
+    const newBadgeCompletion = { ...this.state().badgesCompletion, [payload]: true }
     this.updateStore({ badgesCompletion: newBadgeCompletion })
     try {
       await this.api.patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers(), { useAPIKey: true })
