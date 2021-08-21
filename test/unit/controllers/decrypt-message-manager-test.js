@@ -17,7 +17,7 @@ describe('Decrypt Message Manager', () => {
     })
 
     it('should return number of unapproved msgs', () => {
-      messageManager.addUnapprovedMessage({}, {}, 1)
+      messageManager.addUnapprovedMessage({ data: "unit test message"}, {}, 1)
       const result = messageManager.unapprovedDecryptMsgCount
       assert.strictEqual(result, 1)
     })

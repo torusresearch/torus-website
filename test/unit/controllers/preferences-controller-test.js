@@ -4,7 +4,7 @@ import nock from 'nock'
 import sinon from 'sinon'
 
 import PreferencesController from '../../../src/controllers/PreferencesController'
-import NetworkController from '../../../src/controllers/NetworkController'
+import NetworkController from '../../../src/controllers/network/NetworkController'
 import { ACCOUNT_TYPE, THEME_LIGHT_BLUE_NAME } from '../../../src/utils/enums'
 import config from '../../../src/config'
 
@@ -33,8 +33,8 @@ describe('Preferences Controller', () => {
 
   beforeEach(() => {
     nock.cleanAll()
-    nock.disableNetConnect()
     network = new NetworkController()
+    sandbox.stub(network, 'getLatestBlock').returns({})
     network.initializeProvider(networkControllerProviderConfig)
     preferencesController = new PreferencesController({ signMessage: noop, network, provider: network.getProviderAndBlockTracker().provider })
     storeUserLoginStub = sandbox.stub(preferencesController, 'storeUserLogin')
@@ -524,6 +524,7 @@ describe('Preferences Controller', () => {
   it('should poll user with jwt & selected address', async () => {
     const clock = sandbox.useFakeTimers()
     network = new NetworkController()
+    sandbox.stub(network, 'getLatestBlock').returns({})
     network.initializeProvider(networkControllerProviderConfig)
     const prefsController = new PreferencesController({ interval: 100, network })
     sandbox.stub(prefsController, 'storeUserLogin')

@@ -6,6 +6,9 @@ import { TYPED_MESSAGE_SCHEMA, typedSignatureHash } from 'eth-sig-util'
 import EventEmitter from 'events'
 import jsonschema from 'jsonschema'
 import log from 'loglevel'
+import { isAddress } from 'web3-utils'
+
+import { MESSAGE_TYPE } from '../utils/enums'
 
 /**
  * Represents, and contains data about, an 'eth_signTypedData' type signature request. These are created when a
@@ -29,9 +32,9 @@ export default class TypedMessageManager extends EventEmitter {
   /**
    * Controller in charge of managing - storing, adding, removing, updating - TypedMessage.
    */
-  constructor({ networkController }) {
+  constructor({ getCurrentChainId }) {
     super()
-    this.networkController = networkController
+    this._getCurrentChainId = getCurrentChainId
     this.store = new ObservableStore({
       unapprovedTypedMessages: {},
       unapprovedTypedMessagesCount: 0,
@@ -105,9 +108,9 @@ export default class TypedMessageManager extends EventEmitter {
    */
   addUnapprovedMessage(messageParameters, request, version, messageId) {
     messageParameters.version = version
-    this.validateParams(messageParameters)
     // add origin from request
     if (request) messageParameters.origin = request.origin
+    this.validateParams(messageParameters)
 
     log.debug(`TypedMessageManager addUnapprovedMessage: ${JSON.stringify(messageParameters)}`)
     // create txData obj with parameters and meta data
@@ -117,7 +120,7 @@ export default class TypedMessageManager extends EventEmitter {
       msgParams: messageParameters,
       time,
       status: 'unapproved',
-      type: 'eth_signTypedData',
+      type: MESSAGE_TYPE.ETH_SIGN_TYPED_DATA,
     }
     this.addMsg(messageData)
 
@@ -133,37 +136,43 @@ export default class TypedMessageManager extends EventEmitter {
    *
    */
   validateParams(parameters) {
+    assert.ok(parameters && typeof parameters === 'object', 'Params must be an object.')
+    assert.ok('data' in parameters, 'Params must include a "data" field.')
+    assert.ok('from' in parameters, 'Params must include a "from" field.')
+    assert.ok(
+      typeof parameters.from === 'string' && isAddress(parameters.from),
+      '"from" field must be a valid, lowercase, hexadecimal Ethereum address string.'
+    )
+
     switch (parameters.version) {
       case 'V1':
-        assert.strictEqual(typeof parameters, 'object', 'Params should ben an object.')
-        assert.ok('data' in parameters, 'Params must include a data field.')
-        assert.ok('from' in parameters, 'Params must include a from field.')
-        assert.ok(Array.isArray(parameters.data), 'Data should be an array.')
-        assert.strictEqual(typeof parameters.from, 'string', 'From field must be a string.')
+        assert.ok(Array.isArray(parameters.data), 'params.data must be an array.')
         assert.doesNotThrow(() => {
           typedSignatureHash(parameters.data)
-        }, 'Expected EIP712 typed data')
+        }, 'Signing data must be valid EIP-712 typed data.')
         break
       case 'V3':
       case 'V4':
+        assert.strictEqual(typeof parameters.data, 'string', '"params.data" must be a string.')
         let data
-        assert.strictEqual(typeof parameters, 'object', 'Params should be an object.')
-        assert.ok('data' in parameters, 'Params must include a data field.')
-        assert.ok('from' in parameters, 'Params must include a from field.')
-        assert.strictEqual(typeof parameters.from, 'string', 'From field must be a string.')
-        assert.strictEqual(typeof parameters.data, 'string', 'Data must be passed as a valid JSON string.')
         assert.doesNotThrow(() => {
           data = JSON.parse(parameters.data)
-        }, 'Data must be passed as a valid JSON string.')
+        }, '"data" must be a valid JSON string.')
         const validation = jsonschema.validate(data, TYPED_MESSAGE_SCHEMA)
         assert.ok(data.primaryType in data.types, `Primary type of "${data.primaryType}" has no type definition.`)
-        assert.strictEqual(validation.errors.length, 0, 'Data must conform to EIP-712 schema. See https://git.io/fNtcx.')
-        const { chainId } = data.domain
-        const activeChainId = Number.parseInt(this.networkController.getNetworkState(), 10)
-        if (chainId) assert.strictEqual(chainId, activeChainId, `Provided chainId (${chainId}) must match the active chainId (${activeChainId})`)
+        assert.strictEqual(validation.errors.length, 0, 'Signing data must conform to EIP-712 schema. See https://git.io/fNtcx.')
+        let { chainId } = data.domain
+        if (chainId) {
+          const activeChainId = Number.parseInt(this._getCurrentChainId(), 16)
+          assert.ok(!Number.isNaN(activeChainId), `Cannot sign messages for chainId "${chainId}", because Torus is switching networks.`)
+          if (typeof chainId === 'string') {
+            chainId = Number.parseInt(chainId, 16)
+          }
+          assert.strictEqual(chainId, activeChainId, `Provided chainId "${chainId}" must match the active chainId "${activeChainId}"`)
+        }
         break
       default:
-        break
+        assert.fail(`Unknown typed data version "${parameters.version}"`)
     }
   }
 
@@ -277,9 +286,9 @@ export default class TypedMessageManager extends EventEmitter {
    * @param {number} msgId The id of the TypedMessage to update.
    * @param {string} status The new status of the TypedMessage.
    * @throws A 'TypedMessageManager - TypedMessage not found for id: "${msgId}".' if there is no TypedMessage
-   * in this.messages with an id equal to the passed msgId
-   * @fires An event with a name equal to `${msgId}:${status}`. The TypedMessage is also fired.
-   * @fires If status is 'rejected' or 'signed', an event with a name equal to `${msgId}:finished` is fired along
+   * in this.messages with an id strictEqual to the passed msgId
+   * @fires An event with a name strictEqual to `${msgId}:${status}`. The TypedMessage is also fired.
+   * @fires If status is 'rejected' or 'signed', an event with a name strictEqual to `${msgId}:finished` is fired along
    * with the TypedMessage
    *
    */
@@ -295,7 +304,7 @@ export default class TypedMessageManager extends EventEmitter {
   }
 
   /**
-   * Sets a TypedMessage in this.messages to the passed TypedMessage if the ids are equal. Then saves the
+   * Sets a TypedMessage in this.messages to the passed TypedMessage if the ids are strictEqual. Then saves the
    * unapprovedTypedMsgs index to storage via this._saveMsgList
    *
    * @private

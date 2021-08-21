@@ -1,4 +1,4 @@
-import txStateHistoryHelper from '../../../src/controllers/utils/tx-state-history-helper'
+import * as txStateHistoryHelper from '../../../src/controllers/transactions/tx-state-history-helper'
 
 export default createTxMeta
 

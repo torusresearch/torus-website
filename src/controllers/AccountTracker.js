@@ -21,7 +21,7 @@ import {
   SINGLE_CALL_BALANCES_ADDRESS_RINKEBY,
   SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN,
 } from '../utils/contractAddresses'
-import { KOVAN_CODE, MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE, ZERO_ADDRESS } from '../utils/enums'
+import { KOVAN_CHAIN_ID, MAINNET_CHAIN_ID, RINKEBY_CHAIN_ID, ROPSTEN_CHAIN_ID, ZERO_ADDRESS } from '../utils/enums'
 
 export default class AccountTracker {
   /**
@@ -59,7 +59,8 @@ export default class AccountTracker {
     })
     // bind function for easier listener syntax
     this._updateForBlock = this._updateForBlock.bind(this)
-    this.network = options.network
+
+    this.getCurrentChainId = options.getCurrentChainId
 
     this.web3 = new Web3(this._provider)
   }
@@ -140,6 +141,14 @@ export default class AccountTracker {
   }
 
   /**
+   * Removes all addresses and associated balances
+   */
+
+  clearAccounts() {
+    this.store.updateState({ accounts: {} })
+  }
+
+  /**
    * Given a block, updates this AccountTracker's currentBlockGasLimit, and then updates each local account's balance
    * via EthQuery
    *
@@ -172,19 +181,20 @@ export default class AccountTracker {
   async _updateAccounts() {
     const { accounts } = this.store.getState()
     const addresses = Object.keys(accounts)
-    const currentNetwork = Number.parseInt(this.network.getNetworkState(), 10)
+    const chainId = this.getCurrentChainId()
+
     if (addresses.length > 0) {
-      switch (currentNetwork) {
-        case MAINNET_CODE:
+      switch (chainId) {
+        case MAINNET_CHAIN_ID:
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS)
           break
-        case RINKEBY_CODE:
+        case RINKEBY_CHAIN_ID:
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_RINKEBY)
           break
-        case ROPSTEN_CODE:
+        case ROPSTEN_CHAIN_ID:
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN)
           break
-        case KOVAN_CODE:
+        case KOVAN_CHAIN_ID:
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_KOVAN)
           break
         default:
@@ -220,6 +230,7 @@ export default class AccountTracker {
    */
   async _updateAccountsViaBalanceChecker(addresses, deployedContractAddress) {
     const web3Instance = this.web3
+    web3Instance.setProvider(this._provider)
     const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, deployedContractAddress)
     try {
       const result = await ethContract.methods.balances(addresses, [ZERO_ADDRESS]).call()

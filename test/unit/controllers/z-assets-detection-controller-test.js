@@ -6,7 +6,7 @@ import config from '../../../src/config'
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
 import AssetsController from '../../../src/controllers/AssetsController'
 import AssetsDetectionController from '../../../src/controllers/AssetsDetectionController'
-import NetworkController from '../../../src/controllers/NetworkController'
+import NetworkController from '../../../src/controllers/network/NetworkController'
 import PreferencesController from '../../../src/controllers/PreferencesController'
 import { BSC_MAINNET, MAINNET, MATIC, MUMBAI } from '../../../src/utils/enums'
 import * as utils from '../../../src/utils/utils'
@@ -37,6 +37,7 @@ describe('AssetsDetectionController', () => {
     const networkControllerProviderConfig = {
       getAccounts: noop,
     }
+    sandbox.stub(network, 'getLatestBlock').returns({})
     network.initializeProvider(networkControllerProviderConfig)
     network.setProviderType(MAINNET)
 
@@ -122,6 +123,7 @@ describe('AssetsDetectionController', () => {
       const networkControllerProviderConfig = {
         getAccounts: noop,
       }
+      sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
 
@@ -158,6 +160,7 @@ describe('AssetsDetectionController', () => {
       const networkControllerProviderConfig = {
         getAccounts: noop,
       }
+      sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(ROPSTEN)
 
@@ -177,6 +180,7 @@ describe('AssetsDetectionController', () => {
       const networkControllerProviderConfig = {
         getAccounts: noop,
       }
+      sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
 
@@ -196,6 +200,7 @@ describe('AssetsDetectionController', () => {
       const networkControllerProviderConfig = {
         getAccounts: noop,
       }
+      sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
 

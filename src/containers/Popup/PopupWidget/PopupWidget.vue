@@ -84,7 +84,11 @@
           <div v-if="recentTransaction" class="d-flex mb-4 mt-2">
             <div class="icon-holder">
               <v-icon
-                v-if="[TOKEN_METHOD_APPROVE, DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].includes(recentTransaction.transaction_category)"
+                v-if="
+                  [TRANSACTION_TYPES.TOKEN_METHOD_APPROVE, TRANSACTION_TYPES.DEPLOY_CONTRACT, TRANSACTION_TYPES.CONTRACT_INTERACTION].includes(
+                    recentTransaction.transaction_category
+                  )
+                "
                 class="float-left"
                 size="24"
                 color="torusBrand1"
@@ -165,11 +169,9 @@ import {
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_TOPUP,
-  CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
-  DEPLOY_CONTRACT_ACTION_KEY,
-  TOKEN_METHOD_APPROVE,
+  TRANSACTION_TYPES,
 } from '../../../utils/enums'
 import { addressSlicer, getUserEmail, getUserIcon } from '../../../utils/utils'
 
@@ -189,15 +191,13 @@ export default {
   data() {
     return {
       activeWidget: false,
-      TOKEN_METHOD_APPROVE,
-      DEPLOY_CONTRACT_ACTION_KEY,
-      CONTRACT_INTERACTION_KEY,
       CONTRACT_TYPE_ERC20,
       ACTIVITY_ACTION_TOPUP,
       ACTIVITY_ACTION_SEND,
       CONTRACT_TYPE_ERC721,
       logosUrl: config.logosUrl,
       ACCOUNT_TYPE,
+      TRANSACTION_TYPES,
     }
   },
   computed: {
@@ -261,7 +261,11 @@ export default {
       this.$emit('onLogin')
     },
     getIcon(transaction) {
-      if ([TOKEN_METHOD_APPROVE, DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].includes(transaction.transaction_category)) {
+      if (
+        [TRANSACTION_TYPES.TOKEN_METHOD_APPROVE, TRANSACTION_TYPES.DEPLOY_CONTRACT, TRANSACTION_TYPES.CONTRACT_INTERACTION].includes(
+          transaction.transaction_category
+        )
+      ) {
         return '$vuetify.icons.coins_approve'
       }
       if (transaction.action === ACTIVITY_ACTION_TOPUP) {

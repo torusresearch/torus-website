@@ -1,7 +1,7 @@
 import randomId from '@chaitanyapotti/random-id'
-import clone from 'clone'
 import deepmerge from 'deepmerge'
 import { BN } from 'ethereumjs-util'
+import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 
@@ -104,7 +104,7 @@ if (prefsController) {
   prefsController.metadataStore.subscribe(metadataHandler)
 }
 function resetStore(store, handler, initState) {
-  if (initState) store.putState(clone(initState))
+  if (initState) store.putState(cloneDeep(initState))
   store.unsubscribe(handler)
 }
 
@@ -135,7 +135,7 @@ export default {
     resetStore(encryptionPublicKeyManager.store, encryptionPublicKeyHandler)
     resetStore(decryptMessageManager.store, unapprovedDecryptMsgsHandler)
     assetDetectionController.stopAssetDetection()
-    torus.updateStaticData({ isUnlocked: false })
+    // torus.updateStaticData({ isUnlocked: false })
     if (isMain && selectedAddress) {
       router.push({ path: '/logout' }).catch(() => {})
       try {
@@ -315,12 +315,12 @@ export default {
     else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
   updateSelectedAddress(_, payload) {
-    torus.updateStaticData({ selectedAddress: payload.selectedAddress })
+    // torus.updateStaticData({ selectedAddress: payload.selectedAddress })
     torusController.setSelectedAccount(payload.selectedAddress)
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)
-    torus.updateStaticData({ networkId: payload.networkId })
+    // torus.updateStaticData({ networkId: payload.networkId })
   },
   async setProviderType({ commit, dispatch, state }, payload) {
     let networkType = payload.network
@@ -336,7 +336,7 @@ export default {
         blockExplorerUrl: networkType.blockExplorer,
       })
     }
-    await networkController.setProviderType(networkType.host)
+    await networkController.setProviderType(networkType.host, networkType.rpcUrl || networkType.host, networkType.ticker, networkType.networkName)
     if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency)
       await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home' })
     else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
@@ -478,7 +478,7 @@ export default {
     }
     // TODO: deprecate rehydrate false for the next major version bump
     statusStream.write({ loggedIn: true, rehydrate: false, verifier })
-    torus.updateStaticData({ isUnlocked: true })
+    // torus.updateStaticData({ isUnlocked: true })
     dispatch('cleanupOAuth', { oAuthToken })
   },
   cleanupOAuth({ state }, payload) {
@@ -511,6 +511,10 @@ export default {
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       const walletKeys = Object.keys(wallet)
       dispatch('subscribeToControllers')
+
+      if (selectedAddress && wallet[selectedAddress]) {
+        dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+      }
       await dispatch('initTorusKeyring', {
         keys: walletKeys.map((x) => {
           const { privateKey, accountType, seedPhrase } = wallet[x]
@@ -526,13 +530,12 @@ export default {
         rehydrate: true,
       })
       if (selectedAddress && wallet[selectedAddress]) {
-        dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
         if (Object.keys(wcConnectorSession).length > 0) dispatch('initWalletConnect', { session: wcConnectorSession })
         log.info('rehydrated wallet')
-        torus.updateStaticData({ isUnlocked: true })
+        // torus.updateStaticData({ isUnlocked: true })
       }
       commit('setRehydrationStatus', true)
     } catch (error) {
@@ -561,5 +564,11 @@ export default {
   },
   decryptMessage(_, payload) {
     return torusController.decryptMessageInline(payload)
+  },
+  updateNetworkDetails(context, payload) {
+    context.commit('setNetworkDetails', payload.networkDetails)
+  },
+  updateGasFees(context, payload) {
+    context.commit('setGasFees', payload.gasFees)
   },
 }

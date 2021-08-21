@@ -3,7 +3,7 @@ import nock from 'nock'
 import sinon from 'sinon'
 
 import DetectTokensController from '../../../src/controllers/DetectTokensController'
-import NetworkController from '../../../src/controllers/NetworkController'
+import NetworkController from '../../../src/controllers/network/NetworkController'
 
 const TEMP_ADDRESS = '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'
 const noop = () => {}
@@ -20,7 +20,6 @@ describe('DetectTokensController', () => {
 
   beforeEach(async () => {
     nock.cleanAll()
-    nock.disableNetConnect()
     nock('https://min-api.cryptocompare.com').get(/.*/).query(true).reply(200)
 
     network = new NetworkController()
@@ -51,11 +50,11 @@ describe('DetectTokensController', () => {
 
     clock.tick(1)
     sandbox.assert.notCalled(stub)
-    clock.tick(180000)
+    clock.tick(180_000)
     sandbox.assert.called(stub)
-    clock.tick(180000)
+    clock.tick(180_000)
     sandbox.assert.calledTwice(stub)
-    clock.tick(180000)
+    clock.tick(180_000)
     sandbox.assert.calledThrice(stub)
   })
 

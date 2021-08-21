@@ -1,3 +1,7 @@
+// import log from 'loglevel'
+
+import log from 'loglevel'
+
 import torus from '../torus'
 import { capitalizeFirstLetter } from '../utils/utils'
 
@@ -27,6 +31,14 @@ to "loading" at times in the inpage API
  */
 
 if (torus) {
+  torus.torusController.gasFeeController.store.subscribe((state) => {
+    // log.info('gasFee', state)
+    getStore().dispatch('updateGasFees', { gasFees: state })
+  })
+  torus.torusController.networkController.networkDetails.subscribe((state) => {
+    log.info('network store', state)
+    getStore().dispatch('updateNetworkDetails', { networkDetails: state })
+  })
   torus.torusController.networkController.networkStore.subscribe((state) => {
     getStore().dispatch('updateNetworkId', { networkId: state })
   })
@@ -95,7 +107,7 @@ export function prefsControllerHandler(state) {
   const { selectedAddress } = state
   getStore().commit('setSelectedAddress', selectedAddress)
   if (selectedAddress === '') return
-  const addressState = state[selectedAddress]
+  const addressState = state[selectedAddress] || {}
   Object.keys(addressState).forEach((x) => {
     if (x === 'jwtToken') getStore().commit('setJwtToken', { [selectedAddress]: addressState[x] })
     else if (x !== 'fetchedPastTx' && x !== 'accountType' && x !== 'customTokens')

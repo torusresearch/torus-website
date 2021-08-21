@@ -72,7 +72,7 @@ export default class AssetController {
   setSelectedAddress(address) {
     this.selectedAddress = address
     const { allCollectibleContracts, allCollectibles, allTokens } = this.state
-    const networkType = this.network.getNetworkNameFromNetworkCode()
+    const networkType = this.network.getNetworkIdentifier()
     this.store.updateState({
       collectibleContracts: (allCollectibleContracts[address] && allCollectibleContracts[address][networkType]) || [],
       collectibles: (allCollectibles[address] && allCollectibles[address][networkType]) || [],
@@ -81,7 +81,7 @@ export default class AssetController {
   }
 
   getCollectibleApi(contractAddress, tokenId) {
-    const networkType = this.network.getNetworkNameFromNetworkCode()
+    const networkType = this.network.getNetworkIdentifier()
     const chainId = NFT_SUPPORTED_NETWORKS[networkType]
     if (chainId) {
       return `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${tokenId}/`
@@ -105,7 +105,7 @@ export default class AssetController {
       else address = address2
       const { selectedAddress } = this
       const { allTokens, tokens } = this.state
-      const networkType = this.network.getNetworkNameFromNetworkCode()
+      const networkType = this.network.getNetworkIdentifier()
       const newEntry = { address, symbol, decimals, image }
       const previousIndex = tokens.findIndex((token) => token.address === address)
       if (previousIndex > -1) {
@@ -472,7 +472,7 @@ export default class AssetController {
       const finalCollectibles = mergeCollectibleArrays(oldCollectibles, newCollectibles)
 
       const { selectedAddress } = this
-      const networkType = this.network.getNetworkNameFromNetworkCode()
+      const networkType = this.network.getNetworkIdentifier()
 
       const addressCollectibles = allCollectibles[selectedAddress]
       const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: finalCollectibles } }

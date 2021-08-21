@@ -1,0 +1,51 @@
+.advance-option {
+  .card-header {
+    background: #ffffff;
+    border-radius: 6px;
+    border: 1px solid #f5f5f5;
+    box-sizing: border-box;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+
+    .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      color: var(--v-text_3-base);
+    }
+  }
+
+  .speed-list {
+    .v-list-item {
+      box-sizing: border-box;
+      border-radius: 6px;
+      &.is-selected {
+        border: 1px solid #0364ff;
+        box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
+      }
+      &.is-selected.theme--light {
+        background: #daf0ff;
+      }
+      &.v-list-item--link:before {
+        border-radius: 6px;
+      }
+    }
+    &_label {
+      width: 60px;
+    }
+  }
+
+  .max-priority-fee:not(.error--text),
+  .max-transaction-fee:not(.error--text) {
+    ::v-deep .v-messages__message {
+      color: var(--v-warning-base);
+    }
+  }
+
+  &.theme--dark {
+    .card-header {
+      border: 0;
+      background: #2f3136;
+      box-shadow: 0px 14px 28px rgba(0, 0, 0, 0.16);
+    }
+  }
+}

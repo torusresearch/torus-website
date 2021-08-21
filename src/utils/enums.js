@@ -1,3 +1,5 @@
+import { addHexPrefix } from 'ethereumjs-util'
+
 export const ETH = 'eth'
 
 export const PLATFORM_BRAVE = 'Brave'
@@ -46,6 +48,9 @@ export const MUMBAI_CHAIN_ID = '0x13881'
 export const BSC_MAINNET_CHAIN_ID = '0x38'
 export const BSC_TESTNET_CHAIN_ID = '0x61'
 export const XDAI_CHAIN_ID = '0x64'
+export const OPTIMISM_CHAIN_ID = '0xa'
+export const OPTIMISM_TESTNET_CHAIN_ID = '0x45'
+
 export const NFT_SUPPORTED_NETWORKS = {
   [MATIC]: MATIC_CODE,
   [MUMBAI]: MUMBAI_CODE,
@@ -53,6 +58,8 @@ export const NFT_SUPPORTED_NETWORKS = {
   [MAINNET]: MAINNET_CODE,
 }
 export const ETHERSCAN_SUPPORTED_NETWORKS = new Set([MATIC, BSC_MAINNET, MAINNET])
+export const INFURA_PROVIDER_TYPES = new Set([ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI])
+
 export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
 export const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
 export const KOVAN_DISPLAY_NAME = 'Kovan Test Network'
@@ -78,36 +85,49 @@ export const XDAI_BLOCK_EXPLORER = 'https://blockscout.com/poa/xdai'
 export const BSC_MAINNET_URL = 'https://bsc-dataseed.binance.org'
 export const BSC_MAINNET_BLOCK_EXPLORER = 'https://bscscan.com'
 
-export const BSC_TESTNET_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545'
+export const BSC_TESTNET_URL = 'https://data-seed-prebsc-2-s3.binance.org:8545'
 export const BSC_TESTNET_BLOCK_EXPLORER = 'https://testnet.bscscan.com'
 
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
 export const XDAI_TICKER = 'DAI'
 
-export const TX_MESSAGE = 'message'
-export const TX_PERSONAL_MESSAGE = 'personal_message'
-export const TX_TYPED_MESSAGE = 'typed_message'
-export const TX_TRANSACTION = 'transaction'
-export const TX_GET_ENCRYPTION_KEY = 'get_encryption'
-export const TX_ETH_DECRYPT = 'eth_decrypt'
+export const MESSAGE_TYPE = {
+  ETH_DECRYPT: 'eth_decrypt',
+  ETH_GET_ENCRYPTION_PUBLIC_KEY: 'eth_getEncryptionPublicKey',
+  ETH_SIGN: 'eth_sign',
+  ETH_SIGN_TYPED_DATA: 'eth_signTypedData',
+  PERSONAL_SIGN: 'personal_sign',
+}
 
-export const TRANSACTION_TYPE_CANCEL = 'cancel'
-export const TRANSACTION_TYPE_RETRY = 'retry'
-export const TRANSACTION_TYPE_STANDARD = 'standard'
+export const TRANSACTION_TYPES = {
+  CANCEL: 'cancel',
+  RETRY: 'retry',
+  TOKEN_METHOD_TRANSFER: 'transfer',
+  TOKEN_METHOD_TRANSFER_FROM: 'transferFrom',
+  TOKEN_METHOD_APPROVE: 'approve',
+  SENT_ETHER: 'sentEther',
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM: 'safeTransferFrom',
+  CONTRACT_INTERACTION: 'contractInteraction',
+  DEPLOY_CONTRACT: 'contractDeployment',
+  STANDARD_TRANSACTION: 'transaction',
+  SIGN: MESSAGE_TYPE.ETH_SIGN,
+  SIGN_TYPED_DATA: MESSAGE_TYPE.ETH_SIGN_TYPED_DATA,
+  PERSONAL_SIGN: MESSAGE_TYPE.PERSONAL_SIGN,
+  ETH_DECRYPT: MESSAGE_TYPE.ETH_DECRYPT,
+  ETH_GET_ENCRYPTION_PUBLIC_KEY: MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY,
+}
 
-export const TRANSACTION_STATUS_APPROVED = 'approved'
-export const TRANSACTION_STATUS_CONFIRMED = 'confirmed'
-
-export const TOKEN_METHOD_TRANSFER = 'transfer'
-export const TOKEN_METHOD_APPROVE = 'approve'
-export const TOKEN_METHOD_TRANSFER_FROM = 'transferFrom'
-
-export const COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM = 'safeTransferFrom'
-
-export const SEND_ETHER_ACTION_KEY = 'sentEther'
-export const DEPLOY_CONTRACT_ACTION_KEY = 'contractDeployment'
-export const CONTRACT_INTERACTION_KEY = 'contractInteraction'
+export const TRANSACTION_STATUSES = {
+  UNAPPROVED: 'unapproved',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+  SIGNED: 'signed',
+  SUBMITTED: 'submitted',
+  FAILED: 'failed',
+  DROPPED: 'dropped',
+  CONFIRMED: 'confirmed',
+}
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const ERC1155_INTERFACE_ID = '0xd9b67a26'
@@ -134,8 +154,15 @@ export const getInfuraBlockExplorerUrl = (network) => {
   if (network === MAINNET) return 'https://etherscan.io'
   return `https://${network}.etherscan.io`
 }
+export const NETWORK_TYPE_TO_ID_MAP = {
+  [ROPSTEN]: { networkId: ROPSTEN_CODE, chainId: ROPSTEN_CHAIN_ID },
+  [RINKEBY]: { networkId: RINKEBY_CODE, chainId: RINKEBY_CHAIN_ID },
+  [KOVAN]: { networkId: KOVAN_CODE, chainId: KOVAN_CHAIN_ID },
+  [GOERLI]: { networkId: GOERLI_CODE, chainId: GOERLI_CHAIN_ID },
+  [MAINNET]: { networkId: MAINNET_CODE, chainId: MAINNET_CHAIN_ID },
+}
 
-export const createNetwork = (host, networkName, chainId, blockExplorer, ticker, tickerName, logo) => ({
+export const createNetwork = (host, networkName, chainId, blockExplorer, ticker, tickerName, logo, rpcUrl) => ({
   host,
   networkName,
   chainId,
@@ -143,16 +170,26 @@ export const createNetwork = (host, networkName, chainId, blockExplorer, ticker,
   ticker,
   logo,
   tickerName,
+  rpcUrl,
 })
 
 export const SUPPORTED_NETWORK_TYPES = {
-  [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, getInfuraBlockExplorerUrl(MAINNET), 'ETH', 'Ethereum', 'eth.svg'),
-  [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE, getInfuraBlockExplorerUrl(RINKEBY), 'ETH', 'Ethereum', 'eth.svg'),
-  [KOVAN]: createNetwork(KOVAN, KOVAN_DISPLAY_NAME, KOVAN_CODE, getInfuraBlockExplorerUrl(KOVAN), 'ETH', 'Ethereum', 'eth.svg'),
-  [ROPSTEN]: createNetwork(ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE, getInfuraBlockExplorerUrl(ROPSTEN), 'ETH', 'Ethereum', 'eth.svg'),
-  [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE, getInfuraBlockExplorerUrl(GOERLI), 'ETH', 'Ethereum', 'eth.svg'),
-  [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE, '', 'ETH', 'Ethereum', 'eth.svg'),
-  [MATIC]: createNetwork(MATIC, MATIC_DISPLAY_NAME, MATIC_CODE, MATIC_BLOCK_EXPLORER, MATIC_TICKER, 'Matic Network Token', 'matic-network-logo.svg'),
+  [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, getInfuraBlockExplorerUrl(MAINNET), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE, getInfuraBlockExplorerUrl(RINKEBY), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [KOVAN]: createNetwork(KOVAN, KOVAN_DISPLAY_NAME, KOVAN_CODE, getInfuraBlockExplorerUrl(KOVAN), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [ROPSTEN]: createNetwork(ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE, getInfuraBlockExplorerUrl(ROPSTEN), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE, getInfuraBlockExplorerUrl(GOERLI), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE, '', 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [MATIC]: createNetwork(
+    MATIC,
+    MATIC_DISPLAY_NAME,
+    MATIC_CODE,
+    MATIC_BLOCK_EXPLORER,
+    MATIC_TICKER,
+    'Matic Network Token',
+    'matic-network-logo.svg',
+    MATIC_URL
+  ),
   [MUMBAI]: createNetwork(
     MUMBAI,
     MUMBAI_DISPLAY_NAME,
@@ -160,7 +197,8 @@ export const SUPPORTED_NETWORK_TYPES = {
     MUMBAI_BLOCK_EXPLORER,
     MATIC_TICKER,
     'Matic Network Token',
-    'matic-network-logo.svg'
+    'matic-network-logo.svg',
+    MUMBAI_URL
   ),
   [BSC_MAINNET]: createNetwork(
     BSC_MAINNET,
@@ -169,7 +207,8 @@ export const SUPPORTED_NETWORK_TYPES = {
     BSC_MAINNET_BLOCK_EXPLORER,
     BSC_TICKER,
     'Binance Coin',
-    'bnb.png'
+    'bnb.png',
+    BSC_MAINNET_URL
   ),
   [BSC_TESTNET]: createNetwork(
     BSC_TESTNET,
@@ -178,9 +217,10 @@ export const SUPPORTED_NETWORK_TYPES = {
     BSC_TESTNET_BLOCK_EXPLORER,
     BSC_TICKER,
     'Binance Coin',
-    'bnb.png'
+    'bnb.png',
+    BSC_TESTNET_URL
   ),
-  [XDAI]: createNetwork(XDAI, XDAI_DISPLAY_NAME, XDAI_CODE, XDAI_BLOCK_EXPLORER, XDAI_TICKER, 'xDai Network Token', 'xdai.svg'),
+  [XDAI]: createNetwork(XDAI, XDAI_DISPLAY_NAME, XDAI_CODE, XDAI_BLOCK_EXPLORER, XDAI_TICKER, 'xDai Network Token', 'xdai.svg', XDAI_URL),
 }
 
 export const WALLET_HEADERS_HOME = 'My Wallet'
@@ -409,6 +449,8 @@ export const CAVEAT_NAMES = {
 
 export const NOTIFICATION_NAMES = {
   accountsChanged: 'wallet_accountsChanged',
+  unlockStateChanged: 'wallet_unlockStateChanged',
+  chainChanged: 'wallet_chainChanged',
 }
 
 export const LOG_IGNORE_METHODS = ['wallet_sendDomainMetadata']
@@ -478,3 +520,60 @@ export const FEATURES_PROVIDER_CHANGE_WINDOW = 'directories=0,titlebar=0,toolbar
 export const FEATURES_DEFAULT_WALLET_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=740,width=1315'
 export const FEATURES_DEFAULT_POPUP_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200'
 export const FEATURES_CONFIRM_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=450'
+
+export const TRANSACTION_ENVELOPE_TYPES = {
+  LEGACY: '0x0',
+  ACCESS_LIST: '0x1',
+  FEE_MARKET: '0x2',
+}
+
+/**
+ * Hardforks are points in the chain where logic is changed significantly
+ * enough where there is a fork and the new fork becomes the active chain.
+ * These constants are presented in chronological order starting with BERLIN
+ * because when we first needed to track the hardfork we had launched support
+ * for EIP-2718 (where transactions can have types and different shapes) and
+ * EIP-2930 (optional access lists), which were included in BERLIN.
+ *
+ * BERLIN - forked at block number 12,244,000, included typed transactions and
+ *  optional access lists
+ * LONDON - future, upcoming fork that introduces the baseFeePerGas, an amount
+ *  of the ETH transaction fees that will be burned instead of given to the
+ *  miner. This change necessitated the third type of transaction envelope to
+ *  specify maxFeePerGas and maxPriorityFeePerGas moving the fee bidding system
+ *  to a second price auction model.
+ */
+export const HARDFORKS = {
+  BERLIN: 'berlin',
+  LONDON: 'london',
+}
+
+export const GAS_ESTIMATE_TYPES = {
+  FEE_MARKET: 'fee-market',
+  LEGACY: 'legacy',
+  ETH_GASPRICE: 'eth_gasPrice',
+  NONE: 'none',
+}
+export const CHAIN_ID_TO_GAS_LIMIT_BUFFER_MAP = {
+  [OPTIMISM_CHAIN_ID]: 1,
+  [OPTIMISM_TESTNET_CHAIN_ID]: 1,
+}
+
+export const TEST_CHAINS = [ROPSTEN_CHAIN_ID, RINKEBY_CHAIN_ID, GOERLI_CHAIN_ID, KOVAN_CHAIN_ID]
+export const TEST_CHAINS_NUMERIC_IDS = [ROPSTEN_CODE, RINKEBY_CODE, GOERLI_CODE, KOVAN_CODE]
+
+const TWENTY_ONE_THOUSAND = 21_000
+const ONE_HUNDRED_THOUSAND = 100_000
+
+export const GAS_LIMITS = {
+  // maximum gasLimit of a simple send
+  SIMPLE: addHexPrefix(TWENTY_ONE_THOUSAND.toString(16)),
+  // a base estimate for token transfers.
+  BASE_TOKEN_ESTIMATE: addHexPrefix(ONE_HUNDRED_THOUSAND.toString(16)),
+}
+
+export const TRANSACTION_SPEED = {
+  LOW: 'low',
+  MEDIUM: 'medium',
+  HIGH: 'high',
+}
