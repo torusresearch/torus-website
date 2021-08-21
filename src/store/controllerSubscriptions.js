@@ -1,7 +1,5 @@
 // import log from 'loglevel'
 
-import log from 'loglevel'
-
 import torus from '../torus'
 import { capitalizeFirstLetter } from '../utils/utils'
 
@@ -36,7 +34,7 @@ if (torus) {
     getStore().dispatch('updateGasFees', { gasFees: state })
   })
   torus.torusController.networkController.networkDetails.subscribe((state) => {
-    log.info('network store', state)
+    // log.info('network store', state)
     getStore().dispatch('updateNetworkDetails', { networkDetails: state })
   })
   torus.torusController.networkController.networkStore.subscribe((state) => {

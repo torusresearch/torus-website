@@ -128,7 +128,7 @@ class GasFeeController {
     }
     try {
       isEIP1559Compatible = await this.getEIP1559Compatibility()
-      log.info('eip1559 compatible', isEIP1559Compatible)
+      // log.info('eip1559 compatible', isEIP1559Compatible)
     } catch (error) {
       log.warn(error)
       isEIP1559Compatible = false
