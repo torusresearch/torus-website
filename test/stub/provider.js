@@ -32,15 +32,18 @@ export function providerFromEngine(engine) {
   return provider
 }
 
-export function createTestProviderTools(options = {}) {
+export function createTestProviderTools(opts = {}) {
   const engine = createEngineForTestData()
   // handle provided hooks
-  engine.push(createScaffoldMiddleware(options.scaffold || {}))
+  engine.push(createScaffoldMiddleware(opts.scaffold || {}))
   // handle block tracker methods
   engine.push(
     providerAsMiddleware(
       GanacheCore.provider({
         mnemonic: getTestSeed(),
+        network_id: opts.networkId,
+        _chainId: opts.chainId,
+        _chainIdRpc: opts.chainId,
       })
     )
   )

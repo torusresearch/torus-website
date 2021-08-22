@@ -100,15 +100,13 @@ import {
   ACTIVITY_STATUS_PENDING,
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
-  CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
-  DEPLOY_CONTRACT_ACTION_KEY,
   ETHERSCAN_SUPPORTED_NETWORKS,
   MAINNET,
-  TOKEN_METHOD_APPROVE,
+  TRANSACTION_TYPES,
 } from '../../utils/enums'
 import { formatDate, formatTime } from '../../utils/utils'
 
@@ -246,13 +244,13 @@ export default {
       }
     },
     getActionText(activity) {
-      if (activity.transaction_category === CONTRACT_INTERACTION_KEY) {
+      if (activity.transaction_category === TRANSACTION_TYPES.CONTRACT_INTERACTION) {
         return this.t('walletActivity.contractInteraction')
       }
-      if (activity.transaction_category === DEPLOY_CONTRACT_ACTION_KEY) {
+      if (activity.transaction_category === TRANSACTION_TYPES.DEPLOY_CONTRACT) {
         return this.t('walletActivity.contractDeployment')
       }
-      if (activity.transaction_category === TOKEN_METHOD_APPROVE) {
+      if (activity.transaction_category === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE) {
         return `${this.t('walletActivity.approved')} ${activity.type_name !== 'n/a' ? activity.type_name.toUpperCase() : activity.type.toUpperCase()}`
       }
       if (activity.type_name === 'n/a' || activity.type === 'n/a') {
@@ -268,7 +266,11 @@ export default {
       return `${`${this.t(activity.action)} ${activity.from}`} `
     },
     getIcon(activity) {
-      if ([TOKEN_METHOD_APPROVE, DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].includes(activity.transaction_category)) {
+      if (
+        [TRANSACTION_TYPES.TOKEN_METHOD_APPROVE, TRANSACTION_TYPES.DEPLOY_CONTRACT, TRANSACTION_TYPES.CONTRACT_INTERACTION].includes(
+          activity.transaction_category
+        )
+      ) {
         return '$vuetify.icons.coins_approve'
       }
       if (activity.action === ACTIVITY_ACTION_TOPUP) {

@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-add-event-listener */
 import log from 'loglevel'
 
 import generateIntegrity from './utils/integrity'

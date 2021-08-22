@@ -3,6 +3,8 @@ import { ethErrors } from 'eth-rpc-errors'
 import { bufferToHex, keccak256 } from 'ethereumjs-util'
 import EventEmitter from 'events'
 
+import { MESSAGE_TYPE } from '../utils/enums'
+
 /**
  * Represents, and contains data about, an 'eth_sign' type signature request. These are created when a signature for
  * an eth_sign call is requestednode .
@@ -113,7 +115,7 @@ export default class MessageManager extends EventEmitter {
       msgParams: messageParameters,
       time,
       status: 'unapproved',
-      type: 'eth_sign',
+      type: MESSAGE_TYPE.ETH_SIGN,
     }
 
     if (messageParameters.customPrefix && messageParameters.customMessage) {

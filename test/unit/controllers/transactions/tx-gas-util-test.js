@@ -1,9 +1,9 @@
 /* eslint-disable */
 import assert from 'assert'
-import { Transaction } from 'ethereumjs-tx'
-
+import { TransactionFactory } from '@ethereumjs/tx'
+import Common from '@ethereumjs/common'
 import { hexToBn, bnToHex } from '../../../../src/utils/utils'
-import TxUtils from '../../../../src/controllers/utils/TxGasUtil'
+import TxUtils from '../../../../src/controllers/transactions/TxGasUtil'
 
 describe('txUtils', function () {
   let txUtils
@@ -33,8 +33,10 @@ describe('txUtils', function () {
         nonce: '0x3',
         chainId: 42,
       }
-      const ethTx = new Transaction(txParams, { chain: txParams.chainId })
-      assert.strictEqual(ethTx.getChainId(), 42, 'chainId is set from tx params')
+      const ethTx = TransactionFactory.fromTxData(txParams, {
+        common: new Common({ chain: 'kovan' }),
+      })
+      assert.equal(ethTx.common.chainIdBN().toNumber(), 42, 'chainId is set from tx params')
     })
   })
 
@@ -48,7 +50,7 @@ describe('txUtils', function () {
       const inputBn = hexToBn(inputHex)
       const outputBn = hexToBn(output)
       const expectedBn = inputBn.muln(1.5)
-      assert(outputBn.eq(expectedBn), 'returns 1.5 the input value')
+      assert.ok(outputBn.eq(expectedBn), 'returns 1.5 the input value')
     })
 
     it('uses original estimatedGas, when above block gas limit', function () {

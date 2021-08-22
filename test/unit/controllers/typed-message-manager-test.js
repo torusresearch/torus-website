@@ -2,101 +2,148 @@
 import assert from 'assert'
 
 import TypedMessageManager from '../../../src/controllers/TypedMessageManager'
-import NetworkController from '../../../src/controllers/NetworkController'
+import NetworkController from '../../../src/controllers/network/NetworkController'
+import { TRANSACTION_STATUSES } from '../../../src/utils/enums'
+describe('Typed Message Manager', () => {
+  let typedMessageManager, msgParamsV1, msgParamsV3, typedMsgs, messages, msgId, numberMsgId
 
-describe('Personal Message Manager', () => {
-  let messageManager
+  const address = '0xc42edfcc21ed14dda456aa0756c153f7985d8813'
   let networkController
 
   beforeEach(() => {
     networkController = new NetworkController()
-    messageManager = new TypedMessageManager(networkController)
+    typedMessageManager = new TypedMessageManager({
+      getCurrentChainId: networkController.getCurrentChainId.bind(networkController),
+    })
+
+    msgParamsV1 = {
+      from: address,
+      data: [
+        { type: 'string', name: 'unit test', value: 'hello there' },
+        {
+          type: 'uint32',
+          name: 'A number, but not really a number',
+          value: '$$$',
+        },
+      ],
+    }
+
+    msgParamsV3 = {
+      from: address,
+      data: JSON.stringify({
+        types: {
+          EIP712Domain: [
+            { name: 'name', type: 'string' },
+            { name: 'version', type: 'string' },
+            { name: 'chainId', type: 'uint256' },
+            { name: 'verifyingContract', type: 'address' },
+          ],
+          Person: [
+            { name: 'name', type: 'string' },
+            { name: 'wallet', type: 'address' },
+          ],
+          Mail: [
+            { name: 'from', type: 'Person' },
+            { name: 'to', type: 'Person' },
+            { name: 'contents', type: 'string' },
+          ],
+        },
+        primaryType: 'Mail',
+        domain: {
+          name: 'Ether Mainl',
+          version: '1',
+          chainId: 1,
+          verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+        },
+        message: {
+          from: {
+            name: 'Cow',
+            wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+          },
+          to: {
+            name: 'Bob',
+            wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+          },
+          contents: 'Hello, Bob!',
+        },
+      }),
+    }
   })
 
   describe('#getUnapprovedMsgCount', () => {
     it('should be empty if no unapproved msgs', () => {
-      const result = messageManager.unapprovedTypedMessagesCount
+      const result = typedMessageManager.unapprovedTypedMessagesCount
       assert.strictEqual(result, 0)
     })
 
     it('should return number of unapproved msgs', () => {
-      messageManager.addUnapprovedMessage({}, {}, 1)
-      const result = messageManager.unapprovedTypedMessagesCount
+      typedMessageManager.addUnapprovedMessage(msgParamsV1, null, 'V1')
+      const result = typedMessageManager.unapprovedTypedMessagesCount
       assert.strictEqual(result, 1)
     })
   })
 
   describe('#getMsgList', () => {
     it('when new should return empty array', () => {
-      const result = messageManager.messages
+      const result = typedMessageManager.messages
       assert.ok(Array.isArray(result))
       assert.strictEqual(result.length, 0)
     })
     it('should also return transactions from local storage if any', () => {})
   })
 
-  describe('#addMsg', () => {
-    it('adds a Msg returned in getMsgList', () => {
-      const Message = { id: 1, status: 'approved', metamaskNetworkId: 'unit test' }
-      messageManager.addMsg(Message)
-      const result = messageManager.messages
-      assert.ok(Array.isArray(result))
-      assert.strictEqual(result.length, 1)
-      assert.strictEqual(result[0].id, 1)
+  describe('#Typed message operations', () => {
+    beforeEach(async () => {
+      networkController = new NetworkController()
+      typedMessageManager = new TypedMessageManager({
+        getCurrentChainId: networkController.getCurrentChainId.bind(networkController),
+      })
+      await typedMessageManager.addUnapprovedMessage(msgParamsV3, null, 'V3', 1)
+      typedMsgs = typedMessageManager.getUnapprovedMsgs()
+      messages = typedMessageManager.messages
+      msgId = Object.keys(typedMsgs)[0]
+      messages[0].msgParams.metamaskId = parseInt(msgId, 10)
+      numberMsgId = parseInt(msgId, 10)
     })
-  })
-
-  describe('#setMsgStatusApproved', () => {
-    it('sets the Msg status to approved', () => {
-      const Message = { id: 1, status: 'unapproved', metamaskNetworkId: 'unit test' }
-      messageManager.addMsg(Message)
-      messageManager.setMsgStatusApproved(1)
-      const result = messageManager.messages
-      assert.ok(Array.isArray(result))
-      assert.strictEqual(result.length, 1)
-      assert.strictEqual(result[0].status, 'approved')
+    it('supports version 1 of signedTypedData', function () {
+      typedMessageManager.addUnapprovedMessage(msgParamsV1, null, 'V1')
+      assert.equal(messages[messages.length - 1].msgParams.data, msgParamsV1.data)
     })
-  })
 
-  describe('#rejectMsg', () => {
-    it('sets the Msg status to rejected', () => {
-      const Message = { id: 1, status: 'unapproved', metamaskNetworkId: 'unit test' }
-      messageManager.addMsg(Message)
-      messageManager.rejectMsg(1)
-      const result = messageManager.messages
-      assert.ok(Array.isArray(result))
-      assert.strictEqual(result.length, 1)
-      assert.strictEqual(result[0].status, 'rejected')
+    it('has params address', function () {
+      assert.equal(typedMsgs[msgId].msgParams.from, address)
     })
-  })
 
-  describe('#_updateMsg', () => {
-    it('replaces the Msg with the same id', () => {
-      messageManager.addMsg({ id: '1', status: 'unapproved', metamaskNetworkId: 'unit test' })
-      messageManager.addMsg({ id: '2', status: 'approved', metamaskNetworkId: 'unit test' })
-      messageManager._updateMsg({ id: '1', status: 'blah', hash: 'foo', metamaskNetworkId: 'unit test' })
-      const result = messageManager.getMsg('1')
-      assert.strictEqual(result.hash, 'foo')
+    it('adds to unapproved messages and sets status to unapproved', function () {
+      assert.equal(typedMsgs[msgId].status, TRANSACTION_STATUSES.UNAPPROVED)
     })
-  })
 
-  describe('#getUnapprovedMsgs', () => {
-    it('returns unapproved Msgs in a hash', () => {
-      messageManager.addMsg({ id: '1', status: 'unapproved', metamaskNetworkId: 'unit test' })
-      messageManager.addMsg({ id: '2', status: 'approved', metamaskNetworkId: 'unit test' })
-      const result = messageManager.getUnapprovedMsgs()
-      assert.strictEqual(typeof result, 'object')
-      assert.strictEqual(result['1'].status, 'unapproved')
-      assert.strictEqual(result['2'], undefined)
+    it('validates params', function () {
+      assert.doesNotThrow(() => {
+        typedMessageManager.validateParams(messages[0].msgParams)
+      }, 'Does not throw with valid parameters')
     })
-  })
 
-  describe('#getMsg', () => {
-    it('returns a Msg with the requested id', () => {
-      messageManager.addMsg({ id: '1', status: 'unapproved', metamaskNetworkId: 'unit test' })
-      messageManager.addMsg({ id: '2', status: 'approved', metamaskNetworkId: 'unit test' })
-      assert.strictEqual(messageManager.getMsg('1').status, 'unapproved')
-      assert.strictEqual(messageManager.getMsg('2').status, 'approved')
+    it('gets unapproved by id', function () {
+      const getMsg = typedMessageManager.getMsg(numberMsgId)
+      assert.equal(getMsg.id, numberMsgId)
+    })
+
+    it('approves messages', async function () {
+      const messageMetaMaskId = messages[0].msgParams
+      typedMessageManager.approveMessage(messageMetaMaskId)
+      assert.equal(messages[0].status, TRANSACTION_STATUSES.APPROVED)
+    })
+
+    it('sets msg status to signed and adds a raw sig to message details', function () {
+      typedMessageManager.setMsgStatusSigned(numberMsgId, 'raw sig')
+      assert.equal(messages[0].status, TRANSACTION_STATUSES.SIGNED)
+      assert.equal(messages[0].rawSig, 'raw sig')
+    })
+
+    it('rejects message', function () {
+      typedMessageManager.rejectMsg(numberMsgId)
+      assert.equal(messages[0].status, TRANSACTION_STATUSES.REJECTED)
     })
   })
 })

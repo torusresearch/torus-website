@@ -1,6 +1,6 @@
 import { ObservableStore } from '@metamask/obs-store'
 import BigNumber from 'bignumber.js'
-import isEqual from 'lodash.isequal'
+import { isEqual } from 'lodash'
 import log from 'loglevel'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 import Web3 from 'web3'
@@ -70,7 +70,7 @@ class DetectTokensController {
   async detectNewTokens() {
     const userAddress = this.selectedAddress
     if (!userAddress) return
-    if (this.network.getNetworkNameFromNetworkCode() !== MAINNET) {
+    if (this.network.getNetworkIdentifier() !== MAINNET) {
       this.detectedTokensStore.updateState({ [userAddress]: [] })
       return
     }
@@ -131,7 +131,7 @@ class DetectTokensController {
             tokenAddress: toChecksumAddress(x.contract_address),
             balance: `0x${new BigNumber(x.balance).toString(16)}`,
             isCovalent: true,
-            network: this.network.getNetworkNameFromNetworkCode(),
+            network: this.network.getNetworkIdentifier(),
           })
         } else if (nonZeroTokens[index].isCovalent) {
           nonZeroTokens[index] = {
@@ -147,7 +147,7 @@ class DetectTokensController {
   async refreshTokenBalances() {
     const userAddress = this.selectedAddress
     if (userAddress === '') return
-    if (this.network.getNetworkNameFromNetworkCode() !== MAINNET) {
+    if (this.network.getNetworkIdentifier() !== MAINNET) {
       this.detectedTokensStore.updateState({ [userAddress]: [] })
       return
     }
@@ -178,7 +178,7 @@ class DetectTokensController {
     const userAddress = this.selectedAddress
     if (userAddress === '') return
     this.selectedCustomTokens = customTokens.map((x) => x.token_address)
-    const localNetwork = this.network.getNetworkNameFromNetworkCode()
+    const localNetwork = this.network.getNetworkIdentifier()
     const currentNetworkTokens = customTokens.reduce((acc, x) => {
       if (x.network === localNetwork) acc.push(x)
       return acc
@@ -228,7 +228,7 @@ class DetectTokensController {
     this.detectNewTokens()
     if (this._preferencesStore) {
       const userState = this._preferencesStore.getState()[this.selectedAddress]
-      const { customTokens } = userState || {}
+      const { customTokens = [] } = userState || {}
       this.getCustomTokenBalances(customTokens)
     }
     this.interval = DEFAULT_INTERVAL
@@ -273,7 +273,7 @@ class DetectTokensController {
     preferencesStore.subscribe((state) => {
       const { selectedAddress } = state
       if (!selectedAddress) return
-      const { customTokens = [] } = state[selectedAddress]
+      const { customTokens = [] } = state[selectedAddress] || {}
       if (
         !isEqual(
           this.selectedCustomTokens,

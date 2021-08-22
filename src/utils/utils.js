@@ -71,6 +71,8 @@ import {
   SIMPLEX,
   SUPPORTED_NETWORK_TYPES,
   SVG,
+  TEST_CHAINS,
+  TEST_CHAINS_NUMERIC_IDS,
   THEME_DARK_BLACK_NAME,
   TWITTER,
   WECHAT,
@@ -507,25 +509,6 @@ export function getPaymentProviders(theme) {
   })
 }
 
-export function formatTxMetaForRpcResult(txMeta) {
-  return {
-    blockHash: txMeta.txReceipt ? txMeta.txReceipt.blockHash : null,
-    blockNumber: txMeta.txReceipt ? txMeta.txReceipt.blockNumber : null,
-    from: txMeta.txParams.from,
-    gas: txMeta.txParams.gas,
-    gasPrice: txMeta.txParams.gasPrice,
-    hash: txMeta.hash,
-    input: txMeta.txParams.data || '0x',
-    nonce: txMeta.txParams.nonce,
-    to: txMeta.txParams.to,
-    transactionIndex: txMeta.txReceipt ? txMeta.txReceipt.transactionIndex : null,
-    value: txMeta.txParams.value || '0x0',
-    v: txMeta.v,
-    r: txMeta.r,
-    s: txMeta.s,
-  }
-}
-
 export function capitalizeFirstLetter(string) {
   if (!string) return string
   return string.charAt(0).toUpperCase() + string.slice(1)
@@ -542,11 +525,6 @@ export const standardNetworkId = {
   [BSC_MAINNET_CODE.toString()]: BSC_MAINNET_CHAIN_ID,
   [BSC_TESTNET_CODE.toString()]: BSC_TESTNET_CHAIN_ID,
   [XDAI_CODE.toString()]: XDAI_CHAIN_ID,
-}
-
-export function selectChainId(network, store) {
-  const networkId = store.getState()
-  return standardNetworkId[network] || networkId.toString().startsWith('0x') ? networkId : `0x${Number.parseInt(networkId, 10).toString(16)}`
 }
 
 export const isMain = window.self === window.top
@@ -832,4 +810,82 @@ export async function sanitizeNftMetdataUrl(url) {
     finalUri = getIpfsEndpoint(ipfsPath)
   }
   return finalUri
+}
+export function getChainType(chainId) {
+  if (chainId === MAINNET_CHAIN_ID || chainId === Number.parseInt(MAINNET_CHAIN_ID, 16)) {
+    return 'mainnet'
+  }
+  if (TEST_CHAINS.includes(chainId) || TEST_CHAINS_NUMERIC_IDS.includes(chainId)) {
+    return 'testnet'
+  }
+  return 'custom'
+}
+
+export const GAS_LIMITS = {
+  // maximum gasLimit of a simple send
+  SIMPLE: addHexPrefix((21_000).toString(16)),
+  // a base estimate for token transfers.
+  BASE_TOKEN_ESTIMATE: addHexPrefix((100_000).toString(16)),
+}
+
+export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
+  const {
+    gasFeeEstimates: { low, medium, high },
+  } = gasFees
+  if (Number(maxPriorityFeePerGas) >= Number(medium.suggestedMaxPriorityFeePerGas)) {
+    // High+ is very likely, medium is likely
+    if (Number(maxPriorityFeePerGas) < Number(high.suggestedMaxPriorityFeePerGas)) {
+      // medium
+      return t(translateKey).replace(/{time}/gi, `< ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}`)
+    }
+
+    // high
+    return t(translateKey).replace(/{time}/gi, `< ${toHumanReadableTime(high.minWaitTimeEstimate, t)}`)
+  }
+
+  return t(translateKey).replace(/{time}/gi, `~ ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}`)
+}
+
+const SECOND_CUTOFF = 90
+function toHumanReadableTime(milliseconds = 1, t) {
+  const seconds = Math.ceil(milliseconds / 1000)
+  if (seconds <= SECOND_CUTOFF) {
+    return t('walletTransfer.fee-edit-time-sec').replace(/{time}/gi, seconds)
+  }
+  return t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, Math.ceil(seconds / 60))
+}
+
+export function bnGreaterThan(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).gt(b, 10)
+}
+
+export function bnLessThan(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).lt(b, 10)
+}
+
+export function bnGreaterThanEqualTo(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).gte(b, 10)
+}
+
+export function bnLessThanEqualTo(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).lte(b, 10)
+}
+
+export function bnEqualTo(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).isEqualTo(b, 10)
 }

@@ -4,7 +4,7 @@
  */
 
 import deepmerge from 'deepmerge'
-import isEqual from 'lodash.isequal'
+import { isEqual } from 'lodash'
 import log from 'loglevel'
 import Web3 from 'web3'
 
@@ -58,11 +58,11 @@ export default class AssetsDetectionController {
   }
 
   isMainnet() {
-    return this.network.getNetworkNameFromNetworkCode() === MAINNET
+    return this.network.getNetworkIdentifier() === MAINNET
   }
 
   isMatic() {
-    return this.network.getNetworkNameFromNetworkCode() === MATIC
+    return this.network.getNetworkIdentifier() === MATIC
   }
 
   /**
@@ -150,7 +150,7 @@ export default class AssetsDetectionController {
         return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
       }
       if (this.currentNetwork === MATIC) {
-        return `https://api.opensea.io/api/v2/assets/matic?owner=${address}&limit=300`
+        return `https://api.opensea.io/api/v2/assets/matic?owner_address=${address}&limit=300`
       }
       return ''
     }
@@ -195,7 +195,7 @@ export default class AssetsDetectionController {
    * Detect assets owned by current account on mainnet
    */
   async detectAssets() {
-    if (NFT_SUPPORTED_NETWORKS[this.network.getNetworkNameFromNetworkCode()]) {
+    if (NFT_SUPPORTED_NETWORKS[this.network.getNetworkIdentifier()]) {
       // this.detectTokens()
       this.detectCollectibles()
     }
@@ -207,7 +207,7 @@ export default class AssetsDetectionController {
    */
   async detectCollectibles() {
     /* istanbul ignore if */
-    const currentNetwork = this.network.getNetworkNameFromNetworkCode()
+    const currentNetwork = this.network.getNetworkIdentifier()
     this.currentNetwork = currentNetwork
     let finalArr = []
     const userState = this._preferencesStore.getState()[this.selectedAddress]

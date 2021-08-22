@@ -3,7 +3,7 @@ import log from 'loglevel'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
 import torus from '../torus'
-import { COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM, TOKEN_METHOD_TRANSFER_FROM } from '../utils/enums'
+import { TRANSACTION_TYPES } from '../utils/enums'
 
 const { torusController } = torus || {}
 const { prefsController } = torusController || {}
@@ -124,7 +124,7 @@ export default {
               typeImageLink = contract.logo || logo
               totalAmount = fromWei(toBN(txParams.value || 0))
               finalTo =
-                transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+                transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
                   ? amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
                   : toChecksumAddress(txParams.to)
             } else {
@@ -151,7 +151,10 @@ export default {
           // ERC20 transfer
           tokenRate = state.tokenRates[txParams.to]
           if (methodParams && Array.isArray(methodParams)) {
-            if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
+            if (
+              transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM ||
+              transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+            ) {
               ;[, amountTo, amountValue] = methodParams || []
             } else {
               ;[amountTo, amountValue] = methodParams || []
