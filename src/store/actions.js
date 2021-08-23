@@ -295,6 +295,7 @@ export default {
       rehydrate: false,
     })
     dispatch('updateSelectedAddress', { selectedAddress: address })
+    await dispatch('unlock')
     return privKey
   },
   addWallet(context, payload) {
@@ -445,6 +446,9 @@ export default {
       })
     )
   },
+  unlock(_, __) {
+    torusController.unlock()
+  },
   async handleLogin({ state, dispatch, commit }, { calledFromEmbed, oAuthToken, keys }) {
     // The error in this is caught above
     const {
@@ -467,6 +471,7 @@ export default {
       throw new Error('No Accounts available')
     }
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+    await dispatch('unlock')
     prefsController.getBillboardContents()
     prefsController.getAnnouncementsContents()
     // continue enable function
@@ -528,6 +533,7 @@ export default {
       })
       if (selectedAddress && wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+        await dispatch('unlock')
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })

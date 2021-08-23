@@ -368,13 +368,18 @@ export default class TorusController extends EventEmitter {
 
   async initTorusKeyring(keyArray, addresses) {
     await Promise.all([this.keyringController.deserialize(keyArray), this.accountTracker.syncWithAddresses(addresses)])
-    this.notifyAllConnections({
-      method: NOTIFICATION_NAMES.unlockStateChanged,
-      params: {
-        isUnlocked: true,
-        accounts: [this.prefsController.store.getState().selectedAddress],
-      },
-    })
+  }
+
+  unlock() {
+    if (this.prefsController.store.getState().selectedAddress) {
+      this.notifyAllConnections({
+        method: NOTIFICATION_NAMES.unlockStateChanged,
+        params: {
+          isUnlocked: true,
+          accounts: [this.prefsController.store.getState().selectedAddress],
+        },
+      })
+    }
   }
 
   async addAccount(key, address) {
