@@ -428,7 +428,7 @@
     </v-layout>
     <v-dialog v-model="messageModalShow" max-width="375" persistent>
       <MessageModal
-        :detail-text="messageModalDetails.replace(/\{time\}/gi, timeTaken)"
+        :detail-text="messageModalDetails.replace(/\{time\}/gi, timeTakenDisplay)"
         go-to="walletHistory"
         :modal-type="messageModalType"
         :title="messageModalTitle"
@@ -574,6 +574,7 @@ export default {
       showQrScanner: false,
       selectedLondonSpeed: TRANSACTION_SPEED.MEDIUM,
       londonSpeedTiming: '',
+      londonSpeedTimingModalDisplay: '',
       transactionWarning: '',
     }
   },
@@ -708,6 +709,13 @@ export default {
     onTransferClickDisabled() {
       if (this.isEip1559) return !this.formValid || this.selectedVerifier === ''
       return !this.formValid || this.speedSelected === '' || this.selectedVerifier === ''
+    },
+    timeTakenDisplay() {
+      if (this.isEip1559) {
+        return this.londonSpeedTimingModalDisplay
+      }
+      const estimatedTime = this.t('walletTransfer.transferApprox').replace(/{time}/gi, this.timeTaken)
+      return this.t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, estimatedTime)
     },
   },
   watch: {
@@ -1334,6 +1342,7 @@ export default {
           this.activeGasPrice = new BigNumber(suggestedMaxPriorityFeePerGas).plus(new BigNumber(gasPriceEstimates.estimatedBaseFee))
           this.activePriorityFee = new BigNumber(suggestedMaxPriorityFeePerGas)
           this.londonSpeedTiming = gasTiming(suggestedMaxPriorityFeePerGas, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+          this.londonSpeedTimingModalDisplay = gasTiming(suggestedMaxPriorityFeePerGas, this.gasFees, this.t)
           if (this.displayAmount.isZero()) {
             this.totalCost = '0'
             this.convertedTotalCost = '0'
@@ -1417,6 +1426,7 @@ export default {
       this.activeGasPrice = maxTxFee
       this.activePriorityFee = maxPriorityFee
       this.londonSpeedTiming = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+      this.londonSpeedTimingModalDisplay = gasTiming(maxPriorityFee, this.gasFees, this.t)
       this.gas = data.gas
       this.hasCustomGasLimit = true
       this.updateTotalCost()
