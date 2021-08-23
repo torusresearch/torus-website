@@ -246,7 +246,8 @@ export const SUPPORTED_NETWORK_TYPES = {
     RSK_MAINNET_BLOCK_EXPLORER,
     RSK_MAINNET_TICKER,
     'RSK',
-    'rsk.png'
+    'rsk.png',
+    RSK_MAINNET_URL
   ),
   [RSK_TESTNET]: createNetwork(
     RSK_TESTNET,
@@ -255,7 +256,8 @@ export const SUPPORTED_NETWORK_TYPES = {
     RSK_TESTNET_BLOCK_EXPLORER,
     RSK_TESTNET_TICKER,
     'RSK Testnet',
-    'rsk.png'
+    'rsk.png',
+    RSK_TESTNET_URL
   ),
 }
 

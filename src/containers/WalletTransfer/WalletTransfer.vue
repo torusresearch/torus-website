@@ -587,19 +587,19 @@ export default {
       currencyMultiplier: 'currencyMultiplier',
       contacts: 'filteredContacts',
     }),
-    ...mapState([
-      'selectedCurrency',
-      'weiBalanceLoaded',
-      'tokenDataLoaded',
-      'currencyData',
-      'tokenRates',
+    ...mapState({
+      selectedCurrency: 'selectedCurrency',
+      weiBalanceLoaded: 'weiBalanceLoaded',
+      tokenDataLoaded: 'tokenDataLoaded',
+      currencyData: 'currencyData',
+      tokenRates: 'tokenRates',
       selectedAddress: (state) => toChecksumAddressByChainId(state.selectedAddress, state.networkId),
-      'userInfo',
-      'networkDetails',
-      'networkType',
-      'wallet',
-      'gasFees',
-    ]),
+      userInfo: 'userInfo',
+      networkDetails: 'networkDetails',
+      networkType: 'networkType',
+      wallet: 'wallet',
+      gasFees: 'gasFees',
+    }),
     verifierOptions() {
       return getVerifierOptions()
     },
@@ -1187,7 +1187,6 @@ export default {
           .times(new BigNumber(10).pow(new BigNumber(18)))
           .dp(0, BigNumber.ROUND_DOWN)
           .toString(16)}`
-<<<<<<< HEAD
         const txParams = {
           from: this.selectedAddress.toLowerCase(),
           to: toAddress.toLowerCase(),

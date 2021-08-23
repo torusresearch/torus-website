@@ -33,7 +33,7 @@ import {
   TRANSACTION_STATUSES,
   TRANSACTION_TYPES,
 } from '../../utils/enums'
-import { 
+import {
   BnMultiplyByFraction,
   bnToHex,
   formatPastTx,
