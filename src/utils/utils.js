@@ -812,15 +812,27 @@ export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
   if (Number(maxPriorityFeePerGas) >= Number(medium.suggestedMaxPriorityFeePerGas)) {
     // High+ is very likely, medium is likely
     if (Number(maxPriorityFeePerGas) < Number(high.suggestedMaxPriorityFeePerGas)) {
+      const finalTranslateKey = translateKey || 'walletTransfer.transferLessThan'
       // medium
-      return t(translateKey).replace(/{time}/gi, `< ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}`)
+      return t(finalTranslateKey).replace(
+        /{time}/gi,
+        translateKey ? `< ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}` : toHumanReadableTime(low.maxWaitTimeEstimate, t)
+      )
     }
+    const finalTranslateKey = translateKey || 'walletTransfer.transferLessThan'
 
     // high
-    return t(translateKey).replace(/{time}/gi, `< ${toHumanReadableTime(high.minWaitTimeEstimate, t)}`)
+    return t(finalTranslateKey).replace(
+      /{time}/gi,
+      translateKey ? `< ${toHumanReadableTime(high.minWaitTimeEstimate, t)}` : toHumanReadableTime(high.minWaitTimeEstimate, t)
+    )
   }
+  const finalTranslateKey = translateKey || 'walletTransfer.transferApprox'
 
-  return t(translateKey).replace(/{time}/gi, `~ ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}`)
+  return t(finalTranslateKey).replace(
+    /{time}/gi,
+    translateKey ? `~ ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}` : toHumanReadableTime(low.maxWaitTimeEstimate, t)
+  )
 }
 
 const SECOND_CUTOFF = 90
