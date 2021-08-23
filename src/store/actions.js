@@ -295,7 +295,6 @@ export default {
       rehydrate: false,
     })
     dispatch('updateSelectedAddress', { selectedAddress: address })
-    await dispatch('unlock')
     return privKey
   },
   addWallet(context, payload) {
@@ -315,9 +314,10 @@ export default {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
     else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
-  updateSelectedAddress(_, payload) {
+  updateSelectedAddress({ dispatch }, payload) {
     // torus.updateStaticData({ selectedAddress: payload.selectedAddress })
     torusController.setSelectedAccount(payload.selectedAddress)
+    dispatch('unlock')
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)
@@ -471,7 +471,6 @@ export default {
       throw new Error('No Accounts available')
     }
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
-    await dispatch('unlock')
     prefsController.getBillboardContents()
     prefsController.getAnnouncementsContents()
     // continue enable function
@@ -533,7 +532,6 @@ export default {
       })
       if (selectedAddress && wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
-        await dispatch('unlock')
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
