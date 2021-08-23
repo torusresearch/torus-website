@@ -91,6 +91,8 @@ const VuexStore = new Vuex.Store({
       const windowId = isTx ? payload.id : payload
       const channelName = `torus_channel_${windowId}`
       const finalUrl = `${baseRoute}confirm?instanceId=${windowId}&integrity=true&id=${windowId}`
+      // polling might delay fetching fee or might have outdated fee, so getting latest fee.
+      const latestGasFee = await torus.torusController.gasFeeController.fetchGasFeeEstimates()
       const popupPayload = {
         id: windowId,
         origin: getIFrameOriginObject(),
@@ -102,7 +104,7 @@ const VuexStore = new Vuex.Store({
         whiteLabel: state.whiteLabel,
         selectedAddress: state.selectedAddress,
         networkDetails: state.networkDetails,
-        gasFees: state.gasFees,
+        gasFees: latestGasFee,
       }
       if (isTx) {
         const txParameters = payload
