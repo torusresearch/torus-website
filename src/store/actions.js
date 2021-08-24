@@ -314,10 +314,9 @@ export default {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
     else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
-  updateSelectedAddress({ dispatch }, payload) {
+  updateSelectedAddress(_, payload) {
     // torus.updateStaticData({ selectedAddress: payload.selectedAddress })
     torusController.setSelectedAccount(payload.selectedAddress)
-    dispatch('unlock')
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)
@@ -445,9 +444,6 @@ export default {
         })
       })
     )
-  },
-  unlock(_, __) {
-    torusController.unlock()
   },
   async handleLogin({ state, dispatch, commit }, { calledFromEmbed, oAuthToken, keys }) {
     // The error in this is caught above

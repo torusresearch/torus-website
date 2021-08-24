@@ -395,6 +395,7 @@ export default class TorusController extends EventEmitter {
       this.walletConnectController.setSelectedAddress(address)
       this.gasFeeController.getGasFeeEstimatesAndStartPolling()
     }
+    this.unlock()
   }
 
   /**
