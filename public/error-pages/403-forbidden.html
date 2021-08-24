@@ -91,6 +91,7 @@
         autoplayButtonOutput: false,
       })
 
+      const notificationForm = document.getElementById('notificationForm')
       notificationForm.onsubmit = async (e) => {
         e.preventDefault()
 
@@ -113,6 +114,9 @@
               } else {
                 showSnackbar('error', 'Please try again or contact support')
               }
+            }
+            xmlhttp.onerror = () => {
+              showSnackbar('error', 'Please try again or contact support')
             }
           })
         })
