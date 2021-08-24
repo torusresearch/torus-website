@@ -300,18 +300,18 @@ export default class TorusController extends EventEmitter {
 
     function updatePublicConfigStore(memState) {
       const chainId = networkController.getCurrentChainId()
-      log.info('public store updated', memState, chainId)
       if (memState.network !== 'loading') {
         publicConfigStore.putState(selectPublicState(chainId, memState))
       }
     }
 
     // eslint-disable-next-line unicorn/consistent-function-scoping
-    function selectPublicState(chainId, { isUnlocked, network }) {
+    function selectPublicState(chainId, { isUnlocked, network, selectedAddress }) {
       return JSON.stringify({
         isUnlocked,
         chainId,
         networkVersion: network,
+        selectedAddress,
       })
     }
 
@@ -931,7 +931,6 @@ export default class TorusController extends EventEmitter {
    */
   setupPublicConfig(outStream) {
     const configStream = storeAsStream(this.publicConfigStore)
-    log.info('added public config stream')
     pump(configStream, outStream, (error) => {
       configStream.destroy()
       if (error) log.error(error)
