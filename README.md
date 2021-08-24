@@ -38,7 +38,9 @@ npm run test:unit
 ```
 
 ### Run your E2E tests
+
 Start local application first before running the e2e test
+
 ```sh
 npm run serve
 npm run test:e2e
@@ -56,6 +58,7 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Current Issues
+
 To get rid of the websocket error,
 use the following command in the project root (where package.json lives)
 
@@ -64,13 +67,23 @@ find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
 
 ### Release notes
-Checklist: 
-Website: *.tor.us
 
-| Test/Browser                              | Chrome             | Safari             | Brave              | Firefox            | Edge               | iOS Safari         | iOS Chrome         | Android Chrome    |
-| ----------------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ----------------- |
-| Test login on google/discord oauths       | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:| 
-| Skale Network Change                      | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
-| Import Account                            | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
-| Test wallet transfer                      | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
-| Test on torus-embed vue-app all buttons   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
+Checklist:
+Website: \*.tor.us
+
+| Test/Browser                            | Chrome             | Safari             | Brave              | Firefox            | Edge               | iOS Safari         | iOS Chrome         | Android Chrome     |
+| --------------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
+| Test login on google/discord oauths     | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Skale Network Change                    | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Import Account                          | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Test wallet transfer                    | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Test on torus-embed vue-app all buttons | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+
+Notes:
+
+- When you update @metamask/contract-metadata, run the following command to sync images to s3
+
+```sh
+cd node_modules/@metamask/contract-metadata
+aws s3 cp images s3://images.toruswallet.io/ --cache-control "public, max-age=604800, immutable" --metadata-directive REPLACE --recursive
+```
