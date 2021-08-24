@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="description" content="A simple and secure gateway to the decentralized ecosystem via Google or Facebook OAuth logins" />
+    <meta name="keywords" content="crypto, wallet, oauth, login, best, ethereum, torus" />
+    <meta name="author" content="Torus Labs" />
+    <title>Forbidden</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=DM%20Sans:400,500,700" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.3/tiny-slider.css" />
+    <!--[if (lt IE 9)]><script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.3/min/tiny-slider.helper.ie8.js"></script><![endif]-->
+
+    <link rel="stylesheet" href="<%= BASE_URL %>css/forbidden-page.css" />
+    <!-- <link rel="stylesheet" href="/css/forbidden-page.css" /> -->
+
+    <script src="https://www.google.com/recaptcha/api.js?render=<%= RECAPTCHA_KEY %>"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="cols left-content">
+        <div>
+          <img class="logo" src="/images/torus-logo-blue.svg" alt="Torus Logo" />
+          <div class="title">Torus is currently not available in your country</div>
+          <div class="subtitle">Stay tuned for updates to hear about availability in more regions.</div>
+          <form id="notificationForm" name="notificationForm" action="/" method="post">
+            <div>
+              <input type="email" name="email" id="email" required placeholder="Email" />
+            </div>
+            <div>
+              <input type="submit" value="Notify me" />
+            </div>
+          </form>
+          <div class="notes">
+            If you actually live in one of our
+            <a href="#">supported countries,</a>
+            get in touch and we’ll help you sign up.
+          </div>
+        </div>
+      </div>
+      <div class="cols cols--right">
+        <div class="my-slider">
+          <div class="slide-content">
+            <div>
+              <img src="/images/login-bg-1.svg" alt="Send and receive digital currencies via email" />
+              <div class="title">Send and receive digital currencies via email</div>
+              <div class="subtitle">Transacting on blockchain has never been easier.</div>
+              <div class="subtitle">An email is all you need to get started.</div>
+              <a class="website-link" href="https://tor.us/" target="_blank">Visit our website</a>
+            </div>
+          </div>
+          <div class="slide-content">
+            <div>
+              <img
+                src="/images/login-bg-2.svg"
+                alt="Purchase digital currencies globally with credit card
+              "
+              />
+              <div class="title">Purchase digital currencies globally with credit card</div>
+              <div class="subtitle">Choose from a range of providers</div>
+              <div class="subtitle">Get currencies at one of the most competitive rates</div>
+              <a class="website-link" href="https://tor.us/" target="_blank">Visit our website</a>
+            </div>
+          </div>
+          <div class="slide-content">
+            <div>
+              <img src="/images/login-bg-3.svg" alt="Interact with thousands of apps on the blockchain" />
+              <div class="title">Interact with thousands of apps on the blockchain</div>
+              <div class="subtitle">From Finance, Games, Exchanges and more</div>
+              <div class="subtitle">Access the decentralised world with Torus</div>
+              <a class="website-link" href="https://tor.us/" target="_blank">Visit our website</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="snackbar"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"></script>
+    <script>
+      tns({
+        container: '.my-slider',
+        items: 1,
+        slideBy: 'page',
+        autoplay: true,
+        controls: false,
+        navPosition: 'bottom',
+        autoplayButtonOutput: false,
+      })
+
+      notificationForm.onsubmit = async (e) => {
+        e.preventDefault()
+
+        grecaptcha.ready(function () {
+          grecaptcha.execute('<%= RECAPTCHA_KEY %>', { action: 'submit' }).then(function (token) {
+            const formData = new FormData(notificationForm)
+            var xmlhttp = new XMLHttpRequest()
+            xmlhttp.open('POST', 'http://localhost:2020/notifications/region-email')
+            xmlhttp.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+            xmlhttp.send(
+              JSON.stringify({
+                email: formData.get('email'),
+              })
+            )
+            xmlhttp.onload = () => {
+              if (xmlhttp.status === 201) {
+                showSnackbar('success', 'Submitted')
+              } else if (xmlhttp.status === 409) {
+                showSnackbar('warning', 'This email is already on our list')
+              } else {
+                showSnackbar('error', 'Please try again or contact support')
+              }
+            }
+          })
+        })
+      }
+
+      function showSnackbar(type, message) {
+        var snackbar = document.getElementById('snackbar')
+        console.dir(snackbar)
+        snackbar.classList.add('show')
+        snackbar.classList.add(type)
+        snackbar.innerText = message
+        setTimeout(function () {
+          snackbar.className = ''
+        }, 3000)
+      }
+    </script>
+  </body>
+</html>
