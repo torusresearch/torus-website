@@ -26,6 +26,7 @@
     }
   },
   "rules": {
+    "unicorn/prefer-object-from-entries": 0,
     "unicorn/require-post-message-target-origin": 0,
     "unicorn/prefer-module": 0,
     "unicorn/prefer-node-protocol": 0,
@@ -125,6 +126,8 @@
     "document": "readonly",
     "fetch": "readonly",
     "it": "readonly",
+    "before": "readonly",
+    "after": "readonly",
     "beforeEach": "readonly",
     "afterEach": "readonly",
     "describe": "readonly",

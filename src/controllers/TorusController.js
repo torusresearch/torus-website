@@ -7,12 +7,13 @@ import { stripHexPrefix } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import { JsonRpcEngine } from 'json-rpc-engine'
 import { createEngineStream } from 'json-rpc-middleware-stream'
-import debounce from 'lodash.debounce'
+import { debounce } from 'lodash'
 import log from 'loglevel'
 import pump from 'pump'
 import { toChecksumAddress } from 'web3-utils'
 
 import { version } from '../../package.json'
+import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, TRANSACTION_STATUSES } from '../utils/enums'
 import createRandomId from '../utils/random-id'
 import { isMain } from '../utils/utils'
 import AccountTracker from './AccountTracker'
@@ -23,20 +24,22 @@ import CurrencyController from './CurrencyController'
 import DecryptMessageManager from './DecryptMessageManager'
 import DetectTokensController from './DetectTokensController'
 import EncryptionPublicKeyManager from './EncryptionPublicKeyManager'
+import GasFeeController from './gas/GasFeeController'
 import MessageManager from './MessageManager'
-import NetworkController from './NetworkController'
+import NetworkController from './network/NetworkController'
 import PermissionsController from './PermissionsController'
 import PersonalMessageManager from './PersonalMessageManager'
 import PreferencesController from './PreferencesController'
 import TokenRatesController from './TokenRatesController'
 import KeyringController from './TorusKeyring'
-import TransactionController from './TransactionController'
+import TransactionController from './transactions/TransactionController'
 import TypedMessageManager from './TypedMessageManager'
 import ComposableObservableStore from './utils/ComposableObservableStore'
 import createLoggerMiddleware from './utils/createLoggerMiddleware'
 import createOriginMiddleware from './utils/createOriginMiddleware'
-import nodeify from './utils/nodeify'
-import WalletConnectController from './WalletConnectController'
+import createMethodMiddleware from './utils/methodMiddleware'
+// import setupMultiplex from './utils/setupMultiplex'
+import WalletConnectController from './walletconnect/WalletConnectController'
 
 EventEmitter.defaultMaxListeners = 100
 
@@ -47,26 +50,35 @@ export default class TorusController extends EventEmitter {
    */
   constructor(options) {
     super()
-    this.defaultMaxListeners = 20
+    this.defaultMaxListeners = 100
     this.sendUpdate = debounce(this.privateSendUpdate.bind(this), 200)
     this.opts = options
-    const { host, chainId, networkName } = options.sessionCachedNetwork || {}
-    const networkControllerOptions = options.sessionCachedNetwork && {
-      provider: {
-        type: host,
-        rpcTarget: host,
-        chainId,
-        ticker: networkName,
-        nickname: networkName,
-      },
-    }
 
     this.store = new ComposableObservableStore()
-    this.networkController = new NetworkController(networkControllerOptions)
+    this.networkController = new NetworkController(options.initState.NetworkController)
 
     // this keeps track of how many "controllerStream" connections are open
     // the only thing that uses controller connections are open metamask UI instances
     this.activeControllerConnections = 0
+
+    this.initializeProvider()
+
+    this.provider = this.networkController.getProviderAndBlockTracker().provider
+    this.blockTracker = this.networkController.getProviderAndBlockTracker().blockTracker
+
+    this.gasFeeController = new GasFeeController({
+      interval: 15_000,
+      getProvider: () => this.networkController.getProviderAndBlockTracker().provider,
+      getCurrentNetworkEIP1559Compatibility: this.networkController.getEIP1559Compatibility.bind(this.networkController),
+      getCurrentAccountEIP1559Compatibility: this.getCurrentAccountEIP1559Compatibility.bind(this),
+      legacyAPIEndpoint: 'https://gas-api.metaswap.codefi.network/networks/<chain_id>/gasPrices',
+      EIP1559APIEndpoint: 'https://gas-api.metaswap.codefi.network/networks/<chain_id>/suggestedGasFees',
+      getCurrentNetworkLegacyGasAPICompatibility: () => {
+        const chainId = this.networkController.getCurrentChainId()
+        return chainId === MAINNET_CHAIN_ID
+      },
+      getChainId: () => this.networkController.getCurrentChainId(),
+    })
 
     this.currencyController = new CurrencyController({
       initState: {},
@@ -74,14 +86,19 @@ export default class TorusController extends EventEmitter {
     this.currencyController.updateConversionRate()
     this.currencyController.scheduleConversionInterval()
 
-    this.initializeProvider()
-    this.provider = this.networkController.getProviderAndBlockTracker().provider
-    this.blockTracker = this.networkController.getProviderAndBlockTracker().blockTracker
-
     this.accountTracker = new AccountTracker({
       provider: this.provider,
       blockTracker: this.blockTracker,
-      network: this.networkController,
+      getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController),
+    })
+
+    // start and stop polling for balances based on activeControllerConnections
+    this.on('controllerConnectionChanged', (activeControllerConnections) => {
+      if (activeControllerConnections > 0) {
+        this.accountTracker.start()
+      } else {
+        this.accountTracker.stop()
+      }
     })
 
     // key mgmt
@@ -92,6 +109,11 @@ export default class TorusController extends EventEmitter {
       provider: this.provider,
       signMessage: this.keyringController.signMessage.bind(this.keyringController),
       storeDispatch: this.opts.storeDispatch,
+    })
+
+    this.permissionsController = new PermissionsController({
+      getKeyringAccounts: this.keyringController.getAccounts.bind(this.keyringController),
+      setSiteMetadata: this.prefsController.setSiteMetadata.bind(this.prefsController),
     })
 
     // detect tokens controller
@@ -106,15 +128,6 @@ export default class TorusController extends EventEmitter {
       tokensStore: this.detectTokensController.detectedTokensStore,
     })
 
-    // start and stop polling for balances based on activeControllerConnections
-    this.on('controllerConnectionChanged', (activeControllerConnections) => {
-      if (activeControllerConnections > 0) {
-        this.accountTracker.start()
-      } else {
-        this.accountTracker.stop()
-      }
-    })
-
     // ensure accountTracker updates balances after network change
     this.networkController.on('networkDidChange', () => {
       this.accountTracker._updateAccounts()
@@ -123,32 +136,29 @@ export default class TorusController extends EventEmitter {
       this.prefsController.recalculatePastTx()
       this.prefsController.refetchEtherscanTx()
       this.walletConnectController.updateSession()
-    })
-
-    this.publicConfigStore = this.initPublicConfigStore()
-
-    this.permissionsController = new PermissionsController({
-      getKeyringAccounts: this.keyringController.getAccounts.bind(this.keyringController),
-      setSiteMetadata: this.prefsController.setSiteMetadata.bind(this.prefsController),
+      this.gasFeeController.onNetworkStateChange()
     })
 
     // tx mgmt
     this.txController = new TransactionController({
+      getProviderConfig: this.networkController.getProviderConfig.bind(this.networkController),
+      getCurrentNetworkEIP1559Compatibility: this.networkController.getEIP1559Compatibility.bind(this.networkController),
+      getCurrentAccountEIP1559Compatibility: this.getCurrentAccountEIP1559Compatibility.bind(this),
       networkStore: this.networkController.networkStore,
+      getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController),
+      preferencesStore: this.prefsController.store,
       txHistoryLimit: 40,
-      // TODO: pass in methods to check permissions for transactions. Do the same for other types of txs
-      getNetwork: this.networkController.getNetworkState.bind(this),
       // signs ethTx
       signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
       provider: this.provider,
       blockTracker: this.blockTracker,
-      storeProps: this.opts.storeProps,
+      getEIP1559GasFeeEstimates: this.gasFeeController.fetchGasFeeEstimates.bind(this.gasFeeController),
     })
     this.txController.on('newUnapprovedTx', (txMeta, request) => options.showUnapprovedTx(txMeta, request))
 
     this.txController.on('tx:status-update', (txId, status) => {
-      if (status === 'confirmed' || status === 'failed') {
-        const txMeta = this.txController.txStateManager.getTx(txId)
+      if (status === TRANSACTION_STATUSES.CONFIRMED || status === TRANSACTION_STATUSES.FAILED) {
+        const txMeta = this.txController.txStateManager.getTransaction(txId)
         if (this.platform) {
           this.platform.showTransactionNotification(txMeta) // TODO: implement platform specific handlers
         }
@@ -178,23 +188,38 @@ export default class TorusController extends EventEmitter {
     this.networkController.lookupNetwork()
     this.messageManager = new MessageManager()
     this.personalMessageManager = new PersonalMessageManager()
-    this.typedMessageManager = new TypedMessageManager({ networkController: this.networkController })
+    this.typedMessageManager = new TypedMessageManager({ getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController) })
     this.encryptionPublicKeyManager = new EncryptionPublicKeyManager()
     this.decryptMessageManager = new DecryptMessageManager()
+
     this.store.updateStructure({
-      AssetController: this.assetController.store,
-      // PermissionsController: this.permissionsController.permissions,
       TransactionController: this.txController.store,
-      NetworkController: this.networkController.store,
-      MessageManager: this.messageManager.store,
+      PreferencesController: this.prefsController.store,
       CurrencyController: this.currencyController.store,
-      PersonalMessageManager: this.personalMessageManager.store,
-      TypedMessageManager: this.typedMessageManager.store,
-      EncryptionPublicKeyManager: this.encryptionPublicKeyManager.store,
-      DecryptMessageManager: this.decryptMessageManager.store,
+      NetworkController: this.networkController.store,
+      GasFeeController: this.gasFeeController.store,
     })
-    this.updateAndApproveTransaction = nodeify(this.txController.updateAndApproveTransaction, this.txController)
-    this.cancelTransaction = nodeify(this.txController.cancelTransaction, this.txController)
+
+    // ensure isClientOpenAndUnlocked is updated when memState updates
+    this.on('update', (memState) => this._onStateUpdate(memState))
+
+    this.memStore = new ComposableObservableStore(null, {
+      NetworkController: this.networkController.store,
+      AccountTracker: this.accountTracker.store,
+      TxController: this.txController.memStore,
+      TokenRatesController: this.tokenRatesController.store,
+      MessageManager: this.messageManager.store,
+      PersonalMessageManager: this.personalMessageManager.store,
+      DecryptMessageManager: this.decryptMessageManager.store,
+      EncryptionPublicKeyManager: this.encryptionPublicKeyManager.store,
+      TypesMessageManager: this.typedMessageManager.store,
+      PreferencesController: this.prefsController.store,
+      CurrencyController: this.currencyController.store,
+      GasFeeController: this.gasFeeController.store,
+    })
+    this.memStore.subscribe(this.sendUpdate.bind(this))
+
+    this.publicConfigStore = this.initPublicConfigStore()
 
     if (typeof options.rehydrate === 'function') {
       setTimeout(() => {
@@ -210,6 +235,11 @@ export default class TorusController extends EventEmitter {
       provider: this.provider,
       network: this.networkController,
     })
+
+    this.updateAndApproveTransaction = this.txController.updateAndApproveTransaction.bind(this.txController)
+    this.cancelTransaction = this.txController.cancelTransaction.bind(this.txController)
+
+    this.engine = null
   }
 
   /**
@@ -238,7 +268,13 @@ export default class TorusController extends EventEmitter {
       processTypedMessageV4: this.newUnsignedTypedMessage.bind(this),
       processPersonalMessage: this.newUnsignedPersonalMessage.bind(this),
       getPendingNonce: this.getPendingNonce.bind(this),
-      getPendingTransactionByHash: (hash) => this.txController.getFilteredTxList({ hash, status: 'submitted' })[0],
+      getPendingTransactionByHash: (hash) =>
+        this.txController.getTransactions({
+          searchCriteria: {
+            hash,
+            status: TRANSACTION_STATUSES.SUBMITTED,
+          },
+        })[0],
       processEncryptionPublicKey: this.newUnsignedEncryptionPublicKey.bind(this),
       processDecryptMessage: this.newUnsignedDecryptMessage.bind(this),
     }
@@ -252,25 +288,68 @@ export default class TorusController extends EventEmitter {
    */
   initPublicConfigStore() {
     // get init state
-    const publicConfigStore = new ObservableStore()
+    // setting stringified state  to keep it compatible with old versions of torus-embed
+    const publicConfigStore = new ObservableStore('{}')
 
-    // memStore -> transform -> publicConfigStore
-    this.on('update', (memState) => {
-      this.isClientOpenAndUnlocked = memState.isUnlocked
-      const publicState = selectPublicState(memState)
-      publicConfigStore.putState(publicState)
-    })
+    const { networkController } = this
+
+    // setup memStore subscription hooks
+    this.on('update', updatePublicConfigStore)
+    // const providerState = this.getProviderState()
+    updatePublicConfigStore(this.getState())
+
+    function updatePublicConfigStore(memState) {
+      const chainId = networkController.getCurrentChainId()
+      if (memState.network !== 'loading') {
+        publicConfigStore.putState(selectPublicState(chainId, memState))
+      }
+    }
 
     // eslint-disable-next-line unicorn/consistent-function-scoping
-    function selectPublicState(memState) {
-      const result = {
-        selectedAddress: memState.isUnlocked ? memState.selectedAddress : undefined,
-        networkVersion: memState.network,
-      }
-      return result
+    function selectPublicState(chainId, { isUnlocked, network, selectedAddress }) {
+      return JSON.stringify({
+        isUnlocked,
+        chainId,
+        networkVersion: network,
+        selectedAddress,
+      })
     }
 
     return publicConfigStore
+  }
+
+  /**
+   * Gets relevant state for the provider of an external origin.
+   *
+   * @param {string} origin - The origin to get the provider state for.
+   * @returns {Promise<{
+   *  isUnlocked: boolean,
+   *  networkVersion: string,
+   *  chainId: string,
+   *  accounts: string[],
+   * }>} An object with relevant state properties.
+   */
+  getProviderState() {
+    return {
+      isUnlocked: this.isUnlocked(),
+      ...this.getProviderNetworkState(),
+      accounts: this.prefsController.store.getState().selectedAddress ? [this.prefsController.store.getState().selectedAddress] : [],
+    }
+  }
+
+  /**
+   * Gets network state relevant for external providers.
+   *
+   * @param {Object} [memState] - The MetaMask memState. If not provided,
+   * this function will retrieve the most recent state.
+   * @returns {Object} An object with relevant network state properties.
+   */
+  getProviderNetworkState(memState) {
+    const { network } = memState || this.getState()
+    return {
+      chainId: this.networkController.getCurrentChainId(),
+      networkVersion: network,
+    }
   }
 
   /**
@@ -279,62 +358,10 @@ export default class TorusController extends EventEmitter {
    * @returns {Object} status
    */
   getState() {
-    return this.store.getFlatState()
-  }
-
-  /**
-   * Returns an Object containing API Callback Functions.
-   * These functions are the interface for the UI.
-   * The API object can be transmitted over a stream with dnode.
-   *
-   * @returns {Object} Object containing API functions.
-   */
-  getApi() {
-    const { keyringController } = this
-    const { txController } = this
-    const { networkController } = this
-
     return {
-      // etc
-      getState: (callback) => callback(null, this.getState()),
-      setCurrentCurrency: this.setCurrentCurrency.bind(this),
-
-      // network management
-      setProviderType: nodeify(networkController.setProviderType, networkController),
-
-      // KeyringController
-      exportAccount: nodeify(keyringController.exportAccount, keyringController),
-
-      // txController
-      cancelTransaction: nodeify(txController.cancelTransaction, txController),
-      updateTransaction: nodeify(txController.updateTransaction, txController),
-      updateAndApproveTransaction: nodeify(txController.updateAndApproveTransaction, txController),
-      retryTransaction: nodeify(this.retryTransaction, this),
-      createCancelTransaction: nodeify(this.createCancelTransaction, this),
-      createSpeedUpTransaction: nodeify(this.createSpeedUpTransaction, this),
-      getFilteredTxList: nodeify(txController.getFilteredTxList, txController),
-      estimateGas: nodeify(this.estimateGas, this),
-
-      // messageManager
-      signMessage: nodeify(this.signMessage, this),
-      cancelMessage: this.cancelMessage.bind(this),
-
-      // personalMessageManager
-      signPersonalMessage: nodeify(this.signPersonalMessage, this),
-      cancelPersonalMessage: this.cancelPersonalMessage.bind(this),
-
-      // personalMessageManager
-      signTypedMessage: nodeify(this.signTypedMessage, this),
-      cancelTypedMessage: this.cancelTypedMessage.bind(this),
-
-      // decryptMessageManager
-      decryptMessage: nodeify(this.decryptMessage, this),
-      decryptMessageInline: nodeify(this.decryptMessageInline, this),
-      cancelDecryptMessage: this.cancelDecryptMessage.bind(this),
-
-      // EncryptionPublicKeyManager
-      encryptionPublicKey: nodeify(this.signEncryptionPublicKey, this),
-      cancelEncryptionPublicKey: this.cancelEncryptionPublicKey.bind(this),
+      isUnlocked: this.isUnlocked(),
+      isInitialized: this.isUnlocked(),
+      ...this.memStore.getFlatState(),
     }
   }
 
@@ -342,8 +369,20 @@ export default class TorusController extends EventEmitter {
   // KEYRING RELATED METHODS
   // =============================================================================
 
-  initTorusKeyring(keyArray, addresses) {
-    return Promise.all([this.keyringController.deserialize(keyArray), this.accountTracker.syncWithAddresses(addresses)])
+  async initTorusKeyring(keyArray, addresses) {
+    await Promise.all([this.keyringController.deserialize(keyArray), this.accountTracker.syncWithAddresses(addresses)])
+  }
+
+  unlock() {
+    if (this.prefsController.store.getState().selectedAddress) {
+      this.notifyAllConnections({
+        method: NOTIFICATION_NAMES.unlockStateChanged,
+        params: {
+          isUnlocked: true,
+          accounts: [this.prefsController.store.getState().selectedAddress],
+        },
+      })
+    }
   }
 
   async addAccount(key, address) {
@@ -357,7 +396,9 @@ export default class TorusController extends EventEmitter {
       this.detectTokensController.startTokenDetection(address)
       this.assetDetectionController.startAssetDetection(address)
       this.walletConnectController.setSelectedAddress(address)
+      this.gasFeeController.getGasFeeEstimatesAndStartPolling()
     }
+    this.unlock()
   }
 
   /**
@@ -541,6 +582,14 @@ export default class TorusController extends EventEmitter {
     try {
       const cleanMessageParameters = await this.typedMessageManager.approveMessage(messageParameters)
       const address = toChecksumAddress(normalize(cleanMessageParameters.from))
+      // For some reason every version after V1 used stringified params.
+      if (
+        version !== 'V1' && // But we don't have to require that. We can stop suggesting it now:
+        typeof cleanMessageParameters.data === 'string'
+      ) {
+        cleanMessageParameters.data = JSON.parse(cleanMessageParameters.data)
+      }
+
       const signature = await this.keyringController.signTypedData(address, cleanMessageParameters.data, messageVersion)
       this.typedMessageManager.setMsgStatusSigned(messageId, signature)
       this.getState()
@@ -563,272 +612,6 @@ export default class TorusController extends EventEmitter {
       return callback(null, this.getState())
     }
     return undefined
-  }
-
-  /**
-   * Allows a user to try to speed up a transaction by retrying it
-   * with higher gas.
-   *
-   * @param {string} txId - The ID of the transaction to speed up.
-   * @param {Function} cb - The callback function called with a full state update.
-   */
-  async retryTransaction(txId, gasPrice) {
-    await this.txController.retryTransaction(txId, gasPrice)
-    const state = await this.getState()
-    return state
-  }
-
-  /**
-   * Allows a user to attempt to cancel a previously submitted transaction by creating a new
-   * transaction.
-   * @param {number} originalTxId - the id of the txMeta that you want to attempt to cancel
-   * @param {string=} customGasPrice - the hex value to use for the cancel transaction
-   * @returns {object} MetaMask state
-   */
-  async createCancelTransaction(originalTxId, customGasPrice) {
-    await this.txController.createCancelTransaction(originalTxId, customGasPrice)
-    const state = await this.getState()
-    return state
-  }
-
-  async createSpeedUpTransaction(originalTxId, customGasPrice) {
-    await this.txController.createSpeedUpTransaction(originalTxId, customGasPrice)
-    const state = await this.getState()
-    return state
-  }
-
-  /**
-   * Used to estimate gas of a transaction
-   * @param {Object} estimateGasParams - estimate gas parameters
-   */
-  estimateGas(estimateGasParameters) {
-    return new Promise((resolve, reject) => {
-      this.txController.txGasUtil.query.estimateGas(estimateGasParameters, (error, response) => {
-        if (error) {
-          return reject(error)
-        }
-        return resolve(response)
-      })
-    })
-  }
-
-  /**
-   * Used to create a multiplexed stream for connecting to an untrusted context
-   * like a Dapp or other extension.
-   * @param {*} connectionStream - The Duplex stream to connect to.
-   * @param {string} originDomain - The domain requesting the stream, which
-   * may trigger a blacklist reload.
-   */
-  setupUntrustedCommunication(connectionStream, originDomain) {
-    // setup multiplexing
-    // const mux = setupMultiplex(connectionStream)
-    // connect features && for test cases
-    this.setupProviderConnection(connectionStream, originDomain)
-    // this.setupPublicConfig(mux.createStream('publicConfig'))
-  }
-
-  /**
-   * Used to create a multiplexed stream for connecting to a trusted context,
-   * like our own user interfaces, which have the provider APIs, but also
-   * receive the exported API from this controller, which includes trusted
-   * functions, like the ability to approve transactions or sign messages.
-   *
-   * @param {*} connectionStream - The duplex stream to connect to.
-   * @param {string} originDomain - The domain requesting the connection,
-   * used in logging and error reporting.
-   */
-  setupTrustedCommunication(outStream, originDomain) {
-    // setup multiplexing
-    // const mux = setupMultiplex(connectionStream)
-    // connect features
-    this.setupControllerConnection(outStream)
-    // to fix test cases
-    this.setupProviderConnection(outStream, originDomain)
-  }
-
-  /**
-   * A method for providing our API over a stream using Dnode.
-   * @param {*} outStream - The stream to provide our API over.
-   */
-  setupControllerConnection(_) {
-    // const api = this.getApi()
-    // const dnode = Dnode(api)
-    // report new active controller connection
-    this.activeControllerConnections += 1
-    this.emit('controllerConnectionChanged', this.activeControllerConnections)
-    // connect dnode api to remote connection
-    // pump(outStream, dnode, outStream, err => {
-    //   // report new active controller connection
-    //   this.activeControllerConnections--
-    //   this.emit('controllerConnectionChanged', this.activeControllerConnections)
-    //   // report any error
-    //   if (err) log.error(err)
-    // })
-    // dnode.on('remote', remote => {
-    //   // push updates to popup
-    //   const sendUpdate = update => remote.sendUpdate(update)
-    //   this.on('update', sendUpdate)
-    //   // remove update listener once the connection ends
-    //   dnode.on('end', () => this.removeListener('update', sendUpdate))
-    // })
-  }
-
-  /**
-   * A method for serving our ethereum provider over a given stream.
-   * @param {*} outStream - The stream to provide over.
-   * @param {string} sender - The URI of the requesting resource.
-   */
-  setupProviderConnection(outStream, sender) {
-    // break violently
-    const senderUrl = new URL(sender)
-
-    const engine = this.setupProviderEngine({ origin: senderUrl.hostname, location: sender })
-
-    // setup connection
-    const providerStream = createEngineStream({ engine })
-
-    outStream
-      .pipe(providerStream)
-      .pipe(outStream)
-      .on('error', (error) => {
-        // cleanup filter polyfill middleware
-        engine._middleware.forEach((mid) => {
-          if (mid.destroy && typeof mid.destroy === 'function') {
-            mid.destroy()
-          }
-        })
-        if (error) log.error(error)
-      })
-  }
-
-  /**
-   * A method for creating a provider that is safely restricted for the requesting domain.
-   * */
-  setupProviderEngine({ origin }) {
-    // setup json rpc engine stack
-    const engine = new JsonRpcEngine()
-    const { provider } = this
-    const { blockTracker } = this
-
-    // create filter polyfill middleware
-    const filterMiddleware = createFilterMiddleware({ provider, blockTracker })
-    // create subscription polyfill middleware
-    const subscriptionManager = createSubscriptionManager({ provider, blockTracker })
-    subscriptionManager.events.on('notification', (message) => engine.emit('notification', message))
-
-    // metadata
-    engine.push(createOriginMiddleware({ origin }))
-    engine.push(createLoggerMiddleware({ origin }))
-    // filter and subscription polyfills
-    engine.push(filterMiddleware)
-    engine.push(subscriptionManager.middleware)
-    // permissions
-    engine.push(this.permissionsController.createMiddleware({ origin }))
-    // watch asset
-    // engine.push(this.preferencesController.requestWatchAsset.bind(this.preferencesController))
-    // forward to metamask primary provider
-    engine.push(providerAsMiddleware(provider))
-    return engine
-  }
-
-  /**
-   * A method for providing our public config info over a stream.
-   * This includes info we like to be synchronous if possible, like
-   * the current selected account, and network ID.
-   *
-   * Since synchronous methods have been deprecated in web3,
-   * this is a good candidate for deprecation.
-   *
-   * @param {*} outStream - The stream to provide public config over.
-   */
-  setupPublicConfig(outStream) {
-    const configStream = storeAsStream(this.publicConfigStore)
-    pump(configStream, outStream, (error) => {
-      configStream.destroy()
-      if (error) log.error(error)
-    })
-  }
-
-  /**
-   * A method for emitting the full MetaMask state to all registered listeners.
-   * @private
-   */
-  privateSendUpdate() {
-    this.emit('update', this.getState())
-  }
-
-  /**
-   * Retrieve private key for address
-   * @private
-   */
-  getPrivateKey(address) {
-    const addr = toChecksumAddress(address)
-    if (typeof this.opts.storeProps === 'function') {
-      const { wallet } = this.opts.storeProps()
-      if (addr == null) {
-        throw new Error('TxController - No address given.')
-      } else if (wallet[addr] == null) {
-        throw new Error('TxController - No private key accessible, please login.')
-      } else {
-        return Buffer.from(wallet[addr], 'hex')
-      }
-    }
-    return undefined
-  }
-
-  /**
-   * Returns the nonce that will be associated with a transaction once approved
-   * @param address {string} - The hex string address for the transaction
-   * @returns Promise<number>
-   */
-  async getPendingNonce(address) {
-    const { nonceDetails, releaseLock } = await this.txController.nonceTracker.getNonceLock(address)
-    const pendingNonce = nonceDetails.params.highestSuggested
-
-    releaseLock()
-    return pendingNonce
-  }
-
-  /**
-   * A method for setting the user's preferred display currency.
-   * @param {string} currencyCode - The code of the preferred currency.
-   * @param {Function} cb - A callback function returning currency info.
-   */
-  async setCurrentCurrency(payload, callback) {
-    const { ticker } = this.networkController.getNetworkConfig()
-    try {
-      // if (payload.selectedCurrency !== 'ETH') {
-      this.currencyController.setNativeCurrency(ticker)
-      this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
-      await this.currencyController.updateConversionRate()
-      // }
-      const data = {
-        nativeCurrency: ticker || 'ETH',
-        conversionRate: this.currencyController.getConversionRate(),
-        currentCurrency: this.currencyController.getCurrentCurrency(),
-        conversionDate: this.currencyController.getConversionDate(),
-      }
-      if (payload.origin && payload.origin !== 'store') {
-        this.prefsController.setSelectedCurrency(payload)
-      }
-      if (callback) return callback(null, data)
-    } catch (error) {
-      return callback(error)
-    }
-    return undefined
-  }
-
-  /**
-   * A method for selecting a custom URL for an ethereum RPC provider.
-   * @param {string} rpcTarget - A URL for a valid Ethereum RPC API.
-   * @param {number} chainId - The chainId of the selected network.
-   * @param {string} ticker - The ticker symbol of the selected network.
-   * @param {string} nickname - Optional nickname of the selected network.
-   * @returns {Promise<String>} - The RPC Target URL confirmed.
-   */
-  async setCustomRpc(rpcTarget, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {
-    this.networkController.setRpcTarget(rpcTarget, chainId, ticker, nickname, rpcPrefs)
-    return rpcTarget
   }
 
   /**
@@ -913,7 +696,7 @@ export default class TorusController extends EventEmitter {
       const buff = Buffer.from(stripped, 'hex')
       cleanMessageParameters.data = JSON.parse(buff.toString('utf8'))
 
-      const rawMess = this.keyringController.decryptMessage(cleanMessageParameters, address)
+      const rawMess = this.keyringController.decryptMessage(cleanMessageParameters.data, address)
       this.decryptMessageManager.setMsgStatusDecrypted(messageId, rawMess)
       this.getState()
       return
@@ -936,7 +719,7 @@ export default class TorusController extends EventEmitter {
     const buff = Buffer.from(stripped, 'hex')
     msgParams.data = JSON.parse(buff.toString('utf8'))
 
-    return this.keyringController.decryptMessage(msgParams, address)
+    return this.keyringController.decryptMessage(msgParams.data, address)
   }
 
   /**
@@ -950,5 +733,316 @@ export default class TorusController extends EventEmitter {
     if (cb && typeof cb === 'function') {
       cb(null, this.getState())
     }
+  }
+
+  /**
+   * Method to return a boolean if the keyring for the currently selected
+   * account is a ledger or trezor keyring.
+   * client utilities for EIP-1559
+   * @returns {boolean} true if the keyring type supports EIP-1559
+   */
+  async getCurrentAccountEIP1559Compatibility(fromAddress) {
+    const address = fromAddress || this.prefsController.store.getState().selectedAddress
+    return !!address
+  }
+
+  /**
+   * Allows a user to try to speed up a transaction by retrying it
+   * with higher gas.
+   *
+   * @param {string} txId - The ID of the transaction to speed up.
+   * @param {CustomGasSettings} [customGasSettings] - overrides to use for gas
+   *   params instead of allowing this method to generate them   */
+  async retryTransaction(txId, customGasSettings = {}) {
+    await this.txController.retryTransaction(txId, customGasSettings)
+    const state = await this.getState()
+    return state
+  }
+
+  /**
+   * Allows a user to attempt to cancel a previously submitted transaction by creating a new
+   * transaction.
+   * @param {number} originalTxId - the id of the txMeta that you want to attempt to cancel
+   * @param {CustomGasSettings} [customGasSettings] - overrides to use for gas
+   *  params instead of allowing this method to generate them
+   * @returns {object} MetaMask state
+   */
+  async createCancelTransaction(originalTxId, customGasSettings) {
+    await this.txController.createCancelTransaction(originalTxId, customGasSettings)
+    const state = await this.getState()
+    return state
+  }
+
+  async createSpeedUpTransaction(originalTxId, customGasSettings) {
+    await this.txController.createSpeedUpTransaction(originalTxId, customGasSettings)
+    const state = await this.getState()
+    return state
+  }
+
+  /**
+   * Used to estimate gas of a transaction
+   * @param {Object} estimateGasParams - estimate gas parameters
+   */
+  estimateGas(estimateGasParameters) {
+    return new Promise((resolve, reject) => {
+      this.txController.txGasUtil.query.estimateGas(estimateGasParameters, (error, response) => {
+        if (error) {
+          return reject(error)
+        }
+        return resolve(response)
+      })
+    })
+  }
+
+  /**
+   * Used to create a multiplexed stream for connecting to an untrusted context
+   * like a Dapp or other extension.
+   * @param {*} connectionStream - The Duplex stream to connect to.
+   * @param {string} originDomain - The domain requesting the stream, which
+   * may trigger a blacklist reload.
+   */
+  setupUntrustedCommunication(connectionStream, originDomain) {
+    // connect features && for test cases
+    this.setupProviderConnection(connectionStream, originDomain)
+  }
+
+  /**
+   * Used to create a multiplexed stream for connecting to a trusted context,
+   * like our own user interfaces, which have the provider APIs, but also
+   * receive the exported API from this controller, which includes trusted
+   * functions, like the ability to approve transactions or sign messages.
+   *
+   * @param {*} connectionStream - The duplex stream to connect to.
+   * @param {string} originDomain - The domain requesting the connection,
+   * used in logging and error reporting.
+   */
+  setupTrustedCommunication(outStream, originDomain) {
+    // setup multiplexing
+    // const mux = setupMultiplex(connectionStream)
+    // connect features
+    this.setupControllerConnection(outStream)
+    // to fix test cases
+    this.setupProviderConnection(outStream, originDomain)
+  }
+
+  /**
+   * A method for providing our API over a stream using Dnode.
+   * @param {*} outStream - The stream to provide our API over.
+   */
+  setupControllerConnection(_) {
+    // const api = this.getApi()
+    // const dnode = Dnode(api)
+    // report new active controller connection
+    this.activeControllerConnections += 1
+    this.emit('controllerConnectionChanged', this.activeControllerConnections)
+    // connect dnode api to remote connection
+    // pump(outStream, dnode, outStream, err => {
+    //   // report new active controller connection
+    //   this.activeControllerConnections--
+    //   this.emit('controllerConnectionChanged', this.activeControllerConnections)
+    //   // report any error
+    //   if (err) log.error(err)
+    // })
+    // dnode.on('remote', remote => {
+    //   // push updates to popup
+    //   const sendUpdate = update => remote.sendUpdate(update)
+    //   this.on('update', sendUpdate)
+    //   // remove update listener once the connection ends
+    //   dnode.on('end', () => this.removeListener('update', sendUpdate))
+    // })
+  }
+
+  /**
+   * A method for serving our ethereum provider over a given stream.
+   * @param {*} outStream - The stream to provide over.
+   * @param {string} sender - The URI of the requesting resource.
+   */
+  setupProviderConnection(outStream, sender) {
+    // break violently
+    const senderUrl = new URL(sender)
+
+    const engine = this.setupProviderEngine({ origin: senderUrl.hostname, location: sender })
+    this.engine = engine
+
+    // setup connection
+    const providerStream = createEngineStream({ engine })
+
+    outStream
+      .pipe(providerStream)
+      .pipe(outStream)
+      .on('error', (error) => {
+        // cleanup filter polyfill middleware
+        engine._middleware.forEach((mid) => {
+          if (mid.destroy && typeof mid.destroy === 'function') {
+            mid.destroy()
+          }
+        })
+        this.engine = null
+        if (error) log.error(error)
+      })
+  }
+
+  /**
+   * A method for creating a provider that is safely restricted for the requesting domain.
+   * */
+  setupProviderEngine({ origin }) {
+    // setup json rpc engine stack
+    const engine = new JsonRpcEngine()
+    const { provider, blockTracker } = this
+
+    // create filter polyfill middleware
+    const filterMiddleware = createFilterMiddleware({ provider, blockTracker })
+    // create subscription polyfill middleware
+    const subscriptionManager = createSubscriptionManager({ provider, blockTracker })
+    subscriptionManager.events.on('notification', (message) => engine.emit('notification', message))
+
+    // metadata
+    engine.push(createOriginMiddleware({ origin }))
+    engine.push(createLoggerMiddleware({ origin }))
+
+    engine.push(
+      createMethodMiddleware({
+        origin,
+        getProviderState: this.getProviderState.bind(this),
+        getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController),
+      })
+    )
+
+    // filter and subscription polyfills
+    engine.push(filterMiddleware)
+    engine.push(subscriptionManager.middleware)
+    // permissions
+    engine.push(this.permissionsController.createMiddleware({ origin }))
+    // watch asset
+    // engine.push(this.preferencesController.requestWatchAsset.bind(this.preferencesController))
+    // forward to metamask primary provider
+    engine.push(providerAsMiddleware(provider))
+    return engine
+  }
+
+  /**
+   * A method for providing our public config info over a stream.
+   * This includes info we like to be synchronous if possible, like
+   * the current selected account, and network ID.
+   *
+   * Since synchronous methods have been deprecated in web3,
+   * this is a good candidate for deprecation.
+   *
+   * @param {*} outStream - The stream to provide public config over.
+   */
+  setupPublicConfig(outStream) {
+    const configStream = storeAsStream(this.publicConfigStore)
+    pump(configStream, outStream, (error) => {
+      configStream.destroy()
+      if (error) log.error(error)
+    })
+  }
+
+  /**
+   * A method for emitting the full MetaMask state to all registered listeners.
+   * @private
+   */
+  privateSendUpdate() {
+    this.emit('update', this.getState())
+  }
+
+  /**
+   * Handle memory state updates.
+   * - Ensure isClientOpenAndUnlocked is updated
+   * - Notifies all connections with the new provider network state
+   *   - The external providers handle diffing the state
+   */
+  _onStateUpdate(newState) {
+    this.isClientOpenAndUnlocked = newState.isUnlocked
+    this.notifyAllConnections({
+      method: NOTIFICATION_NAMES.chainChanged,
+      params: this.getProviderNetworkState(newState),
+    })
+  }
+
+  /**
+   * Causes the RPC engines associated with all connections to emit a
+   * notification event with the given payload.
+   *
+   * The caller is responsible for ensuring that only permitted notifications
+   * are sent.
+   *
+   * @param {any} payload - The event payload, or payload getter function.
+   */
+  notifyAllConnections(payload) {
+    const getPayload = () => payload
+    if (this.engine) {
+      this.engine.emit('notification', getPayload())
+    }
+  }
+
+  isUnlocked() {
+    return !!this.prefsController.store.getState().selectedAddress
+  }
+
+  /**
+   * Returns the nonce that will be associated with a transaction once approved
+   * @param address {string} - The hex string address for the transaction
+   * @returns Promise<number>
+   */
+  async getPendingNonce(address) {
+    const { nonceDetails, releaseLock } = await this.txController.nonceTracker.getNonceLock(address)
+    const pendingNonce = nonceDetails.params.highestSuggested
+
+    releaseLock()
+    return pendingNonce
+  }
+
+  /**
+   * Returns the next nonce according to the nonce-tracker
+   * @param {string} address - The hex string address for the transaction
+   * @returns {Promise<number>}
+   */
+  async getNextNonce(address) {
+    const nonceLock = await this.txController.nonceTracker.getNonceLock(address)
+    nonceLock.releaseLock()
+    return nonceLock.nextNonce
+  }
+
+  /**
+   * A method for setting the user's preferred display currency.
+   * @param {string} currencyCode - The code of the preferred currency.
+   * @param {Function} cb - A callback function returning currency info.
+   */
+  async setCurrentCurrency(payload, callback) {
+    const { ticker } = this.networkController.getProviderConfig()
+    try {
+      // if (payload.selectedCurrency !== 'ETH') {
+      this.currencyController.setNativeCurrency(ticker)
+      this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
+      await this.currencyController.updateConversionRate()
+      // }
+      const data = {
+        nativeCurrency: ticker || 'ETH',
+        conversionRate: this.currencyController.getConversionRate(),
+        currentCurrency: this.currencyController.getCurrentCurrency(),
+        conversionDate: this.currencyController.getConversionDate(),
+      }
+      if (payload.origin && payload.origin !== 'store') {
+        this.prefsController.setSelectedCurrency(payload)
+      }
+      if (callback) return callback(null, data)
+    } catch (error) {
+      return callback(error)
+    }
+    return undefined
+  }
+
+  /**
+   * A method for selecting a custom URL for an ethereum RPC provider.
+   * @param {string} rpcUrl - A URL for a valid Ethereum RPC API.
+   * @param {number} chainId - The chainId of the selected network.
+   * @param {string} ticker - The ticker symbol of the selected network.
+   * @param {string} nickname - Optional nickname of the selected network.
+   * @returns {Promise<String>} - The RPC Target URL confirmed.
+   */
+  async setCustomRpc(rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {
+    this.networkController.setRpcTarget(rpcUrl, chainId, ticker, nickname, rpcPrefs)
+    return rpcUrl
   }
 }

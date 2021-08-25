@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="type === TX_TRANSACTION">
+    <template v-if="type === TRANSACTION_TYPES.STANDARD_TRANSACTION">
       <v-layout pa-6 class="elevation-1">
         <v-flex text-center xs12>
           <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
@@ -11,8 +11,14 @@
         <v-flex xs12>
           <NetworkDisplay :minimal="true" class="mb-4" :store-network-type="network"></NetworkDisplay>
         </v-flex>
-        <v-flex v-if="transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM || transactionCategory === TOKEN_METHOD_APPROVE" xs12>
-          <v-flex v-if="transactionCategory === TOKEN_METHOD_APPROVE" xs12 mb-2>
+        <v-flex
+          v-if="
+            transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM ||
+            transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE
+          "
+          xs12
+        >
+          <v-flex v-if="transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE" xs12 mb-2>
             <span class="headline text_2--text">
               {{ `${t('dappPermission.allow')} ${origin.hostname} ${t('dappTransfer.toSpend')} ${selectedToken} ${t('dappTransfer.onYourBehalf')}?` }}
             </span>
@@ -23,12 +29,19 @@
         </v-flex>
         <v-flex v-else xs12>
           <ShowToolTip
-            v-if="[TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(transactionCategory) >= 0"
+            v-if="
+              [TRANSACTION_TYPES.TOKEN_METHOD_APPROVE, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM].indexOf(
+                transactionCategory
+              ) >= 0
+            "
             :address="amountTo"
           >
             <div class="caption">{{ t('dappTransfer.to') }}: {{ amountTo }}</div>
           </ShowToolTip>
-          <ShowToolTip v-else-if="[SEND_ETHER_ACTION_KEY, CONTRACT_INTERACTION_KEY].indexOf(transactionCategory) >= 0" :address="receiver">
+          <ShowToolTip
+            v-else-if="[TRANSACTION_TYPES.SENT_ETHER, TRANSACTION_TYPES.CONTRACT_INTERACTION].indexOf(transactionCategory) >= 0"
+            :address="receiver"
+          >
             <div class="caption">{{ t('dappTransfer.to') }}: {{ receiver }}</div>
           </ShowToolTip>
           <div v-else class="caption">{{ t('dappTransfer.to') }}: {{ displayAmountTo }}</div>
@@ -40,8 +53,8 @@
           <div class="caption">
             {{
               ((contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155) &&
-                transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) ||
-              (isSpecialContract && transactionCategory === TOKEN_METHOD_TRANSFER)
+                transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) ||
+              (isSpecialContract && transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER)
                 ? t('walletTransfer.collectibleId')
                 : t('walletTransfer.totalCost')
             }}
@@ -52,7 +65,21 @@
         </v-flex>
       </v-layout>
       <v-layout mx-6 my-4 wrap>
+        <TransactionFee
+          v-if="isEip1559"
+          :gas-fees="gasFees"
+          :selected-speed="selectedLondonSpeed"
+          :gas="gasEstimate"
+          :nonce="nonce"
+          :selected-currency="selectedCurrency"
+          :currency-multiplier="currencyMultiplier"
+          :initial-max-fee-per-gas="initialMaxFeePerGas"
+          :initial-max-priority-fee-per-gas="initialMaxPriorityFeePerGas"
+          :is-confirm="true"
+          @save="onTransferFeeSelect"
+        />
         <TransactionSpeedSelect
+          v-else
           :nonce="nonce"
           :gas="gasEstimate"
           :display-amount="contractType === CONTRACT_TYPE_ERC20 ? amountValue : value"
@@ -62,7 +89,7 @@
           :currency-multiplier-eth="currencyMultiplier"
           :contract-type="contractType"
           :network-ticker="network.ticker"
-          :symbol="SEND_ETHER_ACTION_KEY === transactionCategory ? network.ticker : selectedToken"
+          :symbol="TRANSACTION_TYPES.SENT_ETHER === transactionCategory ? network.ticker : selectedToken"
           :is-confirm="true"
           :network-host="network.host"
           @onSelectSpeed="onSelectSpeed"
@@ -76,7 +103,7 @@
         <v-flex xs9>
           <v-text-field
             :value="`${costOfTransaction} ${
-              isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + network.ticker : ''
+              isOtherToken && transactionCategory !== TRANSACTION_TYPES.TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + network.ticker : ''
             }`"
             :hint="costOfTransactionConverted"
             outlined
@@ -147,7 +174,7 @@
             {{ t('dappTransfer.pleaseTopup3') }}
           </div>
         </v-flex>
-        <v-flex v-if="transactionCategory === TOKEN_METHOD_APPROVE" xs12 mb-4>
+        <v-flex v-if="transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE" xs12 mb-4>
           <div class="caption error--text">{{ `${t('dappTransfer.byConfirming1')} ${displayAmountValue} ${t('dappTransfer.byConfirming2')}.` }}</div>
         </v-flex>
         <v-flex xs12 mt-4>
@@ -176,7 +203,11 @@
 
     <template
       v-if="
-        type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE || type === TX_GET_ENCRYPTION_KEY || type === TX_ETH_DECRYPT
+        type === MESSAGE_TYPE.PERSONAL_SIGN ||
+        type === MESSAGE_TYPE.ETH_SIGN ||
+        type === MESSAGE_TYPE.ETH_SIGN_TYPED_DATA ||
+        type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY ||
+        type === MESSAGE_TYPE.ETH_DECRYPT
       "
     >
       <v-layout py-6 class="elevation-1">
@@ -184,21 +215,21 @@
           <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
           <div class="display-1 text_2--text">
             {{
-              type === TX_GET_ENCRYPTION_KEY
+              type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY
                 ? t('dappProvider.encryptionRequest')
-                : type === TX_ETH_DECRYPT
+                : type === MESSAGE_TYPE.ETH_DECRYPT
                 ? t('dappProvider.decryptionRequest')
                 : t('dappTransfer.permission')
             }}
           </div>
         </v-flex>
       </v-layout>
-      <v-layout v-if="type === TX_GET_ENCRYPTION_KEY" wrap my-10>
+      <v-layout v-if="type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY" wrap my-10>
         <v-flex xs12 mx-6>
           <div class="text_2--text headline">{{ t('dappProvider.allowCompose').replace(/\{dappname\}/gi, origin.hostname) }}</div>
         </v-flex>
       </v-layout>
-      <v-layout v-if="type === TX_ETH_DECRYPT" wrap my-10>
+      <v-layout v-if="type === MESSAGE_TYPE.ETH_DECRYPT" wrap my-10>
         <v-flex xs12 mx-6>
           <div class="text_2--text headline">{{ t('dappProvider.allowRead').replace(/\{dappname\}/gi, origin.hostname) }}</div>
         </v-flex>
@@ -229,7 +260,7 @@
           </v-card>
         </v-flex>
       </v-layout>
-      <v-layout v-if="type === TX_ETH_DECRYPT" mx-6 my-6 wrap>
+      <v-layout v-if="type === MESSAGE_TYPE.ETH_DECRYPT" mx-6 my-6 wrap>
         <v-flex xs12 mb-2>
           <v-card v-if="showEncrypted" flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
@@ -256,7 +287,7 @@
           </ShowToolTip>
         </v-flex>
       </v-layout>
-      <v-layout v-if="type !== TX_GET_ENCRYPTION_KEY && type !== TX_ETH_DECRYPT" wrap>
+      <v-layout v-if="type !== MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY && type !== MESSAGE_TYPE.ETH_DECRYPT" wrap>
         <v-flex xs12 mt-0 mb-2 mx-6>
           <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
@@ -271,11 +302,11 @@
             <v-list-item class="pa-0">
               <v-list-item-content flat class="pa-1" :class="[$vuetify.theme.dark ? 'lighten-4' : 'background lighten-3']">
                 <v-card flat class="caption text-left pa-2 word-break typedMessageBox">
-                  <v-expansion-panels v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE">
+                  <v-expansion-panels v-if="type === MESSAGE_TYPE.PERSONAL_SIGN || type === MESSAGE_TYPE.ETH_SIGN">
                     <p :class="$vuetify.theme.dark ? '' : 'text_2--text'" :style="{ 'text-align': 'left' }">{{ message }}</p>
                   </v-expansion-panels>
 
-                  <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && !Array.isArray(typedMessages)">
+                  <v-expansion-panels v-else-if="type === MESSAGE_TYPE.ETH_SIGN_TYPED_DATA && !Array.isArray(typedMessages)">
                     <v-expansion-panel
                       v-for="(typedMessage, index) in typedMessages"
                       :key="index"
@@ -288,7 +319,7 @@
                     </v-expansion-panel>
                   </v-expansion-panels>
 
-                  <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && Array.isArray(typedMessages)">
+                  <v-expansion-panels v-else-if="type === MESSAGE_TYPE.ETH_SIGN_TYPED_DATA && Array.isArray(typedMessages)">
                     <v-expansion-panel :class="$vuetify.theme.isDark ? 'dark--theme' : ''">
                       <v-expansion-panel-header>{{ t('dappTransfer.dataSmall') }}</v-expansion-panel-header>
                       <v-expansion-panel-content v-for="(typedMessage, index) in typedMessages" :key="index">
@@ -307,12 +338,20 @@
           <v-layout mx-n2>
             <v-flex xs6 px-2>
               <v-btn block text large class="text_2--text" @click="triggerDeny">
-                {{ type === TX_ETH_DECRYPT || type === TX_ETH_DECRYPT ? t('dappProvider.deny') : t('dappProvider.cancel') }}
+                {{
+                  type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY || type === MESSAGE_TYPE.ETH_DECRYPT
+                    ? t('dappProvider.deny')
+                    : t('dappProvider.cancel')
+                }}
               </v-btn>
             </v-flex>
             <v-flex xs6 px-2>
               <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
-                {{ type === TX_ETH_DECRYPT || type === TX_ETH_DECRYPT ? t('dappProvider.allow') : t('dappProvider.confirm') }}
+                {{
+                  type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY || type === MESSAGE_TYPE.ETH_DECRYPT
+                    ? t('dappProvider.allow')
+                    : t('dappProvider.confirm')
+                }}
               </v-btn>
             </v-flex>
           </v-layout>
@@ -330,28 +369,20 @@ import { mapActions, mapGetters } from 'vuex'
 import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
 import {
-  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
-  CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
-  DEPLOY_CONTRACT_ACTION_KEY,
-  SEND_ETHER_ACTION_KEY,
-  TOKEN_METHOD_APPROVE,
-  TOKEN_METHOD_TRANSFER,
-  TOKEN_METHOD_TRANSFER_FROM,
-  TX_ETH_DECRYPT,
-  TX_GET_ENCRYPTION_KEY,
-  TX_MESSAGE,
-  TX_PERSONAL_MESSAGE,
-  TX_TRANSACTION,
-  TX_TYPED_MESSAGE,
+  GAS_ESTIMATE_TYPES,
+  MESSAGE_TYPE,
+  TRANSACTION_ENVELOPE_TYPES,
+  TRANSACTION_TYPES,
 } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
-import { addressSlicer, isMain, significantDigits } from '../../../utils/utils'
+import { addressSlicer, bnGreaterThan, gasTiming, isMain, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
+import TransactionFee from '../../helpers/TransactionFee'
 import TransactionSpeedSelect from '../../helpers/TransactionSpeedSelect'
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
@@ -360,6 +391,7 @@ export default {
   name: 'Confirm',
   components: {
     VueJsonPretty,
+    TransactionFee,
     TransactionSpeedSelect,
     NetworkDisplay,
     ShowToolTip,
@@ -384,6 +416,7 @@ export default {
       origin: { href: '', hostname: '' },
       balance: new BigNumber('0'),
       gasPrice: new BigNumber('10'),
+      activePriorityFee: new BigNumber('0'),
       value: new BigNumber('0'),
       amountTo: '',
       amountValue: '',
@@ -421,18 +454,8 @@ export default {
       channel: '',
       selectedCurrency: '',
       currencyData: {},
-      COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
-      TOKEN_METHOD_APPROVE,
-      TOKEN_METHOD_TRANSFER,
-      TOKEN_METHOD_TRANSFER_FROM,
-      SEND_ETHER_ACTION_KEY,
-      CONTRACT_INTERACTION_KEY,
-      TX_TRANSACTION,
-      TX_TYPED_MESSAGE,
-      TX_PERSONAL_MESSAGE,
-      TX_MESSAGE,
-      TX_GET_ENCRYPTION_KEY,
-      TX_ETH_DECRYPT,
+      TRANSACTION_TYPES,
+      MESSAGE_TYPE,
       userInfo: {},
       contractType: CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
@@ -443,29 +466,33 @@ export default {
       encryptedMessage: '',
       showEncrypted: false,
       isSpecialContract: false,
+      selectedLondonSpeed: '',
+      londonSpeedTiming: '',
+      initialMaxFeePerGas: new BigNumber(0),
+      initialMaxPriorityFeePerGas: new BigNumber(0),
     }
   },
   computed: {
     ...mapGetters(['getLogo']),
     header() {
       switch (this.transactionCategory) {
-        case DEPLOY_CONTRACT_ACTION_KEY:
+        case TRANSACTION_TYPES.DEPLOY_CONTRACT:
           // return 'Contract Deployment'
           return this.t('dappTransfer.deploy')
-        case CONTRACT_INTERACTION_KEY:
+        case TRANSACTION_TYPES.CONTRACT_INTERACTION:
           return this.getHeaderByDapp()
-        case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
+        case TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           // return 'ERC721 SafeTransferFrom'
           return this.t('dappTransfer.collectibleSafe')
-        case TOKEN_METHOD_APPROVE:
+        case TRANSACTION_TYPES.TOKEN_METHOD_APPROVE:
           // return 'ERC20 Approve'
           return this.t('dappTransfer.approve')
-        case TOKEN_METHOD_TRANSFER:
-        case SEND_ETHER_ACTION_KEY:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER:
+        case TRANSACTION_TYPES.SENT_ETHER:
           // return 'ERC2O Transfer'
           // return 'Send Ether'
           return this.t('dappTransfer.transfer')
-        case TOKEN_METHOD_TRANSFER_FROM:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM:
           // return 'ERC2O Transfer From'
           return this.t('dappTransfer.transferFrom')
         default:
@@ -474,18 +501,18 @@ export default {
       }
     },
     isLightHeader() {
-      return [DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].includes(this.transactionCategory)
+      return [TRANSACTION_TYPES.DEPLOY_CONTRACT, TRANSACTION_TYPES.CONTRACT_INTERACTION].includes(this.transactionCategory)
     },
     displayAmountTo() {
       switch (this.transactionCategory) {
-        case TOKEN_METHOD_APPROVE:
-        case TOKEN_METHOD_TRANSFER:
-        case TOKEN_METHOD_TRANSFER_FROM:
+        case TRANSACTION_TYPES.TOKEN_METHOD_APPROVE:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM:
           return `${this.t('dappTransfer.to')}: ${this.slicedAddress(this.amountTo)}`
-        case SEND_ETHER_ACTION_KEY:
-        case CONTRACT_INTERACTION_KEY:
+        case TRANSACTION_TYPES.SENT_ETHER:
+        case TRANSACTION_TYPES.CONTRACT_INTERACTION:
           return `${this.t('dappTransfer.to')}: ${this.slicedAddress(this.receiver)}`
-        case DEPLOY_CONTRACT_ACTION_KEY:
+        case TRANSACTION_TYPES.DEPLOY_CONTRACT:
           return this.t('dappTransfer.newContract')
         default:
           return this.t('dappTransfer.transactionRequest')
@@ -493,16 +520,16 @@ export default {
     },
     displayAmountValue() {
       switch (this.transactionCategory) {
-        case TOKEN_METHOD_APPROVE:
-        case TOKEN_METHOD_TRANSFER:
-        case TOKEN_METHOD_TRANSFER_FROM:
+        case TRANSACTION_TYPES.TOKEN_METHOD_APPROVE:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM:
           return `${this.amountDisplay(this.amountValue)} ${this.selectedToken}`
-        case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
+        case TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           return `ID: ${this.amountValue} ${this.selectedToken}`
-        case SEND_ETHER_ACTION_KEY:
-        case CONTRACT_INTERACTION_KEY:
+        case TRANSACTION_TYPES.SENT_ETHER:
+        case TRANSACTION_TYPES.CONTRACT_INTERACTION:
           return `${this.amountDisplay(this.value)} ${this.network.ticker}`
-        case DEPLOY_CONTRACT_ACTION_KEY:
+        case TRANSACTION_TYPES.DEPLOY_CONTRACT:
           return this.t('dappTransfer.notApplicable')
         default:
           return this.t('dappTransfer.transactionRequest')
@@ -510,32 +537,34 @@ export default {
     },
     displayAmountConverted() {
       switch (this.transactionCategory) {
-        case TOKEN_METHOD_APPROVE:
-        case TOKEN_METHOD_TRANSFER:
-        case TOKEN_METHOD_TRANSFER_FROM:
+        case TRANSACTION_TYPES.TOKEN_METHOD_APPROVE:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER:
+        case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM:
           return `~ ${significantDigits(this.amountTokenValueConverted)} ${this.selectedCurrency}`
-        case SEND_ETHER_ACTION_KEY:
-        case CONTRACT_INTERACTION_KEY:
+        case TRANSACTION_TYPES.SENT_ETHER:
+        case TRANSACTION_TYPES.CONTRACT_INTERACTION:
           return `~ ${this.dollarValue} ${this.selectedCurrency}`
-        case DEPLOY_CONTRACT_ACTION_KEY:
+        case TRANSACTION_TYPES.DEPLOY_CONTRACT:
           return ''
         default:
           return ''
       }
     },
     costOfTransaction() {
-      if ([TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)) {
+      if ([TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)) {
         return `${this.displayAmountValue}`
       }
       return `${this.totalEthCostDisplay} ${this.network.ticker}`
     },
     isOtherToken() {
-      return [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)
+      return [TRANSACTION_TYPES.TOKEN_METHOD_APPROVE, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM].includes(
+        this.transactionCategory
+      )
       // `+ ${significantDigits(this.gasCost)}`
     },
     costOfTransactionConverted() {
       let cost = this.totalUsdCost
-      if (this.transactionCategory !== TOKEN_METHOD_APPROVE) cost += this.amountTokenValueConverted.toNumber()
+      if (this.transactionCategory !== TRANSACTION_TYPES.TOKEN_METHOD_APPROVE) cost += this.amountTokenValueConverted.toNumber()
 
       const totalCost = this.isOtherToken ? significantDigits(cost, false, 5) : this.totalUsdCost
       return `~ ${totalCost} ${this.selectedCurrency}`
@@ -549,6 +578,9 @@ export default {
       const tokenPriceConverted = this.isOtherToken ? this.tokenPrice.times(ethConverted) : ethConverted
       const selectedToken = this.isOtherToken ? this.selectedToken : this.network.ticker
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
+    },
+    isEip1559() {
+      return this.networkDetails.EIPS && this.networkDetails.EIPS['1559'] && this.gasFees.gasEstimateType === GAS_ESTIMATE_TYPES.FEE_MARKET
     },
   },
   watch: {
@@ -571,18 +603,21 @@ export default {
     ...mapActions(['decryptMessage']),
     async updateConfirmModal() {
       if (!this.currentConfirmModal) return
-      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, currencyData, network } = this.currentConfirmModal || {}
+      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, currencyData, network, networkDetails, gasFees } =
+        this.currentConfirmModal || {}
       this.selectedCurrency = selectedCurrency
       this.currencyData = currencyData
       this.balance = new BigNumber(balance)
-      log.info({ msgParams, txParams })
+      this.networkDetails = networkDetails
+      this.gasFees = gasFees
+      log.info({ msgParams, txParams, gasFees })
       this.origin = origin || this.origin
-      if (type === TX_ETH_DECRYPT) {
+      if (type === MESSAGE_TYPE.ETH_DECRYPT) {
         const { msgParams: { data, from } = {}, id = '' } = msgParams || {}
         this.id = id
         this.message = data
         this.sender = from
-      } else if (type !== TX_TRANSACTION) {
+      } else if (type !== TRANSACTION_TYPES.STANDARD_TRANSACTION) {
         const { msgParams: { message, typedMessages } = {}, id = '' } = msgParams || {}
         let finalTypedMessages = typedMessages
         try {
@@ -596,13 +631,14 @@ export default {
       } else {
         let finalValue = new BigNumber('0')
         const { simulationFails, id, transactionCategory, methodParams, contractParams, txParams: txObject, userInfo } = txParams || {}
-        const { value, to, data, from: sender, gas, gasPrice } = txObject || {}
+        const { value, to, data, from: sender, gas, gasPrice, maxFeePerGas, maxPriorityFeePerGas } = txObject || {}
+        log.info(txParams, 'txParams')
         const { reason = '' } = simulationFails || {}
         if (value) {
           finalValue = new BigNumber(fromWei(value.toString()))
         }
         let txDataParameters = ''
-        if (contractParams.isSpecial && transactionCategory.toLowerCase() === TOKEN_METHOD_TRANSFER) {
+        if (contractParams.isSpecial && transactionCategory.toLowerCase() === TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER) {
           txDataParameters = methodParams
           this.contractType = CONTRACT_TYPE_ERC721
           this.isSpecialContract = true
@@ -621,7 +657,10 @@ export default {
         let amountTo
         let amountValue
         if (methodParams && Array.isArray(methodParams)) {
-          if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
+          if (
+            transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM ||
+            transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+          ) {
             ;[, amountTo, amountValue] = methodParams || []
           } else [amountTo, amountValue] = methodParams || []
         }
@@ -634,7 +673,7 @@ export default {
         this.id = id
         this.network = network
         this.transactionCategory = transactionCategory
-        const gweiGasPrice = new BigNumber(hexToNumber(gasPrice)).div(weiInGwei)
+        const gweiGasPrice = new BigNumber(hexToNumber(maxFeePerGas || gasPrice)).div(weiInGwei)
         // sending to who
         this.amountTo = amountTo ? amountTo.value : checkSummedTo
         // sending what value
@@ -663,6 +702,9 @@ export default {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true
         }
+        this.initialMaxFeePerGas = new BigNumber(hexToNumber(maxFeePerGas) || 0).div(weiInGwei)
+        this.initialMaxPriorityFeePerGas = new BigNumber(hexToNumber(maxPriorityFeePerGas) || 0).div(weiInGwei)
+        this.activePriorityFee = this.initialMaxPriorityFeePerGas
         this.currencyRateDate = this.getDate()
         this.receiver = this.amountTo
         this.value = finalValue // value of eth sending
@@ -674,7 +716,7 @@ export default {
         this.txData = data // data hex
         this.txDataParams = txDataParameters !== '' ? JSON.stringify(txDataParameters, null, 2) : ''
         this.sender = sender // address of sender
-        this.gasCost = gweiGasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
+        this.gasCost = this.gasEstimate.times(gweiGasPrice).div(new BigNumber('10').pow(new BigNumber('9')))
         this.txFees = this.gasCost.times(this.currencyMultiplier)
         const ethCost = finalValue.plus(this.gasCost)
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
@@ -701,22 +743,39 @@ export default {
       const gasPriceHex = `0x${this.gasPrice.times(weiInGwei).toString(16)}`
       const gasHex = this.gasEstimate.eq(new BigNumber('0')) ? undefined : `0x${this.gasEstimate.toString(16)}`
       const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
-      if (this.isConfirmModal) {
-        this.$emit('triggerSign', {
-          id: this.id,
-          txType: this.type,
-          gasPrice: gasPriceHex,
-          gas: gasHex,
-          customNonceValue,
-          approve: true,
-        })
+
+      let gasPriceParams = {
+        gasPrice: gasPriceHex,
+      }
+      if (this.isEip1559) {
+        const finalMaxPriorityFee = this.activePriorityFee
+        const finalMaxPriorityFeeHex = `0x${finalMaxPriorityFee.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
+        gasPriceParams = {
+          maxFeePerGas: gasPriceHex,
+          maxPriorityFeePerGas: finalMaxPriorityFeeHex,
+        }
+      }
+      let params = {
+        id: this.id,
+        gas: gasHex,
+        customNonceValue,
+        ...gasPriceParams,
+      }
+      if (params.maxPriorityFeePerGas && params.maxFeePerGas) {
+        params.txEnvelopeType = TRANSACTION_ENVELOPE_TYPES.FEE_MARKET
       } else {
-        this.$emit('triggerSign', {
-          id: this.id,
-          gasPrice: gasPriceHex,
-          gas: gasHex,
-          customNonceValue,
-        })
+        params.txEnvelopeType = TRANSACTION_ENVELOPE_TYPES.LEGACY
+      }
+
+      if (this.isConfirmModal) {
+        params = {
+          ...params,
+          txType: this.type,
+          approve: true,
+        }
+        this.$emit('triggerSign', params)
+      } else {
+        this.$emit('triggerSign', params)
       }
     },
     triggerDeny() {
@@ -753,6 +812,23 @@ export default {
       }
       this.calculateTransaction()
     },
+    onTransferFeeSelect(data) {
+      log.info('onTransferFeeSelect: ', data)
+      const maxPriorityFee = bnGreaterThan(data.customMaxPriorityFee, 0) ? data.customMaxPriorityFee : data.maxPriorityFee
+      const maxTxFee = bnGreaterThan(data.customMaxTransactionFee, 0) ? data.customMaxTransactionFee : data.maxTransactionFee
+      // at this point user has modified initial gas fee txParams
+      // so set it to zero.
+      this.initialMaxPriorityFeePerGas = new BigNumber(0)
+      this.initialMaxFeePerGas = new BigNumber(0)
+      this.nonce = data.nonce || -1
+      this.gasPrice = maxTxFee
+      this.activePriorityFee = maxPriorityFee
+      this.selectedLondonSpeed = data.selectedSpeed
+      this.gasEstimate = data.gas
+      this.londonSpeedTiming = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+      this.hasCustomGasLimit = true
+      this.calculateTransaction()
+    },
     getDate() {
       const currentDateTime = new Date()
       let hours = currentDateTime.getHours()
@@ -772,7 +848,7 @@ export default {
       return this.t('dappTransfer.contractInteraction')
     },
     calculateTransaction() {
-      this.gasCost = this.gasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
+      this.gasCost = this.gasEstimate.times(this.gasPrice).div(new BigNumber('10').pow(new BigNumber('9')))
       this.txFees = this.gasCost.times(this.currencyMultiplier)
       const ethCost = this.value.plus(this.gasCost)
       this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0

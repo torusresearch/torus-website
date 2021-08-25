@@ -19,10 +19,14 @@ import log from 'loglevel'
 */
 
 class PendingTransactionTracker extends EventEmitter {
+  DROPPED_BUFFER_COUNT = 3
+
+  droppedBlocksBufferByHash = new Map()
+
   constructor(config) {
     super()
     this.droppedBuffer = {}
-    this.query = new EthQuery(config.provider)
+    this.query = config.query || new EthQuery(config.provider)
     this.nonceTracker = config.nonceTracker
     this.getPendingTransactions = config.getPendingTransactions
     this.getCompletedTransactions = config.getCompletedTransactions
@@ -66,7 +70,7 @@ class PendingTransactionTracker extends EventEmitter {
       Also don't mark as failed if it has ever been broadcast successfully.
       A successful broadcast means it may still be mined.
       */
-        const errorMessage = error.message.toLowerCase()
+        const errorMessage = error.value?.message?.toLowerCase() || error.message.toLowerCase()
         const isKnownTx =
           // geth
           errorMessage.includes('replacement transaction underpriced') ||
@@ -143,48 +147,18 @@ class PendingTransactionTracker extends EventEmitter {
       return
     }
 
-    // *note to self* hard failure point
-    const transactionReceipt = (await this.query.getTransactionReceipt(txHash)) || {}
-
     // If another tx with the same nonce is mined, set as failed.
-    const taken = await this._checkIfNonceIsTaken(txMeta)
-    let dropped
-    try {
-      // check the network if the nonce is ahead the tx
-      // and the tx has not been mined into a block
-
-      dropped = await this._checkIftxWasDropped(txMeta, transactionReceipt)
-      // the dropped buffer is in case we ask a node for the tx
-      // that is behind the node we asked for tx count
-      // IS A SECURITY FOR HITTING NODES IN INFURA THAT COULD GO OUT
-      // OF SYNC.
-      // on the next block event it will return fire as dropped
-      if (typeof this.droppedBuffer[txHash] !== 'number') {
-        this.droppedBuffer[txHash] = 0
-      }
-      // 3 block count buffer
-      if (dropped && this.droppedBuffer[txHash] < 3) {
-        dropped = false
-        // eslint-disable-next-line no-plusplus
-        ++this.droppedBuffer[txHash]
-      }
-      if (dropped && this.droppedBuffer[txHash] === 3) {
-        // clean up
-        delete this.droppedBuffer[txHash]
-      }
-    } catch (error) {
-      log.error(error)
-    }
-    if (taken || dropped) {
+    if (this._checkIfNonceIsTaken(txMeta)) {
       this.emit('tx:dropped', txId)
       return
     }
 
-    // get latest transaction status
     try {
-      const { blockNumber } = transactionReceipt || {}
-      if (blockNumber) {
-        this.emit('tx:confirmed', txId, transactionReceipt)
+      const transactionReceipt = await this.query.getTransactionReceipt(txHash)
+      if (transactionReceipt?.blockNumber) {
+        const { baseFeePerGas } = await this.query.getBlockByHash(transactionReceipt?.blockHash, false)
+        this.emit('tx:confirmed', txId, transactionReceipt, baseFeePerGas)
+        return
       }
     } catch (error) {
       // eslint-disable-next-line require-atomic-updates
@@ -193,6 +167,11 @@ class PendingTransactionTracker extends EventEmitter {
         message: 'There was a problem loading this transaction.',
       }
       this.emit('tx:warning', txMeta, error)
+      return
+    }
+
+    if (await this._checkIfTxWasDropped(txMeta)) {
+      this.emit('tx:dropped', txId)
     }
   }
 
@@ -203,15 +182,30 @@ class PendingTransactionTracker extends EventEmitter {
     @returns {boolean}
   */
 
-  async _checkIftxWasDropped(txMeta, { blockNumber }) {
+  async _checkIfTxWasDropped(txMeta) {
     const {
+      hash: txHash,
       txParams: { nonce, from },
     } = txMeta
-    const nextNonce = await this.query.getTransactionCount(from)
-    if (!blockNumber && Number.parseInt(nextNonce.toString(16), 16) > Number.parseInt(nonce, 16)) {
-      return true
+    const networkNextNonce = await this.query.getTransactionCount(from)
+
+    if (Number.parseInt(nonce, 16) >= networkNextNonce.toNumber()) {
+      return false
     }
-    return false
+
+    if (!this.droppedBlocksBufferByHash.has(txHash)) {
+      this.droppedBlocksBufferByHash.set(txHash, 0)
+    }
+
+    const currentBlockBuffer = this.droppedBlocksBufferByHash.get(txHash)
+
+    if (currentBlockBuffer < this.DROPPED_BUFFER_COUNT) {
+      this.droppedBlocksBufferByHash.set(txHash, currentBlockBuffer + 1)
+      return false
+    }
+
+    this.droppedBlocksBufferByHash.delete(txHash)
+    return true
   }
 
   /**
@@ -220,16 +214,15 @@ class PendingTransactionTracker extends EventEmitter {
     @returns {boolean}
   */
 
-  async _checkIfNonceIsTaken(txMeta) {
+  _checkIfNonceIsTaken(txMeta) {
     const address = txMeta.txParams.from
     const completed = this.getCompletedTransactions(address)
-    const sameNonce = completed.filter((otherMeta) => {
+    return completed.some((otherMeta) => {
       if (otherMeta.id === txMeta.id) {
         return false
       }
       return otherMeta.txParams.nonce === txMeta.txParams.nonce
     })
-    return sameNonce.length > 0
   }
 }
 

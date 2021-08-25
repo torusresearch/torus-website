@@ -7,7 +7,7 @@ import { createAsyncMiddleware } from 'json-rpc-engine'
 /**
  * Create middleware for handling certain methods and preprocessing permissions requests.
  */
-export default function createMethodMiddleware({ getAccounts, requestAccountsPermission, setSiteMetadata }) {
+export default function createMethodMiddleware({ getAccounts, requestAccountsPermission, setSiteMetadata, getProviderState, getCurrentChainId }) {
   return createAsyncMiddleware(async (request, res, next) => {
     if (typeof request.method !== 'string') {
       res.error = ethErrors.rpc.invalidRequest({ data: request, message: 'Invalid rpc request' })
@@ -57,6 +57,12 @@ export default function createMethodMiddleware({ getAccounts, requestAccountsPer
         }
 
         res.result = true
+        return
+      case 'wallet_getProviderState':
+        res.result = getProviderState()
+        return
+      case 'wallet_getCurrentChainId':
+        res.result = getCurrentChainId()
         return
       default:
         break

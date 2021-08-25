@@ -4,7 +4,9 @@
       class="icon-holder float-left"
       :class="{
         circle:
-          [TOKEN_METHOD_APPROVE, DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].includes(transaction.transaction_category) ||
+          [TRANSACTION_TYPES.TOKEN_METHOD_APPROVE, TRANSACTION_TYPES.DEPLOY_CONTRACT, TRANSACTION_TYPES.CONTRACT_INTERACTION].includes(
+            transaction.transaction_category
+          ) ||
           !(
             (transaction.type === CONTRACT_TYPE_ERC20 && transaction.actionIcon !== 'n/a') ||
             transaction.action === ACTIVITY_ACTION_TOPUP ||
@@ -14,7 +16,11 @@
       }"
     >
       <v-icon
-        v-if="[TOKEN_METHOD_APPROVE, DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].includes(transaction.transaction_category)"
+        v-if="
+          [TRANSACTION_TYPES.TOKEN_METHOD_APPROVE, TRANSACTION_TYPES.DEPLOY_CONTRACT, TRANSACTION_TYPES.CONTRACT_INTERACTION].includes(
+            transaction.transaction_category
+          )
+        "
         class="float-left"
         size="24"
         color="torusBrand1"
@@ -103,13 +109,11 @@ import config from '../../../config'
 import {
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_TOPUP,
-  CONTRACT_INTERACTION_KEY,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
-  DEPLOY_CONTRACT_ACTION_KEY,
-  TOKEN_METHOD_APPROVE,
+  TRANSACTION_TYPES,
 } from '../../../utils/enums'
 
 export default {
@@ -133,9 +137,7 @@ export default {
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721,
       CONTRACT_TYPE_ERC1155,
-      TOKEN_METHOD_APPROVE,
-      DEPLOY_CONTRACT_ACTION_KEY,
-      CONTRACT_INTERACTION_KEY,
+      TRANSACTION_TYPES,
       logosUrl: config.logosUrl,
     }
   },

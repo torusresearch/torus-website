@@ -8,7 +8,7 @@ import config from '../../../src/config'
 import * as utils from '../../../src/utils/utils'
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
 import AssetsController from '../../../src/controllers/AssetsController'
-import NetworkController from '../../../src/controllers/NetworkController'
+import NetworkController from '../../../src/controllers/network/NetworkController'
 import PreferencesController from '../../../src/controllers/PreferencesController'
 
 const noop = () => {}
@@ -29,14 +29,22 @@ describe('AssetsController', () => {
   let prefsController
   const sandbox = createSandbox()
   let validateImageUrlStub
-
+  let setProviderTypeAndWait
   beforeEach(async () => {
     network = new NetworkController()
     const networkControllerProviderConfig = {
       getAccounts: noop,
     }
+    setProviderTypeAndWait = (networkType) =>
+      new Promise((resolve) => {
+        network.on('networkDidChange', () => {
+          resolve()
+        })
+        network.setProviderType(networkType)
+      })
+    sandbox.stub(network, 'getLatestBlock').returns({})
     network.initializeProvider(networkControllerProviderConfig)
-    network.setProviderType('mainnet')
+    await setProviderTypeAndWait('mainnet')
     prefsController = new PreferencesController({
       network,
     })
@@ -355,11 +363,11 @@ describe('AssetsController', () => {
   it('should add token by provider type', async () => {
     const firstNetworkType = 'rinkeby'
     const secondNetworkType = 'ropsten'
-    network.setProviderType(firstNetworkType)
+    await setProviderTypeAndWait(firstNetworkType)
     await assetsController.addToken('foo', 'bar', 2, '')
-    network.setProviderType(secondNetworkType)
+    await setProviderTypeAndWait(secondNetworkType)
     assert(assetsController.state.tokens.length === 0)
-    network.setProviderType(firstNetworkType)
+    await setProviderTypeAndWait(firstNetworkType)
     assert.deepStrictEqual(assetsController.state.tokens[0], {
       address: 'foo',
       decimals: 2,

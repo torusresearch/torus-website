@@ -5,7 +5,7 @@ import config from './config'
 
 let openLoginInstance = null
 
-export async function getOpenLoginInstance(whiteLabel) {
+export async function getOpenLoginInstance(whiteLabel = {}) {
   log.info('getting openlogin instance')
   const whiteLabelOpenLogin = {}
   if (openLoginInstance !== null) {

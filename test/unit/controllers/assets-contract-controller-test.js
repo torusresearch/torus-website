@@ -89,7 +89,7 @@ describe('AssetsContractController', () => {
   })
 
   it('should get collectible ownership', async () => {
-    const tokenId = await assetsContract.getOwnerOf(GODSADDRESS, 148332)
+    const tokenId = await assetsContract.getOwnerOf(GODSADDRESS, 148_332)
     assert(tokenId !== '')
   })
 

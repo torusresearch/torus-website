@@ -300,7 +300,19 @@
                   </template>
                 </v-text-field>
               </v-flex>
+              <TransactionFee
+                v-if="isEip1559"
+                :gas-fees="gasFees"
+                :selected-speed="selectedLondonSpeed"
+                :gas="gas"
+                :nonce="nonce"
+                :selected-currency="selectedCurrency"
+                :currency-multiplier="currencyMultiplier"
+                :toggle-exclusive="toggle_exclusive"
+                @save="onTransferFeeSelect"
+              />
               <TransactionSpeedSelect
+                v-else
                 :reset-speed="resetSpeed"
                 :symbol="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 ? selectedItem.symbol : networkType.ticker"
                 :contract-type="contractType"
@@ -321,16 +333,19 @@
               </v-flex>
               <v-flex v-else xs12 mb-6 class="text-right">
                 <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
-                <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
-                <div class="caption text_2--text">{{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}</div>
+                <div class="headline text_2--text">{{ totalCost ? totalCostDisplay : `0 ${totalCostSuffix}` }}</div>
+                <div class="caption text_2--text">
+                  {{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}
+                </div>
               </v-flex>
+              <v-flex v-if="transactionWarning" xs12 mt-3 class="text-right text-caption warning--text">{{ transactionWarning }}</v-flex>
               <v-flex xs12 mt-3 class="text-right">
                 <v-btn
                   id="wallet-transfer-submit"
                   large
                   depressed
                   color="torusBrand1"
-                  :disabled="!formValid || speedSelected === '' || selectedVerifier === ''"
+                  :disabled="onTransferClickDisabled"
                   class="px-8 white--text gmt-wallet-transfer"
                   @click="onTransferClick"
                 >
@@ -371,12 +386,14 @@
                     :transaction-fee-eth="getEthAmount(gas, activeGasPrice)"
                     :selected-currency="selectedCurrency"
                     :send-eth-to-contract-error="sendEthToContractError"
-                    :total-cost="`${totalCost || 0} ${totalCostSuffix}`"
+                    :total-cost="totalCost ? totalCostDisplay : `0 ${totalCostSuffix}`"
                     :total-cost-converted="convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}`"
                     :total-cost-bn="totalCostBn"
                     :item-balance="selectedItemBalance"
                     :contract-type="contractType"
                     :eth-balance="ethBalance"
+                    :is-eip1559="isEip1559"
+                    :london-speed-timing="londonSpeedTiming"
                     @onClose="confirmDialog = false"
                     @onConfirm="sendCoin"
                   ></TransferConfirm>
@@ -411,7 +428,7 @@
     </v-layout>
     <v-dialog v-model="messageModalShow" max-width="375" persistent>
       <MessageModal
-        :detail-text="messageModalDetails.replace(/\{time\}/gi, timeTaken)"
+        :detail-text="messageModalDetails.replace(/\{time\}/gi, timeTakenDisplay)"
         go-to="walletHistory"
         :modal-type="messageModalType"
         :title="messageModalTitle"
@@ -437,7 +454,7 @@ import Resolution from '@unstoppabledomains/resolution'
 import BigNumber from 'bignumber.js'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
-import isEqual from 'lodash.isequal'
+import { cloneDeep, isEqual } from 'lodash'
 import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { QrcodeStream } from 'vue-qrcode-reader'
@@ -448,6 +465,7 @@ import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import ComponentLoader from '../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../components/helpers/QuickAddress'
+import TransactionFee from '../../components/helpers/TransactionFee'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import AddContact from '../../components/WalletTransfer/AddContact'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
@@ -460,20 +478,32 @@ import {
   CONTRACT_TYPE_ETH,
   ENS,
   ETH,
+  GAS_ESTIMATE_TYPES,
   GITHUB,
   GOOGLE,
   MESSAGE_MODAL_TYPE_FAIL,
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
+  TRANSACTION_SPEED,
   TWITTER,
   UNSTOPPABLE_DOMAINS,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
-import { apiStreamSupported, getEtherScanHashLink, getUserIcon, getVerifierOptions, significantDigits, validateVerifierId } from '../../utils/utils'
+import {
+  apiStreamSupported,
+  bnGreaterThan,
+  gasTiming,
+  getEtherScanHashLink,
+  getUserIcon,
+  getVerifierOptions,
+  significantDigits,
+  validateVerifierId,
+} from '../../utils/utils'
 
 export default {
   name: 'WalletTransfer',
   components: {
+    TransactionFee,
     TransactionSpeedSelect,
     MessageModal,
     QrcodeStream,
@@ -504,12 +534,13 @@ export default {
       toggle_exclusive: 0,
       gas: new BigNumber('21000'),
       activeGasPrice: new BigNumber('0'),
+      activePriorityFee: new BigNumber('0'),
       gasPriceInCurrency: new BigNumber('0'),
       isFastChecked: false,
       speedSelected: '',
       totalCost: '',
       totalCostBn: new BigNumber('0'),
-      timeTaken: '',
+      timeTaken: 0,
       convertedTotalCost: '',
       resetSpeed: false,
       hasCustomGasLimit: false,
@@ -541,6 +572,10 @@ export default {
       nonce: -1,
       camera: 'off',
       showQrScanner: false,
+      selectedLondonSpeed: TRANSACTION_SPEED.MEDIUM,
+      londonSpeedTiming: '',
+      londonSpeedTimingModalDisplay: '',
+      transactionWarning: '',
     }
   },
   computed: {
@@ -558,8 +593,10 @@ export default {
       'tokenRates',
       'selectedAddress',
       'userInfo',
+      'networkDetails',
       'networkType',
       'wallet',
+      'gasFees',
     ]),
     verifierOptions() {
       return getVerifierOptions()
@@ -599,6 +636,12 @@ export default {
     },
     convertedTotalCostDisplay() {
       return `~ ${significantDigits(this.convertedTotalCost)} ${this.selectedCurrency}`
+    },
+    totalCostDisplay() {
+      if (this.contractType === CONTRACT_TYPE_ETH) {
+        return `~ ${significantDigits(this.totalCost, false, 6)} ${this.totalCostSuffix}`
+      }
+      return this.totalCost
     },
     currencyBalanceDisplay() {
       // = 390.00 USD
@@ -660,10 +703,27 @@ export default {
     apiStreamSupported() {
       return apiStreamSupported()
     },
+    isEip1559() {
+      return this.networkDetails.EIPS && this.networkDetails.EIPS['1559'] && this.gasFees.gasEstimateType === GAS_ESTIMATE_TYPES.FEE_MARKET
+    },
+    onTransferClickDisabled() {
+      if (this.isEip1559) return !this.formValid || this.selectedVerifier === ''
+      return !this.formValid || this.speedSelected === '' || this.selectedVerifier === ''
+    },
+    timeTakenDisplay() {
+      if (this.isEip1559) {
+        return this.londonSpeedTimingModalDisplay
+      }
+      const estimatedTime = this.t('walletTransfer.transferApprox').replace(/{time}/gi, this.timeTaken)
+      return this.t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, estimatedTime)
+    },
   },
   watch: {
     selectedAddress(newValue, oldValue) {
       if (newValue !== oldValue && this.toEthAddress) this.calculateGas(this.toEthAddress)
+    },
+    gasFees(newValue, oldValue) {
+      if (!isEqual(newValue, oldValue) && this.isEip1559) this.updateTotalCost()
     },
   },
   mounted() {
@@ -1107,43 +1167,55 @@ export default {
       const toAddress = this.toEthAddress
       const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
       const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
+      let gasPriceParams = {}
+      if (this.isEip1559) {
+        const finalMaxPriorityFee = this.activePriorityFee
+        const finalMaxPriorityFeeHex = `0x${finalMaxPriorityFee.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
+        gasPriceParams = {
+          maxFeePerGas: fastGasPrice,
+          maxPriorityFeePerGas: finalMaxPriorityFeeHex,
+        }
+      } else {
+        gasPriceParams = {
+          gasPrice: fastGasPrice,
+        }
+      }
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value = `0x${this.amount
           .times(new BigNumber(10).pow(new BigNumber(18)))
           .dp(0, BigNumber.ROUND_DOWN)
           .toString(16)}`
-        log.info(this.gas.toString())
-        torus.web3.eth.sendTransaction(
-          {
-            from: this.selectedAddress,
-            to: toAddress,
-            value,
-            gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            gasPrice: fastGasPrice,
-            customNonceValue,
-          },
-          (error, transactionHash) => {
-            if (error) {
-              const regEx = /user denied transaction signature/i
-              if (!error.message.match(regEx)) {
-                this.messageModalShow = true
-                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
-              }
-              log.error(error)
-            } else {
-              // Send email to the user
-              this.sendEmail(this.selectedItem.symbol, transactionHash)
-              this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
+        const txParams = {
+          from: this.selectedAddress,
+          to: toAddress,
+          value,
+          gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
+          ...gasPriceParams,
+          customNonceValue,
+        }
+        log.info(this.gas.toString(), txParams)
 
+        torus.web3.eth.sendTransaction(txParams, (error, transactionHash) => {
+          if (error) {
+            const regEx = /user denied transaction signature/i
+            if (!error.message.match(regEx)) {
               this.messageModalShow = true
-              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+              this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+              this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+              this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
             }
+            log.error(error)
+          } else {
+            // Send email to the user
+            this.sendEmail(this.selectedItem.symbol, transactionHash)
+            this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
+
+            this.messageModalShow = true
+            this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+            this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
+            this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
           }
-        )
+        })
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
         const value = `0x${this.amount
           .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
@@ -1153,7 +1225,7 @@ export default {
           {
             from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            gasPrice: fastGasPrice,
+            ...gasPriceParams,
             customNonceValue,
           },
           (error, transactionHash) => {
@@ -1183,7 +1255,7 @@ export default {
           {
             from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            gasPrice: fastGasPrice,
+            ...gasPriceParams,
             customNonceValue,
           },
           (error, transactionHash) => {
@@ -1214,7 +1286,7 @@ export default {
           {
             from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            gasPrice: fastGasPrice,
+            ...gasPriceParams,
             customNonceValue,
           },
           (error, transactionHash) => {
@@ -1247,15 +1319,48 @@ export default {
       this.$router.go(-1)
     },
     updateTotalCost() {
-      log.info(this.activeGasPrice.toString(), 'acg price')
-      if (this.displayAmount.isZero() || this.activeGasPrice === '') {
+      const gasPriceEstimates = cloneDeep(this.gasFees.gasFeeEstimates)
+      if (this.isEip1559 && gasPriceEstimates) {
+        // in case of custom gas limits, selectedLondonSpeed will be undefined
+        // and we should n't change if user's custom gas limit is better than
+        // suggestedMaxPriorityFeePerGas + baseFee.
+        if (!this.selectedLondonSpeed && bnGreaterThan(this.activeGasPrice, 0)) {
+          // checking for lowest gas price for worst case
+          const { suggestedMaxPriorityFeePerGas } = gasPriceEstimates[TRANSACTION_SPEED.LOW]
+          // show warning if tx with  user custom gas limit is likely to fail,
+          // when suggestedMaxPriorityFeePerGas + baseFee is more than user defined limit
+          const minFeeReq = new BigNumber(suggestedMaxPriorityFeePerGas).plus(new BigNumber(gasPriceEstimates.estimatedBaseFee))
+          if (new BigNumber(this.activeGasPrice).lt(minFeeReq)) {
+            this.transactionWarning = this.t('walletTransfer.fee-error-likely-fail', this.activeGasPrice.toString(), minFeeReq.toString())
+          } else {
+            this.transactionWarning = ''
+          }
+        }
+        // update activeGasPrice for the default speed or speed which is selected by user
+        if (this.selectedLondonSpeed) {
+          const { suggestedMaxPriorityFeePerGas } = gasPriceEstimates[this.selectedLondonSpeed]
+          this.activeGasPrice = new BigNumber(suggestedMaxPriorityFeePerGas).plus(new BigNumber(gasPriceEstimates.estimatedBaseFee))
+          this.activePriorityFee = new BigNumber(suggestedMaxPriorityFeePerGas)
+          this.londonSpeedTiming = gasTiming(suggestedMaxPriorityFeePerGas, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+          this.londonSpeedTimingModalDisplay = gasTiming(suggestedMaxPriorityFeePerGas, this.gasFees, this.t)
+          if (this.displayAmount.isZero()) {
+            this.totalCost = '0'
+            this.convertedTotalCost = '0'
+            const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
+            this.gasPriceInCurrency = gasPriceInEth.times(this.currencyMultiplier)
+            return
+          }
+        }
+      } else if (!this.isEip1559 && this.displayAmount.isZero()) {
         this.totalCost = '0'
         this.convertedTotalCost = '0'
-
         if (this.activeGasPrice !== '') {
           const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
           this.gasPriceInCurrency = gasPriceInEth.times(this.currencyMultiplier)
         }
+        return
+      }
+      if (this.activeGasPrice === '') {
         return
       }
 
@@ -1284,7 +1389,7 @@ export default {
         this.totalCost = `${this.displayAmount.toString()} ${displayedCurrency} + ${significantDigits(
           this.getEthAmount(this.gas, this.activeGasPrice),
           false,
-          18
+          6
         )} ETH`
       }
 
@@ -1310,6 +1415,21 @@ export default {
       this.updateTotalCost()
 
       this.resetSpeed = false
+    },
+    onTransferFeeSelect(data) {
+      log.info('onTransferFeeSelect: ', data)
+      const maxPriorityFee = bnGreaterThan(data.customMaxPriorityFee, 0) ? data.customMaxPriorityFee : data.maxPriorityFee
+      const maxTxFee = bnGreaterThan(data.customMaxTransactionFee, 0) ? data.customMaxTransactionFee : data.maxTransactionFee
+
+      this.nonce = data.nonce || -1
+      this.selectedLondonSpeed = data.selectedSpeed
+      this.activeGasPrice = maxTxFee
+      this.activePriorityFee = maxPriorityFee
+      this.londonSpeedTiming = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+      this.londonSpeedTimingModalDisplay = gasTiming(maxPriorityFee, this.gasFees, this.t)
+      this.gas = data.gas
+      this.hasCustomGasLimit = true
+      this.updateTotalCost()
     },
     onDecodeQr(result) {
       try {

@@ -1,8 +1,8 @@
 import { ObservableStore } from '@metamask/obs-store'
 import EventEmitter from '@metamask/safe-event-emitter'
-import clone from 'clone'
 import deepmerge from 'deepmerge'
 import { hashPersonalMessage } from 'ethereumjs-util'
+import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import Web3 from 'web3'
 
@@ -305,7 +305,7 @@ class PreferencesController extends EventEmitter {
 
   updateStore(newPartialState, address) {
     const selectedAddress = address || this.store.getState().selectedAddress
-    const currentState = this.state(selectedAddress) || clone(DEFAULT_ACCOUNT_STATE)
+    const currentState = this.state(selectedAddress) || cloneDeep(DEFAULT_ACCOUNT_STATE)
     const mergedState = deepmerge(currentState, newPartialState, { arrayMerge: overwriteMerge })
     this.store.updateState({
       [selectedAddress]: mergedState,
@@ -319,7 +319,7 @@ class PreferencesController extends EventEmitter {
     const lowerCaseSelectedAddress = address.toLowerCase()
     for (const x of txs) {
       if (
-        x.network === this.network.getNetworkNameFromNetworkCode() &&
+        x.network === this.network.getNetworkIdentifier() &&
         x.to &&
         x.from &&
         (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase())
@@ -437,7 +437,7 @@ class PreferencesController extends EventEmitter {
   refetchEtherscanTx(address) {
     const selectedAddress = address || this.store.getState().selectedAddress
     if (this.state(selectedAddress)?.jwtToken) {
-      const selectedNetwork = this.network.getNetworkNameFromNetworkCode()
+      const selectedNetwork = this.network.getNetworkIdentifier()
       if (ETHERSCAN_SUPPORTED_NETWORKS.has(selectedNetwork)) {
         this.fetchEtherscanTx(selectedAddress, selectedNetwork)
       }
@@ -690,7 +690,7 @@ class PreferencesController extends EventEmitter {
     this.store.updateState({ selectedAddress: address })
     if (!Object.keys(this.store.getState()).includes(address)) return
     this.recalculatePastTx(address)
-    const selectedNetwork = this.network.getNetworkNameFromNetworkCode()
+    const selectedNetwork = this.network.getNetworkIdentifier()
     if (ETHERSCAN_SUPPORTED_NETWORKS.has(selectedNetwork)) {
       this.fetchEtherscanTx(address, selectedNetwork)
     }
@@ -716,7 +716,7 @@ class PreferencesController extends EventEmitter {
   }
 
   async setUserBadge(payload) {
-    const newBadgeCompletion = { ...this.state().badgesCompletion, ...{ [payload]: true } }
+    const newBadgeCompletion = { ...this.state().badgesCompletion, [payload]: true }
     this.updateStore({ badgesCompletion: newBadgeCompletion })
     try {
       await this.api.patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers(), { useAPIKey: true })

@@ -11,8 +11,14 @@ const initialState = {
   config: {},
   NetworkController: {
     provider: {
-      type: 'rpc',
-      rpcTarget: 'http://localhost:8545',
+      host: 'mainnet',
+      networkName: 'Main Ethereum Network',
+      chainId: '0x1',
+    },
+    networkDetails: {
+      EIPS: {
+        1559: false,
+      },
     },
   },
 }

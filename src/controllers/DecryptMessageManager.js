@@ -1,8 +1,10 @@
 import { ObservableStore } from '@metamask/obs-store'
 import { ethErrors } from 'eth-rpc-errors'
-import ethUtil from 'ethereumjs-util'
+import { addHexPrefix, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import log from 'loglevel'
+
+import { MESSAGE_TYPE } from '../utils/enums'
 
 const hexRe = /^[\dA-Fa-f]+$/g
 
@@ -81,6 +83,10 @@ export default class DecryptMessageManager extends EventEmitter {
    */
   addUnapprovedMessageAsync(msgParams, request, messageId) {
     return new Promise((resolve, reject) => {
+      if (!msgParams.from) {
+        reject(new Error('MetaMask Decryption: from field is required.'))
+        return
+      }
       this.addUnapprovedMessage(msgParams, request, messageId)
       this.once(`${messageId}:finished`, (data) => {
         switch (data.status) {
@@ -113,7 +119,7 @@ export default class DecryptMessageManager extends EventEmitter {
     if (request) {
       msgParams.origin = request.origin
     }
-    // msgParams.data = this.normalizeMsgData(msgParams.data)
+    msgParams.data = this.normalizeMsgData(msgParams.data)
     // create txData obj with parameters and meta data
     const time = Date.now()
     const msgId = messageId
@@ -122,7 +128,7 @@ export default class DecryptMessageManager extends EventEmitter {
       msgParams,
       time,
       status: 'unapproved',
-      type: 'eth_decrypt',
+      type: MESSAGE_TYPE.ETH_DECRYPT,
     }
     this.addMsg(msgData)
 
@@ -295,14 +301,14 @@ export default class DecryptMessageManager extends EventEmitter {
    */
   normalizeMsgData(data) {
     try {
-      const stripped = ethUtil.stripHexPrefix(data)
+      const stripped = stripHexPrefix(data)
       if (stripped.match(hexRe)) {
-        return ethUtil.addHexPrefix(stripped)
+        return addHexPrefix(stripped)
       }
     } catch {
       log.debug('Message was not hex encoded, interpreting as utf8.')
     }
 
-    return ethUtil.bufferToHex(Buffer.from(data, 'utf8'))
+    return bufferToHex(Buffer.from(data, 'utf8'))
   }
 }
