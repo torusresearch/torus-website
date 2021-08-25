@@ -59,10 +59,10 @@ export default function createMethodMiddleware({ getAccounts, requestAccountsPer
         res.result = true
         return
       case 'wallet_getProviderState':
-        res.result = await getProviderState()
+        res.result = getProviderState()
         return
       case 'wallet_getCurrentChainId':
-        res.result = await getCurrentChainId()
+        res.result = getCurrentChainId()
         return
       default:
         break
