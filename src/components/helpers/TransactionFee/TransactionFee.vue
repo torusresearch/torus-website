@@ -126,15 +126,15 @@ export default {
   },
   mounted() {
     const gasFeeEstimate = this.gasFees.gasFeeEstimates
-    let maxPriorityFee = new BigNumber(this.initialMaxPriorityFeePerGas)
-
-    // overide initial priority fee selected speed is available
+    // overide initial provided fee selected speed is available
     if (this.selectedSpeed && gasFeeEstimate?.[this.selectedSpeed]) {
-      maxPriorityFee = new BigNumber(gasFeeEstimate[this.selectedSpeed].suggestedMaxPriorityFeePerGas)
+      const maxPriorityFee = new BigNumber(gasFeeEstimate[this.selectedSpeed].suggestedMaxPriorityFeePerGas)
+      this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+      this.setMaxTransactionFee(this.gas, maxPriorityFee, gasFeeEstimate.estimatedBaseFee)
+    } else {
+      const maxFeePerGas = new BigNumber(this.initialMaxFeePerGas)
+      this.maxTransactionFeeEth = this.gas.times(maxFeePerGas).div(new BigNumber(10).pow(new BigNumber(9)))
     }
-
-    this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
-    this.setMaxTransactionFee(this.gas, maxPriorityFee, gasFeeEstimate.estimatedBaseFee)
   },
   methods: {
     onSave(details) {
