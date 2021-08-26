@@ -1,6 +1,6 @@
 import { ObservableStore } from '@metamask/obs-store'
 import EthQuery from 'eth-query'
-import { isHexString } from 'ethereumjs-util'
+import { addHexPrefix, isHexString } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import pify from 'pify'
@@ -123,7 +123,7 @@ class GasFeeController {
     const isLegacyGasAPICompatible = this.getCurrentNetworkLegacyGasAPICompatibility()
 
     let chainId = this.getChainId()
-    if (typeof chainId === 'string' && isHexString(chainId)) {
+    if (typeof chainId === 'string' && isHexString(addHexPrefix(chainId))) {
       chainId = Number.parseInt(chainId, 16)
     }
     try {

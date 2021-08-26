@@ -366,7 +366,7 @@ import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
 import { mapActions, mapGetters } from 'vuex'
-import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
+import { fromWei, toChecksumAddress } from 'web3-utils'
 
 import {
   CONTRACT_TYPE_ERC20,
@@ -673,7 +673,7 @@ export default {
         this.id = id
         this.network = network
         this.transactionCategory = transactionCategory
-        const gweiGasPrice = new BigNumber(hexToNumber(maxFeePerGas || gasPrice)).div(weiInGwei)
+        const gweiGasPrice = new BigNumber(maxFeePerGas || gasPrice, 16).div(weiInGwei)
         // sending to who
         this.amountTo = amountTo ? amountTo.value : checkSummedTo
         // sending what value
@@ -702,8 +702,8 @@ export default {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true
         }
-        this.initialMaxFeePerGas = new BigNumber(hexToNumber(maxFeePerGas) || 0).div(weiInGwei)
-        this.initialMaxPriorityFeePerGas = new BigNumber(hexToNumber(maxPriorityFeePerGas) || 0).div(weiInGwei)
+        this.initialMaxFeePerGas = new BigNumber(maxFeePerGas || 0, 16).div(weiInGwei)
+        this.initialMaxPriorityFeePerGas = new BigNumber(maxPriorityFeePerGas || 0, 16).div(weiInGwei)
         this.activePriorityFee = this.initialMaxPriorityFeePerGas
         this.currencyRateDate = this.getDate()
         this.receiver = this.amountTo
@@ -711,8 +711,8 @@ export default {
         this.dollarValue = significantDigits(finalValue.times(this.currencyMultiplier))
         this.gasPrice = gweiGasPrice // gas price in gwei
         this.balanceUsd = significantDigits(this.balance.times(this.currencyMultiplier)) // in usd
-        this.gasEstimate = new BigNumber(hexToNumber(gas)) // gas number
-        this.gasEstimateDefault = new BigNumber(hexToNumber(gas)) // gas number
+        this.gasEstimate = new BigNumber(gas, 16) // gas number
+        this.gasEstimateDefault = new BigNumber(gas, 16) // gas number
         this.txData = data // data hex
         this.txDataParams = txDataParameters !== '' ? JSON.stringify(txDataParameters, null, 2) : ''
         this.sender = sender // address of sender
