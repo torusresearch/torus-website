@@ -230,7 +230,7 @@ export function transactionMatchesNetwork(transaction, chainId, networkId) {
  * @returns {boolean} true if transaction uses valid EIP1559 fields
  */
 export function isEIP1559Transaction(transaction) {
-  return isHexString(transaction?.txParams?.maxFeePerGas) && isHexString(transaction?.txParams?.maxPriorityFeePerGas)
+  return isHexString(addHexPrefix(transaction?.txParams?.maxFeePerGas)) && isHexString(addHexPrefix(transaction?.txParams?.maxPriorityFeePerGas))
 }
 
 /**
@@ -246,6 +246,6 @@ export function isLegacyTransaction(transaction) {
   return (
     typeof transaction.txParams.maxFeePerGas === 'undefined' &&
     typeof transaction.txParams.maxPriorityFeePerGas === 'undefined' &&
-    (typeof transaction.txParams.gasPrice === 'undefined' || isHexString(transaction.txParams.gasPrice))
+    (typeof transaction.txParams.gasPrice === 'undefined' || isHexString(addHexPrefix(transaction.txParams.gasPrice)))
   )
 }

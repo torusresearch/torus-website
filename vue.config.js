@@ -33,7 +33,7 @@ module.exports = {
       // replace the current one with it
       config.optimization.minimizer[0] = new TerserPlugin(options)
     } else {
-      config.devtool = 'source-map'
+      config.devtool = 'inline-source-map'
     }
   },
   chainWebpack: (config) => {
