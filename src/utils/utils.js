@@ -19,6 +19,7 @@ import {
   BSC_TESTNET_CODE,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC1155,
   DISCORD,
   EMAIL_PASSWORD,
   ENVIRONMENT_TYPE_FULLSCREEN,
@@ -69,6 +70,8 @@ import {
   SIMPLEX,
   SUPPORTED_NETWORK_TYPES,
   SVG,
+  TEST_CHAINS,
+  TEST_CHAINS_NUMERIC_IDS,
   THEME_DARK_BLACK_NAME,
   TWITTER,
   WECHAT,
@@ -90,6 +93,8 @@ const networkToNameMap = {
   [KOVAN_CODE]: KOVAN_DISPLAY_NAME,
   [GOERLI_CODE]: GOERLI_DISPLAY_NAME,
 }
+
+export class UserError extends Error {}
 
 export const getNetworkDisplayName = (key) => networkToNameMap[key]
 
@@ -386,19 +391,23 @@ export function formatDate(inputDate) {
   return `${day} ${month} ${year}`
 }
 
+export function formatTime(time) {
+  return new Date(time).toTimeString().slice(0, 8)
+}
+
 export const paymentProviders = {
   [SIMPLEX]: {
     line1: 'Credit/ Debit Card',
     line2: '5% or 10 USD',
     line3: '$20,000/day, $50,000/mo',
-    line4: 'ETH',
+    line4: 'ETH, BNB',
     status: ACTIVE,
     logoExtension: PNG,
     supportPage: 'https://www.simplex.com/support/',
     minOrderValue: 50,
-    maxOrderValue: 20000,
+    maxOrderValue: 20_000,
     validCurrencies: ['USD', 'EUR'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
+    validCryptoCurrencies: ['ETH', 'BNB'],
     includeFees: true,
     api: true,
     enforceMax: true,
@@ -407,14 +416,14 @@ export const paymentProviders = {
     line1: 'Credit/ Debit Card/ Apple Pay',
     line2: '4.5% or 5 USD',
     line3: '2,000€/day, 10,000€/mo',
-    line4: 'ETH, DAI, TUSD, USDC, USDT',
+    line4: 'ETH, DAI, TUSD, USDC, USDT, BNB, BUSD',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://help.moonpay.io/en/',
     minOrderValue: 24.99,
-    maxOrderValue: 50000,
+    maxOrderValue: 50_000,
     validCurrencies: ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'SGD', 'RUB'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT', 'BNB_BSC', 'BUSD_BSC'],
     includeFees: true,
     api: true,
     enforceMax: false,
@@ -439,14 +448,14 @@ export const paymentProviders = {
     line1: 'Debit Card/ <br>Apple Pay/ Bank transfer',
     line2: '0.49% - 2.9%',
     line3: '5,000€/purchase, 20,000€/mo',
-    line4: 'ETH, DAI, USDC',
+    line4: 'ETH, DAI, USDC, BNB',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://instant.ramp.network/',
-    minOrderValue: 5,
-    maxOrderValue: 20000,
-    validCurrencies: ['EUR', 'GBP'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
+    minOrderValue: 50,
+    maxOrderValue: 20_000,
+    validCurrencies: ['EUR', 'GBP', 'USD'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'BSC_BNB'],
     includeFees: true,
     api: true,
     receiveHint: 'walletTopUp.receiveHintRamp',
@@ -499,25 +508,6 @@ export function getPaymentProviders(theme) {
   })
 }
 
-export function formatTxMetaForRpcResult(txMeta) {
-  return {
-    blockHash: txMeta.txReceipt ? txMeta.txReceipt.blockHash : null,
-    blockNumber: txMeta.txReceipt ? txMeta.txReceipt.blockNumber : null,
-    from: txMeta.txParams.from,
-    gas: txMeta.txParams.gas,
-    gasPrice: txMeta.txParams.gasPrice,
-    hash: txMeta.hash,
-    input: txMeta.txParams.data || '0x',
-    nonce: txMeta.txParams.nonce,
-    to: txMeta.txParams.to,
-    transactionIndex: txMeta.txReceipt ? txMeta.txReceipt.transactionIndex : null,
-    value: txMeta.txParams.value || '0x0',
-    v: txMeta.v,
-    r: txMeta.r,
-    s: txMeta.s,
-  }
-}
-
 export function capitalizeFirstLetter(string) {
   if (!string) return string
   return string.charAt(0).toUpperCase() + string.slice(1)
@@ -536,12 +526,7 @@ export const standardNetworkId = {
   [XDAI_CODE.toString()]: XDAI_CHAIN_ID,
 }
 
-export function selectChainId(network, store) {
-  const networkId = store.getState()
-  return standardNetworkId[network] || networkId.toString().startsWith('0x') ? networkId : `0x${Number.parseInt(networkId, 10).toString(16)}`
-}
-
-export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
+export const isMain = window.self === window.top
 
 export const getIFrameOrigin = () => {
   const originHref = window.location.ancestorOrigins?.length > 0 ? window.location.ancestorOrigins[0] : document.referrer
@@ -553,7 +538,6 @@ export const getIFrameOriginObject = () => {
     const url = new URL(getIFrameOrigin())
     return { href: url.href, hostname: url.hostname }
   } catch {
-    log.error('invalid url')
     return { href: window.location.href, hostname: window.location.hostname }
   }
 }
@@ -579,11 +563,13 @@ export const getUserLanguage = () => {
 
 export const formatPastTx = (x, lowerCaseSelectedAddress) => {
   let totalAmountString = ''
-  if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
+  if (x.type === CONTRACT_TYPE_ERC721 || x.type === CONTRACT_TYPE_ERC1155) totalAmountString = x.symbol
   else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol, true)
   else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.type_name, true)
   const currencyAmountString =
-    x.type === CONTRACT_TYPE_ERC721 || x.isEtherscan ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
+    x.type === CONTRACT_TYPE_ERC721 || x.type === CONTRACT_TYPE_ERC1155 || x.isEtherscan
+      ? ''
+      : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
   const finalObject = {
     id: x.created_at.toString(),
     date: new Date(x.created_at),
@@ -591,7 +577,7 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     slicedFrom: typeof x.from === 'string' ? addressSlicer(x.from) : '',
     to: x.to,
     slicedTo: typeof x.to === 'string' ? addressSlicer(x.to) : '',
-    action: lowerCaseSelectedAddress === x.to.toLowerCase() ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
+    action: lowerCaseSelectedAddress === x.to?.toLowerCase() || '' ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
     totalAmount: x.total_amount,
     totalAmountString,
     currencyAmount: x.currency_amount,
@@ -614,6 +600,10 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     input: x.input || '',
     contract_address: x.contract_address || '',
     token_id: x.token_id || '',
+    nonce: x.nonce || '',
+    is_cancel: !!x.is_cancel || false,
+    gas: x.gas || '',
+    gasPrice: x.gasPrice || '',
   }
   return finalObject
 }
@@ -779,4 +769,112 @@ export async function validateContractAddress(web3, address) {
     return true
   }
   return false
+}
+
+export async function validateImageUrl(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.src = url
+    if (img.complete) {
+      resolve(true)
+    } else {
+      img.addEventListener('load', () => {
+        resolve(true)
+      })
+      img.addEventListener('error', () => {
+        reject()
+      })
+    }
+  })
+}
+
+export function getChainType(chainId) {
+  if (chainId === MAINNET_CHAIN_ID || chainId === Number.parseInt(MAINNET_CHAIN_ID, 16)) {
+    return 'mainnet'
+  }
+  if (TEST_CHAINS.includes(chainId) || TEST_CHAINS_NUMERIC_IDS.includes(chainId)) {
+    return 'testnet'
+  }
+  return 'custom'
+}
+
+export const GAS_LIMITS = {
+  // maximum gasLimit of a simple send
+  SIMPLE: addHexPrefix((21_000).toString(16)),
+  // a base estimate for token transfers.
+  BASE_TOKEN_ESTIMATE: addHexPrefix((100_000).toString(16)),
+}
+
+export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
+  const {
+    gasFeeEstimates: { low, medium, high },
+  } = gasFees
+  if (Number(maxPriorityFeePerGas) >= Number(medium.suggestedMaxPriorityFeePerGas)) {
+    // High+ is very likely, medium is likely
+    if (Number(maxPriorityFeePerGas) < Number(high.suggestedMaxPriorityFeePerGas)) {
+      const finalTranslateKey = translateKey || 'walletTransfer.transferLessThan'
+      // medium
+      return t(finalTranslateKey).replace(
+        /{time}/gi,
+        translateKey ? `< ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}` : toHumanReadableTime(low.maxWaitTimeEstimate, t)
+      )
+    }
+    const finalTranslateKey = translateKey || 'walletTransfer.transferLessThan'
+
+    // high
+    return t(finalTranslateKey).replace(
+      /{time}/gi,
+      translateKey ? `< ${toHumanReadableTime(high.minWaitTimeEstimate, t)}` : toHumanReadableTime(high.minWaitTimeEstimate, t)
+    )
+  }
+  const finalTranslateKey = translateKey || 'walletTransfer.transferApprox'
+
+  return t(finalTranslateKey).replace(
+    /{time}/gi,
+    translateKey ? `~ ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}` : toHumanReadableTime(low.maxWaitTimeEstimate, t)
+  )
+}
+
+const SECOND_CUTOFF = 90
+function toHumanReadableTime(milliseconds = 1, t) {
+  const seconds = Math.ceil(milliseconds / 1000)
+  if (seconds <= SECOND_CUTOFF) {
+    return t('walletTransfer.fee-edit-time-sec').replace(/{time}/gi, seconds)
+  }
+  return t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, Math.ceil(seconds / 60))
+}
+
+export function bnGreaterThan(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).gt(b, 10)
+}
+
+export function bnLessThan(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).lt(b, 10)
+}
+
+export function bnGreaterThanEqualTo(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).gte(b, 10)
+}
+
+export function bnLessThanEqualTo(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).lte(b, 10)
+}
+
+export function bnEqualTo(a, b) {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return null
+  }
+  return new BigNumber(a, 10).isEqualTo(b, 10)
 }

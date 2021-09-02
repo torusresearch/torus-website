@@ -13,12 +13,6 @@ module.exports = {
     headers: {
       'Access-Control-Allow-Origin': '*',
     },
-    historyApiFallback: {
-      rewrites: [
-        { from: /redirect/, to: '/redirect.html' },
-        { from: /./, to: '/index.html' },
-      ],
-    },
     // quiet: true
   },
   css: {
@@ -38,10 +32,9 @@ module.exports = {
       // create a fresh pülugin instance with the new options and
       // replace the current one with it
       config.optimization.minimizer[0] = new TerserPlugin(options)
+    } else {
+      config.devtool = 'inline-source-map'
     }
-    // else {
-    //   config.devtool = 'source-map'
-    // }
   },
   chainWebpack: (config) => {
     config.resolve.alias.set('bn.js', path.resolve(__dirname, 'node_modules/bn.js'))
@@ -55,10 +48,10 @@ module.exports = {
     if (process.env.NODE_ENV === 'production') {
       config
         .plugin('service-worker-integrity')
-        .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
+        .use(serviceWorkerIntegrityPlugin, ['index.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
         .after('workbox')
     } else {
-      // config.module.rule('sourcemap').test(/\.js$/).enforce('pre').use('source-map-loader').loader('source-map-loader').end()
+      config.module.rule('sourcemap').test(/\.js$/).enforce('pre').use('source-map-loader').loader('source-map-loader').end()
     }
   },
 
@@ -75,11 +68,11 @@ module.exports = {
     workboxPluginMode: 'InjectManifest',
     orientation: 'potrait',
     workboxOptions: {
-      importWorkboxFrom: 'disabled',
-      swSrc: 'sw.js',
+      swSrc: './src/sw-base.js',
       swDest: 'service-worker.js',
-      precacheManifestFilename: 'precache-manifest.[manifestHash].js',
-      exclude: [/^.*images\/logos\/.*$/],
+      dontCacheBustURLsMatching: /\.[\da-f]{8}\./,
+      exclude: [/\.map$/, /img\/icons\//, /favicon\.ico$/, /^manifest.*\.js?$/, /LICENSE/],
+      maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
     },
     iconPaths: {
       favicon32: 'img/icons/favicon-32x32.png',

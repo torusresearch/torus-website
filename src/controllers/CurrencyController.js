@@ -2,9 +2,10 @@ import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 
 import config from '../config'
+import { isMain } from '../utils/utils'
 
 // every ten minutes
-const POLLING_INTERVAL = 600000
+const POLLING_INTERVAL = 600_000
 
 class CurrencyController {
   /**
@@ -157,13 +158,11 @@ class CurrencyController {
         return
       }
       // parse response
-      let rawResponse
       let parsedResponse
       try {
-        rawResponse = await response.text()
-        parsedResponse = JSON.parse(rawResponse)
+        parsedResponse = await response.json()
       } catch {
-        log.error(new Error(`CurrencyController - Failed to parse response "${rawResponse}"`))
+        log.error(new Error(`CurrencyController - Failed to parse response "${response.status}"`))
         return
       }
       // set conversion rate
@@ -200,9 +199,10 @@ class CurrencyController {
     if (this.conversionInterval) {
       clearInterval(this.conversionInterval)
     }
-    this.conversionInterval = setInterval(() => {
-      this.updateConversionRate()
-    }, POLLING_INTERVAL)
+    if (isMain)
+      this.conversionInterval = setInterval(() => {
+        this.updateConversionRate()
+      }, POLLING_INTERVAL)
   }
 }
 

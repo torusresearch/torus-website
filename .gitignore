@@ -24,3 +24,4 @@ embed.min.js
 coverage
 src/plugins/i18n
 .env
+.eslintcache

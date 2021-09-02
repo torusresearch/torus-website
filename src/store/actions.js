@@ -1,7 +1,7 @@
 import randomId from '@chaitanyapotti/random-id'
-import clone from 'clone'
 import deepmerge from 'deepmerge'
 import { BN } from 'ethereumjs-util'
+import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 
@@ -29,6 +29,7 @@ import { remove } from '../utils/httpHelpers'
 import { fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
 import {
   accountTrackerHandler,
+  announcemenstHandler,
   assetControllerHandler,
   billboardHandler,
   detectTokensControllerHandler,
@@ -76,6 +77,7 @@ const oauthStream = communicationMux.getStream('oauth')
 const userInfoStream = communicationMux.getStream('user_info')
 const providerChangeStream = communicationMux.getStream('provider_change')
 const widgetStream = communicationMux.getStream('widget')
+const windowStream = communicationMux.getStream('window')
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
@@ -102,7 +104,7 @@ if (prefsController) {
   prefsController.metadataStore.subscribe(metadataHandler)
 }
 function resetStore(store, handler, initState) {
-  if (initState) store.putState(clone(initState))
+  if (initState) store.putState(cloneDeep(initState))
   store.unsubscribe(handler)
 }
 
@@ -126,13 +128,14 @@ export default {
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
+    resetStore(prefsController.announcementsStore, announcemenstHandler)
     await walletConnectController.disconnect()
     resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
     resetStore(encryptionPublicKeyManager.store, encryptionPublicKeyHandler)
     resetStore(decryptMessageManager.store, unapprovedDecryptMsgsHandler)
     assetDetectionController.stopAssetDetection()
-    torus.updateStaticData({ isUnlocked: false })
+    // torus.updateStaticData({ isUnlocked: false })
     if (isMain && selectedAddress) {
       router.push({ path: '/logout' }).catch(() => {})
       try {
@@ -171,11 +174,11 @@ export default {
   async forceFetchTokens({ state }) {
     detectTokensController.refreshTokenBalances()
     assetDetectionController.restartAssetDetection()
-    const { selectedAddress } = state
+    const { selectedAddress, networkType } = state
     try {
-      const response = await prefsController.getEtherScanTokenBalances(selectedAddress)
-      const { data } = response
-      detectTokensController.detectEtherscanTokenBalance(data, selectedAddress)
+      const response = await prefsController.getCovalentTokenBalances(selectedAddress, networkType.chainId)
+      const data = response?.data?.data?.items || []
+      detectTokensController.detectCovalentTokenBalance(data, selectedAddress, networkType)
     } catch {
       log.error('etherscan balance fetch failed')
     }
@@ -312,12 +315,12 @@ export default {
     else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
   updateSelectedAddress(_, payload) {
-    torus.updateStaticData({ selectedAddress: payload.selectedAddress })
+    // torus.updateStaticData({ selectedAddress: payload.selectedAddress })
     torusController.setSelectedAccount(payload.selectedAddress)
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)
-    torus.updateStaticData({ networkId: payload.networkId })
+    // torus.updateStaticData({ networkId: payload.networkId })
   },
   async setProviderType({ commit, dispatch, state }, payload) {
     let networkType = payload.network
@@ -333,7 +336,7 @@ export default {
         blockExplorerUrl: networkType.blockExplorer,
       })
     }
-    await networkController.setProviderType(networkType.host)
+    await networkController.setProviderType(networkType.host, networkType.rpcUrl || networkType.host, networkType.ticker, networkType.networkName)
     if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency)
       await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home' })
     else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
@@ -341,11 +344,13 @@ export default {
   },
   async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint }) {
     try {
+      commit('setLoginInProgress', true)
       // This is to maintain backward compatibility
       const currentVeriferConfig = state.embedState.loginConfig[verifier]
+      const { whiteLabel } = state
       // const locale = vuetify.framework.lang.current
       if (!currentVeriferConfig) throw new Error('Invalid verifier')
-      const { typeOfLogin, clientId, jwtParameters } = currentVeriferConfig
+      const { typeOfLogin, clientId, jwtParameters, loginProvider } = currentVeriferConfig
       log.info('starting login', { calledFromEmbed, verifier, preopenInstanceId, login_hint })
       const loginHandler = createHandler({
         typeOfLogin,
@@ -369,9 +374,12 @@ export default {
           jwtParameters || {}
         ),
         skipTKey: state.embedState.skipTKey,
+        whiteLabel,
+        loginProvider,
       })
       const { keys, userInfo, postboxKey } = await loginHandler.handleLoginWindow()
       // Get all open login results
+      userInfo.verifier = verifier
       commit('setUserInfo', userInfo)
       commit('setPostboxKey', postboxKey)
       await dispatch('handleLogin', {
@@ -383,7 +391,14 @@ export default {
       log.error(error)
       oauthStream.write({ err: { message: error.message } })
       commit('setOAuthModalStatus', false)
+      if (preopenInstanceId)
+        windowStream.write({
+          preopenInstanceId,
+          close: true,
+        })
       throw error
+    } finally {
+      commit('setLoginInProgress', false)
     }
   },
   subscribeToControllers() {
@@ -400,6 +415,7 @@ export default {
     prefsController.errorStore.subscribe(errorMessageHandler)
     prefsController.billboardStore.subscribe(billboardHandler)
     prefsController.store.subscribe(prefsControllerHandler)
+    prefsController.announcementsStore.subscribe(announcemenstHandler)
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
     walletConnectController.store.subscribe(walletConnectHandler)
     encryptionPublicKeyManager.store.subscribe(encryptionPublicKeyHandler)
@@ -452,6 +468,7 @@ export default {
     }
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
     prefsController.getBillboardContents()
+    prefsController.getAnnouncementsContents()
     // continue enable function
     if (calledFromEmbed) {
       setTimeout(() => {
@@ -461,7 +478,7 @@ export default {
     }
     // TODO: deprecate rehydrate false for the next major version bump
     statusStream.write({ loggedIn: true, rehydrate: false, verifier })
-    torus.updateStaticData({ isUnlocked: true })
+    // torus.updateStaticData({ isUnlocked: true })
     dispatch('cleanupOAuth', { oAuthToken })
   },
   cleanupOAuth({ state }, payload) {
@@ -494,6 +511,7 @@ export default {
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       const walletKeys = Object.keys(wallet)
       dispatch('subscribeToControllers')
+
       await dispatch('initTorusKeyring', {
         keys: walletKeys.map((x) => {
           const { privateKey, accountType, seedPhrase } = wallet[x]
@@ -515,7 +533,7 @@ export default {
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
         if (Object.keys(wcConnectorSession).length > 0) dispatch('initWalletConnect', { session: wcConnectorSession })
         log.info('rehydrated wallet')
-        torus.updateStaticData({ isUnlocked: true })
+        // torus.updateStaticData({ isUnlocked: true })
       }
       commit('setRehydrationStatus', true)
     } catch (error) {
@@ -544,5 +562,11 @@ export default {
   },
   decryptMessage(_, payload) {
     return torusController.decryptMessageInline(payload)
+  },
+  updateNetworkDetails(context, payload) {
+    context.commit('setNetworkDetails', payload.networkDetails)
+  },
+  updateGasFees(context, payload) {
+    context.commit('setGasFees', payload.gasFees)
   },
 }

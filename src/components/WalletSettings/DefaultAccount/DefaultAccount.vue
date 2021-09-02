@@ -161,6 +161,9 @@ export default {
       // TODO: check openlogin/tkey is loggedin
       return true
     },
+    hasSeedPhraseAccount() {
+      return Object.keys(this.wallets).some((address) => this.wallets[address].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
+    },
   },
   methods: {
     ...mapActions(['setDefaultPublicAddress', 'updateSelectedAddress']),

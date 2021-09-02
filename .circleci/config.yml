@@ -1,7 +1,7 @@
 version: 2
 job_common_node: &job_common_node
   docker:
-    - image: circleci/node
+    - image: cimg/node:lts
   working_directory: ~/torus-website
 job_common_base: &job_common_base
   docker:
@@ -13,17 +13,17 @@ job_common: &job_common
   working_directory: ~/torus-website
 step_save_cache: &step_save_cache
   save_cache:
-    key: dependency-cache-{{ checksum "package.json" }}
+    key: dependency-cache-{{ checksum "package-lock.json" }}
     paths:
       - node_modules
 step_restore_cache: &step_restore_cache
   restore_cache:
-    key: dependency-cache-{{ checksum "package.json" }}
+    key: dependency-cache-{{ checksum "package-lock.json" }}
 step_setup_global_packages: &step_setup_global_packages
   run:
     name: 'Set up global packages'
     command: |
-      [ ! -d "node_modules" ] && rm package-lock.json && npm install && find ./node_modules/ -name ".git" -type d -exec rm -rf {} + || echo "node_modules exist"
+      [ ! -d "node_modules" ] && npm ci || echo "node_modules exist"
 update_lambda_job: &update_lambda_job
   <<: *job_common
   steps:
@@ -154,8 +154,8 @@ jobs:
       - run:
           name: 'Deploy Over SSH'
           command: |
-            ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh ubuntu@testing.tor.us "rm -rf ~/testing-torus-website/* && tar -zxf - -C ~/testing-torus-website/"
+            aws s3 cp dist/ s3://testing.tor.us --recursive
+            aws cloudfront create-invalidation --distribution-id "$TORUS_TESTING_DISTRIBUTION_ID" --paths "/*"
   build-lrc:
     <<: *job_common
     resource_class: large
@@ -182,8 +182,8 @@ jobs:
       - run:
           name: 'Deploy Over SSH'
           command: |
-            ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh ubuntu@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
+            aws s3 cp dist/ s3://lrc.tor.us --recursive
+            aws cloudfront create-invalidation --distribution-id "$TORUS_LRC_DISTRIBUTION_ID" --paths "/*"
   # ------------------------
   # alpha configurations
   # ------------------------
@@ -289,6 +289,7 @@ workflows:
               only:
                 - develop
       - deploy-testing:
+          context: AWS
           requires:
             - build-testing
             - test-coverage
@@ -302,6 +303,7 @@ workflows:
               only:
                 - develop
       - deploy-lrc:
+          context: AWS
           requires:
             - build-lrc
             - test-coverage

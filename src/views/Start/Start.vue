@@ -2,38 +2,31 @@
   <v-container fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <!-- <BeatLoader
-          margin="24px 4px 0"
-          size="12px"
-          :color="$vuetify.theme.dark ? $vuetify.theme.themes.dark.torusBrand1 : $vuetify.theme.themes.light.torusBrand1"
-        /> -->
+        <BoxLoader />
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+import { safeatob } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
-// import BeatLoader from 'vue-spinner/src/BeatLoader'
-import { mapState } from 'vuex'
 
+import BoxLoader from '../../components/helpers/BoxLoader'
 import { getOpenLoginInstance } from '../../openlogin'
 
 export default {
   name: 'Start',
-  // components: { BeatLoader },
-  computed: {
-    ...mapState({
-      loginConfig: (state) => state.embedState.loginConfig,
-    }),
-  },
-  async mounted() {
+  components: { BoxLoader },
+  async created() {
     try {
-      const { verifier, state, skipTKey, ...rest } = this.$route.query
-      log.info('logging in with', verifier, state, skipTKey)
-      const openLogin = await getOpenLoginInstance()
+      const { loginProvider, state, skipTKey, ...rest } = this.$route.query
+      const stateParams = JSON.parse(safeatob(state))
+      log.info('logging in with', loginProvider, state, skipTKey, rest)
+      const { whiteLabel } = stateParams
+      const openLogin = await getOpenLoginInstance(whiteLabel)
       await openLogin.login({
-        loginProvider: this.loginConfig[verifier]?.loginProvider,
+        loginProvider,
         getWalletKey: true,
         relogin: true,
         appState: state,

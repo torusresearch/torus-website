@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import throttle from 'lodash.throttle'
+import { throttle } from 'lodash'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
@@ -47,7 +47,7 @@ export default {
       callback(
         this.$store.dispatch('fetchMoonpayOrder', {
           currentOrder: this.currentOrder,
-          colorCode: this.$vuetify.theme.themes.light.primary.base,
+          colorCode: this.$vuetify.theme.currentTheme.torusBrand1,
           selectedAddress: selectedAddress || this.selectedAddress,
         })
       )

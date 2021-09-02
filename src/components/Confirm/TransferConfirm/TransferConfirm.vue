@@ -86,11 +86,11 @@
       <v-flex xs12 mt-10>
         <div class="d-flex align-start">
           <div :style="{ lineHeight: '0px' }">
-            <span class="caption">{{ t('walletTransfer.transferFee') }}</span>
+            <span class="caption">{{ isEip1559 ? t('walletTransfer.fee-max-transaction') : t('walletTransfer.transferFee') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="caption text-right font-weight-medium">{{ transactionFee }} {{ selectedCurrency }}</div>
-            <div class="caption-2 text-right">(~ {{ speedSelected }} {{ t('walletTransfer.minute') }})</div>
+            <div class="caption text-right font-weight-medium">{{ transactionFeeDisplay }} {{ selectedCurrency }}</div>
+            <div class="caption-2 text-right">({{ `${isEip1559 ? londonSpeedTiming : `~ ${speedSelected} ${t('walletTransfer.minute')}`}` }})</div>
           </div>
         </div>
         <div v-if="gasEstimateFailed" class="caption text-right mt-1">
@@ -107,7 +107,7 @@
             <span class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="text-subtitle-2 text-right">{{ isNonFungibleToken ? `${transactionFeeEth} ETH` : totalCost }}</div>
+            <div class="text-subtitle-2 text-right">{{ isNonFungibleToken ? `${transactionFeeEthDisplay} ETH` : totalCost }}</div>
             <div class="caption-2 text-right">{{ isNonFungibleToken ? `${transactionFee} ${selectedCurrency}` : totalCostConverted }}</div>
             <div v-if="insufficientFunds" class="caption error--text">{{ t('walletTransfer.insufficient') }}</div>
           </div>
@@ -250,6 +250,14 @@ export default {
       type: String,
       default: CONTRACT_TYPE_ETH,
     },
+    isEip1559: {
+      type: Boolean,
+      default: false,
+    },
+    londonSpeedTiming: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -277,6 +285,12 @@ export default {
     },
     gasEstimateFailed() {
       return this.transactionFee.isZero()
+    },
+    transactionFeeEthDisplay() {
+      return significantDigits(this.transactionFeeEth, false, 6)
+    },
+    transactionFeeDisplay() {
+      return significantDigits(this.transactionFee)
     },
   },
   methods: {

@@ -1,11 +1,17 @@
-/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-console */
-import Ganache from 'ganache-core'
-import log from 'loglevel'
-import nock from 'nock'
+const nock = require('nock')
+const log = require('loglevel')
+const Ganache = require('ganache-core')
 
+console.log('requiring helpers for tests in mocha')
+const allowedHosts = ['localhost', 'mainnet.infura.io:443']
+
+const isNetConnectAllowed = (host) => {
+  const found = allowedHosts.find((validHost) => host.includes(validHost))
+  return !!found
+}
 nock.disableNetConnect()
-nock.enableNetConnect((host) => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
+nock.enableNetConnect((host) => isNetConnectAllowed(host))
 
 // catch rejections that are still unhandled when tests exit
 const unhandledRejections = new Map()
@@ -48,6 +54,29 @@ global.Headers = fetch.Headers
 global.Request = fetch.Request
 
 // dom
-require('jsdom-global')()
+require('jsdom-global')('<!doctype html><html><body></body></html>', {
+  url: 'https://example.com',
+})
 
 global.matchMedia = global.matchMedia || (() => ({ matches: false, addListener: () => {}, removeListener: () => {} }))
+
+const storeFn = {
+  getItem(key) {
+    return this[key]
+  },
+  setItem(key, value) {
+    this[key] = value
+  },
+}
+global.localStorage = { ...storeFn }
+global.sessionStorage = { ...storeFn }
+
+const register = require('@babel/register').default
+
+register({
+  extensions: ['.js'],
+  rootMode: 'upward',
+  ignore: [/(node_module)/],
+  presets: [['@vue/cli-plugin-babel/preset', { useBuiltIns: 'entry' }]],
+  plugins: ['@babel/plugin-proposal-class-properties'],
+})

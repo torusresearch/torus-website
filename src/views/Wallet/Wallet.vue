@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import log from 'loglevel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ConfirmForm from '../../components/Confirm/ConfirmForm'
@@ -71,18 +72,8 @@ export default {
     },
     currentConfirmModal() {
       if (this.confirmModals.length > 0) {
-        const { type, txParams, selectedCurrency, currencyData, balance, network, jwtToken, tokenRates, origin } = this.confirmModals[0]
-        return {
-          type,
-          txParams,
-          selectedCurrency,
-          currencyData,
-          balance,
-          network,
-          jwtToken,
-          tokenRates,
-          origin,
-        }
+        log.info(this.confirmModals, 'modals')
+        return this.confirmModals[0]
       }
       return undefined
     },

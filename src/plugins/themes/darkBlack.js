@@ -26,7 +26,7 @@ export default {
     base: '#0364FF',
     lighten5: '#3F4147',
   },
-  infoBanner: '#F6A608',
+  infoBanner: '#47B2FD',
   infoBannerText: '#FFFFFF',
   // Rarely changed
   success: {

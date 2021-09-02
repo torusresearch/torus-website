@@ -3,7 +3,7 @@ import nock from 'nock'
 import sinon from 'sinon'
 
 import DetectTokensController from '../../../src/controllers/DetectTokensController'
-import NetworkController from '../../../src/controllers/NetworkController'
+import NetworkController from '../../../src/controllers/network/NetworkController'
 
 const TEMP_ADDRESS = '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'
 const noop = () => {}
@@ -20,7 +20,6 @@ describe('DetectTokensController', () => {
 
   beforeEach(async () => {
     nock.cleanAll()
-    nock.disableNetConnect()
     nock('https://min-api.cryptocompare.com').get(/.*/).query(true).reply(200)
 
     network = new NetworkController()
@@ -51,17 +50,17 @@ describe('DetectTokensController', () => {
 
     clock.tick(1)
     sandbox.assert.notCalled(stub)
-    clock.tick(180000)
+    clock.tick(180_000)
     sandbox.assert.called(stub)
-    clock.tick(180000)
+    clock.tick(180_000)
     sandbox.assert.calledTwice(stub)
-    clock.tick(180000)
+    clock.tick(180_000)
     sandbox.assert.calledThrice(stub)
   })
 
   it('should not check tokens while in test network', async () => {
     const stub = sandbox
-      .stub(controller, 'detectEtherscanTokenBalance')
+      .stub(controller, 'detectCovalentTokenBalance')
       .withArgs('0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4')
       .returns(true)
       .withArgs('0xBC86727E770de68B1060C91f6BB6945c73e10388')
@@ -74,7 +73,7 @@ describe('DetectTokensController', () => {
   it('should only check and add tokens while in main network', async () => {
     await controller.startTokenDetection(TEMP_ADDRESS)
     sandbox
-      .stub(controller, 'detectEtherscanTokenBalance')
+      .stub(controller, 'detectCovalentTokenBalance')
       .withArgs('0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', { decimals: 8, symbol: 'J8T' })
       .returns(
         controller.detectedTokensStore.putState({
@@ -127,7 +126,7 @@ describe('DetectTokensController', () => {
     })
 
     sandbox
-      .stub(localController, 'detectEtherscanTokenBalance')
+      .stub(localController, 'detectCovalentTokenBalance')
       .withArgs('0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', { decimals: 8, symbol: 'J8T' })
       .returns(
         localController.detectedTokensStore.putState({

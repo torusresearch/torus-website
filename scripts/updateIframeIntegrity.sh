@@ -5,7 +5,7 @@ PACKAGE_VERSION=$(cat package.json | grep '"version"' | head -1 | awk -F: '{ pri
 cd dist
 HASH="$(cat index.html | openssl dgst -sha384 -binary | openssl base64 -A)"
 cd ~/torus-embed/src/
-sed -i -e "s|sha384-.*|sha384-$HASH\'|g" embed.js
+sed -i -e "s|sha384-.*|sha384-$HASH\";|g" embed.ts
 git config user.email "chaitanya.potti@gmail.com"
 git config user.name "chaitanyapotti"
 git commit -am "Updating embed with new hash"

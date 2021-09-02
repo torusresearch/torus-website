@@ -18,9 +18,9 @@ git config user.email "chaitanya.potti@gmail.com"
 git config user.name "chaitanyapotti"
 git diff --quiet && git diff --staged --quiet || (git commit -am "Updating version" && git push origin master)
 zip lambda-code index.js
-aws lambda update-function-code --function-name $FUNCTION_NAME --publish --zip-file "fileb://lambda-code.zip"
-aws cloudfront get-distribution-config --id $CLOUDFRONTID > cf_config.json
+aws --no-paginate lambda update-function-code --function-name $FUNCTION_NAME --publish --zip-file "fileb://lambda-code.zip"
+aws --no-paginate cloudfront get-distribution-config --id $CLOUDFRONTID > cf_config.json
 ETAG=$(cat cf_config.json | grep ETag | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g')
 node ~/torus-website/scripts/createUpdatedDistributionConfig.js
-aws cloudfront update-distribution --distribution-config "file://updated_cf_config.json" --id $CLOUDFRONTID --if-match "$ETAG"
-aws cloudfront create-invalidation --distribution-id $CLOUDFRONTID --paths "/*"
+aws --no-paginate cloudfront update-distribution --distribution-config "file://updated_cf_config.json" --id $CLOUDFRONTID --if-match "$ETAG"
+aws --no-paginate cloudfront create-invalidation --distribution-id $CLOUDFRONTID --paths "/*"

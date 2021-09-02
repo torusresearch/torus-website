@@ -1,4 +1,4 @@
-import clone from 'clone'
+import { cloneDeep } from 'lodash'
 
 import config from '../config'
 import {
@@ -32,6 +32,8 @@ const initialState = {
   weiBalance: {}, // Account specific object
   networkId: 0,
   networkType: { host: MAINNET, chainId: MAINNET_CODE, networkName: MAINNET_DISPLAY_NAME },
+  networkDetails: {},
+  gasFees: {},
   currencyData: {},
   tokenData: {}, // Account specific object
   assets: {}, // Account specific object
@@ -54,6 +56,7 @@ const initialState = {
   crashReport: true,
   locale: LOCALE_EN,
   billboard: {},
+  announcements: {},
   contacts: [],
   permissions: [],
   userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
@@ -61,12 +64,13 @@ const initialState = {
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },
   embedState: {
-    loginConfig: clone(config.loginConfig),
+    loginConfig: cloneDeep(config.loginConfig),
     isOAuthModalVisible: false,
     buttonPosition: 'bottom-left',
     torusWidgetVisibility: true,
     apiKey: 'torus-default',
     skipTKey: false,
+    loginInProgress: false,
   },
   whiteLabel: {
     isActive: false,

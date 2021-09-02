@@ -2,9 +2,9 @@ import './plugins/bigint'
 import './registerServiceWorker'
 import './reset.css'
 
+import VueGtm from '@gtm-support/vue2-gtm'
 import log from 'loglevel'
 import Vue from 'vue'
-import VueGtm from 'vue-gtm'
 
 import App from './App.vue'
 import { vuetify } from './plugins'
@@ -54,9 +54,9 @@ Vue.use(VueGtm, {
 
 Vue.mixin({
   methods: {
-    t(data) {
+    t(data, ...params) {
       if (data === '') return data
-      const translated = vuetify.framework.lang.t(`$vuetify.${data}`)
+      const translated = vuetify.framework.lang.t(`$vuetify.${data}`, ...params)
       return translated.replace('$vuetify.', '')
     },
   },

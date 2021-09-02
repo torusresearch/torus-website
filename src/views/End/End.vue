@@ -2,34 +2,42 @@
   <v-container fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <!-- <BeatLoader
-          margin="24px 4px 0"
-          size="12px"
-          :color="$vuetify.theme.dark ? $vuetify.theme.themes.dark.torusBrand1 : $vuetify.theme.themes.light.torusBrand1"
-        /> -->
+        <BoxLoader />
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+import { safeatob } from '@toruslabs/openlogin-utils'
 import Torus from '@toruslabs/torus.js'
 import { BroadcastChannel } from 'broadcast-channel'
 import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
 
-// import BeatLoader from 'vue-spinner/src/BeatLoader'
+import BoxLoader from '../../components/helpers/BoxLoader'
 import { getOpenLoginInstance } from '../../openlogin'
 import { ACCOUNT_TYPE, POPUP_RESULT } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   name: 'End',
-  // components: { BeatLoader },
-  async mounted() {
+  components: { BoxLoader },
+  async created() {
     try {
+      const { hash } = this.$route
+      const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
+      const result = hashUrl.searchParams.get('result')
+      let whiteLabel = {}
+
+      if (result) {
+        const resultParams = JSON.parse(safeatob(result))
+        const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
+        whiteLabel = appStateParams.whiteLabel || {}
+      }
+
       const torus = new Torus()
-      const openLogin = await getOpenLoginInstance()
+      const openLogin = await getOpenLoginInstance(whiteLabel)
       const { state } = openLogin
       log.info(state, 'state')
       const allInfo = state.store.getStore()
@@ -67,7 +75,7 @@ export default {
       }
       const { appState } = allInfo
       log.info(appState, 'appState')
-      const parsedAppState = JSON.parse(atob(decodeURIComponent(decodeURIComponent(appState))))
+      const parsedAppState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(appState))))
       log.info(parsedAppState.instanceId, keys, userInfo, postboxKey)
       // debugger
       const bc = new BroadcastChannel(`redirect_openlogin_channel_${parsedAppState.instanceId}`, broadcastChannelOptions)

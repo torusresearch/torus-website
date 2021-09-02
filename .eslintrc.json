@@ -15,14 +15,19 @@
     "plugin:unicorn/recommended",
     "prettier"
   ],
-  "plugins": ["prettier", "vue", "babel", "promise", "import", "vue-scoped-css", "simple-import-sort", "switch-case", "unicorn"],
+  "plugins": ["prettier", "vue", "@babel", "promise", "import", "vue-scoped-css", "simple-import-sort", "switch-case", "unicorn"],
   "parser": "vue-eslint-parser",
   "parserOptions": {
-    "parser": "babel-eslint",
+    "sourceType": "module",
     "ecmaVersion": 11,
-    "sourceType": "module"
+    "parser": "@babel/eslint-parser",
+    "babelOptions": {
+      "configFile": "./babel.config.json"
+    }
   },
   "rules": {
+    "unicorn/prefer-object-from-entries": 0,
+    "unicorn/require-post-message-target-origin": 0,
     "unicorn/prefer-module": 0,
     "unicorn/prefer-node-protocol": 0,
     "unicorn/prefer-switch": 0,
@@ -121,6 +126,8 @@
     "document": "readonly",
     "fetch": "readonly",
     "it": "readonly",
+    "before": "readonly",
+    "after": "readonly",
     "beforeEach": "readonly",
     "afterEach": "readonly",
     "describe": "readonly",

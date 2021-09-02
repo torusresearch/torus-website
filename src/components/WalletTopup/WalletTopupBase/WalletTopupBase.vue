@@ -18,7 +18,9 @@
               class="cryptocurrency-selector"
               outlined
               append-icon="$vuetify.icons.select"
-              :items="selectedProviderObj.validCryptoCurrencies"
+              :items="selectedCryptoCurrencies"
+              item-value="key"
+              item-text="displayValue"
               aria-label="Cryptocurrency Selector"
               @change="fetchQuote"
             ></v-select>
@@ -87,9 +89,9 @@
 
           <v-flex xs12 class="text-right">
             <div class="body-2">{{ t('walletTopUp.receive') }}</div>
-            <div class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrency }}</div>
+            <div class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrencyDisplay }}</div>
             <div class="description">
-              {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
+              {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrencyDisplay }} = {{ displayRateString }} {{ selectedCurrency }}
             </div>
 
             <div class="description mt-6">{{ t('walletTopUp.theProcess') }} 10 - 15 {{ t('walletTopUp.minSmall') }}.</div>
@@ -136,7 +138,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { mapState } from 'vuex'
 
-import { XANPOOL } from '../../../utils/enums'
+import { RAMPNETWORK, XANPOOL } from '../../../utils/enums'
 import { broadcastChannelOptions, formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
@@ -206,6 +208,26 @@ export default {
     displayRateString() {
       if (Number.parseFloat(this.currencyRate) !== 0) return significantDigits(1 / this.currencyRate)
       return 0
+    },
+    selectedCryptoCurrencies() {
+      return this.selectedProviderObj.validCryptoCurrencies.map((x) => {
+        const splits = x.split('_')
+        let displayValue = splits[0]
+        if (this.selectedProvider === RAMPNETWORK && splits.length > 1) {
+          displayValue = splits[1]
+        }
+        return {
+          key: x,
+          displayValue,
+        }
+      })
+    },
+    selectedCryptoCurrencyDisplay() {
+      const splits = this.selectedCryptoCurrency.split('_')
+      if (this.selectedProvider === RAMPNETWORK && splits.length > 1) {
+        return splits[1]
+      }
+      return splits[0]
     },
   },
   watch: {

@@ -1,11 +1,7 @@
 {
   "diff": true,
   "extension": ["js"],
-  "package": "./package.json",
-  "reporter": "spec",
-  "slow": 75,
   "timeout": 0,
-  "ui": "bdd",
-  "require": ["test/setup.js", "esm"],
+  "require": ["test/setup.js"],
   "exit": true
 }

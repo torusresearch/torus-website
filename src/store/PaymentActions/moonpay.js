@@ -20,7 +20,7 @@ export default {
       let preopenInstanceId = preopenInstanceIdPayload
       if (!preopenInstanceId) {
         preopenInstanceId = randomId()
-        const finalUrl = `${config.baseUrl}/redirect?preopenInstanceId=${preopenInstanceId}`
+        const finalUrl = `${config.redirect_uri}?preopenInstanceId=${preopenInstanceId}`
         const handledWindow = new PopupHandler({ url: finalUrl })
         handledWindow.open()
         handledWindow.once('close', () => {
@@ -40,7 +40,7 @@ export default {
         apiKey: config.moonpayLiveAPIKEY,
         enabledPaymentMethods: 'credit_debit_card,sepa_bank_transfer,gbp_bank_transfer',
         defaultCurrencyCode: currentOrder.currency.code || undefined,
-        walletAddresses: selectedAddress ? JSON.stringify({ eth: selectedAddress }) : undefined,
+        walletAddresses: selectedAddress ? JSON.stringify({ eth: selectedAddress, bnb_bsc: selectedAddress, busd_bsc: selectedAddress }) : undefined,
         colorCode,
         baseCurrencyAmount: currentOrder.baseCurrencyAmount || undefined,
         baseCurrencyCode: currentOrder.baseCurrency.code || undefined,
