@@ -798,6 +798,7 @@ export function sanitizeNftMetdataUrl(url) {
   }
   return finalUri
 }
+
 export function getChainType(chainId) {
   if (chainId === MAINNET_CHAIN_ID || chainId === Number.parseInt(MAINNET_CHAIN_ID, 16)) {
     return 'mainnet'

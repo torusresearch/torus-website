@@ -33,7 +33,14 @@
               </v-flex>
               <v-flex xs12>
                 <div class="body-2 mb-2">{{ t('homeAssets.tokenId') }}</div>
-                <v-text-field v-model="tokenId" :rules="[rules.required]" outlined @change="setTokenId"></v-text-field>
+                <v-text-field
+                  v-model="tokenId"
+                  :rules="[rules.required]"
+                  outlined
+                  :error-messages="displayError"
+                  :error="!!displayError"
+                  @change="setTokenId"
+                ></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <div class="body-2 mb-2">{{ t('homeAssets.tokenName') }}</div>
@@ -138,7 +145,7 @@ export default {
       contractAddress: '',
       tokenId: '',
       nftName: '',
-      nftDescription: '',
+      description: '',
       nftStandard: CONTRACT_TYPE_ERC721,
       nftImageLink: '',
       nftBalance: 1,
@@ -146,6 +153,7 @@ export default {
         required: (value) => !!value || this.t('walletSettings.required'),
       },
       assetInfo: {},
+      displayError: '',
     }
   },
   computed: {
@@ -184,14 +192,14 @@ export default {
           this.nftBalance = `${balance}`
         }
       } catch (error) {
-        let displayError = getDisplayErrorMsg(error)
+        let displayError = getDisplayErrorMsg(error?.message || '')
         if (displayError === null) {
-          displayError = 'Something went wrong'
+          displayError = 'walletSettings.somethingWrong'
           log.error('error while populating custom nft details', error)
         } else {
           log.debug('error', displayError)
         }
-        // todo: @lionell, need to show displayError
+        this.displayError = this.t(displayError)
       }
     },
     async setContractAddress(value) {
@@ -218,7 +226,7 @@ export default {
           name: this.nftName,
           image: this.nftImageLink,
           explorerLink: getEtherScanAddressLink(this.contractAddress, this.networkType.host),
-          description: this.nftDescription,
+          description: this.description,
         }
         this.tab = 1
       }
@@ -242,6 +250,7 @@ export default {
       this.$refs.addAssetForm.reset()
       this.tab = 0
       this.addAssetDialog = false
+      this.displayError = ''
     },
   },
 }

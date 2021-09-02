@@ -8,16 +8,20 @@ import { sanitizeNftMetdataUrl, validateImageUrl } from '../../utils/utils'
 const errorsType = {
   UNSUPPORTED_STANDARD: 'unsupported_standard',
   NO_OWNERNSHIP: 'no_ownership',
+  NON_EXISTENT_TOKEN_ID: 'non_existent_token_id',
 }
 
 const abiErc1155 = { abi: [...erc1155abi.abi, ...erc1155MetadataAbi.abi] }
 
 export const getDisplayErrorMsg = (type) => {
-  if (errorsType[type] === errorsType.UNSUPPORTED_STANDARD) {
-    return 'Contract address does not support any valid nft standard'
+  if (type === errorsType.UNSUPPORTED_STANDARD) {
+    return 'homeAssets.unSupportedStandard'
   }
-  if (errorsType[type] === errorsType.NO_OWNERNSHIP) {
-    return 'You don not own nft belonging to provided contract address and token id'
+  if (type === errorsType.NO_OWNERNSHIP) {
+    return 'homeAssets.noOwnership'
+  }
+  if (type === errorsType.NON_EXISTENT_TOKEN_ID) {
+    return 'homeAssets.nonExistentTokenId'
   }
   return null
 }
@@ -59,7 +63,10 @@ class NftHandler {
       const collectibleDetails = Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.address.toLowerCase())
         ? OLD_ERC721_LIST[this.address.toLowerCase()]
         : {}
-      this.nftImageLink = await validateImageUrl(sanitizeNftMetdataUrl(collectibleDetails.logo))
+      try {
+        const sanitizedNftMetdataUrl = sanitizeNftMetdataUrl(collectibleDetails.logo)
+        if (await validateImageUrl(sanitizedNftMetdataUrl)) this.nftImageLink = sanitizedNftMetdataUrl
+      } catch {}
       this.nftName = collectibleDetails.name
       this.description = ''
       const { nftName, nftImageLink, description, nftStandard } = this
@@ -69,14 +76,17 @@ class NftHandler {
       const { nftName, nftImageLink, description, nftStandard } = this
       return { nftName, nftImageLink, description, nftStandard }
     }
-    const tokenURI = await this.getCollectibleTokenURI(this.address, this.tokenId, _standard)
+    const tokenURI = await this.getCollectibleTokenURI(this.tokenId, _standard)
     const finalTokenMetaUri = sanitizeNftMetdataUrl(tokenURI)
     const object = await get(finalTokenMetaUri)
-    const image = Object.prototype.hasOwnProperty.call(object, 'image') ? 'image' : 'image_url'
+    const image = object.image || object.image_url
 
-    this.nftImageLink = await validateImageUrl(sanitizeNftMetdataUrl(object[image]))
+    const sanitizedNftMetdataUrl = sanitizeNftMetdataUrl(image)
+    try {
+      if (await validateImageUrl(sanitizedNftMetdataUrl)) this.nftImageLink = sanitizedNftMetdataUrl
+    } catch {}
 
-    this.nftName = await this.getAssetName()
+    this.nftName = object.name || (await this.getAssetName())
     this.description = Object.prototype.hasOwnProperty.call(object, 'description') ? object.description : ''
     const { nftName, nftImageLink, description, nftStandard } = this
     return { nftName, nftImageLink, description, nftStandard }
@@ -99,7 +109,12 @@ class NftHandler {
       const balance = await this.contract.methods.balanceOf(this.userAddress, this.tokenId).call()
       return Number.parseInt(balance, 10)
     }
-    const owner = await this.contract.methods.ownerOf(this.tokenId).call()
+    let owner = ''
+    try {
+      owner = await this.contract.methods.ownerOf(this.tokenId).call()
+    } catch {
+      throw new Error(errorsType.NON_EXISTENT_TOKEN_ID)
+    }
     if (owner.toLowerCase() === this.userAddress.toLowerCase()) {
       return 1
     }
