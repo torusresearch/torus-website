@@ -4,7 +4,7 @@ import { ERC1155 as erc1155abi, ERC1155Metadata as erc1155MetadataAbi } from 'mu
 
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, ERC721_INTERFACE_ID, ERC1155_INTERFACE_ID, OLD_ERC721_LIST } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
-import { sanitizeNftImageUrl, sanitizeNftMetdataUrl } from '../../utils/utils'
+import { sanitizeNftMetdataUrl, validateImageUrl } from '../../utils/utils'
 
 const errorsType = {
   UNSUPPORTED_STANDARD: 'unsupported_standard',
@@ -57,7 +57,7 @@ class NftHandler {
       const collectibleDetails = Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.address.toLowerCase())
         ? OLD_ERC721_LIST[this.address.toLowerCase()]
         : {}
-      this.nftImageLink = await sanitizeNftImageUrl(collectibleDetails.logo)
+      this.nftImageLink = await validateImageUrl(sanitizeNftMetdataUrl(collectibleDetails.logo))
       this.nftName = collectibleDetails.name
       this.decription = ''
       const { nftName, nftImageLink, decription, nftStandard } = this
@@ -68,11 +68,11 @@ class NftHandler {
       return { nftName, nftImageLink, decription, nftStandard }
     }
     const tokenURI = await this.getCollectibleTokenURI(this.address, this.tokenId, _standard)
-    const finalTokenMetaUri = await sanitizeNftMetdataUrl(tokenURI)
+    const finalTokenMetaUri = sanitizeNftMetdataUrl(tokenURI)
     const object = await get(finalTokenMetaUri)
     const image = Object.prototype.hasOwnProperty.call(object, 'image') ? 'image' : /* istanbul ignore next */ 'image_url'
 
-    this.nftImageLink = await sanitizeNftImageUrl(object[image])
+    this.nftImageLink = await validateImageUrl(sanitizeNftMetdataUrl(object[image]))
 
     this.nftName = await this.getAssetName()
     this.decription = Object.prototype.hasOwnProperty.call(object, 'description') ? object.description : ''

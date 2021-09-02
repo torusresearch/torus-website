@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import { addHexPrefix, BN, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
@@ -789,21 +790,7 @@ export async function validateImageUrl(url) {
   })
 }
 
-export async function sanitizeNftImageUrl(url) {
-  let finalImageUri = url
-  try {
-    if (url.startsWith('ipfs')) {
-      const ipfsPath = url.split('ipfs://ipfs/')[1]
-      finalImageUri = getIpfsEndpoint(ipfsPath)
-    }
-    await validateImageUrl(finalImageUri)
-  } catch {
-    finalImageUri = '/images/nft-placeholder.svg'
-  }
-  return finalImageUri
-}
-
-export async function sanitizeNftMetdataUrl(url) {
+export function sanitizeNftMetdataUrl(url) {
   let finalUri = url
   if (url.startsWith('ipfs')) {
     const ipfsPath = url.split('ipfs://ipfs/')[1]

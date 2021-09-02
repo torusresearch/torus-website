@@ -11,7 +11,7 @@ import { isAddress, toChecksumAddress } from 'web3-utils'
 import erc721Contracts from '../assets/assets-map.json'
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, NFT_SUPPORTED_NETWORKS, SUPPORTED_NFT_STANDARDS } from '../utils/enums'
 import { get } from '../utils/httpHelpers'
-import { sanitizeNftImageUrl, sanitizeNftMetdataUrl } from '../utils/utils'
+import { sanitizeNftMetdataUrl, validateImageUrl } from '../utils/utils'
 
 const initStateObject = { allCollectibleContracts: {}, allCollectibles: {}, allTokens: {}, collectibleContracts: [], collectibles: [], tokens: [] }
 
@@ -161,7 +161,7 @@ export default class AssetController {
       return { image: collectibleDetails.logo, name: collectibleDetails.name, tokenBalance: 1, description: '', standard: interfaceStandard }
     }
     const tokenURI = await this.getCollectibleTokenURI(contractAddress, tokenId, interfaceStandard)
-    const finalTokenMetaUri = await sanitizeNftMetdataUrl(tokenURI)
+    const finalTokenMetaUri = sanitizeNftMetdataUrl(tokenURI)
     const object = await get(finalTokenMetaUri)
     const image = Object.prototype.hasOwnProperty.call(object, 'image') ? 'image' : /* istanbul ignore next */ 'image_url'
     const tokenBalance =
@@ -330,7 +330,11 @@ export default class AssetController {
       // fallback to asset image
       normalizedContractInfo.logo = assetImage
     } else {
-      normalizedContractInfo.logo = await sanitizeNftImageUrl(normalizedContractInfo.logo)
+      try {
+        await validateImageUrl(sanitizeNftMetdataUrl(normalizedContractInfo.logo))
+      } catch {
+        normalizedContractInfo.logo = assetImage
+      }
     }
     return normalizedContractInfo
   }
