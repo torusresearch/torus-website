@@ -388,10 +388,11 @@ export default class AssetsDetectionController {
   }
 
   set preferencesStore(preferencesStore) {
-    if (this._preferencesStore) this._preferencesStore.unsubscribe()
     if (!preferencesStore) {
       return
     }
+    if (this._preferencesStore) this._preferencesStore.unsubscribe()
+
     this._preferencesStore = preferencesStore
     // set default maybe
     preferencesStore.subscribe(async (state) => {

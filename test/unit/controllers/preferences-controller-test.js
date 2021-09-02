@@ -85,6 +85,7 @@ describe('Preferences Controller', () => {
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount.address,
       customTokens: [],
+      customNfts: [],
       selectedCurrency: 'USD',
       locale: 'en',
       contacts: [],
@@ -115,6 +116,7 @@ describe('Preferences Controller', () => {
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount.address,
       customTokens: [],
+      customNfts: [],
       selectedCurrency: 'USD',
       locale: 'en',
       contacts: [],
@@ -131,6 +133,7 @@ describe('Preferences Controller', () => {
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount2.address,
       customTokens: [],
+      customNfts: [],
       selectedCurrency: 'USD',
       locale: 'en',
       contacts: [],
@@ -164,6 +167,7 @@ describe('Preferences Controller', () => {
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount.address,
       customTokens: [],
+      customNfts: [],
       selectedCurrency: 'USD',
       locale: 'en',
       contacts: [],
@@ -382,6 +386,31 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
+      nock(TORUS_API)
+        .post('/customnft')
+        .reply(201, {
+          data: {
+            nft_address: '0xf0ee6b27b759c9893ce4f094b49ad28fd15a23e4',
+            network: 'rinkeby',
+            nft_name: 'ETHERMON',
+            nft_image_link: 'https://ethermon.ipfs.io/abcd.jpg',
+            nft_id: '10019029019901',
+            nft_contract_standard: 'ERC721',
+            description: 'test desc',
+            balance: 1,
+          },
+          success: true,
+        })
+
+      nock(TORUS_API)
+        .delete('/customnft/1')
+        .reply(200, {
+          data: {
+            id: 1,
+          },
+          success: true,
+        })
+
       nock(TORUS_API).patch('/user/badge').reply(200, { success: true })
 
       handleSuccessStub = sandbox.stub(preferencesController, 'handleSuccess')
@@ -480,6 +509,7 @@ describe('Preferences Controller', () => {
         nft_contract_standard: 'ERC721',
         description: 'test desc',
         balance: 1,
+        id: 1,
       })
       assert(handleSuccessStub.calledOnce)
       assert.deepStrictEqual(preferencesController.state().customNfts, [
