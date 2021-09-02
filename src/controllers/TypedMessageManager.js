@@ -6,7 +6,7 @@ import { TYPED_MESSAGE_SCHEMA, typedSignatureHash } from 'eth-sig-util'
 import EventEmitter from 'events'
 import jsonschema from 'jsonschema'
 import log from 'loglevel'
-import { isAddress } from 'web3-utils'
+import { isAddress, isHexStrict } from 'web3-utils'
 
 import { MESSAGE_TYPE } from '../utils/enums'
 
@@ -166,7 +166,7 @@ export default class TypedMessageManager extends EventEmitter {
           const activeChainId = Number.parseInt(this._getCurrentChainId(), 16)
           assert.ok(!Number.isNaN(activeChainId), `Cannot sign messages for chainId "${chainId}", because Torus is switching networks.`)
           if (typeof chainId === 'string') {
-            chainId = Number.parseInt(chainId, 16)
+            chainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
           }
           assert.strictEqual(chainId, activeChainId, `Provided chainId "${chainId}" must match the active chainId "${activeChainId}"`)
         }

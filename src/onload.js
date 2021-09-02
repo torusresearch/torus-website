@@ -97,6 +97,10 @@ function onloadTorus(torus) {
 
   torusController.setupUntrustedCommunication(providerOutStream, getIFrameOrigin())
 
+  const publicConfOutStream = torus.metamaskMux.getStream('publicConfig')
+
+  torusController.setupPublicConfig(publicConfOutStream)
+
   return torus
 }
 

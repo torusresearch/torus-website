@@ -397,7 +397,7 @@ class TransactionController extends EventEmitter {
       //  then we set maxFeePerGas and maxPriorityFeePerGas to the suggested gasPrice.
       if (txMeta.txParams.gasPrice && !txMeta.txParams.maxFeePerGas && !txMeta.txParams.maxPriorityFeePerGas) {
         txMeta.txParams.maxFeePerGas = txMeta.txParams.gasPrice
-        txMeta.txParams.maxPriorityFeePerGas = txMeta.txParams.gasPrice
+        txMeta.txParams.maxPriorityFeePerGas = defaultMaxPriorityFeePerGas || txMeta.txParams.gasPrice
       } else {
         if (defaultMaxFeePerGas && !txMeta.txParams.maxFeePerGas) {
           // If the dapp has not set the gasPrice or the maxFeePerGas, then we set maxFeePerGas

@@ -77,6 +77,15 @@ const getBalance = async (state, key) =>
     }, 500)
   })
 
+const fetchGasFeeEstimates = async (state) => {
+  try {
+    return torus.torusController.gasFeeController.fetchGasFeeEstimates()
+  } catch (error) {
+    log.warn(error, 'failed fetching gas estimates')
+    return state.gasFees
+  }
+}
+
 const VuexStore = new Vuex.Store({
   plugins: vuexPersist ? [vuexPersist.plugin] : [],
   state: defaultState,
@@ -91,6 +100,7 @@ const VuexStore = new Vuex.Store({
       const windowId = isTx ? payload.id : payload
       const channelName = `torus_channel_${windowId}`
       const finalUrl = `${baseRoute}confirm?instanceId=${windowId}&integrity=true&id=${windowId}`
+
       const popupPayload = {
         id: windowId,
         origin: getIFrameOriginObject(),
@@ -102,7 +112,6 @@ const VuexStore = new Vuex.Store({
         whiteLabel: state.whiteLabel,
         selectedAddress: state.selectedAddress,
         networkDetails: state.networkDetails,
-        gasFees: state.gasFees,
       }
       if (isTx) {
         const txParameters = payload
@@ -116,14 +125,17 @@ const VuexStore = new Vuex.Store({
         popupPayload.type = type
       }
       let weiBalance = 0
+      let latestGasFee = {}
       try {
-        weiBalance = await getBalance(state, state.selectedAddress)
+        // polling might delay fetching fee or might have outdated fee, so getting latest fee.
+        ;[weiBalance, latestGasFee] = await Promise.all([getBalance(state, state.selectedAddress), fetchGasFeeEstimates(state)])
       } catch (error) {
         log.error(error, 'Unable to fetch balance within 5 secs')
         handleDeny(windowId, popupPayload.type)
         return
       }
       popupPayload.balance = fromWei(weiBalance.toString())
+      popupPayload.gasFees = latestGasFee
       if (request.isWalletConnectRequest && isMain) {
         const originObj = { href: '', hostname: '' }
         try {
@@ -226,13 +238,14 @@ function handleConfirm(ev) {
 
     if (ev.data.gasPrice || (ev.data.maxPriorityFeePerGas && ev.data.maxFeePerGas) || ev.data.gas || ev.data.customNonceValue) {
       const newTxMeta = JSON.parse(JSON.stringify(txMeta))
-      if (ev.data.gasPrice) {
-        log.info('Changed gas price to:', ev.data.gasPrice)
-        newTxMeta.txParams.gasPrice = ev.data.gasPrice
-      }
+
+      // both (maxPriorityFeePerGas, maxFeePerGas) and gasPrice should never sent
       if (ev.data.maxPriorityFeePerGas && ev.data.maxFeePerGas) {
         newTxMeta.txParams.maxPriorityFeePerGas = ev.data.maxPriorityFeePerGas
         newTxMeta.txParams.maxFeePerGas = ev.data.maxFeePerGas
+      } else if (ev.data.gasPrice) {
+        log.info('Changed gas price to:', ev.data.gasPrice)
+        newTxMeta.txParams.gasPrice = ev.data.gasPrice
       }
       if (ev.data.txEnvelopeType) {
         newTxMeta.txParams.type = ev.data.txEnvelopeType
