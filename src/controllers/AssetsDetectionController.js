@@ -85,7 +85,7 @@ export default class AssetsDetectionController {
     if (userAddress === '') return [[], collectiblesMap]
 
     this.selectedCustomNfts = customNfts.map((x) => x.nft_address)
-    const localNetwork = this.network.getNetworkNameFromNetworkCode()
+    const localNetwork = this.network.getNetworkIdentifier()
     const currentNetworkTokens = customNfts.reduce((acc, x) => {
       if (x.network === localNetwork) acc.push(x)
       return acc
@@ -211,7 +211,7 @@ export default class AssetsDetectionController {
     this.currentNetwork = currentNetwork
     let finalArr = []
     const userState = this._preferencesStore.getState()[this.selectedAddress]
-    const { customNfts } = userState || {}
+    const { customNfts = [] } = userState || {}
     let customCollectiblesMap = {}
     if (this._preferencesStore) {
       const [customNftArr, _customCollectiblesMap] = await this.getCustomNfts(customNfts)
