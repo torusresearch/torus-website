@@ -176,10 +176,10 @@ export default {
         const balance = await this.currentNft.fetchNftBalance()
         this.isOwner = balance > 0
         if (this.isOwner) {
-          const { nftName, nftImageLink, decription, nftStandard } = await this.currentNft.getNftMetadata()
+          const { nftName, nftImageLink, description, nftStandard } = await this.currentNft.getNftMetadata()
           this.nftName = nftName
           this.nftImageLink = nftImageLink
-          this.decription = decription
+          this.description = description
           this.nftStandard = nftStandard
           this.nftBalance = `${balance}`
         }

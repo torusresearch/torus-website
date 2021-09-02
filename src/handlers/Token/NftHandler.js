@@ -40,7 +40,7 @@ class NftHandler {
     this.contract = new web3.eth.Contract(tokenAbi, address)
     this.nftName = nftName
     this.nftImageLink = nftImageLink
-    this.decription = description
+    this.description = description
     this.nftStandard = nftStandard
     this.isSpecial = isSpecial
   }
@@ -59,13 +59,13 @@ class NftHandler {
         : {}
       this.nftImageLink = await validateImageUrl(sanitizeNftMetdataUrl(collectibleDetails.logo))
       this.nftName = collectibleDetails.name
-      this.decription = ''
-      const { nftName, nftImageLink, decription, nftStandard } = this
-      return { nftName, nftImageLink, decription, nftStandard }
+      this.description = ''
+      const { nftName, nftImageLink, description, nftStandard } = this
+      return { nftName, nftImageLink, description, nftStandard }
     }
     if (this.nftImageLink && this.nftName) {
-      const { nftName, nftImageLink, decription, nftStandard } = this
-      return { nftName, nftImageLink, decription, nftStandard }
+      const { nftName, nftImageLink, description, nftStandard } = this
+      return { nftName, nftImageLink, description, nftStandard }
     }
     const tokenURI = await this.getCollectibleTokenURI(this.address, this.tokenId, _standard)
     const finalTokenMetaUri = sanitizeNftMetdataUrl(tokenURI)
@@ -75,9 +75,9 @@ class NftHandler {
     this.nftImageLink = await validateImageUrl(sanitizeNftMetdataUrl(object[image]))
 
     this.nftName = await this.getAssetName()
-    this.decription = Object.prototype.hasOwnProperty.call(object, 'description') ? object.description : ''
-    const { nftName, nftImageLink, decription, nftStandard } = this
-    return { nftName, nftImageLink, decription, nftStandard }
+    this.description = Object.prototype.hasOwnProperty.call(object, 'description') ? object.description : ''
+    const { nftName, nftImageLink, description, nftStandard } = this
+    return { nftName, nftImageLink, description, nftStandard }
   }
 
   /**

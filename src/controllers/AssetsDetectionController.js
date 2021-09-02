@@ -108,7 +108,7 @@ export default class AssetsDetectionController {
           let { description, nft_image_link, nft_name } = x
           if (!description || !nft_image_link || !nft_name) {
             const nftMetadata = await tokenInstance.getNftMetadata()
-            description = nftMetadata.decription
+            description = nftMetadata.description
             nft_image_link = nftMetadata.nftImageLink
             nft_name = nftMetadata.nftName
           }
