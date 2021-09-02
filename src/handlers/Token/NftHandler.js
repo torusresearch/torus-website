@@ -11,7 +11,7 @@ const errorsType = {
   NON_EXISTENT_TOKEN_ID: 'non_existent_token_id',
 }
 
-const abiErc1155 = { abi: [...erc1155abi.abi, ...erc1155MetadataAbi.abi] }
+const abiErc1155 = [...erc1155abi.abi, ...erc1155MetadataAbi.abi]
 
 export const getDisplayErrorMsg = (type) => {
   if (type === errorsType.UNSUPPORTED_STANDARD) {
