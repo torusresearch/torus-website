@@ -1,5 +1,4 @@
 import abiERC721 from 'human-standard-collectible-abi'
-import tokenAbi from 'human-standard-token-abi'
 import { ERC1155 as erc1155abi, ERC1155Metadata as erc1155MetadataAbi } from 'multi-token-standard-abi'
 
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, ERC721_INTERFACE_ID, ERC1155_INTERFACE_ID, OLD_ERC721_LIST } from '../../utils/enums'
@@ -10,6 +9,9 @@ const errorsType = {
   UNSUPPORTED_STANDARD: 'unsupported_standard',
   NO_OWNERNSHIP: 'no_ownership',
 }
+
+const abiErc1155 = { abi: [...erc1155abi.abi, ...erc1155MetadataAbi.abi] }
+
 export const getDisplayErrorMsg = (type) => {
   if (errorsType[type] === errorsType.UNSUPPORTED_STANDARD) {
     return 'Contract address does not support any valid nft standard'
@@ -37,12 +39,12 @@ class NftHandler {
     this.userAddress = userAddress
     this.address = address
     this.tokenId = tokenId
-    this.contract = new web3.eth.Contract(tokenAbi, address)
     this.nftName = nftName
     this.nftImageLink = nftImageLink
     this.description = description
     this.nftStandard = nftStandard
     this.isSpecial = isSpecial
+    this.contract = null
   }
 
   async getNftMetadata(standard, isSpecial) {
@@ -70,7 +72,7 @@ class NftHandler {
     const tokenURI = await this.getCollectibleTokenURI(this.address, this.tokenId, _standard)
     const finalTokenMetaUri = sanitizeNftMetdataUrl(tokenURI)
     const object = await get(finalTokenMetaUri)
-    const image = Object.prototype.hasOwnProperty.call(object, 'image') ? 'image' : /* istanbul ignore next */ 'image_url'
+    const image = Object.prototype.hasOwnProperty.call(object, 'image') ? 'image' : 'image_url'
 
     this.nftImageLink = await validateImageUrl(sanitizeNftMetdataUrl(object[image]))
 
@@ -94,31 +96,23 @@ class NftHandler {
   async fetchNftBalance() {
     const { standard } = await this.checkNftStandard()
     if (standard === CONTRACT_TYPE_ERC1155) {
-      const web3Instance = this.web3
-      const contract = new web3Instance.eth.Contract(erc1155abi.abi, this.address)
-      const balance = await contract.methods.balanceOf(this.userAddress, this.tokenId).call()
+      const balance = await this.contract.methods.balanceOf(this.userAddress, this.tokenId).call()
       return Number.parseInt(balance, 10)
     }
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC721, this.address)
-    const owner = await contract.methods.ownerOf(this.tokenId).call()
+    const owner = await this.contract.methods.ownerOf(this.tokenId).call()
     if (owner.toLowerCase() === this.userAddress.toLowerCase()) {
       return 1
     }
     return 0
   }
 
-  getCollectibleTokenURI(address, tokenId, standard = CONTRACT_TYPE_ERC721) {
-    const { abi, method } = standard === CONTRACT_TYPE_ERC721 ? { abi: abiERC721, method: 'tokenURI' } : { abi: erc1155MetadataAbi, method: 'uri' }
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abi, address)
-    return contract.methods[method](tokenId).call()
+  getCollectibleTokenURI(tokenId, standard = CONTRACT_TYPE_ERC721) {
+    const method = standard === CONTRACT_TYPE_ERC721 ? 'tokenURI' : 'uri'
+    return this.contract.methods[method](tokenId).call()
   }
 
-  contractSupportsInterface(address, interfaceId) {
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC721, address)
-    return contract.methods.supportsInterface(interfaceId).call()
+  contractSupportsInterface(interfaceId) {
+    return this.contract.methods.supportsInterface(interfaceId).call()
   }
 
   async checkNftStandard() {
@@ -128,22 +122,25 @@ class NftHandler {
     if (this.nftStandard && this.isSpecial !== undefined) {
       return { standard: this.nftStandard, isSpecial: false }
     }
+    const web3Instance = this.web3
+    this.contract = new web3Instance.eth.Contract(abiERC721, this.address)
     // For Cryptokitties
     if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.address.toLowerCase())) {
       this.nftStandard = CONTRACT_TYPE_ERC721
       this.isSpecial = true
       return { standard: CONTRACT_TYPE_ERC721, isSpecial: true }
     }
-    const isErc721 = this.nftStandard === CONTRACT_TYPE_ERC721 || (await this.contractSupportsInterface(this.address, ERC721_INTERFACE_ID))
+    const isErc721 = this.nftStandard === CONTRACT_TYPE_ERC721 || (await this.contractSupportsInterface(ERC721_INTERFACE_ID))
     if (isErc721) {
       this.nftStandard = CONTRACT_TYPE_ERC721
       this.isSpecial = false
       return { standard: CONTRACT_TYPE_ERC721, isSpecial: false }
     }
-    const isErc1155 = this.nftStandard === CONTRACT_TYPE_ERC1155 || (await this.contractSupportsInterface(this.address, ERC1155_INTERFACE_ID))
+    const isErc1155 = this.nftStandard === CONTRACT_TYPE_ERC1155 || (await this.contractSupportsInterface(ERC1155_INTERFACE_ID))
     if (isErc1155) {
       this.nftStandard = CONTRACT_TYPE_ERC1155
       this.isSpecial = false
+      this.contract = new web3Instance.eth.Contract(abiErc1155, this.address)
       return { standard: CONTRACT_TYPE_ERC1155, isSpecial: false }
     }
 
