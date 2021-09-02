@@ -3,27 +3,19 @@ import assert from 'assert'
 
 import TypedMessageManager from '../../../src/controllers/TypedMessageManager'
 import NetworkController from '../../../src/controllers/network/NetworkController'
-import {
-  TRANSACTION_STATUSES,
-} from '../../../src/utils/enums';
+import { TRANSACTION_STATUSES } from '../../../src/utils/enums'
 describe('Typed Message Manager', () => {
-  let typedMessageManager,
-      msgParamsV1,
-      msgParamsV3,
-      typedMsgs,
-      messages,
-      msgId,
-      numberMsgId;
+  let typedMessageManager, msgParamsV1, msgParamsV3, typedMsgs, messages, msgId, numberMsgId
 
-  const address = '0xc42edfcc21ed14dda456aa0756c153f7985d8813';
+  const address = '0xc42edfcc21ed14dda456aa0756c153f7985d8813'
   let networkController
 
   beforeEach(() => {
     networkController = new NetworkController()
     typedMessageManager = new TypedMessageManager({
-      getCurrentChainId: networkController.getCurrentChainId.bind(networkController)
+      getCurrentChainId: networkController.getCurrentChainId.bind(networkController),
     })
-    
+
     msgParamsV1 = {
       from: address,
       data: [
@@ -34,7 +26,7 @@ describe('Typed Message Manager', () => {
           value: '$$$',
         },
       ],
-    };
+    }
 
     msgParamsV3 = {
       from: address,
@@ -75,7 +67,7 @@ describe('Typed Message Manager', () => {
           contents: 'Hello, Bob!',
         },
       }),
-    };
+    }
   })
 
   describe('#getUnapprovedMsgCount', () => {
@@ -85,7 +77,7 @@ describe('Typed Message Manager', () => {
     })
 
     it('should return number of unapproved msgs', () => {
-      typedMessageManager.addUnapprovedMessage(msgParamsV1, null, 'V1');
+      typedMessageManager.addUnapprovedMessage(msgParamsV1, null, 'V1')
       const result = typedMessageManager.unapprovedTypedMessagesCount
       assert.strictEqual(result, 1)
     })
@@ -100,61 +92,58 @@ describe('Typed Message Manager', () => {
     it('should also return transactions from local storage if any', () => {})
   })
 
-  describe(('#Typed message operations'), () => {
+  describe('#Typed message operations', () => {
     beforeEach(async () => {
       networkController = new NetworkController()
       typedMessageManager = new TypedMessageManager({
-        getCurrentChainId: networkController.getCurrentChainId.bind(networkController)
+        getCurrentChainId: networkController.getCurrentChainId.bind(networkController),
       })
-      await typedMessageManager.addUnapprovedMessage(msgParamsV3, null, 'V3', 1);
-      typedMsgs = typedMessageManager.getUnapprovedMsgs();
-      messages = typedMessageManager.messages;
-      msgId = Object.keys(typedMsgs)[0];
-      messages[0].msgParams.metamaskId = parseInt(msgId, 10);
-      numberMsgId = parseInt(msgId, 10);
+      await typedMessageManager.addUnapprovedMessage(msgParamsV3, null, 'V3', 1)
+      typedMsgs = typedMessageManager.getUnapprovedMsgs()
+      messages = typedMessageManager.messages
+      msgId = Object.keys(typedMsgs)[0]
+      messages[0].msgParams.metamaskId = parseInt(msgId, 10)
+      numberMsgId = parseInt(msgId, 10)
     })
     it('supports version 1 of signedTypedData', function () {
-      typedMessageManager.addUnapprovedMessage(msgParamsV1, null, 'V1');
-      assert.equal(
-        messages[messages.length - 1].msgParams.data,
-        msgParamsV1.data,
-      );
-    });
-  
+      typedMessageManager.addUnapprovedMessage(msgParamsV1, null, 'V1')
+      assert.equal(messages[messages.length - 1].msgParams.data, msgParamsV1.data)
+    })
+
     it('has params address', function () {
-      assert.equal(typedMsgs[msgId].msgParams.from, address);
-    });
-  
+      assert.equal(typedMsgs[msgId].msgParams.from, address)
+    })
+
     it('adds to unapproved messages and sets status to unapproved', function () {
-      assert.equal(typedMsgs[msgId].status, TRANSACTION_STATUSES.UNAPPROVED);
-    });
-  
+      assert.equal(typedMsgs[msgId].status, TRANSACTION_STATUSES.UNAPPROVED)
+    })
+
     it('validates params', function () {
       assert.doesNotThrow(() => {
-        typedMessageManager.validateParams(messages[0].msgParams);
-      }, 'Does not throw with valid parameters');
-    });
-  
+        typedMessageManager.validateParams(messages[0].msgParams)
+      }, 'Does not throw with valid parameters')
+    })
+
     it('gets unapproved by id', function () {
-      const getMsg = typedMessageManager.getMsg(numberMsgId);
-      assert.equal(getMsg.id, numberMsgId);
-    });
-  
+      const getMsg = typedMessageManager.getMsg(numberMsgId)
+      assert.equal(getMsg.id, numberMsgId)
+    })
+
     it('approves messages', async function () {
-      const messageMetaMaskId = messages[0].msgParams;
-      typedMessageManager.approveMessage(messageMetaMaskId);
-      assert.equal(messages[0].status, TRANSACTION_STATUSES.APPROVED);
-    });
-  
+      const messageMetaMaskId = messages[0].msgParams
+      typedMessageManager.approveMessage(messageMetaMaskId)
+      assert.equal(messages[0].status, TRANSACTION_STATUSES.APPROVED)
+    })
+
     it('sets msg status to signed and adds a raw sig to message details', function () {
-      typedMessageManager.setMsgStatusSigned(numberMsgId, 'raw sig');
-      assert.equal(messages[0].status, TRANSACTION_STATUSES.SIGNED);
-      assert.equal(messages[0].rawSig, 'raw sig');
-    });
-  
+      typedMessageManager.setMsgStatusSigned(numberMsgId, 'raw sig')
+      assert.equal(messages[0].status, TRANSACTION_STATUSES.SIGNED)
+      assert.equal(messages[0].rawSig, 'raw sig')
+    })
+
     it('rejects message', function () {
-      typedMessageManager.rejectMsg(numberMsgId);
-      assert.equal(messages[0].status, TRANSACTION_STATUSES.REJECTED);
-    });
+      typedMessageManager.rejectMsg(numberMsgId)
+      assert.equal(messages[0].status, TRANSACTION_STATUSES.REJECTED)
+    })
   })
 })

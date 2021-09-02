@@ -744,10 +744,18 @@ describe('Transaction Controller', function () {
     })
 
     it('prepares a tx with the custom chainId set', function (done) {
-      txController.addTransaction({ id: '1', status: 'unapproved', metamaskNetworkId: 100, txParams: {  
-        to: VALID_ADDRESS,
-        from: VALID_ADDRESS_TWO
-      }}, noop)
+      txController.addTransaction(
+        {
+          id: '1',
+          status: 'unapproved',
+          metamaskNetworkId: 100,
+          txParams: {
+            to: VALID_ADDRESS,
+            from: VALID_ADDRESS_TWO,
+          },
+        },
+        noop
+      )
       txController.networkStore.putState(100)
       txController
         .signTransaction('1')
@@ -761,8 +769,8 @@ describe('Transaction Controller', function () {
             },
             'istanbul'
           )
-          const ethTx = TransactionFactory.fromTxData(toBuffer(rawTx) , { common: chain });
-          assert.equal(ethTx.common.chainIdBN().toNumber(), 100);
+          const ethTx = TransactionFactory.fromTxData(toBuffer(rawTx), { common: chain })
+          assert.equal(ethTx.common.chainIdBN().toNumber(), 100)
           done()
         })
         .catch(done)
@@ -1066,7 +1074,9 @@ describe('Transaction Controller', function () {
         to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
         data: '0x0',
       }
-      txController.txStateManager._addTransactionsToState([{ id: 1, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] }])
+      txController.txStateManager._addTransactionsToState([
+        { id: 1, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] },
+      ])
       txController
         .retryTransaction(1)
         .then((txMeta) => {

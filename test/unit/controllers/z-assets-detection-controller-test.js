@@ -65,6 +65,7 @@ describe('AssetsDetectionController', () => {
       assetController: assets,
       getCovalentNfts: prefsController.getCovalentNfts.bind(prefsController),
       getOpenSeaCollectibles: prefsController.getOpenSeaCollectibles.bind(prefsController),
+      preferencesStore: prefsController.store,
     })
 
     // do it only if the method is not already wrapped

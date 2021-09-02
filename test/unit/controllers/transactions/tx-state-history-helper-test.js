@@ -1,6 +1,11 @@
 /* eslint-disable */
 import assert from 'assert'
-import { generateHistoryEntry, migrateFromSnapshotsToDiffs, replayHistory, snapshotFromTxMeta } from '../../../../src/controllers/transactions/tx-state-history-helper'
+import {
+  generateHistoryEntry,
+  migrateFromSnapshotsToDiffs,
+  replayHistory,
+  snapshotFromTxMeta,
+} from '../../../../src/controllers/transactions/tx-state-history-helper'
 import testVault from '../../../data/v17-long-history.json'
 
 describe('Transaction state history helper', () => {
