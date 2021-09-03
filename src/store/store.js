@@ -238,13 +238,14 @@ function handleConfirm(ev) {
 
     if (ev.data.gasPrice || (ev.data.maxPriorityFeePerGas && ev.data.maxFeePerGas) || ev.data.gas || ev.data.customNonceValue) {
       const newTxMeta = JSON.parse(JSON.stringify(txMeta))
-      if (ev.data.gasPrice) {
-        log.info('Changed gas price to:', ev.data.gasPrice)
-        newTxMeta.txParams.gasPrice = ev.data.gasPrice
-      }
+
+      // both (maxPriorityFeePerGas, maxFeePerGas) and gasPrice should never sent
       if (ev.data.maxPriorityFeePerGas && ev.data.maxFeePerGas) {
         newTxMeta.txParams.maxPriorityFeePerGas = ev.data.maxPriorityFeePerGas
         newTxMeta.txParams.maxFeePerGas = ev.data.maxFeePerGas
+      } else if (ev.data.gasPrice) {
+        log.info('Changed gas price to:', ev.data.gasPrice)
+        newTxMeta.txParams.gasPrice = ev.data.gasPrice
       }
       if (ev.data.txEnvelopeType) {
         newTxMeta.txParams.type = ev.data.txEnvelopeType

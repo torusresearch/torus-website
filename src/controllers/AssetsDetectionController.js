@@ -4,8 +4,11 @@
  */
 
 import deepmerge from 'deepmerge'
+import { isEqual } from 'lodash'
 import log from 'loglevel'
+import Web3 from 'web3'
 
+import NftHandler from '../handlers/Token/NftHandler'
 import {
   BSC_MAINNET,
   CONTRACT_TYPE_ERC721,
@@ -23,10 +26,14 @@ export default class AssetsDetectionController {
     this.interval = options.interval || DEFAULT_INTERVAL
     this.selectedAddress = options.selectedAddress || ''
     this.network = options.network
+    this._provider = options.provider
+    this.web3 = new Web3(this._provider)
     this.assetController = options.assetController
     this.getCovalentNfts = options.getCovalentNfts
     this.getOpenSeaCollectibles = options.getOpenSeaCollectibles
     this.currentNetwork = null
+    this.preferencesStore = options.preferencesStore
+    this.selectedCustomNfts = []
   }
 
   restartAssetDetection() {
@@ -70,6 +77,70 @@ export default class AssetsDetectionController {
       this._handle = setInterval(() => {
         this.detectAssets()
       }, interval)
+  }
+
+  async getCustomNfts(customNfts, forceUpdateStore = false) {
+    const collectiblesMap = {}
+    const userAddress = this.selectedAddress
+    if (userAddress === '') return [[], collectiblesMap]
+
+    this.selectedCustomNfts = customNfts.map((x) => x.nft_address)
+    const localNetwork = this.network.getNetworkIdentifier()
+    const currentNetworkTokens = customNfts.reduce((acc, x) => {
+      if (x.network === localNetwork) acc.push(x)
+      return acc
+    }, [])
+    let nonZeroTokens = await Promise.all(
+      currentNetworkTokens.map(async (x) => {
+        try {
+          const tokenInstance = new NftHandler({
+            address: x.nft_address,
+            tokenId: x.nft_id,
+            userAddress: this.selectedAddress,
+            nftStandard: x.nft_contract_standard,
+            isSpecial: undefined,
+            web3: this.web3,
+          })
+          const balance = await tokenInstance.fetchNftBalance()
+          if (balance === 0) {
+            throw new Error('Nft not owned by user anymore')
+          }
+          let { description, nft_image_link, nft_name } = x
+          if (!description || !nft_image_link || !nft_name) {
+            const nftMetadata = await tokenInstance.getNftMetadata()
+            description = nftMetadata.description
+            nft_image_link = nftMetadata.nftImageLink
+            nft_name = nftMetadata.nftName
+          }
+          const collectible = {
+            contractAddress: x.nft_address,
+            tokenID: x.nft_id.toString(),
+            options: {
+              contractName: nft_name,
+              contractSymbol: nft_name,
+              contractImage: nft_image_link,
+              contractFallbackLogo: nft_image_link, // fallback is handled by nft handler
+              standard: x.nft_contract_standard.toLowerCase(),
+              contractDescription: description,
+              description,
+              image: nft_image_link,
+              name: `${nft_name}#${x.nft_id}`,
+              tokenBalance: balance,
+            },
+          }
+          const collectibleIndex = `${x.nft_address.toLowerCase()}_${x.nft_id.toString()}`
+          collectiblesMap[collectibleIndex] = collectible
+
+          return collectible
+        } catch (error) {
+          log.warn('Invalid contract address while fetching', error)
+          return undefined
+        }
+      })
+    )
+    nonZeroTokens = nonZeroTokens.filter((x) => x)
+    if (forceUpdateStore) await this.assetController.addCollectibles(nonZeroTokens, false)
+    return [nonZeroTokens, collectiblesMap]
   }
 
   getOwnerCollectiblesApi(address, apiType = 'covalent') {
@@ -139,33 +210,56 @@ export default class AssetsDetectionController {
     const currentNetwork = this.network.getNetworkIdentifier()
     this.currentNetwork = currentNetwork
     let finalArr = []
-
+    const userState = this._preferencesStore.getState()[this.selectedAddress]
+    const { customNfts = [] } = userState || {}
+    let customCollectiblesMap = {}
+    if (this._preferencesStore) {
+      const [customNftArr, _customCollectiblesMap] = await this.getCustomNfts(customNfts)
+      finalArr = [...customNftArr]
+      customCollectiblesMap = _customCollectiblesMap
+    }
     if (this.isMainnet() || this.isMatic()) {
       const [openseaAssets, covalentAssets] = await Promise.all([
         this.detectCollectiblesFromOpensea(),
         this.detectCollectiblesFromCovalent(currentNetwork),
       ])
-      const [covalentCollectibles, covalentCollectiblesMap] = covalentAssets
+      const [, covalentCollectiblesMap] = covalentAssets
       const [, openseaCollectiblesMap] = openseaAssets
 
       const openseaIndexes = Object.keys(openseaCollectiblesMap)
       if (openseaIndexes.length > 0) {
         Object.keys(openseaCollectiblesMap).forEach((x) => {
-          const openseaCollectible = openseaCollectiblesMap[x]
-          const covalentCollectible = covalentCollectiblesMap[x]
-          if (covalentCollectible) {
-            const finalCollectible = deepmerge(covalentCollectible, openseaCollectible)
-            finalArr.push(finalCollectible)
-          } else {
-            finalArr.push(openseaCollectible)
+          if (!customCollectiblesMap[x]) {
+            const openseaCollectible = openseaCollectiblesMap[x]
+            const covalentCollectible = covalentCollectiblesMap[x]
+            if (covalentCollectible) {
+              const finalCollectible = deepmerge(covalentCollectible, openseaCollectible)
+              finalArr.push(finalCollectible)
+            } else {
+              finalArr.push(openseaCollectible)
+            }
           }
         })
       } else {
-        finalArr = covalentCollectibles
+        Object.keys(covalentCollectiblesMap).forEach((x) => {
+          if (!customCollectiblesMap[x]) {
+            const covalentCollectible = covalentCollectiblesMap[x]
+            if (covalentCollectible) {
+              finalArr.push(covalentCollectible)
+            }
+          }
+        })
       }
     } else {
-      const [covalentCollectibles] = await this.detectCollectiblesFromCovalent(currentNetwork)
-      finalArr = covalentCollectibles
+      const [, covalentCollectiblesMap] = await this.detectCollectiblesFromCovalent(currentNetwork)
+      Object.keys(covalentCollectiblesMap).forEach((x) => {
+        if (!customCollectiblesMap[x]) {
+          const covalentCollectible = covalentCollectiblesMap[x]
+          if (covalentCollectible) {
+            finalArr.push(covalentCollectible)
+          }
+        }
+      })
     }
 
     await this.assetController.addCollectibles(finalArr, false)
@@ -291,6 +385,29 @@ export default class AssetsDetectionController {
       }
     }
     return [finalCollectibles, collectiblesMap]
+  }
+
+  set preferencesStore(preferencesStore) {
+    if (!preferencesStore) {
+      return
+    }
+    if (this._preferencesStore) this._preferencesStore.unsubscribe()
+
+    this._preferencesStore = preferencesStore
+    // set default maybe
+    preferencesStore.subscribe(async (state) => {
+      const { selectedAddress } = state
+      if (!selectedAddress) return
+      const { customNfts = [] } = state[selectedAddress]
+      if (
+        !isEqual(
+          this.selectedCustomNfts,
+          customNfts.map((x) => x.nft_address)
+        )
+      ) {
+        this.getCustomNfts(customNfts, true)
+      }
+    })
   }
 }
 

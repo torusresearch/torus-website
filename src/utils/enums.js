@@ -162,6 +162,8 @@ export const NETWORK_TYPE_TO_ID_MAP = {
   [MAINNET]: { networkId: MAINNET_CODE, chainId: MAINNET_CHAIN_ID },
 }
 
+export const getIpfsEndpoint = (path) => `https://ipfs.infura.io:5001/api/v0/cat?arg=${path}`
+
 export const createNetwork = (host, networkName, chainId, blockExplorer, ticker, tickerName, logo, rpcUrl) => ({
   host,
   networkName,

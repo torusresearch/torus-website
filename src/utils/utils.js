@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import { addHexPrefix, BN, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
@@ -26,6 +27,7 @@ import {
   ENVIRONMENT_TYPE_NOTIFICATION,
   ENVIRONMENT_TYPE_POPUP,
   ETH,
+  getIpfsEndpoint,
   GITHUB,
   GOERLI,
   GOERLI_CHAIN_ID,
@@ -786,6 +788,15 @@ export async function validateImageUrl(url) {
       })
     }
   })
+}
+
+export function sanitizeNftMetdataUrl(url) {
+  let finalUri = url
+  if (url.startsWith('ipfs')) {
+    const ipfsPath = url.split('ipfs://ipfs/')[1]
+    finalUri = getIpfsEndpoint(ipfsPath)
+  }
+  return finalUri
 }
 
 export function getChainType(chainId) {

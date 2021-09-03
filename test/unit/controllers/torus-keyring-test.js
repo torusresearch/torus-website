@@ -1,7 +1,7 @@
 /* eslint-disable */
 import assert from 'assert'
 import { recoverPersonalSignature, recoverTypedSignatureLegacy, recoverTypedSignature_v4, recoverTypedSignature, encrypt } from 'eth-sig-util'
-import { TransactionFactory } from '@ethereumjs/tx';
+import { TransactionFactory } from '@ethereumjs/tx'
 
 import { bufferToHex, bufferToInt, ecrecover, pubToAddress, rlphash, toBuffer, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
@@ -96,7 +96,7 @@ describe('torus-keyring', () => {
         value: '0x1000',
       }
       // const tx = new EthereumTx(txParameters)
-      const unsignedEthTx = TransactionFactory.fromTxData(txParameters);
+      const unsignedEthTx = TransactionFactory.fromTxData(txParameters)
 
       const signed = await keyring.signTransaction(unsignedEthTx, address)
       assert.ok(signed.raw, 'has a raw signature')
@@ -275,7 +275,7 @@ describe('torus-keyring', () => {
         ],
       },
     }
-    const signature = await keyringController.signTypedData(testAccount.address,messageParameters, 'V3')
+    const signature = await keyringController.signTypedData(testAccount.address, messageParameters, 'V3')
     const recovered = recoverTypedSignature({ data: messageParameters, sig: signature })
     assert(testAccount.address === recovered)
   })
@@ -365,7 +365,7 @@ describe('torus-keyring', () => {
       to: '0x51253087e6f8358b5f10c0a94315d69db3357859',
       value: '0x5208',
     }
-    const unsignedEthTx = TransactionFactory.fromTxData(transaction);
+    const unsignedEthTx = TransactionFactory.fromTxData(transaction)
     const signature = await keyringController.signTransaction(unsignedEthTx, testAccount.address)
     assert(signature !== '')
   })
