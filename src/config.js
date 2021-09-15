@@ -120,6 +120,9 @@ export default {
   rampApiHost: 'https://ramp-network-api.tor.us',
   xanpoolApiHost: 'https://xanpool-api.tor.us',
   mercuryoApiHost: 'https://mercuryo-api.tor.us',
+  // transakApiHost: 'https://transak-api.tor.us',
+  transakApiHost: 'https://cf2b-2401-3c00-18e-5ef4-10d5-cba2-ce95-f1ae.ngrok.io',
+  // transakApiHost: 'https://torus.loca.lt',
 
   moonpayHost: 'https://buy.moonpay.io',
   moonpayApiQuoteHost: 'https://api.moonpay.io',
@@ -144,6 +147,13 @@ export default {
   mercuryoLiveAPIKEY: '8e531c49-2f64-4e7e-b1d4-16aa4958c291',
   mercuryoTestHost: 'https://sandbox-exchange.mrcr.io',
   mercuryoTestAPIKEY: '45fb9cb6-608e-44fe-a1cf-9c59de4a9e8d',
+
+  transakHost: 'https://global.transak.com',
+  transakApiQuoteHost: 'https://api.transak.com/api/v2',
+  transakLiveAPIKEY: 'e5adb5e3-b30c-4fa8-85ea-adcbadc98198',
+  transakTestHost: 'https://staging-global.transak.com',
+  transakTestApiQuoteHost: 'https://staging-api.transak.com/api/v2',
+  transakTestAPIKEY: 'e5adb5e3-b30c-4fa8-85ea-adcbadc98198',
 
   redirect_uri: redirectURI,
   supportedCurrencies: ['USD', 'AUD', 'BTC', 'CAD', 'DAI', 'ETC', 'EUR', 'GBP', 'HKD', 'IDR', 'INR', 'JPY', 'PHP', 'RUB', 'SGD', 'UAH'],

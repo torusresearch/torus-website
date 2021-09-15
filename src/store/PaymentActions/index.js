@@ -11,6 +11,7 @@ import mercuryo from './mercuryo'
 import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
 import simplex from './simplex'
+import transak from './transak'
 import wyre from './wyre'
 import xanpool from './xanpool'
 
@@ -42,6 +43,7 @@ export default {
   ...wyre,
   ...xanpool,
   ...mercuryo,
+  ...transak,
   async initiateTopup({ state, dispatch }, { provider, params, preopenInstanceId }) {
     if (paymentProviders[provider] && paymentProviders[provider].api) {
       try {
