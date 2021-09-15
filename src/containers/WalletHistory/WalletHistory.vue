@@ -100,15 +100,16 @@ import {
   ACTIVITY_STATUS_PENDING,
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
+  CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
-  CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
   ETHERSCAN_SUPPORTED_NETWORKS,
   MAINNET,
   TRANSACTION_TYPES,
 } from '../../utils/enums'
-import { formatDate, formatTime } from '../../utils/utils'
+
+import { addressSlicer, formatDate, formatTime, toChecksumAddressByChainId } from '../../utils/utils'
 
 export default {
   name: 'WalletHistory',
@@ -177,6 +178,11 @@ export default {
         x.statusText = this.getStatusText(x)
         x.dateFormatted = formatDate(x.date)
         x.timeFormatted = formatTime(x.date)
+        x.to = toChecksumAddressByChainId(x.to, this.$store.state.networkId)
+        x.slicedToChecksummed = addressSlicer(x.to)
+        x.from = toChecksumAddressByChainId(x.from, this.$store.state.networkId)
+        x.slicedFromChecksummed = addressSlicer(x.from)
+
         if (!x.is_cancel && (x.etherscanLink === '' || accumulator.findIndex((y) => y.etherscanLink === x.etherscanLink) === -1)) accumulator.push(x)
         return accumulator
       }, [])

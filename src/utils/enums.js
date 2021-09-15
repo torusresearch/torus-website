@@ -25,6 +25,8 @@ export const MUMBAI = 'mumbai'
 export const BSC_MAINNET = 'bsc_mainnet'
 export const BSC_TESTNET = 'bsc_testnet'
 export const XDAI = 'xdai'
+export const RSK_MAINNET = 'rsk_mainnet'
+export const RSK_TESTNET = 'rsk_testnet'
 
 export const MAINNET_CODE = 1
 export const ROPSTEN_CODE = 3
@@ -37,6 +39,8 @@ export const LOCALHOST_CODE = 5777
 export const BSC_MAINNET_CODE = 56
 export const BSC_TESTNET_CODE = 97
 export const XDAI_CODE = 100
+export const RSK_MAINNET_CODE = 30
+export const RSK_TESTNET_CODE = 31
 
 export const MAINNET_CHAIN_ID = '0x1'
 export const ROPSTEN_CHAIN_ID = '0x3'
@@ -50,6 +54,8 @@ export const BSC_TESTNET_CHAIN_ID = '0x61'
 export const XDAI_CHAIN_ID = '0x64'
 export const OPTIMISM_CHAIN_ID = '0xa'
 export const OPTIMISM_TESTNET_CHAIN_ID = '0x45'
+export const RSK_MAINNET_CHAIN_ID = '0x1e'
+export const RSK_TESTNET_CHAIN_ID = '0x1f'
 
 export const NFT_SUPPORTED_NETWORKS = {
   [MATIC]: MATIC_CODE,
@@ -72,6 +78,8 @@ export const MUMBAI_DISPLAY_NAME = 'Mumbai Matic-Testnet'
 export const BSC_MAINNET_DISPLAY_NAME = 'Binance Smart Chain Mainnet'
 export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
 export const XDAI_DISPLAY_NAME = 'xDai'
+export const RSK_MAINNET_DISPLAY_NAME = 'RSK Mainnet'
+export const RSK_TESTNET_DISPLAY_NAME = 'RSK Testnet'
 
 export const MATIC_URL = 'https://rpc-mainnet.maticvigil.com'
 export const MATIC_BLOCK_EXPLORER = 'https://explorer-mainnet.maticvigil.com'
@@ -88,9 +96,17 @@ export const BSC_MAINNET_BLOCK_EXPLORER = 'https://bscscan.com'
 export const BSC_TESTNET_URL = 'https://data-seed-prebsc-2-s3.binance.org:8545'
 export const BSC_TESTNET_BLOCK_EXPLORER = 'https://testnet.bscscan.com'
 
+export const RSK_MAINNET_URL = 'https://public-node.rsk.co'
+export const RSK_MAINNET_BLOCK_EXPLORER = 'https://explorer.rsk.co'
+
+export const RSK_TESTNET_URL = 'https://public-node.testnet.rsk.co'
+export const RSK_TESTNET_BLOCK_EXPLORER = 'https://explorer.testnet.rsk.co'
+
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
 export const XDAI_TICKER = 'DAI'
+export const RSK_MAINNET_TICKER = 'RBTC'
+export const RSK_TESTNET_TICKER = 'tRBTC'
 
 export const MESSAGE_TYPE = {
   ETH_DECRYPT: 'eth_decrypt',
@@ -223,6 +239,26 @@ export const SUPPORTED_NETWORK_TYPES = {
     BSC_TESTNET_URL
   ),
   [XDAI]: createNetwork(XDAI, XDAI_DISPLAY_NAME, XDAI_CODE, XDAI_BLOCK_EXPLORER, XDAI_TICKER, 'xDai Network Token', 'xdai.svg', XDAI_URL),
+  [RSK_MAINNET]: createNetwork(
+    RSK_MAINNET,
+    RSK_MAINNET_DISPLAY_NAME,
+    RSK_MAINNET_CODE,
+    RSK_MAINNET_BLOCK_EXPLORER,
+    RSK_MAINNET_TICKER,
+    'RSK',
+    'rsk.png',
+    RSK_MAINNET_URL
+  ),
+  [RSK_TESTNET]: createNetwork(
+    RSK_TESTNET,
+    RSK_TESTNET_DISPLAY_NAME,
+    RSK_TESTNET_CODE,
+    RSK_TESTNET_BLOCK_EXPLORER,
+    RSK_TESTNET_TICKER,
+    'RSK Testnet',
+    'rsk.png',
+    RSK_TESTNET_URL
+  ),
 }
 
 export const WALLET_HEADERS_HOME = 'My Wallet'

@@ -38,6 +38,8 @@
     "@metamask/safe-event-emitter": "^2.0.0",
     "@sentry/browser": "^6.12.0",
     "@sentry/vue": "^6.12.0",
+    "@rsksmart/rsk-utils": "^1.1.0",
+    "@sentry/browser": "^6.11.0",
     "@toruslabs/fetch-node-details": "^2.7.1",
     "@toruslabs/http-helpers": "^1.4.0",
     "@toruslabs/loglevel-sentry": "^2.7.1",

@@ -22,7 +22,7 @@
 <script>
 import { mapState } from 'vuex'
 
-import { apiStreamSupported } from '../../../utils/utils'
+import { apiStreamSupported, toChecksumAddressByChainId } from '../../../utils/utils'
 import ExportQrCode from '../ExportQrCode'
 import ShowToolTip from '../ShowToolTip'
 import WalletConnect from '../WalletConnect'
@@ -30,7 +30,12 @@ import WalletConnect from '../WalletConnect'
 export default {
   components: { ExportQrCode, ShowToolTip, WalletConnect },
   computed: {
-    ...mapState(['selectedAddress']),
+    ...mapState({
+      selectedAddress(state) {
+        if (state.selectedAddress === '') return state.selectedAddress
+        return toChecksumAddressByChainId(state.selectedAddress, this.$store.state.networkId)
+      },
+    }),
     slicedAddress() {
       return this.$vuetify.breakpoint.xsOnly
         ? `${this.selectedAddress.slice(0, 4)}...${this.selectedAddress.slice(-3)}`

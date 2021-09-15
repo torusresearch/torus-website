@@ -10,7 +10,7 @@ import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
-import { fromWei, isAddress, sha3, toBN, toChecksumAddress } from 'web3-utils'
+import { fromWei, sha3, toBN } from 'web3-utils'
 
 import erc721Contracts from '../../assets/assets-map.json'
 import AbiDecoder from '../../utils/abiDecoder'
@@ -33,7 +33,17 @@ import {
   TRANSACTION_STATUSES,
   TRANSACTION_TYPES,
 } from '../../utils/enums'
-import { BnMultiplyByFraction, bnToHex, formatPastTx, GAS_LIMITS, getChainType, getEtherScanHashLink, hexToBn } from '../../utils/utils'
+import {
+  BnMultiplyByFraction,
+  bnToHex,
+  formatPastTx,
+  GAS_LIMITS,
+  getChainType,
+  getEtherScanHashLink,
+  hexToBn,
+  isAddressByChainId,
+  toChecksumAddressByChainId,
+} from '../../utils/utils'
 import NonceTracker from '../NonceTracker'
 import cleanErrorStack from '../utils/cleanErrorStack'
 import PendingTransactionTracker from './PendingTransactionTracker'
@@ -1011,7 +1021,7 @@ class TransactionController extends EventEmitter {
   async _determineTransactionCategory(txParameters) {
     const { data, to, isEtherscan } = txParameters
     let checkSummedTo = to
-    if (isAddress(to)) checkSummedTo = toChecksumAddress(to)
+    if (isAddressByChainId(to, this.getChainId())) checkSummedTo = toChecksumAddressByChainId(to, this.getChainId())
     const decodedERC1155 = data && erc1155AbiDecoder.decodeMethod(data)
     const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
     const decodedERC20 = data && tokenABIDecoder.decodeMethod(data)
@@ -1021,7 +1031,9 @@ class TransactionController extends EventEmitter {
     let tokenMethodName = ''
     let methodParameters = {}
     let contractParameters = {}
-    const tokenObject = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[toChecksumAddress(to)] : {}
+    const tokenObject = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo)
+      ? erc20Contracts[toChecksumAddressByChainId(to, this.getChainId())]
+      : {}
     // If we know the contract address, mark it as erc20
     if (tokenObject && tokenObject.erc20 && decodedERC20) {
       const { name = '', params } = decodedERC20
