@@ -21,7 +21,7 @@ export default {
       if (!preopenInstanceId) {
         preopenInstanceId = randomId()
         const finalUrl = `${config.redirect_uri}?preopenInstanceId=${preopenInstanceId}`
-        const handledWindow = new PopupHandler({ url: finalUrl }, preopenInstanceId)
+        const handledWindow = new PopupHandler({ url: finalUrl })
         handledWindow.open()
         handledWindow.once('close', () => {
           reject(new Error('user closed Transak popup'))
