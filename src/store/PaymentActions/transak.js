@@ -1,6 +1,4 @@
 import randomId from '@chaitanyapotti/random-id'
-import { log } from 'loglevel'
-import queryStringLib from 'query-string'
 
 import config from '../../config'
 import PopupHandler from '../../handlers/Popup/PopupHandler'
@@ -23,10 +21,10 @@ export default {
       if (!preopenInstanceId) {
         preopenInstanceId = randomId()
         const finalUrl = `${config.redirect_uri}?preopenInstanceId=${preopenInstanceId}`
-        const handledWindow = new PopupHandler({ url: finalUrl })
+        const handledWindow = new PopupHandler({ url: finalUrl }, preopenInstanceId)
         handledWindow.open()
         handledWindow.once('close', () => {
-          reject(new Error('user closed transak popup'))
+          reject(new Error('user closed Transak popup'))
         })
       }
       const orderInstanceId = randomId()
@@ -38,29 +36,19 @@ export default {
           })
         )
       )
-      log(currentOrder)
       const parameters = {
         apiKey: config.transakLiveAPIKEY,
         hostURL: config.baseUrl,
-        // enabledPaymentMethods: 'credit_debit_card,sepa_bank_transfer,gbp_bank_transfer',
         cryptoCurrencyCode: currentOrder.cryptoCurrency || undefined,
         walletAddress: selectedAddress,
-        // JSON.stringify({ eth: selectedAddress, bnb_bsc: selectedAddress, busd_bsc: selectedAddress }) : undefined,
         themeColor: colorCode,
         fiatAmount: currentOrder.fiatAmount || undefined,
         fiatCurrency: currentOrder.fiatCurrency || undefined,
         email: state.userInfo.email || undefined,
         partnerCustomerId: selectedAddress || state.selectedAddress,
-        // redirectURL: `${config.redirect_uri}?state=${instanceState}`,
-        // redirectURL: 'http://info.cern.ch',
-        redirectURL: 'https://www.tor.us',
-        // redirectURL: `https://localhost:4050/redirect?state=${instanceState}`,
-        // showWalletAddressForm: true,
+        redirectURL: `${config.redirect_uri}?state=${instanceState}`,
       }
-      log(instanceState)
-      log(parameters)
-      const parameterString = queryStringLib.stringify(parameters, { arrayFormat: 'comma' })
-      // const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(parameters)))
+      const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(parameters)))
       // const url = `${config.transakHost}?${parameterString.toString()}`
       const url = `${config.transakTestHost}?${parameterString.toString()}`
 
