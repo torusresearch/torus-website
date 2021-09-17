@@ -889,3 +889,7 @@ export function bnEqualTo(a, b) {
   }
   return new BigNumber(a, 10).isEqualTo(b, 10)
 }
+
+export function waitForMs(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}

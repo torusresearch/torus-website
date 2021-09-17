@@ -32,6 +32,7 @@ import DeviceIcon from './DeviceIcon.vue'
 import DeviceMobileIcon from './DeviceMobileIcon.vue'
 import DeviceTabletIcon from './DeviceTabletIcon.vue'
 import DisconnectIcon from './DisconnectIcon.vue'
+import DiscoverIcon from './DiscoverIcon.vue'
 import DownloadIcon from './DownloadIcon.vue'
 import EthIcon from './EthIcon.vue'
 import ExportIcon from './ExportIcon.vue'
@@ -387,5 +388,8 @@ export default {
   },
   json: {
     component: JsonIcon,
+  },
+  discover: {
+    component: DiscoverIcon,
   },
 }

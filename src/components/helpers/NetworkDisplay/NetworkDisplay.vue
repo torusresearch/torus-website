@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex network-chip align-center" :class="[chipClass, minimal ? 'network-chip--minimal' : '']">
-    <v-icon v-text="'$vuetify.icons.network'"></v-icon>
+    <v-icon v-if="showIcon" v-text="'$vuetify.icons.network'"></v-icon>
     <span class="network-chip__name text-clamp-one" :class="{ 'network-chip__name--mobile': $vuetify.breakpoint.xsOnly }">
       {{ $vuetify.breakpoint.xsOnly && !minimal ? shortSelectedNetwork : selectedNetwork }}
     </span>
@@ -30,6 +30,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    showIcon: {
+      type: Boolean,
+      default: true,
+    },
   },
   computed: {
     selectedNetwork() {
@@ -48,7 +52,7 @@ export default {
       return this.selectedNetwork.replace(' Network', '')
     },
     host() {
-      return this.storeNetworkType.host
+      return this.storeNetworkType.host || this.selectedNetwork
     },
     isUrlNetwork() {
       // Checks if input is a url including localhost, ip address and domain name
