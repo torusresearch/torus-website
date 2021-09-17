@@ -9,6 +9,7 @@ const errorsType = {
   UNSUPPORTED_STANDARD: 'unsupported_standard',
   NO_OWNERNSHIP: 'no_ownership',
   NON_EXISTENT_TOKEN_ID: 'non_existent_token_id',
+  NFT_METADATA_FAILED: 'nft_metadata_failed',
 }
 
 const abiErc1155 = [...erc1155abi.abi, ...erc1155MetadataAbi.abi]
@@ -22,6 +23,9 @@ export const getDisplayErrorMsg = (type) => {
   }
   if (type === errorsType.NON_EXISTENT_TOKEN_ID) {
     return 'homeAssets.nonExistentTokenId'
+  }
+  if (type === errorsType.NFT_METADATA_FAILED) {
+    return 'homeAssets.nftMetadataFailed'
   }
   return null
 }
@@ -78,18 +82,22 @@ class NftHandler {
     }
     const tokenURI = await this.getCollectibleTokenURI(this.tokenId, _standard)
     const finalTokenMetaUri = sanitizeNftMetdataUrl(tokenURI)
-    const object = await get(finalTokenMetaUri)
-    const image = object.image || object.image_url
-
-    const sanitizedNftMetdataUrl = sanitizeNftMetdataUrl(image)
     try {
-      if (await validateImageUrl(sanitizedNftMetdataUrl)) this.nftImageLink = sanitizedNftMetdataUrl
-    } catch {}
+      // this call might fail, if metadata url available in smart contract is not reachable
+      const object = await get(finalTokenMetaUri)
+      const image = object.image || object.image_url
+      const sanitizedNftMetdataUrl = sanitizeNftMetdataUrl(image)
+      try {
+        if (await validateImageUrl(sanitizedNftMetdataUrl)) this.nftImageLink = sanitizedNftMetdataUrl
+      } catch {}
 
-    this.nftName = object.name || (await this.getAssetName())
-    this.description = Object.prototype.hasOwnProperty.call(object, 'description') ? object.description : ''
-    const { nftName, nftImageLink, description, nftStandard } = this
-    return { nftName, nftImageLink, description, nftStandard }
+      this.nftName = object.name || (await this.getAssetName())
+      this.description = Object.prototype.hasOwnProperty.call(object, 'description') ? object.description : ''
+      const { nftName, nftImageLink, description, nftStandard } = this
+      return { nftName, nftImageLink, description, nftStandard }
+    } catch {
+      throw new Error(errorsType.NFT_METADATA_FAILED)
+    }
   }
 
   /**
