@@ -157,7 +157,7 @@ class AbiDecoder {
               // 42 because len(0x) + 40
               if (decodedP.value.length > 42) {
                 const toRemove = decodedP.value.length - 42
-                const temporary = decodedP.value.split('')
+                const temporary = [...decodedP.value]
                 temporary.splice(2, toRemove)
                 decodedP.value = temporary.join('')
               }
