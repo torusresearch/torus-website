@@ -57,7 +57,7 @@
   }
 
   &.network-chip--matic {
-    background: #efe2ff;
+    background: #98dcff;
   }
 
   &.network-chip--mumbai {
@@ -70,6 +70,10 @@
 
   &.network-chip--bsc_testnet {
     background: #f0b90b;
+  }
+
+  &.network-chip--reef {
+    background: #decaec;
   }
 
   &.network-chip--xdai {

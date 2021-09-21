@@ -1,18 +1,9 @@
 .dapp-parent {
   padding: 24px 5% 0 5%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
   & .discover-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
     width: 100%;
     margin-bottom: 40px;
     & .discover-title {
-      font-weight: bold;
       font-size: 24px;
       line-height: 28px;
       transform: translateX(10px);
@@ -23,23 +14,8 @@
     }
   }
   & .dapp-list-container {
-    display: grid;
-    gap: 16px 12px;
     overflow: auto;
     padding: 20px;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-  }
-  .gcol-4 {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-  }
-  .gcol-3 {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-  .gcol-2 {
-    grid-template-columns: 1fr 1fr;
-  }
-  .gcol-1 {
-    grid-template-columns: 1fr;
   }
 }
 .filter-selector {

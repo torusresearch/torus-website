@@ -1,5 +1,5 @@
 <template>
-  <v-card class="dapp-card d-flex align-center" :class="{ 'theme--dark': $vuetify.theme.isDark }">
+  <v-card class="dapp-card d-flex align-center" :class="{ 'theme--dark': $vuetify.theme.isDark }" @click="navigateToDapp">
     <img width="57" height="57" :src="`${getSrc()}`" alt="Dapp Logo" />
     <div class="d-flex align-start dapp-info flex-column">
       <p class="dapp-title">{{ dapp.title }}</p>
@@ -26,23 +26,19 @@ export default {
   props: {
     dapp: {
       type: Object,
-      default: () => undefined,
+      required: true,
     },
   },
-  data() {
-    return {
-      isLoadingDapps: true,
-      errorText: '',
-    }
-  },
-  computed: {},
-  mounted() {},
   methods: {
     getSrc() {
       return this.dapp?.logo?.[0].url || ''
     },
     isSupportedNetwork() {
       return !!SUPPORTED_NETWORK_TYPES[this.dapp.network]?.host
+    },
+    navigateToDapp() {
+      // open dapp homepage on click
+      window.location = this.dapp.url
     },
   },
 }

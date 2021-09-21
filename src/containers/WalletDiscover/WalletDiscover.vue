@@ -1,7 +1,7 @@
 <template>
-  <div class="dapp-parent">
-    <div class="discover-header">
-      <h3 class="discover-title" :style="{ color: $vuetify.theme.isDark ? '#EEF2F4' : '#5C6C7F' }">
+  <div class="dapp-parent d-flex flex-column justify-start align-center">
+    <div class="discover-header d-flex flex-row justify-space-between align-center">
+      <h3 class="discover-title font-weight-bold" :style="{ color: $vuetify.theme.isDark ? '#EEF2F4' : '#5C6C7F' }">
         {{ t('navBar.discover') }}
       </h3>
 
@@ -65,28 +65,23 @@
       </v-layout>
     </div>
 
-    <div
-      v-if="!isLoadingDapps"
-      :class="{
-        'dapp-list-container': 'true',
-        'gcol-4': $vuetify.breakpoint.lg,
-        'gcol-3': $vuetify.breakpoint.md,
-        'gcol-2': $vuetify.breakpoint.sm,
-        'gcol-1': $vuetify.breakpoint.xs,
-      }"
-    >
-      <Dapp v-for="dapp in filteredList" :key="dapp.title" :dapp="dapp" />
-    </div>
+    <v-container>
+      <v-row>
+        <v-col v-for="dapp in filteredList" :key="dapp.title + dapp.network" class="col-sm-6 col-md-4 col-lg-3 col-xl-3">
+          <Dapp :dapp="dapp" />
+        </v-col>
+      </v-row>
+    </v-container>
     <p v-if="isLoadingDapps">Please wait while we fetch data.</p>
     <p v-if="!isLoadingDapps && filteredList.length === 0">No Dapp found for current query.</p>
   </div>
 </template>
 <script>
-import log from 'loglevel'
+import { mapState } from 'vuex'
 
 import Dapp from '../../components/WalletDiscover/Dapp'
 import torus from '../../torus'
-import { BSC_MAINNET, MAINNET, MATIC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
+import { SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 
 const ALL_CATEGORIES = 'All DApps'
 const ALL_NETWORKS = 'All network'
@@ -102,13 +97,18 @@ export default {
     }
   },
   computed: {
+    ...mapState(['networkType', 'supportedNetworks']),
     networkList() {
       return [
         ALL_NETWORKS,
         ...new Set(
           this.dapps
-            .filter((d) => !!d?.network?.length)
-            .map((d) => d.network)
+            .reduce((networkList, dapp) => {
+              if (dapp?.network?.length) {
+                networkList.push(dapp.network)
+              }
+              return networkList
+            }, [])
             ?.sort()
         ),
       ]
@@ -118,8 +118,12 @@ export default {
         ALL_CATEGORIES,
         ...new Set(
           this.dapps
-            .filter((d) => !!d?.desc?.length)
-            .map((d) => d.desc)
+            .reduce((categoryList, dapp) => {
+              if (dapp?.category?.length) {
+                categoryList.push(dapp.category)
+              }
+              return categoryList
+            }, [])
             ?.sort()
         ),
       ]
@@ -128,7 +132,7 @@ export default {
       return (
         this.dapps?.filter(
           (dapp) =>
-            (this.selectedCategory === ALL_CATEGORIES || this.selectedCategory === dapp.desc) &&
+            (this.selectedCategory === ALL_CATEGORIES || this.selectedCategory === dapp.category) &&
             (this.selectedNetwork === ALL_NETWORKS || this.selectedNetwork === dapp.network)
         ) || []
       )
@@ -137,32 +141,18 @@ export default {
   async mounted() {
     this.$vuetify.goTo(0)
     this.dapps = (await this.fetchDapps())?.records || []
-    this.standardiseNetworkNames()
     this.isLoadingDapps = false
-    log.info('WalletDiscover', this.dapps, SUPPORTED_NETWORK_TYPES)
+    this.selectedNetwork = this.$store?.state?.networkType?.host || ALL_NETWORKS // set default network as user's setting default
   },
   methods: {
     async fetchDapps() {
-      let data
+      let data = {}
       try {
         data = await torus.torusController.prefsController.fetchDappList()
       } catch {
         this.isLoadingDapps = false
       }
       return data
-    },
-    standardiseNetworkNames() {
-      this.dapps.forEach((dapp) => {
-        let standardNetwork = dapp.network
-        if (dapp.network.toLowerCase().includes('ethereum')) {
-          standardNetwork = MAINNET
-        } else if (dapp.network.toLowerCase().includes('polygon')) {
-          standardNetwork = MATIC
-        } else if (dapp.network.toLowerCase().includes('binance')) {
-          standardNetwork = BSC_MAINNET
-        }
-        dapp.network = standardNetwork
-      })
     },
     getDisplayName(name) {
       return SUPPORTED_NETWORK_TYPES[name]?.networkName || name

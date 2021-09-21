@@ -25,6 +25,7 @@ export const MUMBAI = 'mumbai'
 export const BSC_MAINNET = 'bsc_mainnet'
 export const BSC_TESTNET = 'bsc_testnet'
 export const XDAI = 'xdai'
+export const REEF = 'reef'
 
 export const MAINNET_CODE = 1
 export const ROPSTEN_CODE = 3
@@ -37,6 +38,7 @@ export const LOCALHOST_CODE = 5777
 export const BSC_MAINNET_CODE = 56
 export const BSC_TESTNET_CODE = 97
 export const XDAI_CODE = 100
+export const REEF_CODE = 101
 
 export const MAINNET_CHAIN_ID = '0x1'
 export const ROPSTEN_CHAIN_ID = '0x3'
@@ -72,6 +74,7 @@ export const MUMBAI_DISPLAY_NAME = 'Mumbai Matic-Testnet'
 export const BSC_MAINNET_DISPLAY_NAME = 'Binance Smart Chain Mainnet'
 export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
 export const XDAI_DISPLAY_NAME = 'xDai'
+export const REEF_DISPLAY_NAME = 'Reef Chain'
 
 export const MATIC_URL = 'https://rpc-mainnet.maticvigil.com'
 export const MATIC_BLOCK_EXPLORER = 'https://explorer-mainnet.maticvigil.com'
@@ -87,6 +90,9 @@ export const BSC_MAINNET_BLOCK_EXPLORER = 'https://bscscan.com'
 
 export const BSC_TESTNET_URL = 'https://data-seed-prebsc-2-s3.binance.org:8545'
 export const BSC_TESTNET_BLOCK_EXPLORER = 'https://testnet.bscscan.com'
+
+export const REEF_URL = 'https://reef.finance/'
+export const REEF_BLOCK_EXPLORER = 'https://reefscan.com/'
 
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
@@ -223,6 +229,7 @@ export const SUPPORTED_NETWORK_TYPES = {
     BSC_TESTNET_URL
   ),
   [XDAI]: createNetwork(XDAI, XDAI_DISPLAY_NAME, XDAI_CODE, XDAI_BLOCK_EXPLORER, XDAI_TICKER, 'xDai Network Token', 'xdai.svg', XDAI_URL),
+  [REEF]: createNetwork(REEF, REEF_DISPLAY_NAME, REEF_CODE, REEF_BLOCK_EXPLORER, 'REEF', 'Reef', 'eth.svg', undefined),
 }
 
 export const WALLET_HEADERS_HOME = 'My Wallet'
