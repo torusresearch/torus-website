@@ -1,12 +1,15 @@
 <template>
-  <div class="dapp-parent d-flex flex-column justify-start align-center">
-    <div class="discover-header d-flex flex-row justify-space-between align-center">
+  <div class="dapp-parent d-flex flex-column justify-start align-center" :class="$vuetify.breakpoint.xsOnly ? 'xs-parent' : ''">
+    <div
+      class="discover-header d-flex"
+      :class="$vuetify.breakpoint.xsOnly ? 'flex-column justify-start align-start' : 'flex-row justify-space-between align-center'"
+    >
       <h3 class="discover-title font-weight-bold" :style="{ color: $vuetify.theme.isDark ? '#EEF2F4' : '#5C6C7F' }">
         {{ t('navBar.discover') }}
       </h3>
 
       <v-layout mx-n2 class="dapp-filters">
-        <v-flex xs6 px-2>
+        <v-flex xs6 px-2 class="filter-width">
           <v-menu offset-y>
             <template #activator="{ on }">
               <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
@@ -33,7 +36,7 @@
             </v-card>
           </v-menu>
         </v-flex>
-        <v-flex xs6 px-2>
+        <v-flex xs6 px-2 class="filter-width">
           <v-menu offset-y>
             <template #activator="{ on }">
               <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
@@ -65,15 +68,15 @@
       </v-layout>
     </div>
 
-    <v-container>
+    <v-container class="f-width">
       <v-row>
         <v-col v-for="dapp in filteredList" :key="dapp.title + dapp.network" class="col-sm-6 col-md-4 col-lg-3 col-xl-3">
-          <Dapp :dapp="dapp" />
+          <Dapp :dapp="dapp" :show-network="selectedNetwork === ALL_NETWORKS" />
         </v-col>
       </v-row>
     </v-container>
-    <p v-if="isLoadingDapps">Please wait while we fetch data.</p>
-    <p v-if="!isLoadingDapps && filteredList.length === 0">No Dapp found for current query.</p>
+    <p v-if="isLoadingDapps">{{ t('walletDiscover.loading') }}</p>
+    <p v-if="!isLoadingDapps && filteredList.length === 0">{{ t('walletDiscover.noData') }}</p>
   </div>
 </template>
 <script>
@@ -143,6 +146,9 @@ export default {
     this.dapps = (await this.fetchDapps())?.records || []
     this.isLoadingDapps = false
     this.selectedNetwork = this.$store?.state?.networkType?.host || ALL_NETWORKS // set default network as user's setting default
+  },
+  created() {
+    this.ALL_NETWORKS = ALL_NETWORKS
   },
   methods: {
     async fetchDapps() {

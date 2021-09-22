@@ -9,13 +9,19 @@
       transform: translateX(10px);
       width: 100%;
     }
-    & .dapp-filters{
-      min-width: 600px;
+    & .dapp-filters {
+      min-width: 539px;
     }
   }
   & .dapp-list-container {
     overflow: auto;
     padding: 20px;
+  }
+  & .f-width {
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    max-width: 100%;
   }
 }
 .filter-selector {
@@ -29,4 +35,22 @@
     border: 1px solid #343539;
     box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
   }
+}
+.xs-parent {
+  padding: 24px 1% 0 1%;
+  & .dapp-filters {
+    flex-direction: column;
+  }
+  & .dapp-filters {
+    min-width: 100% !important;
+  }
+  & .filter-width{
+    max-width: 100% !important;
+    transform: translateX(10px);
+    margin: 10px 0;
+  }
+}
+
+.col {
+  flex-basis: auto;
 }

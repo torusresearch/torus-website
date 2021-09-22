@@ -1,18 +1,23 @@
 <template>
   <v-card class="dapp-card d-flex align-center" :class="{ 'theme--dark': $vuetify.theme.isDark }" @click="navigateToDapp">
-    <img width="57" height="57" :src="`${getSrc()}`" alt="Dapp Logo" />
+    <img width="57" height="57" :src="`${getSrc}`" alt="Dapp Logo" />
     <div class="d-flex align-start dapp-info flex-column">
-      <p class="dapp-title">{{ dapp.title }}</p>
+      <span class="d-flex flex-row justify-space-between align-center title-row">
+        <p class="dapp-title">{{ dapp.title }}</p>
+        <div v-if="showNetwork" class="net-chip">
+          <div v-if="!isSupportedNetwork" class="dapp-chip">
+            <p class="dapp-chip-text">{{ dapp.network }}</p>
+          </div>
+          <NetworkDisplay
+            v-else
+            :network="dapp.network"
+            :show-icon="false"
+            :store-network-type="{ host: dapp.network, networkName: '', chainId: '' }"
+          ></NetworkDisplay>
+        </div>
+      </span>
       <p class="dapp-category">{{ dapp.category }}</p>
-      <div v-if="!isSupportedNetwork()" class="dapp-chip">
-        <p class="dapp-chip-text">{{ dapp.network }}</p>
-      </div>
-      <NetworkDisplay
-        v-if="isSupportedNetwork()"
-        :network="dapp.network"
-        :show-icon="false"
-        :store-network-type="{ host: dapp.network, networkName: '', chainId: '' }"
-      ></NetworkDisplay>
+      <p class="dapp-desc">{{ dapp.desc }}</p>
     </div>
   </v-card>
 </template>
@@ -28,17 +33,23 @@ export default {
       type: Object,
       required: true,
     },
+    showNetwork: {
+      type: Boolean,
+      default: true,
+    },
   },
-  methods: {
+  computed: {
     getSrc() {
       return this.dapp?.logo?.[0].url || ''
     },
     isSupportedNetwork() {
       return !!SUPPORTED_NETWORK_TYPES[this.dapp.network]?.host
     },
+  },
+  methods: {
     navigateToDapp() {
       // open dapp homepage on click
-      window.location = this.dapp.url
+      window.location.href = this.dapp.url
     },
   },
 }
