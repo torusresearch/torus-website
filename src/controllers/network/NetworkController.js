@@ -100,7 +100,7 @@ export default class NetworkController extends EventEmitter {
       ethQuery.sendAsync({ method: 'eth_getBlockByNumber', params: ['latest', false] }, (err, block) => {
         const currentNetwork = this.getNetworkState()
         if (currentNetwork !== initialNetwork) {
-          log.warn('network has been changed')
+          log.info('network has been changed')
           return resolve({})
         }
         if (err) {
