@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+import WalletDiscover from './containers/WalletDiscover'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
@@ -162,6 +163,11 @@ const router = new Router({
               component: WalletTopupTransak,
             },
           ],
+        },
+        {
+          path: 'discover',
+          name: 'walletDiscover',
+          component: WalletDiscover,
         },
       ],
     },

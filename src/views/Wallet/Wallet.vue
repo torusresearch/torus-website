@@ -83,6 +83,7 @@ export default {
         { name: 'transfer', display: this.t('navBar.transfer'), route: '/wallet/transfer', icon: 'transaction' },
         { name: 'activity', display: this.t('navBar.activity'), route: '/wallet/history', icon: 'activities' },
         { name: 'settings', display: this.t('navBar.settings'), route: '/wallet/settings', icon: 'settings' },
+        { name: 'discover', display: this.t('navBar.discover'), route: '/wallet/discover', icon: 'discover' },
       ]
       if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc' && !this.whiteLabel.topupHide) {
         items.splice(2, 0, { name: 'top-up', display: this.t('navBar.topUp'), route: '/wallet/topup', icon: 'topup' })

@@ -1,0 +1,83 @@
+.dapp-card {
+  width: 100%;
+  height: 88px;
+  background: #ffffff;
+  border: 1px solid #f5f5f5;
+  box-sizing: border-box;
+  box-shadow: 0px 10px 24px rgba(3, 100, 255, 0.06) !important;
+  border-radius: 10px;
+  padding: 24px;
+  margin: auto;
+  cursor: pointer;
+  & .dapp-info {
+    padding-left: 8px;
+    height: 57px;
+    width: 100%;
+    overflow-x: hidden;
+    & .net-chip {
+      max-width: 60%;
+    }
+    & .title-row {
+      width: 100%;
+    }
+    & .dapp-title {
+      font-size: 14px;
+      color: #333333;
+      margin: 0px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      padding-right: 5px;
+    }
+    & .dapp-category {
+      font-size: 12px;
+      color: #828282;
+      margin: 0px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: 164px;
+      min-height: 18px;
+    }
+    & .dapp-desc {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 12px;
+      line-height: 14px;
+      color: #828282;
+      margin: 0px;
+      transform: translateY(3px);
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+  }
+  & .dapp-chip {
+    height: 20px;
+    border-radius: 10px;
+    background-color: #c5e8ff;
+    margin-left: auto;
+    margin-top: auto;
+    & .dapp-chip-text {
+      font-weight: bold;
+      font-size: 12px;
+      letter-spacing: 0.0857143px;
+      color: #5c6c7f;
+      margin: 0px 15px;
+    }
+  }
+}
+.theme--dark {
+  border: none;
+  .dapp-category {
+    color: #b3c0ce !important;
+  }
+  .dapp-title {
+    color: #d3d3d4 !important;
+  }
+}
+
+.network-chip {
+  margin-left: auto;
+}

@@ -23,7 +23,17 @@ import {
 } from '../utils/enums'
 import { notifyUser } from '../utils/notifications'
 import { setSentryEnabled } from '../utils/sentry'
-import { formatDate, formatPastTx, formatTime, getEthTxStatus, getIFrameOrigin, getUserLanguage, isMain, storageAvailable } from '../utils/utils'
+import {
+  formatDate,
+  formatPastTx,
+  formatTime,
+  getEthTxStatus,
+  getIFrameOrigin,
+  getUserLanguage,
+  isMain,
+  storageAvailable,
+  waitForMs,
+} from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 // By default, poll every 3 minutes
@@ -804,6 +814,14 @@ class PreferencesController extends EventEmitter {
     } catch (error) {
       log.error(error)
     }
+  }
+
+  async fetchDappList() {
+    if (!this.state()?.jwtToken) {
+      // sometimes store does not have the token when this API call is made.
+      await waitForMs(3000)
+    }
+    return this.api.get(`${config.api}/dapps`, this.headers(), { useAPIKey: true })
   }
 
   hideAnnouncement(payload, announcements) {
