@@ -10,6 +10,7 @@ import {
   WalletTopupMoonpay,
   WalletTopupRampNetwork,
   WalletTopupSimplex,
+  WalletTopupTransak,
   WalletTopupWyre,
   WalletTopupXanpool,
 } from './containers/WalletTopup'
@@ -154,6 +155,11 @@ const router = new Router({
               path: 'mercuryo',
               name: 'walletTopupMercuryo',
               component: WalletTopupMercuryo,
+            },
+            {
+              path: 'transak',
+              name: 'walletTopupTransak',
+              component: WalletTopupTransak,
             },
           ],
         },
