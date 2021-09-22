@@ -87,7 +87,7 @@ import torus from '../../torus'
 import { SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 
 const ALL_CATEGORIES = 'All DApps'
-const ALL_NETWORKS = 'All network'
+const ALL_NETWORKS = 'All networks'
 export default {
   name: 'WalletDiscover',
   components: { Dapp },
