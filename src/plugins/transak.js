@@ -25,21 +25,4 @@ const getQuote = (requestObject) => {
   return undefined
 }
 
-const getSignature = (requestObject) => {
-  try {
-    const options = {
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: `Bearer ${requestObject.token}`,
-      },
-    }
-    return get(`${config.transakApiHost}/sign?url=${requestObject.url}`, options)
-  } catch (error) {
-    log.error(error)
-  }
-  return undefined
-}
-
-export { getQuote, getSignature }
+export default { getQuote }
