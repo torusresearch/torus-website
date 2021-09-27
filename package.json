@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@chaitanyapotti/random-id": "^1.0.3",
-    "@ethereumjs/common": "^2.4.0",
+    "@ethereumjs/common": "^2.5.0",
     "@ethereumjs/tx": "^3.3.0",
     "@gtm-support/vue2-gtm": "^1.2.0",
     "@metamask/contract-metadata": "^1.29.0",
