@@ -481,6 +481,7 @@ import {
   GAS_ESTIMATE_TYPES,
   GITHUB,
   GOOGLE,
+  MAINNET,
   MESSAGE_MODAL_TYPE_FAIL,
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
@@ -835,7 +836,7 @@ export default {
       }
     },
     sendEmail(transactionHash) {
-      if (/\S+@\S+\.\S+/.test(this.toAddress)) {
+      if (/\S+@\S+\.\S+/.test(this.toAddress) && this.networkType.host === MAINNET) {
         const emailObject = {
           to_email: this.toAddress,
           tx_hash: transactionHash,
