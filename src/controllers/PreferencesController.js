@@ -796,6 +796,8 @@ class PreferencesController extends EventEmitter {
 
   /* istanbul ignore next */
   async sendEmail(payload) {
+    // waiting for tx to get inserted first.
+    await waitForMs(2000)
     return this.api.post(`${config.api}/transaction/sendemail`, payload.emailObject, this.headers(), { useAPIKey: true })
   }
 

@@ -834,21 +834,11 @@ export default {
         )
       }
     },
-    sendEmail(typeToken, transactionHash) {
+    sendEmail(transactionHash) {
       if (/\S+@\S+\.\S+/.test(this.toAddress)) {
-        const etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
         const emailObject = {
-          from_name: this.userInfo.name,
           to_email: this.toAddress,
-          total_amount: significantDigits(this.amount.toFormat(5), false, 5).toString(),
-          token: typeToken.toString(),
-          etherscanLink,
-          currency: this.selectedCurrency,
-          currencyAmount: significantDigits(this.amount.times(this.getCurrencyTokenRate).toFormat(2)) || '',
-          tokenImageUrl:
-            this.contractType !== CONTRACT_TYPE_ERC721 || this.contractType !== this.CONTRACT_TYPE_ERC1155
-              ? `${this.logosUrl}/${this.selectedItemDisplay.logo}`
-              : this.selectedItemDisplay.image,
+          tx_hash: transactionHash,
         }
         this.$store
           .dispatch('sendEmail', { emailObject })
@@ -1207,7 +1197,7 @@ export default {
             log.error(error)
           } else {
             // Send email to the user
-            this.sendEmail(this.selectedItem.symbol, transactionHash)
+            this.sendEmail(transactionHash)
             this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
 
             this.messageModalShow = true
@@ -1240,7 +1230,7 @@ export default {
               log.error(error)
             } else {
               // Send email to the user
-              this.sendEmail(this.selectedItem.symbol, transactionHash)
+              this.sendEmail(transactionHash)
               this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
 
               this.messageModalShow = true
@@ -1270,7 +1260,7 @@ export default {
               log.error(error)
             } else {
               // Send email to the user
-              this.sendEmail(this.assetSelected.name, transactionHash)
+              this.sendEmail(transactionHash)
               this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
@@ -1301,7 +1291,7 @@ export default {
               log.error(error)
             } else {
               // Send email to the user
-              this.sendEmail(this.assetSelected.name, transactionHash)
+              this.sendEmail(transactionHash)
               this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
