@@ -63,7 +63,7 @@
     "eth-query": "^2.1.2",
     "eth-rpc-errors": "^4.0.3",
     "eth-sig-util": "^3.0.1",
-    "ethereumjs-util": "^7.1.0",
+    "ethereumjs-util": "^7.1.2",
     "ethereumjs-wallet": "^1.0.1",
     "ethjs-query": "^0.3.8",
     "fast-json-patch": "^2.2.1",
