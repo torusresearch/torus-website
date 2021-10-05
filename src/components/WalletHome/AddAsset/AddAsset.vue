@@ -26,7 +26,7 @@
                 <div class="body-2 mb-2">{{ t('homeAssets.contractAddress') }}</div>
                 <v-text-field
                   :value="contractAddress"
-                  :rules="[rules.required, addressValidityRule, duplicateNftRule, ownerShipRule]"
+                  :rules="[rules.required, addressValidityRule]"
                   outlined
                   @change="setContractAddress"
                 ></v-text-field>
@@ -35,7 +35,7 @@
                 <div class="body-2 mb-2">{{ t('homeAssets.tokenId') }}</div>
                 <v-text-field
                   v-model="tokenId"
-                  :rules="[rules.required]"
+                  :rules="[rules.required, ownerShipRule, duplicateNftRule]"
                   outlined
                   :error-messages="displayError"
                   :error="!!displayError"
