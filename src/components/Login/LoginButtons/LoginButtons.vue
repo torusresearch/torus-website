@@ -20,7 +20,7 @@
         @click="triggerLogin(verifier.verifier)"
       />
     </div>
-    <v-layout justify-space-between class="buttons-container" wrap :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
+    <v-layout class="buttons-container" wrap :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
       <v-flex
         v-for="verifier in mainButtons"
         :key="verifier.verifier"
