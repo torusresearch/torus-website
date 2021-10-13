@@ -1,5 +1,5 @@
 <template>
-  <v-flex class="login-buttons" :class="{ 'is-popup': isPopup }" xs10 sm12 ml-auto mr-auto>
+  <v-flex class="login-buttons" :class="isPopup ? 'is-popup xs-12' : 'xs10 sm12'" ml-auto mr-auto>
     <!-- <div
       v-if="(mainButtonsLong.length > 0 || mainButtons.length > 0) && !$vuetify.breakpoint.xsOnly && !isPopup"
       class="headline font-weight-regular mb-2"
@@ -20,7 +20,7 @@
         @click="triggerLogin(verifier.verifier)"
       />
     </div>
-    <v-layout class="buttons-container" wrap :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
+    <v-layout justify-space-between class="buttons-container" wrap :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
       <v-flex
         v-for="verifier in mainButtons"
         :key="verifier.verifier"
