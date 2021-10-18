@@ -50,7 +50,7 @@
 
 <script>
 import BigNumber from 'bignumber.js'
-import { isEqual } from 'lodash'
+import { isEqual } from 'lodash-es'
 
 import { bnGreaterThan, gasTiming, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'

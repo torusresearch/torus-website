@@ -2,7 +2,7 @@
 import Common from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
 import { ObservableStore } from '@metamask/obs-store'
-import EventEmitter from '@metamask/safe-event-emitter'
+import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import { ethErrors } from 'eth-rpc-errors'
 import { addHexPrefix, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import EthQuery from 'ethjs-query'
@@ -72,7 +72,7 @@ const erc1155AbiDecoder = new AbiDecoder(erc1155Abi.abi)
   @param {Object}  opts.preferencesStore
 */
 
-class TransactionController extends EventEmitter {
+class TransactionController extends SafeEventEmitter {
   constructor(options) {
     super()
     this.networkStore = options.networkStore || new ObservableStore({})

@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
 import { ObservableStore } from '@metamask/obs-store'
-import EventEmitter from '@metamask/safe-event-emitter'
-import { keyBy, mapValues, omitBy, pickBy, sortBy } from 'lodash'
+import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
+import { keyBy, mapValues, omitBy, pickBy, sortBy } from 'lodash-es'
 import log from 'loglevel'
 
 import { TRANSACTION_STATUSES } from '../../utils/enums'
@@ -30,7 +29,7 @@ import { getFinalStates, normalizeAndValidateTxParams, transactionMatchesNetwork
   @param {function} opts.getNetwork return network number
   @class
 */
-class TransactionStateManager extends EventEmitter {
+class TransactionStateManager extends SafeEventEmitter {
   constructor({ initState, txHistoryLimit, getNetwork, getCurrentChainId }) {
     super()
 

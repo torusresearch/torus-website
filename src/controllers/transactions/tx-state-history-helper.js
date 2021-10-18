@@ -1,5 +1,5 @@
 import jsonDiffer from 'fast-json-patch'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 
 /** @module */
 

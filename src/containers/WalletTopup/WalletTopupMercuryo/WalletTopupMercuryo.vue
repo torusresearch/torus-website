@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { throttle } from 'lodash'
+import { throttle } from 'lodash-es'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 

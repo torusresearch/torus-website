@@ -1,6 +1,6 @@
 import { ObservableStore } from '@metamask/obs-store'
 import BigNumber from 'bignumber.js'
-import { isEqual } from 'lodash'
+import { isEqual } from 'lodash-es'
 import log from 'loglevel'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 import Web3 from 'web3'

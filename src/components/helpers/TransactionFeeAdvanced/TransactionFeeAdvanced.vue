@@ -166,7 +166,7 @@
 
 <script>
 import BigNumber from 'bignumber.js'
-import { isEqual } from 'lodash'
+import { isEqual } from 'lodash-es'
 import log from 'loglevel'
 
 import { TRANSACTION_SPEED } from '../../../utils/enums'
