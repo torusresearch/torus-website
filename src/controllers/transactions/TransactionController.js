@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable require-atomic-updates */
 import Common from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
@@ -920,13 +921,6 @@ class TransactionController extends EventEmitter {
     /** @returns {string} the user selected address */
     this.getSelectedAddress = () => this.preferencesStore.getState().selectedAddress || ''
 
-    this.getHeaders = () => ({
-      headers: {
-        Authorization: `Bearer ${this.preferencesStore.getState()?.jwtToken || ''}`,
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-    })
-
     /** @returns {Array} transactions whos status is unapproved */
     this.getUnapprovedTxCount = () => Object.keys(this.txStateManager.getUnapprovedTxList()).length
 
@@ -938,6 +932,14 @@ class TransactionController extends EventEmitter {
 
     /** see txStateManager */
     this.getTransactions = (opts) => this.txStateManager.getTransactions(opts)
+  }
+
+  getHeaders() {
+    const prefsState = this.preferencesStore.getState()
+    return {
+      Authorization: `Bearer ${prefsState[prefsState.selectedAddress]?.jwtToken || ''}`,
+      'Content-Type': 'application/json; charset=utf-8',
+    }
   }
 
   // called once on startup
@@ -1030,7 +1032,6 @@ class TransactionController extends EventEmitter {
     const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
     const decodedERC20 = data && tokenABIDecoder.decodeMethod(data)
     const chainId = this._getCurrentChainId()
-
     let result
     let code
     let tokenMethodName = ''
@@ -1080,15 +1081,20 @@ class TransactionController extends EventEmitter {
       )
       methodParameters = params
       try {
-        const idParam = params.find((param) => param.name === 'id')
-        const assetRes = await this.api.getAssetData(
-          { contract: checkSummedTo.toLowerCase(), chainId, tokenId: idParam.value },
-          this.getHeaders(),
-          10
-        )
+        let assetRes = {}
+        const idParam = params.find((param) => param.name === '_tokenId' || param.name === 'tokenId' || param.name === 'id')
+        if (idParam) {
+          assetRes = await this.api.getAssetData(
+            { contract: checkSummedTo.toLowerCase(), chainId, tokenId: idParam.value },
+            this.getHeaders(),
+            10_000
+          )
+        } else {
+          assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase(), chainId }, this.getHeaders(), 10_000)
+        }
         contractParameters = { ...contractParameters, ...assetRes }
       } catch (error) {
-        log.warn('failed to fetch asset contract data', error)
+        log.warn('failed to fetch asset data', error)
       }
 
       contractParameters.erc721 = true
@@ -1101,15 +1107,21 @@ class TransactionController extends EventEmitter {
         (methodName) => methodName.toLowerCase() === name.toLowerCase()
       )
       try {
-        const idParam = params.find((param) => param.name === 'id')
-        const assetRes = await this.api.getAssetData(
-          { contract: checkSummedTo.toLowerCase(), chainId, tokenId: idParam.value },
-          this.getHeaders(),
-          10
-        )
+        let assetRes = {}
+        const idParam = params.find((param) => param.name === '_tokenId' || param.name === 'tokenId' || param.name === 'id')
+
+        if (idParam) {
+          assetRes = await this.api.getAssetData(
+            { contract: checkSummedTo.toLowerCase(), chainId, tokenId: idParam.value },
+            this.getHeaders(),
+            10_000
+          )
+        } else {
+          assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase(), chainId }, this.getHeaders(), 10_000)
+        }
         contractParameters = { ...contractParameters, ...assetRes }
       } catch (error) {
-        log.warn('failed to fetch asset contract data', error)
+        log.warn('failed to fetch asset data', error)
       }
       methodParameters = params
       contractParameters.erc1155 = true
@@ -1118,7 +1130,7 @@ class TransactionController extends EventEmitter {
     } else if (isEtherscan) {
       let nftParams = {}
       try {
-        const assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase(), chainId }, this.getHeaders(), 10)
+        const assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase(), chainId }, this.getHeaders(), 10_000)
         nftParams = { ...assetRes }
       } catch (error) {
         log.warn('failed to fetch asset contract data', error)
@@ -1139,7 +1151,7 @@ class TransactionController extends EventEmitter {
       }
     }
 
-    // log.info(data, decodedERC20, decodedERC721, tokenMethodName, contractParams, methodParams)
+    // log.debug(data, decodedERC20, decodedERC721, tokenMethodName, contractParameters, methodParameters, 'tx category')
 
     if (!result) {
       if (txParameters.data && tokenMethodName) {

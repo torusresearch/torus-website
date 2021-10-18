@@ -109,13 +109,11 @@ export default class ApiHelpers {
       throw new Error('Nft metadata not found')
     }
     // for all other covalent supported chains except mainnnet.
-    const queryApi = `https://api.covalenthq.com/v1/${chainId}/tokens/${contract}/nft_metadata/${tokenId}`
-    const url = new URL(`${config.api}/covalent`)
-    url.searchParams.append('url', queryApi)
+    const queryApi = `${config.api}/covalent?url=https://api.covalenthq.com/v1/${chainId}/tokens/${contract}/nft_metadata/${tokenId}/`
     if (timeout > 0) {
-      res = await this.getWithTimeout(url.href, options, timeout)
+      res = await this.getWithTimeout(queryApi, options, timeout)
     } else {
-      res = await this.get(url.href, options)
+      res = await this.get(queryApi, options)
     }
     const contractData = res.data?.data?.items || []
     if (contractData.length > 0) {
@@ -162,6 +160,7 @@ export default class ApiHelpers {
         logo: res.data?.image_url,
         name: res.data?.name,
         description: res.data?.name,
+        schema_name: res.data?.schema_name?.toLowerCase(),
       }
     }
     if (!COVALENT_SUPPORTED_CHAIN_IDS[chainId]) {
@@ -172,23 +171,25 @@ export default class ApiHelpers {
     // so here tring to fetch using first potential nft token id.
     const tokenId = 1
     // for all other covalent supported chains except mainnnet.
-    const queryApi = `https://api.covalenthq.com/v1/${chainId}/tokens/${contract}/nft_metadata/${tokenId}`
-    const url = new URL(`${config.api}/covalent`)
-    url.searchParams.append('url', queryApi)
+    const queryApi = `${config.api}/covalent?url=https://api.covalenthq.com/v1/${chainId}/tokens/${contract}/nft_metadata/${tokenId}/`
     if (timeout > 0) {
-      res = await this.getWithTimeout(url.href, options, timeout)
+      res = await this.getWithTimeout(queryApi, options, timeout)
     } else {
-      res = await this.get(url.href, options)
+      res = await this.get(queryApi, options)
     }
     const contractData = res.data?.data?.items || []
     if (contractData.length > 0) {
-      const { contract_ticker_symbol: symbol, contract_name: name, logo_url: logo } = contractData[0]
-
+      const { contract_ticker_symbol: symbol, contract_name: name, logo_url: logo, supports_erc } = contractData[0]
+      let schema_name = 'erc721'
+      if (supports_erc.includes('erc1155')) {
+        schema_name = 'erc1155'
+      }
       return {
         name,
         logo,
         symbol: symbol || name,
         description: '',
+        schema_name,
       }
     }
     throw new Error('Nft contract data not found')
