@@ -53,7 +53,7 @@
     "bignumber.js": "^9.0.1",
     "broadcast-channel": "^4.2.0",
     "copy-to-clipboard": "^3.3.1",
-    "core-js": "^3.18.0",
+    "core-js": "^3.18.2",
     "create-hash": "^1.2.0",
     "deepmerge": "^4.2.2",
     "eth-block-tracker": "^5.0.1",
