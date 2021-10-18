@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import { addHexPrefix, BN, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
@@ -223,6 +222,7 @@ export function bnToHex(inputBn) {
  *
  */
 export function hexToBn(inputHex) {
+  if (BN.isBN(inputHex)) return inputHex
   return new BN(stripHexPrefix(inputHex), 16)
 }
 

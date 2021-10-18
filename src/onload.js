@@ -1,6 +1,6 @@
 import NodeDetailManager from '@toruslabs/fetch-node-details'
+import { BasePostMessageStream } from '@toruslabs/openlogin-jrpc'
 import log from 'loglevel'
-import LocalMessageDuplexStream from 'post-message-stream'
 import Web3 from 'web3'
 
 import TorusController from './controllers/TorusController'
@@ -77,13 +77,13 @@ function onloadTorus(torus) {
 
   if (isMain) return torus
 
-  const metamaskStream = new LocalMessageDuplexStream({
+  const metamaskStream = new BasePostMessageStream({
     name: 'iframe_metamask',
     target: 'embed_metamask',
     targetWindow: window.parent,
   })
 
-  const communicationStream = new LocalMessageDuplexStream({
+  const communicationStream = new BasePostMessageStream({
     name: 'iframe_comm',
     target: 'embed_comm',
     targetWindow: window.parent,

@@ -1,5 +1,5 @@
+import { JRPCEngine } from '@toruslabs/openlogin-jrpc'
 import { ethErrors } from 'eth-rpc-errors'
-import { JsonRpcEngine } from 'json-rpc-engine'
 import log from 'loglevel'
 
 // import { ObservableStore } from '@metamask/obs-store'
@@ -22,7 +22,7 @@ export default class PermissionsController {
   }
 
   createMiddleware({ origin }) {
-    const engine = new JsonRpcEngine()
+    const engine = new JRPCEngine()
 
     engine.push(
       createMethodMiddleware({

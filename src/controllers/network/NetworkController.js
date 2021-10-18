@@ -1,4 +1,5 @@
 import { ComposedStore, ObservableStore } from '@metamask/obs-store'
+import { JRPCEngine, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
 import assert from 'assert'
 import { PollingBlockTracker } from 'eth-block-tracker'
 import {
@@ -10,7 +11,6 @@ import {
 } from 'eth-json-rpc-middleware'
 import EthQuery from 'eth-query'
 import EventEmitter from 'events'
-import { JsonRpcEngine, mergeMiddleware } from 'json-rpc-engine'
 import log from 'loglevel'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 
@@ -327,7 +327,7 @@ export default class NetworkController extends EventEmitter {
 
   _setNetworkClient({ networkMiddleware, blockTracker }) {
     const metamaskMiddleware = createMetamaskMiddleware(this._baseProviderParams)
-    const engine = new JsonRpcEngine()
+    const engine = new JRPCEngine()
     engine.push(metamaskMiddleware)
     engine.push(networkMiddleware)
     const provider = providerFromEngine(engine)

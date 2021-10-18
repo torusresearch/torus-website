@@ -1,6 +1,6 @@
+import { createScaffoldMiddleware, JRPCEngine } from '@toruslabs/openlogin-jrpc'
 import { providerAsMiddleware } from 'eth-json-rpc-middleware'
 import GanacheCore from 'ganache-core'
-import { createScaffoldMiddleware, JsonRpcEngine } from 'json-rpc-engine'
 
 export function getTestSeed() {
   return 'people carpet cluster attract ankle motor ozone mass dove original primary mask'
@@ -24,7 +24,7 @@ export function getTestAccounts() {
 }
 
 export function createEngineForTestData() {
-  return new JsonRpcEngine()
+  return new JRPCEngine()
 }
 
 export function providerFromEngine(engine) {

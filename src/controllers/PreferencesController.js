@@ -1,5 +1,5 @@
 import { ObservableStore } from '@metamask/obs-store'
-import EventEmitter from '@metamask/safe-event-emitter'
+import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import deepmerge from 'deepmerge'
 import { hashPersonalMessage } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
@@ -72,7 +72,7 @@ const DEFAULT_ACCOUNT_STATE = {
   customNfts: [],
 }
 
-class PreferencesController extends EventEmitter {
+class PreferencesController extends SafeEventEmitter {
   /**
    *
    * @typedef {Object} PreferencesController
