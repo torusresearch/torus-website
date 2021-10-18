@@ -1,6 +1,6 @@
 import { addHexPrefix } from 'ethereumjs-util'
 import EthQuery from 'ethjs-query'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 
 import { BnMultiplyByFraction, bnToHex, hexToBn } from '../../utils/utils'
@@ -24,6 +24,7 @@ class TxGasUtil {
   async analyzeGasUsage(txMeta) {
     const block = await this.query.getBlockByNumber('latest', false)
     // fallback to block gasLimit
+    log.error('blockGasLimit', block)
     const blockGasLimitBN = hexToBn(block.gasLimit)
     const saferGasLimitBN = BnMultiplyByFraction(blockGasLimitBN, 19, 20)
     let estimatedGasHex = bnToHex(saferGasLimitBN)

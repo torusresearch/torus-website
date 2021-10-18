@@ -222,6 +222,7 @@ export function bnToHex(inputBn) {
  *
  */
 export function hexToBn(inputHex) {
+  if (BN.isBN(inputHex)) return inputHex
   return new BN(stripHexPrefix(inputHex), 16)
 }
 

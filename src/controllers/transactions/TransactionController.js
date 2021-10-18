@@ -25,7 +25,6 @@ import {
   GAS_ESTIMATE_TYPES,
   HARDFORKS,
   INFURA_PROVIDER_TYPES,
-  MAINNET,
   OLD_ERC721_LIST,
   RPC,
   SUPPORTED_NETWORK_TYPES,
@@ -191,22 +190,7 @@ class TransactionController extends SafeEventEmitter {
     const chainId = this._getCurrentChainId()
     const networkId = this.networkStore.getState()
 
-    const customChainParams = {
-      name,
-      chainId,
-      // It is improbable for a transaction to be signed while the network
-      // is loading for two reasons.
-      // 1. Pending, unconfirmed transactions are wiped on network change
-      // 2. The UI is unusable (loading indicator) when network is loading.
-      // setting the networkId to 0 is for type safety and to explicity lead
-      // the transaction to failing if a user is able to get to this branch
-      // on a custom network that requires valid network id. I have not ran
-      // into this limitation on any network I have attempted, even when
-      // hardcoding networkId to 'loading'.
-      networkId: networkId === 'loading' ? 0 : Number.parseInt(networkId, 10),
-    }
-
-    return Common.forCustomChain(MAINNET, customChainParams, hardfork)
+    return Common.custom({ chainId, name, defaultHardfork: hardfork, networkId: networkId === 'loading' ? 0 : Number.parseInt(networkId, 10) })
   }
 
   /**

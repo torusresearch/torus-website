@@ -1,7 +1,7 @@
 import randomId from '@chaitanyapotti/random-id'
 import deepmerge from 'deepmerge'
 import { BN } from 'ethereumjs-util'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 

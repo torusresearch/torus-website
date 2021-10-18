@@ -1,6 +1,6 @@
 import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
-import { keyBy, mapValues, omitBy, pickBy, sortBy } from 'lodash-es'
+import { keyBy, mapValues, omitBy, pickBy, sortBy } from 'lodash'
 import log from 'loglevel'
 
 import { TRANSACTION_STATUSES } from '../../utils/enums'

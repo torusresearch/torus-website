@@ -1,7 +1,3 @@
-require('@babel/register')({
-  ignore: [(name) => name.includes('node_modules')],
-})
-
 require('dotenv').config({ path: '.env' })
 
 require('./helper')

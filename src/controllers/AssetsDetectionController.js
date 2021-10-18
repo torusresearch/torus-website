@@ -4,7 +4,7 @@
  */
 
 import deepmerge from 'deepmerge'
-import { isEqual } from 'lodash-es'
+import { isEqual } from 'lodash'
 import log from 'loglevel'
 import Web3 from 'web3'
 
