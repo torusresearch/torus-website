@@ -4,7 +4,7 @@ import { TransactionFactory } from '@ethereumjs/tx'
 import { ObservableStore } from '@metamask/obs-store'
 import EventEmitter from '@metamask/safe-event-emitter'
 import { ethErrors } from 'eth-rpc-errors'
-import { addHexPrefix, bufferToHex } from 'ethereumjs-util'
+import { addHexPrefix, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import EthQuery from 'ethjs-query'
 import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
@@ -33,7 +33,7 @@ import {
   TRANSACTION_STATUSES,
   TRANSACTION_TYPES,
 } from '../../utils/enums'
-import { BnMultiplyByFraction, bnToHex, formatPastTx, GAS_LIMITS, getChainType, getEtherScanHashLink, hexToBn } from '../../utils/utils'
+import { bnLessThan, BnMultiplyByFraction, bnToHex, formatPastTx, GAS_LIMITS, getChainType, getEtherScanHashLink, hexToBn } from '../../utils/utils'
 import NonceTracker from '../NonceTracker'
 import cleanErrorStack from '../utils/cleanErrorStack'
 import PendingTransactionTracker from './PendingTransactionTracker'
@@ -397,7 +397,12 @@ class TransactionController extends EventEmitter {
       //  then we set maxFeePerGas and maxPriorityFeePerGas to the suggested gasPrice.
       if (txMeta.txParams.gasPrice && !txMeta.txParams.maxFeePerGas && !txMeta.txParams.maxPriorityFeePerGas) {
         txMeta.txParams.maxFeePerGas = txMeta.txParams.gasPrice
-        txMeta.txParams.maxPriorityFeePerGas = defaultMaxPriorityFeePerGas || txMeta.txParams.gasPrice
+        txMeta.txParams.maxPriorityFeePerGas = bnLessThan(
+          typeof defaultMaxPriorityFeePerGas === 'string' ? stripHexPrefix(defaultMaxPriorityFeePerGas) : defaultMaxPriorityFeePerGas,
+          typeof txMeta.txParams.gasPrice === 'string' ? stripHexPrefix(txMeta.txParams.gasPrice) : txMeta.txParams.gasPrice
+        )
+          ? defaultMaxPriorityFeePerGas
+          : txMeta.txParams.gasPrice
       } else {
         if (defaultMaxFeePerGas && !txMeta.txParams.maxFeePerGas) {
           // If the dapp has not set the gasPrice or the maxFeePerGas, then we set maxFeePerGas
