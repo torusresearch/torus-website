@@ -24,7 +24,6 @@ class TxGasUtil {
   async analyzeGasUsage(txMeta) {
     const block = await this.query.getBlockByNumber('latest', false)
     // fallback to block gasLimit
-    log.error('blockGasLimit', block)
     const blockGasLimitBN = hexToBn(block.gasLimit)
     const saferGasLimitBN = BnMultiplyByFraction(blockGasLimitBN, 19, 20)
     let estimatedGasHex = bnToHex(saferGasLimitBN)
