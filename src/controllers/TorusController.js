@@ -153,6 +153,7 @@ export default class TorusController extends EventEmitter {
       provider: this.provider,
       blockTracker: this.blockTracker,
       getEIP1559GasFeeEstimates: this.gasFeeController.fetchGasFeeEstimates.bind(this.gasFeeController),
+      storeDispatch: this.opts.storeDispatch,
     })
     this.txController.on('newUnapprovedTx', (txMeta, request) => options.showUnapprovedTx(txMeta, request))
 

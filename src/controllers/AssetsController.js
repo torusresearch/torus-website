@@ -8,8 +8,7 @@ import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
-import erc721Contracts from '../assets/assets-map.json'
-import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, NFT_SUPPORTED_NETWORKS, SUPPORTED_NFT_STANDARDS } from '../utils/enums'
+import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, NFT_SUPPORTED_NETWORKS, OLD_ERC721_LIST, SUPPORTED_NFT_STANDARDS } from '../utils/enums'
 import { get } from '../utils/httpHelpers'
 import { sanitizeNftMetdataUrl, validateImageUrl } from '../utils/utils'
 
@@ -155,8 +154,8 @@ export default class AssetController {
   async getCollectibleInformationFromTokenURI(contractAddress, tokenId) {
     const { standard: interfaceStandard, isSpecial } = await this.assetContractController.checkNftStandard(contractAddress)
     if (isSpecial) {
-      const collectibleDetails = Object.prototype.hasOwnProperty.call(erc721Contracts, contractAddress.toLowerCase())
-        ? erc721Contracts[contractAddress.toLowerCase()]
+      const collectibleDetails = Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, contractAddress.toLowerCase())
+        ? OLD_ERC721_LIST[contractAddress.toLowerCase()]
         : {}
       return { image: collectibleDetails.logo, name: collectibleDetails.name, tokenBalance: 1, description: '', standard: interfaceStandard }
     }

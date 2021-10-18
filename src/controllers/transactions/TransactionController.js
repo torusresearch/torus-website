@@ -12,8 +12,8 @@ import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { fromWei, isAddress, sha3, toBN, toChecksumAddress } from 'web3-utils'
 
-import erc721Contracts from '../../assets/assets-map.json'
 import AbiDecoder from '../../utils/abiDecoder'
+import ApiHelpers from '../../utils/apiHelpers'
 import erc20Contracts from '../../utils/contractMetadata'
 import { decGWEIToHexWEI } from '../../utils/conversionUtils'
 import {
@@ -29,6 +29,7 @@ import {
   OLD_ERC721_LIST,
   RPC,
   SUPPORTED_NETWORK_TYPES,
+  SUPPORTED_NFT_STANDARDS,
   TRANSACTION_ENVELOPE_TYPES,
   TRANSACTION_STATUSES,
   TRANSACTION_TYPES,
@@ -95,6 +96,7 @@ class TransactionController extends EventEmitter {
     this.txGasUtil = new TxGasUtil(this.provider)
     this.opts = options
     this._mapMethods()
+    this.api = new ApiHelpers(options.storeDispatch)
     this.txStateManager = new TransactionStateManager({
       initState: options.initState,
       txHistoryLimit: options.txHistoryLimit,
@@ -918,6 +920,13 @@ class TransactionController extends EventEmitter {
     /** @returns {string} the user selected address */
     this.getSelectedAddress = () => this.preferencesStore.getState().selectedAddress || ''
 
+    this.getHeaders = () => ({
+      headers: {
+        Authorization: `Bearer ${this.preferencesStore.getState()?.jwtToken || ''}`,
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    })
+
     /** @returns {Array} transactions whos status is unapproved */
     this.getUnapprovedTxCount = () => Object.keys(this.txStateManager.getUnapprovedTxList()).length
 
@@ -1040,8 +1049,8 @@ class TransactionController extends EventEmitter {
     } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, checkSummedTo.toLowerCase())) {
       // For Cryptokitties
       tokenMethodName = TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER
-      contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
-        ? erc721Contracts[checkSummedTo.toLowerCase()]
+      contractParameters = Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, checkSummedTo.toLowerCase())
+        ? OLD_ERC721_LIST[checkSummedTo.toLowerCase()]
         : {}
       delete contractParameters.erc20
       contractParameters.erc721 = true
@@ -1069,9 +1078,12 @@ class TransactionController extends EventEmitter {
         (methodName) => methodName.toLowerCase() === name.toLowerCase()
       )
       methodParameters = params
-      contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
-        ? erc721Contracts[checkSummedTo.toLowerCase()]
-        : {}
+      try {
+        const assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase() }, this.getHeaders(), 10)
+        contractParameters = assetRes.data
+      } catch (error) {
+        log.warn('failed to fetch asset contract data', error)
+      }
 
       contractParameters.erc721 = true
       contractParameters.decimals = 0
@@ -1082,18 +1094,33 @@ class TransactionController extends EventEmitter {
       tokenMethodName = [TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM].find(
         (methodName) => methodName.toLowerCase() === name.toLowerCase()
       )
+      try {
+        const assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase() }, this.getHeaders(), 10)
+        contractParameters = assetRes.data
+      } catch (error) {
+        log.warn('failed to fetch asset contract data', error)
+      }
       methodParameters = params
       contractParameters.erc1155 = true
       contractParameters.decimals = 0
       contractParameters.isSpecial = false
     } else if (isEtherscan) {
-      if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())) {
+      let nftParams = {}
+      try {
+        const assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase() }, this.getHeaders(), 10)
+        nftParams = assetRes.data
+      } catch (error) {
+        log.warn('failed to fetch asset contract data', error)
+      }
+      if (checkSummedTo && SUPPORTED_NFT_STANDARDS.has(nftParams.schema_name)) {
+        contractParameters = nftParams
         tokenMethodName = TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
-        contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
-          ? erc721Contracts[checkSummedTo.toLowerCase()]
-          : {}
         delete contractParameters.erc20
-        contractParameters.erc721 = true
+        if (contractParameters.schema_name?.toLowerCase() === CONTRACT_TYPE_ERC1155) {
+          contractParameters.erc1155 = true
+        } else if (contractParameters.schema_name?.toLowerCase() === CONTRACT_TYPE_ERC721) {
+          contractParameters.erc721 = true
+        }
       } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo)) {
         tokenMethodName = TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM
         contractParameters = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}

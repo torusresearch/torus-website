@@ -1,7 +1,7 @@
 import log from 'loglevel'
 
 import config from '../config'
-import { get, patch, post, remove } from './httpHelpers'
+import { get, patch, post, promiseRace, remove } from './httpHelpers'
 
 export default class ApiHelpers {
   constructor(getDispatch) {
@@ -10,6 +10,7 @@ export default class ApiHelpers {
     this.patch = this._wrap(patch)
     this.post = this._wrap(post)
     this.remove = this._wrap(remove)
+    this.getWithTimeout = this._wrap(promiseRace)
   }
 
   _wrap(fn) {
@@ -70,6 +71,23 @@ export default class ApiHelpers {
     const url = new URL(`${config.api}/etherscan`)
     Object.keys(parameters).forEach((key) => url.searchParams.append(key, parameters[key]))
     return this.get(url.href, options, { useAPIKey: true })
+  }
+
+  async getAssetContractData(parameters = {}, headers, timeout = 0) {
+    const options = {
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...headers,
+      },
+    }
+    const url = new URL(`${config.api}/opensea`)
+    Object.keys(parameters).forEach((key) => url.searchParams.append(key, parameters[key]))
+    if (timeout > 0) {
+      return this.getWithTimeout(url.href, options, timeout)
+    }
+    return this.get(url.href, options)
   }
 
   async logOut() {

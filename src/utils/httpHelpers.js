@@ -8,7 +8,8 @@ export const promiseRace = (url, options, timeout) => {
   return Promise.race([
     get(url, options),
     new Promise((resolve, reject) => {
-      setTimeout(() => {
+      const id = setTimeout(() => {
+        clearTimeout(id)
         reject(new Error('timeout'))
       }, timeout)
     }),
