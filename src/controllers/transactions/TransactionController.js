@@ -1029,6 +1029,7 @@ class TransactionController extends EventEmitter {
     const decodedERC1155 = data && erc1155AbiDecoder.decodeMethod(data)
     const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
     const decodedERC20 = data && tokenABIDecoder.decodeMethod(data)
+    const chainId = this._getCurrentChainId()
 
     let result
     let code
@@ -1079,8 +1080,13 @@ class TransactionController extends EventEmitter {
       )
       methodParameters = params
       try {
-        const assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase() }, this.getHeaders(), 10)
-        contractParameters = assetRes.data
+        const idParam = params.find((param) => param.name === 'id')
+        const assetRes = await this.api.getAssetData(
+          { contract: checkSummedTo.toLowerCase(), chainId, tokenId: idParam.value },
+          this.getHeaders(),
+          10
+        )
+        contractParameters = { ...contractParameters, ...assetRes }
       } catch (error) {
         log.warn('failed to fetch asset contract data', error)
       }
@@ -1095,8 +1101,13 @@ class TransactionController extends EventEmitter {
         (methodName) => methodName.toLowerCase() === name.toLowerCase()
       )
       try {
-        const assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase() }, this.getHeaders(), 10)
-        contractParameters = assetRes.data
+        const idParam = params.find((param) => param.name === 'id')
+        const assetRes = await this.api.getAssetData(
+          { contract: checkSummedTo.toLowerCase(), chainId, tokenId: idParam.value },
+          this.getHeaders(),
+          10
+        )
+        contractParameters = { ...contractParameters, ...assetRes }
       } catch (error) {
         log.warn('failed to fetch asset contract data', error)
       }
@@ -1107,8 +1118,8 @@ class TransactionController extends EventEmitter {
     } else if (isEtherscan) {
       let nftParams = {}
       try {
-        const assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase() }, this.getHeaders(), 10)
-        nftParams = assetRes.data
+        const assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase(), chainId }, this.getHeaders(), 10)
+        nftParams = { ...assetRes }
       } catch (error) {
         log.warn('failed to fetch asset contract data', error)
       }

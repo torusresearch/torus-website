@@ -1,6 +1,7 @@
 import log from 'loglevel'
 
 import config from '../config'
+import { COVALENT_SUPPORTED_CHAIN_IDS, MAINNET_CODE } from './enums'
 import { get, patch, post, promiseRace, remove } from './httpHelpers'
 
 export default class ApiHelpers {
@@ -73,7 +74,11 @@ export default class ApiHelpers {
     return this.get(url.href, options, { useAPIKey: true })
   }
 
-  async getAssetContractData(parameters = {}, headers, timeout = 0) {
+  async getAssetData(parameters = {}, headers, timeout = 0) {
+    const { chainId, contract, tokenId } = parameters
+    if (!contract || !chainId || !tokenId) {
+      throw new Error('Invalid params received while fetching asset data')
+    }
     const options = {
       mode: 'cors',
       headers: {
@@ -82,12 +87,111 @@ export default class ApiHelpers {
         ...headers,
       },
     }
-    const url = new URL(`${config.api}/opensea`)
-    Object.keys(parameters).forEach((key) => url.searchParams.append(key, parameters[key]))
-    if (timeout > 0) {
-      return this.getWithTimeout(url.href, options, timeout)
+    let res = {}
+    // for mainnet use opensea.
+    if (chainId === MAINNET_CODE) {
+      const queryApi = `https://api.opensea.io/api/v1/asset/${contract}/${tokenId}`
+      const url = new URL(`${config.api}/opensea`)
+      url.searchParams.append('url', queryApi)
+      if (timeout > 0) {
+        res = await this.getWithTimeout(url.href, options, timeout)
+      } else {
+        res = await this.get(url.href, options)
+      }
+      return {
+        symbol: res.data?.asset_contract?.symbol,
+        logo: res.data?.image_url,
+        name: res.data?.name,
+        description: res.data?.name,
+      }
     }
-    return this.get(url.href, options)
+    if (!COVALENT_SUPPORTED_CHAIN_IDS[chainId]) {
+      throw new Error('Nft metadata not found')
+    }
+    // for all other covalent supported chains except mainnnet.
+    const queryApi = `https://api.covalenthq.com/v1/${chainId}/tokens/${contract}/nft_metadata/${tokenId}`
+    const url = new URL(`${config.api}/covalent`)
+    url.searchParams.append('url', queryApi)
+    if (timeout > 0) {
+      res = await this.getWithTimeout(url.href, options, timeout)
+    } else {
+      res = await this.get(url.href, options)
+    }
+    const contractData = res.data?.data?.items || []
+    if (contractData.length > 0) {
+      const { nft_data: nftData, contract_ticker_symbol: symbol } = contractData[0]
+      if (nftData.length > 0 && !!nftData[0].external_data) {
+        const { name, image, description } = nftData[0].external_data
+        return {
+          name,
+          logo: image,
+          symbol: symbol || name,
+          description,
+        }
+      }
+    }
+    throw new Error('Nft metadata not found')
+  }
+
+  async getAssetContractData(parameters = {}, headers, timeout = 0) {
+    const { chainId, contract } = parameters
+    if (!contract || !chainId) {
+      throw new Error('Invalid params received while fetching asset data')
+    }
+    const options = {
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...headers,
+      },
+    }
+    let res = {}
+    // for mainnet use opensea.
+    if (chainId === MAINNET_CODE) {
+      const queryApi = `https://api.opensea.io/api/v1/asset_contract/${contract}`
+      const url = new URL(`${config.api}/opensea`)
+      url.searchParams.append('url', queryApi)
+      if (timeout > 0) {
+        res = await this.getWithTimeout(url.href, options, timeout)
+      } else {
+        res = await this.get(url.href, options)
+      }
+      return {
+        symbol: res.data?.symbol,
+        logo: res.data?.image_url,
+        name: res.data?.name,
+        description: res.data?.name,
+      }
+    }
+    if (!COVALENT_SUPPORTED_CHAIN_IDS[chainId]) {
+      throw new Error('Nft contract data not found')
+    }
+    // covalent api requires tokenId to be sent.
+    // since we need only contract data which will be same for all nfts of that contract,
+    // so here tring to fetch using first potential nft token id.
+    const tokenId = 1
+    // for all other covalent supported chains except mainnnet.
+    const queryApi = `https://api.covalenthq.com/v1/${chainId}/tokens/${contract}/nft_metadata/${tokenId}`
+    const url = new URL(`${config.api}/covalent`)
+    url.searchParams.append('url', queryApi)
+    if (timeout > 0) {
+      res = await this.getWithTimeout(url.href, options, timeout)
+    } else {
+      res = await this.get(url.href, options)
+    }
+    const contractData = res.data?.data?.items || []
+    if (contractData.length > 0) {
+      const { contract_ticker_symbol: symbol, contract_name: name, logo_url: logo } = contractData[0]
+
+      return {
+        name,
+        logo,
+        symbol: symbol || name,
+        description: '',
+      }
+    }
+    throw new Error('Nft contract data not found')
   }
 
   async logOut() {
