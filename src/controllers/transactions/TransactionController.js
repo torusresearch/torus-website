@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable require-atomic-updates */
 import Common from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
