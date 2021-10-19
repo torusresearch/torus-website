@@ -1,12 +1,10 @@
 import { ObservableStore, storeAsStream } from '@metamask/obs-store'
+import { createEngineStream, JRPCEngine, SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import { providerAsMiddleware } from 'eth-json-rpc-middleware'
 import { normalize } from 'eth-sig-util'
 import { stripHexPrefix } from 'ethereumjs-util'
-import EventEmitter from 'events'
-import { JsonRpcEngine } from 'json-rpc-engine'
-import { createEngineStream } from 'json-rpc-middleware-stream'
 import { debounce } from 'lodash'
 import log from 'loglevel'
 import pump from 'pump'
@@ -41,9 +39,9 @@ import createMethodMiddleware from './utils/methodMiddleware'
 // import setupMultiplex from './utils/setupMultiplex'
 import WalletConnectController from './walletconnect/WalletConnectController'
 
-EventEmitter.defaultMaxListeners = 100
+SafeEventEmitter.defaultMaxListeners = 100
 
-export default class TorusController extends EventEmitter {
+export default class TorusController extends SafeEventEmitter {
   /**
    * @constructor
    * @param {Object} opts
@@ -888,7 +886,7 @@ export default class TorusController extends EventEmitter {
    * */
   setupProviderEngine({ origin }) {
     // setup json rpc engine stack
-    const engine = new JsonRpcEngine()
+    const engine = new JRPCEngine()
     const { provider, blockTracker } = this
 
     // create filter polyfill middleware

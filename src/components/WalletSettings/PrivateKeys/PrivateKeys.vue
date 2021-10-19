@@ -22,7 +22,7 @@
                           id="json-file-password"
                           v-model="keyStorePassword"
                           small
-                          :rules="[rules.required]"
+                          :rules="[rules.required, rules.password]"
                           autocomplete="new-password"
                           :type="showJsonPassword ? 'text' : 'password'"
                           :placeholder="t('walletSettings.enterPassword')"
@@ -188,6 +188,7 @@ export default {
       downloadFormValid: true,
       rules: {
         required: (value) => !!value || this.t('walletSettings.required'),
+        password: (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,}$/.test(value) || this.t('walletSettings.errors-invalid-password'),
       },
     }
   },

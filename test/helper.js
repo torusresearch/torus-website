@@ -80,3 +80,5 @@ register({
   presets: [['@vue/cli-plugin-babel/preset', { useBuiltIns: 'entry' }]],
   plugins: ['@babel/plugin-proposal-class-properties'],
 })
+
+console.log('finished requiring helpers for tests in mocha')

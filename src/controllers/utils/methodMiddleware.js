@@ -1,8 +1,8 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable consistent-return */
 /* eslint-disable no-unreachable */
+import { createAsyncMiddleware } from '@toruslabs/openlogin-jrpc'
 import { ethErrors } from 'eth-rpc-errors'
-import { createAsyncMiddleware } from 'json-rpc-engine'
 
 /**
  * Create middleware for handling certain methods and preprocessing permissions requests.

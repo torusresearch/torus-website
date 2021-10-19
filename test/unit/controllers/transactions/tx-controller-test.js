@@ -760,15 +760,7 @@ describe('Transaction Controller', function () {
       txController
         .signTransaction('1')
         .then((rawTx) => {
-          const chain = Common.forCustomChain(
-            MAINNET,
-            {
-              networkId: 100,
-              chainId: 100,
-              url: 'https://xdai.poanetwork.dev',
-            },
-            'istanbul'
-          )
+          const chain = Common.custom({ chainId: 100, name: 'xDai', defaultHardfork: 'istanbul', networkId: 100, url: 'https://xdai.poanetwork.dev' })
           const ethTx = TransactionFactory.fromTxData(toBuffer(rawTx), { common: chain })
           assert.equal(ethTx.common.chainIdBN().toNumber(), 100)
           done()

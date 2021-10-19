@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import { addHexPrefix, BN, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
@@ -75,6 +74,7 @@ import {
   TEST_CHAINS,
   TEST_CHAINS_NUMERIC_IDS,
   THEME_DARK_BLACK_NAME,
+  TRANSAK,
   TWITTER,
   WECHAT,
   WEIBO,
@@ -222,6 +222,7 @@ export function bnToHex(inputBn) {
  *
  */
 export function hexToBn(inputHex) {
+  if (BN.isBN(inputHex)) return inputHex
   return new BN(stripHexPrefix(inputHex), 16)
 }
 
@@ -495,6 +496,22 @@ export const paymentProviders = {
     includeFees: true,
     api: true,
     enforceMax: false,
+  },
+  [TRANSAK]: {
+    line1: 'Credit/ Debit Card/ <br/>Bank Transfer (sepa/gbp)',
+    line2: '0.99% - 5.5% or 5 USD',
+    line3: '500€/day',
+    line4: 'ETH, DAI, USDC, USDT',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://support.transak.com/hc/en-US',
+    minOrderValue: 20,
+    maxOrderValue: 500,
+    validCurrencies: ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'SGD'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
+    includeFees: true,
+    api: true,
+    enforceMax: true,
   },
 }
 
@@ -888,4 +905,8 @@ export function bnEqualTo(a, b) {
     return null
   }
   return new BigNumber(a, 10).isEqualTo(b, 10)
+}
+
+export function waitForMs(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }

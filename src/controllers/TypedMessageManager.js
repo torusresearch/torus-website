@@ -163,7 +163,8 @@ export default class TypedMessageManager extends EventEmitter {
         assert.strictEqual(validation.errors.length, 0, 'Signing data must conform to EIP-712 schema. See https://git.io/fNtcx.')
         let { chainId } = data.domain
         if (chainId) {
-          const activeChainId = Number.parseInt(this._getCurrentChainId(), 16)
+          let activeChainId = this._getCurrentChainId()
+          activeChainId = Number.parseInt(activeChainId, isHexStrict(activeChainId) ? 16 : 10)
           assert.ok(!Number.isNaN(activeChainId), `Cannot sign messages for chainId "${chainId}", because Torus is switching networks.`)
           if (typeof chainId === 'string') {
             chainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)

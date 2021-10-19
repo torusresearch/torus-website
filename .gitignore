@@ -25,3 +25,5 @@ coverage
 src/plugins/i18n
 .env
 .eslintcache
+pnpm-lock.yaml
+.husky

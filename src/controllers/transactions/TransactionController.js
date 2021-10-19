@@ -2,9 +2,9 @@
 import Common from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
 import { ObservableStore } from '@metamask/obs-store'
-import EventEmitter from '@metamask/safe-event-emitter'
+import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import { ethErrors } from 'eth-rpc-errors'
-import { addHexPrefix, bufferToHex } from 'ethereumjs-util'
+import { addHexPrefix, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import EthQuery from 'ethjs-query'
 import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
@@ -25,7 +25,6 @@ import {
   GAS_ESTIMATE_TYPES,
   HARDFORKS,
   INFURA_PROVIDER_TYPES,
-  MAINNET,
   OLD_ERC721_LIST,
   RPC,
   SUPPORTED_NETWORK_TYPES,
@@ -33,7 +32,7 @@ import {
   TRANSACTION_STATUSES,
   TRANSACTION_TYPES,
 } from '../../utils/enums'
-import { BnMultiplyByFraction, bnToHex, formatPastTx, GAS_LIMITS, getChainType, getEtherScanHashLink, hexToBn } from '../../utils/utils'
+import { bnLessThan, BnMultiplyByFraction, bnToHex, formatPastTx, GAS_LIMITS, getChainType, getEtherScanHashLink, hexToBn } from '../../utils/utils'
 import NonceTracker from '../NonceTracker'
 import cleanErrorStack from '../utils/cleanErrorStack'
 import PendingTransactionTracker from './PendingTransactionTracker'
@@ -72,7 +71,7 @@ const erc1155AbiDecoder = new AbiDecoder(erc1155Abi.abi)
   @param {Object}  opts.preferencesStore
 */
 
-class TransactionController extends EventEmitter {
+class TransactionController extends SafeEventEmitter {
   constructor(options) {
     super()
     this.networkStore = options.networkStore || new ObservableStore({})
@@ -191,22 +190,7 @@ class TransactionController extends EventEmitter {
     const chainId = this._getCurrentChainId()
     const networkId = this.networkStore.getState()
 
-    const customChainParams = {
-      name,
-      chainId,
-      // It is improbable for a transaction to be signed while the network
-      // is loading for two reasons.
-      // 1. Pending, unconfirmed transactions are wiped on network change
-      // 2. The UI is unusable (loading indicator) when network is loading.
-      // setting the networkId to 0 is for type safety and to explicity lead
-      // the transaction to failing if a user is able to get to this branch
-      // on a custom network that requires valid network id. I have not ran
-      // into this limitation on any network I have attempted, even when
-      // hardcoding networkId to 'loading'.
-      networkId: networkId === 'loading' ? 0 : Number.parseInt(networkId, 10),
-    }
-
-    return Common.forCustomChain(MAINNET, customChainParams, hardfork)
+    return Common.custom({ chainId, name, defaultHardfork: hardfork, networkId: networkId === 'loading' ? 0 : Number.parseInt(networkId, 10) })
   }
 
   /**
@@ -397,7 +381,12 @@ class TransactionController extends EventEmitter {
       //  then we set maxFeePerGas and maxPriorityFeePerGas to the suggested gasPrice.
       if (txMeta.txParams.gasPrice && !txMeta.txParams.maxFeePerGas && !txMeta.txParams.maxPriorityFeePerGas) {
         txMeta.txParams.maxFeePerGas = txMeta.txParams.gasPrice
-        txMeta.txParams.maxPriorityFeePerGas = defaultMaxPriorityFeePerGas || txMeta.txParams.gasPrice
+        txMeta.txParams.maxPriorityFeePerGas = bnLessThan(
+          typeof defaultMaxPriorityFeePerGas === 'string' ? stripHexPrefix(defaultMaxPriorityFeePerGas) : defaultMaxPriorityFeePerGas,
+          typeof txMeta.txParams.gasPrice === 'string' ? stripHexPrefix(txMeta.txParams.gasPrice) : txMeta.txParams.gasPrice
+        )
+          ? defaultMaxPriorityFeePerGas
+          : txMeta.txParams.gasPrice
       } else {
         if (defaultMaxFeePerGas && !txMeta.txParams.maxFeePerGas) {
           // If the dapp has not set the gasPrice or the maxFeePerGas, then we set maxFeePerGas

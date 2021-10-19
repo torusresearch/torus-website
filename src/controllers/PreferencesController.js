@@ -1,5 +1,5 @@
 import { ObservableStore } from '@metamask/obs-store'
-import EventEmitter from '@metamask/safe-event-emitter'
+import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import deepmerge from 'deepmerge'
 import { hashPersonalMessage } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
@@ -23,7 +23,17 @@ import {
 } from '../utils/enums'
 import { notifyUser } from '../utils/notifications'
 import { setSentryEnabled } from '../utils/sentry'
-import { formatDate, formatPastTx, formatTime, getEthTxStatus, getIFrameOrigin, getUserLanguage, isMain, storageAvailable } from '../utils/utils'
+import {
+  formatDate,
+  formatPastTx,
+  formatTime,
+  getEthTxStatus,
+  getIFrameOrigin,
+  getUserLanguage,
+  isMain,
+  storageAvailable,
+  waitForMs,
+} from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 // By default, poll every 3 minutes
@@ -62,7 +72,7 @@ const DEFAULT_ACCOUNT_STATE = {
   customNfts: [],
 }
 
-class PreferencesController extends EventEmitter {
+class PreferencesController extends SafeEventEmitter {
   /**
    *
    * @typedef {Object} PreferencesController
@@ -786,6 +796,8 @@ class PreferencesController extends EventEmitter {
 
   /* istanbul ignore next */
   async sendEmail(payload) {
+    // waiting for tx to get inserted first.
+    await waitForMs(2000)
     return this.api.post(`${config.api}/transaction/sendemail`, payload.emailObject, this.headers(), { useAPIKey: true })
   }
 
@@ -804,6 +816,14 @@ class PreferencesController extends EventEmitter {
     } catch (error) {
       log.error(error)
     }
+  }
+
+  async fetchDappList() {
+    if (!this.state()?.jwtToken) {
+      // sometimes store does not have the token when this API call is made.
+      await waitForMs(3000)
+    }
+    return this.api.get(`${config.api}/dapps`, this.headers(), { useAPIKey: true })
   }
 
   hideAnnouncement(payload, announcements) {

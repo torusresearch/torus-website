@@ -1,3 +1,4 @@
+import { createScaffoldMiddleware, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
 import { PollingBlockTracker } from 'eth-block-tracker'
 import createInfuraMiddleware from 'eth-json-rpc-infura'
 import {
@@ -8,7 +9,6 @@ import {
   createRetryOnEmptyMiddleware,
   providerFromMiddleware,
 } from 'eth-json-rpc-middleware'
-import { createScaffoldMiddleware, mergeMiddleware } from 'json-rpc-engine'
 
 import config from '../../config'
 import { NETWORK_TYPE_TO_ID_MAP } from '../../utils/enums'

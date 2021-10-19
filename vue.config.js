@@ -15,9 +15,9 @@ module.exports = {
     },
     // quiet: true
   },
-  css: {
-    extract: false,
-  },
+  // css: {
+  //   extract: false,
+  // },
   // Adds support for Edge browser, IE 11 and Safari 9
   transpileDependencies: ['vuetify', 'fast-json-patch'],
 
@@ -29,16 +29,18 @@ module.exports = {
       options.terserOptions.keep_fnames = true
       options.terserOptions.mangle.keep_fnames = true
       options.terserOptions.compress.keep_fnames = true
-      // create a fresh pülugin instance with the new options and
+      // create a fresh plugin instance with the new options and
       // replace the current one with it
       config.optimization.minimizer[0] = new TerserPlugin(options)
     } else {
-      config.devtool = 'inline-source-map'
+      config.devtool = 'source-map'
     }
   },
   chainWebpack: (config) => {
     config.resolve.alias.set('bn.js', path.resolve(__dirname, 'node_modules/bn.js'))
-    config.resolve.alias.set('lodash', path.resolve(__dirname, 'node_modules/lodash'))
+    config.resolve.alias.set('js-sha3', path.resolve(__dirname, 'node_modules/js-sha3'))
+    // config.resolve.alias.set('web3-providers-ipc', path.resolve(__dirname, 'node_modules/empty-module'))
+    // config.resolve.alias.set('web3-providers-ws', path.resolve(__dirname, 'node_modules/empty-module'))
     config.resolve.alias.set('#', path.resolve(__dirname, 'src/'))
     config.resolve.extensions.add('.vue')
 
@@ -104,7 +106,7 @@ module.exports = {
   pluginOptions: {
     webpackBundleAnalyzer: {
       openAnalyzer: false,
-      analyzerMode: 'disabled',
+      // analyzerMode: 'disabled',
     },
   },
 }
