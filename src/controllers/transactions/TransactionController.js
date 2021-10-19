@@ -30,7 +30,6 @@ import {
   OLD_ERC721_LIST,
   RPC,
   SUPPORTED_NETWORK_TYPES,
-  SUPPORTED_NFT_STANDARDS,
   TRANSACTION_ENVELOPE_TYPES,
   TRANSACTION_STATUSES,
   TRANSACTION_TYPES,
@@ -1127,28 +1126,10 @@ class TransactionController extends EventEmitter {
       contractParameters.erc1155 = true
       contractParameters.decimals = 0
       contractParameters.isSpecial = false
-    } else if (isEtherscan) {
-      let nftParams = {}
-      try {
-        const assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase(), chainId }, this.getHeaders(), 10_000)
-        nftParams = { ...assetRes }
-      } catch (error) {
-        log.warn('failed to fetch asset contract data', error)
-      }
-      if (checkSummedTo && SUPPORTED_NFT_STANDARDS.has(nftParams.schema_name)) {
-        contractParameters = nftParams
-        tokenMethodName = TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
-        delete contractParameters.erc20
-        if (contractParameters.schema_name?.toLowerCase() === CONTRACT_TYPE_ERC1155) {
-          contractParameters.erc1155 = true
-        } else if (contractParameters.schema_name?.toLowerCase() === CONTRACT_TYPE_ERC721) {
-          contractParameters.erc721 = true
-        }
-      } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo)) {
-        tokenMethodName = TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM
-        contractParameters = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
-        contractParameters.erc20 = true
-      }
+    } else if (isEtherscan && checkSummedTo && Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo)) {
+      tokenMethodName = TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM
+      contractParameters = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
+      contractParameters.erc20 = true
     }
 
     // log.debug(data, decodedERC20, decodedERC721, tokenMethodName, contractParameters, methodParameters, 'tx category')
