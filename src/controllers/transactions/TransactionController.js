@@ -12,8 +12,8 @@ import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { fromWei, isAddress, sha3, toBN, toChecksumAddress } from 'web3-utils'
 
-import erc721Contracts from '../../assets/assets-map.json'
 import AbiDecoder from '../../utils/abiDecoder'
+import ApiHelpers from '../../utils/apiHelpers'
 import erc20Contracts from '../../utils/contractMetadata'
 import { decGWEIToHexWEI } from '../../utils/conversionUtils'
 import {
@@ -94,6 +94,7 @@ class TransactionController extends SafeEventEmitter {
     this.txGasUtil = new TxGasUtil(this.provider)
     this.opts = options
     this._mapMethods()
+    this.api = new ApiHelpers(options.storeDispatch)
     this.txStateManager = new TransactionStateManager({
       initState: options.initState,
       txHistoryLimit: options.txHistoryLimit,
@@ -915,6 +916,14 @@ class TransactionController extends SafeEventEmitter {
     this.getTransactions = (opts) => this.txStateManager.getTransactions(opts)
   }
 
+  getHeaders() {
+    const prefsState = this.preferencesStore.getState()
+    return {
+      Authorization: `Bearer ${prefsState[prefsState.selectedAddress]?.jwtToken || ''}`,
+      'Content-Type': 'application/json; charset=utf-8',
+    }
+  }
+
   // called once on startup
   async _updatePendingTxsAfterFirstBlock() {
     // wait for first block so we know we're ready
@@ -1004,7 +1013,7 @@ class TransactionController extends SafeEventEmitter {
     const decodedERC1155 = data && erc1155AbiDecoder.decodeMethod(data)
     const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
     const decodedERC20 = data && tokenABIDecoder.decodeMethod(data)
-
+    const chainId = this._getCurrentChainId()
     let result
     let code
     let tokenMethodName = ''
@@ -1024,8 +1033,8 @@ class TransactionController extends SafeEventEmitter {
     } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, checkSummedTo.toLowerCase())) {
       // For Cryptokitties
       tokenMethodName = TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER
-      contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
-        ? erc721Contracts[checkSummedTo.toLowerCase()]
+      contractParameters = Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, checkSummedTo.toLowerCase())
+        ? OLD_ERC721_LIST[checkSummedTo.toLowerCase()]
         : {}
       delete contractParameters.erc20
       contractParameters.erc721 = true
@@ -1053,9 +1062,22 @@ class TransactionController extends SafeEventEmitter {
         (methodName) => methodName.toLowerCase() === name.toLowerCase()
       )
       methodParameters = params
-      contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
-        ? erc721Contracts[checkSummedTo.toLowerCase()]
-        : {}
+      try {
+        let assetRes = {}
+        const idParam = params.find((param) => param.name === '_tokenId' || param.name === 'tokenId' || param.name === 'id')
+        if (idParam) {
+          assetRes = await this.api.getAssetData(
+            { contract: checkSummedTo.toLowerCase(), chainId, tokenId: idParam.value },
+            this.getHeaders(),
+            10_000
+          )
+        } else {
+          assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase(), chainId }, this.getHeaders(), 10_000)
+        }
+        contractParameters = { ...contractParameters, ...assetRes }
+      } catch (error) {
+        log.warn('failed to fetch asset data', error)
+      }
 
       contractParameters.erc721 = true
       contractParameters.decimals = 0
@@ -1066,26 +1088,34 @@ class TransactionController extends SafeEventEmitter {
       tokenMethodName = [TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM].find(
         (methodName) => methodName.toLowerCase() === name.toLowerCase()
       )
+      try {
+        let assetRes = {}
+        const idParam = params.find((param) => param.name === '_tokenId' || param.name === 'tokenId' || param.name === 'id')
+
+        if (idParam) {
+          assetRes = await this.api.getAssetData(
+            { contract: checkSummedTo.toLowerCase(), chainId, tokenId: idParam.value },
+            this.getHeaders(),
+            10_000
+          )
+        } else {
+          assetRes = await this.api.getAssetContractData({ contract: checkSummedTo.toLowerCase(), chainId }, this.getHeaders(), 10_000)
+        }
+        contractParameters = { ...contractParameters, ...assetRes }
+      } catch (error) {
+        log.warn('failed to fetch asset data', error)
+      }
       methodParameters = params
       contractParameters.erc1155 = true
       contractParameters.decimals = 0
       contractParameters.isSpecial = false
-    } else if (isEtherscan) {
-      if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())) {
-        tokenMethodName = TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
-        contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
-          ? erc721Contracts[checkSummedTo.toLowerCase()]
-          : {}
-        delete contractParameters.erc20
-        contractParameters.erc721 = true
-      } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo)) {
-        tokenMethodName = TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM
-        contractParameters = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
-        contractParameters.erc20 = true
-      }
+    } else if (isEtherscan && checkSummedTo && Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo)) {
+      tokenMethodName = TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM
+      contractParameters = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
+      contractParameters.erc20 = true
     }
 
-    // log.info(data, decodedERC20, decodedERC721, tokenMethodName, contractParams, methodParams)
+    // log.debug(data, decodedERC20, decodedERC721, tokenMethodName, contractParameters, methodParameters, 'tx category')
 
     if (!result) {
       if (txParameters.data && tokenMethodName) {

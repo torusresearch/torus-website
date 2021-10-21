@@ -1,4 +1,4 @@
-import ObjectMultiplex from '@metamask/object-multiplex'
+import { ObjectMultiplex } from '@toruslabs/openlogin-jrpc'
 import log from 'loglevel'
 import pump from 'pump'
 
