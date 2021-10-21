@@ -33,7 +33,6 @@
     "@ethereumjs/tx": "^3.3.2",
     "@gtm-support/vue2-gtm": "^1.2.0",
     "@metamask/contract-metadata": "^1.30.0",
-    "@metamask/object-multiplex": "^1.2.0",
     "@metamask/obs-store": "^7.0.0",
     "@sentry/browser": "^6.13.3",
     "@sentry/vue": "^6.13.3",
