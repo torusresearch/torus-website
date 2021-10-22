@@ -8,6 +8,9 @@
       {{ t('login.signUpIn') }}
     </div> -->
     <div :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
+      <v-btn v-if="hasExistingAccount" large color="torusBrand1" class="white--text body-2 font-weight-regular mb-2" block @click="loginExisting">
+        {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(lastLoginInfo.typeOfLogin)) }}
+      </v-btn>
       <LoginButton
         v-for="verifier in mainButtonsLong"
         :key="verifier.verifier"
@@ -92,6 +95,7 @@
 
 <script>
 import { HOSTED_EMAIL_PASSWORDLESS_VERIFIER } from '../../../utils/enums'
+import { capitalizeFirstLetter } from '../../../utils/utils'
 import LoginButton from '../LoginButton'
 
 export default {
@@ -111,6 +115,15 @@ export default {
         return []
       },
     },
+    lastLoginInfo: {
+      type: Object,
+      default() {
+        return {
+          typeOfLogin: '',
+          verifierId: '',
+        }
+      },
+    },
   },
   data() {
     return {
@@ -128,6 +141,7 @@ export default {
   },
   computed: {
     mainButtonsLong() {
+      if (this.hasExistingAccount) return []
       return this.loginButtonsArray.filter(
         (button) =>
           ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
@@ -137,13 +151,11 @@ export default {
     },
     mainButtons() {
       return this.loginButtonsArray.filter((button) => {
+        const descCheck = this.hasExistingAccount || button.description === ''
         if (this.viewMoreOptions) {
-          return (
-            ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
-            button.description === ''
-          )
+          return ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) && descCheck
         }
-        return (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.mainOption && button.description === ''
+        return (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.mainOption && descCheck
       })
     },
     loginButtonsLong() {
@@ -161,6 +173,9 @@ export default {
       if (this.$vuetify.breakpoint.height >= 1440) return '3.47vh'
       if (this.$vuetify.breakpoint.height >= 1080) return '4.6vh'
       return '40'
+    },
+    hasExistingAccount() {
+      return this.lastLoginInfo.typeOfLogin && this.lastLoginInfo.verifierId
     },
   },
   watch: {
@@ -212,6 +227,10 @@ export default {
     loginBtnHover(verifier) {
       if (!this.$vuetify.breakpoint.xsOnly) this.setActiveBtn(verifier)
     },
+    loginExisting() {
+      const targetLogin = this.loginButtonsArray.find((login) => login.typeOfLogin === this.lastLoginInfo.typeOfLogin)
+      this.triggerLogin(targetLogin.verifier, this.lastLoginInfo.verifierId)
+    },
     setActiveBtn(verifier) {
       this.$emit('setActiveBtn', verifier)
     },
@@ -220,6 +239,9 @@ export default {
     },
     triggerLogin(verifier, email) {
       this.$emit('triggerLogin', verifier, email)
+    },
+    capitalizeFirstLetter(text) {
+      return capitalizeFirstLetter(text)
     },
   },
 }
