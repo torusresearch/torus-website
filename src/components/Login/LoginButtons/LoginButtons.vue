@@ -8,7 +8,16 @@
       {{ t('login.signUpIn') }}
     </div> -->
     <div :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
-      <v-btn v-if="hasExistingAccount" large color="torusBrand1" class="white--text body-2 font-weight-regular mb-2" block @click="loginExisting">
+      <v-btn
+        v-if="hasExistingAccount"
+        large
+        color="torusBrand1"
+        class="white--text font-weight-regular mb-2"
+        :class="$vuetify.breakpoint.xsOnly ? 'body-2' : 'headline'"
+        block
+        height="56"
+        @click="loginExisting"
+      >
         {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(lastLoginInfo.typeOfLogin)) }}
       </v-btn>
       <LoginButton
