@@ -134,7 +134,7 @@
     "husky": "^7.0.2",
     "jsdom": "^18.0.0",
     "jsdom-global": "^3.0.2",
-    "lint-staged": "^11.2.3",
+    "lint-staged": "^11.2.4",
     "luxon": "^2.0.2",
     "mocha": "^9.1.3",
     "nock": "13.1.3",
