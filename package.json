@@ -83,7 +83,7 @@
     "vue-content-loader": "^0.2.3",
     "vue-json-pretty": "^1.8.1",
     "vue-qr": "^3.2.2",
-    "vue-qrcode-reader": "^3.0.4",
+    "vue-qrcode-reader": "^3.0.5",
     "vue-router": "^3.5.2",
     "vue-spinner": "^1.0.4",
     "vuetify": "^2.5.10",
