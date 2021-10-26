@@ -20,6 +20,7 @@
               :login-buttons-array="loginButtonsArray"
               :is-popup="true"
               :active-button="activeButton"
+              :last-login-info="lastLoginInfo"
               @setActiveBtn="(verifier) => (activeButton = verifier)"
               @setActiveMobileBtn="(verifier) => (activeMobileButton = verifier)"
               @triggerLogin="startLogin"
@@ -93,6 +94,7 @@ export default {
     ...mapState({
       whiteLabel: 'whiteLabel',
       loginConfig: (state) => state.embedState.loginConfig,
+      lastLoginInfo: 'lastLoginInfo',
     }),
     localeSelected() {
       return this.$vuetify.lang.current

@@ -232,6 +232,9 @@ export default {
   setGasFees(state, payload) {
     state.gasFees = payload
   },
+  setLastLoginInfo(state, payload) {
+    state.lastLoginInfo = { ...state.lastLoginInfo, ...payload }
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]

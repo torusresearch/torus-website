@@ -335,6 +335,12 @@ if (storageAvailable('localStorage')) {
   if (torusEnableCrashReporter !== null) {
     VuexStore.commit('setCrashReport', Boolean(torusEnableCrashReporter))
   }
+
+  const openLoginStore = localStorage.getItem('openlogin_store')
+  if (openLoginStore !== null) {
+    const { typeOfLogin, verifierId } = JSON.parse(openLoginStore)
+    VuexStore.commit('setLastLoginInfo', { typeOfLogin, verifierId })
+  }
 }
 
 // Another location
