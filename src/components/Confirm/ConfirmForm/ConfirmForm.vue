@@ -1,13 +1,13 @@
 <template>
   <div>
     <template v-if="type === TRANSACTION_TYPES.STANDARD_TRANSACTION">
-      <v-layout pa-6 class="elevation-1">
-        <v-flex text-center xs12>
-          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
-          <div class="display-1 text_2--text">{{ t('dappTransfer.confirmation') }}</div>
+      <v-layout pa-6 class="confirm-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
+        <v-flex text-left xs12>
+          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
+          <div class="headline text_2--text">{{ t('dappTransfer.confirmation') }}</div>
         </v-flex>
       </v-layout>
-      <v-layout wrap align-center mx-6 my-3>
+      <v-layout wrap align-center mx-6 mb-3 mt-5>
         <v-flex xs12>
           <NetworkDisplay :minimal="true" class="mb-4" :store-network-type="network"></NetworkDisplay>
         </v-flex>
@@ -210,10 +210,10 @@
         type === MESSAGE_TYPE.ETH_DECRYPT
       "
     >
-      <v-layout py-6 class="elevation-1">
-        <v-flex xs12 text-center>
-          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
-          <div class="display-1 text_2--text">
+      <v-layout pa-6 class="confirm-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
+        <v-flex xs12 text-left>
+          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
+          <div class="headline text_2--text">
             {{
               type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY
                 ? t('dappProvider.encryptionRequest')

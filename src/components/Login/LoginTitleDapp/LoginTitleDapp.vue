@@ -1,8 +1,8 @@
 <template>
-  <div class="font-weight-regular text_2--text">
+  <div class="font-weight-bold text_2--text">
     <span>
       {{ t('dappLogin.yourDigital') }}
-      <span v-if="activeButtonDetails.verifier === GOOGLE_VERIFIER" :class="{ 'font-weight-bold': !$vuetify.breakpoint.xsOnly }">
+      <span v-if="activeButtonDetails.verifier === GOOGLE_VERIFIER">
         <span class="verifier-title__google-blue">G</span>
         <span class="verifier-title__google-red">o</span>
         <span class="verifier-title__google-yellow">o</span>
