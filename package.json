@@ -132,7 +132,7 @@
     "fibers": "^5.0.0",
     "ganache-core": "^2.13.2",
     "husky": "^7.0.4",
-    "jsdom": "^18.0.0",
+    "jsdom": "^18.0.1",
     "jsdom-global": "^3.0.2",
     "lint-staged": "^11.2.6",
     "luxon": "^2.0.2",
