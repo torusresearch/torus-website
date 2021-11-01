@@ -17,6 +17,7 @@
                   <LoginTitle v-if="activeMobileButton" :active-button-details="activeMobileButtonDetails" class="mb-6" />
                   <LoginButtons
                     :login-buttons-array="loginButtonsArray"
+                    :last-login-info="lastLoginInfo"
                     @setActiveMobileBtn="(verifier) => (activeMobileButton = verifier)"
                     @triggerLogin="startLogin"
                   />
@@ -49,6 +50,7 @@
                   <LoginButtons
                     :login-buttons-array="loginButtonsArray"
                     :active-button="activeButton"
+                    :last-login-info="lastLoginInfo"
                     @setActiveBtn="(verifier) => (activeButton = verifier)"
                     @triggerLogin="startLogin"
                   />
@@ -164,6 +166,8 @@ export default {
       selectedAddress: 'selectedAddress',
       tKeyOnboardingComplete: 'tKeyOnboardingComplete',
       loginConfig: (state) => state.embedState.loginConfig,
+      userInfo: 'userInfo',
+      lastLoginInfo: 'lastLoginInfo',
     }),
     ...mapGetters(['loginButtonsArray']),
     loggedIn() {
@@ -197,6 +201,9 @@ export default {
     },
     thirdPartyAuthenticators() {
       return thirdPartyAuthenticators(this.loginConfig)
+    },
+    lastLoginProvider() {
+      return 'google'
     },
   },
   watch: {
