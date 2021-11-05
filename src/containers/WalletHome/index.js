@@ -1,5 +1,3 @@
-import WalletHome from './WalletHome'
-import WalletHomeCollectible from './WalletHomeCollectible'
-import WalletHomeMain from './WalletHomeMain'
-
-export { WalletHome, WalletHomeCollectible, WalletHomeMain }
+export { default as WalletHome } from './WalletHome'
+export { default as WalletHomeCollectible } from './WalletHomeCollectible'
+export { default as WalletHomeMain } from './WalletHomeMain'

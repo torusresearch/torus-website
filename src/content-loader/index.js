@@ -1,37 +1,17 @@
-import ChangeProviderScreenLoader from './ChangeProviderScreenLoader.vue'
-import PopupScreenLoader from './PopupScreenLoader.vue'
-import UserInfoScreenLoader from './UserInfoScreenLoader.vue'
-import WalletActivityLoader from './WalletActivityLoader.vue'
-import WalletActivityLoaderMobile from './WalletActivityLoaderMobile.vue'
-import WalletCollectiblesLoader from './WalletCollectiblesLoader.vue'
-import WalletCollectiblesLoaderMobile from './WalletCollectiblesLoaderMobile.vue'
-import WalletHomeLoader from './WalletHomeLoader.vue'
-import WalletHomeLoaderMobile from './WalletHomeLoaderMobile.vue'
-import WalletLoginLoader from './WalletLoginLoader.vue'
-import WalletLoginLoaderMobile from './WalletLoginLoaderMobile.vue'
-import WalletSettingsLoader from './WalletSettingsLoader.vue'
-import WalletSettingsLoaderMobile from './WalletSettingsLoaderMobile.vue'
-import WalletTopupLoader from './WalletTopupLoader.vue'
-import WalletTopupLoaderMobile from './WalletTopupLoaderMobile.vue'
-import WalletTransferLoader from './WalletTransferLoader.vue'
-import WalletTransferLoaderMobile from './WalletTransferLoaderMobile.vue'
-
-export {
-  ChangeProviderScreenLoader,
-  PopupScreenLoader,
-  UserInfoScreenLoader,
-  WalletActivityLoader,
-  WalletActivityLoaderMobile,
-  WalletCollectiblesLoader,
-  WalletCollectiblesLoaderMobile,
-  WalletHomeLoader,
-  WalletHomeLoaderMobile,
-  WalletLoginLoader,
-  WalletLoginLoaderMobile,
-  WalletSettingsLoader,
-  WalletSettingsLoaderMobile,
-  WalletTopupLoader,
-  WalletTopupLoaderMobile,
-  WalletTransferLoader,
-  WalletTransferLoaderMobile,
-}
+export { default as ChangeProviderScreenLoader } from './ChangeProviderScreenLoader.vue'
+export { default as PopupScreenLoader } from './PopupScreenLoader.vue'
+export { default as UserInfoScreenLoader } from './UserInfoScreenLoader.vue'
+export { default as WalletActivityLoader } from './WalletActivityLoader.vue'
+export { default as WalletActivityLoaderMobile } from './WalletActivityLoaderMobile.vue'
+export { default as WalletCollectiblesLoader } from './WalletCollectiblesLoader.vue'
+export { default as WalletCollectiblesLoaderMobile } from './WalletCollectiblesLoaderMobile.vue'
+export { default as WalletHomeLoader } from './WalletHomeLoader.vue'
+export { default as WalletHomeLoaderMobile } from './WalletHomeLoaderMobile.vue'
+export { default as WalletLoginLoader } from './WalletLoginLoader.vue'
+export { default as WalletLoginLoaderMobile } from './WalletLoginLoaderMobile.vue'
+export { default as WalletSettingsLoader } from './WalletSettingsLoader.vue'
+export { default as WalletSettingsLoaderMobile } from './WalletSettingsLoaderMobile.vue'
+export { default as WalletTopupLoader } from './WalletTopupLoader.vue'
+export { default as WalletTopupLoaderMobile } from './WalletTopupLoaderMobile.vue'
+export { default as WalletTransferLoader } from './WalletTransferLoader.vue'
+export { default as WalletTransferLoaderMobile } from './WalletTransferLoaderMobile.vue'

@@ -1,3 +1,1 @@
-import VuexStore from './setupStoreChannels'
-
-export default VuexStore
+export { default } from './setupStoreChannels'
