@@ -2,6 +2,8 @@ import { ObservableStore } from '@metamask/obs-store'
 import { normalize as normalizeAddress } from 'eth-sig-util'
 import log from 'loglevel'
 
+import { COINGECKO_PLATFORMS_CHAIN_CODE_MAP } from '../utils/enums'
+
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
 
@@ -15,11 +17,12 @@ class TokenRatesController {
    *
    * @param {Object} [config] - Options to configure controller
    */
-  constructor({ interval = DEFAULT_INTERVAL, currency, tokensStore } = {}) {
+  constructor({ interval = DEFAULT_INTERVAL, currency, tokensStore, getChainId } = {}) {
     this.store = new ObservableStore()
     this.currency = currency
     this.interval = interval
     this.tokensStore = tokensStore
+    this.getChainId = getChainId
   }
 
   /**
@@ -27,13 +30,15 @@ class TokenRatesController {
    */
   async updateExchangeRates() {
     const contractExchangeRates = {}
+    const currentChainId = typeof this.getChainId === 'function' ? this.getChainId() : null
+    const platform = COINGECKO_PLATFORMS_CHAIN_CODE_MAP[currentChainId]?.platform
     const nativeCurrency = this.currency ? this.currency.getState().nativeCurrency.toLowerCase() : 'eth'
     const uniqueTokens = [...new Set(this._tokens.map((token) => token.tokenAddress))]
     const pairs = uniqueTokens.join(',')
     const query = `contract_addresses=${pairs}&vs_currencies=${nativeCurrency}`
-    if (uniqueTokens.length > 0) {
+    if (uniqueTokens.length > 0 && platform) {
       try {
-        const response = await fetch(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
+        const response = await fetch(`https://api.coingecko.com/api/v3/simple/token_price/${platform}?${query}`)
         const prices = await response.json()
         uniqueTokens.forEach((token) => {
           const price = prices[token.toLowerCase()]

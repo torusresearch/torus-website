@@ -910,3 +910,22 @@ export function bnEqualTo(a, b) {
 export function waitForMs(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
+
+/**
+ *
+ * @param {*} chainId in numeric format
+ * @returns fungible token standard ie erc20, bep20
+ */
+export function getFungibleTokenStandard(chainId) {
+  switch (chainId) {
+    case MATIC_CODE:
+    case MUMBAI_CODE:
+    case MAINNET_CODE:
+      return 'ERC20'
+    case BSC_TESTNET_CODE:
+    case BSC_MAINNET_CODE:
+      return 'BEP20'
+    default:
+      return 'ERC20'
+  }
+}

@@ -594,3 +594,18 @@ export const TRANSACTION_SPEED = {
   MEDIUM: 'medium',
   HIGH: 'high',
 }
+
+export const COINGECKO_PLATFORMS_CHAIN_CODE_MAP = {
+  [MATIC_CODE]: {
+    platform: 'polygon-pos',
+    currency: 'matic',
+  },
+  [BSC_MAINNET_CODE]: {
+    platform: 'binance-smart-chain',
+    currency: 'bnb',
+  },
+  [MAINNET_CODE]: {
+    platform: 'ethereum',
+    currency: 'eth',
+  },
+}
