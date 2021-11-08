@@ -88,6 +88,7 @@ const initialState = {
   postboxKey: {},
   isTkeySeedPhraseInputRequired: false,
   ethTransferOnly: config.ethTransferOnly,
+  lastLoginInfo: {},
 }
 
 export default initialState

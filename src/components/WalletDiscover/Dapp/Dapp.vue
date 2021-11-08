@@ -1,24 +1,24 @@
 <template>
-  <v-card class="dapp-card d-flex align-center" :class="{ 'theme--dark': $vuetify.theme.isDark }" @click="navigateToDapp">
-    <img width="57" height="57" :src="`${getSrc}`" alt="Dapp Logo" />
-    <div class="d-flex align-start dapp-info flex-column">
-      <span class="d-flex flex-row justify-space-between align-center title-row">
+  <v-card class="dapp-card align-center" :class="{ 'theme--dark': $vuetify.theme.isDark, 'has-network': showNetwork }" @click="navigateToDapp">
+    <div class="d-flex">
+      <img width="48" height="48" :src="`${getSrc}`" alt="Dapp Logo" />
+      <div class="d-flex align-start dapp-info flex-column">
         <p class="dapp-title">{{ dapp.title }}</p>
-        <div v-if="showNetwork" class="net-chip">
-          <div v-if="!isSupportedNetwork" class="dapp-chip">
-            <p class="dapp-chip-text">{{ dapp.network }}</p>
-          </div>
-          <NetworkDisplay
-            v-else
-            :network="dapp.network"
-            :show-icon="false"
-            :store-network-type="{ host: dapp.network, networkName: '', chainId: '' }"
-          ></NetworkDisplay>
-        </div>
-      </span>
-      <p class="dapp-category">{{ dapp.category }}</p>
-      <p class="dapp-desc">{{ dapp.desc }}</p>
+        <p class="dapp-category">{{ dapp.category }}</p>
+        <p class="dapp-desc">{{ dapp.desc }}</p>
+      </div>
     </div>
+    <template v-if="showNetwork">
+      <div v-if="!isSupportedNetwork" class="dapp-chip">
+        <p class="dapp-chip-text">{{ dapp.network }}</p>
+      </div>
+      <NetworkDisplay
+        v-else
+        :network="dapp.network"
+        :show-icon="false"
+        :store-network-type="{ host: dapp.network, networkName: '', chainId: '' }"
+      ></NetworkDisplay>
+    </template>
   </v-card>
 </template>
 

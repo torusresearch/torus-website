@@ -9,7 +9,6 @@ class TorusExtended extends Torus {
   constructor() {
     super()
     this.instanceId = randomId()
-    this.openLogin = null
   }
 
   hashMessage(message) {

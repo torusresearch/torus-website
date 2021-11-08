@@ -51,7 +51,7 @@ export default {
           ethAddress: torus.generateAddressFromPrivKey(new BN(state.walletKey, 'hex')),
         })
       }
-      if (state.tKey) {
+      if (state.tKey && state.tKey !== state.walletKey) {
         keys.push({
           privKey: state.tKey,
           accountType: ACCOUNT_TYPE.THRESHOLD,

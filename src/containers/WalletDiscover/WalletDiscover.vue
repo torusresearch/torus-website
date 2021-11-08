@@ -69,14 +69,37 @@
     </div>
 
     <v-container class="f-width">
-      <v-row>
-        <v-col v-for="dapp in filteredList" :key="dapp.title + dapp.network" class="col-sm-6 col-md-4 col-lg-3 col-xl-3">
-          <Dapp :dapp="dapp" :show-network="selectedNetwork === ALL_NETWORKS" />
-        </v-col>
-      </v-row>
+      <v-data-iterator
+        :disable-pagination="$vuetify.breakpoint.xsOnly"
+        :items="filteredList"
+        item-key="url"
+        :items-per-page.sync="itemsPerPage"
+        :page.sync="page"
+        hide-default-footer
+        :loading="isLoadingDapps"
+        :loading-text="t('walletDiscover.loading')"
+        :no-results-text="t('walletDiscover.noData')"
+        :no-data-text="t('walletDiscover.noData')"
+      >
+        <template #default="props">
+          <v-row>
+            <v-col v-for="dapp in props.items" :key="dapp.title + dapp.network" class="col-sm-6 col-md-4 col-lg-3 col-xl-3">
+              <Dapp :dapp="dapp" :show-network="selectedNetwork === ALL_NETWORKS" />
+            </v-col>
+          </v-row>
+        </template>
+      </v-data-iterator>
     </v-container>
-    <p v-if="isLoadingDapps">{{ t('walletDiscover.loading') }}</p>
-    <p v-if="!isLoadingDapps && filteredList.length === 0">{{ t('walletDiscover.noData') }}</p>
+
+    <div v-if="!$vuetify.breakpoint.xsOnly && pageCount > 1" class="text-center pt-6">
+      <v-pagination
+        v-model="page"
+        class="activity-pagination"
+        prev-icon="$vuetify.icons.page_prev"
+        next-icon="$vuetify.icons.page_next"
+        :length="pageCount"
+      ></v-pagination>
+    </div>
   </div>
 </template>
 <script>
@@ -97,6 +120,8 @@ export default {
       dapps: [],
       selectedCategory: ALL_CATEGORIES,
       selectedNetwork: ALL_NETWORKS,
+      page: 1,
+      itemsPerPage: 20,
     }
   },
   computed: {
@@ -132,13 +157,17 @@ export default {
       ]
     },
     filteredList() {
-      return (
+      const filtered =
         this.dapps?.filter(
           (dapp) =>
             (this.selectedCategory === ALL_CATEGORIES || this.selectedCategory === dapp.category) &&
             (this.selectedNetwork === ALL_NETWORKS || this.selectedNetwork === dapp.network)
         ) || []
-      )
+
+      return filtered
+    },
+    pageCount() {
+      return Math.ceil(this.filteredList.length / this.itemsPerPage)
     },
   },
   async mounted() {
