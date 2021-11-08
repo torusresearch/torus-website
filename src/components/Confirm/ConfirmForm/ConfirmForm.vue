@@ -368,7 +368,10 @@ import VueJsonPretty from 'vue-json-pretty'
 import { mapActions, mapGetters } from 'vuex'
 import { fromWei, toChecksumAddress } from 'web3-utils'
 
+import TokenHandler from '../../../handlers/Token/TokenHandler'
+import torus from '../../../torus'
 import {
+  COINGECKO_PLATFORMS_CHAIN_CODE_MAP,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
@@ -379,7 +382,7 @@ import {
   TRANSACTION_TYPES,
 } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
-import { addressSlicer, bnGreaterThan, gasTiming, isMain, significantDigits } from '../../../utils/utils'
+import { addressSlicer, bnGreaterThan, gasTiming, getFungibleTokenStandard, isMain, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import TransactionFee from '../../helpers/TransactionFee'
@@ -443,6 +446,7 @@ export default {
         networkName: '',
         host: '',
         chainId: '',
+        ticker: '',
       },
       transactionCategory: '',
       dollarValue: new BigNumber('0'),
@@ -667,9 +671,19 @@ export default {
         log.info(methodParams, 'params')
         const checkSummedTo = toChecksumAddress(to)
         const tokenObject = contractParams
-        const decimals = new BigNumber(tokenObject.decimals || '0')
+        let decimals = new BigNumber('0')
+        if (tokenObject.decimals) {
+          decimals = new BigNumber(tokenObject.decimals)
+        } else if (!tokenObject.decimals && tokenObject.erc20) {
+          const tokenHandler = new TokenHandler({
+            ...tokenObject,
+            address: checkSummedTo,
+            web3: torus.web3,
+          })
+          decimals = new BigNumber(await tokenHandler.getDecimals())
+        }
         this.userInfo = userInfo
-        this.selectedToken = tokenObject.symbol || 'ERC20'
+        this.selectedToken = tokenObject.erc20 ? getFungibleTokenStandard(txParams?.chainId) : tokenObject.symbol
         this.id = id
         this.network = network
         this.transactionCategory = transactionCategory
@@ -683,14 +697,18 @@ export default {
           let tokenRateMultiplier = tokenRates[checkSummedTo.toLowerCase()]
           if (!tokenRateMultiplier) {
             const pairs = checkSummedTo
-            const query = `contract_addresses=${pairs}&vs_currencies=eth`
-            let prices = {}
-            try {
-              prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
-              const lowerCheckSum = checkSummedTo.toLowerCase()
-              tokenRateMultiplier = prices[lowerCheckSum] && prices[lowerCheckSum].eth ? prices[lowerCheckSum].eth : 0 // token price in eth
-            } catch (error) {
-              log.info(error)
+            const coingeckoMap = COINGECKO_PLATFORMS_CHAIN_CODE_MAP[txParams.chainId]
+            tokenRateMultiplier = 0
+            if (coingeckoMap) {
+              const query = `contract_addresses=${pairs}&vs_currencies=${coingeckoMap.currency}`
+              let prices = {}
+              try {
+                prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/${coingeckoMap.platform}?${query}`)
+                const lowerCheckSum = checkSummedTo.toLowerCase()
+                tokenRateMultiplier = prices[lowerCheckSum] && prices[lowerCheckSum].eth ? prices[lowerCheckSum].eth : 0 // token price in eth
+              } catch (error) {
+                log.info(error)
+              }
             }
           }
           this.tokenPrice = new BigNumber(tokenRateMultiplier)
