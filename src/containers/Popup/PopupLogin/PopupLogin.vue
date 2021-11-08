@@ -7,10 +7,10 @@
             <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="closeDialog">
               <v-icon :size="closeBtnSize">$vuetify.icons.close</v-icon>
             </v-btn>
-            <div class="verifier-title1 text_2--text">
+            <div class="verifier-title1 text_2--text mb-2">
               <span>{{ t('dappLogin.signIn') }}</span>
             </div>
-            <div class="verifier-title2 font-weight-regular text_2--text">
+            <div class="verifier-title2 text_2--text">
               <LoginTitleDapp v-if="$vuetify.breakpoint.xsOnly && activeMobileButton" :active-button-details="activeMobileButtonDetails" />
               <LoginTitleDapp v-if="!$vuetify.breakpoint.xsOnly && activeButton" :active-button-details="activeButtonDetails" />
             </div>

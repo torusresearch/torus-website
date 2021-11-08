@@ -1,4 +1,10 @@
-/* NEW UI */
+.confirm-header {
+  background: var(--v-torusGray4-base);
+  &.theme--dark {
+    background: var(--v-torusBlack2-base);
+  }
+}
+
 .v-card__text {
   padding: 12px;
 }
