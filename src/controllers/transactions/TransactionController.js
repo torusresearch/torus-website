@@ -144,7 +144,7 @@ class TransactionController extends SafeEventEmitter {
   getChainId() {
     const networkState = this.networkStore.getState()
     const chainId = this._getCurrentChainId()
-    const integerChainId = Number.parseInt(chainId, 16)
+    const integerChainId = typeof chainId === 'string' ? Number.parseInt(chainId, 16) : chainId
     if (networkState === 'loading' || Number.isNaN(integerChainId)) {
       return 0
     }
