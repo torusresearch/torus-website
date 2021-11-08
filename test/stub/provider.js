@@ -1,6 +1,5 @@
 import { createScaffoldMiddleware, JRPCEngine } from '@toruslabs/openlogin-jrpc'
-import { providerAsMiddleware } from 'eth-json-rpc-middleware'
-import GanacheCore from 'ganache-core'
+import GanacheCore from 'ganache'
 
 export function getTestSeed() {
   return 'people carpet cluster attract ankle motor ozone mass dove original primary mask'
@@ -44,10 +43,29 @@ export function createTestProviderTools(opts = {}) {
         network_id: opts.networkId,
         _chainId: opts.chainId,
         _chainIdRpc: opts.chainId,
+        chain: {
+          vmErrorsOnRPCResponse: true,
+        },
       })
     )
   )
   // wrap in standard provider interface
   const provider = providerFromEngine(engine)
   return { provider, engine }
+}
+
+function providerAsMiddleware(provider) {
+  return (req, res, _next, end) => {
+    // send request to provider
+    provider
+      .request(req)
+      .then((providerRes) => {
+        res.result = providerRes
+        return end()
+      })
+      .catch((error) => {
+        // forward any error
+        end(error)
+      })
+  }
 }
