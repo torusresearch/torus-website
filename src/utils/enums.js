@@ -596,15 +596,15 @@ export const TRANSACTION_SPEED = {
 }
 
 export const COINGECKO_PLATFORMS_CHAIN_CODE_MAP = {
-  MATIC_CODE: {
+  [MATIC_CODE]: {
     platform: 'polygon-pos',
     currency: 'matic',
   },
-  BSC_MAINNET_CODE: {
+  [BSC_MAINNET_CODE]: {
     platform: 'binance-smart-chain',
     currency: 'bnb',
   },
-  MAINNET_CODE: {
+  [MAINNET_CODE]: {
     platform: 'ethereum',
     currency: 'eth',
   },

@@ -30,7 +30,8 @@ class TokenRatesController {
    */
   async updateExchangeRates() {
     const contractExchangeRates = {}
-    const platform = COINGECKO_PLATFORMS_CHAIN_CODE_MAP[this.getChainId()]?.platform
+    const currentChainId = typeof this.getChainId === 'function' ? this.getChainId() : null
+    const platform = COINGECKO_PLATFORMS_CHAIN_CODE_MAP[currentChainId]?.platform
     const nativeCurrency = this.currency ? this.currency.getState().nativeCurrency.toLowerCase() : 'eth'
     const uniqueTokens = [...new Set(this._tokens.map((token) => token.tokenAddress))]
     const pairs = uniqueTokens.join(',')
