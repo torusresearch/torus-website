@@ -155,7 +155,7 @@
     "stream-http": "^3.2.0",
     "stylus": "^0.55.0",
     "stylus-loader": "^6.2.0",
-    "terser-webpack-plugin": "^5.2.4",
+    "terser-webpack-plugin": "^5.2.5",
     "through2": "^4.0.2",
     "uglifyify": "^5.0.2",
     "vue-cli-plugin-vuetify": "^2.4.3",
