@@ -267,7 +267,7 @@ export default {
     ...(REDDIT_VERIFIER && {
       [REDDIT_VERIFIER]: {
         description: '',
-        typeOfLogin: REDDIT,
+        typeOfLogin: JWT,
         name: REDDIT,
         clientId: VUE_APP_REDDIT_CLIENT_ID,
         linkedVerifier: REDDIT_LINKED_VERIFIER,
@@ -277,6 +277,11 @@ export default {
         showOnModal: true,
         showOnDesktop: true,
         showOnMobile: true,
+        jwtParameters: {
+          domain: LOGIN_DOMAIN,
+          verifierIdField: 'name',
+          connection: 'Reddit',
+        },
         // For torus only
         hasLightLogo: false,
         loginProvider: REDDIT_LOGIN_PROVIDER,
