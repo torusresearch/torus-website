@@ -93,12 +93,15 @@ const { hash } = window.location
 const hashUrl = new URL(`${baseUrl}?${hash.slice(1)}`)
 const dappStorageKey = hashUrl.searchParams.get('dappStorageKey')
 
+const appVersion = process.env.VUE_APP_TORUS_BUILD_VERSION
+
 // no reddit for binance.tor.us
 
 // In Modal, show 6 by default (view more)
 export default {
   baseUrl,
   baseRoute,
+  appVersion,
   tkeyEmailHost: 'https://email.tkey.io/send_mail',
   commonApiHost: 'https://common-api.tor.us',
   // commonApiHost: 'http://localhost:60000',

@@ -11,8 +11,7 @@
               <span>{{ t('dappLogin.signIn') }}</span>
             </div>
             <div class="verifier-title2 text_2--text">
-              <LoginTitleDapp v-if="$vuetify.breakpoint.xsOnly && activeMobileButton" :active-button-details="activeMobileButtonDetails" />
-              <LoginTitleDapp v-if="!$vuetify.breakpoint.xsOnly && activeButton" :active-button-details="activeButtonDetails" />
+              <LoginTitle is-dapp="true" />
             </div>
           </div>
           <div class="buttons-holder">
@@ -50,9 +49,12 @@
               </a>
             </div>
             <v-spacer></v-spacer>
-            <div v-if="!whiteLabel.isActive" class="d-flex align-center">
-              <span class="text_2--text mr-1">{{ t('dappLogin.poweredBy') }}</span>
-              <img alt="Torus Logo" height="10" :src="getLogo.logo" />
+            <div v-if="!whiteLabel.isActive">
+              <div class="d-flex align-center mb-2">
+                <span class="text_2--text mr-1">{{ t('dappLogin.poweredBy') }}</span>
+                <img alt="Torus Logo" height="10" :src="getLogo.logo" />
+              </div>
+              <div class="caption text-right text_2--text font-italic">Version {{ appVersion }}</div>
             </div>
           </div>
         </v-card>
@@ -66,13 +68,14 @@ import log from 'loglevel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import LoginButtons from '../../../components/Login/LoginButtons'
-import LoginTitleDapp from '../../../components/Login/LoginTitleDapp'
+import LoginTitle from '../../../components/Login/LoginTitle'
+import config from '../../../config'
 import { GITHUB, GOOGLE_VERIFIER, TWITTER } from '../../../utils/enums'
 import { thirdPartyAuthenticators } from '../../../utils/utils'
 
 export default {
   name: 'PopupLogin',
-  components: { LoginButtons, LoginTitleDapp },
+  components: { LoginButtons, LoginTitle },
   props: {
     loginDialog: {
       type: Boolean,
@@ -151,6 +154,9 @@ export default {
       if (this.$vuetify.breakpoint.height >= 1440) return '2.6vh'
       if (this.$vuetify.breakpoint.height >= 1080) return '2.6vh'
       return '24px'
+    },
+    appVersion() {
+      return config.appVersion.replace('v', '')
     },
   },
   methods: {
