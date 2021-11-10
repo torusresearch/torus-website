@@ -1,4 +1,5 @@
 import { ObservableStore } from '@metamask/obs-store'
+import BigNumber from 'bignumber.js'
 import { normalize as normalizeAddress } from 'eth-sig-util'
 import log from 'loglevel'
 
@@ -35,13 +36,13 @@ class TokenRatesController {
     const nativeCurrency = this.currency ? this.currency.getState().nativeCurrency.toLowerCase() : 'eth'
     const supportedCurrency = COINGECKO_SUPPORTED_CURRENCIES.has(nativeCurrency)
       ? nativeCurrency
-      : this.currency.getState().commonDenomination.toLowerCase()
+      : this.currency?.getState().commonDenomination.toLowerCase() || 'eth'
     const uniqueTokens = [...new Set(this._tokens.map((token) => token.tokenAddress))]
     const pairs = uniqueTokens.join(',')
     const query = `contract_addresses=${pairs}&vs_currencies=${supportedCurrency}`
-    let convertionFactor = 1
+    let conversionFactor = 1
     if (supportedCurrency !== nativeCurrency) {
-      convertionFactor = this.currency.getState().commonDenominatorPrice
+      conversionFactor = this.currency?.getState().commonDenominatorPrice || 1
     }
     if (uniqueTokens.length > 0 && platform) {
       try {
@@ -49,7 +50,8 @@ class TokenRatesController {
         const prices = await response.json()
         uniqueTokens.forEach((token) => {
           const price = prices[token.toLowerCase()]
-          contractExchangeRates[normalizeAddress(token)] = price && convertionFactor ? price[supportedCurrency] / convertionFactor : 0
+          contractExchangeRates[normalizeAddress(token)] =
+            price && conversionFactor ? new BigNumber(price[supportedCurrency]).div(conversionFactor).toNumber() : 0
         })
         this.store.putState({ contractExchangeRates })
       } catch (error) {

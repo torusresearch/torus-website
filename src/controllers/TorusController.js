@@ -1018,7 +1018,8 @@ export default class TorusController extends SafeEventEmitter {
       this.currencyController.setNativeCurrency(ticker)
       this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
       await this.currencyController.updateConversionRate()
-      this.currencyController.updateCommonDenominatorPrice()
+      await this.currencyController.updateCommonDenominatorPrice()
+      await this.tokenRatesController.updateExchangeRates()
       // }
       const data = {
         nativeCurrency: ticker || 'ETH',
