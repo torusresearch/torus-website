@@ -226,7 +226,7 @@ export default class NetworkController extends EventEmitter {
     return SUPPORTED_NETWORK_TYPES[type]?.chainId || configChainId
   }
 
-  setRpcTarget(rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs) {
+  setRpcTarget(rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {
     this.setProviderConfig({
       type: RPC,
       rpcUrl,

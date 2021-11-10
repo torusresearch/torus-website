@@ -3,7 +3,7 @@ import log from 'loglevel'
 import config from '../config'
 import { get, post } from '../utils/httpHelpers'
 
-const getQuote = (parameters = {}, headers) => {
+const getQuote = (parameters = {}, headers = {}) => {
   try {
     const options = {
       mode: 'cors',

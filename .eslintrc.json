@@ -27,6 +27,8 @@
     }
   },
   "rules": {
+    "no-promise-executor-return": 0,
+    "no-restricted-exports": [2, { "restrictedNamedExports": [] }],
     "import/prefer-default-export": 0,
     "vue/multi-word-component-names": 0,
     "unicorn/prefer-object-from-entries": 0,
