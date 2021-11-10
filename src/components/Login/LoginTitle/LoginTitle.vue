@@ -5,7 +5,7 @@
       :class="isDapp ? 'headline font-weight-medium' : 'display-1 font-weight-bold'"
       :style="{ maxWidth: isDapp ? 'inherit' : '260px' }"
     >
-      Your blockchain wallet in one-click
+      {{ t('login.title') }}
     </div>
   </v-flex>
 </template>

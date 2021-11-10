@@ -54,7 +54,7 @@
                 <span class="text_2--text mr-1">{{ t('dappLogin.poweredBy') }}</span>
                 <img alt="Torus Logo" height="10" :src="getLogo.logo" />
               </div>
-              <div class="caption text-right text_2--text font-italic">Version {{ appVersion }}</div>
+              <div class="caption text_2--text font-italic">{{ t('dappLogin.version').replace(/\{version\}/gi, appVersion) }}</div>
             </div>
           </div>
         </v-card>

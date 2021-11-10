@@ -35,7 +35,7 @@
         </a>
       </div>
     </div>
-    <div class="caption text_2--text font-italic">Version {{ appVersion }}</div>
+    <div class="caption text_2--text font-italic">{{ t('dappLogin.version').replace(/\{version\}/gi, appVersion) }}</div>
   </v-flex>
 </template>
 
