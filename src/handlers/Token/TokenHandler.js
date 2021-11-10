@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 import tokenAbi from 'human-standard-token-abi'
+import log from 'loglevel'
 
 class TokenHandler {
   constructor({ address, symbol, decimals, name, web3 }) {
@@ -16,8 +17,13 @@ class TokenHandler {
   }
 
   async getDecimals() {
-    if (!this.decimals) this.decimals = await this.contract.methods.decimals().call()
-    return this.decimals
+    try {
+      if (!this.decimals) this.decimals = await this.contract.methods.decimals().call()
+      return this.decimals
+    } catch (error) {
+      log.warn(`Could not get decimals for token ${this.address}`, error)
+      return 0
+    }
   }
 
   async getName() {

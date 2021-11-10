@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 import log from 'loglevel'
 
 import config from '../config'

@@ -122,6 +122,7 @@ export default class TorusController extends SafeEventEmitter {
     })
 
     this.tokenRatesController = new TokenRatesController({
+      getChainId: this.networkController.getCurrentChainId.bind(this.networkController),
       currency: this.currencyController.store,
       tokensStore: this.detectTokensController.detectedTokensStore,
     })

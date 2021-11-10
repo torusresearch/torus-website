@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const nock = require('nock')
 const log = require('loglevel')
-const Ganache = require('ganache-core')
+const Ganache = require('ganache')
 
 console.log('requiring helpers for tests in mocha')
 const allowedHosts = ['localhost', 'mainnet.infura.io:443']
@@ -36,7 +36,9 @@ process.on('exit', () => {
 
 // ganache server
 const server = Ganache.server()
-server.listen(8545, () => {})
+server.listen(8545, (err) => {
+  if (err) console.error('Failed to start ganache', err)
+})
 
 log.setDefaultLevel(5)
 global.log = log

@@ -864,8 +864,8 @@ export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
 }
 
 const SECOND_CUTOFF = 90
-function toHumanReadableTime(milliseconds = 1, t) {
-  const seconds = Math.ceil(milliseconds / 1000)
+function toHumanReadableTime(milliseconds, t) {
+  const seconds = Math.ceil((milliseconds || 1) / 1000)
   if (seconds <= SECOND_CUTOFF) {
     return t('walletTransfer.fee-edit-time-sec').replace(/{time}/gi, seconds)
   }
@@ -909,4 +909,23 @@ export function bnEqualTo(a, b) {
 
 export function waitForMs(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/**
+ *
+ * @param {*} chainId in numeric format
+ * @returns fungible token standard ie erc20, bep20
+ */
+export function getFungibleTokenStandard(chainId) {
+  switch (chainId) {
+    case MATIC_CODE:
+    case MUMBAI_CODE:
+    case MAINNET_CODE:
+      return 'ERC20'
+    case BSC_TESTNET_CODE:
+    case BSC_MAINNET_CODE:
+      return 'BEP20'
+    default:
+      return 'ERC20'
+  }
 }
