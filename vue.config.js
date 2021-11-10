@@ -32,7 +32,7 @@ module.exports = {
       // replace the current one with it
       // config.optimization.minimizer[0] = new TerserPlugin(options)
     } else {
-      config.devtool = 'source-map'
+      config.devtool = 'eval-source-map'
     }
 
     config.resolve.alias = {
@@ -68,8 +68,6 @@ module.exports = {
         .plugin('service-worker-integrity')
         .use(serviceWorkerIntegrityPlugin, ['index.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
         .after('workbox')
-    } else {
-      config.module.rule('sourcemap').test(/\.js$/).enforce('pre').use('source-map-loader').loader('source-map-loader').end()
     }
   },
 
@@ -122,7 +120,7 @@ module.exports = {
   pluginOptions: {
     webpackBundleAnalyzer: {
       openAnalyzer: false,
-      // analyzerMode: 'disabled',
+      analyzerMode: 'disabled',
     },
   },
 }
