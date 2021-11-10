@@ -488,7 +488,7 @@ import {
   TRANSACTION_SPEED,
   TWITTER,
   UNSTOPPABLE_DOMAINS,
-  V1_V2_VERIFIER_MAP,
+  WALLET_OPENLOGIN_VERIFIER_MAP,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
 import {
@@ -1073,14 +1073,14 @@ export default {
       } else {
         try {
           const { loginConfig } = this.$store.state.embedState
-          const foundLoginConfig = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
+          const walletVerifier = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
           const validVeriferId = await this.getIdFromNick(this.toAddress, this.selectedVerifier)
           this.convertedVerifierId = validVeriferId
-          const v2Verifier = V1_V2_VERIFIER_MAP[foundLoginConfig]
-          if (foundLoginConfig && v2Verifier) {
+          const openloginVerifier = WALLET_OPENLOGIN_VERIFIER_MAP[walletVerifier]
+          if (walletVerifier && openloginVerifier) {
             toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
-              v1Verifier: foundLoginConfig,
-              v2Verifier,
+              walletVerifier,
+              openloginVerifier,
               verifierId: validVeriferId.startsWith('@') ? validVeriferId.replace('@', '').toLowerCase() : validVeriferId.toLowerCase(),
             })
           }
