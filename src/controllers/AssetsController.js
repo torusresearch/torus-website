@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 /**
  * Asset Controller
  *

@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 import { ObservableStore } from '@metamask/obs-store'
 import BigNumber from 'bignumber.js'
 import { isEqual } from 'lodash'

@@ -864,8 +864,8 @@ export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
 }
 
 const SECOND_CUTOFF = 90
-function toHumanReadableTime(milliseconds = 1, t) {
-  const seconds = Math.ceil(milliseconds / 1000)
+function toHumanReadableTime(milliseconds, t) {
+  const seconds = Math.ceil((milliseconds || 1) / 1000)
   if (seconds <= SECOND_CUTOFF) {
     return t('walletTransfer.fee-edit-time-sec').replace(/{time}/gi, seconds)
   }
