@@ -11,19 +11,11 @@
               <span>{{ t('dappLogin.signIn') }}</span>
             </div>
             <div class="verifier-title2 text_2--text">
-              <LoginTitle is-dapp="true" />
+              <LoginTitle :is-dapp="true" />
             </div>
           </div>
           <div class="buttons-holder">
-            <LoginButtons
-              :login-buttons-array="loginButtonsArray"
-              :is-popup="true"
-              :active-button="activeButton"
-              :last-login-info="lastLoginInfo"
-              @setActiveBtn="(verifier) => (activeButton = verifier)"
-              @setActiveMobileBtn="(verifier) => (activeMobileButton = verifier)"
-              @triggerLogin="startLogin"
-            />
+            <LoginButtons :login-buttons-array="loginButtonsArray" :is-popup="true" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
           </div>
           <div
             v-if="!canHideDisclaimer1 && !viewMoreOptions && thirdPartyAuthenticators.length > 0"
@@ -54,7 +46,7 @@
                 <span class="text_2--text mr-1">{{ t('dappLogin.poweredBy') }}</span>
                 <img alt="Torus Logo" height="10" :src="getLogo.logo" />
               </div>
-              <div class="caption text_2--text font-italic">{{ t('dappLogin.version').replace(/\{version\}/gi, appVersion) }}</div>
+              <div class="caption text-right text_2--text font-italic">{{ t('dappLogin.version').replace(/\{version\}/gi, appVersion) }}</div>
             </div>
           </div>
         </v-card>
@@ -86,9 +78,6 @@ export default {
     return {
       GOOGLE_VERIFIER,
       showModal: true,
-      activeButton: '',
-      activeMobileButton: '',
-      activeMobileButtonInterval: null,
       viewMoreOptions: false,
     }
   },
@@ -135,12 +124,6 @@ export default {
       const { isActive, disclaimerHide } = this.whiteLabel
       const isUsingSpecialLogin = this.loginButtonsArray.some((x) => (x.typeOfLogin === GITHUB || x.typeOfLogin === TWITTER) && x.showOnModal)
       return disclaimerHide && !isUsingSpecialLogin && isActive
-    },
-    activeButtonDetails() {
-      return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
-    },
-    activeMobileButtonDetails() {
-      return this.loginButtonsArray.find((x) => x.verifier === this.activeMobileButton)
     },
     thirdPartyAuthenticators() {
       return thirdPartyAuthenticators(this.loginConfig)

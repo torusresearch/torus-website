@@ -110,10 +110,6 @@ import LoginButton from '../LoginButton'
 export default {
   components: { LoginButton },
   props: {
-    activeButton: {
-      type: String,
-      default: '',
-    },
     isPopup: {
       type: Boolean,
       default: false,
@@ -136,6 +132,7 @@ export default {
   },
   data() {
     return {
+      activeButton: '',
       viewMoreOptions: false,
       activeMobileButtonInterval: null,
       HOSTED_EMAIL_PASSWORDLESS_VERIFIER,
@@ -204,7 +201,6 @@ export default {
   },
   mounted() {
     this.chooseAndSetActiveButton()
-    this.animateVerifier()
   },
   methods: {
     chooseAndSetActiveButton() {
@@ -218,21 +214,6 @@ export default {
       else if (this.mainButtons.length > 0) this.setActiveBtn(this.mainButtons[0].verifier)
       else if (this.loginButtonsLong.length > 0) this.setActiveBtn(this.loginButtonsLong[0].verifier)
     },
-    animateVerifier() {
-      const verifiers = this.loginButtonsArray.filter((button) => button.showOnMobile)
-      if (verifiers.length > 0) {
-        let counter = 0
-
-        clearInterval(this.activeMobileButtonInterval)
-        this.activeMobileButtonInterval = setInterval(() => {
-          if (counter >= verifiers.length) {
-            counter = 0
-          }
-          this.setActiveMobileBtn(verifiers[counter].verifier)
-          counter += 1
-        }, 1000)
-      }
-    },
     loginBtnHover(verifier) {
       if (!this.$vuetify.breakpoint.xsOnly) this.setActiveBtn(verifier)
     },
@@ -241,10 +222,7 @@ export default {
       this.triggerLogin(targetLogin.verifier, this.lastLoginInfo.verifierId)
     },
     setActiveBtn(verifier) {
-      this.$emit('setActiveBtn', verifier)
-    },
-    setActiveMobileBtn(verifier) {
-      this.$emit('setActiveMobileBtn', verifier)
+      this.activeButton = verifier
     },
     triggerLogin(verifier, email) {
       this.$emit('triggerLogin', verifier, email)
