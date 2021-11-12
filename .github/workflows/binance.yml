@@ -1,10 +1,10 @@
-name: prod release
+name: binance release
 
 # Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
+  # Triggers the workflow on push or pull request events but only for the binance branch
   push:
-    branches: [master]
+    branches: [binance]
 
 jobs:
   test:
@@ -53,8 +53,8 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
 
-  build-deploy-prod:
-    name: Build & deploy app.tor.us
+  build-deploy-binance:
+    name: Build & deploy binance.tor.us
     strategy:
       matrix:
         node: ['14.x']
@@ -103,10 +103,6 @@ jobs:
           . ./scripts/gitPush.sh
         env:
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
-
-      - name: 'Upload source to Sentry'
-        run: |
-          . ./scripts/uploadToSentry.sh
 
       - name: 'Delete sourcemaps'
         run: rm ./dist/js/*.js.map
