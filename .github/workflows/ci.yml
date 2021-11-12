@@ -1,4 +1,4 @@
-name: Any branch
+name: Any branch test & lint & build
 
 # Controls when the action will run.
 on:

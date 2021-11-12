@@ -1,0 +1,170 @@
+name: testing/lrc release
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the develop branch
+  push:
+    branches: [develop]
+
+jobs:
+  test:
+    name: Test release
+    strategy:
+      matrix:
+        node: ['14.x']
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - name: Node dependency cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Pre-build setup
+        run: npm run pre-build
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Running unit tests with coverage
+        run: npm run test:coverage-codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+
+  build-deploy-testing:
+    name: Build & deploy testing.tor.us
+    strategy:
+      matrix:
+        node: ['14.x']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - name: Node dependency cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run build
+        run: npm run build:testing
+        env:
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+
+      # Upload to S3
+      - name: sync s3
+        uses: jakejarvis/s3-sync-action@master
+        env:
+          SOURCE_DIR: 'dist'
+          AWS_REGION: 'us-east-1'
+          AWS_S3_BUCKET: 'testing.tor.us'
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Invalidate Cloudfront (this action)
+      - name: invalidate
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          DISTRIBUTION: ${{ secrets.DISTRIBUTION_TESTING_TOR_US }}
+          PATHS: '/*'
+          AWS_REGION: 'us-east-1'
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  build-deploy-lrc:
+    name: Build & deploy lrc.tor.us
+    strategy:
+      matrix:
+        node: ['14.x']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - name: Node dependency cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run build
+        run: npm run build:lrc
+        env:
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+
+      # Upload to S3
+      - name: sync s3
+        uses: jakejarvis/s3-sync-action@master
+        env:
+          SOURCE_DIR: 'dist'
+          AWS_REGION: 'us-east-1'
+          AWS_S3_BUCKET: 'lrc.tor.us'
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Invalidate Cloudfront (this action)
+      - name: invalidate
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          DISTRIBUTION: ${{ secrets.DISTRIBUTION_LRC_TOR_US }}
+          PATHS: '/*'
+          AWS_REGION: 'us-east-1'
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
