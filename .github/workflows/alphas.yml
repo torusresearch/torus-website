@@ -104,7 +104,7 @@ jobs:
           echo "$ALPHA_SSH_KEY" >> ~/.ssh/id_rsa_alpha
           chmod 400 ~/.ssh/id_rsa_alpha
           ssh-keyscan -H "$GH_BRANCH".tor.us >> ~/.ssh/known_hosts
-          tar czf - dist/ | ssh -i ~/.ssh/id_rsa_alpha ubuntu@"$GH_BRANCH".tor.us "rm -rf ~/"$GH_BRANCH"-torus-website/* && tar -zxf - -C ~/"$CIRCLE_BRANCH"-torus-website/"
+          tar czf - dist/ | ssh -i ~/.ssh/id_rsa_alpha ubuntu@"$GH_BRANCH".tor.us "rm -rf ~/"$GH_BRANCH"-torus-website/* && tar -zxf - -C ~/"$GH_BRANCH"-torus-website/"
         env:
           GH_BRANCH: ${{ steps.extract_branch.outputs.branch }}
           ALPHA_SSH_KEY: ${{ secrets.ALPHA_SSH_KEY }}
