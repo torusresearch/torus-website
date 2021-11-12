@@ -184,36 +184,7 @@ jobs:
           command: |
             aws s3 cp dist/ s3://lrc.tor.us --recursive
             aws cloudfront create-invalidation --distribution-id "$TORUS_LRC_DISTRIBUTION_ID" --paths "/*"
-  # ------------------------
-  # alpha configurations
-  # ------------------------
-  build-alpha:
-    <<: *job_common
-    steps:
-      - checkout:
-          path: ~/torus-website
-      - <<: *step_restore_cache
-      - <<: *step_setup_global_packages
-      - run:
-          name: 'Build code for torus alpha website'
-          command: |
-            npm run build:alpha-branches
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - torus-website/dist
-      - <<: *step_save_cache
-  deploy-alpha:
-    <<: *job_common_base
-    steps:
-      - attach_workspace:
-          at: ~/
-      - add_ssh_keys
-      - run:
-          name: 'Deploy Over SSH'
-          command: |
-            ssh-keyscan -H "$CIRCLE_BRANCH".tor.us >> ~/.ssh/known_hosts
-            tar czf - dist/ | ssh ubuntu@"$CIRCLE_BRANCH".tor.us "rm -rf ~/"$CIRCLE_BRANCH"-torus-website/* && tar -zxf - -C ~/"$CIRCLE_BRANCH"-torus-website/"
+
 # ------------------------
 # alpha configurations
 # ------------------------
@@ -222,7 +193,6 @@ workflows:
   version: 2
   commit:
     jobs:
-      - test-coverage
       - build:
           filters:
             branches:
@@ -283,47 +253,3 @@ workflows:
             branches:
               only:
                 - binance
-      - build-testing:
-          filters:
-            branches:
-              only:
-                - develop
-      - deploy-testing:
-          context: AWS
-          requires:
-            - build-testing
-            - test-coverage
-          filters:
-            branches:
-              only:
-                - develop
-      - build-lrc:
-          filters:
-            branches:
-              only:
-                - develop
-      - deploy-lrc:
-          context: AWS
-          requires:
-            - build-lrc
-            - test-coverage
-          filters:
-            branches:
-              only:
-                - develop
-      # ------------------------
-      # alpha configurations
-      # ------------------------
-      - build-alpha:
-          filters:
-            branches:
-              only:
-                - /^alpha.*/
-      - deploy-alpha:
-          requires:
-            - build-alpha
-            - test-coverage
-          filters:
-            branches:
-              only:
-                - /^alpha.*/
