@@ -1384,7 +1384,7 @@ export default {
           this.getEthAmount(this.gas, this.activeGasPrice),
           false,
           6
-        )} ETH`
+        )} ${this.networkType.ticker}`
       }
 
       this.convertedTotalCost = gasPriceInCurrency.plus(toSendConverted)

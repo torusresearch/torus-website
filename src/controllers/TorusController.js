@@ -82,6 +82,7 @@ export default class TorusController extends SafeEventEmitter {
       initState: {},
     })
     this.currencyController.updateConversionRate()
+    this.currencyController.updateCommonDenominatorPrice()
     this.currencyController.scheduleConversionInterval()
 
     this.accountTracker = new AccountTracker({
@@ -1017,6 +1018,8 @@ export default class TorusController extends SafeEventEmitter {
       this.currencyController.setNativeCurrency(ticker)
       this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
       await this.currencyController.updateConversionRate()
+      await this.currencyController.updateCommonDenominatorPrice()
+      await this.tokenRatesController.updateExchangeRates()
       // }
       const data = {
         nativeCurrency: ticker || 'ETH',

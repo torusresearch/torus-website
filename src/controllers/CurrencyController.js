@@ -31,6 +31,8 @@ class CurrencyController {
       conversionRate: 0,
       conversionDate: 'N/A',
       nativeCurrency: 'ETH',
+      commonDenomination: 'USD',
+      commonDenominatorPrice: 0,
       ...options.initState,
     }
     this.store = new ObservableStore(initState)
@@ -175,6 +177,10 @@ class CurrencyController {
         // ETC
         this.setConversionRate(Number(parsedResponse[currentCurrency.toUpperCase()]))
         this.setConversionDate(Number.parseInt(Date.now() / 1000, 10))
+        const { commonDenomination } = this.store.getState()
+        if (currentCurrency.toUpperCase() === commonDenomination.toUpperCase()) {
+          this.store.updateState({ commonDenominatorPrice: Number(parsedResponse[currentCurrency.toUpperCase()]) })
+        }
       } else {
         this.setConversionRate(0)
         this.setConversionDate('N/A')
@@ -186,6 +192,46 @@ class CurrencyController {
       this.setConversionDate('N/A')
       // throw error
       log.error(error, `CurrencyController - Failed to query rate for currency "${currentCurrency}"`)
+    }
+  }
+
+  /**
+   * updates the common denominator price of native currency in state
+   *
+   */
+  async updateCommonDenominatorPrice() {
+    const currentCurrency = this.getCurrentCurrency()
+    const nativeCurrency = this.getNativeCurrency()
+    const { commonDenomination } = this.store.getState()
+    try {
+      if (currentCurrency.toUpperCase() === commonDenomination.toUpperCase()) return
+      const apiUrl = `${config.api}/currency?fsym=${nativeCurrency.toUpperCase()}&tsyms=${commonDenomination.toUpperCase()}`
+      let response
+      try {
+        response = await fetch(apiUrl)
+      } catch (error) {
+        log.error(error, 'CurrencyController - Failed to request currency from cryptocompare')
+        return
+      }
+      // parse response
+      let parsedResponse
+      try {
+        parsedResponse = await response.json()
+      } catch {
+        log.error(new Error(`CurrencyController - Failed to parse response "${response.status}"`))
+        return
+      }
+      if (parsedResponse[commonDenomination.toUpperCase()]) {
+        this.store.updateState({ commonDenominatorPrice: Number(parsedResponse[commonDenomination.toUpperCase()]) })
+      }
+    } catch (error) {
+      // reset current conversion rate
+      log.warn('Torus - Failed to query currency conversion:', error)
+      // throw error
+      log.error(
+        error,
+        `CurrencyController - updateCommonDenominatorPrice: Failed to query rate for currency: ${nativeCurrency}/ ${commonDenomination}`
+      )
     }
   }
 
@@ -202,6 +248,7 @@ class CurrencyController {
     if (isMain)
       this.conversionInterval = setInterval(() => {
         this.updateConversionRate()
+        this.updateCommonDenominatorPrice()
       }, POLLING_INTERVAL)
   }
 }
