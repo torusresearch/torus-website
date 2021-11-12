@@ -53,10 +53,10 @@ jobs:
 
       - name: Running unit tests with coverage
         run: npm run test:coverage-codecov
-        with:
+        env:
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
 
       - name: Run build
         run: npm run build:testing
-        with:
+        env:
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
