@@ -5,6 +5,7 @@
 </template>
 
 <script>
+/* eslint-disable vue-scoped-css/enforce-style-type */
 export default {
   mounted() {
     const pageHtml = document.querySelector('html')

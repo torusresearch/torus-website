@@ -10,7 +10,7 @@ import log from 'loglevel'
 import pump from 'pump'
 import { toChecksumAddress } from 'web3-utils'
 
-import { version } from '../../package.json'
+import config from '../config'
 import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, TRANSACTION_STATUSES } from '../utils/enums'
 import createRandomId from '../utils/random-id'
 import { isMain } from '../utils/utils'
@@ -251,9 +251,9 @@ export default class TorusController extends SafeEventEmitter {
     const providerOptions = {
       static: {
         eth_syncing: false,
-        web3_clientVersion: `Torus/v${version}`,
+        web3_clientVersion: `Torus/v${config.appVersion}`,
       },
-      version,
+      version: config.appVersion,
       // account mgmt
       getAccounts: async () =>
         // Expose no accounts if this origin has not been approved, preventing
@@ -586,7 +586,7 @@ export default class TorusController extends SafeEventEmitter {
       const address = toChecksumAddress(normalize(cleanMessageParameters.from))
       // For some reason every version after V1 used stringified params.
       if (
-        version !== 'V1' && // But we don't have to require that. We can stop suggesting it now:
+        messageVersion !== 'V1' && // But we don't have to require that. We can stop suggesting it now:
         typeof cleanMessageParameters.data === 'string'
       ) {
         cleanMessageParameters.data = JSON.parse(cleanMessageParameters.data)
