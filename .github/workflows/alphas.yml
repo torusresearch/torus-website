@@ -100,6 +100,7 @@ jobs:
       # Upload to ec2
       - name: Upload to ec2 machine
         run: |
+          mkdir -p .ssh
           echo "$ALPHA_SSH_KEY" >> ~/.ssh/id_rsa_alpha
           ssh-keyscan -H "$GH_BRANCH".tor.us >> ~/.ssh/known_hosts
           tar czf - dist/ | ssh -i id_rsa_alpha ubuntu@"$GH_BRANCH".tor.us "rm -rf ~/"$GH_BRANCH"-torus-website/* && tar -zxf - -C ~/"$CIRCLE_BRANCH"-torus-website/"
