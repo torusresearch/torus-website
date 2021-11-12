@@ -55,6 +55,7 @@ jobs:
         run: npm run test:coverage-codecov
         env:
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Run build
         run: npm run build:testing
