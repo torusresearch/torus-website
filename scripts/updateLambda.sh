@@ -3,11 +3,11 @@
 git clone git@github.com:torusresearch/torus-serverless.git ~/torus-serverless
 PACKAGE_VERSION=$(cat package.json | grep '"version"' | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d ' ')
 FOLDER=''
-if [[ "$CIRCLE_BRANCH" = 'master' ]]; then
+if [[ "$GITHUB_REF" = 'refs/heads/master' ]]; then
   FOLDER='cloudfront-redirect'
   FUNCTION_NAME='torus-routing'
   CLOUDFRONTID=$CLOUDFRONT_DISTRIBUTION_ID
-elif [[ "$CIRCLE_BRANCH" = 'binance' ]]; then
+elif [[ "$GITHUB_REF" = 'refs/heads/binance' ]]; then
   FOLDER='cloudfront-binance-redirect'
   FUNCTION_NAME='torus-binance-routing'
   CLOUDFRONTID=$CLOUDFRONT_BINANCE_DISTRIBUTION_ID

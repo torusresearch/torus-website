@@ -66,56 +66,6 @@ deploy_function: &deploy_function
         command: |
           . ./scripts/uploadToAws.sh
 jobs:
-  test-coverage:
-    <<: *job_common
-    steps:
-      - checkout:
-          path: ~/torus-website
-      - <<: *step_restore_cache
-      - <<: *step_setup_global_packages
-      - run:
-          name: 'Running unit tests with coverage'
-          command: npm run test:coverage-codecov
-      - <<: *step_save_cache
-      # Save coverage artifacts
-      - store_artifacts:
-          path: ~/torus-website/coverage
-  build:
-    <<: *job_common
-    resource_class: large
-    steps:
-      - checkout:
-          path: ~/torus-website
-      - <<: *step_restore_cache
-      - <<: *step_setup_global_packages
-      - run:
-          name: 'Build code for torus website'
-          command: |
-            . ./scripts/setup.sh
-            npm version minor -m 'Updating version to %s [skip ci]' && npm run build && . ./scripts/gitPush.sh
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - torus-website
-      - <<: *step_save_cache
-  build-binance:
-    <<: *job_common
-    resource_class: large
-    steps:
-      - checkout:
-          path: ~/torus-website
-      - <<: *step_restore_cache
-      - <<: *step_setup_global_packages
-      - run:
-          name: 'Build code for torus binance website'
-          command: |
-            . ./scripts/setup.sh
-            npm version minor -m 'Updating version to %s [skip ci]' && npm run build:binance && . ./scripts/gitPush.sh
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - torus-website
-      - <<: *step_save_cache
   deploy:
     <<: *deploy_function
   deploy-binance:
@@ -128,66 +78,6 @@ jobs:
     <<: *update_iframeIntegrity
   update-iframeIntegrity-binance:
     <<: *update_iframeIntegrity
-  build-testing:
-    <<: *job_common
-    resource_class: large
-    steps:
-      - checkout:
-          path: ~/torus-website
-      - <<: *step_restore_cache
-      - <<: *step_setup_global_packages
-      - run:
-          name: 'Build code for torus testing website'
-          command: |
-            npm run build:testing
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - torus-website/dist
-      - <<: *step_save_cache
-  deploy-testing:
-    <<: *job_common_base
-    steps:
-      - attach_workspace:
-          at: ~/
-      - add_ssh_keys
-      - run:
-          name: 'Deploy Over SSH'
-          command: |
-            aws s3 cp dist/ s3://testing.tor.us --recursive
-            aws cloudfront create-invalidation --distribution-id "$TORUS_TESTING_DISTRIBUTION_ID" --paths "/*"
-  build-lrc:
-    <<: *job_common
-    resource_class: large
-    steps:
-      - checkout:
-          path: ~/torus-website
-      - <<: *step_restore_cache
-      - <<: *step_setup_global_packages
-      - run:
-          name: 'Build code for torus lrc website'
-          command: |
-            npm run build:lrc
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - torus-website/dist
-      - <<: *step_save_cache
-  deploy-lrc:
-    <<: *job_common_base
-    steps:
-      - attach_workspace:
-          at: ~/
-      - add_ssh_keys
-      - run:
-          name: 'Deploy Over SSH'
-          command: |
-            aws s3 cp dist/ s3://lrc.tor.us --recursive
-            aws cloudfront create-invalidation --distribution-id "$TORUS_LRC_DISTRIBUTION_ID" --paths "/*"
-
-# ------------------------
-# alpha configurations
-# ------------------------
 
 workflows:
   version: 2
