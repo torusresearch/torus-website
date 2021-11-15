@@ -14,8 +14,8 @@ elif [[ "$GITHUB_REF" = 'refs/heads/binance' ]]; then
 fi
 cd ~/torus-serverless/$FOLDER
 sed -i -e "s|const GLOBAL_VERSION.*|const GLOBAL_VERSION = \"v$PACKAGE_VERSION\";|g" index.js
-git config user.email "chaitanya.potti@gmail.com"
-git config user.name "chaitanyapotti"
+git config user.email "no-reply@tor.us"
+git config user.name "torus-bot"
 git diff --quiet && git diff --staged --quiet || (git commit -am "Updating version" && git push origin master)
 zip lambda-code index.js
 aws --no-paginate lambda update-function-code --function-name $FUNCTION_NAME --publish --zip-file "fileb://lambda-code.zip"
