@@ -7,8 +7,8 @@ cd dist
 HASH="$(cat index.html | openssl dgst -sha384 -binary | openssl base64 -A)"
 cd ~/torus-embed/src/
 sed -i -e "s|sha384-.*|sha384-$HASH\";|g" embed.ts
-git config user.email "chaitanya.potti@gmail.com"
-git config user.name "chaitanyapotti"
+git config user.email "no-reply@tor.us"
+git config user.name "torus-bot"
 git commit -am "Updating embed with new hash"
 cd ..
 if ! (git diff --quiet && git diff --staged --quiet && git diff origin/master HEAD --quiet); then
