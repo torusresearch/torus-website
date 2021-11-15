@@ -103,6 +103,7 @@ jobs:
           . ./scripts/gitPush.sh
         env:
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+          GITHUB_SSH_KEY: ${{ secrets.ALPHA_SSH_KEY }}
 
       - name: 'Delete sourcemaps'
         run: rm ./dist/js/*.js.map
@@ -111,10 +112,6 @@ jobs:
       - name: Run AWS actions
         run: |
           . ./scripts/uploadToAws.sh
-          mkdir -p ~/.ssh 
-          echo "$GITHUB_SSH_KEY" >> ~/.ssh/id_rsa
-          chmod 400 ~/.ssh/id_rsa
-          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateLambda.sh
           . ./scripts/updateIframeIntegrity.sh
         env:
