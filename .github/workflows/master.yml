@@ -126,3 +126,4 @@ jobs:
           . ./scripts/updateIframeIntegrity.sh
         env:
           GITHUB_SSH_KEY: ${{ secrets.ALPHA_SSH_KEY }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.DISTRIBUTION_APP_TOR_US }}
