@@ -13,3 +13,4 @@ fi
 aws s3 rm $URL --recursive
 cd dist
 aws s3 cp . $URL --recursive
+cd ..

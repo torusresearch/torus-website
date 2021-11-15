@@ -24,3 +24,4 @@ ETAG=$(cat cf_config.json | grep ETag | head -1 | awk -F: '{ print $2 }' | sed '
 node ~/torus-website/scripts/createUpdatedDistributionConfig.js
 aws --no-paginate cloudfront update-distribution --distribution-config "file://updated_cf_config.json" --id $CLOUDFRONTID --if-match "$ETAG"
 aws --no-paginate cloudfront create-invalidation --distribution-id $CLOUDFRONTID --paths "/*"
+cd ~/torus-website
