@@ -112,6 +112,8 @@ jobs:
       - name: 'Upload source to Sentry'
         run: |
           . ./scripts/uploadToSentry.sh
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: 'Delete sourcemaps'
         run: rm ./dist/js/*.js.map
