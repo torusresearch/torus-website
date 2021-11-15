@@ -5,9 +5,9 @@ PACKAGE_VERSION=$(cat package.json \
   | awk -F: '{ print $2 }' \
   | sed 's/[",]//g')
 URL=''
-if [[ "$CIRCLE_BRANCH" = 'master' ]]; then
+if [[ "$GITHUB_REF" = 'refs/heads/master' ]]; then
   URL=$(echo s3://app.tor.us/v"$PACKAGE_VERSION" | tr -d ' ')
-elif [[ "$CIRCLE_BRANCH" = 'binance' ]]; then
+elif [[ "$GITHUB_REF" = 'refs/heads/binance' ]]; then
   URL=$(echo s3://binance.tor.us/v"$PACKAGE_VERSION" | tr -d ' ')
 fi
 aws s3 rm $URL --recursive

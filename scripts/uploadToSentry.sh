@@ -7,9 +7,9 @@ PACKAGE_VERSION=$(cat package.json \
   | sed 's/[",]//g' \
   | xargs)
 
-if [[ "$CIRCLE_BRANCH" = 'master' ]]; then
+if [[ "$GITHUB_REF" = 'refs/heads/master' ]]; then
   SENTRY_PROJECT='torus-website'
-elif [[ "$CIRCLE_BRANCH" = 'binance' ]]; then
+elif [[ "$GITHUB_REF" = 'refs/heads/binance' ]]; then
   SENTRY_PROJECT='binance-torus-website'
 fi
 

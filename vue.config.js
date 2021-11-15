@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const { IgnorePlugin, ProvidePlugin } = require('webpack')
-const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
+// const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 process.env.VUE_APP_TORUS_BUILD_VERSION = version
@@ -62,14 +62,14 @@ module.exports = {
       stream: require.resolve('stream-browserify'),
     }
   },
-  chainWebpack: (config) => {
-    if (process.env.NODE_ENV === 'production') {
-      config
-        .plugin('service-worker-integrity')
-        .use(serviceWorkerIntegrityPlugin, ['index.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
-        .after('workbox')
-    }
-  },
+  // chainWebpack: (config) => {
+  //   if (process.env.NODE_ENV === 'production') {
+  //     config
+  //       .plugin('service-worker-integrity')
+  //       .use(serviceWorkerIntegrityPlugin, ['index.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
+  //       .after('workbox')
+  //   }
+  // },
 
   publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'binance' ? `/${version}/` : '/',
   integrity: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'binance',

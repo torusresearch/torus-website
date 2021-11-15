@@ -7,20 +7,15 @@
             <v-flex v-if="$vuetify.breakpoint.xsOnly" class="mobile-login-container" xs12>
               <section class="py-10 py-sm-12">
                 <v-layout wrap>
-                  <v-flex class="mb-6" xs10 sm8 ml-auto mr-auto>
+                  <v-flex class="mb-8" xs10 sm8 ml-auto mr-auto>
                     <img
                       height="25"
                       :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
                       alt="Torus Logo"
                     />
                   </v-flex>
-                  <LoginTitle v-if="activeMobileButton" :active-button-details="activeMobileButtonDetails" class="mb-6" />
-                  <LoginButtons
-                    :login-buttons-array="loginButtonsArray"
-                    :last-login-info="lastLoginInfo"
-                    @setActiveMobileBtn="(verifier) => (activeMobileButton = verifier)"
-                    @triggerLogin="startLogin"
-                  />
+                  <LoginTitle class="mb-6" />
+                  <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
                   <LoginFooter :authenticators="thirdPartyAuthenticators" />
                 </v-layout>
               </section>
@@ -39,21 +34,15 @@
             <!-- Desktop -->
             <v-flex v-else xs12>
               <v-layout wrap>
-                <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
+                <v-flex class="mb-10" xs10 sm8 ml-auto mr-auto>
                   <img height="25" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                 </v-flex>
-                <LoginTitle v-if="activeButton" :active-button-details="activeButtonDetails" />
+                <LoginTitle />
                 <!-- <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-10']">
                   <div class="headline font-weight-regular" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
                 </v-flex> -->
                 <v-flex xs8 mx-auto mt-4>
-                  <LoginButtons
-                    :login-buttons-array="loginButtonsArray"
-                    :active-button="activeButton"
-                    :last-login-info="lastLoginInfo"
-                    @setActiveBtn="(verifier) => (activeButton = verifier)"
-                    @triggerLogin="startLogin"
-                  />
+                  <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
                 </v-flex>
                 <LoginFooter :authenticators="thirdPartyAuthenticators" />
               </v-layout>
@@ -150,8 +139,6 @@ export default {
   data() {
     return {
       isLogout: false,
-      activeButton: '',
-      activeMobileButton: '',
       loginInProgress: false,
       snackbar: false,
       snackbarText: '',
@@ -192,12 +179,6 @@ export default {
         return this.$vuetify.breakpoint.xsOnly ? WalletCollectiblesLoaderMobile : WalletCollectiblesLoader
       }
       return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
-    },
-    activeButtonDetails() {
-      return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
-    },
-    activeMobileButtonDetails() {
-      return this.loginButtonsArray.find((x) => x.verifier === this.activeMobileButton)
     },
     thirdPartyAuthenticators() {
       return thirdPartyAuthenticators(this.loginConfig)
@@ -262,9 +243,6 @@ export default {
     } finally {
       this.loginInProgress = false
     }
-  },
-  beforeDestroy() {
-    clearInterval(this.activeMobileButtonInterval)
   },
   methods: {
     ...mapActions({

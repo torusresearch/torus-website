@@ -1,0 +1,63 @@
+name: Any branch test & lint & build
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events for all except ignored branches
+  push:
+    branches-ignore:
+      - 'alpha*'
+      - master
+      - develop
+      - binance
+
+jobs:
+  ci:
+    name: ci
+    strategy:
+      matrix:
+        node: ['14.x']
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - name: Node dependency cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Pre-build setup
+        run: npm run pre-build
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Running unit tests with coverage
+        run: npm run test:coverage-codecov
+        env:
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Run build
+        run: npm run build:testing
+        env:
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
