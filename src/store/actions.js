@@ -346,11 +346,11 @@ export default {
     try {
       commit('setLoginInProgress', true)
       // This is to maintain backward compatibility
-      const currentVeriferConfig = state.embedState.loginConfig[verifier]
+      const currentVerifierConfig = state.embedState.loginConfig[verifier]
       const { whiteLabel } = state
       // const locale = vuetify.framework.lang.current
-      if (!currentVeriferConfig) throw new Error('Invalid verifier')
-      const { typeOfLogin, clientId, jwtParameters, loginProvider } = currentVeriferConfig
+      if (!currentVerifierConfig) throw new Error('Invalid verifier')
+      const { typeOfLogin, clientId, jwtParameters } = currentVerifierConfig
       log.info('starting login', { calledFromEmbed, verifier, preopenInstanceId, login_hint })
       const loginHandler = createHandler({
         typeOfLogin,
@@ -375,7 +375,7 @@ export default {
         ),
         skipTKey: state.embedState.skipTKey,
         whiteLabel,
-        loginProvider,
+        loginConfigItem: currentVerifierConfig,
       })
       const { keys, userInfo, postboxKey } = await loginHandler.handleLoginWindow()
       // Get all open login results

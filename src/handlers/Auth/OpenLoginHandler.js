@@ -8,7 +8,7 @@ import PopupWithBcHandler from '../Popup/PopupWithBcHandler'
 class OpenLoginHandler {
   nonce = randomId()
 
-  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, jwtParameters, skipTKey, whiteLabel, loginProvider }) {
+  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, jwtParameters, skipTKey, whiteLabel, loginConfigItem }) {
     this.clientId = clientId
     this.verifier = verifier
     this.preopenInstanceId = preopenInstanceId
@@ -17,7 +17,7 @@ class OpenLoginHandler {
     this.jwtParameters = jwtParameters
     this.skipTKey = skipTKey
     this.whiteLabel = whiteLabel
-    this.loginProvider = loginProvider
+    this.loginConfigItem = loginConfigItem
     this.setFinalUrl()
   }
 
@@ -27,6 +27,7 @@ class OpenLoginHandler {
       verifier: this.verifier,
       redirectToOpener: this.redirectToOpener || false,
       whiteLabel: this.whiteLabel || '',
+      loginConfigItem: this.loginConfigItem,
     })
     return encodeURIComponent(
       safebtoa(
@@ -34,7 +35,8 @@ class OpenLoginHandler {
           instanceId: this.nonce,
           verifier: this.verifier,
           redirectToOpener: this.redirectToOpener || false,
-          whiteLabel: this.whiteLabel || '',
+          whiteLabel: this.whiteLabel || {},
+          loginConfig: !Object.keys(config.loginConfig).includes(this.verifier) ? { [this.loginConfigItem.loginProvider]: this.loginConfigItem } : {},
         })
       )
     )
@@ -43,7 +45,7 @@ class OpenLoginHandler {
   setFinalUrl() {
     const finalUrl = new URL(`${config.baseRoute}start`)
     finalUrl.searchParams.append('state', this.state)
-    finalUrl.searchParams.append('loginProvider', this.loginProvider)
+    finalUrl.searchParams.append('loginProvider', this.loginConfigItem.loginProvider)
     Object.keys(this.jwtParameters).forEach((x) => {
       if (this.jwtParameters[x]) finalUrl.searchParams.append(x, this.jwtParameters[x])
     })
