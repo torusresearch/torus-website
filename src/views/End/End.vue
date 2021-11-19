@@ -29,15 +29,17 @@ export default {
       const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
       const result = hashUrl.searchParams.get('result')
       let whiteLabel = {}
+      let loginConfig = {}
 
       if (result) {
         const resultParams = JSON.parse(safeatob(result))
         const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
         whiteLabel = appStateParams.whiteLabel || {}
+        loginConfig = appStateParams.loginConfig || {}
       }
 
       const torus = new Torus()
-      const openLogin = await getOpenLoginInstance(whiteLabel)
+      const openLogin = await getOpenLoginInstance(whiteLabel, loginConfig)
       const { state } = openLogin
       log.info(state, 'state')
       const allInfo = state.store.getStore()
