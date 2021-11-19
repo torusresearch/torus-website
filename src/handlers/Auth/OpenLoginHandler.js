@@ -8,12 +8,9 @@ import PopupWithBcHandler from '../Popup/PopupWithBcHandler'
 class OpenLoginHandler {
   nonce = randomId()
 
-  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, jwtParameters, skipTKey, whiteLabel, loginConfigItem }) {
-    this.clientId = clientId
-    this.verifier = verifier
+  constructor({ redirect_uri, preopenInstanceId, jwtParameters, skipTKey, whiteLabel, loginConfigItem }) {
     this.preopenInstanceId = preopenInstanceId
     this.redirect_uri = redirect_uri
-    this.typeOfLogin = typeOfLogin
     this.jwtParameters = jwtParameters
     this.skipTKey = skipTKey
     this.whiteLabel = whiteLabel
@@ -24,7 +21,7 @@ class OpenLoginHandler {
   get state() {
     log.info('check', {
       instanceId: this.nonce,
-      verifier: this.verifier,
+      verifier: this.loginConfigItem.verifier,
       redirectToOpener: this.redirectToOpener || false,
       whiteLabel: this.whiteLabel || '',
       loginConfigItem: this.loginConfigItem,
@@ -36,7 +33,9 @@ class OpenLoginHandler {
           verifier: this.verifier,
           redirectToOpener: this.redirectToOpener || false,
           whiteLabel: this.whiteLabel || {},
-          loginConfig: !Object.keys(config.loginConfig).includes(this.verifier) ? { [this.loginConfigItem.loginProvider]: this.loginConfigItem } : {},
+          loginConfig: !Object.keys(config.loginConfig).includes(this.loginConfigItem.verifier)
+            ? { [this.loginConfigItem.loginProvider]: this.loginConfigItem }
+            : {},
         })
       )
     )
@@ -55,6 +54,10 @@ class OpenLoginHandler {
   }
 
   async handleLoginWindow() {
+    const { verifier, typeOfLogin, clientId } = this.loginConfigItem
+    if (!verifier || !typeOfLogin || !clientId) {
+      throw new Error('Invalid params')
+    }
     const channelName = `redirect_openlogin_channel_${this.nonce}`
     log.info('channelname', channelName)
     const verifierWindow = new PopupWithBcHandler({ channelName, url: this.finalURL, preopenInstanceId: this.preopenInstanceId })

@@ -6,7 +6,7 @@ import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 
 import config from '../config'
-import { HandlerFactory as createHandler } from '../handlers/Auth'
+import { OpenLoginHandler } from '../handlers/Auth'
 import PopupHandler from '../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import { getOpenLoginInstance } from '../openlogin'
@@ -349,13 +349,10 @@ export default {
       const currentVerifierConfig = state.embedState.loginConfig[verifier]
       const { whiteLabel } = state
       // const locale = vuetify.framework.lang.current
-      if (!currentVerifierConfig) throw new Error('Invalid verifier')
-      const { typeOfLogin, clientId, jwtParameters } = currentVerifierConfig
+      if (!currentVerifierConfig) throw new Error('Invalid verifier config')
+      const { jwtParameters } = currentVerifierConfig
       log.info('starting login', { calledFromEmbed, verifier, preopenInstanceId, login_hint })
-      const loginHandler = createHandler({
-        typeOfLogin,
-        clientId,
-        verifier,
+      const loginHandler = new OpenLoginHandler({
         redirect_uri: config.redirect_uri,
         preopenInstanceId,
         jwtParameters: deepmerge(

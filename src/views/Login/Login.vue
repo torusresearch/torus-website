@@ -130,7 +130,7 @@ import {
   WalletTransferLoader,
   WalletTransferLoaderMobile,
 } from '../../content-loader'
-import { HandlerFactory as createHandler } from '../../handlers/Auth'
+import { OpenLoginHandler } from '../../handlers/Auth'
 import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/utils'
 
 export default {
@@ -214,11 +214,9 @@ export default {
       else return
       const { access_token: accessToken, id_token: idToken } = hashParameters
       const currentVeriferConfig = this.loginConfig[returnedVerifier]
-      const { typeOfLogin, clientId, jwtParameters } = currentVeriferConfig
-      const loginHandler = createHandler({
-        typeOfLogin,
-        clientId,
-        verifier: returnedVerifier,
+      const { jwtParameters } = currentVeriferConfig
+      const loginHandler = new OpenLoginHandler({
+        loginConfigItem: currentVeriferConfig,
         redirect_uri: '',
         preopenInstanceId: '',
         jwtParameters: jwtParameters || {},
