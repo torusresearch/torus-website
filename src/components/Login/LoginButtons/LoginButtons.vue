@@ -6,7 +6,7 @@
       :class="$vuetify.theme.dark ? '' : 'text_2--text'"
     >
       {{ t('login.signUpIn') }}
-    </div> -->
+    </div>-->
     <div :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
       <v-btn
         v-if="hasExistingAccount"
@@ -103,6 +103,8 @@
 </template>
 
 <script>
+import log from 'loglevel'
+
 import { HOSTED_EMAIL_PASSWORDLESS_VERIFIER } from '../../../utils/enums'
 import { capitalizeFirstLetter } from '../../../utils/utils'
 import LoginButton from '../LoginButton'
@@ -200,6 +202,7 @@ export default {
     clearInterval(this.activeMobileButtonInterval)
   },
   mounted() {
+    log.info(this.loginButtonsArray)
     this.chooseAndSetActiveButton()
   },
   methods: {

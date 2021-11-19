@@ -131,6 +131,10 @@ export default {
     Object.keys(enabledVerifiers).forEach((x) => {
       if (finalLoginConfig[x]) finalLoginConfig[x].showOnModal = !enabledVerifiers[x] ? false : finalLoginConfig[x].showOnModal
     })
+    Object.keys(finalLoginConfig).forEach((x) => {
+      // Fallback to verifier name as login provider if not set
+      if (!finalLoginConfig[x].loginProvider) finalLoginConfig[x].loginProvider = x
+    })
     state.embedState = {
       ...state.embedState,
       loginConfig: finalLoginConfig,
