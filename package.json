@@ -43,7 +43,7 @@
     "@toruslabs/openlogin-jrpc": "^1.2.0",
     "@toruslabs/openlogin-utils": "^1.2.0",
     "@toruslabs/torus.js": "^4.2.0",
-    "@unstoppabledomains/resolution": "^6.0.2",
+    "@unstoppabledomains/resolution": "^6.0.3",
     "@walletconnect/core": "^1.6.6",
     "@walletconnect/iso-crypto": "^1.6.6",
     "await-semaphore": "^0.1.3",
