@@ -366,7 +366,11 @@ export default class AssetController {
         normalizedCollectibleInfo.tokenBalance = 1
       } else if (normalizedCollectibleInfo.standard === CONTRACT_TYPE_ERC1155) {
         try {
-          await this.assetContractController.getErc1155Balance(_contractAddress, this.selectedAddress, tokenID)
+          normalizedCollectibleInfo.tokenBalance = await this.assetContractController.getErc1155Balance(
+            _contractAddress,
+            this.selectedAddress,
+            tokenID
+          )
         } catch {
           normalizedCollectibleInfo.tokenBalance = null
         }
