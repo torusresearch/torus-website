@@ -353,6 +353,7 @@ export default {
       const { jwtParameters } = currentVerifierConfig
       log.info('starting login', { calledFromEmbed, verifier, preopenInstanceId, login_hint })
       const loginHandler = new OpenLoginHandler({
+        verifier,
         redirect_uri: config.redirect_uri,
         preopenInstanceId,
         jwtParameters: deepmerge(

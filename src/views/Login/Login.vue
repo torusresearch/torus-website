@@ -216,6 +216,7 @@ export default {
       const currentVeriferConfig = this.loginConfig[returnedVerifier]
       const { jwtParameters } = currentVeriferConfig
       const loginHandler = new OpenLoginHandler({
+        verifier: returnedVerifier,
         loginConfigItem: currentVeriferConfig,
         redirect_uri: '',
         preopenInstanceId: '',

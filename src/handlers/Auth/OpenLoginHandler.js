@@ -8,7 +8,8 @@ import PopupWithBcHandler from '../Popup/PopupWithBcHandler'
 class OpenLoginHandler {
   nonce = randomId()
 
-  constructor({ redirect_uri, preopenInstanceId, jwtParameters, skipTKey, whiteLabel, loginConfigItem }) {
+  constructor({ verifier, redirect_uri, preopenInstanceId, jwtParameters, skipTKey, whiteLabel, loginConfigItem }) {
+    this.verifier = verifier
     this.preopenInstanceId = preopenInstanceId
     this.redirect_uri = redirect_uri
     this.jwtParameters = jwtParameters
@@ -21,7 +22,7 @@ class OpenLoginHandler {
   get state() {
     log.info('check', {
       instanceId: this.nonce,
-      verifier: this.loginConfigItem.verifier,
+      verifier: this.verifier,
       redirectToOpener: this.redirectToOpener || false,
       whiteLabel: this.whiteLabel || '',
       loginConfigItem: this.loginConfigItem,
@@ -33,9 +34,7 @@ class OpenLoginHandler {
           verifier: this.verifier,
           redirectToOpener: this.redirectToOpener || false,
           whiteLabel: this.whiteLabel || {},
-          loginConfig: !Object.keys(config.loginConfig).includes(this.loginConfigItem.verifier)
-            ? { [this.loginConfigItem.loginProvider]: this.loginConfigItem }
-            : {},
+          loginConfig: !Object.keys(config.loginConfig).includes(this.verifier) ? { [this.loginConfigItem.loginProvider]: this.loginConfigItem } : {},
         })
       )
     )
@@ -54,8 +53,8 @@ class OpenLoginHandler {
   }
 
   async handleLoginWindow() {
-    const { verifier, typeOfLogin, clientId } = this.loginConfigItem
-    if (!verifier || !typeOfLogin || !clientId) {
+    const { typeOfLogin, clientId } = this.loginConfigItem
+    if (!this.verifier || !typeOfLogin || !clientId) {
       throw new Error('Invalid params')
     }
     const channelName = `redirect_openlogin_channel_${this.nonce}`
