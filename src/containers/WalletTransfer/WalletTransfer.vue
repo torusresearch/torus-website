@@ -41,7 +41,7 @@
         </v-card>
       </v-flex>
       <v-flex xs12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
-        <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="off" autocomplete="off" @submit.prevent="sendCoin">
+        <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="none" autocomplete="off" @submit.prevent="sendCoin">
           <v-card
             :flat="$vuetify.breakpoint.xsOnly"
             class="form-container"
@@ -53,12 +53,12 @@
                 <div v-if="selectedItemDisplay">
                   <v-menu transition="slide-y-transition" bottom>
                     <template #activator="{ on }">
-                      <v-chip class="select-coin" label large :outlined="$vuetify.theme.dark" v-on="on">
+                      <v-btn class="select-coin" label :outlined="$vuetify.theme.dark" v-on="on">
                         <span class="select-coin-name">{{ selectedItemDisplay.name }}</span>
                         <div class="flex-grow-1 text-right pr-2">
                           <v-icon right>$vuetify.icons.select</v-icon>
                         </div>
-                      </v-chip>
+                      </v-btn>
                     </template>
                     <v-list class="select-item-list">
                       <v-list-item
@@ -104,7 +104,12 @@
                       </v-subheader>
                       <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
                         <v-list-item-icon class="ml-8 mr-1">
-                          <img :src="collectible.logo" height="20px" :alt="`${collectible.name} Logo`" />
+                          <img
+                            :src="collectible.logo"
+                            height="20px"
+                            :alt="collectible.name"
+                            onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
+                          />
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>
@@ -197,6 +202,7 @@
                     v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && !isSendAll"
                     id="send-all-btn"
                     class="float-right torusBrand1--text body-2"
+                    tabindex="0"
                     @click="sendAll"
                   >
                     {{ t('walletTransfer.sendAll') }}

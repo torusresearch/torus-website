@@ -13,7 +13,7 @@
             <img
               :src="$vuetify.theme.isDark && imageDarkPath ? imageDarkPath : imagePath"
               :style="$vuetify.breakpoint.smAndDown ? 'height: 42px' : 'height: 50px'"
-              :alt="`${title} Image`"
+              :alt="`${title}`"
             />
           </div>
         </slot>

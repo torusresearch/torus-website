@@ -26,7 +26,7 @@
     }
     & .dapp-title {
       font-size: 14px;
-      color: #333333;
+      color: var(--v-text_1-base);
       margin: 0px;
       text-overflow: ellipsis;
       overflow: hidden;
@@ -36,7 +36,7 @@
     & .dapp-category {
       font-size: 12px;
       line-height: 14px;
-      color: #828282;
+      color: var(--v-torusGray3-base);
       margin: 0px;
       text-overflow: ellipsis;
       overflow: hidden;
@@ -49,7 +49,7 @@
       font-weight: normal;
       font-size: 12px;
       line-height: 14px;
-      color: #828282;
+      color: #595857;
       margin: 0px;
       transform: translateY(3px);
       text-overflow: ellipsis;

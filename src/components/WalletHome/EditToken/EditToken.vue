@@ -4,7 +4,7 @@
       <v-btn v-if="isHideMode" icon x-small v-on="on">
         <v-icon class="white--text" x-small>$vuetify.icons.close</v-icon>
       </v-btn>
-      <a v-else class="torusBrand1--text caption font-weight-medium gtm-add-token-cta" v-on="on">{{ t('homeToken.addTokenHere') }}</a>
+      <a v-else class="torusBrand1--text caption font-weight-medium gtm-add-token-cta" tabindex="0" v-on="on">{{ t('homeToken.addTokenHere') }}</a>
     </template>
     <v-card class="add-token">
       <v-tabs-items v-model="tab" touchless>

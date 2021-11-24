@@ -1,7 +1,7 @@
 <template>
   <v-dialog ref="advanceOption" v-model="dialog" persistent width="375" eager>
     <template #activator="{ on }">
-      <a id="advance-option-link" class="float-right torusBrand1--text" v-on="on">{{ t('walletTransfer.fee-edit') }}</a>
+      <a id="advance-option-link" class="float-right torusBrand1--text" tabindex="0" v-on="on">{{ t('walletTransfer.fee-edit') }}</a>
     </template>
     <v-card class="advance-option">
       <v-form ref="advanceOptionForm" v-model="advanceOptionFormValid" lazy-validation @submit.prevent="save">

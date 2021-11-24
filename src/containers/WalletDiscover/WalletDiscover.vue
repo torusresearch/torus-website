@@ -1,15 +1,15 @@
 <template>
-  <div class="dapp-parent d-flex flex-column justify-start align-center" :class="$vuetify.breakpoint.xsOnly ? 'xs-parent' : ''">
+  <v-container class="dapp-parent d-flex flex-column justify-start align-center" :class="$vuetify.breakpoint.xsOnly ? 'xs-parent px-4' : ''">
     <div
-      class="discover-header d-flex"
-      :class="$vuetify.breakpoint.xsOnly ? 'flex-column justify-start align-start' : 'flex-row justify-space-between align-center'"
+      class="discover-header d-flex mt-3"
+      :class="$vuetify.breakpoint.smAndDown ? 'flex-column justify-start align-start' : 'flex-row justify-space-between'"
     >
       <h3 class="discover-title font-weight-bold" :style="{ color: $vuetify.theme.isDark ? '#EEF2F4' : '#5C6C7F' }">
         {{ t('navBar.discover') }}
       </h3>
 
-      <v-layout mx-n2 class="dapp-filters">
-        <v-flex xs6 px-2 class="filter-width">
+      <v-layout mx-n2 class="dapp-filters mt-5 mt-md-0">
+        <v-flex xs6 px-sm-2 class="filter-width">
           <v-menu offset-y>
             <template #activator="{ on }">
               <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
@@ -36,7 +36,7 @@
             </v-card>
           </v-menu>
         </v-flex>
-        <v-flex xs6 px-2 class="filter-width">
+        <v-flex xs6 px-sm-2 class="filter-width">
           <v-menu offset-y>
             <template #activator="{ on }">
               <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
@@ -100,7 +100,7 @@
         :length="pageCount"
       ></v-pagination>
     </div>
-  </div>
+  </v-container>
 </template>
 <script>
 import { mapState } from 'vuex'

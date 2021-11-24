@@ -1,7 +1,7 @@
 <template>
   <v-flex xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes" :class="{ 'not-sm': !$vuetify.breakpoint.xsOnly }">
     <div class="text_3--text mb-4 mb-sm-6">
-      <div class="text_2--text mb-2 font-weight-bold">{{ t('login.note') }}:</div>
+      <div class="text_3--text mb-2 font-weight-bold">{{ t('login.note') }}:</div>
       <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
       <div v-if="authenticators.length > 0">
         <span>{{ t('dappLogin.termsAuth01') }}</span>

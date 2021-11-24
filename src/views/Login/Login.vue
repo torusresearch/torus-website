@@ -29,7 +29,7 @@
                   "
                 />
               </section>
-              <v-icon v-if="scrollOnTop" class="more-icon">$vuetify.icons.login_more</v-icon>
+              <v-icon v-if="scrollOnTop" class="more-icon" aria-label="Scroll for more information" role="image">$vuetify.icons.login_more</v-icon>
             </v-flex>
             <!-- Desktop -->
             <v-flex v-else xs12>

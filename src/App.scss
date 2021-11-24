@@ -196,6 +196,11 @@
     .v-text-field__details {
       padding: 0;
     }
+    &.v-text-field--outlined.v-input--is-focused:not(.error--text) {
+      fieldset {
+        border: 1px solid  var(--v-torusFont1-base);
+      }
+    }
   }
 
   .v-btn:not(.v-btn--text):not(.v-btn--icon) {

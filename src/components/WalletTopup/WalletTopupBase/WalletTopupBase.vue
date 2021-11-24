@@ -82,6 +82,7 @@
                 outlined
                 :items="supportedCurrencies"
                 append-icon="$vuetify.icons.select"
+                aria-label="Currency Selector"
                 @change="onCurrencyChange"
               ></v-select>
             </v-flex>
