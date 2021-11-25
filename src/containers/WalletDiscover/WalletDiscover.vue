@@ -172,7 +172,8 @@ export default {
   },
   async mounted() {
     this.$vuetify.goTo(0)
-    this.dapps = (await this.fetchDapps())?.records || []
+    const dappRecords = await this.fetchDapps()
+    this.dapps = dappRecords?.records || []
     this.isLoadingDapps = false
     this.selectedNetwork = this.$store?.state?.networkType?.host || ALL_NETWORKS // set default network as user's setting default
   },

@@ -77,16 +77,19 @@ function onloadTorus(torus) {
 
   if (isMain) return torus
 
+  const iframeOrigin = getIFrameOrigin()
   const metamaskStream = new BasePostMessageStream({
     name: 'iframe_metamask',
     target: 'embed_metamask',
     targetWindow: window.parent,
+    targetOrigin: iframeOrigin,
   })
 
   const communicationStream = new BasePostMessageStream({
     name: 'iframe_comm',
     target: 'embed_comm',
     targetWindow: window.parent,
+    targetOrigin: iframeOrigin,
   })
 
   torus.metamaskMux = setupMultiplex(metamaskStream)
@@ -95,7 +98,7 @@ function onloadTorus(torus) {
 
   const providerOutStream = torus.metamaskMux.getStream('provider')
 
-  torusController.setupUntrustedCommunication(providerOutStream, getIFrameOrigin())
+  torusController.setupUntrustedCommunication(providerOutStream, iframeOrigin)
 
   const publicConfOutStream = torus.metamaskMux.getStream('publicConfig')
 
