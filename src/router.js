@@ -210,7 +210,9 @@ router.beforeResolve((to, from, next) => {
   return next()
 })
 router.beforeEach((to, _, next) => {
-  document.title = to.meta.title ? `${to.meta.title} | Torus` : 'Torus'
+  if (Object.prototype.hasOwnProperty.call(to, 'meta')) {
+    document.title = to.meta.title ? `${to.meta.title} | Torus` : 'Torus'
+  }
   next()
 })
 
