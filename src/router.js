@@ -35,25 +35,25 @@ const router = new Router({
       path: '/',
       name: 'login',
       component: Login,
-      meta: { requiresAuth: false },
+      meta: { requiresAuth: false, title: 'Login' },
     },
     {
       path: '/start',
       name: 'start',
       component: Start,
-      meta: { requiresAuth: false },
+      meta: { requiresAuth: false, title: 'Start' },
     },
     {
       path: '/end',
       name: 'end',
       component: End,
-      meta: { requiresAuth: false },
+      meta: { requiresAuth: false, title: 'End' },
     },
     {
       path: '/logout',
       name: 'logout',
       component: Login,
-      meta: { requiresAuth: false },
+      meta: { requiresAuth: false, title: 'Logout' },
     },
     {
       path: '/popup',
@@ -71,13 +71,13 @@ const router = new Router({
       path: '/confirm',
       name: 'confirm',
       component: Confirm,
-      meta: { requiresAuth: false },
+      meta: { requiresAuth: false, title: 'Confirm' },
     },
     {
       path: '/providerchange',
       name: 'providerchange',
       component: ProviderChange,
-      meta: { requiresAuth: false },
+      meta: { requiresAuth: false, title: 'Provider Change' },
     },
     {
       path: '/wallet',
@@ -99,11 +99,13 @@ const router = new Router({
               path: '',
               name: 'walletHomeMain',
               component: WalletHomeMain,
+              meta: { title: 'Home' },
             },
             {
               path: 'collectibles/:address',
               name: 'walletHomeCollectible',
               component: WalletHomeCollectible,
+              meta: { title: 'Home' },
             },
           ],
         },
@@ -111,21 +113,25 @@ const router = new Router({
           path: 'history',
           name: 'walletHistory',
           component: WalletHistory,
+          meta: { title: 'Activity' },
         },
         {
           path: 'settings',
           name: 'walletSettings',
           component: WalletSettings,
+          meta: { title: 'Settings' },
         },
         {
           path: 'transfer',
           name: 'walletTransfer',
           component: WalletTransfer,
+          meta: { title: 'Transfer' },
         },
         {
           path: 'topup',
           name: 'walletTopup',
           component: WalletTopupHome,
+          meta: { title: 'Topup' },
           children: [
             {
               path: 'rampnetwork',
@@ -168,6 +174,7 @@ const router = new Router({
           path: 'discover',
           name: 'walletDiscover',
           component: WalletDiscover,
+          meta: { title: 'Discover' },
         },
       ],
     },
@@ -201,6 +208,12 @@ router.beforeResolve((to, from, next) => {
     // next()
   }
   return next()
+})
+router.beforeEach((to, _, next) => {
+  if (Object.prototype.hasOwnProperty.call(to, 'meta')) {
+    document.title = to.meta.title ? `${to.meta.title} | Torus` : 'Torus'
+  }
+  next()
 })
 
 export default router

@@ -7,16 +7,16 @@
     margin-bottom: 2px;
   }
   .select-coin {
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
+    background: #ffffff;
+    box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06) !important;
     color: var(--v-torusFont1-base);
+    font-weight: normal;
     border-radius: 6px !important;
     font-size: 16px;
     display: flex;
     border: 1px solid var(--v-torusGray1-base);
-    ::v-deep .v-chip__content {
-      width: 100%;
-    }
+    width: 100%;
+    height: 54px;
     .v-icon--right {
       color: #D3D5E2;
     }
@@ -24,6 +24,12 @@
       background-color: var(--v-torusBlack-base) !important;
       box-shadow: none;
       border: 1px solid var(--v-torusGray3-base);
+    }
+    &:focus {
+      border-color: var(--v-torusFont1-base);
+    }
+    &::before {
+      background-color: #ffffff;
     }
   }
   ::v-deep .v-messages {

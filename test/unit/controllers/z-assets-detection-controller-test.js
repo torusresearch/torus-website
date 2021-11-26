@@ -128,7 +128,13 @@ describe('AssetsDetectionController', () => {
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
 
-      const assetCtrlr = new AssetsDetectionController({ network: localNetwork, selectedAddress: TEST_ADDRESS })
+      const assetsController = new AssetsController({
+        selectedAddress: TEST_ADDRESS,
+        assetContractController: assetsContract,
+        network,
+        getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
+      })
+      const assetCtrlr = new AssetsDetectionController({ assetController: assetsController, network: localNetwork, selectedAddress: TEST_ADDRESS })
       const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
       clock.tick(60_000)
       sandbox.assert.calledOnce(mockCollectibles)
@@ -164,13 +170,21 @@ describe('AssetsDetectionController', () => {
       sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(ROPSTEN)
-
-      const assetCtrlr = new AssetsDetectionController({ network: localNetwork, selectedAddress: TEST_ADDRESS })
+      const assetController = new AssetsController({
+        selectedAddress: TEST_ADDRESS,
+        assetContractController: assetsContract,
+        network,
+        getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
+      })
+      const assetCtrlr = new AssetsDetectionController({ assetController, network: localNetwork, selectedAddress: TEST_ADDRESS })
       assetCtrlr.selectedAddress = TEST_ADDRESS
-      const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
+      const mockOpenseaCollectibles = sandbox.stub(assetCtrlr, 'detectCollectiblesFromOpensea')
+      const mockCovalentCollectibles = sandbox.stub(assetCtrlr, 'detectCollectiblesFromCovalent')
       clock.tick(60_000)
-      sandbox.assert.notCalled(mockCollectibles)
-      mockCollectibles.restore()
+      sandbox.assert.notCalled(mockOpenseaCollectibles)
+      sandbox.assert.notCalled(mockCovalentCollectibles)
+      mockOpenseaCollectibles.restore()
+      mockCovalentCollectibles.restore()
       resolve()
     }))
 
@@ -184,8 +198,13 @@ describe('AssetsDetectionController', () => {
       sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
-
-      const assetCtrlr = new AssetsDetectionController({ network: localNetwork })
+      const assetController = new AssetsController({
+        selectedAddress: TEST_ADDRESS,
+        assetContractController: assetsContract,
+        network,
+        getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
+      })
+      const assetCtrlr = new AssetsDetectionController({ assetController, network: localNetwork })
       const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
       assetCtrlr.startAssetDetection(TEST_ADDRESS)
       clock.tick(1)
@@ -204,8 +223,13 @@ describe('AssetsDetectionController', () => {
       sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
-
-      const assetCtrlr = new AssetsDetectionController({ network: localNetwork })
+      const assetController = new AssetsController({
+        selectedAddress: TEST_ADDRESS,
+        assetContractController: assetsContract,
+        network,
+        getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
+      })
+      const assetCtrlr = new AssetsDetectionController({ assetController, network: localNetwork })
       const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
       clock.tick(1)
       sandbox.assert.notCalled(mockCollectibles)

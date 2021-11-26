@@ -9,7 +9,11 @@
           title="View Assets"
         >
           <v-list-item-avatar :size="$vuetify.breakpoint.xsOnly ? 36 : 50" :class="$vuetify.breakpoint.xsOnly ? 'my-0' : ''">
-            <v-img :src="collectible.logo" :alt="collectible.name"></v-img>
+            <img
+              :src="collectible.logo"
+              :alt="collectible.name"
+              onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
+            />
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title class="caption text_1--text font-weight-bold" :class="{ 'mb-2': !$vuetify.breakpoint.xsOnly }">
