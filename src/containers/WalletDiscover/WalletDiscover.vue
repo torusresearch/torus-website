@@ -12,11 +12,18 @@
         <v-flex xs6 px-sm-2 class="filter-width">
           <v-menu offset-y>
             <template #activator="{ on }">
-              <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
+              <v-btn
+                block
+                outlined
+                height="42"
+                class="d-flex align-center filter-selector pa-2"
+                :class="{ 'theme--dark': $vuetify.theme.isDark }"
+                v-on="on"
+              >
                 <v-icon x-small class="text_2--text">$vuetify.icons.activities</v-icon>
                 <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ selectedCategory }}</span>
                 <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
-              </div>
+              </v-btn>
             </template>
             <v-card class="pa-3">
               <v-list min-width="190" dense>
@@ -39,13 +46,20 @@
         <v-flex xs6 px-sm-2 class="filter-width">
           <v-menu offset-y>
             <template #activator="{ on }">
-              <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
+              <v-btn
+                block
+                outlined
+                height="42"
+                class="d-flex align-center filter-selector pa-2"
+                :class="{ 'theme--dark': $vuetify.theme.isDark }"
+                v-on="on"
+              >
                 <v-icon class="text_2--text" small>$vuetify.icons.calendar</v-icon>
                 <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">
                   {{ getDisplayName(selectedNetwork) }}
                 </span>
                 <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
-              </div>
+              </v-btn>
             </template>
             <v-card class="pa-3">
               <v-list min-width="190" dense>
