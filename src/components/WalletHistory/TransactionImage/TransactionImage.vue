@@ -34,7 +34,9 @@
         class="mr-2"
         :class="isCancel ? 'ml-0' : 'ml-2'"
         width="36"
-        onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+        :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+          $vuetify.theme.dark ? 'dark' : 'light'
+        }.svg';`"
       />
       <v-icon v-else-if="transaction.type === CONTRACT_TYPE_ERC20" class="float-left" size="24" color="torusBrand1">$vuetify.icons.token</v-icon>
       <img
@@ -68,7 +70,9 @@
         height="36"
         large
         :alt="`${transaction.type_name} Icon`"
-        onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+        :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+          $vuetify.theme.dark ? 'dark' : 'light'
+        }.svg';`"
         :style="{ marginRight: '16px', marginLeft: isCancel ? '0px' : '13px' }"
       />
       <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ transaction.actionIcon }}</v-icon>

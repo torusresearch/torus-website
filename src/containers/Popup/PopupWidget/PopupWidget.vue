@@ -99,7 +99,9 @@
                 v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC20 && recentTransaction.actionIcon !== 'n/a'"
                 :src="`${logosUrl}/${recentTransaction.actionIcon}`"
                 :alt="`${recentTransaction.type_name} Icon`"
-                onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+                :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+                  $vuetify.theme.dark ? 'dark' : 'light'
+                }.svg';`"
               />
               <v-icon v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC20" class="float-left" size="24" color="torusBrand1">
                 $vuetify.icons.token
@@ -118,7 +120,9 @@
                 height="30"
                 large
                 :alt="`${recentTransaction.type_name} Icon`"
-                onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+                :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+                  $vuetify.theme.dark ? 'dark' : 'light'
+                }.svg';`"
               />
               <v-icon v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC721" class="float-left" size="24" color="torusBrand1">
                 $vuetify.icons.collectibles

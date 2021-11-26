@@ -20,6 +20,10 @@
     opacity: 1;
     font-weight: bold;
   }
+  &:focus-visible {
+    outline: none;
+    border: 1px solid  var(--v-torusFont1-base);
+  }
   &.theme--dark {
     background-color: var(--v-torusBlack2-base);
     opacity: 0.4;

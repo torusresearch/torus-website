@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="addAssetDialog" max-width="375" persistent>
     <template #activator="{ on }">
-      <a class="torusBrand1--text caption font-weight-medium gtm-add-asset-cta" v-on="on">{{ t('homeAssets.add') }}</a>
+      <a class="torusBrand1--text caption font-weight-medium gtm-add-asset-cta" tabindex="0" v-on="on">{{ t('homeAssets.add') }}</a>
     </template>
     <v-card class="add-asset">
       <v-tabs-items v-model="tab" touchless>

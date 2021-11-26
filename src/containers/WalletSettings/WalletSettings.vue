@@ -2,7 +2,7 @@
   <v-container class="wallet-settings" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
       <v-flex xs6>
-        <div class="font-weight-bold text_1--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
+        <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
           {{ t('walletSettings.settings') }}
         </div>
       </v-flex>

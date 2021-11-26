@@ -1,5 +1,5 @@
 <template>
-  <v-card color="elevation-1 activity mb-4 pa-5" :ripple="false" @click="showDetails = !showDetails">
+  <v-card color="elevation-1 activity mb-4 pa-5" :ripple="false" @click="showDetails = !showDetails" @keydown.enter="showDetails = !showDetails">
     <v-layout wrap mx-n4 mb-5 mb-sm-0>
       <v-flex
         px-4

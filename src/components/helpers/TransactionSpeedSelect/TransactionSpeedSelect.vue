@@ -98,6 +98,7 @@
         <div
           class="btn-speed text-center elevation-3"
           :class="[speedSelected === 'average' ? 'selected' : '', $vuetify.theme.dark ? 'theme--dark' : '']"
+          tabindex="0"
           @click="selectSpeed('average', averageGasPrice)"
         >
           <div class="d-flex">
@@ -117,6 +118,7 @@
         <div
           class="btn-speed text-center elevation-3"
           :class="[speedSelected === 'fastest' ? 'selected' : '', $vuetify.theme.dark ? 'theme--dark' : '']"
+          tabindex="0"
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
           <div class="d-flex">
