@@ -210,10 +210,11 @@ export default class AssetsDetectionController {
 
     this.currentNetwork = currentNetwork
     let finalArr = []
-    const userState = this._preferencesStore.getState()[this.selectedAddress]
-    const { customNfts = [] } = userState || {}
+
     let customCollectiblesMap = {}
     if (this._preferencesStore) {
+      const userState = this._preferencesStore.getState()[this.selectedAddress]
+      const { customNfts = [] } = userState || {}
       const [customNftArr, _customCollectiblesMap] = await this.getCustomNfts(customNfts)
       finalArr = [...customNftArr]
       customCollectiblesMap = _customCollectiblesMap
