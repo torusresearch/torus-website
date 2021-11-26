@@ -355,7 +355,11 @@ export default class AssetController {
       tokenBalance,
       collectibleIndex,
     }
-    normalizedCollectibleInfo.standard = standard || (await this.assetContractController.checkNftStandard(_contractAddress)).standard
+    normalizedCollectibleInfo.standard = standard
+    if (!standard) {
+      const result = await this.assetContractController.checkNftStandard(_contractAddress)
+      normalizedCollectibleInfo.standard = result.standard
+    }
     const final_standard = normalizedCollectibleInfo.standard?.toLowerCase()
     if (!name || !image || !final_standard || !SUPPORTED_NFT_STANDARDS.has(final_standard)) {
       const collectibleInfo = await this.getCollectibleInfo(address, tokenID, detectFromApi)
