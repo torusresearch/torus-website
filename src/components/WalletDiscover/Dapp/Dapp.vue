@@ -1,7 +1,20 @@
 <template>
-  <v-card class="dapp-card align-center" :class="{ 'theme--dark': $vuetify.theme.isDark, 'has-network': showNetwork }" @click="navigateToDapp">
+  <v-card
+    class="dapp-card align-center"
+    :class="{ 'theme--dark': $vuetify.theme.isDark, 'has-network': showNetwork }"
+    @click="navigateToDapp"
+    @keydown.enter="navigateToDapp"
+  >
     <div class="d-flex">
-      <img width="48" height="48" :src="`${getSrc}`" alt="Dapp Logo" />
+      <img
+        width="48"
+        height="48"
+        :src="`${getSrc}`"
+        alt="Dapp Logo"
+        :onerror="`if (!this.src.includes('images/dapp-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/dapp-${
+          $vuetify.theme.dark ? 'dark' : 'light'
+        }.svg';`"
+      />
       <div class="d-flex align-start dapp-info flex-column">
         <p class="dapp-title">{{ dapp.title }}</p>
         <p class="dapp-category">{{ dapp.category }}</p>
