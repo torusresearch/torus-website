@@ -195,10 +195,8 @@ export default class AssetsDetectionController {
    * Detect assets owned by current account on mainnet
    */
   async detectAssets() {
-    if (NFT_SUPPORTED_NETWORKS[this.network.getNetworkIdentifier()]) {
-      // this.detectTokens()
-      this.detectCollectibles()
-    }
+    // this.detectTokens()
+    this.detectCollectibles()
   }
 
   /**
@@ -208,6 +206,8 @@ export default class AssetsDetectionController {
   async detectCollectibles() {
     /* istanbul ignore if */
     const currentNetwork = this.network.getNetworkIdentifier()
+    this.assetController.setSelectedAddress(this.selectedAddress)
+
     this.currentNetwork = currentNetwork
     let finalArr = []
     const userState = this._preferencesStore.getState()[this.selectedAddress]
@@ -218,29 +218,41 @@ export default class AssetsDetectionController {
       finalArr = [...customNftArr]
       customCollectiblesMap = _customCollectiblesMap
     }
-    if (this.isMainnet() || this.isMatic()) {
-      const [openseaAssets, covalentAssets] = await Promise.all([
-        this.detectCollectiblesFromOpensea(),
-        this.detectCollectiblesFromCovalent(currentNetwork),
-      ])
-      const [, covalentCollectiblesMap] = covalentAssets
-      const [, openseaCollectiblesMap] = openseaAssets
+    if (NFT_SUPPORTED_NETWORKS[this.network.getNetworkIdentifier()]) {
+      if (this.isMainnet() || this.isMatic()) {
+        const [openseaAssets, covalentAssets] = await Promise.all([
+          this.detectCollectiblesFromOpensea(),
+          this.detectCollectiblesFromCovalent(currentNetwork),
+        ])
+        const [, covalentCollectiblesMap] = covalentAssets
+        const [, openseaCollectiblesMap] = openseaAssets
 
-      const openseaIndexes = Object.keys(openseaCollectiblesMap)
-      if (openseaIndexes.length > 0) {
-        Object.keys(openseaCollectiblesMap).forEach((x) => {
-          if (!customCollectiblesMap[x]) {
-            const openseaCollectible = openseaCollectiblesMap[x]
-            const covalentCollectible = covalentCollectiblesMap[x]
-            if (covalentCollectible) {
-              const finalCollectible = deepmerge(covalentCollectible, openseaCollectible)
-              finalArr.push(finalCollectible)
-            } else {
-              finalArr.push(openseaCollectible)
+        const openseaIndexes = Object.keys(openseaCollectiblesMap)
+        if (openseaIndexes.length > 0) {
+          Object.keys(openseaCollectiblesMap).forEach((x) => {
+            if (!customCollectiblesMap[x]) {
+              const openseaCollectible = openseaCollectiblesMap[x]
+              const covalentCollectible = covalentCollectiblesMap[x]
+              if (covalentCollectible) {
+                const finalCollectible = deepmerge(covalentCollectible, openseaCollectible)
+                finalArr.push(finalCollectible)
+              } else {
+                finalArr.push(openseaCollectible)
+              }
             }
-          }
-        })
+          })
+        } else {
+          Object.keys(covalentCollectiblesMap).forEach((x) => {
+            if (!customCollectiblesMap[x]) {
+              const covalentCollectible = covalentCollectiblesMap[x]
+              if (covalentCollectible) {
+                finalArr.push(covalentCollectible)
+              }
+            }
+          })
+        }
       } else {
+        const [, covalentCollectiblesMap] = await this.detectCollectiblesFromCovalent(currentNetwork)
         Object.keys(covalentCollectiblesMap).forEach((x) => {
           if (!customCollectiblesMap[x]) {
             const covalentCollectible = covalentCollectiblesMap[x]
@@ -250,16 +262,6 @@ export default class AssetsDetectionController {
           }
         })
       }
-    } else {
-      const [, covalentCollectiblesMap] = await this.detectCollectiblesFromCovalent(currentNetwork)
-      Object.keys(covalentCollectiblesMap).forEach((x) => {
-        if (!customCollectiblesMap[x]) {
-          const covalentCollectible = covalentCollectiblesMap[x]
-          if (covalentCollectible) {
-            finalArr.push(covalentCollectible)
-          }
-        }
-      })
     }
 
     await this.assetController.addCollectibles(finalArr, false)
@@ -277,7 +279,6 @@ export default class AssetsDetectionController {
     if (network === BSC_MAINNET) {
       protocolPrefix = 'BEP'
     }
-    this.assetController.setSelectedAddress(selectedAddress)
     const apiCollectibles = await this.getOwnerCollectibles('covalent')
     for (const item of apiCollectibles) {
       if (item.type === 'nft') {
@@ -345,7 +346,6 @@ export default class AssetsDetectionController {
     if (!selectedAddress) {
       return [finalCollectibles, collectiblesMap]
     }
-    this.assetController.setSelectedAddress(selectedAddress)
     const apiCollectibles = await this.getOwnerCollectibles('opensea')
     for (const {
       token_id: tokenID,

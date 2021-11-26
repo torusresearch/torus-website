@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import config from '../config'
-import { ETH, NFT_SUPPORTED_NETWORKS, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { ETH, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { significantDigits } from '../utils/utils'
 
 const fallBackLogoDark = require('#/assets/images/torus-logo-blue.svg')
@@ -57,10 +57,7 @@ const tokenBalances = (state) => {
 }
 
 const collectibleBalances = (state) => {
-  const { networkType, assets, selectedAddress } = state || {}
-  if (!NFT_SUPPORTED_NETWORKS[networkType.host]) {
-    assets[selectedAddress] = []
-  }
+  const { assets, selectedAddress } = state || {}
   return assets[selectedAddress] || []
 }
 

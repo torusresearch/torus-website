@@ -396,6 +396,7 @@ export default class TorusController extends SafeEventEmitter {
     this.prefsController.setSelectedAddress(address)
     if (isMain) {
       this.detectTokensController.startTokenDetection(address)
+      this.assetController.setSelectedAddress(address)
       this.assetDetectionController.startAssetDetection(address)
       this.walletConnectController.setSelectedAddress(address)
       this.gasFeeController.getGasFeeEstimatesAndStartPolling()
