@@ -1,3 +1,4 @@
 {
-  "prettier.printWidth": 150
+  "prettier.printWidth": 150,
+  "cSpell.words": ["loglevel", "openlogin", "toruslabs", "unstoppabledomains", "walletconnect"]
 }
