@@ -1,4 +1,5 @@
 /* eslint-disable unicorn/prefer-add-event-listener */
+import Bowser, { BROWSER_MAP, OS_MAP } from 'bowser'
 import log from 'loglevel'
 
 import generateIntegrity from './utils/integrity'
@@ -140,7 +141,14 @@ export function unregister() {
   }
 }
 
-if (navigator.userAgent.includes('Firefox') && 'serviceWorker' in navigator) {
+const browserInfo = Bowser.parse(navigator.userAgent)
+log.info(JSON.stringify(browserInfo), 'current browser info')
+
+// Firefox and iOS Chrome
+const canExcludeSw =
+  browserInfo.browser.name === BROWSER_MAP.firefox || (browserInfo.os.name === OS_MAP.iOS && browserInfo.browser.name === BROWSER_MAP.chrome)
+
+if (canExcludeSw && 'serviceWorker' in navigator) {
   // remove service worker for firefox
   navigator.serviceWorker
     .getRegistrations()
