@@ -37,6 +37,7 @@ export async function getOpenLoginInstance(whiteLabel = {}, loginConfig = {}) {
   })
 
   await openLogin.init()
+  log.info('got openlogin instance')
   // eslint-disable-next-line require-atomic-updates
   openLoginInstance = openLogin
   return openLoginInstance
