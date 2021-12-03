@@ -9,7 +9,7 @@
     </div>-->
     <div :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
       <v-btn
-        v-if="hasExistingAccount"
+        v-if="hasExistingAccount && existingLoginTypeAvailable"
         large
         color="torusBrand1"
         class="white--text font-weight-regular mb-2"
@@ -184,6 +184,10 @@ export default {
     },
     hasExistingAccount() {
       return this.lastLoginInfo.typeOfLogin && this.lastLoginInfo.verifierId
+    },
+    existingLoginTypeAvailable() {
+      const available = this.loginButtonsArray.find((button) => button.typeOfLogin === this.lastLoginInfo.typeOfLogin)
+      return available
     },
   },
   watch: {
