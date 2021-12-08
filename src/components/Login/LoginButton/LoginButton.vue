@@ -2,7 +2,12 @@
   <v-btn
     class="gmt-login text_2--text"
     :aria-label="`login with ${verifier.name.toLowerCase()}`"
-    :class="[{ active, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.name.toLowerCase()}`, { 'is-long': isLong }, { 'is-popup': isPopup }]"
+    :class="[
+      { active, isDark: $vuetify.theme.dark },
+      `gmt-login-${verifier.typeOfLogin.toLowerCase()}`,
+      { 'is-long': isLong },
+      { 'is-popup': isPopup },
+    ]"
     :type="buttonType"
     :block="block"
     :disabled="disabled"
@@ -13,18 +18,20 @@
       v-if="(active || $vuetify.breakpoint.xsOnly) && buttonType !== 'submit'"
       :src="
         verifier.logoHover ||
-        require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}${verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''}.svg`)
+        require(`../../../assets/img/icons/login-${verifier.typeOfLogin.toLowerCase()}${
+          verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''
+        }.svg`)
       "
-      :alt="`${verifier.name} Icon`"
+      :alt="`${verifier.typeOfLogin} Icon`"
     />
     <img
       v-else-if="$vuetify.theme.isDark && verifier.logoLight && buttonType !== 'submit'"
       :src="verifier.logoLight"
-      :alt="`${verifier.name} Icon`"
+      :alt="`${verifier.typeOfLogin} Icon`"
     />
     <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark && buttonType !== 'submit'" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
     <v-icon v-else-if="buttonType !== 'submit'" class="text_3--text">
-      {{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}
+      {{ `$vuetify.icons.${verifier.typeOfLogin.toLowerCase()}` }}
     </v-icon>
     <span v-if="isLong">{{ formatDescription }}</span>
   </v-btn>
