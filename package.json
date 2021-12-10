@@ -136,7 +136,7 @@
     "ganache": "^7.0.0-beta.1",
     "https-browserify": "^1.0.0",
     "husky": "^7.0.4",
-    "jsdom": "^18.1.1",
+    "jsdom": "^19.0.0",
     "jsdom-global": "^3.0.2",
     "lint-staged": "^12.1.2",
     "luxon": "^2.1.1",
