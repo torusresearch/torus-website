@@ -18,7 +18,7 @@
         height="56"
         @click="loginExisting"
       >
-        {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(lastLoginInfo.typeOfLogin)) }}
+        {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(existingLoginTypeAvailable.name)) }}
       </v-btn>
       <LoginButton
         v-for="verifier in mainButtonsLong"
@@ -128,6 +128,8 @@ export default {
         return {
           typeOfLogin: '',
           verifierId: '',
+          aggregateVerifier: '',
+          verifier: '',
         }
       },
     },
@@ -186,7 +188,9 @@ export default {
       return this.lastLoginInfo.typeOfLogin && this.lastLoginInfo.verifierId
     },
     existingLoginTypeAvailable() {
-      const available = this.loginButtonsArray.find((button) => button.typeOfLogin === this.lastLoginInfo.typeOfLogin)
+      const existingVerifier = this.lastLoginInfo.aggregateVerifier || this.lastLoginInfo.verifier
+      const available = this.loginButtonsArray.find((button) => (button.linkedVerifier || button.verifier) === existingVerifier)
+      log.info('existingLoginTypeAvailable', available)
       return available
     },
   },
@@ -225,7 +229,8 @@ export default {
       if (!this.$vuetify.breakpoint.xsOnly) this.setActiveBtn(verifier)
     },
     loginExisting() {
-      const targetLogin = this.loginButtonsArray.find((login) => login.typeOfLogin === this.lastLoginInfo.typeOfLogin)
+      const existingVerifier = this.lastLoginInfo.aggregateVerifier || this.lastLoginInfo.verifier
+      const targetLogin = this.loginButtonsArray.find((login) => (login.linkedVerifier || login.verifier) === existingVerifier)
       this.triggerLogin(targetLogin.verifier, this.lastLoginInfo.verifierId)
     },
     setActiveBtn(verifier) {
