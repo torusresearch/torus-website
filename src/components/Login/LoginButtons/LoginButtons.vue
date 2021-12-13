@@ -9,16 +9,15 @@
     </div>-->
     <div :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
       <v-btn
-        v-if="hasExistingAccount"
+        v-if="hasExistingAccount && existingLoginTypeAvailable"
         large
         color="torusBrand1"
-        class="white--text font-weight-regular mb-2"
+        class="white--text font-weight-regular btn-existing mb-2"
         :class="$vuetify.breakpoint.xsOnly ? 'body-2' : 'headline'"
         block
-        height="56"
         @click="loginExisting"
       >
-        {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(lastLoginInfo.typeOfLogin)) }}
+        {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(existingLoginTypeAvailable.name)) }}
       </v-btn>
       <LoginButton
         v-for="verifier in mainButtonsLong"
@@ -128,6 +127,8 @@ export default {
         return {
           typeOfLogin: '',
           verifierId: '',
+          aggregateVerifier: '',
+          verifier: '',
         }
       },
     },
@@ -185,6 +186,12 @@ export default {
     hasExistingAccount() {
       return this.lastLoginInfo.typeOfLogin && this.lastLoginInfo.verifierId
     },
+    existingLoginTypeAvailable() {
+      const existingVerifier = this.lastLoginInfo.aggregateVerifier || this.lastLoginInfo.verifier
+      const available = this.loginButtonsArray.find((button) => (button.linkedVerifier || button.verifier) === existingVerifier)
+      log.info('existingLoginTypeAvailable', available)
+      return available
+    },
   },
   watch: {
     loginButtonsArray(newValue, oldValue) {
@@ -221,7 +228,8 @@ export default {
       if (!this.$vuetify.breakpoint.xsOnly) this.setActiveBtn(verifier)
     },
     loginExisting() {
-      const targetLogin = this.loginButtonsArray.find((login) => login.typeOfLogin === this.lastLoginInfo.typeOfLogin)
+      const existingVerifier = this.lastLoginInfo.aggregateVerifier || this.lastLoginInfo.verifier
+      const targetLogin = this.loginButtonsArray.find((login) => (login.linkedVerifier || login.verifier) === existingVerifier)
       this.triggerLogin(targetLogin.verifier, this.lastLoginInfo.verifierId)
     },
     setActiveBtn(verifier) {

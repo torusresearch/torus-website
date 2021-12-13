@@ -2,7 +2,7 @@
   <v-btn
     class="gmt-login text_2--text"
     :aria-label="`login with ${verifier.name.toLowerCase()}`"
-    :class="[{ active, isDark: $vuetify.theme.dark }, `gmt-login-${verifier.name.toLowerCase()}`, { 'is-long': isLong }, { 'is-popup': isPopup }]"
+    :class="[{ active, isDark: $vuetify.theme.dark }, `gmt-login-${iconName}`, { 'is-long': isLong }, { 'is-popup': isPopup }]"
     :type="buttonType"
     :block="block"
     :disabled="disabled"
@@ -13,7 +13,7 @@
       v-if="(active || $vuetify.breakpoint.xsOnly) && buttonType !== 'submit'"
       :src="
         verifier.logoHover ||
-        require(`../../../assets/img/icons/login-${verifier.name.toLowerCase()}${verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''}.svg`)
+        require(`../../../assets/img/icons/login-${iconName}${verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''}.svg`)
       "
       :alt="`${verifier.name} Icon`"
     />
@@ -24,13 +24,15 @@
     />
     <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark && buttonType !== 'submit'" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
     <v-icon v-else-if="buttonType !== 'submit'" class="text_3--text">
-      {{ `$vuetify.icons.${verifier.name.toLowerCase()}` }}
+      {{ `$vuetify.icons.${iconName}` }}
     </v-icon>
     <span v-if="isLong">{{ formatDescription }}</span>
   </v-btn>
 </template>
 
 <script>
+import config from '../../../config'
+
 export default {
   props: {
     verifier: {
@@ -68,6 +70,11 @@ export default {
     formatDescription() {
       const finalDesc = this.verifier.description ? this.t(this.verifier.description) : this.t('dappLogin.continue')
       return finalDesc.replace(/{verifier}/gi, this.verifier.name.charAt(0).toUpperCase() + this.verifier.name.slice(1))
+    },
+    iconName() {
+      const normalVerifier = config.loginConfig[this.verifier.verifier]
+      if (normalVerifier) return this.verifier.name.toLowerCase()
+      return this.verifier.typeOfLogin.toLowerCase()
     },
   },
   methods: {

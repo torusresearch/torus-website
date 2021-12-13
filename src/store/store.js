@@ -57,6 +57,7 @@ if (storageAvailable(isPwa || config.dappStorageKey ? 'localStorage' : 'sessionS
       tKeyStore: { ...state.tKeyStore, shareTransferRequests: [] },
       wcConnectorSession: state.wcConnectorSession,
       postboxKey: state.postboxKey,
+      lastLoginInfo: state.lastLoginInfo,
     }),
   })
 }
@@ -338,8 +339,8 @@ if (storageAvailable('localStorage')) {
 
   const openLoginStore = localStorage.getItem('openlogin_store')
   if (openLoginStore !== null) {
-    const { typeOfLogin, verifierId } = JSON.parse(openLoginStore)
-    VuexStore.commit('setLastLoginInfo', { typeOfLogin, verifierId })
+    const { typeOfLogin, verifierId, aggregateVerifier, verifier } = JSON.parse(openLoginStore)
+    VuexStore.commit('setLastLoginInfo', { typeOfLogin, verifierId, aggregateVerifier, verifier })
   }
 }
 
