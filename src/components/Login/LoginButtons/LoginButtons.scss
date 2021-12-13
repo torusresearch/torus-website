@@ -23,6 +23,15 @@
     }
   }
 
+  ::v-deep .v-btn.btn-existing {
+    height: unset;
+    padding: 8px 19.5555555556px;
+    min-height: 56px;
+    .v-btn__content {
+      white-space: normal;
+      max-width: 260px;
+    }
+  }
   .buttons-container {
     margin-left: -4px;
     margin-right: -4px;

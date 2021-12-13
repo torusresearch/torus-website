@@ -12,10 +12,9 @@
         v-if="hasExistingAccount && existingLoginTypeAvailable"
         large
         color="torusBrand1"
-        class="white--text font-weight-regular mb-2"
+        class="white--text font-weight-regular btn-existing mb-2"
         :class="$vuetify.breakpoint.xsOnly ? 'body-2' : 'headline'"
         block
-        height="56"
         @click="loginExisting"
       >
         {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(existingLoginTypeAvailable.name)) }}
