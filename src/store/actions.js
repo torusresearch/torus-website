@@ -329,10 +329,9 @@ export default {
     let isSupportedNetwork = false
     const activeChainId = networkType.chainId && isHexStrict(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`
     const chainIdConfig = CHAIN_ID_TO_TYPE_MAP[activeChainId]
-    if ((!networkType.ticker || !networkType.tickerName) && chainIdConfig) {
+    if (chainIdConfig) {
       const networkConfig = SUPPORTED_NETWORK_TYPES[chainIdConfig.name]
-      networkType.ticker = networkConfig.ticker
-      networkType.tickerName = networkConfig.tickerName
+      networkType = { ...networkConfig, ...networkType }
     }
     if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
       networkType = SUPPORTED_NETWORK_TYPES[networkType.host]
