@@ -2,10 +2,11 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import pump from 'pump'
 import stream from 'stream'
+import { isHexStrict } from 'web3-utils'
 
 import { injectStore as onloadInjection } from '../onload'
 import torus from '../torus'
-import { SUPPORTED_NETWORK_TYPES } from '../utils/enums'
+import { CHAIN_ID_TO_TYPE_MAP, SUPPORTED_NETWORK_TYPES } from '../utils/enums'
 // import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_NEW, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
 import { broadcastChannelOptions, isMain } from '../utils/utils'
 import { injectStore as controllerInjection } from './controllerSubscriptions'
@@ -69,6 +70,13 @@ if (!isMain) {
       VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
       VuexStore.commit('setSkipTKey', skipTKey)
       if (VuexStore.state.networkType.host !== network.host) {
+        const activeChainId = network.chainId && isHexStrict(network.chainId) ? network.chainId : `0x${network.chainId.toString(16)}`
+        const chainIdConfig = CHAIN_ID_TO_TYPE_MAP[activeChainId]
+        if ((!network.ticker || !network.tickerName) && chainIdConfig) {
+          const networkConfig = SUPPORTED_NETWORK_TYPES[chainIdConfig.name]
+          network.ticker = networkConfig.ticker
+          network.tickerName = networkConfig.tickerName
+        }
         VuexStore.dispatch('setProviderType', { network })
       }
       const { isRehydrationComplete } = VuexStore.state
