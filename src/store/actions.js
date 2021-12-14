@@ -327,7 +327,7 @@ export default {
   async setProviderType({ commit, dispatch, state }, payload) {
     let networkType = payload.network
     let isSupportedNetwork = false
-    const activeChainId = networkType.chainId && isHexStrict(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`
+    const activeChainId = networkType.chainId && (isHexStrict(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`)
     const chainIdConfig = CHAIN_ID_TO_TYPE_MAP[activeChainId]
     if (chainIdConfig) {
       const networkConfig = SUPPORTED_NETWORK_TYPES[chainIdConfig.name]
