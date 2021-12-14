@@ -50,6 +50,7 @@ export const MUMBAI_CHAIN_ID = '0x13881'
 export const BSC_MAINNET_CHAIN_ID = '0x38'
 export const BSC_TESTNET_CHAIN_ID = '0x61'
 export const XDAI_CHAIN_ID = '0x64'
+export const REEF_CHAIN_ID = '0x65'
 export const OPTIMISM_CHAIN_ID = '0xa'
 export const OPTIMISM_TESTNET_CHAIN_ID = '0x45'
 
@@ -76,8 +77,8 @@ export const MAINNET_DISPLAY_NAME = 'Main Ethereum Network'
 export const GOERLI_DISPLAY_NAME = 'Goerli Test Network'
 export const RPC_DISPLAY_NAME = 'RPC'
 export const LOCALHOST_DISPLAY_NAME = 'https://localhost:8545'
-export const MATIC_DISPLAY_NAME = 'Matic Network'
-export const MUMBAI_DISPLAY_NAME = 'Mumbai Matic-Testnet'
+export const MATIC_DISPLAY_NAME = 'Polygon Mainnet'
+export const MUMBAI_DISPLAY_NAME = 'Matic Mumbai'
 export const BSC_MAINNET_DISPLAY_NAME = 'Binance Smart Chain Mainnet'
 export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
 export const XDAI_DISPLAY_NAME = 'xDai'
@@ -187,6 +188,20 @@ export const createNetwork = (host, networkName, chainId, blockExplorer, ticker,
   tickerName,
   rpcUrl,
 })
+
+export const CHAIN_ID_TO_TYPE_MAP = {
+  [ROPSTEN_CHAIN_ID]: { networkId: ROPSTEN_CODE, name: ROPSTEN },
+  [RINKEBY_CHAIN_ID]: { networkId: RINKEBY_CODE, name: RINKEBY },
+  [KOVAN_CHAIN_ID]: { networkId: KOVAN_CODE, name: KOVAN },
+  [GOERLI_CHAIN_ID]: { networkId: GOERLI_CODE, name: GOERLI },
+  [MAINNET_CHAIN_ID]: { networkId: MAINNET_CODE, name: MAINNET },
+  [MATIC_CHAIN_ID]: { networkId: MATIC_CODE, name: MATIC },
+  [MUMBAI_CHAIN_ID]: { networkId: MUMBAI_CODE, name: MUMBAI },
+  [BSC_MAINNET_CHAIN_ID]: { networkId: BSC_MAINNET_CODE, name: BSC_MAINNET },
+  [BSC_TESTNET_CHAIN_ID]: { networkId: BSC_TESTNET_CODE, name: BSC_TESTNET },
+  [XDAI_CHAIN_ID]: { networkId: XDAI_CODE, name: XDAI },
+  [REEF_CHAIN_ID]: { networkId: REEF_CODE, name: REEF },
+}
 
 export const SUPPORTED_NETWORK_TYPES = {
   [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, getInfuraBlockExplorerUrl(MAINNET), 'ETH', 'Ethereum', 'eth.svg', undefined),
