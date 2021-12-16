@@ -1,6 +1,6 @@
 /* eslint-disable */
 import assert from 'assert'
-import { recoverPersonalSignature, recoverTypedSignatureLegacy, recoverTypedSignature_v4, recoverTypedSignature, encrypt } from 'eth-sig-util'
+import { recoverPersonalSignature, recoverTypedSignature, encrypt } from '@metamask/eth-sig-util'
 import { TransactionFactory } from '@ethereumjs/tx'
 
 import { bufferToHex, bufferToInt, ecrecover, pubToAddress, rlphash, toBuffer, stripHexPrefix } from 'ethereumjs-util'
@@ -219,7 +219,7 @@ describe('torus-keyring', () => {
     const keyringController = new TorusKeyring([testAccount.key])
     const data = bufferToHex(Buffer.from('Hello from test', 'utf8'))
     const signature = await keyringController.signPersonalMessage(testAccount.address, data)
-    const recovered = recoverPersonalSignature({ data, sig: signature })
+    const recovered = recoverPersonalSignature({ data, signature })
     assert(testAccount.address === recovered)
   })
 
@@ -238,7 +238,7 @@ describe('torus-keyring', () => {
       },
     ]
     const signature = await keyringController.signTypedData(testAccount.address, typedMessageParameters, 'V1')
-    const recovered = recoverTypedSignatureLegacy({ data: typedMessageParameters, sig: signature })
+    const recovered = recoverTypedSignature({ data: typedMessageParameters, signature, version: 'V1' })
     assert(testAccount.address === recovered)
   })
 
@@ -276,7 +276,7 @@ describe('torus-keyring', () => {
       },
     }
     const signature = await keyringController.signTypedData(testAccount.address, messageParameters, 'V3')
-    const recovered = recoverTypedSignature({ data: messageParameters, sig: signature })
+    const recovered = recoverTypedSignature({ data: messageParameters, signature, version: 'V3' })
     assert(testAccount.address === recovered)
   })
 
@@ -331,7 +331,7 @@ describe('torus-keyring', () => {
     }
 
     const signature = await keyringController.signTypedData(testAccount.address, messageParameters, 'V4')
-    const recovered = recoverTypedSignature_v4({ data: messageParameters, sig: signature })
+    const recovered = recoverTypedSignature({ data: messageParameters, signature, version: 'V4' })
     assert(testAccount.address === recovered)
   })
 
@@ -350,8 +350,10 @@ describe('torus-keyring', () => {
     } catch (error) {
       error2 = error
     }
+    console.error(error1)
+    console.error(error2)
     assert(error1.message.includes('Expect argument to be non-empty array'))
-    assert(error2.message.includes("Cannot read property 'EIP712Domain' of undefined"))
+    assert(error2.message.includes("Cannot read properties of undefined (reading 'EIP712Domain')"))
   })
 
   it('should sign transaction', async () => {
@@ -380,7 +382,7 @@ describe('torus-keyring', () => {
     const keyringController = new TorusKeyring([testAccount.key])
     const msg = 'Encryption works!!!'
     const encryptionKey = keyringController.signEncryptionPublicKey(testAccount.address)
-    const messageEncrypted = encrypt(encryptionKey, { data: msg }, 'x25519-xsalsa20-poly1305')
+    const messageEncrypted = encrypt({ publicKey: encryptionKey, data: msg, version: 'x25519-xsalsa20-poly1305' })
     const decrypted = keyringController.decryptMessage(messageEncrypted, testAccount.address)
     assert.strictEqual(msg, decrypted)
   })
