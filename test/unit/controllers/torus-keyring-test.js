@@ -353,7 +353,8 @@ describe('torus-keyring', () => {
     console.error(error1)
     console.error(error2)
     assert(error1.message.includes('Expect argument to be non-empty array'))
-    assert(error2.message.includes("Cannot read properties of undefined (reading 'EIP712Domain')"))
+    // This error msg varies based on node version. Hence, the split check
+    assert(error2.message.includes('Cannot read propert') && error2.message.includes('EIP712Domain'))
   })
 
   it('should sign transaction', async () => {
