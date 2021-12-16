@@ -1,6 +1,6 @@
+import { normalize as normalizeAddress } from '@metamask/eth-sig-util'
 import { ObservableStore } from '@metamask/obs-store'
 import BigNumber from 'bignumber.js'
-import { normalize as normalizeAddress } from 'eth-sig-util'
 import log from 'loglevel'
 
 import { COINGECKO_PLATFORMS_CHAIN_CODE_MAP, COINGECKO_SUPPORTED_CURRENCIES } from '../utils/enums'

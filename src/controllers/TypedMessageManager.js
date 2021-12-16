@@ -1,8 +1,8 @@
 /* eslint-disable no-case-declarations */
+import { TYPED_MESSAGE_SCHEMA, typedSignatureHash } from '@metamask/eth-sig-util'
 import { ObservableStore } from '@metamask/obs-store'
 import assert from 'assert'
 import { ethErrors } from 'eth-rpc-errors'
-import { TYPED_MESSAGE_SCHEMA, typedSignatureHash } from 'eth-sig-util'
 import EventEmitter from 'events'
 import jsonschema from 'jsonschema'
 import log from 'loglevel'
@@ -158,7 +158,7 @@ export default class TypedMessageManager extends EventEmitter {
         assert.doesNotThrow(() => {
           data = JSON.parse(parameters.data)
         }, '"data" must be a valid JSON string.')
-        const validation = jsonschema.validate(data, TYPED_MESSAGE_SCHEMA)
+        const validation = jsonschema.validate(data, TYPED_MESSAGE_SCHEMA.properties)
         assert.ok(data.primaryType in data.types, `Primary type of "${data.primaryType}" has no type definition.`)
         assert.strictEqual(validation.errors.length, 0, 'Signing data must conform to EIP-712 schema. See https://git.io/fNtcx.')
         let { chainId } = data.domain
