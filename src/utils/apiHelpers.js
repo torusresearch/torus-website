@@ -110,7 +110,8 @@ export default class ApiHelpers {
       throw new Error('Nft metadata not found')
     }
     // for all other covalent supported chains except mainnnet.
-    const queryApi = `${config.api}/covalent?url=https://api.covalenthq.com/v1/${chainId}/tokens/${contract}/nft_metadata/${tokenId}/`
+    const url = encodeURIComponent(`https://api.covalenthq.com/v1/${chainId}/tokens/${contract}/nft_metadata/${tokenId}/`)
+    const queryApi = `${config.api}/covalent?url=${url}`
     if (timeout > 0) {
       res = await this.getWithTimeout(queryApi, options, timeout)
     } else {
@@ -172,7 +173,8 @@ export default class ApiHelpers {
     // so here tring to fetch using first potential nft token id.
     const tokenId = 1
     // for all other covalent supported chains except mainnnet.
-    const queryApi = `${config.api}/covalent?url=https://api.covalenthq.com/v1/${chainId}/tokens/${contract}/nft_metadata/${tokenId}/`
+    const url = encodeURIComponent(`https://api.covalenthq.com/v1/${chainId}/tokens/${contract}/nft_metadata/${tokenId}/`)
+    const queryApi = `${config.api}/covalent?url=${url}`
     if (timeout > 0) {
       res = await this.getWithTimeout(queryApi, options, timeout)
     } else {
