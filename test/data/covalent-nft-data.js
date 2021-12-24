@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export const userBalances = {
   '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc': {
     data: {
@@ -11,7 +10,7 @@ export const userBalances = {
         {
           contract_decimals: 0,
           contract_name: 'MARBLE-NFT',
-          contract_ticker_symbol: 'MRBLNFT',
+          contract_ticker_symbol: 'MRBLNFT1',
           contract_address: '0x1d963688FE2209A98db35c67A041524822CF04gg',
           supports_erc: ['erc20', 'erc721'],
           logo_url: 'url',
@@ -40,7 +39,7 @@ export const userBalances = {
         {
           contract_decimals: 0,
           contract_name: 'MARBLE-NFT',
-          contract_ticker_symbol: 'MRBLNFT',
+          contract_ticker_symbol: 'MRBLNFT2',
           contract_address: '0x1d963688FE2209A98db35c67A041524822CF04ii',
           supports_erc: ['erc20', 'erc721'],
           logo_url: 'url',
@@ -69,7 +68,7 @@ export const userBalances = {
         {
           contract_decimals: 0,
           contract_name: 'MARBLE-NFT',
-          contract_ticker_symbol: 'MRBLNFT',
+          contract_ticker_symbol: 'MRBLNFT3',
           contract_address: '0x1d963688FE2209A98db35c67A041524822CF04hh',
           supports_erc: ['erc20', 'erc721'],
           logo_url: 'url',
