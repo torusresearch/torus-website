@@ -78,6 +78,7 @@ function onloadTorus(torus) {
   if (isMain) return torus
 
   const iframeOrigin = getIFrameOrigin()
+  log.info('iframe origin', iframeOrigin)
   const metamaskStream = new BasePostMessageStream({
     name: 'iframe_metamask',
     target: 'embed_metamask',
