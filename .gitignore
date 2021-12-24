@@ -27,3 +27,4 @@ src/plugins/i18n
 .eslintcache
 pnpm-lock.yaml
 .husky
+.local-chromium

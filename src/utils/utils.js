@@ -549,7 +549,9 @@ export const isMain = window.self === window.top
 
 export const getIFrameOrigin = () => {
   const originHref = window.location.ancestorOrigins?.length > 0 ? window.location.ancestorOrigins[0] : document.referrer
-  return originHref
+  if (!originHref) return originHref
+  const url = new URL(originHref)
+  return url.origin
 }
 
 export const getIFrameOriginObject = () => {

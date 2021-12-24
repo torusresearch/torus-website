@@ -71,7 +71,7 @@ describe('AssetsController', () => {
     }
 
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/1/')
+      .get(`/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/1/')}`)
       .reply(200, {
         data: {
           data: {
@@ -116,7 +116,7 @@ describe('AssetsController', () => {
       .persist(true)
 
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/2/')
+      .get(`/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/2/')}`)
       .reply(200, {
         data: {
           data: {
@@ -161,7 +161,7 @@ describe('AssetsController', () => {
       .persist(true)
 
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/fou/nft_metadata/1/')
+      .get(`/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/fou/nft_metadata/1/')}`)
       .reply(200, {
         data: {
           data: {
@@ -206,7 +206,51 @@ describe('AssetsController', () => {
       .persist(true)
 
     nock(COVALENT_API)
-      .get(`/covalent?url=https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1203/`)
+      .get(`/covalent?url=${encodeURIComponent(`https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1203/`)}`)
+      .reply(200, {
+        data: {
+          data: {
+            updated_at: '2021-05-11T11:21:52.553495435Z',
+            items: [
+              {
+                contract_decimals: 0,
+                contract_name: 'Kudos',
+                contract_ticker_symbol: 'KDO',
+                contract_address: `${KUDOSADDRESS}`,
+                supports_erc: ['erc20'],
+                logo_url: 'Kudos url',
+                type: 'nft',
+                balance: null,
+                quote_rate: null,
+                quote: null,
+                nft_data: [
+                  {
+                    token_id: '1203',
+                    token_balance: '1',
+                    token_url: 'url',
+                    supports_erc: ['erc20', 'erc721'],
+                    token_price_wei: null,
+                    token_quote_rate_eth: null,
+                    external_data: {
+                      description: 'Kudos Description',
+                      image: 'Kudos url',
+                      name: 'Kudos Name',
+                      external_url: 'https://kudos',
+                    },
+                  },
+                ],
+              },
+            ],
+            pagination: null,
+          },
+          error: false,
+          error_message: null,
+          error_code: null,
+        },
+      })
+      .persist(true)
+    nock(COVALENT_API)
+      .get(`/covalent?url=${encodeURIComponent(`https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1/`)}`)
       .reply(200, {
         data: {
           data: {
@@ -257,17 +301,21 @@ describe('AssetsController', () => {
       })
       .persist(true)
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/nft_metadata/798958393/')
+      .get(
+        `/covalent?url=${encodeURIComponent(
+          'https://api.covalenthq.com/v1/1/tokens/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/nft_metadata/798958393/'
+        )}`
+      )
       .replyWithError(new TypeError('failed to fetch'))
       .persist(true)
 
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/1/tokens/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/nft_metadata/1/')
+      .get(`/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/nft_metadata/1/')}`)
       .replyWithError(new TypeError('failed to fetch'))
       .persist(true)
 
     nock(COVALENT_API)
-      .get(`/covalent?url=https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1/`)
+      .get(`/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1/')}`)
       .reply(200, {
         data: {
           data: {
@@ -349,6 +397,7 @@ describe('AssetsController', () => {
   it('should add token by selected address', async () => {
     assetsController.setSelectedAddress(TEST_ADDRESS_2)
     await assetsController.addToken('foo', 'bar', 2, '')
+    console.log('assetsController.state.tokens', assetsController.state.tokens)
     assetsController.setSelectedAddress(TEST_ADDRESS_3)
     assert(assetsController.state.tokens.length === 0)
     assetsController.setSelectedAddress(TEST_ADDRESS_2)
