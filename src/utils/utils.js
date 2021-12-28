@@ -13,6 +13,7 @@ import {
   ACTIVITY_ACTION_SEND,
   ALLOWED_VERIFIERS,
   APPLE,
+  BANXA,
   BSC_MAINNET_CHAIN_ID,
   BSC_MAINNET_CODE,
   BSC_TESTNET_CHAIN_ID,
@@ -513,10 +514,27 @@ export const paymentProviders = {
     api: true,
     enforceMax: true,
   },
+  [BANXA]: {
+    line1: 'Debit Card/ <br>Apple Pay/ Bank transfer',
+    line2: '0.49% - 2.9%',
+    line3: '5,000€/purchase, 20,000€/mo',
+    line4: 'ETH, DAI, USDC, BNB',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://instant.ramp.network/',
+    minOrderValue: 50,
+    maxOrderValue: 20_000,
+    validCurrencies: ['EUR', 'GBP', 'USD'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'BSC_BNB'],
+    includeFees: true,
+    api: true,
+    receiveHint: 'walletTopUp.receiveHintRamp',
+    enforceMax: false,
+  },
 }
 
 export function getPaymentProviders(theme) {
-  return Object.keys(paymentProviders).map((x) => {
+  const providers = Object.keys(paymentProviders).map((x) => {
     const item = paymentProviders[x]
     return {
       ...item,
@@ -525,6 +543,8 @@ export function getPaymentProviders(theme) {
       link: `/wallet/topup/${x}`,
     }
   })
+  log.info('getPaymentProviders', providers)
+  return providers
 }
 
 export function capitalizeFirstLetter(string) {

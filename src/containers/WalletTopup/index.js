@@ -1,3 +1,4 @@
+export { default as WalletTopupBanxa } from './WalletTopupBanxa'
 export { default as WalletTopupHome } from './WalletTopupHome'
 export { default as WalletTopupMercuryo } from './WalletTopupMercuryo'
 export { default as WalletTopupMoonpay } from './WalletTopupMoonpay'

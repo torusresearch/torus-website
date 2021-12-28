@@ -7,6 +7,7 @@ import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
 import { MERCURYO, MOONPAY, RAMPNETWORK, WYRE, XANPOOL } from '../../utils/enums'
 import { fakeStream, paymentProviders } from '../../utils/utils'
+import banxa from './banxa'
 import mercuryo from './mercuryo'
 import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
@@ -37,6 +38,7 @@ const handleFailure = (error) => {
 }
 
 export default {
+  ...banxa,
   ...simplex,
   ...rampnetwork,
   ...moonpay,
