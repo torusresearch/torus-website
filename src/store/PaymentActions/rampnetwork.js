@@ -1,16 +1,17 @@
 import config from '../../config'
 import PopupHandler from '../../handlers/Popup/PopupHandler'
-import getQuote from '../../plugins/rampnetwork'
+import postQuote from '../../plugins/rampnetwork'
 import { ETH } from '../../utils/enums'
 import { paymentProviders } from '../../utils/utils'
 
 export default {
   fetchRampNetworkQuote(_, payload) {
     // returns a promise
-    return getQuote({
-      digital_currency: (payload.selectedCryptoCurrency || ETH).toLowerCase(),
-      fiat_currency: (payload.selectedCurrency || paymentProviders.rampnetwork.validCurrencies[0]).toLowerCase(),
-      requested_amount: +Number.parseFloat(payload.fiatValue || paymentProviders.rampnetwork.minOrderValue),
+    return postQuote({
+      cryptoAssetSymbol: (payload.selectedCryptoCurrency || ETH).toLowerCase(),
+      fiatCurrency: (payload.selectedCurrency || paymentProviders.rampnetwork.validCurrencies[0]).toLowerCase(),
+      fiatValue: +Number.parseFloat(payload.fiatValue || paymentProviders.rampnetwork.minOrderValue),
+      paymentMethodType: 'CARD_PAYMENT',
     })
   },
   fetchRampNetworkOrder({ state, dispatch }, { currentOrder, preopenInstanceId, selectedAddress }) {
