@@ -125,7 +125,7 @@ if (!isMain) {
   // Userinfo section
   const userInfoAccessStream = torus.communicationMux.getStream('user_info_access')
   userInfoAccessStream.on('data', (chunk) => {
-    const payload = { ...VuexStore.state.userInfo }
+    const payload = { ...VuexStore.state.userInfo, isNewUser: VuexStore.state.isNewUser }
     delete payload.verifierParams
     if (chunk.name === 'user_info_access_request') {
       userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
