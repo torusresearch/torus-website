@@ -4,7 +4,7 @@ import log from 'loglevel'
 import config from '../../config'
 import PopupHandler from '../../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
-import { getQuote, getWalletOrder } from '../../plugins/banxa'
+import { getQuote, getWalletOrder, postWalletOrder } from '../../plugins/banxa'
 import { BANXA, ETH } from '../../utils/enums'
 import { paymentProviders } from '../../utils/utils'
 
@@ -54,16 +54,17 @@ export default {
       getWalletOrder(parameters, {})
         .then(({ data }) => {
           log.info('fetchBanxa', JSON.stringify(data))
-          return dispatch('postBanxaOrder', { finalUrl: data.checkout_url, preopenInstanceId, orderInstanceId })
+          return dispatch('postBanxaOrder', { finalUrl: data.checkout_url, preopenInstanceId, orderInstanceId, orderId: data.id })
         })
         .then(resolve)
         .catch(reject)
     })
   },
-  async postBanxaOrder(context, { finalUrl, preopenInstanceId, orderInstanceId }) {
+  async postBanxaOrder(context, { finalUrl, preopenInstanceId, orderInstanceId, orderId }) {
     log.info('postBanxa', JSON.stringify({ finalUrl, preopenInstanceId, orderInstanceId }))
     const banxaWindow = new PopupWithBcHandler({ preopenInstanceId, url: finalUrl, channelName: `redirect_channel_${orderInstanceId}` })
     await banxaWindow.handle()
+    postWalletOrder({ orderId })
     return { success: true }
   },
 }

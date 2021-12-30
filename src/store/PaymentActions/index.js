@@ -5,7 +5,7 @@ import config from '../../config'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MERCURYO, MOONPAY, RAMPNETWORK, WYRE, XANPOOL } from '../../utils/enums'
+import { BANXA, MERCURYO, MOONPAY, RAMPNETWORK, WYRE, XANPOOL } from '../../utils/enums'
 import { fakeStream, paymentProviders } from '../../utils/utils'
 import banxa from './banxa'
 import mercuryo from './mercuryo'
@@ -138,6 +138,18 @@ export default {
             fiat_currency: selectedParameters.selectedCurrency || '',
           }
           const { success } = await dispatch('fetchMercuryoOrder', {
+            currentOrder,
+            preopenInstanceId,
+            selectedAddress: selectedParameters.selectedAddress,
+          })
+          handleSuccess(success)
+        } else if (provider === BANXA) {
+          const currentOrder = {
+            coin_code: selectedParameters.selectedCryptoCurrency || 'ETH',
+            fiat_amount: selectedParameters.fiatValue || '',
+            fiat_code: selectedParameters.selectedCurrency || '',
+          }
+          const { success } = await dispatch('fetchBanxaOrder', {
             currentOrder,
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,

@@ -39,4 +39,20 @@ const getWalletOrder = (payload, headers) => {
   return undefined
 }
 
-export { getQuote, getWalletOrder }
+const postWalletOrder = (payload, headers) => {
+  try {
+    const options = {
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+    }
+    return post(`${config.banxaApiHost}/order/${payload.orderId}`, {}, options)
+  } catch (error) {
+    log.error(error)
+  }
+  return undefined
+}
+
+export { getQuote, getWalletOrder, postWalletOrder }
