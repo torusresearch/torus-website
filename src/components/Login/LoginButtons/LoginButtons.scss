@@ -29,7 +29,12 @@
     min-height: 56px;
     .v-btn__content {
       white-space: normal;
-      max-width: 260px;
+      max-width: 280px;
+      .last-login-email {
+        overflow: hidden;
+        width: 200px;
+        text-overflow: ellipsis;
+      }
     }
   }
   .buttons-container {

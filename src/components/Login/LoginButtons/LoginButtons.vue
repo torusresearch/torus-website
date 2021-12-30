@@ -17,7 +17,15 @@
         block
         @click="loginExisting"
       >
-        {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(existingLoginTypeAvailable.name)) }}
+        <v-icon class="text_3--text mr-2" color="white">
+          {{ `$vuetify.icons.${lastLoginIcon}` }}
+        </v-icon>
+        <div>
+          {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(existingLoginTypeAvailable.name)) }}
+          <div v-if="lastLoginTypeIsEmail" class="font-weight-bold last-login-email">
+            {{ lastLoginInfo.verifierId }}
+          </div>
+        </div>
       </v-btn>
       <LoginButton
         v-for="verifier in mainButtonsLong"
@@ -104,7 +112,7 @@
 <script>
 import log from 'loglevel'
 
-import { HOSTED_EMAIL_PASSWORDLESS_VERIFIER } from '../../../utils/enums'
+import { GOOGLE, HOSTED_EMAIL_PASSWORDLESS_VERIFIER, JWT } from '../../../utils/enums'
 import { capitalizeFirstLetter } from '../../../utils/utils'
 import LoginButton from '../LoginButton'
 
@@ -191,6 +199,13 @@ export default {
       const available = this.loginButtonsArray.find((button) => (button.linkedVerifier || button.verifier) === existingVerifier)
       log.info('existingLoginTypeAvailable', available)
       return available
+    },
+    lastLoginIcon() {
+      return this.lastLoginInfo.typeOfLogin.toLowerCase()
+    },
+    lastLoginTypeIsEmail() {
+      const { typeOfLogin } = this.lastLoginInfo
+      return typeOfLogin === JWT || typeOfLogin === GOOGLE
     },
   },
   watch: {
