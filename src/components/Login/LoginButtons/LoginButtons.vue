@@ -22,8 +22,8 @@
         </v-icon>
         <div>
           {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(existingLoginTypeAvailable.name)) }}
-          <div v-if="lastLoginTypeIsEmail" class="font-weight-bold last-login-email">
-            {{ lastLoginInfo.verifierId }}
+          <div v-if="lastLoginVerifierId" class="font-weight-bold last-login-email">
+            {{ lastLoginVerifierId }}
           </div>
         </div>
       </v-btn>
@@ -112,7 +112,7 @@
 <script>
 import log from 'loglevel'
 
-import { GOOGLE, HOSTED_EMAIL_PASSWORDLESS_VERIFIER, JWT } from '../../../utils/enums'
+import { HOSTED_EMAIL_PASSWORDLESS_VERIFIER } from '../../../utils/enums'
 import { capitalizeFirstLetter } from '../../../utils/utils'
 import LoginButton from '../LoginButton'
 
@@ -137,6 +137,7 @@ export default {
           verifierId: '',
           aggregateVerifier: '',
           verifier: '',
+          email: '',
         }
       },
     },
@@ -203,9 +204,9 @@ export default {
     lastLoginIcon() {
       return this.lastLoginInfo.typeOfLogin.toLowerCase()
     },
-    lastLoginTypeIsEmail() {
-      const { typeOfLogin } = this.lastLoginInfo
-      return typeOfLogin === JWT || typeOfLogin === GOOGLE
+    lastLoginVerifierId() {
+      const { email } = this.lastLoginInfo
+      return email || ''
     },
   },
   watch: {
