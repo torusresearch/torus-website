@@ -1,3 +1,4 @@
+import * as rskUtils from '@rsksmart/rsk-utils'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import { addHexPrefix, BN, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
@@ -99,8 +100,6 @@ const networkToNameMap = {
   [KOVAN_CODE]: KOVAN_DISPLAY_NAME,
   [GOERLI_CODE]: GOERLI_DISPLAY_NAME,
 }
-
-const rskUtils = require('@rsksmart/rsk-utils')
 
 export class UserError extends Error {}
 

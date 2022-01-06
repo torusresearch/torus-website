@@ -55,6 +55,10 @@ export default class AssetController {
     return this.store.getState()
   }
 
+  get currentChainId() {
+    return this.network.getCurrentChainId()
+  }
+
   initializeNetworkSubscription() {
     this.network.store.subscribe(({ provider }) => {
       const { allCollectibleContracts, allCollectibles, allTokens } = this.state
@@ -100,7 +104,7 @@ export default class AssetController {
   async addToken(address2, symbol, decimals, image) {
     try {
       let address
-      if (isAddressByChainId(address, this.$store.state.networkId)) address = toChecksumAddressByChainId(address2, this.$store.state.networkId)
+      if (isAddressByChainId(address, this.currentChainId)) address = toChecksumAddressByChainId(address2, this.currentChainId)
       else address = address2
       const { selectedAddress } = this
       const { allTokens, tokens } = this.state
@@ -217,7 +221,7 @@ export default class AssetController {
           return info
         }
       }
-      const info = await this.getCollectibleInformationFromTokenURI(toChecksumAddressByChainId(contractAddress, this.$store.state.networkId), tokenId)
+      const info = await this.getCollectibleInformationFromTokenURI(toChecksumAddressByChainId(contractAddress, this.currentChainId), tokenId)
 
       return info
     } catch {
@@ -296,8 +300,7 @@ export default class AssetController {
     let normalizedContractInfo = {}
     const { contractName, contractSymbol, standard, contractAddress, contractImage, contractDescription, assetImage } = contractDetails
     let _contractAddress
-    if (isAddressByChainId(contractAddress, this.$store.state.networkId))
-      _contractAddress = toChecksumAddressByChainId(contractAddress, this.$store.state.networkId)
+    if (isAddressByChainId(contractAddress, this.currentChainId)) _contractAddress = toChecksumAddressByChainId(contractAddress, this.currentChainId)
     else _contractAddress = contractAddress
     if (contractName && standard) {
       normalizedContractInfo = {
@@ -342,7 +345,7 @@ export default class AssetController {
   async _normalizeCollectibleDetails(collectibleDetails = {}, detectFromApi) {
     const { name, image, description, standard, tokenBalance, address, tokenID } = collectibleDetails
     let _contractAddress
-    if (isAddressByChainId(address, this.$store.state.networkId)) _contractAddress = toChecksumAddressByChainId(address, this.$store.state.networkId)
+    if (isAddressByChainId(address, this.currentChainId)) _contractAddress = toChecksumAddressByChainId(address, this.currentChainId)
     else _contractAddress = address
     const collectibleIndex = `${_contractAddress}_${tokenID}`
     let normalizedCollectibleInfo = {

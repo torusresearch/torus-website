@@ -119,7 +119,7 @@ export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
 export const XDAI_TICKER = 'DAI'
 export const RSK_MAINNET_TICKER = 'RBTC'
-export const RSK_TESTNET_TICKER = 'tRBTC'
+export const RSK_TESTNET_TICKER = 'RBTC'
 
 export const MESSAGE_TYPE = {
   ETH_DECRYPT: 'eth_decrypt',
@@ -657,6 +657,10 @@ export const COINGECKO_PLATFORMS_CHAIN_CODE_MAP = {
   [MAINNET_CODE]: {
     platform: 'ethereum',
     currency: 'eth',
+  },
+  [RSK_MAINNET_CODE]: {
+    platform: 'rootstock',
+    currency: 'rbtc',
   },
 }
 
