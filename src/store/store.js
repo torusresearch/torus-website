@@ -57,6 +57,7 @@ if (storageAvailable(isPwa || config.dappStorageKey ? 'localStorage' : 'sessionS
       tKeyStore: { ...state.tKeyStore, shareTransferRequests: [] },
       wcConnectorSession: state.wcConnectorSession,
       postboxKey: state.postboxKey,
+      lastLoginInfo: state.lastLoginInfo,
     }),
   })
 }
@@ -334,6 +335,12 @@ if (storageAvailable('localStorage')) {
   const torusEnableCrashReporter = localStorage.getItem('torus-enable-crash-reporter')
   if (torusEnableCrashReporter !== null) {
     VuexStore.commit('setCrashReport', Boolean(torusEnableCrashReporter))
+  }
+
+  const openLoginStore = localStorage.getItem('openlogin_store')
+  if (openLoginStore !== null) {
+    const { typeOfLogin, verifierId, aggregateVerifier, verifier } = JSON.parse(openLoginStore)
+    VuexStore.commit('setLastLoginInfo', { typeOfLogin, verifierId, aggregateVerifier, verifier })
   }
 }
 

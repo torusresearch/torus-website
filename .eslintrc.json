@@ -16,16 +16,21 @@
     "prettier"
   ],
   "plugins": ["prettier", "vue", "@babel", "promise", "import", "vue-scoped-css", "simple-import-sort", "switch-case", "unicorn"],
+  "ignorePatterns": ["*.config.js"],
   "parser": "vue-eslint-parser",
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion": 11,
+    "ecmaVersion": 2021,
     "parser": "@babel/eslint-parser",
     "babelOptions": {
       "configFile": "./babel.config.json"
     }
   },
   "rules": {
+    "no-promise-executor-return": 0,
+    "no-restricted-exports": [2, { "restrictedNamedExports": [] }],
+    "import/prefer-default-export": 0,
+    "vue/multi-word-component-names": 0,
     "unicorn/prefer-object-from-entries": 0,
     "unicorn/require-post-message-target-origin": 0,
     "unicorn/prefer-module": 0,
@@ -80,16 +85,6 @@
     "vue/valid-v-slot": 2,
     "object-curly-newline": 0,
     "semi": [2, "never"],
-    "vue/max-attributes-per-line": [
-      2,
-      {
-        "singleline": 20,
-        "multiline": {
-          "max": 1,
-          "allowFirstLine": false
-        }
-      }
-    ],
     "quotes": [2, "single"],
     "max-len": [
       2,
@@ -118,7 +113,7 @@
     ]
   },
   "env": {
-    "es6": true,
+    "es2021": true,
     "browser": true,
     "node": true
   },

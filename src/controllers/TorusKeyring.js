@@ -1,13 +1,4 @@
-import {
-  concatSig,
-  decrypt,
-  getEncryptionPublicKey,
-  normalize,
-  personalSign,
-  signTypedData,
-  signTypedData_v4 as signTypedDataV4,
-  signTypedDataLegacy,
-} from 'eth-sig-util'
+import { concatSig, decrypt, getEncryptionPublicKey, normalize, personalSign, signTypedData } from '@metamask/eth-sig-util'
 import { bufferToHex, ecsign, stripHexPrefix } from 'ethereumjs-util'
 import Wallet from 'ethereumjs-wallet'
 import { EventEmitter } from 'events'
@@ -96,7 +87,7 @@ export default class TorusKeyring extends EventEmitter {
     const wallet = this._getWalletForAccount(address)
     const privKey = stripHexPrefix(wallet.getPrivateKeyString())
     const privKeyBuffer = Buffer.from(privKey, 'hex')
-    const sig = personalSign(privKeyBuffer, { data: messageHex })
+    const sig = personalSign({ privateKey: privKeyBuffer, data: messageHex })
     return sig
   }
 
@@ -104,16 +95,7 @@ export default class TorusKeyring extends EventEmitter {
   async signTypedData(withAccount, typedData, version = 'V1') {
     const wallet = this._getWalletForAccount(withAccount)
     const privKey = wallet.getPrivateKey()
-    switch (version) {
-      case 'V1':
-        return signTypedDataLegacy(privKey, { data: typedData })
-      case 'V4':
-        return signTypedDataV4(privKey, { data: typedData })
-      case 'V3':
-        return signTypedData(privKey, { data: typedData })
-      default:
-        return signTypedDataLegacy(privKey, { data: typedData })
-    }
+    return signTypedData({ privateKey: privKey, data: typedData, version })
   }
 
   // not using
@@ -140,7 +122,7 @@ export default class TorusKeyring extends EventEmitter {
   decryptMessage(data, address) {
     const wallet = this._getWalletForAccount(address)
     const privKey = wallet.getPrivateKey()
-    return decrypt(data, privKey)
+    return decrypt({ encryptedData: data, privateKey: privKey })
   }
 
   /* PRIVATE METHODS */

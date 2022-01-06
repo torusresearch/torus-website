@@ -1,0 +1,75 @@
+.dapp-parent {
+  overflow: hidden;
+  & .discover-header {
+    width: 100%;
+    margin-bottom: 28px;
+    & .discover-title {
+      font-size: 24px;
+      line-height: 28px;
+      width: 100%;
+    }
+    & .dapp-filters {
+      min-width: 539px;
+    }
+  }
+  & .dapp-list-container {
+    overflow: auto;
+    padding: 20px;
+  }
+  & .f-width {
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    max-width: 100%;
+  }
+}
+.filter-selector {
+  background: #ffffff;
+  border: 1px solid #f5f5f5;
+  box-sizing: border-box;
+  box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+  border-radius: 3px;
+  &.theme--dark {
+    background: #2f3136;
+    border: 1px solid #343539;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+  }
+}
+.xs-parent {
+  padding: 24px 1% 0 1%;
+  & .dapp-filters {
+    flex-direction: column;
+  }
+  & .dapp-filters {
+    min-width: 100% !important;
+  }
+  & .filter-width{
+    max-width: 100% !important;
+    transform: translateX(10px);
+    margin-top: 10px;
+  }
+}
+
+.col {
+  flex-basis: auto;
+}
+
+.v-data-iterator {
+  text-align: center;
+}
+
+::v-deep .v-pagination__item,
+::v-deep .v-pagination__navigation {
+  border: 0;
+  background: none;
+  color: var(--v-torusFont1-base);
+  font-weight: 500;
+  box-shadow: none;
+  opacity: 0.7;
+  &.torusBrand1 {
+    background: none;
+    background-color: transparent !important;
+    color: var(--v-torusBrand1-base);
+    opacity: 1;
+  }
+}

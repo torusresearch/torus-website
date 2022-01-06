@@ -41,7 +41,7 @@
         </v-card>
       </v-flex>
       <v-flex xs12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
-        <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="off" autocomplete="off" @submit.prevent="sendCoin">
+        <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="none" autocomplete="off" @submit.prevent="sendCoin">
           <v-card
             :flat="$vuetify.breakpoint.xsOnly"
             class="form-container"
@@ -53,12 +53,12 @@
                 <div v-if="selectedItemDisplay">
                   <v-menu transition="slide-y-transition" bottom>
                     <template #activator="{ on }">
-                      <v-chip class="select-coin" label large :outlined="$vuetify.theme.dark" v-on="on">
+                      <v-btn class="select-coin" label :outlined="$vuetify.theme.dark" v-on="on">
                         <span class="select-coin-name">{{ selectedItemDisplay.name }}</span>
                         <div class="flex-grow-1 text-right pr-2">
                           <v-icon right>$vuetify.icons.select</v-icon>
                         </div>
-                      </v-chip>
+                      </v-btn>
                     </template>
                     <v-list class="select-item-list">
                       <v-list-item
@@ -71,7 +71,9 @@
                           <img
                             :src="`${logosUrl}/${token.logo}`"
                             height="20px"
-                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+                            :onerror="`if (!this.src.includes('images/token-${
+                              $vuetify.theme.dark ? 'dark' : 'light'
+                            }.svg')) this.src = '/images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg';`"
                             :alt="token.name"
                           />
                         </v-list-item-icon>
@@ -89,7 +91,9 @@
                           <img
                             :src="`${logosUrl}/${token.logo}`"
                             height="20px"
-                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+                            :onerror="`if (!this.src.includes('images/token-${
+                              $vuetify.theme.dark ? 'dark' : 'light'
+                            }.svg')) this.src = '/images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg';`"
                             :alt="token.name"
                           />
                         </v-list-item-icon>
@@ -104,7 +108,12 @@
                       </v-subheader>
                       <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
                         <v-list-item-icon class="ml-8 mr-1">
-                          <img :src="collectible.logo" height="20px" :alt="`${collectible.name} Logo`" />
+                          <img
+                            :src="collectible.logo"
+                            height="20px"
+                            :alt="collectible.name"
+                            onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
+                          />
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>
@@ -193,17 +202,27 @@
               <v-flex xs12 class="you-send-container">
                 <div class="mb-2">
                   <span class="body-2">{{ t('walletTransfer.youSend') }}</span>
-                  <a
+                  <v-btn
                     v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && !isSendAll"
                     id="send-all-btn"
-                    class="float-right torusBrand1--text body-2"
+                    text
+                    height="24"
+                    class="float-right torusBrand1--text body-2 px-0"
+                    tabindex="0"
                     @click="sendAll"
                   >
                     {{ t('walletTransfer.sendAll') }}
-                  </a>
-                  <a v-if="isSendAll" id="send-all-reset-btn" class="float-right torusBrand1--text body-2" @click="resetSendAll">
+                  </v-btn>
+                  <v-btn
+                    v-if="isSendAll"
+                    id="send-all-reset-btn"
+                    text
+                    height="24"
+                    class="float-right torusBrand1--text body-2 px-0"
+                    @click="resetSendAll"
+                  >
                     {{ t('walletTransfer.reset') }}
-                  </a>
+                  </v-btn>
                 </div>
                 <v-select
                   v-if="contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155"
@@ -481,12 +500,14 @@ import {
   GAS_ESTIMATE_TYPES,
   GITHUB,
   GOOGLE,
+  MAINNET,
   MESSAGE_MODAL_TYPE_FAIL,
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
   TRANSACTION_SPEED,
   TWITTER,
   UNSTOPPABLE_DOMAINS,
+  WALLET_OPENLOGIN_VERIFIER_MAP,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
 import {
@@ -836,21 +857,11 @@ export default {
         )
       }
     },
-    sendEmail(typeToken, transactionHash) {
-      if (/\S+@\S+\.\S+/.test(this.toAddress)) {
-        const etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
+    sendEmail(transactionHash) {
+      if (/\S+@\S+\.\S+/.test(this.toAddress) && this.networkType.host === MAINNET) {
         const emailObject = {
-          from_name: this.userInfo.name,
           to_email: this.toAddress,
-          total_amount: significantDigits(this.amount.toFormat(5), false, 5).toString(),
-          token: typeToken.toString(),
-          etherscanLink,
-          currency: this.selectedCurrency,
-          currencyAmount: significantDigits(this.amount.times(this.getCurrencyTokenRate).toFormat(2)) || '',
-          tokenImageUrl:
-            this.contractType !== CONTRACT_TYPE_ERC721 || this.contractType !== this.CONTRACT_TYPE_ERC1155
-              ? `${this.logosUrl}/${this.selectedItemDisplay.logo}`
-              : this.selectedItemDisplay.image,
+          tx_hash: transactionHash,
         }
         this.$store
           .dispatch('sendEmail', { emailObject })
@@ -1083,12 +1094,14 @@ export default {
       } else {
         try {
           const { loginConfig } = this.$store.state.embedState
-          const foundLoginConfig = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
+          const walletVerifier = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
           const validVeriferId = await this.getIdFromNick(this.toAddress, this.selectedVerifier)
           this.convertedVerifierId = validVeriferId
-          if (foundLoginConfig) {
+          const openloginVerifier = WALLET_OPENLOGIN_VERIFIER_MAP[walletVerifier]
+          if (walletVerifier && openloginVerifier) {
             toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
-              verifier: foundLoginConfig,
+              walletVerifier,
+              openloginVerifier,
               verifierId: validVeriferId.startsWith('@') ? validVeriferId.replace('@', '').toLowerCase() : validVeriferId.toLowerCase(),
             })
           }
@@ -1208,7 +1221,7 @@ export default {
             log.error(error)
           } else {
             // Send email to the user
-            this.sendEmail(this.selectedItem.symbol, transactionHash)
+            this.sendEmail(transactionHash)
             this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
 
             this.messageModalShow = true
@@ -1241,7 +1254,7 @@ export default {
               log.error(error)
             } else {
               // Send email to the user
-              this.sendEmail(this.selectedItem.symbol, transactionHash)
+              this.sendEmail(transactionHash)
               this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
 
               this.messageModalShow = true
@@ -1271,7 +1284,7 @@ export default {
               log.error(error)
             } else {
               // Send email to the user
-              this.sendEmail(this.assetSelected.name, transactionHash)
+              this.sendEmail(transactionHash)
               this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
@@ -1302,7 +1315,7 @@ export default {
               log.error(error)
             } else {
               // Send email to the user
-              this.sendEmail(this.assetSelected.name, transactionHash)
+              this.sendEmail(transactionHash)
               this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
@@ -1391,7 +1404,7 @@ export default {
           this.getEthAmount(this.gas, this.activeGasPrice),
           false,
           6
-        )} ETH`
+        )} ${this.networkType.ticker}`
       }
 
       this.convertedTotalCost = gasPriceInCurrency.plus(toSendConverted)

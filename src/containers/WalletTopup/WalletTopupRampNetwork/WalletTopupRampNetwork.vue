@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
 import { throttle } from 'lodash'
 import log from 'loglevel'
 import { mapState } from 'vuex'
@@ -35,19 +36,13 @@ export default {
         self.$store
           .dispatch('fetchRampNetworkQuote', payload)
           .then((result) => {
-            const asset = result.assets.find((item) => item.symbol === payload.selectedCryptoCurrency)
+            const { asset } = result
 
-            const fiat = payload.fiatValue
-            const feeRate = asset.maxFeePercent[payload.selectedCurrency] / 100
-            const rate = asset.price[payload.selectedCurrency]
-            const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
-            const cryptoValue = fiatWithoutFee / rate // Final Crypto amount
-
-            self.cryptoCurrencyValue = cryptoValue
+            self.cryptoCurrencyValue = new BigNumber(result.cryptoAmount).div(new BigNumber(10).pow(asset.decimals)).toNumber()
             self.cryptoCurrencySymbol = asset.symbol
-            self.currencyRate = 1 / asset.price[payload.selectedCurrency]
+            self.currencyRate = 1 / result.assetExchangeRate
             self.currentOrder = {
-              cryptoCurrencyValue: Math.trunc(cryptoValue * 10 ** asset.decimals),
+              cryptoCurrencyValue: result.cryptoAmount,
               cryptoCurrencySymbol: asset.symbol,
             }
           })

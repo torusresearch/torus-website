@@ -1,14 +1,15 @@
-import { get, patch, post, remove } from '@toruslabs/http-helpers'
+import { get } from '@toruslabs/http-helpers'
 import log from 'loglevel'
 
-export { get, patch, post, remove }
+export { get, patch, post, remove } from '@toruslabs/http-helpers'
 
 export const promiseRace = (url, options, timeout) => {
   log.info('promise race', url)
   return Promise.race([
     get(url, options),
     new Promise((resolve, reject) => {
-      setTimeout(() => {
+      const id = setTimeout(() => {
+        clearTimeout(id)
         reject(new Error('timeout'))
       }, timeout)
     }),

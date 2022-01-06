@@ -1,9 +1,9 @@
 import log from 'loglevel'
 
 import config from '../config'
-import { get } from '../utils/httpHelpers'
+import { post } from '../utils/httpHelpers'
 
-const getQuote = () => {
+const postQuote = (body) => {
   let response
   try {
     const options = {
@@ -12,11 +12,11 @@ const getQuote = () => {
         Accept: 'application/json',
       },
     }
-    response = get(`${config.rampApiQuoteHost}`, options)
+    response = post(`${config.rampApiQuoteHost}`, body, options)
   } catch (error) {
     log.error(error)
   }
   return response
 }
 
-export default getQuote
+export default postQuote

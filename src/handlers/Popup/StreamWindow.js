@@ -18,7 +18,7 @@ class StreamWindow {
         this.closeHandler = (chunk) => {
           if (chunk.name === 'opened_window' && this.preopenInstanceId === chunk.data.preopenInstanceId) {
             this.open(url)
-            windowStream.removeListener('data', this.closeHandler)
+            if (windowStream.removeListener) windowStream.removeListener('data', this.closeHandler)
           }
         }
         windowStream.on('data', this.closeHandler)
@@ -73,7 +73,7 @@ class StreamWindow {
         const { preopenInstanceId, closed } = chunk.data
         if (preopenInstanceId === this.preopenInstanceId && closed) {
           this.closed = true
-          windowStream.removeListener('data', this.preopenHandler)
+          if (windowStream.removeListener) windowStream.removeListener('data', this.preopenHandler)
         }
       }
       if (windowStream.on) windowStream.on('data', this.preopenHandler)
@@ -85,8 +85,8 @@ class StreamWindow {
       preopenInstanceId: this.preopenInstanceId,
       close: true,
     })
-    if (this.preopenHandler) windowStream.removeListener('data', this.preopenHandler)
-    if (this.closeHandler) windowStream.removeListener('data', this.closeHandler)
+    if (this.preopenHandler && windowStream.removeListener) windowStream.removeListener('data', this.preopenHandler)
+    if (this.closeHandler && windowStream.removeListener) windowStream.removeListener('data', this.closeHandler)
   }
 }
 

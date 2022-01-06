@@ -1,4 +1,4 @@
-import EventEmitter from '@metamask/safe-event-emitter'
+import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import EthQuery from 'ethjs-query'
 import log from 'loglevel'
 
@@ -18,7 +18,7 @@ import log from 'loglevel'
 @class
 */
 
-class PendingTransactionTracker extends EventEmitter {
+class PendingTransactionTracker extends SafeEventEmitter {
   DROPPED_BUFFER_COUNT = 3
 
   droppedBlocksBufferByHash = new Map()

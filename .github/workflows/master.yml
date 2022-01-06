@@ -1,0 +1,129 @@
+name: prod release
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [master]
+
+jobs:
+  test:
+    name: Test release
+    strategy:
+      matrix:
+        node: ['14.x']
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ssh-key: ${{ secrets.ALPHA_SSH_KEY }}
+
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - name: Node dependency cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Pre-build setup
+        run: npm run pre-build
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Running unit tests with coverage
+        run: npm run test:coverage-codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+
+  build-deploy-prod:
+    name: Build & deploy app.tor.us
+    strategy:
+      matrix:
+        node: ['14.x']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ssh-key: ${{ secrets.ALPHA_SSH_KEY }}
+
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - name: Node dependency cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run build
+        run: |
+          . ./scripts/setup.sh
+          npm version minor -m 'Updating version to %s [skip ci]'
+          npm run build
+          . ./scripts/gitPush.sh
+        env:
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+          GITHUB_SSH_KEY: ${{ secrets.ALPHA_SSH_KEY }}
+
+      - name: 'Upload source to Sentry'
+        run: |
+          . ./scripts/uploadToSentry.sh
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: 'Delete sourcemaps'
+        run: rm ./dist/js/*.js.map
+
+      # Upload to S3
+      - name: Run AWS actions
+        run: |
+          . ./scripts/uploadToAws.sh
+          . ./scripts/updateLambda.sh
+          . ./scripts/updateIframeIntegrity.sh
+        env:
+          GITHUB_SSH_KEY: ${{ secrets.ALPHA_SSH_KEY }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.DISTRIBUTION_APP_TOR_US }}

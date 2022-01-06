@@ -1,13 +1,13 @@
 <template>
   <div>
     <template v-if="type === TRANSACTION_TYPES.STANDARD_TRANSACTION">
-      <v-layout pa-6 class="elevation-1">
-        <v-flex text-center xs12>
-          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
-          <div class="display-1 text_2--text">{{ t('dappTransfer.confirmation') }}</div>
+      <v-layout pa-6 class="confirm-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
+        <v-flex text-left xs12>
+          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
+          <div class="headline text_2--text">{{ t('dappTransfer.confirmation') }}</div>
         </v-flex>
       </v-layout>
-      <v-layout wrap align-center mx-6 my-3>
+      <v-layout wrap align-center mx-6 mb-3 mt-5>
         <v-flex xs12>
           <NetworkDisplay :minimal="true" class="mb-4" :store-network-type="network"></NetworkDisplay>
         </v-flex>
@@ -210,10 +210,10 @@
         type === MESSAGE_TYPE.ETH_DECRYPT
       "
     >
-      <v-layout py-6 class="elevation-1">
-        <v-flex xs12 text-center>
-          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
-          <div class="display-1 text_2--text">
+      <v-layout pa-6 class="confirm-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
+        <v-flex xs12 text-left>
+          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
+          <div class="headline text_2--text">
             {{
               type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY
                 ? t('dappProvider.encryptionRequest')
@@ -368,19 +368,29 @@ import VueJsonPretty from 'vue-json-pretty'
 import { mapActions, mapGetters } from 'vuex'
 import { fromWei } from 'web3-utils'
 
+import TokenHandler from '../../../handlers/Token/TokenHandler'
+import torus from '../../../torus'
 import {
+  COINGECKO_PLATFORMS_CHAIN_CODE_MAP,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
   GAS_ESTIMATE_TYPES,
   MESSAGE_TYPE,
-  RSK_MAINNET_CHAIN_ID,
   TRANSACTION_ENVELOPE_TYPES,
   TRANSACTION_TYPES,
 } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
-import { addressSlicer, bnGreaterThan, gasTiming, isMain, significantDigits, toChecksumAddressByChainId } from '../../../utils/utils'
+import {
+  addressSlicer,
+  bnGreaterThan,
+  gasTiming,
+  getFungibleTokenStandard,
+  isMain,
+  significantDigits,
+  toChecksumAddressByChainId,
+} from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import TransactionFee from '../../helpers/TransactionFee'
@@ -444,6 +454,7 @@ export default {
         networkName: '',
         host: '',
         chainId: '',
+        ticker: '',
       },
       transactionCategory: '',
       dollarValue: new BigNumber('0'),
@@ -668,9 +679,19 @@ export default {
         log.info(methodParams, 'params')
         const checkSummedTo = toChecksumAddressByChainId(to, network.chainId)
         const tokenObject = contractParams
-        const decimals = new BigNumber(tokenObject.decimals || '0')
+        let decimals = new BigNumber('0')
+        if (tokenObject.decimals) {
+          decimals = new BigNumber(tokenObject.decimals)
+        } else if (!tokenObject.decimals && tokenObject.erc20) {
+          const tokenHandler = new TokenHandler({
+            ...tokenObject,
+            address: checkSummedTo,
+            web3: torus.web3,
+          })
+          decimals = new BigNumber(await tokenHandler.getDecimals())
+        }
         this.userInfo = userInfo
-        this.selectedToken = tokenObject.symbol || 'ERC20'
+        this.selectedToken = tokenObject.erc20 ? getFungibleTokenStandard(txParams?.chainId) : tokenObject.symbol
         this.id = id
         this.network = network
         this.transactionCategory = transactionCategory
@@ -684,18 +705,18 @@ export default {
           let tokenRateMultiplier = tokenRates[checkSummedTo.toLowerCase()]
           if (!tokenRateMultiplier) {
             const pairs = checkSummedTo
-            const query =
-              network.chainId === RSK_MAINNET_CHAIN_ID
-                ? `contract_addresses=${pairs}&vs_currencies=btc`
-                : `contract_addresses=${pairs}&vs_currencies=eth`
-            let prices = {}
-            try {
-              const coin = network.chainId === RSK_MAINNET_CHAIN_ID ? 'rootstock' : 'ethereum'
-              prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/${coin}?${query}`)
-              const lowerCheckSum = checkSummedTo.toLowerCase()
-              tokenRateMultiplier = prices[lowerCheckSum] && prices[lowerCheckSum].eth ? prices[lowerCheckSum].eth : 0 // token price in eth
-            } catch (error) {
-              log.info(error)
+            const coingeckoMap = COINGECKO_PLATFORMS_CHAIN_CODE_MAP[txParams.chainId]
+            tokenRateMultiplier = 0
+            if (coingeckoMap) {
+              const query = `contract_addresses=${pairs}&vs_currencies=${coingeckoMap.currency}`
+              let prices = {}
+              try {
+                prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/${coingeckoMap.platform}?${query}`)
+                const lowerCheckSum = checkSummedTo.toLowerCase()
+                tokenRateMultiplier = prices[lowerCheckSum] && prices[lowerCheckSum].eth ? prices[lowerCheckSum].eth : 0 // token price in eth
+              } catch (error) {
+                log.info(error)
+              }
             }
           }
           this.tokenPrice = new BigNumber(tokenRateMultiplier)
@@ -736,7 +757,10 @@ export default {
         if (this.balance.lt(ethCost) && !this.canShowError) {
           this.errorMsg = 'dappTransfer.insufficientFunds'
           this.topUpErrorShow = true
-          window.$crisp.push(['do', 'chat:show'])
+          // window.$crisp.push(['do', 'chat:show'])
+        } else if (this.errorMsg === 'dappTransfer.insufficientFunds') {
+          this.errorMsg = ''
+          this.topUpErrorShow = false
         }
       }
       this.type = type // type of tx
@@ -863,7 +887,10 @@ export default {
       if (this.balance.lt(ethCost) && !this.canShowError) {
         this.errorMsg = 'dappTransfer.insufficientFunds'
         this.topUpErrorShow = true
-        window.$crisp.push(['do', 'chat:show'])
+        // window.$crisp.push(['do', 'chat:show'])
+      } else if (this.errorMsg === 'dappTransfer.insufficientFunds') {
+        this.errorMsg = ''
+        this.topUpErrorShow = false
       }
     },
     async decryptInline() {

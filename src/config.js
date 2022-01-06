@@ -93,14 +93,20 @@ const { hash } = window.location
 const hashUrl = new URL(`${baseUrl}?${hash.slice(1)}`)
 const dappStorageKey = hashUrl.searchParams.get('dappStorageKey')
 
+const appVersion = process.env.VUE_APP_TORUS_BUILD_VERSION
+
+const rampApiKey = 'dw9fe8drpzmdfuks79ub5hvmqzuyjbme4kwkwkqf'
+
 // no reddit for binance.tor.us
 
 // In Modal, show 6 by default (view more)
 export default {
   baseUrl,
   baseRoute,
+  appVersion,
   tkeyEmailHost: 'https://email.tkey.io/send_mail',
   commonApiHost: 'https://common-api.tor.us',
+  // commonApiHost: 'http://localhost:60000',
   metadataHost: 'https://metadata.tor.us',
   api: 'https://api.tor.us',
   // api: 'http://localhost:2020',
@@ -120,6 +126,7 @@ export default {
   rampApiHost: 'https://ramp-network-api.tor.us',
   xanpoolApiHost: 'https://xanpool-api.tor.us',
   mercuryoApiHost: 'https://mercuryo-api.tor.us',
+  transakApiHost: 'https://transak-api.tor.us',
 
   moonpayHost: 'https://buy.moonpay.io',
   moonpayApiQuoteHost: 'https://api.moonpay.io',
@@ -131,8 +138,8 @@ export default {
   wyreAccountId: 'AC_RUQMPNP7QQY',
 
   rampHost: 'https://widget-instant.ramp.network',
-  rampApiQuoteHost: 'https://api-instant.ramp.network/api/host-api/assets',
-  rampAPIKEY: 'dw9fe8drpzmdfuks79ub5hvmqzuyjbme4kwkwkqf',
+  rampApiQuoteHost: `https://api-instant.ramp.network/api/host-api/quote?hostApiKey=${rampApiKey}`,
+  rampAPIKEY: rampApiKey,
 
   xanpoolHost: 'https://checkout.xanpool.com',
   xanpoolLiveAPIKEY: '778522fccc19a010f100f437c4aca60j',
@@ -144,6 +151,13 @@ export default {
   mercuryoLiveAPIKEY: '8e531c49-2f64-4e7e-b1d4-16aa4958c291',
   mercuryoTestHost: 'https://sandbox-exchange.mrcr.io',
   mercuryoTestAPIKEY: '45fb9cb6-608e-44fe-a1cf-9c59de4a9e8d',
+
+  transakHost: 'https://global.transak.com',
+  transakApiQuoteHost: 'https://api.transak.com/api/v2',
+  transakLiveAPIKEY: '0ae336e4-1968-4ec3-b817-625f6810a7d2',
+  transakTestHost: 'https://staging-global.transak.com',
+  transakTestApiQuoteHost: 'https://staging-api.transak.com/api/v2',
+  transakTestAPIKEY: 'e5adb5e3-b30c-4fa8-85ea-adcbadc98198',
 
   redirect_uri: redirectURI,
   supportedCurrencies: ['USD', 'AUD', 'BTC', 'CAD', 'DAI', 'ETC', 'EUR', 'GBP', 'HKD', 'IDR', 'INR', 'JPY', 'PHP', 'RUB', 'SGD', 'UAH'],
@@ -258,7 +272,7 @@ export default {
     ...(REDDIT_VERIFIER && {
       [REDDIT_VERIFIER]: {
         description: '',
-        typeOfLogin: REDDIT,
+        typeOfLogin: JWT,
         name: REDDIT,
         clientId: VUE_APP_REDDIT_CLIENT_ID,
         linkedVerifier: REDDIT_LINKED_VERIFIER,
@@ -268,6 +282,11 @@ export default {
         showOnModal: true,
         showOnDesktop: true,
         showOnMobile: true,
+        jwtParameters: {
+          domain: LOGIN_DOMAIN,
+          verifierIdField: 'name',
+          connection: 'Reddit',
+        },
         // For torus only
         hasLightLogo: false,
         loginProvider: REDDIT_LOGIN_PROVIDER,

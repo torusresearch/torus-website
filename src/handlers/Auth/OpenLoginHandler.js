@@ -8,16 +8,14 @@ import PopupWithBcHandler from '../Popup/PopupWithBcHandler'
 class OpenLoginHandler {
   nonce = randomId()
 
-  constructor({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, jwtParameters, skipTKey, whiteLabel, loginProvider }) {
-    this.clientId = clientId
+  constructor({ verifier, redirect_uri, preopenInstanceId, jwtParameters, skipTKey, whiteLabel, loginConfigItem }) {
     this.verifier = verifier
     this.preopenInstanceId = preopenInstanceId
     this.redirect_uri = redirect_uri
-    this.typeOfLogin = typeOfLogin
     this.jwtParameters = jwtParameters
     this.skipTKey = skipTKey
     this.whiteLabel = whiteLabel
-    this.loginProvider = loginProvider
+    this.loginConfigItem = loginConfigItem
     this.setFinalUrl()
   }
 
@@ -27,6 +25,7 @@ class OpenLoginHandler {
       verifier: this.verifier,
       redirectToOpener: this.redirectToOpener || false,
       whiteLabel: this.whiteLabel || '',
+      loginConfigItem: this.loginConfigItem,
     })
     return encodeURIComponent(
       safebtoa(
@@ -34,7 +33,8 @@ class OpenLoginHandler {
           instanceId: this.nonce,
           verifier: this.verifier,
           redirectToOpener: this.redirectToOpener || false,
-          whiteLabel: this.whiteLabel || '',
+          whiteLabel: this.whiteLabel || {},
+          loginConfig: !Object.keys(config.loginConfig).includes(this.verifier) ? { [this.loginConfigItem.loginProvider]: this.loginConfigItem } : {},
         })
       )
     )
@@ -43,7 +43,7 @@ class OpenLoginHandler {
   setFinalUrl() {
     const finalUrl = new URL(`${config.baseRoute}start`)
     finalUrl.searchParams.append('state', this.state)
-    finalUrl.searchParams.append('loginProvider', this.loginProvider)
+    finalUrl.searchParams.append('loginProvider', this.loginConfigItem.loginProvider)
     Object.keys(this.jwtParameters).forEach((x) => {
       if (this.jwtParameters[x]) finalUrl.searchParams.append(x, this.jwtParameters[x])
     })
@@ -53,6 +53,10 @@ class OpenLoginHandler {
   }
 
   async handleLoginWindow() {
+    const { typeOfLogin, clientId } = this.loginConfigItem
+    if (!this.verifier || !typeOfLogin || !clientId) {
+      throw new Error('Invalid params')
+    }
     const channelName = `redirect_openlogin_channel_${this.nonce}`
     log.info('channelname', channelName)
     const verifierWindow = new PopupWithBcHandler({ channelName, url: this.finalURL, preopenInstanceId: this.preopenInstanceId })

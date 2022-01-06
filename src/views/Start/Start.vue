@@ -23,8 +23,8 @@ export default {
       const { loginProvider, state, skipTKey, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))
       log.info('logging in with', loginProvider, state, skipTKey, rest)
-      const { whiteLabel } = stateParams
-      const openLogin = await getOpenLoginInstance(whiteLabel)
+      const { whiteLabel, loginConfig = {} } = stateParams
+      const openLogin = await getOpenLoginInstance(whiteLabel, loginConfig)
       await openLogin.login({
         loginProvider,
         getWalletKey: true,

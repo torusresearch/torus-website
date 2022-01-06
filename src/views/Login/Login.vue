@@ -7,19 +7,15 @@
             <v-flex v-if="$vuetify.breakpoint.xsOnly" class="mobile-login-container" xs12>
               <section class="py-10 py-sm-12">
                 <v-layout wrap>
-                  <v-flex class="mb-6" xs10 sm8 ml-auto mr-auto>
+                  <v-flex class="mb-8" xs10 sm8 ml-auto mr-auto>
                     <img
                       height="25"
                       :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
                       alt="Torus Logo"
                     />
                   </v-flex>
-                  <LoginTitle v-if="activeMobileButton" :active-button-details="activeMobileButtonDetails" class="mb-6" />
-                  <LoginButtons
-                    :login-buttons-array="loginButtonsArray"
-                    @setActiveMobileBtn="(verifier) => (activeMobileButton = verifier)"
-                    @triggerLogin="startLogin"
-                  />
+                  <LoginTitle class="mb-6" />
+                  <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
                   <LoginFooter :authenticators="thirdPartyAuthenticators" />
                 </v-layout>
               </section>
@@ -33,25 +29,20 @@
                   "
                 />
               </section>
-              <v-icon v-if="scrollOnTop" class="more-icon">$vuetify.icons.login_more</v-icon>
+              <v-icon v-if="scrollOnTop" class="more-icon" aria-label="Scroll for more information" role="image">$vuetify.icons.login_more</v-icon>
             </v-flex>
             <!-- Desktop -->
             <v-flex v-else xs12>
               <v-layout wrap>
-                <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
+                <v-flex class="mb-10" xs10 sm8 ml-auto mr-auto>
                   <img height="25" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                 </v-flex>
-                <LoginTitle v-if="activeButton" :active-button-details="activeButtonDetails" />
+                <LoginTitle />
                 <!-- <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-10']">
                   <div class="headline font-weight-regular" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
                 </v-flex> -->
                 <v-flex xs8 mx-auto mt-4>
-                  <LoginButtons
-                    :login-buttons-array="loginButtonsArray"
-                    :active-button="activeButton"
-                    @setActiveBtn="(verifier) => (activeButton = verifier)"
-                    @triggerLogin="startLogin"
-                  />
+                  <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
                 </v-flex>
                 <LoginFooter :authenticators="thirdPartyAuthenticators" />
               </v-layout>
@@ -139,7 +130,7 @@ import {
   WalletTransferLoader,
   WalletTransferLoaderMobile,
 } from '../../content-loader'
-import { HandlerFactory as createHandler } from '../../handlers/Auth'
+import { OpenLoginHandler } from '../../handlers/Auth'
 import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/utils'
 
 export default {
@@ -148,8 +139,6 @@ export default {
   data() {
     return {
       isLogout: false,
-      activeButton: '',
-      activeMobileButton: '',
       loginInProgress: false,
       snackbar: false,
       snackbarText: '',
@@ -164,6 +153,8 @@ export default {
       selectedAddress: 'selectedAddress',
       tKeyOnboardingComplete: 'tKeyOnboardingComplete',
       loginConfig: (state) => state.embedState.loginConfig,
+      userInfo: 'userInfo',
+      lastLoginInfo: 'lastLoginInfo',
     }),
     ...mapGetters(['loginButtonsArray']),
     loggedIn() {
@@ -189,14 +180,11 @@ export default {
       }
       return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
     },
-    activeButtonDetails() {
-      return this.loginButtonsArray.find((x) => x.verifier === this.activeButton)
-    },
-    activeMobileButtonDetails() {
-      return this.loginButtonsArray.find((x) => x.verifier === this.activeMobileButton)
-    },
     thirdPartyAuthenticators() {
       return thirdPartyAuthenticators(this.loginConfig)
+    },
+    lastLoginProvider() {
+      return 'google'
     },
   },
   watch: {
@@ -226,11 +214,10 @@ export default {
       else return
       const { access_token: accessToken, id_token: idToken } = hashParameters
       const currentVeriferConfig = this.loginConfig[returnedVerifier]
-      const { typeOfLogin, clientId, jwtParameters } = currentVeriferConfig
-      const loginHandler = createHandler({
-        typeOfLogin,
-        clientId,
+      const { jwtParameters } = currentVeriferConfig
+      const loginHandler = new OpenLoginHandler({
         verifier: returnedVerifier,
+        loginConfigItem: currentVeriferConfig,
         redirect_uri: '',
         preopenInstanceId: '',
         jwtParameters: jwtParameters || {},
@@ -255,9 +242,6 @@ export default {
     } finally {
       this.loginInProgress = false
     }
-  },
-  beforeDestroy() {
-    clearInterval(this.activeMobileButtonInterval)
   },
   methods: {
     ...mapActions({

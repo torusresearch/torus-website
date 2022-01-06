@@ -1,28 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import WalletHistory from './containers/WalletHistory'
-import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
-import WalletSettings from './containers/WalletSettings'
-import {
-  WalletTopupHome,
-  WalletTopupMercuryo,
-  WalletTopupMoonpay,
-  WalletTopupRampNetwork,
-  WalletTopupSimplex,
-  WalletTopupWyre,
-  WalletTopupXanpool,
-} from './containers/WalletTopup'
-import WalletTransfer from './containers/WalletTransfer'
-import Confirm from './views/Confirm'
-import End from './views/End'
-import Login from './views/Login'
-import Popup from './views/Popup'
-import ProviderChange from './views/ProviderChange'
-import RedirectCatch from './views/RedirectCatch'
-import Start from './views/Start'
-import Wallet from './views/Wallet'
-
 Vue.use(Router)
 
 const router = new Router({
@@ -32,134 +10,151 @@ const router = new Router({
     {
       path: '/',
       name: 'login',
-      component: Login,
-      meta: { requiresAuth: false },
+      component: () => import(/* webpackChunkName: "login" */ './views/Login'),
+      meta: { requiresAuth: false, title: 'Login' },
     },
     {
       path: '/start',
       name: 'start',
-      component: Start,
-      meta: { requiresAuth: false },
+      component: () => import(/* webpackChunkName: "start" */ './views/Start'),
+      meta: { requiresAuth: false, title: 'Start' },
     },
     {
       path: '/end',
       name: 'end',
-      component: End,
-      meta: { requiresAuth: false },
+      component: () => import(/* webpackChunkName: "end" */ './views/End'),
+      meta: { requiresAuth: false, title: 'End' },
     },
     {
       path: '/logout',
       name: 'logout',
-      component: Login,
-      meta: { requiresAuth: false },
+      component: () => import(/* webpackChunkName: "login" */ './views/Login'),
+      meta: { requiresAuth: false, title: 'Logout' },
     },
     {
       path: '/popup',
       name: 'popup',
-      component: Popup,
+      component: () => import(/* webpackChunkName: "popup" */ './views/Popup'),
       meta: { requiresAuth: false },
     },
     {
       path: '/redirect',
       name: 'redirect',
-      component: RedirectCatch,
+      component: () => import(/* webpackChunkName: "redirect" */ './views/RedirectCatch'),
       meta: { requiresAuth: false },
     },
     {
       path: '/confirm',
       name: 'confirm',
-      component: Confirm,
-      meta: { requiresAuth: false },
+      component: () => import(/* webpackChunkName: "confirm" */ './views/Confirm'),
+      meta: { requiresAuth: false, title: 'Confirm' },
     },
     {
       path: '/providerchange',
       name: 'providerchange',
-      component: ProviderChange,
-      meta: { requiresAuth: false },
+      component: () => import(/* webpackChunkName: "providerchange" */ './views/ProviderChange'),
+      meta: { requiresAuth: false, title: 'Provider Change' },
     },
     {
       path: '/wallet',
-      component: Wallet,
+      component: () => import(/* webpackChunkName: "wallet" */ './views/Wallet'),
       children: [
         {
           path: '/',
           name: 'walletDefault',
-          component: WalletHome,
+          component: () => import(/* webpackChunkName: "walletDefault" */ './containers/WalletHome/WalletHome'),
           redirect: { name: 'walletHomeMain' },
         },
         {
           path: 'home',
           name: 'walletHome',
-          component: WalletHome,
+          component: () => import(/* webpackChunkName: "walletHome" */ './containers/WalletHome/WalletHome'),
           redirect: { name: 'walletHomeMain' },
           children: [
             {
               path: '',
               name: 'walletHomeMain',
-              component: WalletHomeMain,
+              component: () => import(/* webpackChunkName: "walletHomeMain" */ './containers/WalletHome/WalletHomeMain'),
+              meta: { title: 'Home' },
             },
             {
               path: 'collectibles/:address',
               name: 'walletHomeCollectible',
-              component: WalletHomeCollectible,
+              component: () => import(/* webpackChunkName: "walletHomeCollectible" */ './containers/WalletHome/WalletHomeCollectible'),
+              meta: { title: 'Home' },
             },
           ],
         },
         {
           path: 'history',
           name: 'walletHistory',
-          component: WalletHistory,
+          component: () => import(/* webpackChunkName: "walletHistory" */ './containers/WalletHistory'),
+          meta: { title: 'Activity' },
         },
         {
           path: 'settings',
           name: 'walletSettings',
-          component: WalletSettings,
+          component: () => import(/* webpackChunkName: "walletSettings" */ './containers/WalletSettings'),
+          meta: { title: 'Settings' },
         },
         {
           path: 'transfer',
           name: 'walletTransfer',
-          component: WalletTransfer,
+          component: () => import(/* webpackChunkName: "walletTransfer" */ './containers/WalletTransfer'),
+          meta: { title: 'Transfer' },
         },
         {
           path: 'topup',
           name: 'walletTopup',
-          component: WalletTopupHome,
+          component: () => import(/* webpackChunkName: "walletTopup" */ './containers/WalletTopup/WalletTopupHome'),
+          meta: { title: 'Topup' },
           children: [
             {
               path: 'rampnetwork',
               name: 'walletTopupRampNetwork',
-              component: WalletTopupRampNetwork,
+              component: () => import(/* webpackChunkName: "walletTopupRampNetwork" */ './containers/WalletTopup/WalletTopupRampNetwork'),
             },
             {
               path: 'simplex',
               name: 'walletTopupSimplex',
-              component: WalletTopupSimplex,
+              component: () => import(/* webpackChunkName: "walletTopupSimplex" */ './containers/WalletTopup/WalletTopupSimplex'),
             },
             {
               path: 'moonpay',
               name: 'walletTopupMoonpay',
-              component: WalletTopupMoonpay,
+              component: () => import(/* webpackChunkName: "walletTopupMoonpay" */ './containers/WalletTopup/WalletTopupMoonpay'),
             },
             {
               path: 'wyre',
               name: 'walletTopupWyre',
-              component: WalletTopupWyre,
+              component: () => import(/* webpackChunkName: "walletTopupWyre" */ './containers/WalletTopup/WalletTopupWyre'),
             },
             {
               path: 'xanpool',
               name: 'walletTopupXanpool',
-              component: WalletTopupXanpool,
+              component: () => import(/* webpackChunkName: "walletTopupXanpool" */ './containers/WalletTopup/WalletTopupXanpool'),
             },
             {
               path: 'mercuryo',
               name: 'walletTopupMercuryo',
-              component: WalletTopupMercuryo,
+              component: () => import(/* webpackChunkName: "walletTopupMercuryo" */ './containers/WalletTopup/WalletTopupMercuryo'),
+            },
+            {
+              path: 'transak',
+              name: 'walletTopupTransak',
+              component: () => import(/* webpackChunkName: "walletTopupTransak" */ './containers/WalletTopup/WalletTopupTransak'),
             },
           ],
         },
+        {
+          path: 'discover',
+          name: 'walletDiscover',
+          component: () => import(/* webpackChunkName: "walletDiscover" */ './containers/WalletDiscover'),
+          meta: { title: 'Discover' },
+        },
       ],
     },
-    { path: '*', component: Login },
+    { path: '*', component: () => import(/* webpackChunkName: "login" */ './views/Login') },
   ],
 })
 
@@ -189,6 +184,12 @@ router.beforeResolve((to, from, next) => {
     // next()
   }
   return next()
+})
+router.beforeEach((to, _, next) => {
+  if (Object.prototype.hasOwnProperty.call(to, 'meta')) {
+    document.title = to.meta.title ? `${to.meta.title} | Torus` : 'Torus'
+  }
+  next()
 })
 
 export default router

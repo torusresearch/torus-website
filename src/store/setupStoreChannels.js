@@ -5,6 +5,7 @@ import stream from 'stream'
 
 import { injectStore as onloadInjection } from '../onload'
 import torus from '../torus'
+import { SUPPORTED_NETWORK_TYPES } from '../utils/enums'
 // import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_NEW, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
 import { broadcastChannelOptions, isMain } from '../utils/utils'
 import { injectStore as controllerInjection } from './controllerSubscriptions'
@@ -57,6 +58,7 @@ if (!isMain) {
         torusWidgetVisibility = true,
         loginConfig = {},
         skipTKey = false,
+        network = SUPPORTED_NETWORK_TYPES.mainnet,
       },
     } = chunk
     if (name === 'init_stream') {
@@ -66,6 +68,9 @@ if (!isMain) {
       VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
       VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
       VuexStore.commit('setSkipTKey', skipTKey)
+      if (VuexStore.state.networkType.host !== network.host) {
+        VuexStore.dispatch('setProviderType', { network })
+      }
       const { isRehydrationComplete } = VuexStore.state
       if (isRehydrationComplete) {
         initStream.write({
@@ -120,7 +125,7 @@ if (!isMain) {
   // Userinfo section
   const userInfoAccessStream = torus.communicationMux.getStream('user_info_access')
   userInfoAccessStream.on('data', (chunk) => {
-    const payload = { ...VuexStore.state.userInfo }
+    const payload = { ...VuexStore.state.userInfo, isNewUser: VuexStore.state.isNewUser }
     delete payload.verifierParams
     if (chunk.name === 'user_info_access_request') {
       userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
@@ -179,4 +184,5 @@ if (!isMain) {
   })
 }
 
+// eslint-disable-next-line unicorn/prefer-export-from
 export default VuexStore

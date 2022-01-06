@@ -1,9 +1,0 @@
-@import '../../../scss/login-types.mixin';
-
-.verifier-title {
-  img {
-    height: 23px;
-    margin-bottom: -5px;
-  }
-  @include loginTypes();
-}

@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="addAssetDialog" max-width="375" persistent>
     <template #activator="{ on }">
-      <a class="torusBrand1--text caption font-weight-medium gtm-add-asset-cta" v-on="on">{{ t('homeAssets.add') }}</a>
+      <a class="torusBrand1--text caption font-weight-medium gtm-add-asset-cta" tabindex="0" v-on="on">{{ t('homeAssets.add') }}</a>
     </template>
     <v-card class="add-asset">
       <v-tabs-items v-model="tab" touchless>
@@ -26,7 +26,7 @@
                 <div class="body-2 mb-2">{{ t('homeAssets.contractAddress') }}</div>
                 <v-text-field
                   :value="contractAddress"
-                  :rules="[rules.required, addressValidityRule, duplicateNftRule, ownerShipRule]"
+                  :rules="[rules.required, addressValidityRule]"
                   outlined
                   @change="setContractAddress"
                 ></v-text-field>
@@ -35,7 +35,7 @@
                 <div class="body-2 mb-2">{{ t('homeAssets.tokenId') }}</div>
                 <v-text-field
                   v-model="tokenId"
-                  :rules="[rules.required]"
+                  :rules="[rules.required, ownerShipRule, duplicateNftRule]"
                   outlined
                   :error-messages="displayError"
                   :error="!!displayError"

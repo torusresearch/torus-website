@@ -4,9 +4,10 @@ import { BN } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
+import { isHexStrict } from 'web3-utils'
 
 import config from '../config'
-import { HandlerFactory as createHandler } from '../handlers/Auth'
+import { OpenLoginHandler } from '../handlers/Auth'
 import PopupHandler from '../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import { getOpenLoginInstance } from '../openlogin'
@@ -16,6 +17,7 @@ import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
 import {
   ACCOUNT_TYPE,
+  CHAIN_ID_TO_TYPE_MAP,
   DISCORD,
   FACEBOOK,
   FEATURES_DEFAULT_WALLET_WINDOW,
@@ -325,6 +327,12 @@ export default {
   async setProviderType({ commit, dispatch, state }, payload) {
     let networkType = payload.network
     let isSupportedNetwork = false
+    const activeChainId = networkType.chainId && (isHexStrict(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`)
+    const chainIdConfig = CHAIN_ID_TO_TYPE_MAP[activeChainId]
+    if (chainIdConfig) {
+      const networkConfig = SUPPORTED_NETWORK_TYPES[chainIdConfig.name]
+      networkType = { ...networkConfig, ...networkType }
+    }
     if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
       networkType = SUPPORTED_NETWORK_TYPES[networkType.host]
       isSupportedNetwork = true
@@ -346,15 +354,13 @@ export default {
     try {
       commit('setLoginInProgress', true)
       // This is to maintain backward compatibility
-      const currentVeriferConfig = state.embedState.loginConfig[verifier]
+      const currentVerifierConfig = state.embedState.loginConfig[verifier]
       const { whiteLabel } = state
       // const locale = vuetify.framework.lang.current
-      if (!currentVeriferConfig) throw new Error('Invalid verifier')
-      const { typeOfLogin, clientId, jwtParameters, loginProvider } = currentVeriferConfig
+      if (!currentVerifierConfig) throw new Error('Invalid verifier config')
+      const { jwtParameters } = currentVerifierConfig
       log.info('starting login', { calledFromEmbed, verifier, preopenInstanceId, login_hint })
-      const loginHandler = createHandler({
-        typeOfLogin,
-        clientId,
+      const loginHandler = new OpenLoginHandler({
         verifier,
         redirect_uri: config.redirect_uri,
         preopenInstanceId,
@@ -375,7 +381,7 @@ export default {
         ),
         skipTKey: state.embedState.skipTKey,
         whiteLabel,
-        loginProvider,
+        loginConfigItem: currentVerifierConfig,
       })
       const { keys, userInfo, postboxKey } = await loginHandler.handleLoginWindow()
       // Get all open login results

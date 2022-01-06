@@ -1,4 +1,1 @@
-import HandlerFactory from './HandlerFactory'
-import OpenLoginHandler from './OpenLoginHandler'
-
-export { HandlerFactory, OpenLoginHandler }
+export { default as OpenLoginHandler } from './OpenLoginHandler'

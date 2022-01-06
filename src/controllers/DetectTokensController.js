@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 import { ObservableStore } from '@metamask/obs-store'
 import BigNumber from 'bignumber.js'
 import { isEqual } from 'lodash'
@@ -116,8 +117,8 @@ class DetectTokensController {
       if (
         x &&
         x.contract_ticker_symbol !== networkConfig.ticker &&
-        !x.supports_erc.includes(CONTRACT_TYPE_ERC1155) &&
-        !x.supports_erc.includes(CONTRACT_TYPE_ERC721)
+        !x.supports_erc?.includes(CONTRACT_TYPE_ERC1155) &&
+        !x.supports_erc?.includes(CONTRACT_TYPE_ERC721)
       ) {
         const index = nonZeroTokens.findIndex((element) => element.tokenAddress.toLowerCase() === x.contract_address.toLowerCase())
         if (index === -1) {

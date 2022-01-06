@@ -1,8 +1,7 @@
 const fs = require('fs')
 const path = require('path')
-const TerserPlugin = require('terser-webpack-plugin')
-const { IgnorePlugin } = require('webpack')
-const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
+const { IgnorePlugin, ProvidePlugin } = require('webpack')
+// const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 process.env.VUE_APP_TORUS_BUILD_VERSION = version
@@ -15,45 +14,62 @@ module.exports = {
     },
     // quiet: true
   },
-  css: {
-    extract: false,
-  },
+  // css: {
+  //   extract: false,
+  // },
   // Adds support for Edge browser, IE 11 and Safari 9
   transpileDependencies: ['vuetify', 'fast-json-patch'],
 
   configureWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {
       // Get the current options from the Terser Plugin instance that vue-cli-service added:
-      const { options } = config.optimization.minimizer[0]
+      const terserPlugin = config.optimization.minimizer[0]
       // Set the options you want to set
-      options.terserOptions.keep_fnames = true
-      options.terserOptions.mangle.keep_fnames = true
-      options.terserOptions.compress.keep_fnames = true
-      // create a fresh pülugin instance with the new options and
+      terserPlugin.options.minimizer.options.keep_fnames = true
+      terserPlugin.options.minimizer.options.mangle.keep_fnames = true
+      terserPlugin.options.minimizer.options.compress.keep_fnames = true
+      // create a fresh plugin instance with the new options and
       // replace the current one with it
-      config.optimization.minimizer[0] = new TerserPlugin(options)
+      // config.optimization.minimizer[0] = new TerserPlugin(options)
     } else {
-      config.devtool = 'inline-source-map'
+      config.devtool = 'eval-source-map'
+    }
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'bn.js': path.resolve(__dirname, 'node_modules/bn.js'),
+      'js-sha3': path.resolve(__dirname, 'node_modules/js-sha3'),
+      '#': path.resolve(__dirname, 'src/'),
+    }
+    config.plugins.push(new IgnorePlugin({ resourceRegExp: /^\.\/wordlists\/(?!english)/, contextRegExp: /bip39\/src$/ }))
+    config.plugins.push(
+      new ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+      })
+    )
+    config.plugins.push(
+      new ProvidePlugin({
+        process: 'process/browser',
+      })
+    )
+    config.resolve.fallback = {
+      ...(config.resolve.fallback || {}),
+      http: require.resolve('stream-http'),
+      https: require.resolve('https-browserify'),
+      os: require.resolve('os-browserify/browser'),
+      crypto: require.resolve('crypto-browserify'),
+      assert: require.resolve('assert/'),
+      stream: require.resolve('stream-browserify'),
     }
   },
-  chainWebpack: (config) => {
-    config.resolve.alias.set('bn.js', path.resolve(__dirname, 'node_modules/bn.js'))
-    config.resolve.alias.set('lodash', path.resolve(__dirname, 'node_modules/lodash'))
-    config.resolve.alias.set('#', path.resolve(__dirname, 'src/'))
-    config.resolve.extensions.add('.vue')
-
-    config.plugin('ignore').use(IgnorePlugin, [/^\.\/wordlists\/(?!english)/, /bip39\/src$/])
-
-    // new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/)
-    if (process.env.NODE_ENV === 'production') {
-      config
-        .plugin('service-worker-integrity')
-        .use(serviceWorkerIntegrityPlugin, ['index.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
-        .after('workbox')
-    } else {
-      config.module.rule('sourcemap').test(/\.js$/).enforce('pre').use('source-map-loader').loader('source-map-loader').end()
-    }
-  },
+  // chainWebpack: (config) => {
+  //   if (process.env.NODE_ENV === 'production') {
+  //     config
+  //       .plugin('service-worker-integrity')
+  //       .use(serviceWorkerIntegrityPlugin, ['index.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
+  //       .after('workbox')
+  //   }
+  // },
 
   publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'binance' ? `/${version}/` : '/',
   integrity: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'binance',

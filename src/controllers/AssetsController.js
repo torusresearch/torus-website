@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 /**
  * Asset Controller
  *
@@ -7,8 +8,7 @@
 import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 
-import erc721Contracts from '../assets/assets-map.json'
-import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, NFT_SUPPORTED_NETWORKS, SUPPORTED_NFT_STANDARDS } from '../utils/enums'
+import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, NFT_SUPPORTED_NETWORKS, OLD_ERC721_LIST, SUPPORTED_NFT_STANDARDS } from '../utils/enums'
 import { get } from '../utils/httpHelpers'
 import { isAddressByChainId, sanitizeNftMetdataUrl, toChecksumAddressByChainId, validateImageUrl } from '../utils/utils'
 
@@ -154,8 +154,8 @@ export default class AssetController {
   async getCollectibleInformationFromTokenURI(contractAddress, tokenId) {
     const { standard: interfaceStandard, isSpecial } = await this.assetContractController.checkNftStandard(contractAddress)
     if (isSpecial) {
-      const collectibleDetails = Object.prototype.hasOwnProperty.call(erc721Contracts, contractAddress.toLowerCase())
-        ? erc721Contracts[contractAddress.toLowerCase()]
+      const collectibleDetails = Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, contractAddress.toLowerCase())
+        ? OLD_ERC721_LIST[contractAddress.toLowerCase()]
         : {}
       return { image: collectibleDetails.logo, name: collectibleDetails.name, tokenBalance: 1, description: '', standard: interfaceStandard }
     }
@@ -355,7 +355,11 @@ export default class AssetController {
       tokenBalance,
       collectibleIndex,
     }
-    normalizedCollectibleInfo.standard = standard || (await this.assetContractController.checkNftStandard(_contractAddress)).standard
+    normalizedCollectibleInfo.standard = standard
+    if (!standard) {
+      const result = await this.assetContractController.checkNftStandard(_contractAddress)
+      normalizedCollectibleInfo.standard = result.standard
+    }
     const final_standard = normalizedCollectibleInfo.standard?.toLowerCase()
     if (!name || !image || !final_standard || !SUPPORTED_NFT_STANDARDS.has(final_standard)) {
       const collectibleInfo = await this.getCollectibleInfo(address, tokenID, detectFromApi)
@@ -366,7 +370,11 @@ export default class AssetController {
         normalizedCollectibleInfo.tokenBalance = 1
       } else if (normalizedCollectibleInfo.standard === CONTRACT_TYPE_ERC1155) {
         try {
-          await this.assetContractController.getErc1155Balance(_contractAddress, this.selectedAddress, tokenID)
+          normalizedCollectibleInfo.tokenBalance = await this.assetContractController.getErc1155Balance(
+            _contractAddress,
+            this.selectedAddress,
+            tokenID
+          )
         } catch {
           normalizedCollectibleInfo.tokenBalance = null
         }

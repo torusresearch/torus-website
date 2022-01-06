@@ -1,0 +1,99 @@
+.dapp-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #f5f5f5;
+  box-sizing: border-box;
+  box-shadow: 0px 10px 24px rgba(3, 100, 255, 0.06) !important;
+  border-radius: 10px;
+  padding: 18px;
+  margin: auto;
+  cursor: pointer;
+  overflow: hidden;
+  &.has-network {
+    height: 106px;
+  }
+  & .dapp-info {
+    margin-top: -2px;
+    padding-left: 8px;
+    height: 57px;
+    width: 100%;
+    overflow-x: hidden;
+    & .net-chip {
+      max-width: 60%;
+    }
+    & .title-row {
+      width: 100%;
+    }
+    & .dapp-title {
+      font-size: 14px;
+      color: var(--v-text_1-base);
+      margin: 0px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      font-weight: bold;
+    }
+    & .dapp-category {
+      font-size: 12px;
+      line-height: 14px;
+      color: var(--v-torusGray3-base);
+      margin: 0px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: 164px;
+      min-height: 14px;
+    }
+    & .dapp-desc {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 12px;
+      line-height: 14px;
+      color: #595857;
+      margin: 0px;
+      transform: translateY(3px);
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+  }
+  & .dapp-chip {
+    position: absolute;
+    inset: auto 0;
+    bottom: 0;
+    padding: 3px 0;
+    text-align: center;
+    background-color: #c5e8ff;
+    & .dapp-chip-text {
+      font-weight: bold;
+      font-size: 12px;
+      letter-spacing: 0.0857143px;
+      color: #5c6c7f;
+      margin: 0px 15px;
+    }
+  }
+}
+.dapp-card.theme--dark {
+  border: none;
+  box-shadow: 0px 14px 28px rgba(0, 0, 0, 0.16) !important;
+  .dapp-category {
+    color: #b3c0ce !important;
+  }
+  .dapp-title {
+    color: #d3d3d4 !important;
+  }
+}
+
+.network-chip {
+  position: absolute;
+  inset: auto 0;
+  bottom: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 3px 0;
+  height: auto;
+  ::v-deep .network-chip__name.network-chip__name--mobile {
+    font-size: 12px;
+  }
+}

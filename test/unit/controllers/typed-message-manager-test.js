@@ -50,7 +50,7 @@ describe('Typed Message Manager', () => {
         },
         primaryType: 'Mail',
         domain: {
-          name: 'Ether Mainl',
+          name: 'Ether Mail',
           version: '1',
           chainId: 1,
           verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',

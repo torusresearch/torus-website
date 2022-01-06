@@ -27,6 +27,7 @@ export const BSC_TESTNET = 'bsc_testnet'
 export const XDAI = 'xdai'
 export const RSK_MAINNET = 'rsk_mainnet'
 export const RSK_TESTNET = 'rsk_testnet'
+export const REEF = 'reef'
 
 export const MAINNET_CODE = 1
 export const ROPSTEN_CODE = 3
@@ -41,6 +42,7 @@ export const BSC_TESTNET_CODE = 97
 export const XDAI_CODE = 100
 export const RSK_MAINNET_CODE = 30
 export const RSK_TESTNET_CODE = 31
+export const REEF_CODE = 101
 
 export const MAINNET_CHAIN_ID = '0x1'
 export const ROPSTEN_CHAIN_ID = '0x3'
@@ -52,6 +54,7 @@ export const MUMBAI_CHAIN_ID = '0x13881'
 export const BSC_MAINNET_CHAIN_ID = '0x38'
 export const BSC_TESTNET_CHAIN_ID = '0x61'
 export const XDAI_CHAIN_ID = '0x64'
+export const REEF_CHAIN_ID = '0x65'
 export const OPTIMISM_CHAIN_ID = '0xa'
 export const OPTIMISM_TESTNET_CHAIN_ID = '0x45'
 export const RSK_MAINNET_CHAIN_ID = '0x1e'
@@ -63,6 +66,13 @@ export const NFT_SUPPORTED_NETWORKS = {
   [BSC_MAINNET]: BSC_MAINNET_CODE,
   [MAINNET]: MAINNET_CODE,
 }
+
+export const COVALENT_SUPPORTED_CHAIN_IDS = {
+  [MATIC_CODE]: MATIC,
+  [MUMBAI_CODE]: MUMBAI,
+  [BSC_MAINNET_CODE]: BSC_MAINNET,
+  [MAINNET_CODE]: MAINNET,
+}
 export const ETHERSCAN_SUPPORTED_NETWORKS = new Set([MATIC, BSC_MAINNET, MAINNET])
 export const INFURA_PROVIDER_TYPES = new Set([ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI])
 
@@ -73,19 +83,20 @@ export const MAINNET_DISPLAY_NAME = 'Main Ethereum Network'
 export const GOERLI_DISPLAY_NAME = 'Goerli Test Network'
 export const RPC_DISPLAY_NAME = 'RPC'
 export const LOCALHOST_DISPLAY_NAME = 'https://localhost:8545'
-export const MATIC_DISPLAY_NAME = 'Matic Network'
-export const MUMBAI_DISPLAY_NAME = 'Mumbai Matic-Testnet'
+export const MATIC_DISPLAY_NAME = 'Polygon Mainnet'
+export const MUMBAI_DISPLAY_NAME = 'Matic Mumbai'
 export const BSC_MAINNET_DISPLAY_NAME = 'Binance Smart Chain Mainnet'
 export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
 export const XDAI_DISPLAY_NAME = 'xDai'
 export const RSK_MAINNET_DISPLAY_NAME = 'RSK Mainnet'
 export const RSK_TESTNET_DISPLAY_NAME = 'RSK Testnet'
+export const REEF_DISPLAY_NAME = 'Reef Chain'
 
-export const MATIC_URL = 'https://rpc-mainnet.maticvigil.com'
-export const MATIC_BLOCK_EXPLORER = 'https://explorer-mainnet.maticvigil.com'
+export const MATIC_URL = `https://polygon-mainnet.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
+export const MATIC_BLOCK_EXPLORER = 'https://polygonscan.com'
 
-export const MUMBAI_URL = 'https://rpc-mumbai.maticvigil.com'
-export const MUMBAI_BLOCK_EXPLORER = 'https://mumbai-explorer.matic.today'
+export const MUMBAI_URL = `https://polygon-mumbai.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
+export const MUMBAI_BLOCK_EXPLORER = 'https://mumbai.polygonscan.com'
 
 export const XDAI_URL = 'https://rpc.xdaichain.com'
 export const XDAI_BLOCK_EXPLORER = 'https://blockscout.com/poa/xdai'
@@ -101,6 +112,8 @@ export const RSK_MAINNET_BLOCK_EXPLORER = 'https://explorer.rsk.co'
 
 export const RSK_TESTNET_URL = 'https://public-node.testnet.rsk.co'
 export const RSK_TESTNET_BLOCK_EXPLORER = 'https://explorer.testnet.rsk.co'
+export const REEF_URL = 'https://reef.finance/'
+export const REEF_BLOCK_EXPLORER = 'https://reefscan.com/'
 
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
@@ -191,6 +204,20 @@ export const createNetwork = (host, networkName, chainId, blockExplorer, ticker,
   rpcUrl,
 })
 
+export const CHAIN_ID_TO_TYPE_MAP = {
+  [ROPSTEN_CHAIN_ID]: { networkId: ROPSTEN_CODE, name: ROPSTEN },
+  [RINKEBY_CHAIN_ID]: { networkId: RINKEBY_CODE, name: RINKEBY },
+  [KOVAN_CHAIN_ID]: { networkId: KOVAN_CODE, name: KOVAN },
+  [GOERLI_CHAIN_ID]: { networkId: GOERLI_CODE, name: GOERLI },
+  [MAINNET_CHAIN_ID]: { networkId: MAINNET_CODE, name: MAINNET },
+  [MATIC_CHAIN_ID]: { networkId: MATIC_CODE, name: MATIC },
+  [MUMBAI_CHAIN_ID]: { networkId: MUMBAI_CODE, name: MUMBAI },
+  [BSC_MAINNET_CHAIN_ID]: { networkId: BSC_MAINNET_CODE, name: BSC_MAINNET },
+  [BSC_TESTNET_CHAIN_ID]: { networkId: BSC_TESTNET_CODE, name: BSC_TESTNET },
+  [XDAI_CHAIN_ID]: { networkId: XDAI_CODE, name: XDAI },
+  [REEF_CHAIN_ID]: { networkId: REEF_CODE, name: REEF },
+}
+
 export const SUPPORTED_NETWORK_TYPES = {
   [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, getInfuraBlockExplorerUrl(MAINNET), 'ETH', 'Ethereum', 'eth.svg', undefined),
   [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE, getInfuraBlockExplorerUrl(RINKEBY), 'ETH', 'Ethereum', 'eth.svg', undefined),
@@ -259,6 +286,7 @@ export const SUPPORTED_NETWORK_TYPES = {
     'rsk.png',
     RSK_TESTNET_URL
   ),
+  [REEF]: createNetwork(REEF, REEF_DISPLAY_NAME, REEF_CODE, REEF_BLOCK_EXPLORER, 'REEF', 'Reef', 'eth.svg', undefined),
 }
 
 export const WALLET_HEADERS_HOME = 'My Wallet'
@@ -421,6 +449,7 @@ export const MOONPAY = 'moonpay'
 export const WYRE = 'wyre'
 export const CRYPTO = 'crypto'
 export const MERCURYO = 'mercuryo'
+export const TRANSAK = 'transak'
 export const PNG = 'png'
 export const SVG = 'svg'
 
@@ -615,3 +644,99 @@ export const TRANSACTION_SPEED = {
   MEDIUM: 'medium',
   HIGH: 'high',
 }
+
+export const COINGECKO_PLATFORMS_CHAIN_CODE_MAP = {
+  [MATIC_CODE]: {
+    platform: 'polygon-pos',
+    currency: 'matic',
+  },
+  [BSC_MAINNET_CODE]: {
+    platform: 'binance-smart-chain',
+    currency: 'bnb',
+  },
+  [MAINNET_CODE]: {
+    platform: 'ethereum',
+    currency: 'eth',
+  },
+}
+
+export const WALLET_OPENLOGIN_VERIFIER_MAP = {
+  [GOOGLE_VERIFIER]: GOOGLE_LINKED_VERIFIER,
+  [FACEBOOK_VERIFIER]: FACEBOOK_LINKED_VERIFIER,
+  [REDDIT_VERIFIER]: REDDIT_LINKED_VERIFIER,
+  [DISCORD_VERIFIER]: DISCORD_LINKED_VERIFIER,
+  [TWITCH_VERIFIER]: TWITCH_LINKED_VERIFIER,
+  [GITHUB_VERIFIER]: GITHUB_LINKED_VERIFIER,
+  [KAKAO_VERIFIER]: KAKAO_LINKED_VERIFIER,
+  [LINKEDIN_VERIFIER]: LINKEDIN_LINKED_VERIFIER,
+  [TWITTER_VERIFIER]: TWITTER_LINKED_VERIFIER,
+  [WEIBO_VERIFIER]: WEIBO_LINKED_VERIFIER,
+  [WECHAT_VERIFIER]: WEIBO_LINKED_VERIFIER,
+  [LINE_VERIFIER]: LINE_LINKED_VERIFIER,
+  [APPLE_VERIFIER]: APPLE_LINKED_VERIFIER,
+  [HOSTED_EMAIL_PASSWORDLESS_VERIFIER]: HOSTED_EMAIL_PASSWORDLESS_LINKED_VERIFIER,
+}
+
+export const COINGECKO_SUPPORTED_CURRENCIES = new Set([
+  'btc',
+  'eth',
+  'ltc',
+  'bch',
+  'bnb',
+  'eos',
+  'xrp',
+  'xlm',
+  'link',
+  'dot',
+  'yfi',
+  'usd',
+  'aed',
+  'ars',
+  'aud',
+  'bdt',
+  'bhd',
+  'bmd',
+  'brl',
+  'cad',
+  'chf',
+  'clp',
+  'cny',
+  'czk',
+  'dkk',
+  'eur',
+  'gbp',
+  'hkd',
+  'huf',
+  'idr',
+  'ils',
+  'inr',
+  'jpy',
+  'krw',
+  'kwd',
+  'lkr',
+  'mmk',
+  'mxn',
+  'myr',
+  'ngn',
+  'nok',
+  'nzd',
+  'php',
+  'pkr',
+  'pln',
+  'rub',
+  'sar',
+  'sek',
+  'sgd',
+  'thb',
+  'try',
+  'twd',
+  'uah',
+  'vef',
+  'vnd',
+  'zar',
+  'xdr',
+  'xag',
+  'xau',
+  'bits',
+  'sats',
+])

@@ -10,10 +10,14 @@
         </div>
         <slot name="image">
           <div class="ml-auto mt-1">
-            <img
-              :src="$vuetify.theme.isDark && imageDarkPath ? imageDarkPath : imagePath"
+            <v-img
+              :src="`${$vuetify.theme.isDark && imageDarkPath ? imageDarkPath : imagePath}`"
+              class="mr-1"
+              contain
+              position="right center"
+              max-width="170"
               :style="$vuetify.breakpoint.smAndDown ? 'height: 42px' : 'height: 50px'"
-              :alt="`${title} Image`"
+              :alt="`${title}`"
             />
           </div>
         </slot>

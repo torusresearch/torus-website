@@ -15,10 +15,14 @@ const MILLISECOND = 1
 const SECOND = MILLISECOND * 1000
 
 const noop = () => true
-const currentNetworkId = '42'
-const currentChainId = '0x2a'
+const currentNetworkId = 1337
+const currentChainId = 1337
 const providerConfig = {
-  type: 'kovan',
+  type: 'rpc',
+  rpcUrl: 'http://localhost:8545',
+  ticker: 'ETH',
+  nickname: 'ETH',
+  chainId: '0x539',
 }
 
 const VALID_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -647,7 +651,7 @@ describe('Transaction Controller', function () {
           gasPrice: originalValue,
         },
       }
-      // eslint-disable-next-line @babel/no-invalid-this
+
       this.timeout(SECOND * 15)
       const wrongValue = '0x05'
 
@@ -737,7 +741,7 @@ describe('Transaction Controller', function () {
         .signTransaction('1')
         .then((rawTx) => {
           const ethTx = TransactionFactory.fromSerializedData(toBuffer(rawTx))
-          assert.equal(ethTx.common.chainIdBN().toNumber(), 42)
+          assert.equal(ethTx.common.chainIdBN().toNumber(), 1337)
           done()
         })
         .catch(done)
@@ -760,15 +764,7 @@ describe('Transaction Controller', function () {
       txController
         .signTransaction('1')
         .then((rawTx) => {
-          const chain = Common.forCustomChain(
-            MAINNET,
-            {
-              networkId: 100,
-              chainId: 100,
-              url: 'https://xdai.poanetwork.dev',
-            },
-            'istanbul'
-          )
+          const chain = Common.custom({ chainId: 100, name: 'xDai', defaultHardfork: 'istanbul', networkId: 100, url: 'https://xdai.poanetwork.dev' })
           const ethTx = TransactionFactory.fromTxData(toBuffer(rawTx), { common: chain })
           assert.equal(ethTx.common.chainIdBN().toNumber(), 100)
           done()

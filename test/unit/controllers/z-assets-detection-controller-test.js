@@ -74,7 +74,11 @@ describe('AssetsDetectionController', () => {
     }
     // eth mainnet
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/1/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
+      .get(
+        `/covalent?url=${encodeURIComponent(
+          'https://api.covalenthq.com/v1/1/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false'
+        )}`
+      )
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -82,7 +86,11 @@ describe('AssetsDetectionController', () => {
 
     // polygon
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/137/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
+      .get(
+        `/covalent?url=${encodeURIComponent(
+          'https://api.covalenthq.com/v1/137/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false'
+        )}`
+      )
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -90,7 +98,11 @@ describe('AssetsDetectionController', () => {
 
     // polygon mumbai
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/80001/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
+      .get(
+        `/covalent?url=${encodeURIComponent(
+          'https://api.covalenthq.com/v1/80001/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false'
+        )}`
+      )
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -98,7 +110,11 @@ describe('AssetsDetectionController', () => {
 
     // bsc mainnet
     nock(COVALENT_API)
-      .get('/covalent?url=https://api.covalenthq.com/v1/56/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/')
+      .get(
+        `/covalent?url=${encodeURIComponent(
+          'https://api.covalenthq.com/v1/56/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false'
+        )}`
+      )
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -128,7 +144,13 @@ describe('AssetsDetectionController', () => {
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
 
-      const assetCtrlr = new AssetsDetectionController({ network: localNetwork, selectedAddress: TEST_ADDRESS })
+      const assetsController = new AssetsController({
+        selectedAddress: TEST_ADDRESS,
+        assetContractController: assetsContract,
+        network,
+        getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
+      })
+      const assetCtrlr = new AssetsDetectionController({ assetController: assetsController, network: localNetwork, selectedAddress: TEST_ADDRESS })
       const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
       clock.tick(60_000)
       sandbox.assert.calledOnce(mockCollectibles)
@@ -164,13 +186,21 @@ describe('AssetsDetectionController', () => {
       sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(ROPSTEN)
-
-      const assetCtrlr = new AssetsDetectionController({ network: localNetwork, selectedAddress: TEST_ADDRESS })
+      const assetController = new AssetsController({
+        selectedAddress: TEST_ADDRESS,
+        assetContractController: assetsContract,
+        network,
+        getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
+      })
+      const assetCtrlr = new AssetsDetectionController({ assetController, network: localNetwork, selectedAddress: TEST_ADDRESS })
       assetCtrlr.selectedAddress = TEST_ADDRESS
-      const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
+      const mockOpenseaCollectibles = sandbox.stub(assetCtrlr, 'detectCollectiblesFromOpensea')
+      const mockCovalentCollectibles = sandbox.stub(assetCtrlr, 'detectCollectiblesFromCovalent')
       clock.tick(60_000)
-      sandbox.assert.notCalled(mockCollectibles)
-      mockCollectibles.restore()
+      sandbox.assert.notCalled(mockOpenseaCollectibles)
+      sandbox.assert.notCalled(mockCovalentCollectibles)
+      mockOpenseaCollectibles.restore()
+      mockCovalentCollectibles.restore()
       resolve()
     }))
 
@@ -184,8 +214,13 @@ describe('AssetsDetectionController', () => {
       sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
-
-      const assetCtrlr = new AssetsDetectionController({ network: localNetwork })
+      const assetController = new AssetsController({
+        selectedAddress: TEST_ADDRESS,
+        assetContractController: assetsContract,
+        network,
+        getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
+      })
+      const assetCtrlr = new AssetsDetectionController({ assetController, network: localNetwork })
       const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
       assetCtrlr.startAssetDetection(TEST_ADDRESS)
       clock.tick(1)
@@ -204,8 +239,13 @@ describe('AssetsDetectionController', () => {
       sandbox.stub(localNetwork, 'getLatestBlock').returns({})
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
-
-      const assetCtrlr = new AssetsDetectionController({ network: localNetwork })
+      const assetController = new AssetsController({
+        selectedAddress: TEST_ADDRESS,
+        assetContractController: assetsContract,
+        network,
+        getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
+      })
+      const assetCtrlr = new AssetsDetectionController({ assetController, network: localNetwork })
       const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
       clock.tick(1)
       sandbox.assert.notCalled(mockCollectibles)
@@ -260,26 +300,26 @@ describe('AssetsDetectionController', () => {
       {
         standard: 'erc721',
         address: '0x1d963688FE2209A98db35c67A041524822CF04gg',
-        description: 'Description GG',
-        logo: 'url GG',
-        name: 'Name GG',
-        symbol: 'GG',
+        description: '',
+        logo: 'url',
+        name: 'MARBLE-NFT (ERC721)',
+        symbol: 'MRBLNFT1',
       },
       {
         standard: 'erc721',
         address: '0x1d963688FE2209A98db35c67A041524822CF04ii',
-        description: 'Description II',
-        logo: 'url II',
-        name: 'Name II',
-        symbol: 'II',
+        description: '',
+        logo: 'url',
+        name: 'MARBLE-NFT (ERC721)',
+        symbol: 'MRBLNFT2',
       },
       {
         standard: 'erc721',
         address: '0x1d963688FE2209A98db35c67A041524822CF04hh',
-        description: 'Description HH',
-        logo: 'url HH',
-        name: 'Name HH',
-        symbol: 'HH',
+        description: '',
+        logo: 'url',
+        name: 'MARBLE-NFT (ERC721)',
+        symbol: 'MRBLNFT3',
       },
     ]
     assert.deepStrictEqual(assets.state.collectibles, expectedCollectibles)

@@ -5,7 +5,7 @@ import config from './config'
 
 let openLoginInstance = null
 
-export async function getOpenLoginInstance(whiteLabel = {}) {
+export async function getOpenLoginInstance(whiteLabel = {}, loginConfig = {}) {
   log.info('getting openlogin instance')
   const whiteLabelOpenLogin = {}
   if (openLoginInstance !== null) {
@@ -32,10 +32,12 @@ export async function getOpenLoginInstance(whiteLabel = {}) {
       [window.location.origin]: config.openLoginOriginSig,
     },
     whiteLabel: whiteLabelOpenLogin,
+    loginConfig,
     // no3PC: true,
   })
 
   await openLogin.init()
+  log.info('got openlogin instance')
   // eslint-disable-next-line require-atomic-updates
   openLoginInstance = openLogin
   return openLoginInstance

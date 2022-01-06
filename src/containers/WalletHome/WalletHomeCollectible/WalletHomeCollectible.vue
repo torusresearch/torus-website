@@ -20,7 +20,14 @@
           @change="changeContract"
         >
           <template #prepend-inner>
-            <img v-if="selectedContract" class="mr-1" :src="selectedContract.logo" :alt="selectedContract.name" height="24px" />
+            <img
+              v-if="selectedContract"
+              class="mr-1"
+              :src="selectedContract.logo"
+              :alt="selectedContract.name"
+              onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
+              height="24px"
+            />
           </template>
         </v-select>
       </v-flex>

@@ -1,13 +1,24 @@
 <template>
-  <v-flex class="login-buttons" :class="{ 'is-popup': isPopup }" xs10 sm12 ml-auto mr-auto>
+  <v-flex class="login-buttons" :class="isPopup ? 'is-popup xs-12' : 'xs10 sm12'" ml-auto mr-auto>
     <!-- <div
       v-if="(mainButtonsLong.length > 0 || mainButtons.length > 0) && !$vuetify.breakpoint.xsOnly && !isPopup"
       class="headline font-weight-regular mb-2"
       :class="$vuetify.theme.dark ? '' : 'text_2--text'"
     >
       {{ t('login.signUpIn') }}
-    </div> -->
+    </div>-->
     <div :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
+      <v-btn
+        v-if="hasExistingAccount && existingLoginTypeAvailable"
+        large
+        color="torusBrand1"
+        class="white--text font-weight-regular btn-existing mb-2"
+        :class="$vuetify.breakpoint.xsOnly ? 'body-2' : 'headline'"
+        block
+        @click="loginExisting"
+      >
+        {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(existingLoginTypeAvailable.name)) }}
+      </v-btn>
       <LoginButton
         v-for="verifier in mainButtonsLong"
         :key="verifier.verifier"
@@ -20,7 +31,7 @@
         @click="triggerLogin(verifier.verifier)"
       />
     </div>
-    <v-layout class="buttons-container" wrap :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
+    <v-layout class="buttons-container" wrap :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
       <v-flex
         v-for="verifier in mainButtons"
         :key="verifier.verifier"
@@ -91,16 +102,15 @@
 </template>
 
 <script>
+import log from 'loglevel'
+
 import { HOSTED_EMAIL_PASSWORDLESS_VERIFIER } from '../../../utils/enums'
+import { capitalizeFirstLetter } from '../../../utils/utils'
 import LoginButton from '../LoginButton'
 
 export default {
   components: { LoginButton },
   props: {
-    activeButton: {
-      type: String,
-      default: '',
-    },
     isPopup: {
       type: Boolean,
       default: false,
@@ -111,9 +121,21 @@ export default {
         return []
       },
     },
+    lastLoginInfo: {
+      type: Object,
+      default() {
+        return {
+          typeOfLogin: '',
+          verifierId: '',
+          aggregateVerifier: '',
+          verifier: '',
+        }
+      },
+    },
   },
   data() {
     return {
+      activeButton: '',
       viewMoreOptions: false,
       activeMobileButtonInterval: null,
       HOSTED_EMAIL_PASSWORDLESS_VERIFIER,
@@ -128,6 +150,7 @@ export default {
   },
   computed: {
     mainButtonsLong() {
+      if (this.hasExistingAccount) return []
       return this.loginButtonsArray.filter(
         (button) =>
           ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
@@ -137,13 +160,11 @@ export default {
     },
     mainButtons() {
       return this.loginButtonsArray.filter((button) => {
+        const descCheck = this.hasExistingAccount || button.description === ''
         if (this.viewMoreOptions) {
-          return (
-            ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
-            button.description === ''
-          )
+          return ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) && descCheck
         }
-        return (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.mainOption && button.description === ''
+        return (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.mainOption && descCheck
       })
     },
     loginButtonsLong() {
@@ -162,6 +183,15 @@ export default {
       if (this.$vuetify.breakpoint.height >= 1080) return '4.6vh'
       return '40'
     },
+    hasExistingAccount() {
+      return this.lastLoginInfo.typeOfLogin && this.lastLoginInfo.verifierId
+    },
+    existingLoginTypeAvailable() {
+      const existingVerifier = this.lastLoginInfo.aggregateVerifier || this.lastLoginInfo.verifier
+      const available = this.loginButtonsArray.find((button) => (button.linkedVerifier || button.verifier) === existingVerifier)
+      log.info('existingLoginTypeAvailable', available)
+      return available
+    },
   },
   watch: {
     loginButtonsArray(newValue, oldValue) {
@@ -179,8 +209,8 @@ export default {
     clearInterval(this.activeMobileButtonInterval)
   },
   mounted() {
+    log.info(this.loginButtonsArray)
     this.chooseAndSetActiveButton()
-    this.animateVerifier()
   },
   methods: {
     chooseAndSetActiveButton() {
@@ -194,32 +224,22 @@ export default {
       else if (this.mainButtons.length > 0) this.setActiveBtn(this.mainButtons[0].verifier)
       else if (this.loginButtonsLong.length > 0) this.setActiveBtn(this.loginButtonsLong[0].verifier)
     },
-    animateVerifier() {
-      const verifiers = this.loginButtonsArray.filter((button) => button.showOnMobile)
-      if (verifiers.length > 0) {
-        let counter = 0
-
-        clearInterval(this.activeMobileButtonInterval)
-        this.activeMobileButtonInterval = setInterval(() => {
-          if (counter >= verifiers.length) {
-            counter = 0
-          }
-          this.setActiveMobileBtn(verifiers[counter].verifier)
-          counter += 1
-        }, 1000)
-      }
-    },
     loginBtnHover(verifier) {
       if (!this.$vuetify.breakpoint.xsOnly) this.setActiveBtn(verifier)
     },
-    setActiveBtn(verifier) {
-      this.$emit('setActiveBtn', verifier)
+    loginExisting() {
+      const existingVerifier = this.lastLoginInfo.aggregateVerifier || this.lastLoginInfo.verifier
+      const targetLogin = this.loginButtonsArray.find((login) => (login.linkedVerifier || login.verifier) === existingVerifier)
+      this.triggerLogin(targetLogin.verifier, this.lastLoginInfo.verifierId)
     },
-    setActiveMobileBtn(verifier) {
-      this.$emit('setActiveMobileBtn', verifier)
+    setActiveBtn(verifier) {
+      this.activeButton = verifier
     },
     triggerLogin(verifier, email) {
       this.$emit('triggerLogin', verifier, email)
+    },
+    capitalizeFirstLetter(text) {
+      return capitalizeFirstLetter(text)
     },
   },
 }
