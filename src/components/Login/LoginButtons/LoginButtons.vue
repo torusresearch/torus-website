@@ -17,7 +17,7 @@
         block
         @click="loginExisting"
       >
-        <v-icon class="text_3--text mr-2" color="white">
+        <v-icon class="text_3--text mr-3" color="white">
           {{ `$vuetify.icons.${lastLoginIcon}` }}
         </v-icon>
         <div>
