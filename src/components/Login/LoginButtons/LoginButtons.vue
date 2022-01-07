@@ -17,7 +17,15 @@
         block
         @click="loginExisting"
       >
-        {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(existingLoginTypeAvailable.name)) }}
+        <v-icon class="text_3--text mr-3" color="white">
+          {{ `$vuetify.icons.${lastLoginIcon}` }}
+        </v-icon>
+        <div>
+          {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(existingLoginTypeAvailable.name)) }}
+          <div v-if="lastLoginVerifierId" class="font-weight-bold last-login-email">
+            {{ lastLoginVerifierId }}
+          </div>
+        </div>
       </v-btn>
       <LoginButton
         v-for="verifier in mainButtonsLong"
@@ -129,6 +137,7 @@ export default {
           verifierId: '',
           aggregateVerifier: '',
           verifier: '',
+          email: '',
         }
       },
     },
@@ -191,6 +200,13 @@ export default {
       const available = this.loginButtonsArray.find((button) => (button.linkedVerifier || button.verifier) === existingVerifier)
       log.info('existingLoginTypeAvailable', available)
       return available
+    },
+    lastLoginIcon() {
+      return this.lastLoginInfo.typeOfLogin.toLowerCase()
+    },
+    lastLoginVerifierId() {
+      const { email } = this.lastLoginInfo
+      return email || ''
     },
   },
   watch: {
