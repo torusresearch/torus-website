@@ -273,7 +273,7 @@ export const SUPPORTED_NETWORK_TYPES = {
     RSK_MAINNET_BLOCK_EXPLORER,
     RSK_MAINNET_TICKER,
     'RSK',
-    'rsk.png',
+    'rsk.svg',
     RSK_MAINNET_URL
   ),
   [RSK_TESTNET]: createNetwork(
@@ -283,7 +283,7 @@ export const SUPPORTED_NETWORK_TYPES = {
     RSK_TESTNET_BLOCK_EXPLORER,
     RSK_TESTNET_TICKER,
     'RSK Testnet',
-    'rsk.png',
+    'rsk.svg',
     RSK_TESTNET_URL
   ),
   [REEF]: createNetwork(REEF, REEF_DISPLAY_NAME, REEF_CODE, REEF_BLOCK_EXPLORER, 'REEF', 'Reef', 'eth.svg', undefined),

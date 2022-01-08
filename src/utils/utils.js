@@ -3,7 +3,7 @@ import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import { addHexPrefix, BN, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
-import { isAddress, toChecksumAddress } from 'web3-utils'
+import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import languages from '../plugins/locales'
@@ -364,7 +364,8 @@ export const broadcastChannelOptions = {
 
 export function validateVerifierId(selectedTypeOfLogin, value, chainId) {
   if (selectedTypeOfLogin === ETH) {
-    if (Number.parseInt(chainId, 10) === RSK_MAINNET_CODE || Number.parseInt(chainId, 10) === RSK_TESTNET_CODE) {
+    const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+    if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
       return isAddressByChainId(value, chainId) || 'walletSettings.invalidEth'
     }
     return isAddress(value) || 'walletSettings.invalidEth'
@@ -697,14 +698,16 @@ export function generateAddressFromPrivateKey(privKey) {
 }
 
 export function toChecksumAddressByChainId(address, chainId) {
-  if (Number.parseInt(chainId, 10) === RSK_MAINNET_CODE || Number.parseInt(chainId, 10) === RSK_TESTNET_CODE) {
+  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskUtils.toChecksumAddress(address, chainId)
   }
   return toChecksumAddress(address)
 }
 
 export function isAddressByChainId(address, chainId) {
-  if (Number.parseInt(chainId, 10) === RSK_MAINNET_CODE || Number.parseInt(chainId, 10) === RSK_TESTNET_CODE) {
+  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskUtils.isValidChecksumAddress(address, chainId)
   }
   return isAddress(address)
