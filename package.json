@@ -42,7 +42,7 @@
     "@toruslabs/loglevel-sentry": "^2.7.2",
     "@toruslabs/openlogin": "^1.3.3",
     "@toruslabs/openlogin-jrpc": "^1.3.3",
-    "@toruslabs/openlogin-utils": "^1.3.3",
+    "@toruslabs/openlogin-utils": "^1.3.4",
     "@toruslabs/torus.js": "^4.2.3",
     "@unstoppabledomains/resolution": "^7.1.2",
     "@walletconnect/core": "^1.7.0",
