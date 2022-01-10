@@ -1,9 +1,11 @@
 import BigNumber from 'bignumber.js'
+// import LogFilter from 'eth-json-rpc-filters/log-filter'
 import log from 'loglevel'
-import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
+import { fromWei, toBN } from 'web3-utils'
 
 import torus from '../torus'
 import { TRANSACTION_TYPES } from '../utils/enums'
+import { isAddressByChainId, toChecksumAddressByChainId } from '../utils/utils'
 
 const { torusController } = torus || {}
 const { prefsController } = torusController || {}
@@ -90,7 +92,7 @@ export default {
               typeName = contract.name || name
               typeImageLink = contract.logo || logo
               totalAmount = fromWei(toBN(txParams.value || 0))
-              finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+              finalTo = amountTo && isAddressByChainId(amountTo.value) && toChecksumAddressByChainId(amountTo.value, state.networkId)
             }
           } else {
             tokenRate = 1
@@ -99,7 +101,7 @@ export default {
             typeName = state.networkType.ticker
             typeImageLink = 'n/a'
             totalAmount = fromWei(toBN(txParams.value || 0))
-            finalTo = toChecksumAddress(txParams.to)
+            finalTo = toChecksumAddressByChainId(txParams.to, state.networkId)
           }
         } else if (contractParams.erc721) {
           // Handling cryptokitties
@@ -125,8 +127,8 @@ export default {
               totalAmount = fromWei(toBN(txParams.value || 0))
               finalTo =
                 transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
-                  ? amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
-                  : toChecksumAddress(txParams.to)
+                  ? amountTo && isAddressByChainId(amountTo.value) && toChecksumAddressByChainId(amountTo.value, state.networkId)
+                  : toChecksumAddressByChainId(txParams.to, state.networkId)
             } else {
               // there might be a case when user has the asset but it is not present in state
               // in that case we can record it as a contract interaction transaction.
@@ -136,7 +138,7 @@ export default {
               typeName = state.networkType.ticker
               typeImageLink = 'n/a'
               totalAmount = fromWei(toBN(txParams.value || 0))
-              finalTo = toChecksumAddress(txParams.to)
+              finalTo = toChecksumAddressByChainId(txParams.to, state.networkId)
             }
           } else {
             tokenRate = 1
@@ -145,7 +147,7 @@ export default {
             typeName = state.networkType.ticker
             typeImageLink = 'n/a'
             totalAmount = fromWei(toBN(txParams.value || 0))
-            finalTo = toChecksumAddress(txParams.to)
+            finalTo = toChecksumAddressByChainId(txParams.to, state.networkId)
           }
         } else if (contractParams.erc20) {
           // ERC20 transfer
@@ -167,7 +169,7 @@ export default {
           typeImageLink = logo
           const bnAmount = new BigNumber(amountValue && amountValue.value ? amountValue.value : txParams.value || 0)
           totalAmount = bnAmount.div(new BigNumber(10).pow(new BigNumber(decimals || 18))).toString()
-          finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+          finalTo = amountTo && isAddressByChainId(amountTo.value) && toChecksumAddressByChainId(amountTo.value, state.networkId)
         } else {
           tokenRate = 1
           symbol = state.networkType.ticker
@@ -175,12 +177,12 @@ export default {
           typeName = state.networkType.ticker
           typeImageLink = 'n/a'
           totalAmount = fromWei(toBN(txParams.value || 0))
-          finalTo = toChecksumAddress(txParams.to)
+          finalTo = toChecksumAddressByChainId(txParams.to, state.networkId)
         }
         // Goes to db
         const txObject = {
           created_at: new Date(time),
-          from: toChecksumAddress(txParams.from),
+          from: toChecksumAddressByChainId(txParams.from, state.networkId),
           to: finalTo,
           total_amount: totalAmount,
           gas: txParams.gas,
@@ -198,6 +200,7 @@ export default {
           transaction_category: transactionCategory,
           is_cancel: txParams.is_cancel,
         }
+        // prefsController.patchNewTx(txObject, toChecksumAddressByChainId(state.selectedAddress, state.networkId))
         prefsController.patchNewTx(txObject, state.selectedAddress)
       }
     }

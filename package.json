@@ -34,6 +34,7 @@
     "@gtm-support/vue2-gtm": "^1.2.1",
     "@metamask/contract-metadata": "^1.31.0",
     "@metamask/obs-store": "^7.0.0",
+    "@rsksmart/rsk-utils": "^1.1.0",
     "@sentry/browser": "^6.16.1",
     "@sentry/vue": "^6.16.1",
     "@toruslabs/fetch-node-details": "^4.0.2",
