@@ -1,8 +1,9 @@
+import * as rskUtils from '@rsksmart/rsk-utils'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import { addHexPrefix, BN, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
-import { isAddress, toChecksumAddress } from 'web3-utils'
+import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import languages from '../plugins/locales'
@@ -68,6 +69,10 @@ import {
   ROPSTEN_CHAIN_ID,
   ROPSTEN_CODE,
   ROPSTEN_DISPLAY_NAME,
+  RSK_MAINNET_CHAIN_ID,
+  RSK_MAINNET_CODE,
+  RSK_TESTNET_CHAIN_ID,
+  RSK_TESTNET_CODE,
   SIMPLEX,
   SUPPORTED_NETWORK_TYPES,
   SVG,
@@ -357,8 +362,12 @@ export const broadcastChannelOptions = {
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
-export function validateVerifierId(selectedTypeOfLogin, value) {
+export function validateVerifierId(selectedTypeOfLogin, value, chainId) {
   if (selectedTypeOfLogin === ETH) {
+    const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+    if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
+      return isAddressByChainId(value, chainId) || 'walletSettings.invalidEth'
+    }
     return isAddress(value) || 'walletSettings.invalidEth'
   }
   if (selectedTypeOfLogin === GOOGLE) {
@@ -543,6 +552,8 @@ export const standardNetworkId = {
   [BSC_MAINNET_CODE.toString()]: BSC_MAINNET_CHAIN_ID,
   [BSC_TESTNET_CODE.toString()]: BSC_TESTNET_CHAIN_ID,
   [XDAI_CODE.toString()]: XDAI_CHAIN_ID,
+  [RSK_MAINNET_CODE.toString()]: RSK_MAINNET_CHAIN_ID,
+  [RSK_TESTNET_CODE.toString()]: RSK_TESTNET_CHAIN_ID,
 }
 
 export const isMain = window.self === window.top
@@ -686,6 +697,22 @@ export function generateAddressFromPrivateKey(privKey) {
   return toChecksumAddress(privateToAddress(Buffer.from(privKey, 'hex')).toString('hex'))
 }
 
+export function toChecksumAddressByChainId(address, chainId) {
+  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
+    return rskUtils.toChecksumAddress(address, chainId)
+  }
+  return toChecksumAddress(address)
+}
+
+export function isAddressByChainId(address, chainId) {
+  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
+    return rskUtils.isValidChecksumAddress(address, chainId)
+  }
+  return isAddress(address)
+}
+
 export function downloadItem(filename, text) {
   const element = document.createElement('a')
   element.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(text)}`)
@@ -780,9 +807,9 @@ export function getVerifierOptions() {
   }
 }
 
-export async function validateContractAddress(web3, address) {
-  if (isAddress(address)) {
-    const contractCode = await web3.eth.getCode(address)
+export async function validateContractAddress(web3, address, chainId) {
+  if (isAddressByChainId(address, chainId)) {
+    const contractCode = await web3.eth.getCode(address.toLowerCase())
     // user account address will return 0x for networks , except ganache returns 0x0
     if (contractCode === '0x' || contractCode === '0x0') {
       return false

@@ -47,7 +47,7 @@
         <div class="d-flex align-start mt-1">
           <div class="account-list__address-container pt-1" :style="{ maxWidth: $vuetify.breakpoint.xsOnly ? '140px' : '180px' }">
             <div v-if="userId && index === 0" class="account-list__address">{{ userId }}</div>
-            <div class="account-list__address mt-1">{{ acc.address }}</div>
+            <div class="account-list__address mt-1">{{ checksummedAccount(acc.address) }}</div>
           </div>
           <div class="ml-auto">
             <span class="mr-1">
@@ -124,7 +124,14 @@ import { BroadcastChannel } from 'broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE, DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
-import { addressSlicer, broadcastChannelOptions, getEtherScanAddressLink, getUserEmail, getUserIcon } from '../../../utils/utils'
+import {
+  addressSlicer,
+  broadcastChannelOptions,
+  getEtherScanAddressLink,
+  getUserEmail,
+  getUserIcon,
+  toChecksumAddressByChainId,
+} from '../../../utils/utils'
 import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import ShowToolTip from '../../helpers/ShowToolTip'
@@ -163,7 +170,10 @@ export default {
   computed: {
     ...mapState({
       userInfo: 'userInfo',
-      selectedAddress: 'selectedAddress',
+      selectedAddress: (state) => {
+        if (state.selectedAddress === '') return state.selectedAddress
+        return toChecksumAddressByChainId(state.selectedAddress, state.networkId)
+      },
       selectedCurrency: 'selectedCurrency',
       currencyData: 'currencyData',
       networkType: 'networkType',
@@ -207,7 +217,7 @@ export default {
   methods: {
     ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
     etherscanAddressLink(address) {
-      return getEtherScanAddressLink(address, this.networkType.host)
+      return getEtherScanAddressLink(toChecksumAddressByChainId(address, this.$store.state.networkId), this.networkType.host)
     },
     async logout() {
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
@@ -246,6 +256,9 @@ export default {
         return `${this.t('accountMenu.importedAccount')} ${index + 1}`
       }
       return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
+    },
+    checksummedAccount(address) {
+      return toChecksumAddressByChainId(address, this.$store.state.networkId)
     },
   },
 }

@@ -651,7 +651,7 @@ describe('Transaction Controller', function () {
           gasPrice: originalValue,
         },
       }
-       
+
       this.timeout(SECOND * 15)
       const wrongValue = '0x05'
 

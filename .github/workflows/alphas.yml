@@ -11,7 +11,7 @@ jobs:
     name: Test release
     strategy:
       matrix:
-        node: ['14.x']
+        node: ['16.x']
         os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
@@ -57,7 +57,7 @@ jobs:
     name: Build & deploy alpha*.tor.us
     strategy:
       matrix:
-        node: ['14.x']
+        node: ['16.x']
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 

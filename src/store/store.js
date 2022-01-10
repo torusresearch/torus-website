@@ -339,8 +339,8 @@ if (storageAvailable('localStorage')) {
 
   const openLoginStore = localStorage.getItem('openlogin_store')
   if (openLoginStore !== null) {
-    const { typeOfLogin, verifierId, aggregateVerifier, verifier } = JSON.parse(openLoginStore)
-    VuexStore.commit('setLastLoginInfo', { typeOfLogin, verifierId, aggregateVerifier, verifier })
+    const { typeOfLogin, verifierId, aggregateVerifier, verifier, email } = JSON.parse(openLoginStore)
+    VuexStore.commit('setLastLoginInfo', { typeOfLogin, verifierId, aggregateVerifier, verifier, email })
   }
 }
 

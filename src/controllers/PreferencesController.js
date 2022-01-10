@@ -411,6 +411,8 @@ class PreferencesController extends SafeEventEmitter {
 
         const finalTx = this.cancelTxCalculate([...storePastTx, formattedTx])
         tx.is_cancel = formattedTx.is_cancel
+        tx.to = tx.to.toLowerCase()
+        tx.from = tx.from.toLowerCase()
 
         this.updateStore({ pastTransactions: finalTx }, address)
         this.postPastTx(tx, address)

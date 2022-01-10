@@ -7,11 +7,10 @@
 
 import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
-import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, NFT_SUPPORTED_NETWORKS, OLD_ERC721_LIST, SUPPORTED_NFT_STANDARDS } from '../utils/enums'
 import { get } from '../utils/httpHelpers'
-import { sanitizeNftMetdataUrl, validateImageUrl } from '../utils/utils'
+import { isAddressByChainId, sanitizeNftMetdataUrl, toChecksumAddressByChainId, validateImageUrl } from '../utils/utils'
 
 const initStateObject = { allCollectibleContracts: {}, allCollectibles: {}, allTokens: {}, collectibleContracts: [], collectibles: [], tokens: [] }
 
@@ -54,6 +53,10 @@ export default class AssetController {
 
   get state() {
     return this.store.getState()
+  }
+
+  get currentChainId() {
+    return this.network.getCurrentChainId()
   }
 
   initializeNetworkSubscription() {
@@ -101,7 +104,7 @@ export default class AssetController {
   async addToken(address2, symbol, decimals, image) {
     try {
       let address
-      if (isAddress(address)) address = toChecksumAddress(address2)
+      if (isAddressByChainId(address, this.currentChainId)) address = toChecksumAddressByChainId(address2, this.currentChainId)
       else address = address2
       const { selectedAddress } = this
       const { allTokens, tokens } = this.state
@@ -218,7 +221,7 @@ export default class AssetController {
           return info
         }
       }
-      const info = await this.getCollectibleInformationFromTokenURI(toChecksumAddress(contractAddress), tokenId)
+      const info = await this.getCollectibleInformationFromTokenURI(toChecksumAddressByChainId(contractAddress, this.currentChainId), tokenId)
 
       return info
     } catch {
@@ -297,7 +300,7 @@ export default class AssetController {
     let normalizedContractInfo = {}
     const { contractName, contractSymbol, standard, contractAddress, contractImage, contractDescription, assetImage } = contractDetails
     let _contractAddress
-    if (isAddress(contractAddress)) _contractAddress = toChecksumAddress(contractAddress)
+    if (isAddressByChainId(contractAddress, this.currentChainId)) _contractAddress = toChecksumAddressByChainId(contractAddress, this.currentChainId)
     else _contractAddress = contractAddress
     if (contractName && standard) {
       normalizedContractInfo = {
@@ -342,7 +345,7 @@ export default class AssetController {
   async _normalizeCollectibleDetails(collectibleDetails = {}, detectFromApi) {
     const { name, image, description, standard, tokenBalance, address, tokenID } = collectibleDetails
     let _contractAddress
-    if (isAddress(address)) _contractAddress = toChecksumAddress(address)
+    if (isAddressByChainId(address, this.currentChainId)) _contractAddress = toChecksumAddressByChainId(address, this.currentChainId)
     else _contractAddress = address
     const collectibleIndex = `${_contractAddress}_${tokenID}`
     let normalizedCollectibleInfo = {
