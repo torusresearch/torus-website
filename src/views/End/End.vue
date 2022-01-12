@@ -4,6 +4,10 @@
       <v-flex text-center>
         <BoxLoader />
       </v-flex>
+      <div class="footer">
+        <div class="powered-by">{{ t('login.secured-by') }}</div>
+        <img height="26" :src="require(`@/assets/images/web3auth.svg`)" alt="Web3Auth" />
+      </div>
     </v-layout>
   </v-container>
 </template>
