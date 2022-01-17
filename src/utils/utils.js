@@ -699,6 +699,7 @@ export function generateAddressFromPrivateKey(privKey) {
 
 export function toChecksumAddressByChainId(address, chainId) {
   const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  if (!isAddressByChainId(address, chainId)) return address
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskUtils.toChecksumAddress(address, chainId)
   }
