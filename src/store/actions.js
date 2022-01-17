@@ -121,7 +121,6 @@ export default {
       theme: state.theme,
       embedState: cloneDeep(state.embedState || {}),
     })
-    debugger
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
 

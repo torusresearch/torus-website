@@ -397,7 +397,7 @@ describe('AssetsController', () => {
   it('should add token by selected address', async () => {
     assetsController.setSelectedAddress(TEST_ADDRESS_2)
     await assetsController.addToken('foo', 'bar', 2, '')
-    console.log('assetsController.state.tokens', assetsController.state.tokens)
+    log.info('assetsController.state.tokens', assetsController.state.tokens)
     assetsController.setSelectedAddress(TEST_ADDRESS_3)
     assert(assetsController.state.tokens.length === 0)
     assetsController.setSelectedAddress(TEST_ADDRESS_2)
