@@ -411,6 +411,8 @@ class PreferencesController extends SafeEventEmitter {
 
         const finalTx = this.cancelTxCalculate([...storePastTx, formattedTx])
         tx.is_cancel = formattedTx.is_cancel
+        tx.to = tx.to.toLowerCase()
+        tx.from = tx.from.toLowerCase()
 
         this.updateStore({ pastTransactions: finalTx }, address)
         this.postPastTx(tx, address)
@@ -610,7 +612,7 @@ class PreferencesController extends SafeEventEmitter {
 
   async getCovalentTokenBalances(address, chainId) {
     const api = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/`
-    return this.api.get(`${config.api}/covalent?url=${api}`, this.headers(), { useAPIKey: true })
+    return this.api.get(`${config.api}/covalent?url=${encodeURIComponent(api)}`, this.headers(), { useAPIKey: true })
   }
 
   async getBillboardContents() {
@@ -776,16 +778,16 @@ class PreferencesController extends SafeEventEmitter {
 
   /* istanbul ignore next */
   async getCovalentNfts(api) {
-    return this.api.get(`${config.api}/covalent?url=${api}`, this.headers(), { useAPIKey: true })
+    return this.api.get(`${config.api}/covalent?url=${encodeURIComponent(api)}`, this.headers(), { useAPIKey: true })
   }
 
   async getNftMetadata(api) {
-    return this.api.get(`${config.api}/covalent?url=${api}`, this.headers(), { useAPIKey: true })
+    return this.api.get(`${config.api}/covalent?url=${encodeURIComponent(api)}`, this.headers(), { useAPIKey: true })
   }
 
   /* istanbul ignore next */
   async getOpenSeaCollectibles(api) {
-    return this.api.get(`${config.api}/opensea?url=${api}`, this.headers(), { useAPIKey: true })
+    return this.api.get(`${config.api}/opensea?url=${encodeURIComponent(api)}`, this.headers(), { useAPIKey: true })
   }
 
   /* istanbul ignore next */

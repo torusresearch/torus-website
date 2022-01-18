@@ -25,6 +25,8 @@ export const MUMBAI = 'mumbai'
 export const BSC_MAINNET = 'bsc_mainnet'
 export const BSC_TESTNET = 'bsc_testnet'
 export const XDAI = 'xdai'
+export const RSK_MAINNET = 'rsk_mainnet'
+export const RSK_TESTNET = 'rsk_testnet'
 export const REEF = 'reef'
 
 export const MAINNET_CODE = 1
@@ -38,6 +40,8 @@ export const LOCALHOST_CODE = 5777
 export const BSC_MAINNET_CODE = 56
 export const BSC_TESTNET_CODE = 97
 export const XDAI_CODE = 100
+export const RSK_MAINNET_CODE = 30
+export const RSK_TESTNET_CODE = 31
 export const REEF_CODE = 101
 
 export const MAINNET_CHAIN_ID = '0x1'
@@ -50,8 +54,11 @@ export const MUMBAI_CHAIN_ID = '0x13881'
 export const BSC_MAINNET_CHAIN_ID = '0x38'
 export const BSC_TESTNET_CHAIN_ID = '0x61'
 export const XDAI_CHAIN_ID = '0x64'
+export const REEF_CHAIN_ID = '0x65'
 export const OPTIMISM_CHAIN_ID = '0xa'
 export const OPTIMISM_TESTNET_CHAIN_ID = '0x45'
+export const RSK_MAINNET_CHAIN_ID = '0x1e'
+export const RSK_TESTNET_CHAIN_ID = '0x1f'
 
 export const NFT_SUPPORTED_NETWORKS = {
   [MATIC]: MATIC_CODE,
@@ -76,11 +83,13 @@ export const MAINNET_DISPLAY_NAME = 'Main Ethereum Network'
 export const GOERLI_DISPLAY_NAME = 'Goerli Test Network'
 export const RPC_DISPLAY_NAME = 'RPC'
 export const LOCALHOST_DISPLAY_NAME = 'https://localhost:8545'
-export const MATIC_DISPLAY_NAME = 'Matic Network'
-export const MUMBAI_DISPLAY_NAME = 'Mumbai Matic-Testnet'
+export const MATIC_DISPLAY_NAME = 'Polygon Mainnet'
+export const MUMBAI_DISPLAY_NAME = 'Matic Mumbai'
 export const BSC_MAINNET_DISPLAY_NAME = 'Binance Smart Chain Mainnet'
 export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
 export const XDAI_DISPLAY_NAME = 'xDai'
+export const RSK_MAINNET_DISPLAY_NAME = 'RSK Mainnet'
+export const RSK_TESTNET_DISPLAY_NAME = 'RSK Testnet'
 export const REEF_DISPLAY_NAME = 'Reef Chain'
 
 export const MATIC_URL = `https://polygon-mainnet.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
@@ -98,12 +107,19 @@ export const BSC_MAINNET_BLOCK_EXPLORER = 'https://bscscan.com'
 export const BSC_TESTNET_URL = 'https://data-seed-prebsc-2-s3.binance.org:8545'
 export const BSC_TESTNET_BLOCK_EXPLORER = 'https://testnet.bscscan.com'
 
+export const RSK_MAINNET_URL = 'https://public-node.rsk.co'
+export const RSK_MAINNET_BLOCK_EXPLORER = 'https://explorer.rsk.co'
+
+export const RSK_TESTNET_URL = 'https://public-node.testnet.rsk.co'
+export const RSK_TESTNET_BLOCK_EXPLORER = 'https://explorer.testnet.rsk.co'
 export const REEF_URL = 'https://reef.finance/'
 export const REEF_BLOCK_EXPLORER = 'https://reefscan.com/'
 
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
 export const XDAI_TICKER = 'DAI'
+export const RSK_MAINNET_TICKER = 'RBTC'
+export const RSK_TESTNET_TICKER = 'RBTC'
 
 export const MESSAGE_TYPE = {
   ETH_DECRYPT: 'eth_decrypt',
@@ -188,6 +204,20 @@ export const createNetwork = (host, networkName, chainId, blockExplorer, ticker,
   rpcUrl,
 })
 
+export const CHAIN_ID_TO_TYPE_MAP = {
+  [ROPSTEN_CHAIN_ID]: { networkId: ROPSTEN_CODE, name: ROPSTEN },
+  [RINKEBY_CHAIN_ID]: { networkId: RINKEBY_CODE, name: RINKEBY },
+  [KOVAN_CHAIN_ID]: { networkId: KOVAN_CODE, name: KOVAN },
+  [GOERLI_CHAIN_ID]: { networkId: GOERLI_CODE, name: GOERLI },
+  [MAINNET_CHAIN_ID]: { networkId: MAINNET_CODE, name: MAINNET },
+  [MATIC_CHAIN_ID]: { networkId: MATIC_CODE, name: MATIC },
+  [MUMBAI_CHAIN_ID]: { networkId: MUMBAI_CODE, name: MUMBAI },
+  [BSC_MAINNET_CHAIN_ID]: { networkId: BSC_MAINNET_CODE, name: BSC_MAINNET },
+  [BSC_TESTNET_CHAIN_ID]: { networkId: BSC_TESTNET_CODE, name: BSC_TESTNET },
+  [XDAI_CHAIN_ID]: { networkId: XDAI_CODE, name: XDAI },
+  [REEF_CHAIN_ID]: { networkId: REEF_CODE, name: REEF },
+}
+
 export const SUPPORTED_NETWORK_TYPES = {
   [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, getInfuraBlockExplorerUrl(MAINNET), 'ETH', 'Ethereum', 'eth.svg', undefined),
   [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE, getInfuraBlockExplorerUrl(RINKEBY), 'ETH', 'Ethereum', 'eth.svg', undefined),
@@ -236,6 +266,26 @@ export const SUPPORTED_NETWORK_TYPES = {
     BSC_TESTNET_URL
   ),
   [XDAI]: createNetwork(XDAI, XDAI_DISPLAY_NAME, XDAI_CODE, XDAI_BLOCK_EXPLORER, XDAI_TICKER, 'xDai Network Token', 'xdai.svg', XDAI_URL),
+  [RSK_MAINNET]: createNetwork(
+    RSK_MAINNET,
+    RSK_MAINNET_DISPLAY_NAME,
+    RSK_MAINNET_CODE,
+    RSK_MAINNET_BLOCK_EXPLORER,
+    RSK_MAINNET_TICKER,
+    'RSK',
+    'rsk.svg',
+    RSK_MAINNET_URL
+  ),
+  [RSK_TESTNET]: createNetwork(
+    RSK_TESTNET,
+    RSK_TESTNET_DISPLAY_NAME,
+    RSK_TESTNET_CODE,
+    RSK_TESTNET_BLOCK_EXPLORER,
+    RSK_TESTNET_TICKER,
+    'RSK Testnet',
+    'rsk.svg',
+    RSK_TESTNET_URL
+  ),
   [REEF]: createNetwork(REEF, REEF_DISPLAY_NAME, REEF_CODE, REEF_BLOCK_EXPLORER, 'REEF', 'Reef', 'eth.svg', undefined),
 }
 
@@ -608,6 +658,10 @@ export const COINGECKO_PLATFORMS_CHAIN_CODE_MAP = {
   [MAINNET_CODE]: {
     platform: 'ethereum',
     currency: 'eth',
+  },
+  [RSK_MAINNET_CODE]: {
+    platform: 'rootstock',
+    currency: 'rbtc',
   },
 }
 

@@ -69,6 +69,7 @@
 import VueQr from 'vue-qr'
 import { mapState } from 'vuex'
 
+import { toChecksumAddressByChainId } from '../../../utils/utils'
 import ShowToolTip from '../ShowToolTip'
 
 export default {
@@ -90,7 +91,9 @@ export default {
   computed: {
     ...mapState({
       selectedAddress(state) {
-        return this.customAddress || state.selectedAddress
+        const add = this.customAddress || state.selectedAddress
+        if (add === '') return add
+        return toChecksumAddressByChainId(add, this.$store.state.networkId)
       },
     }),
     slicedAddress() {

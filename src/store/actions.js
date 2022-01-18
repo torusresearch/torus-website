@@ -4,6 +4,7 @@ import { BN } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
+import { isHexStrict } from 'web3-utils'
 
 import config from '../config'
 import { OpenLoginHandler } from '../handlers/Auth'
@@ -16,6 +17,7 @@ import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
 import {
   ACCOUNT_TYPE,
+  CHAIN_ID_TO_TYPE_MAP,
   DISCORD,
   FACEBOOK,
   FEATURES_DEFAULT_WALLET_WINDOW,
@@ -111,7 +113,14 @@ function resetStore(store, handler, initState) {
 export default {
   async logOut({ commit, state }, _) {
     const { selectedAddress } = state
-    commit('logOut', { ...initialState, networkType: state.networkType, networkId: state.networkId })
+    commit('logOut', {
+      ...initialState,
+      networkType: state.networkType,
+      networkId: state.networkId,
+      whiteLabel: state.whiteLabel,
+      theme: state.theme,
+      embedState: cloneDeep(state.embedState || {}),
+    })
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
 
@@ -325,6 +334,12 @@ export default {
   async setProviderType({ commit, dispatch, state }, payload) {
     let networkType = payload.network
     let isSupportedNetwork = false
+    const activeChainId = networkType.chainId && (isHexStrict(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`)
+    const chainIdConfig = CHAIN_ID_TO_TYPE_MAP[activeChainId]
+    if (chainIdConfig) {
+      const networkConfig = SUPPORTED_NETWORK_TYPES[chainIdConfig.name]
+      networkType = { ...networkConfig, ...networkType }
+    }
     if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
       networkType = SUPPORTED_NETWORK_TYPES[networkType.host]
       isSupportedNetwork = true

@@ -164,7 +164,7 @@ export default {
   },
   data() {
     return {
-      selectedType: 'private',
+      selectedType: 'keystore',
       privateKey: '',
       jsonPassword: '',
       privateKeyFormValid: true,
@@ -185,10 +185,10 @@ export default {
   computed: {
     options() {
       return [
-        {
-          name: this.t('accountMenu.privateKey'),
-          value: 'private',
-        },
+        // {
+        //   name: this.t('accountMenu.privateKey'),
+        //   value: 'private',
+        // },
         {
           name: this.t('accountMenu.keystore'),
           value: 'keystore',

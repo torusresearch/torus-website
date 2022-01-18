@@ -95,6 +95,8 @@ const dappStorageKey = hashUrl.searchParams.get('dappStorageKey')
 
 const appVersion = process.env.VUE_APP_TORUS_BUILD_VERSION
 
+const rampApiKey = 'dw9fe8drpzmdfuks79ub5hvmqzuyjbme4kwkwkqf'
+
 // no reddit for binance.tor.us
 
 // In Modal, show 6 by default (view more)
@@ -137,8 +139,8 @@ export default {
   wyreAccountId: 'AC_RUQMPNP7QQY',
 
   rampHost: 'https://widget-instant.ramp.network',
-  rampApiQuoteHost: 'https://api-instant.ramp.network/api/host-api/assets',
-  rampAPIKEY: 'dw9fe8drpzmdfuks79ub5hvmqzuyjbme4kwkwkqf',
+  rampApiQuoteHost: `https://api-instant.ramp.network/api/host-api/quote?hostApiKey=${rampApiKey}`,
+  rampAPIKEY: rampApiKey,
 
   xanpoolHost: 'https://checkout.xanpool.com',
   xanpoolLiveAPIKEY: '778522fccc19a010f100f437c4aca60j',

@@ -366,7 +366,7 @@ import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
 import { mapActions, mapGetters } from 'vuex'
-import { fromWei, toChecksumAddress } from 'web3-utils'
+import { fromWei } from 'web3-utils'
 
 import TokenHandler from '../../../handlers/Token/TokenHandler'
 import torus from '../../../torus'
@@ -382,7 +382,15 @@ import {
   TRANSACTION_TYPES,
 } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
-import { addressSlicer, bnGreaterThan, gasTiming, getFungibleTokenStandard, isMain, significantDigits } from '../../../utils/utils'
+import {
+  addressSlicer,
+  bnGreaterThan,
+  gasTiming,
+  getFungibleTokenStandard,
+  isMain,
+  significantDigits,
+  toChecksumAddressByChainId,
+} from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import TransactionFee from '../../helpers/TransactionFee'
@@ -669,7 +677,7 @@ export default {
           } else [amountTo, amountValue] = methodParams || []
         }
         log.info(methodParams, 'params')
-        const checkSummedTo = toChecksumAddress(to)
+        const checkSummedTo = toChecksumAddressByChainId(to, network.chainId)
         const tokenObject = contractParams
         let decimals = new BigNumber('0')
         if (tokenObject.decimals) {

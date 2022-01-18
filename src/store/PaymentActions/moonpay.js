@@ -55,14 +55,22 @@ export default {
 
       getSignature({ url: encodeURIComponent(url) })
         .then(({ signature }) =>
-          dispatch('postMoonpayOrder', { finalUrl: `${url}&signature=${encodeURIComponent(signature)}`, preopenInstanceId, orderInstanceId })
+          dispatch('postMoonpayOrder', {
+            finalUrl: `${url}&signature=${encodeURIComponent(signature)}`,
+            preopenInstanceId,
+            orderInstanceId,
+          })
         )
         .then((response) => resolve(response))
         .catch((error) => reject(error))
     })
   },
   async postMoonpayOrder(_, { finalUrl, preopenInstanceId, orderInstanceId }) {
-    const moonpayWindow = new PopupWithBcHandler({ url: finalUrl, preopenInstanceId, channelName: `redirect_channel_${orderInstanceId}` })
+    const moonpayWindow = new PopupWithBcHandler({
+      url: finalUrl,
+      preopenInstanceId,
+      channelName: `redirect_channel_${orderInstanceId}`,
+    })
     const result = await moonpayWindow.handle()
     const { queryParams: { transactionStatus = '' } = {} } = result
     if (transactionStatus !== 'failed') return { success: true }
