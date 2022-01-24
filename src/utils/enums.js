@@ -730,9 +730,11 @@ export const GAS_ESTIMATE_TYPES = {
   ETH_GASPRICE: 'eth_gasPrice',
   NONE: 'none',
 }
+
+// https://help.optimism.io/hc/en-us/articles/4411895794715-Transaction-fees
 export const CHAIN_ID_TO_GAS_LIMIT_BUFFER_MAP = {
-  [OPTIMISM_MAINNET_CHAIN_ID]: 1,
-  [OPTIMISM_TESTNET_CHAIN_ID]: 1,
+  [OPTIMISM_MAINNET_CHAIN_ID]: 1.5,
+  [OPTIMISM_TESTNET_CHAIN_ID]: 1.5,
 }
 
 export const TEST_CHAINS = [ROPSTEN_CHAIN_ID, RINKEBY_CHAIN_ID, GOERLI_CHAIN_ID, KOVAN_CHAIN_ID]
