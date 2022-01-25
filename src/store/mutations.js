@@ -2,6 +2,7 @@ import { setAPIKey } from '@toruslabs/http-helpers'
 import merge from 'deepmerge'
 
 import config from '../config'
+import i18n, { loadLanguageAsync } from '../plugins/i18n-setup'
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
 import { LOCALES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
@@ -173,7 +174,7 @@ export default {
       }
 
       if (payload.customTranslations) {
-        vuetify.framework.lang.locales = merge(vuetify.framework.lang.locales, payload.customTranslations)
+        loadLanguageAsync(merge(i18n.locale, payload.customTranslations))
       }
 
       sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
@@ -261,5 +262,5 @@ function localThemeSet(payload, state) {
 }
 function updateDefaultLanguage(state, language) {
   state.locale = language
-  vuetify.framework.lang.current = language
+  loadLanguageAsync(language)
 }

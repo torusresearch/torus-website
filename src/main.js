@@ -7,10 +7,12 @@ import log from 'loglevel'
 import Vue from 'vue'
 
 import App from './App.vue'
-import { i18n, vuetify } from './plugins'
+import i18n, { loadLanguageAsync } from './plugins/i18n-setup'
+import vuetify from './plugins/vuetify'
 import router from './router'
 import store from './store'
 import { installSentry } from './utils/sentry'
+import { getUserLanguage } from './utils/utils'
 // import torus from './torus'
 
 log.enableAll()
@@ -53,6 +55,8 @@ Vue.use(VueGtm, {
 })
 
 installSentry(Vue)
+
+loadLanguageAsync(getUserLanguage())
 
 new Vue({
   router,

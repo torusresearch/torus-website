@@ -13,7 +13,7 @@
             { 'mb-2': $vuetify.breakpoint.xsOnly },
           ]"
         >
-          <span>{{ t(theme.label) }}</span>
+          <span>{{ $t(theme.label) }}</span>
           <img :src="require(`../../../assets/images/${theme.icon}`)" alt="Display Settings Icon" />
         </v-btn>
       </v-flex>

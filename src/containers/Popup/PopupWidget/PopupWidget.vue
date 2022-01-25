@@ -300,7 +300,7 @@ export default {
           transaction.type === 'eth' ? transaction.type_name?.toUpperCase() || '' : transaction.type_name
         }`
       }
-      return `${`${this.t(transaction.action)} ${transaction.from}`} `
+      return `${`${this.$t(transaction.action)} ${transaction.from}`} `
     },
     showWidget() {
       const currentWidgetVisibility = this.activeWidget

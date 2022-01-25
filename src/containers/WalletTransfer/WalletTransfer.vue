@@ -151,7 +151,7 @@
                         </v-btn>
                       </template>
                       <template #message="props">
-                        {{ t(props.message) }}
+                        {{ $t(props.message) }}
                       </template>
                     </v-combobox>
                     <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
@@ -185,12 +185,12 @@
                     >
                       <template #selection="{ item }">
                         <div class="v-select__selection v-select__selection--comma">
-                          {{ t(item.name) }}
+                          {{ $t(item.name) }}
                         </div>
                       </template>
-                      <template #item="{ item }">{{ t(item.name) }}</template>
+                      <template #item="{ item }">{{ $t(item.name) }}</template>
                       <template #message="props">
-                        {{ t(props.message) }}
+                        {{ $t(props.message) }}
                       </template>
                     </v-select>
                   </v-flex>
@@ -286,7 +286,7 @@
                     </v-btn>
                   </template>
                   <template #message="props">
-                    {{ $refs.youSend && $refs.youSend.errorBucket.length === 0 ? props.message : t(props.message) }}
+                    {{ $refs.youSend && $refs.youSend.errorBucket.length === 0 ? props.message : $t(props.message) }}
                   </template>
                 </v-text-field>
                 <v-text-field
@@ -315,7 +315,7 @@
                     </v-btn>
                   </template>
                   <template #message="props">
-                    {{ $refs.youSendNft && $refs.youSendNft.errorBucket.length === 0 ? props.message : t(props.message) }}
+                    {{ $refs.youSendNft && $refs.youSendNft.errorBucket.length === 0 ? props.message : $t(props.message) }}
                   </template>
                 </v-text-field>
               </v-flex>
@@ -677,7 +677,7 @@ export default {
     },
     verifierPlaceholder() {
       return this.selectedVerifier
-        ? `${this.$t('walletSettings.enter')} ${this.t(this.verifierOptions.find((verifier) => verifier.value === this.selectedVerifier).name)}`
+        ? `${this.$t('walletSettings.enter')} ${this.$t(this.verifierOptions.find((verifier) => verifier.value === this.selectedVerifier).name)}`
         : ''
     },
     contactList() {

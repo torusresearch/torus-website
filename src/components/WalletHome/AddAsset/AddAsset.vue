@@ -199,7 +199,7 @@ export default {
         } else {
           log.debug('error', displayError)
         }
-        this.displayError = this.t(displayError)
+        this.displayError = this.$t(displayError)
       }
     },
     async setContractAddress(value) {

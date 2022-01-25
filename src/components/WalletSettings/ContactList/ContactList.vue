@@ -32,10 +32,10 @@
             >
               <template #selection="{ item }">
                 <div class="v-select__selection v-select__selection--comma">
-                  {{ item === 'walletSettings.all' ? t(item) : t(item.name) }}
+                  {{ item === 'walletSettings.all' ? $t(item) : $t(item.name) }}
                 </div>
               </template>
-              <template #item="{ item }">{{ t(item.name) }}</template>
+              <template #item="{ item }">{{ $t(item.name) }}</template>
             </v-select>
           </div>
         </div>
@@ -113,10 +113,10 @@
               >
                 <template #selection="{ item }">
                   <div class="v-select__selection v-select__selection--comma">
-                    {{ t(item.name) }}
+                    {{ $t(item.name) }}
                   </div>
                 </template>
-                <template #item="{ item }">{{ t(item.name) }}</template>
+                <template #item="{ item }">{{ $t(item.name) }}</template>
               </v-select>
             </v-flex>
           </v-layout>
@@ -131,7 +131,7 @@
                 aria-label="Contact Value"
               >
                 <template #message="props">
-                  {{ t(props.message) }}
+                  {{ $t(props.message) }}
                 </template>
               </v-text-field>
             </v-flex>
@@ -196,7 +196,7 @@ export default {
     },
     verifierPlaceholder() {
       const verifierLocale = ALLOWED_VERIFIERS.find((verifier) => verifier.value === this.selectedVerifier).name
-      return `${this.$t('walletSettings.enter')} ${this.t(verifierLocale)}`
+      return `${this.$t('walletSettings.enter')} ${this.$t(verifierLocale)}`
     },
     contacts() {
       return this.stateContacts.filter((contact) => {

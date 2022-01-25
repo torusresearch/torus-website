@@ -92,7 +92,7 @@ export default {
   computed: {
     verifierLabels() {
       return Object.keys(VERIFIER_LABELS).reduce((accumulator, current) => {
-        accumulator[current] = this.t(VERIFIER_LABELS[current])
+        accumulator[current] = this.$t(VERIFIER_LABELS[current])
         return accumulator
       }, {})
     },

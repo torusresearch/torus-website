@@ -89,7 +89,7 @@ export default {
       lastLoginInfo: 'lastLoginInfo',
     }),
     localeSelected() {
-      return this.$vuetify.lang.current
+      return this.$i18n.locale
     },
     tncLink() {
       let finalLink = 'https://docs.tor.us/legal/terms-and-conditions'

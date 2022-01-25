@@ -71,10 +71,10 @@
                 </div>
                 <v-combobox id="nonce" v-model="newNonce" outlined :items="nonceItems" :rules="[rules.validNonce]">
                   <template #item="props">
-                    {{ t(props.item.text) }}
+                    {{ $t(props.item.text) }}
                   </template>
                   <template #selection="{ item }">
-                    {{ item.text ? t(item.text) : item }}
+                    {{ item.text ? $t(item.text) : item }}
                   </template>
                 </v-combobox>
               </div>

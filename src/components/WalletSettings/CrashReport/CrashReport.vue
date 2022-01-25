@@ -4,7 +4,7 @@
     <v-layout wrap>
       <v-switch
         :input-value="enabled"
-        :label="t(enabled ? 'walletSettings.crashReportIsEnabled' : 'walletSettings.crashReportIsDisabled')"
+        :label="$t(enabled ? 'walletSettings.crashReportIsEnabled' : 'walletSettings.crashReportIsDisabled')"
         @change="setCrashReport"
       ></v-switch>
     </v-layout>

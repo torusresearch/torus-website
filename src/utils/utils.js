@@ -6,7 +6,7 @@ import log from 'loglevel'
 import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
-import languages from '../plugins/locales'
+import languages from '../plugins/i18n-setup'
 import {
   ACCOUNT_TYPE,
   ACTIVE,

@@ -85,7 +85,7 @@ export default {
     ...mapState(['announcements', 'userInfo', 'successMsg', 'errorMsg']),
     ...mapGetters(['getLogo']),
     localeAnnouncements() {
-      return this.announcements[this.$vuetify.lang.current] || []
+      return this.announcements[this.$i18n.locale] || []
     },
     lrcMsg() {
       if (process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc') {

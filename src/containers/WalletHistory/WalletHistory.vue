@@ -20,7 +20,7 @@
                   v-on="on"
                 >
                   <v-icon x-small class="text_2--text">$vuetify.icons.activities</v-icon>
-                  <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedAction) }}</span>
+                  <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ $t(selectedAction) }}</span>
                   <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
                 </v-btn>
               </template>
@@ -54,7 +54,7 @@
                   v-on="on"
                 >
                   <v-icon class="text_2--text" small>$vuetify.icons.calendar</v-icon>
-                  <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedPeriod) }}</span>
+                  <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ $t(selectedPeriod) }}</span>
                   <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
                 </v-btn>
               </template>
@@ -146,19 +146,19 @@ export default {
     actionTypes() {
       return [
         {
-          text: this.t(ACTIVITY_ACTION_ALL),
+          text: this.$t(ACTIVITY_ACTION_ALL),
           value: ACTIVITY_ACTION_ALL,
         },
         {
-          text: this.t(ACTIVITY_ACTION_SEND),
+          text: this.$t(ACTIVITY_ACTION_SEND),
           value: ACTIVITY_ACTION_SEND,
         },
         {
-          text: this.t(ACTIVITY_ACTION_RECEIVE),
+          text: this.$t(ACTIVITY_ACTION_RECEIVE),
           value: ACTIVITY_ACTION_RECEIVE,
         },
         {
-          text: this.t(ACTIVITY_ACTION_TOPUP),
+          text: this.$t(ACTIVITY_ACTION_TOPUP),
           value: ACTIVITY_ACTION_TOPUP,
         },
       ]
@@ -166,19 +166,19 @@ export default {
     periods() {
       return [
         {
-          text: this.t(ACTIVITY_PERIOD_ALL),
+          text: this.$t(ACTIVITY_PERIOD_ALL),
           value: ACTIVITY_PERIOD_ALL,
         },
         {
-          text: this.t(ACTIVITY_PERIOD_WEEK_ONE),
+          text: this.$t(ACTIVITY_PERIOD_WEEK_ONE),
           value: ACTIVITY_PERIOD_WEEK_ONE,
         },
         {
-          text: this.t(ACTIVITY_PERIOD_MONTH_ONE),
+          text: this.$t(ACTIVITY_PERIOD_MONTH_ONE),
           value: ACTIVITY_PERIOD_MONTH_ONE,
         },
         {
-          text: this.t(ACTIVITY_PERIOD_MONTH_SIX),
+          text: this.$t(ACTIVITY_PERIOD_MONTH_SIX),
           value: ACTIVITY_PERIOD_MONTH_SIX,
         },
       ]
@@ -284,7 +284,7 @@ export default {
           activity.type === 'eth' ? activity.type_name.toUpperCase() : activity.type_name
         }`
       }
-      return `${`${this.t(activity.action)} ${activity.from}`} `
+      return `${`${this.$t(activity.action)} ${activity.from}`} `
     },
     getIcon(activity) {
       if (
