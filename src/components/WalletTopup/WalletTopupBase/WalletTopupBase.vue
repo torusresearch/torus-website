@@ -6,12 +6,12 @@
           <v-flex xs12>
             <p class="body-2 text_1--text">
               <span class="text-capitalize selected-provider">{{ selectedProvider }}</span>
-              {{ t('walletTopUp.description') }}
+              {{ $t('walletTopUp.description') }}
             </p>
           </v-flex>
 
           <v-flex xs12 sm4>
-            <div class="body-2 mb-2">{{ t('walletTopUp.wannaBuy') }}</div>
+            <div class="body-2 mb-2">{{ $t('walletTopUp.wannaBuy') }}</div>
             <v-select
               id="cryptocurrency"
               v-model="selectedCryptoCurrency"
@@ -30,9 +30,9 @@
           <v-layout wrap mx-n2>
             <v-flex xs12 sm8 px-2>
               <div class="mb-2 d-flex align-center">
-                <span class="body-2">{{ t('walletTopUp.youSend') }}</span>
+                <span class="body-2">{{ $t('walletTopUp.youSend') }}</span>
                 <span class="caption ml-auto">
-                  {{ t('walletTopUp.min') }} {{ selectedProvider === XANPOOL ? '0.1 ETH' : minOrderValue }}, {{ t('walletTopUp.max') }}
+                  {{ $t('walletTopUp.min') }} {{ selectedProvider === XANPOOL ? '0.1 ETH' : minOrderValue }}, {{ $t('walletTopUp.max') }}
                   {{ maxOrderValue }} USD*
                 </span>
               </div>
@@ -58,11 +58,11 @@
                   <div class="v-messages__wrapper">
                     <div class="v-messages__message d-flex">
                       <v-flex class="description text_2--text">
-                        <span v-if="selectedProviderObj.includeFees">{{ t('walletTopUp.includes') }} &nbsp;&nbsp;</span>
-                        <span v-else>{{ t('walletTopUp.doesntInclude') }} &nbsp;&nbsp;</span>
+                        <span v-if="selectedProviderObj.includeFees">{{ $t('walletTopUp.includes') }} &nbsp;&nbsp;</span>
+                        <span v-else>{{ $t('walletTopUp.doesntInclude') }} &nbsp;&nbsp;</span>
                         <span v-html="selectedProviderObj.line2 || ''"></span>
                         <HelpTooltip
-                          :title="t('walletTopUp.serviceFee')"
+                          :title="$t('walletTopUp.serviceFee')"
                           :description="`${t('walletTopUp.serviceFeeDesc1')} ${selectedProvider} ${t('walletTopUp.serviceFeeDesc2')}`"
                         ></HelpTooltip>
                       </v-flex>
@@ -89,15 +89,15 @@
           </v-layout>
 
           <v-flex xs12 class="text-right">
-            <div class="body-2">{{ t('walletTopUp.receive') }}</div>
+            <div class="body-2">{{ $t('walletTopUp.receive') }}</div>
             <div class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrencyDisplay }}</div>
             <div class="description">
-              {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrencyDisplay }} = {{ displayRateString }} {{ selectedCurrency }}
+              {{ $t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrencyDisplay }} = {{ displayRateString }} {{ selectedCurrency }}
             </div>
 
-            <div class="description mt-6">{{ t('walletTopUp.theProcess') }} 10 - 15 {{ t('walletTopUp.minSmall') }}.</div>
+            <div class="description mt-6">{{ $t('walletTopUp.theProcess') }} 10 - 15 {{ $t('walletTopUp.minSmall') }}.</div>
             <div class="description mt-1">
-              {{ selectedProviderObj.receiveHint ? t(selectedProviderObj.receiveHint) : t('walletTopUp.receiveHint') }}
+              {{ selectedProviderObj.receiveHint ? t(selectedProviderObj.receiveHint) : $t('walletTopUp.receiveHint') }}
             </div>
           </v-flex>
         </v-layout>
@@ -117,20 +117,20 @@
                     type="submit"
                     @click.prevent="sendOrder"
                   >
-                    {{ t('walletTopUp.continue') }}
+                    {{ $t('walletTopUp.continue') }}
                   </v-btn>
                 </span>
               </template>
-              <span>{{ t('walletTopUp.resolveErrors') }}</span>
+              <span>{{ $t('walletTopUp.resolveErrors') }}</span>
             </v-tooltip>
-            <div class="description mt-1">{{ t('walletTopUp.redirectMessage') }}</div>
+            <div class="description mt-1">{{ $t('walletTopUp.redirectMessage') }}</div>
           </div>
         </v-flex>
       </v-layout>
     </v-card>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
-      <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
+      <v-btn dark text @click="snackbar = false">{{ $t('walletTopUp.close') }}</v-btn>
     </v-snackbar>
   </div>
 </template>

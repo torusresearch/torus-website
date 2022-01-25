@@ -4,7 +4,7 @@
       <div class="caption">
         <div class="text_1--text d-flex mb-2">
           <div class="details-label d-flex mr-6">
-            <span>{{ t('walletActivity.startedAt') }}</span>
+            <span>{{ $t('walletActivity.startedAt') }}</span>
             <span class="ml-auto">:</span>
           </div>
           <div class="details-value">
@@ -13,7 +13,7 @@
         </div>
         <div class="text_1--text d-flex mb-2">
           <div class="details-label d-flex mr-6">
-            <span>{{ transaction.action === ACTIVITY_ACTION_SEND ? t('walletActivity.sendTo') : t('walletActivity.receiveFrom') }}</span>
+            <span>{{ transaction.action === ACTIVITY_ACTION_SEND ? $t('walletActivity.sendTo') : $t('walletActivity.receiveFrom') }}</span>
             <span class="ml-auto">:</span>
           </div>
           <div class="details-value">
@@ -22,14 +22,14 @@
         </div>
         <div v-if="transaction.type !== CONTRACT_TYPE_ERC721 && transaction.type !== CONTRACT_TYPE_ERC1155" class="text_1--text d-flex mb-2">
           <div class="details-label d-flex mr-6">
-            <span>{{ t('walletActivity.rate') }}</span>
+            <span>{{ $t('walletActivity.rate') }}</span>
             <span class="ml-auto">:</span>
           </div>
           <div class="details-value">
             <span>
               {{
                 transaction.isEtherscan || !transaction.ethRate
-                  ? t('walletActivity.unavailable')
+                  ? $t('walletActivity.unavailable')
                   : `${transaction.ethRate} ${transaction.currencyUsed}`
               }}
             </span>
@@ -37,7 +37,7 @@
         </div>
         <div v-if="transaction.type !== CONTRACT_TYPE_ERC721 && transaction.type !== CONTRACT_TYPE_ERC1155" class="text_1--text d-flex mb-2">
           <div class="details-label d-flex mr-6">
-            <span>{{ t('walletActivity.amount') }}</span>
+            <span>{{ $t('walletActivity.amount') }}</span>
             <span class="ml-auto">:</span>
           </div>
           <div class="details-value amount-text">
@@ -46,7 +46,7 @@
         </div>
         <div class="text_1--text d-flex mb-2">
           <div class="details-label d-flex mr-6">
-            <span>{{ t('walletActivity.network') }}</span>
+            <span>{{ $t('walletActivity.network') }}</span>
             <span class="ml-auto">:</span>
           </div>
           <div class="details-value">
@@ -59,7 +59,7 @@
           <div v-if="transaction.hasCancel" class="caption">
             <div class="text_1--text d-flex mb-2">
               <div class="details-label d-flex mr-6">
-                <span>{{ t('walletActivity.cancelDate') }}</span>
+                <span>{{ $t('walletActivity.cancelDate') }}</span>
                 <span class="ml-auto">:</span>
               </div>
               <div class="details-value">{{ transaction.cancelDateInitiated }}</div>
@@ -87,12 +87,12 @@
                       text
                       @click.stop="showCancelTransaction"
                     >
-                      {{ t('walletActivity.cancelButton') }}
+                      {{ $t('walletActivity.cancelButton') }}
                     </v-btn>
                   </span>
                 </template>
                 <span>
-                  <div class="caption text_3--text text-justify">{{ t('walletActivity.cancelButtonTooltip') }} {{ cancellationFeeEstimate }}</div>
+                  <div class="caption text_3--text text-justify">{{ $t('walletActivity.cancelButtonTooltip') }} {{ cancellationFeeEstimate }}</div>
                 </span>
               </v-tooltip>
             </v-flex>
@@ -108,7 +108,7 @@
                 rel="noreferrer noopener"
                 @click.stop
               >
-                {{ t('walletActivity.viewOnEtherscan') }}
+                {{ $t('walletActivity.viewOnEtherscan') }}
               </v-btn>
             </v-flex>
           </v-layout>

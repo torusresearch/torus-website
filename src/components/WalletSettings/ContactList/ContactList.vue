@@ -3,7 +3,7 @@
     <v-layout wrap>
       <v-flex xs12 px-1 mb-1>
         <div class="d-flex align-center">
-          <div class="body-2">{{ t('walletSettings.listContacts') }}</div>
+          <div class="body-2">{{ $t('walletSettings.listContacts') }}</div>
           <div class="d-flex ml-auto">
             <v-text-field
               v-if="!$vuetify.breakpoint.smAndDown"
@@ -12,7 +12,7 @@
               class="search-name caption"
               dense
               hide-details
-              :placeholder="t('walletSettings.searchByName')"
+              :placeholder="$t('walletSettings.searchByName')"
               outlined
               aria-label="Search Name"
             ></v-text-field>
@@ -28,7 +28,7 @@
               item-text="name"
               item-value="value"
               aria-label="Filter Type"
-              :placeholder="t('walletSettings.filterByType')"
+              :placeholder="$t('walletSettings.filterByType')"
             >
               <template #selection="{ item }">
                 <div class="v-select__selection v-select__selection--comma">
@@ -84,7 +84,7 @@
           </v-list>
         </v-card>
 
-        <div class="body-2 mt-4">{{ t('walletSettings.addNewContact') }}</div>
+        <div class="body-2 mt-4">{{ $t('walletSettings.addNewContact') }}</div>
 
         <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
           <v-layout wrap class="mt-2 mx-n1">
@@ -92,7 +92,7 @@
               <v-text-field
                 id="contact-name"
                 v-model="newContactName"
-                :placeholder="t('walletSettings.enterContact')"
+                :placeholder="$t('walletSettings.enterContact')"
                 :rules="[rules.required]"
                 outlined
                 aria-label="Contact Name"
@@ -147,7 +147,7 @@
                   type="submit"
                   :disabled="!contactFormValid"
                 >
-                  {{ t('walletSettings.addContact') }}
+                  {{ $t('walletSettings.addContact') }}
                 </v-btn>
               </v-flex>
             </v-layout>
@@ -174,7 +174,7 @@ export default {
       newContact: '',
       newContactName: '',
       rules: {
-        required: (value) => !!value || this.t('walletSettings.required'),
+        required: (value) => !!value || this.$t('walletSettings.required'),
       },
       ETH,
       searchName: '',
@@ -196,7 +196,7 @@ export default {
     },
     verifierPlaceholder() {
       const verifierLocale = ALLOWED_VERIFIERS.find((verifier) => verifier.value === this.selectedVerifier).name
-      return `${this.t('walletSettings.enter')} ${this.t(verifierLocale)}`
+      return `${this.$t('walletSettings.enter')} ${this.t(verifierLocale)}`
     },
     contacts() {
       return this.stateContacts.filter((contact) => {

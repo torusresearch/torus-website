@@ -7,7 +7,7 @@ import log from 'loglevel'
 import Vue from 'vue'
 
 import App from './App.vue'
-import { vuetify } from './plugins'
+import { i18n, vuetify } from './plugins'
 import router from './router'
 import store from './store'
 import { installSentry } from './utils/sentry'
@@ -52,16 +52,6 @@ Vue.use(VueGtm, {
   vueRouter: router, // Pass the router instance to automatically sync with router (optional)
 })
 
-Vue.mixin({
-  methods: {
-    t(data, ...params) {
-      if (data === '') return data
-      const translated = vuetify.framework.lang.t(`$vuetify.${data}`, ...params)
-      return translated.replace('$vuetify.', '')
-    },
-  },
-})
-
 installSentry(Vue)
 
 new Vue({
@@ -69,6 +59,7 @@ new Vue({
   store,
   render: (h) => h(App),
   vuetify,
+  i18n,
 }).$mount('#app')
 
 // window.Vue = vue

@@ -7,7 +7,7 @@
       <v-layout pa-6 class="provider-change-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
         <v-flex text-left xs12>
           <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
-          <div class="headline text_2--text">{{ t('dappInfo.permission') }}</div>
+          <div class="headline text_2--text">{{ $t('dappInfo.permission') }}</div>
         </v-flex>
       </v-layout>
       <v-layout wrap align-center mx-6 mb-3 mt-5>
@@ -24,7 +24,7 @@
       <v-divider class="mx-6"></v-divider>
       <v-layout wrap align-center ma-6>
         <v-flex xs12 mb-2>
-          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
+          <div class="caption mb-2 text_2--text">{{ $t('dappProvider.requestFrom') }}:</div>
 
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
@@ -48,7 +48,7 @@
           </v-card>
         </v-flex>
         <v-flex xs12 mt-4>
-          <div class="caption mb-2 text_2--text">{{ t('dappPermission.currentNetwork') }}</div>
+          <div class="caption mb-2 text_2--text">{{ $t('dappPermission.currentNetwork') }}</div>
 
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
@@ -61,11 +61,11 @@
         <v-flex xs12 mt-8>
           <v-layout mx-n2>
             <v-flex xs6 px-2>
-              <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
+              <v-btn block text large class="text_2--text" @click="triggerDeny">{{ $t('dappProvider.cancel') }}</v-btn>
             </v-flex>
             <v-flex xs6 px-2>
               <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
-                {{ t('dappProvider.confirm') }}
+                {{ $t('dappProvider.confirm') }}
               </v-btn>
             </v-flex>
           </v-layout>
@@ -100,7 +100,7 @@ export default {
   computed: {
     ...mapGetters(['getLogo']),
     headline() {
-      return this.t('dappPermission.allowNetworkChange')
+      return this.$t('dappPermission.allowNetworkChange')
         .replace(/{host}/gi, this.origin.hostname)
         .replace(
           /{network}/gi,

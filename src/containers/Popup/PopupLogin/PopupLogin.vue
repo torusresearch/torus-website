@@ -8,7 +8,7 @@
               <v-icon :size="closeBtnSize">$vuetify.icons.close</v-icon>
             </v-btn>
             <div class="verifier-title1 text_2--text mb-2">
-              <span>{{ t('dappLogin.signIn') }}</span>
+              <span>{{ $t('dappLogin.signIn') }}</span>
             </div>
             <div class="verifier-title2 text_2--text">
               <LoginTitle :is-dapp="true" />
@@ -22,7 +22,7 @@
             class="text_3--text footer-notes"
             :class="$vuetify.breakpoint.xsOnly ? 'pb-13' : ''"
           >
-            <span>{{ t('dappLogin.termsAuth01') }}</span>
+            <span>{{ $t('dappLogin.termsAuth01') }}</span>
             <br />
             <span>{{ thirdPartyAuthenticators }}.</span>
             <a
@@ -31,22 +31,22 @@
               target="_blank"
               rel="noreferrer noopener"
             >
-              {{ t('dappLogin.termsLearnMore') }}
+              {{ $t('dappLogin.termsLearnMore') }}
             </a>
           </div>
           <div class="d-flex justify-center footer-links pt-3 pb-4" :class="{ smallScreen: $vuetify.breakpoint.width < 385 }">
             <div>
               <a class="text-decoration-none text_2--text" :href="tncLink" target="_blank" rel="noreferrer noopener">
-                {{ t('dappLogin.termsConditions') }}
+                {{ $t('dappLogin.termsConditions') }}
               </a>
             </div>
             <v-spacer></v-spacer>
             <div v-if="!whiteLabel.isActive">
               <div class="d-flex align-center mb-2">
-                <span class="text_2--text mr-1">{{ t('dappLogin.poweredBy') }}</span>
+                <span class="text_2--text mr-1">{{ $t('dappLogin.poweredBy') }}</span>
                 <img alt="Torus Logo" height="10" :src="getLogo.logo" />
               </div>
-              <div class="caption text-right text_2--text font-italic">{{ t('dappLogin.version').replace(/\{version\}/gi, appVersion) }}</div>
+              <div class="caption text-right text_2--text font-italic">{{ $t('dappLogin.version').replace(/\{version\}/gi, appVersion) }}</div>
             </div>
           </div>
         </v-card>

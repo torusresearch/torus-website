@@ -3,7 +3,7 @@
     <v-layout mt-3 wrap>
       <v-flex xs12 md7>
         <div class="text_2--text font-weight-bold float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
-          {{ t('walletActivity.transactionActivities') }}
+          {{ $t('walletActivity.transactionActivities') }}
         </div>
       </v-flex>
       <v-flex xs12 md5 :class="$vuetify.breakpoint.xsOnly ? 'mt-7' : ''">
@@ -264,21 +264,23 @@ export default {
     },
     getActionText(activity) {
       if (activity.transaction_category === TRANSACTION_TYPES.CONTRACT_INTERACTION) {
-        return this.t('walletActivity.contractInteraction')
+        return this.$t('walletActivity.contractInteraction')
       }
       if (activity.transaction_category === TRANSACTION_TYPES.DEPLOY_CONTRACT) {
-        return this.t('walletActivity.contractDeployment')
+        return this.$t('walletActivity.contractDeployment')
       }
       if (activity.transaction_category === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE) {
-        return `${this.t('walletActivity.approved')} ${activity.type_name !== 'n/a' ? activity.type_name.toUpperCase() : activity.type.toUpperCase()}`
+        return `${this.$t('walletActivity.approved')} ${
+          activity.type_name !== 'n/a' ? activity.type_name.toUpperCase() : activity.type.toUpperCase()
+        }`
       }
       if (activity.type_name === 'n/a' || activity.type === 'n/a') {
-        return `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+        return `${activity.action === ACTIVITY_ACTION_SEND ? this.$t('walletActivity.sent') : this.$t('walletActivity.received')} ${
           activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
         }`
       }
       if (activity.type_name || activity.type) {
-        return `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+        return `${activity.action === ACTIVITY_ACTION_SEND ? this.$t('walletActivity.sent') : this.$t('walletActivity.received')} ${
           activity.type === 'eth' ? activity.type_name.toUpperCase() : activity.type_name
         }`
       }

@@ -5,7 +5,7 @@
       :class="isDapp ? 'headline font-weight-medium' : 'display-1 font-weight-bold'"
       :style="{ maxWidth: isDapp ? 'inherit' : '260px' }"
     >
-      {{ t('login.title') }}
+      {{ $t('login.title') }}
     </div>
   </v-flex>
 </template>

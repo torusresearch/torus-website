@@ -2,7 +2,7 @@
   <v-container class="wallet-transfer pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4 mobile-view' : ''">
     <div class="d-flex align-center">
       <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
-        {{ t('walletTransfer.transferDetails') }}
+        {{ $t('walletTransfer.transferDetails') }}
       </div>
       <div class="ml-auto">
         <QuickAddress />
@@ -21,7 +21,7 @@
       >
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
-            <span class="body-2 text_1--text">{{ t('walletTransfer.accountBalance') }}</span>
+            <span class="body-2 text_1--text">{{ $t('walletTransfer.accountBalance') }}</span>
             <div class="ml-auto">
               <NetworkDisplay :store-network-type="networkType"></NetworkDisplay>
             </div>
@@ -49,7 +49,7 @@
           >
             <v-layout wrap>
               <v-flex xs12>
-                <div class="body-2 mb-2">{{ t('walletTransfer.selectItem') }}</div>
+                <div class="body-2 mb-2">{{ $t('walletTransfer.selectItem') }}</div>
                 <div v-if="selectedItemDisplay">
                   <v-menu transition="slide-y-transition" bottom>
                     <template #activator="{ on }">
@@ -84,7 +84,7 @@
                       <v-divider class="mx-3"></v-divider>
                       <v-subheader v-if="finalBalancesArrayTokens.length > 0" class="body-2">
                         <v-icon small left class="mr-2">$vuetify.icons.token</v-icon>
-                        {{ t('walletTransfer.tokens') }}
+                        {{ $t('walletTransfer.tokens') }}
                       </v-subheader>
                       <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
                         <v-list-item-icon class="ml-8 mr-1">
@@ -104,7 +104,7 @@
                       <v-divider class="mx-3"></v-divider>
                       <v-subheader v-if="collectibles.length > 0" class="body-2">
                         <v-icon small left class="mr-2">$vuetify.icons.collectibles</v-icon>
-                        {{ t('walletTransfer.collectibles') }}
+                        {{ $t('walletTransfer.collectibles') }}
                       </v-subheader>
                       <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
                         <v-list-item-icon class="ml-8 mr-1">
@@ -124,7 +124,7 @@
                 </div>
               </v-flex>
               <v-flex xs12 mt-6>
-                <div class="body-2 mb-2">{{ t('walletTransfer.transferMode') }}</div>
+                <div class="body-2 mb-2">{{ $t('walletTransfer.transferMode') }}</div>
                 <v-layout wrap class="mx-n2">
                   <v-flex xs12 sm8 class="recipient-address-container px-2">
                     <v-combobox
@@ -201,7 +201,7 @@
               </v-flex>
               <v-flex xs12 class="you-send-container">
                 <div class="mb-2">
-                  <span class="body-2">{{ t('walletTransfer.youSend') }}</span>
+                  <span class="body-2">{{ $t('walletTransfer.youSend') }}</span>
                   <v-btn
                     v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && !isSendAll"
                     id="send-all-btn"
@@ -211,7 +211,7 @@
                     tabindex="0"
                     @click="sendAll"
                   >
-                    {{ t('walletTransfer.sendAll') }}
+                    {{ $t('walletTransfer.sendAll') }}
                   </v-btn>
                   <v-btn
                     v-if="isSendAll"
@@ -221,7 +221,7 @@
                     class="float-right torusBrand1--text body-2 px-0"
                     @click="resetSendAll"
                   >
-                    {{ t('walletTransfer.reset') }}
+                    {{ $t('walletTransfer.reset') }}
                   </v-btn>
                 </div>
                 <v-select
@@ -346,12 +346,12 @@
                 @onSelectSpeed="onSelectSpeed"
               />
               <v-flex v-if="contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155" xs12 mb-6 class="text-right">
-                <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
+                <div class="text-subtitle-2">{{ $t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ getEthAmount(gas, activeGasPrice) }} {{ networkType.ticker }}</div>
                 <div class="caption text_2--text">{{ gasPriceInCurrency }} {{ selectedCurrency }}</div>
               </v-flex>
               <v-flex v-else xs12 mb-6 class="text-right">
-                <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
+                <div class="text-subtitle-2">{{ $t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ totalCost ? totalCostDisplay : `0 ${totalCostSuffix}` }}</div>
                 <div class="caption text_2--text">
                   {{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}
@@ -368,7 +368,7 @@
                   class="px-8 white--text gmt-wallet-transfer"
                   @click="onTransferClick"
                 >
-                  {{ t('walletTransfer.transfer') }}
+                  {{ $t('walletTransfer.transfer') }}
                 </v-btn>
                 <v-dialog v-model="confirmDialog" max-width="375" persistent>
                   <TransferConfirm
@@ -425,7 +425,7 @@
       <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && !$vuetify.breakpoint.smAndDown" px-4 xs6>
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
-            <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
+            <span class="body-2">{{ $t('walletTransfer.accountBalance') }}</span>
             <div class="ml-auto">
               <NetworkDisplay :store-network-type="networkType"></NetworkDisplay>
             </div>
@@ -455,7 +455,7 @@
       >
         <template v-if="selectedVerifier === TWITTER && messageModalType === MESSAGE_MODAL_TYPE_SUCCESS" #link>
           <div class="mb-4">
-            <div class="mb-4 text_2--text body-2">{{ t('walletTransfer.transferShare') }}</div>
+            <div class="mb-4 text_2--text body-2">{{ $t('walletTransfer.transferShare') }}</div>
             <v-btn text class="share-btn" :href="tweetData" target="_blank">
               <v-icon size="20" class="mr-1">$vuetify.icons.twitter</v-icon>
               <span class="body-2 font-weight-bold">Tweet</span>
@@ -677,7 +677,7 @@ export default {
     },
     verifierPlaceholder() {
       return this.selectedVerifier
-        ? `${this.t('walletSettings.enter')} ${this.t(this.verifierOptions.find((verifier) => verifier.value === this.selectedVerifier).name)}`
+        ? `${this.$t('walletSettings.enter')} ${this.t(this.verifierOptions.find((verifier) => verifier.value === this.selectedVerifier).name)}`
         : ''
     },
     contactList() {
@@ -706,7 +706,7 @@ export default {
       const amount = `${this.contractType === CONTRACT_TYPE_ERC721 || this.contractType === CONTRACT_TYPE_ERC1155 ? '' : this.displayAmount} ${
         !this.toggle_exclusive ? selectedAsset : this.selectedCurrency
       }`
-      const message = this.t('walletTransfer.transferTweet')
+      const message = this.$t('walletTransfer.transferTweet')
         .replace(/{address}/gi, this.toAddress)
         .replace(/{amount}/gi, amount)
       share.searchParams.append('text', message)
@@ -737,8 +737,8 @@ export default {
       if (this.isEip1559) {
         return this.londonSpeedTimingModalDisplay
       }
-      const estimatedTime = this.t('walletTransfer.transferApprox').replace(/{time}/gi, this.timeTaken)
-      return this.t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, estimatedTime)
+      const estimatedTime = this.$t('walletTransfer.transferApprox').replace(/{time}/gi, this.timeTaken)
+      return this.$t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, estimatedTime)
     },
   },
   watch: {
@@ -1126,8 +1126,8 @@ export default {
           // Show error body
           this.messageModalShow = true
           this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-          this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-          this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+          this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
+          this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
           log.error('Invalid to Address')
           return
         }
@@ -1159,7 +1159,7 @@ export default {
       const currencyGasPrice = ethGasPrice.times(this.getCurrencyTokenRate)
 
       if (ethBalance.minus(ethGasPrice).lt(new BigNumber(0))) {
-        this.sendAmountError = this.t('walletTransfer.insufficient')
+        this.sendAmountError = this.$t('walletTransfer.insufficient')
         return
       }
 
@@ -1215,8 +1215,8 @@ export default {
             if (!error.message.match(regEx)) {
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-              this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+              this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
+              this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
             }
             log.error(error)
           } else {
@@ -1226,8 +1226,8 @@ export default {
 
             this.messageModalShow = true
             this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-            this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-            this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+            this.messageModalTitle = this.$t('walletTransfer.transferSuccessTitle')
+            this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage')
           }
         })
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
@@ -1248,8 +1248,8 @@ export default {
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+                this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
+                this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
               }
               log.error(error)
             } else {
@@ -1259,8 +1259,8 @@ export default {
 
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+              this.messageModalTitle = this.$t('walletTransfer.transferSuccessTitle')
+              this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage')
             }
           }
         )
@@ -1278,8 +1278,8 @@ export default {
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+                this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
+                this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
               }
               log.error(error)
             } else {
@@ -1288,8 +1288,8 @@ export default {
               this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+              this.messageModalTitle = this.$t('walletTransfer.transferSuccessTitle')
+              this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage')
             }
           }
         )
@@ -1309,8 +1309,8 @@ export default {
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+                this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
+                this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
               }
               log.error(error)
             } else {
@@ -1319,8 +1319,8 @@ export default {
               this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+              this.messageModalTitle = this.$t('walletTransfer.transferSuccessTitle')
+              this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage')
             }
           }
         )
@@ -1345,7 +1345,7 @@ export default {
           // when suggestedMaxPriorityFeePerGas + baseFee is more than user defined limit
           const minFeeReq = new BigNumber(suggestedMaxPriorityFeePerGas).plus(new BigNumber(gasPriceEstimates.estimatedBaseFee))
           if (new BigNumber(this.activeGasPrice).lt(minFeeReq)) {
-            this.transactionWarning = this.t('walletTransfer.fee-error-likely-fail', this.activeGasPrice.toString(), minFeeReq.toString())
+            this.transactionWarning = this.$t('walletTransfer.fee-error-likely-fail', this.activeGasPrice.toString(), minFeeReq.toString())
           } else {
             this.transactionWarning = ''
           }
@@ -1458,7 +1458,7 @@ export default {
           this.qrErrorMsg = ''
         } else {
           this.toAddress = ''
-          this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
+          this.qrErrorMsg = this.$t('walletTransfer.incorrectQR')
         }
       } catch {
         const parsedResult = result.replace('ethereum:', '')
@@ -1468,7 +1468,7 @@ export default {
           this.qrErrorMsg = ''
         } else {
           this.toAddress = ''
-          this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
+          this.qrErrorMsg = this.$t('walletTransfer.incorrectQR')
         }
       } finally {
         this.camera = 'off'

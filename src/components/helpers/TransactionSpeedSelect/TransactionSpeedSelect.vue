@@ -2,7 +2,7 @@
   <v-flex v-if="isConfirm" xs12>
     <v-layout wrap align-center class="mb-2">
       <v-flex xs3>
-        <span class="caption">{{ t('walletTransfer.transactionFee') }}</span>
+        <span class="caption">{{ $t('walletTransfer.transactionFee') }}</span>
       </v-flex>
       <v-flex xs9>
         <v-layout v-if="!isAdvanceOption" mx-n2 xs12>
@@ -19,7 +19,7 @@
                   alt="Average Speed Icon"
                 />
                 <div class="mr-auto">
-                  <div class="btn-speed__speed">~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
+                  <div class="btn-speed__speed">~ {{ averageGasPriceSpeed }} {{ $t('walletTransfer.minute') }}</div>
                   <div class="btn-speed__price">{{ getGasDisplayString(averageGasPrice) }}</div>
                 </div>
               </div>
@@ -38,7 +38,7 @@
                   alt="Fastest Speed Icon"
                 />
                 <div class="mr-auto">
-                  <div class="btn-speed__speed">~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
+                  <div class="btn-speed__speed">~ {{ fastestGasPriceSpeed }} {{ $t('walletTransfer.minute') }}</div>
                   <div class="btn-speed__price">{{ getGasDisplayString(fastestGasPrice) }}</div>
                 </div>
               </div>
@@ -53,7 +53,7 @@
       </v-flex>
       <v-flex xs12 class="text-right">
         <a v-if="isAdvanceOption" class="torusBrand1--text caption" @click="resetAdvanceOption">
-          {{ t('walletTransfer.reset') }}
+          {{ $t('walletTransfer.reset') }}
         </a>
         <TransferAdvanceOption
           v-else
@@ -76,7 +76,7 @@
     <v-layout>
       <v-flex class="body-2 mb-2">
         <span>
-          {{ t('walletTransfer.transferFee') }}
+          {{ $t('walletTransfer.transferFee') }}
         </span>
         <TransferAdvanceOption
           :symbol="symbol"
@@ -108,7 +108,7 @@
               alt="Average Speed Icon"
             />
             <div class="mr-auto">
-              <div class="btn-speed__speed">~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
+              <div class="btn-speed__speed">~ {{ averageGasPriceSpeed }} {{ $t('walletTransfer.minute') }}</div>
               <div class="btn-speed__price">{{ getGasDisplayString(averageGasPrice) }}</div>
             </div>
           </div>
@@ -128,7 +128,7 @@
               alt="Fastest Speed Icon"
             />
             <div class="mr-auto">
-              <div class="btn-speed__speed">~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
+              <div class="btn-speed__speed">~ {{ fastestGasPriceSpeed }} {{ $t('walletTransfer.minute') }}</div>
               <div class="btn-speed__price">{{ getGasDisplayString(fastestGasPrice) }}</div>
             </div>
           </div>
@@ -143,7 +143,7 @@
         </div>
       </v-flex>
       <v-flex xs4 class="text-right">
-        <v-btn id="adv-reset-btn" outlined color="torusBrand1" @click="resetAdvanceOption">{{ t('walletTransfer.reset') }}</v-btn>
+        <v-btn id="adv-reset-btn" outlined color="torusBrand1" @click="resetAdvanceOption">{{ $t('walletTransfer.reset') }}</v-btn>
       </v-flex>
     </v-layout>
   </v-flex>
@@ -312,7 +312,7 @@ export default {
     },
     getGasDisplayString(gasPrice) {
       const currencyFee = this.getGasAmount(gasPrice)
-      return `${this.t('walletTransfer.pay')} ${significantDigits(currencyFee.toString())} ${this.selectedCurrency}`
+      return `${this.$t('walletTransfer.pay')} ${significantDigits(currencyFee.toString())} ${this.selectedCurrency}`
     },
     getGasAmount(gasPrice) {
       const ethFee = this.getEthAmount(this.gas, gasPrice)

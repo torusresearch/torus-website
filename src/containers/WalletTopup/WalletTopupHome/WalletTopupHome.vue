@@ -3,10 +3,10 @@
     <div class="d-flex align-center">
       <div class="font-weight-bold text-left text_2--text page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
         <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
-          {{ t('walletTopUp.purchaseVia') }}
+          {{ $t('walletTopUp.purchaseVia') }}
           <span class="text-capitalize">{{ selectedProvider }}</span>
         </span>
-        <span v-else>{{ t('walletTopUp.selectProvider') }}</span>
+        <span v-else>{{ $t('walletTopUp.selectProvider') }}</span>
       </div>
       <div class="ml-auto">
         <QuickAddress />
@@ -26,7 +26,7 @@
       <v-flex v-if="selectedProvider && $vuetify.breakpoint.xsOnly" xs12 mb-2>
         <div class="font-weight-bold headline px-4 mb-4 text_2--text">
           <span>
-            {{ t('walletTopUp.purchaseVia') }}
+            {{ $t('walletTopUp.purchaseVia') }}
             <span class="text-capitalize">{{ selectedProvider }}</span>
           </span>
         </div>

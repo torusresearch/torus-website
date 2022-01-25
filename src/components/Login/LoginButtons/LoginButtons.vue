@@ -5,7 +5,7 @@
       class="headline font-weight-regular mb-2"
       :class="$vuetify.theme.dark ? '' : 'text_2--text'"
     >
-      {{ t('login.signUpIn') }}
+      {{ $t('login.signUpIn') }}
     </div>-->
     <div :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
       <v-btn
@@ -21,7 +21,7 @@
           {{ `$vuetify.icons.${lastLoginIcon}` }}
         </v-icon>
         <div>
-          {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(existingLoginTypeAvailable.name)) }}
+          {{ $t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(existingLoginTypeAvailable.name)) }}
           <div v-if="lastLoginVerifierId" class="font-weight-bold last-login-email">
             {{ lastLoginVerifierId }}
           </div>
@@ -58,7 +58,7 @@
       <div v-if="mainButtonsLong.length > 0 || mainButtons.length > 0" class="d-flex or-container align-center">
         <v-divider />
         <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
-          <div class="text_2--text">{{ t('login.or') }}</div>
+          <div class="text_2--text">{{ $t('login.or') }}</div>
         </div>
         <v-divider />
       </div>
@@ -74,7 +74,7 @@
             :height="textFieldHeight"
             class="passwordless-email"
             :rules="[rules.email]"
-            :placeholder="t('login.enterYourEmail')"
+            :placeholder="$t('login.enterYourEmail')"
             outlined
           />
           <LoginButton
@@ -102,7 +102,7 @@
     <div class="d-flex align-center" :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
       <v-spacer></v-spacer>
       <v-btn :class="{ 'has-more': viewMoreOptions }" class="view-option-selector" @click="viewMoreOptions = !viewMoreOptions">
-        <span class="selector-text">{{ viewMoreOptions ? t('dappLogin.viewLess') : t('dappLogin.viewMore') }}</span>
+        <span class="selector-text">{{ viewMoreOptions ? $t('dappLogin.viewLess') : $t('dappLogin.viewMore') }}</span>
         <v-icon>$vuetify.icons.select</v-icon>
       </v-btn>
     </div>

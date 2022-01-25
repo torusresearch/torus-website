@@ -5,7 +5,7 @@
       :class="$vuetify.breakpoint.smAndDown ? 'flex-column justify-start align-start' : 'flex-row justify-space-between'"
     >
       <h3 class="discover-title font-weight-bold" :style="{ color: $vuetify.theme.isDark ? '#EEF2F4' : '#5C6C7F' }">
-        {{ t('navBar.discover') }}
+        {{ $t('navBar.discover') }}
       </h3>
 
       <v-layout mx-n2 class="dapp-filters mt-5 mt-md-0">
@@ -91,9 +91,9 @@
         :page.sync="page"
         hide-default-footer
         :loading="isLoadingDapps"
-        :loading-text="t('walletDiscover.loading')"
-        :no-results-text="t('walletDiscover.noData')"
-        :no-data-text="t('walletDiscover.noData')"
+        :loading-text="$t('walletDiscover.loading')"
+        :no-results-text="$t('walletDiscover.noData')"
+        :no-data-text="$t('walletDiscover.noData')"
       >
         <template #default="props">
           <v-row>

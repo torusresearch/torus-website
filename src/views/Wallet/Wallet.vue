@@ -79,14 +79,14 @@ export default {
     },
     headerItems() {
       const items = [
-        { name: 'home', display: this.t('navBar.home'), route: '/wallet/home', icon: 'settings' },
-        { name: 'transfer', display: this.t('navBar.transfer'), route: '/wallet/transfer', icon: 'transaction' },
-        { name: 'activity', display: this.t('navBar.activity'), route: '/wallet/history', icon: 'activities' },
-        { name: 'settings', display: this.t('navBar.settings'), route: '/wallet/settings', icon: 'settings' },
-        { name: 'discover', display: this.t('navBar.discover'), route: '/wallet/discover', icon: 'discover' },
+        { name: 'home', display: this.$t('navBar.home'), route: '/wallet/home', icon: 'settings' },
+        { name: 'transfer', display: this.$t('navBar.transfer'), route: '/wallet/transfer', icon: 'transaction' },
+        { name: 'activity', display: this.$t('navBar.activity'), route: '/wallet/history', icon: 'activities' },
+        { name: 'settings', display: this.$t('navBar.settings'), route: '/wallet/settings', icon: 'settings' },
+        { name: 'discover', display: this.$t('navBar.discover'), route: '/wallet/discover', icon: 'discover' },
       ]
       if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc' && !this.whiteLabel.topupHide) {
-        items.splice(2, 0, { name: 'top-up', display: this.t('navBar.topUp'), route: '/wallet/topup', icon: 'topup' })
+        items.splice(2, 0, { name: 'top-up', display: this.$t('navBar.topUp'), route: '/wallet/topup', icon: 'topup' })
       }
       return items
     },
@@ -95,23 +95,23 @@ export default {
         [BADGES_TOPUP]: {
           type: BADGES_TOPUP,
           image: 'badge-topped-wallet',
-          header: this.t('walletHome.topupTitle'),
-          details1: this.t('walletHome.topupDetails1'),
-          details2: this.t('walletHome.topupDetails2'),
+          header: this.$t('walletHome.topupTitle'),
+          details1: this.$t('walletHome.topupDetails1'),
+          details2: this.$t('walletHome.topupDetails2'),
         },
         [BADGES_TRANSACTION]: {
           type: BADGES_TRANSACTION,
           image: 'badge-first-transaction',
-          header: this.t('walletHome.topupTransactionTitle'),
-          details1: this.t('walletHome.topupTransactionDetails1'),
-          details2: this.t('walletHome.topupTransactionDetails2'),
+          header: this.$t('walletHome.topupTransactionTitle'),
+          details1: this.$t('walletHome.topupTransactionDetails1'),
+          details2: this.$t('walletHome.topupTransactionDetails2'),
         },
         [BADGES_COLLECTIBLE]: {
           type: BADGES_COLLECTIBLE,
           image: 'badge-first-collectible',
-          header: this.t('walletHome.collectiblesTitle'),
-          details1: this.t('walletHome.collectiblesDetails1'),
-          details2: this.t('walletHome.collectiblesDetails2'),
+          header: this.$t('walletHome.collectiblesTitle'),
+          details1: this.$t('walletHome.collectiblesDetails1'),
+          details2: this.$t('walletHome.collectiblesDetails2'),
         },
       }
     },

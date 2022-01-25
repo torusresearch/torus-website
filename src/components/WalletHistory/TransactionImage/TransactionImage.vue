@@ -85,7 +85,7 @@
         :class="[{ isDark: $vuetify.theme.isDark }, isCancel ? 'ml-0' : 'ml-2']"
         x-small
       >
-        {{ $vuetify.breakpoint.smAndDown ? t('walletActivity.external') : t('walletActivity.externalTransaction') }}
+        {{ $vuetify.breakpoint.smAndDown ? $t('walletActivity.external') : $t('walletActivity.externalTransaction') }}
       </v-chip>
     </div>
     <div class="info text_2--text font-weight-light">

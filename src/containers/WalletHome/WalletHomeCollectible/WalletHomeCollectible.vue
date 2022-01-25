@@ -50,13 +50,13 @@ export default {
     return {
       breadcrumb: [
         {
-          text: this.t('walletHome.home'),
+          text: this.$t('walletHome.home'),
           disabled: false,
           exact: true,
           to: '/wallet/home',
         },
         {
-          text: this.t('walletHome.collectibles'),
+          text: this.$t('walletHome.collectibles'),
           disabled: false,
           exact: true,
           to: '/wallet/home#collectibles',

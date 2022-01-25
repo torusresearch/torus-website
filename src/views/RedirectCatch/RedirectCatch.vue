@@ -4,11 +4,11 @@
       <v-flex text-center>
         <BoxLoader />
         <div v-if="showCloseText" class="redirect-title font-weight-bold mt-2">
-          {{ t('dappGeneral.loading') }}
+          {{ $t('dappGeneral.loading') }}
         </div>
       </v-flex>
       <div class="footer">
-        <div class="powered-by">{{ t('login.secured-by') }}</div>
+        <div class="powered-by">{{ $t('login.secured-by') }}</div>
         <img height="26" :src="require(`@/assets/images/web3auth.svg`)" alt="Web3Auth" />
       </div>
     </v-layout>

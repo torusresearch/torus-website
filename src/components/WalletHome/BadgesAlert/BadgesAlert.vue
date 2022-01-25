@@ -16,7 +16,7 @@
         </div>
 
         <v-btn :color="$vuetify.theme.isDark ? '' : 'torusBrand4'" large class="torusBrand1--text mb-10 px-12" @click="onReturnHome">
-          {{ t('walletHome.returnHome') }}
+          {{ $t('walletHome.returnHome') }}
         </v-btn>
       </v-flex>
     </v-layout>

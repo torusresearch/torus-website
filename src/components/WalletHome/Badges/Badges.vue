@@ -1,7 +1,7 @@
 <template>
   <v-layout v-if="!allCompleted" wrap class="badges-container">
     <v-flex xs12>
-      <div class="display-1" :class="$vuetify.theme.dark ? 'torusGray2--text' : 'text_2--text'">{{ t('walletHome.gettingStarted') }}</div>
+      <div class="display-1" :class="$vuetify.theme.dark ? 'torusGray2--text' : 'text_2--text'">{{ $t('walletHome.gettingStarted') }}</div>
     </v-flex>
     <v-flex xs12 mt-6>
       <v-layout wrap mx-n4>
@@ -39,7 +39,7 @@ export default {
     badges() {
       return [
         {
-          title: this.t('walletHome.walletCreated'),
+          title: this.$t('walletHome.walletCreated'),
           image: 'badge-wallet-created',
           link: '',
           linkText: '',
@@ -47,26 +47,26 @@ export default {
           external: false,
         },
         {
-          title: this.t('walletHome.topUpWallet'),
+          title: this.$t('walletHome.topUpWallet'),
           image: 'badge-topped-wallet',
           link: '/wallet/topup',
-          linkText: this.t('walletHome.goToTopUp'),
+          linkText: this.$t('walletHome.goToTopUp'),
           completed: this.badgesCompletion[BADGES_TOPUP] === undefined ? true : this.badgesCompletion[BADGES_TOPUP],
           external: false,
         },
         {
-          title: this.t('walletHome.conductFirstTransaction'),
+          title: this.$t('walletHome.conductFirstTransaction'),
           image: 'badge-first-transaction',
           link: '/wallet/transfer',
-          linkText: this.t('walletHome.goToTransfer'),
+          linkText: this.$t('walletHome.goToTransfer'),
           completed: this.badgesCompletion[BADGES_TRANSACTION] === undefined ? true : this.badgesCompletion[BADGES_TRANSACTION],
           external: false,
         },
         {
-          title: this.t('walletHome.getFirstCollectible'),
+          title: this.$t('walletHome.getFirstCollectible'),
           image: 'badge-first-collectible',
           link: 'https://opensea.io/',
-          linkText: this.t('walletHome.goToOpensea'),
+          linkText: this.$t('walletHome.goToOpensea'),
           completed: this.badgesCompletion[BADGES_COLLECTIBLE] === undefined ? true : this.badgesCompletion[BADGES_COLLECTIBLE],
           external: true,
         },

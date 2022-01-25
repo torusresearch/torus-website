@@ -11,9 +11,9 @@
       <v-layout align-center fill-height px-10>
         <v-flex class="text-center">
           <img class="mb-6 slide-image" :src="require(`../../../assets/images/${slide.image}`)" alt="Login Carousel" />
-          <div class="text-h6 text-sm-h5 font-weight-medium mb-3 text_2--text px-2">{{ t(slide.title) }}</div>
-          <div class="text-caption text-sm-body-1 text_2--text">{{ t(slide.subtitle1) }}</div>
-          <div v-if="slide.subtitle2" class="text-caption text-sm-body-1 text_2--text">{{ t(slide.subtitle2) }}</div>
+          <div class="text-h6 text-sm-h5 font-weight-medium mb-3 text_2--text px-2">{{ $t(slide.title) }}</div>
+          <div class="text-caption text-sm-body-1 text_2--text">{{ $t(slide.subtitle1) }}</div>
+          <div v-if="slide.subtitle2" class="text-caption text-sm-body-1 text_2--text">{{ $t(slide.subtitle2) }}</div>
           <v-btn
             class="learn-more-btn mt-6"
             :class="{ isDark: $vuetify.theme.dark, isMobile: $vuetify.breakpoint.xsOnly }"
@@ -21,7 +21,7 @@
             target="_blank"
             rel="noreferrer noopener"
           >
-            {{ t('login.visitOurWebsite') }}
+            {{ $t('login.visitOurWebsite') }}
           </v-btn>
         </v-flex>
       </v-layout>

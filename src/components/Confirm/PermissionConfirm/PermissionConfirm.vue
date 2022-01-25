@@ -4,7 +4,7 @@
       <v-flex class="card-shadow text-center" py-6 mb-4 xs12>
         <img src="../../../assets/images/security.svg" alt="Security Icon" />
         <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="headline font-weight-bold">
-          {{ t('dappPermission.permission') }}
+          {{ $t('dappPermission.permission') }}
         </div>
       </v-flex>
       <v-flex mx-6 mb-4 xs12>
@@ -44,29 +44,29 @@
         </v-layout>
       </v-flex>
       <v-flex mb-4 mx-6 xs12>
-        <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="caption mb-2">{{ t('dappPermission.toAllow') }}:</div>
+        <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="caption mb-2">{{ $t('dappPermission.toAllow') }}:</div>
 
         <v-card class="permission-list card-shadow px-3 py-4 mb-4">
           <div class="mb-4">
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--title">
               <v-icon size="12" v-text="'$vuetify.icons.person'"></v-icon>
-              {{ t('dappPermission.accessUserInfo') }}
+              {{ $t('dappPermission.accessUserInfo') }}
             </div>
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--subtitle">
-              {{ t('dappPermission.displayUserInfo') }}
+              {{ $t('dappPermission.displayUserInfo') }}
             </div>
           </div>
           <div class="mb-4">
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--title">
               <v-icon size="12" v-text="'$vuetify.icons.time'"></v-icon>
-              {{ t('dappPermission.transactHours').replace(/\{num\}/gi, 6) }}
+              {{ $t('dappPermission.transactHours').replace(/\{num\}/gi, 6) }}
             </div>
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--subtitle"></div>
           </div>
           <div class="mb-4">
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--title">
               <v-icon size="12" v-text="'$vuetify.icons.network'"></v-icon>
-              {{ t('dappPermission.changeNetwork').replace(/\{network\}/gi, 'Rinkeby Network') }}
+              {{ $t('dappPermission.changeNetwork').replace(/\{network\}/gi, 'Rinkeby Network') }}
             </div>
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--subtitle"></div>
           </div>
@@ -75,9 +75,9 @@
         <v-card class="card-shadow px-3 py-4 mb-8">
           <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="caption permission-note">
             <img src="../../../assets/images/exclamation-triangle.png" alt="Alert Icon" />
-            {{ t('dappPermission.note').replace(/\{num\}/gi, 6) }}.
+            {{ $t('dappPermission.note').replace(/\{num\}/gi, 6) }}.
             <a class="font-italic" rel="noreferrer noopener" :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'">
-              {{ t('dappPermission.learnMore') }}
+              {{ $t('dappPermission.learnMore') }}
             </a>
           </div>
         </v-card>
@@ -85,11 +85,11 @@
         <v-layout px-2>
           <v-flex xs6>
             <v-btn block text large :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" @click="triggerDeny">
-              {{ t('dappPermission.cancel') }}
+              {{ $t('dappPermission.cancel') }}
             </v-btn>
           </v-flex>
           <v-flex xs6>
-            <v-btn block depressed large color="torusBrand1" class="ml-2 white--text" @click="triggerSign">{{ t('dappPermission.allow') }}</v-btn>
+            <v-btn block depressed large color="torusBrand1" class="ml-2 white--text" @click="triggerSign">{{ $t('dappPermission.allow') }}</v-btn>
           </v-flex>
         </v-layout>
       </v-flex>
