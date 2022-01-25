@@ -157,7 +157,7 @@ export default {
   setButtonPosition(state, payload) {
     state.embedState = { ...state.embedState, buttonPosition: payload || 'bottom-left' }
   },
-  setWhiteLabel(state, payload) {
+  async setWhiteLabel(state, payload) {
     state.whiteLabel = {
       ...state.whiteLabel,
       isActive: true,
@@ -170,11 +170,13 @@ export default {
       const selectedLocale = LOCALES.find((localeInner) => localeInner.value === payload.defaultLanguage)
       if (selectedLocale) {
         payload.defaultLanguage = selectedLocale.value
-        updateDefaultLanguage(state, payload.defaultLanguage)
+        await updateDefaultLanguage(state, payload.defaultLanguage)
       }
 
       if (payload.customTranslations) {
-        loadLanguageAsync(merge(i18n.locale, payload.customTranslations))
+        Object.keys(payload.customTranslations).forEach((key) => {
+          i18n.mergeLocaleMessage(key, payload.customTranslations[key])
+        })
       }
 
       sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
@@ -260,7 +262,7 @@ function localThemeSet(payload, state) {
   if (isLocalStorageAvailable && payload) localStorage.setItem('torus-theme', payload)
   if (isLocalStorageAvailable && !localStorage.getItem('torus-theme')) localStorage.setItem('torus-theme', state.theme)
 }
-function updateDefaultLanguage(state, language) {
+async function updateDefaultLanguage(state, language) {
   state.locale = language
-  loadLanguageAsync(language)
+  await loadLanguageAsync(language)
 }

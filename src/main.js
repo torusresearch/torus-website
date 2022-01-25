@@ -55,7 +55,6 @@ Vue.use(VueGtm, {
 })
 
 installSentry(Vue)
-
 loadLanguageAsync(getUserLanguage())
 
 new Vue({

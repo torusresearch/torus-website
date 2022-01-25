@@ -6,7 +6,7 @@ import log from 'loglevel'
 import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
-import languages from '../plugins/i18n-setup'
+import { languageMap } from '../plugins/i18n-setup'
 import {
   ACCOUNT_TYPE,
   ACTIVE,
@@ -100,8 +100,6 @@ const networkToNameMap = {
   [KOVAN_CODE]: KOVAN_DISPLAY_NAME,
   [GOERLI_CODE]: GOERLI_DISPLAY_NAME,
 }
-
-export class UserError extends Error {}
 
 export const getNetworkDisplayName = (key) => networkToNameMap[key]
 
@@ -589,7 +587,7 @@ export function formatSmallNumbers(number, currency = 'usd', noTilde = false) {
 export const getUserLanguage = () => {
   let userLanguage = window.navigator.userLanguage || window.navigator.language || 'en-US'
   userLanguage = userLanguage.split('-')
-  userLanguage = Object.prototype.hasOwnProperty.call(languages, userLanguage[0]) ? userLanguage[0] : 'en'
+  userLanguage = Object.prototype.hasOwnProperty.call(languageMap, userLanguage[0]) ? userLanguage[0] : 'en'
   return userLanguage
 }
 

@@ -1,13 +1,17 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 
-// import en from './i18n/english.json'
+import en from './i18n/english.json'
 
 Vue.use(VueI18n)
-const i18n = new VueI18n()
+const i18n = new VueI18n({
+  locale: 'en', // set locale
+  fallbackLocale: 'en',
+  messages: { en }, // set locale messages
+})
 
-const loadedLanguages = new Set([]) // our default language that is preloaded
-const languageMap = {
+const loadedLanguages = new Set(['en']) // our default language that is preloaded
+export const languageMap = {
   en: 'english',
   de: 'german',
   ja: 'japanese',
