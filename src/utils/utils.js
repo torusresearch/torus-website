@@ -101,6 +101,8 @@ const networkToNameMap = {
   [GOERLI_CODE]: GOERLI_DISPLAY_NAME,
 }
 
+export class UserError extends Error {}
+
 export const getNetworkDisplayName = (key) => networkToNameMap[key]
 
 /**
