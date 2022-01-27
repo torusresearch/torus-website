@@ -54,6 +54,16 @@ Vue.use(VueGtm, {
   vueRouter: router, // Pass the router instance to automatically sync with router (optional)
 })
 
+Vue.mixin({
+  methods: {
+    t(data, params) {
+      if (data === '') return data
+      const translated = i18n.t(`${data}`, params)
+      return translated
+    },
+  },
+})
+
 installSentry(Vue)
 loadLanguageAsync(getUserLanguage())
 

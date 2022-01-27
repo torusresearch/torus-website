@@ -200,8 +200,6 @@ export default {
   async mounted() {
     if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
 
-    log.info('vuetify', this.$vuetify)
-
     this.isLogout = this.$route.name !== 'login'
 
     this.scroll()
