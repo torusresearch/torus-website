@@ -1,7 +1,7 @@
 <template>
   <div class="default-account-container" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
     <div class="body-2 torusFont1--text text-capitalize mb-2 px-1">
-      {{ computedWallets.length > 1 ? $t('tkeySettings.accounts') : $t('tkeySettings.account') }}
+      {{ computedWallets.length > 1 ? t('tkeySettings.accounts') : t('tkeySettings.account') }}
     </div>
 
     <v-list dense outlined class="pa-0 account-list mb-2">
@@ -16,10 +16,10 @@
         </v-list-item-content>
         <v-list-item-action class="ma-0">
           <div v-if="wallet.isDefault" class="caption torus_1--text" :style="{ marginRight: '15px' }">
-            {{ $t('tkeySettings.default') }}
+            {{ t('tkeySettings.default') }}
           </div>
           <v-btn v-else-if="hasThresholdLogged" text small color="torusBrand1" class="caption" @click="setDefaultPublicAddress(wallet.key)">
-            {{ $t('tkeySettings.switchDefault') }}
+            {{ t('tkeySettings.switchDefault') }}
           </v-btn>
         </v-list-item-action>
       </v-list-item>
@@ -29,12 +29,12 @@
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title class="font-weight-regular caption">
-            <span class="text_1--text">{{ $t('tkeySettings.twoFaWallet') }}</span>
+            <span class="text_1--text">{{ t('tkeySettings.twoFaWallet') }}</span>
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-action class="ma-0">
           <v-btn :loading="loggingWithTKey" text small color="torusBrand1" class="caption" @click="loginWithTKey">
-            {{ $t('tkeySettings.loginWithTkey') }}
+            {{ t('tkeySettings.loginWithTkey') }}
           </v-btn>
         </v-list-item-action>
       </v-list-item> -->
@@ -44,15 +44,15 @@
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title class="caption mb-3 mt-1">
-            <span class="text_1--text font-weight-bold mr-1">{{ $t('tkeySettings.twoFaWallet') }}</span>
-            <span class="torusBrand1--text font-italic">{{ $t('tkeySettings.new') }}</span>
+            <span class="text_1--text font-weight-bold mr-1">{{ t('tkeySettings.twoFaWallet') }}</span>
+            <span class="torusBrand1--text font-italic">{{ t('tkeySettings.new') }}</span>
           </v-list-item-title>
           <div class="caption pb-3">
-            <div class="mb-1">{{ $t('tkeySettings.newDesc') }}:</div>
+            <div class="mb-1">{{ t('tkeySettings.newDesc') }}:</div>
             <ul class="tkey-features mb-4">
-              <li>{{ $t('tkeySettings.newList1') }}</li>
-              <li>{{ $t('tkeySettings.newList2') }}</li>
-              <li>{{ $t('tkeySettings.newList3') }}</li>
+              <li>{{ t('tkeySettings.newList1') }}</li>
+              <li>{{ t('tkeySettings.newList2') }}</li>
+              <li>{{ t('tkeySettings.newList3') }}</li>
             </ul>
             <div class="text-right">
               <v-btn
@@ -63,7 +63,7 @@
                 type="submit"
                 @click="goToTkeyOnboarding"
               >
-                {{ $t('tkeySettings.newCreate') }}
+                {{ t('tkeySettings.newCreate') }}
               </v-btn>
             </div>
           </div>
@@ -72,7 +72,7 @@
       </v-list-item> -->
     </v-list>
 
-    <div class="caption text_3--text mb-4 px-5">{{ $t('tkeySettings.note') }}: {{ $t('tkeySettings.theSelectedAccount') }}</div>
+    <div class="caption text_3--text mb-4 px-5">{{ t('tkeySettings.note') }}: {{ t('tkeySettings.theSelectedAccount') }}</div>
   </div>
 </template>
 
@@ -117,7 +117,7 @@ export default {
       }, [])
     },
     userEmail() {
-      return getUserEmail(this.userInfo, this.loginConfig, this.$t('accountMenu.wallet'))
+      return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
     },
     hasSeedPhraseAccount() {
       return Object.keys(this.wallets).some((address) => this.wallets[address].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
@@ -138,12 +138,12 @@ export default {
       this.setIsTkeySeedPhraseInputRequired(true)
     },
     accountTitle(accountType, address) {
-      if (accountType === ACCOUNT_TYPE.THRESHOLD) return `OpenLogin ${this.$t('tkeySettings.account')}`
+      if (accountType === ACCOUNT_TYPE.THRESHOLD) return `OpenLogin ${this.t('tkeySettings.account')}`
       if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
         const index = Object.keys(this.wallets)
           .filter((x) => this.wallets[x].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
           .indexOf(address)
-        return `${this.$t('tkeySettings.tkeySeedPhrase.seedPhraseAccount')} ${index + 1}`
+        return `${this.t('tkeySettings.tkeySeedPhrase.seedPhraseAccount')} ${index + 1}`
       }
       return this.userInfo.verifierId
     },

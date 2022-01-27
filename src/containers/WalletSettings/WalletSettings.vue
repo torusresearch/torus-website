@@ -3,7 +3,7 @@
     <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
       <v-flex xs6>
         <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
-          {{ $t('walletSettings.settings') }}
+          {{ t('walletSettings.settings') }}
         </div>
       </v-flex>
       <v-flex xs6>
@@ -17,7 +17,7 @@
             <v-expansion-panel-header id="privacy-panel-header">
               <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
               <div class="grow font-weight-bold title text_1--text">
-                {{ $t('walletSettings.privacySecurity') }}
+                {{ t('walletSettings.privacySecurity') }}
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
@@ -28,7 +28,7 @@
             <v-expansion-panel-header id="contact-list-panel-header">
               <v-icon size="16" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.list'" />
               <div class="grow font-weight-bold title text_1--text">
-                {{ $t('walletSettings.addressBook') }}
+                {{ t('walletSettings.addressBook') }}
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
@@ -39,7 +39,7 @@
             <v-expansion-panel-header id="privacy-panel-header">
               <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.device_detailed'" />
               <div class="grow font-weight-bold title text_1--text">
-                {{ $t('walletSettings.crashReport') }}
+                {{ t('walletSettings.crashReport') }}
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
@@ -54,7 +54,7 @@
             <v-expansion-panel-header id="network-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.globe'" />
               <div class="grow font-weight-bold title text_1--text">
-                {{ $t('walletSettings.network') }}
+                {{ t('walletSettings.network') }}
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
@@ -65,7 +65,7 @@
             <v-expansion-panel-header id="display-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.server'" />
               <div class="grow font-weight-bold title text_1--text">
-                {{ $t('walletSettings.display') }}
+                {{ t('walletSettings.display') }}
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
@@ -75,7 +75,7 @@
           <v-expansion-panel readonly class="my-2">
             <v-expansion-panel-header id="display-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.person_circle'" />
-              <div class="grow font-weight-bold title text_1--text">{{ $t('tkeySettings.accountManagement') }}</div>
+              <div class="grow font-weight-bold title text_1--text">{{ t('tkeySettings.accountManagement') }}</div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <DefaultAccount :has-threshold-logged="hasThresholdLogged" />

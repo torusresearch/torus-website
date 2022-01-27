@@ -39,7 +39,7 @@
                 </v-flex>
                 <LoginTitle />
                 <!-- <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-10']">
-                  <div class="headline font-weight-regular" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ $t('login.signUpIn') }}</div>
+                  <div class="headline font-weight-regular" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
                 </v-flex> -->
                 <v-flex xs8 mx-auto mt-4>
                   <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
@@ -61,7 +61,7 @@
               />
             </v-flex>
             <v-flex xs12>
-              <div class="text-center text-subtitle-1 font-weight-bold">{{ $t('login.beenLoggedOut') }}</div>
+              <div class="text-center text-subtitle-1 font-weight-bold">{{ t('login.beenLoggedOut') }}</div>
             </v-flex>
             <v-flex xs12 mt-4>
               <div class="text-center">
@@ -73,7 +73,7 @@
                   type="button"
                   @click="returnHome"
                 >
-                  {{ $t('login.returnHome') }}
+                  {{ t('login.returnHome') }}
                 </v-btn>
               </div>
             </v-flex>
@@ -100,7 +100,7 @@
     </template>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
-      <v-btn dark text @click="snackbar = false">{{ $t('walletTopUp.close') }}</v-btn>
+      <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
     </v-snackbar>
   </div>
 </template>
@@ -240,7 +240,7 @@ export default {
       log.error(error)
       this.snackbar = true
       this.snackbarColor = 'error'
-      this.snackbarText = error.message?.includes('email_verified') ? this.$t('login.errorVerifyEmail') : this.$t('login.loginError')
+      this.snackbarText = error.message?.includes('email_verified') ? this.t('login.errorVerifyEmail') : this.t('login.loginError')
     } finally {
       this.loginInProgress = false
     }
@@ -260,7 +260,7 @@ export default {
         log.error(error)
         this.snackbar = true
         this.snackbarColor = 'error'
-        this.snackbarText = error.message?.includes('email_verified') ? this.$t('login.errorVerifyEmail') : this.$t('login.loginError')
+        this.snackbarText = error.message?.includes('email_verified') ? this.t('login.errorVerifyEmail') : this.t('login.loginError')
       } finally {
         this.loginInProgress = false
       }

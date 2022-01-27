@@ -2,7 +2,7 @@
   <v-container class="wallet-home pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <div class="d-flex align-center">
       <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
-        {{ $t('walletHome.walletHome') }}
+        {{ t('walletHome.walletHome') }}
       </div>
       <div class="ml-auto">
         <QuickAddress />
@@ -13,7 +13,7 @@
         <v-card class="card-total elevation-1 px-6 py-4">
           <div class="d-flex align-center" :style="{ marginBottom: '5px' }">
             <div :style="{ lineHeight: '1em' }">
-              <span class="title text_1--text" :style="{ lineHeight: '1em' }">{{ $t('walletHome.totalValue') }}</span>
+              <span class="title text_1--text" :style="{ lineHeight: '1em' }">{{ t('walletHome.totalValue') }}</span>
             </div>
             <div class="ml-auto">
               <NetworkDisplay :network="networkType.networkName" :store-network-type="networkType"></NetworkDisplay>
@@ -75,7 +75,7 @@
                 @click="topup"
               >
                 <v-icon left>$vuetify.icons.add</v-icon>
-                {{ $t('walletHome.topUp') }}
+                {{ t('walletHome.topUp') }}
               </v-btn>
             </v-flex>
             <v-flex xs6 px-3>
@@ -88,7 +88,7 @@
                 @click="initiateTransfer"
               >
                 <v-icon left>$vuetify.icons.send</v-icon>
-                {{ $t('walletHome.transfer') }}
+                {{ t('walletHome.transfer') }}
               </v-btn>
             </v-flex>
           </v-layout>
@@ -99,14 +99,14 @@
           <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
             <v-layout>
               <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
-                <div class="text-body-1 font-weight-bold">{{ $t('walletHome.welcome') }} Torus.</div>
+                <div class="text-body-1 font-weight-bold">{{ t('walletHome.welcome') }} Torus.</div>
                 <v-dialog v-model="dialogOnboarding" persistent max-width="600">
                   <template #activator="{ on }">
                     <div class="body-2'">
                       <a id="learn-more-btn" class="torusBrand1--text font-weight-bold" v-on="on">
-                        {{ $t('walletHome.learnMore') }}
+                        {{ t('walletHome.learnMore') }}
                       </a>
-                      {{ $t('walletHome.aboutWallet') }}.
+                      {{ t('walletHome.aboutWallet') }}.
                     </div>
                   </template>
                   <Onboarding @onClose="dialogOnboarding = false" />
@@ -152,13 +152,13 @@
     <v-layout wrap align-center class="mt-7">
       <v-flex xs12 md6 :class="{ 'offset-md-3': $vuetify.breakpoint.mdAndUp }">
         <v-tabs v-model="activeTab" class="home-tab" centered hide-slider>
-          <v-tab :key="$t('walletHome.tokens')" class="home-tab-token gmt-tokens-tab font-weight-bold">
+          <v-tab :key="t('walletHome.tokens')" class="home-tab-token gmt-tokens-tab font-weight-bold">
             <v-icon class="mr-1" small left>$vuetify.icons.token</v-icon>
-            {{ $t('walletHome.tokens') }}
+            {{ t('walletHome.tokens') }}
           </v-tab>
-          <v-tab :key="$t('walletHome.collectibles')" class="home-tab-collectibles gmt-collectibles-tab font-weight-bold">
+          <v-tab :key="t('walletHome.collectibles')" class="home-tab-collectibles gmt-collectibles-tab font-weight-bold">
             <v-icon class="mr-1" small left>$vuetify.icons.collectibles</v-icon>
-            {{ $t('walletHome.collectibles') }}
+            {{ t('walletHome.collectibles') }}
           </v-tab>
         </v-tabs>
       </v-flex>
@@ -172,10 +172,10 @@
             @click="refreshBalances"
           >
             <v-icon left color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
-            <span class="caption text_2--text">{{ $t('walletHome.showAllTokens') }}</span>
+            <span class="caption text_2--text">{{ t('walletHome.showAllTokens') }}</span>
           </v-btn>
         </div>
-        <div class="text_3--text refresh-text" small>{{ $t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
+        <div class="text_3--text refresh-text" small>{{ t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
       </v-flex>
       <v-flex v-if="showSearch" xs12 mt-4>
         <v-text-field
@@ -197,11 +197,11 @@
             class="gmt-edit-tokens refresh-btn"
             :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
             height="24"
-            :aria-label="$t('homeToken.editTokens')"
+            :aria-label="t('homeToken.editTokens')"
             @click="hideTokenMode = !hideTokenMode"
           >
             <v-icon left class="text_2--text" size="14">$vuetify.icons.pencil_edit</v-icon>
-            <span class="caption text_2--text">{{ $t('homeToken.editTokens') }}</span>
+            <span class="caption text_2--text">{{ t('homeToken.editTokens') }}</span>
           </v-btn>
         </div>
       </v-tab-item>
@@ -221,21 +221,21 @@
             @click="refreshBalances"
           >
             <v-icon left color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
-            <span class="caption text_2--text">{{ $t('walletHome.showAllTokens') }}</span>
+            <span class="caption text_2--text">{{ t('walletHome.showAllTokens') }}</span>
           </v-btn>
           <v-btn
             v-if="hasCustomToken"
             class="gmt-edit-tokens refresh-btn ml-2"
             :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
             height="24"
-            :aria-label="$t('homeToken.editTokens')"
+            :aria-label="t('homeToken.editTokens')"
             @click="hideTokenMode = !hideTokenMode"
           >
             <v-icon left class="text_2--text" size="14">$vuetify.icons.pencil_edit</v-icon>
-            <span class="caption text_2--text">{{ $t('homeToken.editTokens') }}</span>
+            <span class="caption text_2--text">{{ t('homeToken.editTokens') }}</span>
           </v-btn>
         </div>
-        <div class="text_3--text refresh-text" small>{{ $t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
+        <div class="text_3--text refresh-text" small>{{ t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
       </v-flex>
     </v-layout>
   </v-container>

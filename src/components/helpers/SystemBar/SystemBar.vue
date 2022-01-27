@@ -40,7 +40,7 @@ export default {
   },
   computed: {
     messageFormatted() {
-      return capitalizeFirstLetter(this.type === 'announcement' ? this.message : this.$t(this.message))
+      return capitalizeFirstLetter(this.type === 'announcement' ? this.message : this.t(this.message))
     },
     barColor() {
       const barColor = []

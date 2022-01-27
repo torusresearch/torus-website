@@ -17,9 +17,9 @@
         <slot></slot>
       </a>
     </template>
-    <template v-if="copied">{{ $t('walletHome.copy') }}!</template>
+    <template v-if="copied">{{ t('walletHome.copy') }}!</template>
     <template v-else>
-      {{ $t('walletHome.copyToClipboard') }}
+      {{ t('walletHome.copyToClipboard') }}
     </template>
   </v-tooltip>
 </template>

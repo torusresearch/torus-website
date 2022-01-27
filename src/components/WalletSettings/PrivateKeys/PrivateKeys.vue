@@ -3,7 +3,7 @@
     <v-card-text class="py-6">
       <v-layout wrap>
         <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
-          <div class="font-weight-bold headline">{{ $t('walletSettings.privateKey') }}</div>
+          <div class="font-weight-bold headline">{{ t('walletSettings.privateKey') }}</div>
         </v-flex>
         <v-flex xs12 mt-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <v-list>
@@ -13,7 +13,7 @@
                 <v-icon size="26" class="text_3--text" :style="{ marginRight: '10px' }" v-text="'$vuetify.icons.json'" />
               </v-list-item-icon>
               <v-list-item-content>
-                <div class="text-subtitle-1 flex-grow-1 font-weight-bold">{{ $t('walletSettings.downloadSoftCopy') }} (JSON)</div>
+                <div class="text-subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.downloadSoftCopy') }} (JSON)</div>
                 <v-expand-transition>
                   <v-layout v-if="isShowGetPassword" wrap align-center justify-space-between class="mt-2 download-form-container">
                     <v-flex>
@@ -25,7 +25,7 @@
                           :rules="[rules.required, rules.password]"
                           autocomplete="new-password"
                           :type="showJsonPassword ? 'text' : 'password'"
-                          :placeholder="$t('walletSettings.enterPassword')"
+                          :placeholder="t('walletSettings.enterPassword')"
                         >
                           <template #append>
                             <v-btn icon aria-label="Show/Hide JSON Password" @click="showJsonPassword = !showJsonPassword">
@@ -46,10 +46,10 @@
                               :loading="isLoadingDownloadWallet"
                               @click="downloadWallet"
                             >
-                              {{ $t('walletSettings.confirm') }}
+                              {{ t('walletSettings.confirm') }}
                               <template #loader>
                                 <span>
-                                  {{ $t('tkeySettings.encrypting') }}
+                                  {{ t('tkeySettings.encrypting') }}
                                   <v-progress-circular :indeterminate="true" size="24" value="0" width="4" color="text_2" />
                                 </span>
                               </template>
@@ -63,7 +63,7 @@
                               :href="walletJson"
                               :download="name"
                             >
-                              {{ $t('walletSettings.downloadWallet') }}
+                              {{ t('walletSettings.downloadWallet') }}
                             </v-btn>
                           </template>
                         </v-text-field>
@@ -80,10 +80,10 @@
                         :loading="isLoadingDownloadWallet"
                         @click="downloadWallet"
                       >
-                        {{ $t('walletSettings.confirm') }}
+                        {{ t('walletSettings.confirm') }}
                         <template #loader>
                           <span>
-                            {{ $t('tkeySettings.encrypting') }}
+                            {{ t('tkeySettings.encrypting') }}
                             <v-progress-circular :indeterminate="true" size="24" value="0" width="4" color="text_2" />
                           </span>
                         </template>
@@ -96,7 +96,7 @@
                         :href="walletJson"
                         :download="name"
                       >
-                        {{ $t('walletSettings.downloadWallet') }}
+                        {{ t('walletSettings.downloadWallet') }}
                       </v-btn>
                     </v-flex>
                   </v-layout>
@@ -119,7 +119,7 @@
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="text-subtitle-1 flex-grow-1 font-weight-bold">
-                  {{ isSeedPhrase ? $t('tkeySettings.tkeySeedPhrase.showSeedPhrase') : $t('walletSettings.showPrivateKey') }}
+                  {{ isSeedPhrase ? t('tkeySettings.tkeySeedPhrase.showSeedPhrase') : t('walletSettings.showPrivateKey') }}
                 </div>
                 <v-layout v-if="isShowPrivateKey" wrap align-center justify-space-between class="mt-2">
                   <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12' : ''">
@@ -131,7 +131,7 @@
                     <ShowToolTip :address="selectedKey">
                       <v-btn id="click-to-copy-btn" text small class="torusBrand1--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
                         <v-icon small class="mr-1">$vuetify.icons.copy</v-icon>
-                        <span>{{ $t('walletSettings.clickCopy') }}</span>
+                        <span>{{ t('walletSettings.clickCopy') }}</span>
                       </v-btn>
                     </ShowToolTip>
                   </v-flex>
@@ -155,7 +155,7 @@
       </v-layout>
       <v-layout mt-4 pr-4>
         <v-spacer></v-spacer>
-        <v-btn id="close-btn" large text @click="onClose">{{ $t('walletSettings.close') }}</v-btn>
+        <v-btn id="close-btn" large text @click="onClose">{{ t('walletSettings.close') }}</v-btn>
       </v-layout>
     </v-card-text>
   </v-card>
@@ -187,8 +187,8 @@ export default {
       isLoadingDownloadWallet: false,
       downloadFormValid: true,
       rules: {
-        required: (value) => !!value || this.$t('walletSettings.required'),
-        password: (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,}$/.test(value) || this.$t('walletSettings.errors-invalid-password'),
+        required: (value) => !!value || this.t('walletSettings.required'),
+        password: (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,}$/.test(value) || this.t('walletSettings.errors-invalid-password'),
       },
     }
   },

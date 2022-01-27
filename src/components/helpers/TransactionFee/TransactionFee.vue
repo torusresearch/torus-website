@@ -3,8 +3,8 @@
     <v-layout>
       <v-flex class="body-2 mb-2">
         <span v-if="!isConfirm">
-          <span>{{ $t('walletTransfer.fee-max-transaction') }}*</span>
-          <HelpTooltip :title="$t('walletTransfer.fee-max-transaction')" :description="$t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
+          <span>{{ t('walletTransfer.fee-max-transaction') }}*</span>
+          <HelpTooltip :title="t('walletTransfer.fee-max-transaction')" :description="t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
         </span>
         <TransactionFeeAdvanced
           :gas="gas"
@@ -21,13 +21,13 @@
     </v-layout>
     <v-layout :class="isConfirm ? 'align-top' : 'align-center'">
       <v-flex v-if="isConfirm" xs3 class="caption mt-2">
-        <span>{{ $t('walletTransfer.fee-max-transaction') }}*</span>
-        <HelpTooltip :title="$t('walletTransfer.fee-max-transaction')" :description="$t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
+        <span>{{ t('walletTransfer.fee-max-transaction') }}*</span>
+        <HelpTooltip :title="t('walletTransfer.fee-max-transaction')" :description="t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
       </v-flex>
       <v-flex mb-1 :class="[isConfirm ? 'xs9' : 'xs12']">
         <v-text-field
           outlined
-          :value="$t('walletTransfer.fee-upto').replace(/{amount}/gi, maxFeeDisplay)"
+          :value="t('walletTransfer.fee-upto').replace(/{amount}/gi, maxFeeDisplay)"
           disabled
           :hint="`*${t('walletTransfer.fee-max-transaction-hint')}`"
           persistent-hint

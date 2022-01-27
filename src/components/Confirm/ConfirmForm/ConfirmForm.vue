@@ -4,7 +4,7 @@
       <v-layout pa-6 class="confirm-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
         <v-flex text-left xs12>
           <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
-          <div class="headline text_2--text">{{ $t('dappTransfer.confirmation') }}</div>
+          <div class="headline text_2--text">{{ t('dappTransfer.confirmation') }}</div>
         </v-flex>
       </v-layout>
       <v-layout wrap align-center mx-6 mb-3 mt-5>
@@ -24,7 +24,7 @@
             </span>
           </v-flex>
           <ShowToolTip :address="amountTo">
-            <div class="caption">{{ $t('dappTransfer.to') }}: {{ amountTo }}</div>
+            <div class="caption">{{ t('dappTransfer.to') }}: {{ amountTo }}</div>
           </ShowToolTip>
         </v-flex>
         <v-flex v-else xs12>
@@ -36,15 +36,15 @@
             "
             :address="amountTo"
           >
-            <div class="caption">{{ $t('dappTransfer.to') }}: {{ amountTo }}</div>
+            <div class="caption">{{ t('dappTransfer.to') }}: {{ amountTo }}</div>
           </ShowToolTip>
           <ShowToolTip
             v-else-if="[TRANSACTION_TYPES.SENT_ETHER, TRANSACTION_TYPES.CONTRACT_INTERACTION].indexOf(transactionCategory) >= 0"
             :address="receiver"
           >
-            <div class="caption">{{ $t('dappTransfer.to') }}: {{ receiver }}</div>
+            <div class="caption">{{ t('dappTransfer.to') }}: {{ receiver }}</div>
           </ShowToolTip>
-          <div v-else class="caption">{{ $t('dappTransfer.to') }}: {{ displayAmountTo }}</div>
+          <div v-else class="caption">{{ t('dappTransfer.to') }}: {{ displayAmountTo }}</div>
         </v-flex>
       </v-layout>
       <v-divider class="mx-6 my-4"></v-divider>
@@ -55,8 +55,8 @@
               ((contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155) &&
                 transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) ||
               (isSpecialContract && transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER)
-                ? $t('walletTransfer.collectibleId')
-                : $t('walletTransfer.totalCost')
+                ? t('walletTransfer.collectibleId')
+                : t('walletTransfer.totalCost')
             }}
           </div>
         </v-flex>
@@ -98,7 +98,7 @@
       <v-divider class="mt-10 my-4"></v-divider>
       <v-layout mx-6 mt-4 pb-10 wrap>
         <v-flex xs3 class="pt-3">
-          <div class="caption">{{ $t('dappTransfer.youSend') }}</div>
+          <div class="caption">{{ t('dappTransfer.youSend') }}</div>
         </v-flex>
         <v-flex xs9>
           <v-text-field
@@ -115,31 +115,31 @@
           <v-dialog v-model="detailsDialog" width="600px">
             <template #activator="{ on }">
               <div id="more-details-link" class="text-subtitle-2 float-right dialog-launcher primary--text" v-on="on">
-                {{ $t('dappTransfer.moreDetails') }}
+                {{ t('dappTransfer.moreDetails') }}
               </div>
             </template>
             <v-card class="pa-4 more-details-container">
               <v-card-text class="text_1--text">
                 <v-layout wrap>
                   <v-flex xs4 sm2>
-                    {{ $t('dappTransfer.rate') }}
+                    {{ t('dappTransfer.rate') }}
                     <span class="float-right mr-4">:</span>
                   </v-flex>
                   <v-flex id="currency-rate" xs8 sm10 class="text_2--text">{{ getCurrencyRate }}</v-flex>
                   <v-flex xs4 sm2>
-                    {{ $t('dappTransfer.network') }}
+                    {{ t('dappTransfer.network') }}
                     <span class="float-right mr-4">:</span>
                   </v-flex>
                   <v-flex xs8 sm10 class="text_2--text">
                     <span id="network" class="text-capitalize">{{ network.networkName || network.host }}</span>
                   </v-flex>
                   <v-flex xs4 sm2>
-                    {{ $t('dappTransfer.type') }}
+                    {{ t('dappTransfer.type') }}
                     <span class="float-right mr-4">:</span>
                   </v-flex>
                   <v-flex id="type" xs8 sm10 class="text_2--text">{{ header }}</v-flex>
                   <v-flex v-if="txData || txDataParams !== ''" xs2>
-                    {{ $t('dappTransfer.data') }}
+                    {{ t('dappTransfer.data') }}
                     <span class="float-right mr-4">:</span>
                   </v-flex>
                   <v-flex xs12 mt-1>
@@ -150,7 +150,7 @@
                     </v-card>
                   </v-flex>
                   <v-flex v-if="txData" xs12 mt-4>
-                    <div class="mb-1">Hex {{ $t('dappTransfer.data') }}:</div>
+                    <div class="mb-1">Hex {{ t('dappTransfer.data') }}:</div>
                     <v-card flat color="background_3" :style="{ 'word-break': 'break-all' }">
                       <v-card-text>{{ txData }}</v-card-text>
                     </v-card>
@@ -160,18 +160,18 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn id="less-details-link" color="primary" text @click="detailsDialog = false">
-                  {{ $t('dappTransfer.lessDetails') }}
+                  {{ t('dappTransfer.lessDetails') }}
                 </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
         </v-flex>
         <v-flex v-if="topUpErrorShow || canShowError" xs12 mb-4 class="text-right">
-          <div class="caption error--text">{{ errorMsg === 'dappTransfer.insufficientFunds' ? $t('dappTransfer.insufficientFunds') : errorMsg }}</div>
+          <div class="caption error--text">{{ errorMsg === 'dappTransfer.insufficientFunds' ? t('dappTransfer.insufficientFunds') : errorMsg }}</div>
           <div v-if="topUpErrorShow" class="caption mt-1">
-            {{ $t('dappTransfer.pleaseTopup1') }}
-            <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">{{ $t('dappTransfer.pleaseTopup2') }}</v-btn>
-            {{ $t('dappTransfer.pleaseTopup3') }}
+            {{ t('dappTransfer.pleaseTopup1') }}
+            <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">{{ t('dappTransfer.pleaseTopup2') }}</v-btn>
+            {{ t('dappTransfer.pleaseTopup3') }}
           </div>
         </v-flex>
         <v-flex v-if="transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE" xs12 mb-4>
@@ -180,7 +180,7 @@
         <v-flex xs12 mt-4>
           <v-layout mx-n2>
             <v-flex xs6 px-2>
-              <v-btn block text large class="text_2--text" @click="triggerDeny">{{ $t('dappTransfer.cancel') }}</v-btn>
+              <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>
             </v-flex>
             <v-flex xs6 px-2>
               <v-btn
@@ -193,7 +193,7 @@
                 class="white--text"
                 @click="triggerSign"
               >
-                {{ $t('dappTransfer.confirm') }}
+                {{ t('dappTransfer.confirm') }}
               </v-btn>
             </v-flex>
           </v-layout>
@@ -216,27 +216,27 @@
           <div class="headline text_2--text">
             {{
               type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY
-                ? $t('dappProvider.encryptionRequest')
+                ? t('dappProvider.encryptionRequest')
                 : type === MESSAGE_TYPE.ETH_DECRYPT
-                ? $t('dappProvider.decryptionRequest')
-                : $t('dappTransfer.permission')
+                ? t('dappProvider.decryptionRequest')
+                : t('dappTransfer.permission')
             }}
           </div>
         </v-flex>
       </v-layout>
       <v-layout v-if="type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY" wrap my-10>
         <v-flex xs12 mx-6>
-          <div class="text_2--text headline">{{ $t('dappProvider.allowCompose').replace(/\{dappname\}/gi, origin.hostname) }}</div>
+          <div class="text_2--text headline">{{ t('dappProvider.allowCompose').replace(/\{dappname\}/gi, origin.hostname) }}</div>
         </v-flex>
       </v-layout>
       <v-layout v-if="type === MESSAGE_TYPE.ETH_DECRYPT" wrap my-10>
         <v-flex xs12 mx-6>
-          <div class="text_2--text headline">{{ $t('dappProvider.allowRead').replace(/\{dappname\}/gi, origin.hostname) }}</div>
+          <div class="text_2--text headline">{{ t('dappProvider.allowRead').replace(/\{dappname\}/gi, origin.hostname) }}</div>
         </v-flex>
       </v-layout>
       <v-layout wrap align-center mx-6 my-6>
         <v-flex xs12 mb-2>
-          <div class="caption mb-2 text_2--text">{{ $t('dappProvider.requestFrom') }}:</div>
+          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
 
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
@@ -271,7 +271,7 @@
             <div class="message_cover" :class="$vuetify.theme.isDark ? 'is-dark' : ''"></div>
             <div class="message_cover-lock" :class="$vuetify.theme.isDark ? 'is-dark' : ''" @click="decryptInline">
               <v-icon size="16" class="text_2--text mr-1">$vuetify.icons.lock_filled</v-icon>
-              <div class="message-lock-text">{{ $t('dappProvider.decryptMessage') }}</div>
+              <div class="message-lock-text">{{ t('dappProvider.decryptMessage') }}</div>
             </div>
             <v-card-text>
               <div class="caption text_2--text" :style="{ height: '100px' }">{{ message }}</div>
@@ -282,7 +282,7 @@
           <ShowToolTip :address="encryptedMessage">
             <v-btn small class="copy-encrypted-btn" aria-label="Copy encrypted message">
               <v-icon class="caption text_2--text" left size="12" v-text="'$vuetify.icons.copy'" />
-              <span class="caption text_2--text">{{ $t('dappProvider.copyEncrypted') }}</span>
+              <span class="caption text_2--text">{{ t('dappProvider.copyEncrypted') }}</span>
             </v-btn>
           </ShowToolTip>
         </v-flex>
@@ -294,7 +294,7 @@
               <v-icon v-if="$store.state.whiteLabel.isActive" small class="torusBrand1--text">$vuetify.icons.check_circle</v-icon>
               <img v-else src="../../../assets/img/icons/check-circle-primary.svg" width="12" alt="Data Icon" />
             </div>
-            <div class="caption text_2--text text-capitalize">{{ $t('dappTransfer.data') }}</div>
+            <div class="caption text_2--text text-capitalize">{{ t('dappTransfer.data') }}</div>
           </div>
         </v-flex>
         <v-flex xs12 mb-4 mx-6>
@@ -321,7 +321,7 @@
 
                   <v-expansion-panels v-else-if="type === MESSAGE_TYPE.ETH_SIGN_TYPED_DATA && Array.isArray(typedMessages)">
                     <v-expansion-panel :class="$vuetify.theme.isDark ? 'dark--theme' : ''">
-                      <v-expansion-panel-header>{{ $t('dappTransfer.dataSmall') }}</v-expansion-panel-header>
+                      <v-expansion-panel-header>{{ t('dappTransfer.dataSmall') }}</v-expansion-panel-header>
                       <v-expansion-panel-content v-for="(typedMessage, index) in typedMessages" :key="index">
                         <VueJsonPretty :path="'res'" :data="typedMessage" :showline="true" :deep="5"></VueJsonPretty>
                       </v-expansion-panel-content>
@@ -340,8 +340,8 @@
               <v-btn block text large class="text_2--text" @click="triggerDeny">
                 {{
                   type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY || type === MESSAGE_TYPE.ETH_DECRYPT
-                    ? $t('dappProvider.deny')
-                    : $t('dappProvider.cancel')
+                    ? t('dappProvider.deny')
+                    : t('dappProvider.cancel')
                 }}
               </v-btn>
             </v-flex>
@@ -349,8 +349,8 @@
               <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
                 {{
                   type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY || type === MESSAGE_TYPE.ETH_DECRYPT
-                    ? $t('dappProvider.allow')
-                    : $t('dappProvider.confirm')
+                    ? t('dappProvider.allow')
+                    : t('dappProvider.confirm')
                 }}
               </v-btn>
             </v-flex>
@@ -490,26 +490,26 @@ export default {
       switch (this.transactionCategory) {
         case TRANSACTION_TYPES.DEPLOY_CONTRACT:
           // return 'Contract Deployment'
-          return this.$t('dappTransfer.deploy')
+          return this.t('dappTransfer.deploy')
         case TRANSACTION_TYPES.CONTRACT_INTERACTION:
           return this.getHeaderByDapp()
         case TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           // return 'ERC721 SafeTransferFrom'
-          return this.$t('dappTransfer.collectibleSafe')
+          return this.t('dappTransfer.collectibleSafe')
         case TRANSACTION_TYPES.TOKEN_METHOD_APPROVE:
           // return 'ERC20 Approve'
-          return this.$t('dappTransfer.approve')
+          return this.t('dappTransfer.approve')
         case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER:
         case TRANSACTION_TYPES.SENT_ETHER:
           // return 'ERC2O Transfer'
           // return 'Send Ether'
-          return this.$t('dappTransfer.transfer')
+          return this.t('dappTransfer.transfer')
         case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM:
           // return 'ERC2O Transfer From'
-          return this.$t('dappTransfer.transferFrom')
+          return this.t('dappTransfer.transferFrom')
         default:
           // return 'Transaction Request'
-          return this.$t('dappTransfer.transaction')
+          return this.t('dappTransfer.transaction')
       }
     },
     isLightHeader() {
@@ -520,14 +520,14 @@ export default {
         case TRANSACTION_TYPES.TOKEN_METHOD_APPROVE:
         case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER:
         case TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM:
-          return `${this.$t('dappTransfer.to')}: ${this.slicedAddress(this.amountTo)}`
+          return `${this.t('dappTransfer.to')}: ${this.slicedAddress(this.amountTo)}`
         case TRANSACTION_TYPES.SENT_ETHER:
         case TRANSACTION_TYPES.CONTRACT_INTERACTION:
-          return `${this.$t('dappTransfer.to')}: ${this.slicedAddress(this.receiver)}`
+          return `${this.t('dappTransfer.to')}: ${this.slicedAddress(this.receiver)}`
         case TRANSACTION_TYPES.DEPLOY_CONTRACT:
-          return this.$t('dappTransfer.newContract')
+          return this.t('dappTransfer.newContract')
         default:
-          return this.$t('dappTransfer.transactionRequest')
+          return this.t('dappTransfer.transactionRequest')
       }
     },
     displayAmountValue() {
@@ -542,9 +542,9 @@ export default {
         case TRANSACTION_TYPES.CONTRACT_INTERACTION:
           return `${this.amountDisplay(this.value)} ${this.network.ticker}`
         case TRANSACTION_TYPES.DEPLOY_CONTRACT:
-          return this.$t('dappTransfer.notApplicable')
+          return this.t('dappTransfer.notApplicable')
         default:
-          return this.$t('dappTransfer.transactionRequest')
+          return this.t('dappTransfer.transactionRequest')
       }
     },
     displayAmountConverted() {
@@ -874,7 +874,7 @@ export default {
     },
     significantDigits,
     getHeaderByDapp() {
-      return this.$t('dappTransfer.contractInteraction')
+      return this.t('dappTransfer.contractInteraction')
     },
     calculateTransaction() {
       this.gasCost = this.gasEstimate.times(this.gasPrice).div(new BigNumber('10').pow(new BigNumber('9')))

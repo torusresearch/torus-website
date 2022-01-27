@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     formatDescription() {
-      const finalDesc = this.verifier.description ? this.$t(this.verifier.description) : this.$t('dappLogin.continue')
+      const finalDesc = this.verifier.description ? this.t(this.verifier.description) : this.t('dappLogin.continue')
       return finalDesc.replace(/{verifier}/gi, this.verifier.name.charAt(0).toUpperCase() + this.verifier.name.slice(1))
     },
     iconName() {

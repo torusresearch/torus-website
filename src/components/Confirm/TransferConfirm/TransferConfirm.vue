@@ -3,7 +3,7 @@
     <v-layout py-6 class="elevation-1">
       <v-flex xs12 text-center>
         <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
-        <div class="headline">{{ $t('walletTransfer.confirmTransaction') }}</div>
+        <div class="headline">{{ t('walletTransfer.confirmTransaction') }}</div>
       </v-flex>
     </v-layout>
     <v-layout py-3 px-6 wrap>
@@ -39,7 +39,7 @@
                   </v-badge>
                 </template>
                 <span>
-                  <div class="text_2--text twitter-note">{{ $t('walletTransfer.twitterVerifyNote') }}</div>
+                  <div class="text_2--text twitter-note">{{ t('walletTransfer.twitterVerifyNote') }}</div>
                 </span>
               </v-tooltip>
             </div>
@@ -71,7 +71,7 @@
       <v-flex xs12>
         <div class="d-flex align-start justify-space-between" :class="isNonFungibleToken ? 'align-center' : 'align-start'">
           <div :style="{ lineHeight: '0px' }">
-            <span class="caption">{{ isNonFungibleToken ? $t('walletTransfer.assetToSend') : $t('walletTransfer.amountToSend') }}</span>
+            <span class="caption">{{ isNonFungibleToken ? t('walletTransfer.assetToSend') : t('walletTransfer.amountToSend') }}</span>
           </div>
           <div v-if="isNonFungibleToken" class="ml-auto caption d-flex align-center text-right" :style="{ maxWidth: '200px' }">
             <span class="mr-2">{{ assetSelected.name }}</span>
@@ -86,7 +86,7 @@
       <v-flex xs12 mt-10>
         <div class="d-flex align-start">
           <div :style="{ lineHeight: '0px' }">
-            <span class="caption">{{ isEip1559 ? $t('walletTransfer.fee-max-transaction') : $t('walletTransfer.transferFee') }}</span>
+            <span class="caption">{{ isEip1559 ? t('walletTransfer.fee-max-transaction') : t('walletTransfer.transferFee') }}</span>
           </div>
           <div class="ml-auto">
             <div class="caption text-right font-weight-medium">{{ transactionFeeDisplay }} {{ selectedCurrency }}</div>
@@ -95,7 +95,7 @@
         </div>
         <div v-if="gasEstimateFailed" class="caption text-right mt-1">
           <v-icon x-small class="error--text mr-1">$vuetify.icons.alert</v-icon>
-          <span class="error--text">{{ $t('walletTransfer.gasEstimateFail') }}</span>
+          <span class="error--text">{{ t('walletTransfer.gasEstimateFail') }}</span>
         </div>
       </v-flex>
     </v-layout>
@@ -104,12 +104,12 @@
       <v-flex xs12>
         <div class="d-flex align-start">
           <div :style="{ lineHeight: '0px' }">
-            <span class="text-subtitle-2">{{ $t('walletTransfer.totalCost') }}</span>
+            <span class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
           </div>
           <div class="ml-auto">
             <div class="text-subtitle-2 text-right">{{ isNonFungibleToken ? `${transactionFeeEthDisplay} ETH` : totalCost }}</div>
             <div class="caption-2 text-right">{{ isNonFungibleToken ? `${transactionFee} ${selectedCurrency}` : totalCostConverted }}</div>
-            <div v-if="insufficientFunds" class="caption error--text">{{ $t('walletTransfer.insufficient') }}</div>
+            <div v-if="insufficientFunds" class="caption error--text">{{ t('walletTransfer.insufficient') }}</div>
           </div>
         </div>
       </v-flex>
@@ -119,7 +119,7 @@
       <v-flex xs12 my-10>
         <v-layout mx-n2>
           <v-flex xs6 px-2>
-            <v-btn block large text @click="onCancel">{{ $t('walletTransfer.cancel') }}</v-btn>
+            <v-btn block large text @click="onCancel">{{ t('walletTransfer.cancel') }}</v-btn>
           </v-flex>
           <v-flex xs6 px-2>
             <v-btn
@@ -132,7 +132,7 @@
               :disabled="insufficientFunds"
               @click="onConfirm"
             >
-              {{ $t('walletTransfer.confirm') }}
+              {{ t('walletTransfer.confirm') }}
             </v-btn>
           </v-flex>
         </v-layout>

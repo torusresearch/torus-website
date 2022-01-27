@@ -22,15 +22,15 @@
           <v-list-item-content class="align-self-center text-right text_1--text caption">
             <div v-html="`${t('walletTopUp.paywith')} ${targetProvider.line1}`" />
             <div>
-              <span class="font-weight-medium">{{ $t('walletTopUp.fees') }}</span>
+              <span class="font-weight-medium">{{ t('walletTopUp.fees') }}</span>
               : {{ targetProvider.line2 }}
             </div>
             <div>
-              <span class="font-weight-medium">{{ $t('walletTopUp.limits') }}</span>
+              <span class="font-weight-medium">{{ t('walletTopUp.limits') }}</span>
               : {{ targetProvider.line3 }}
             </div>
             <div>
-              <span class="font-weight-medium">{{ $t('walletTopUp.currencies') }}</span>
+              <span class="font-weight-medium">{{ t('walletTopUp.currencies') }}</span>
               : {{ targetProvider.line4 }}
             </div>
           </v-list-item-content>
@@ -62,9 +62,9 @@
 
     <div id="write-to-us" class="mt-4 py-4 px-1 text-gray caption">
       <div>
-        {{ $t('walletTopUp.otherMode') }}
+        {{ t('walletTopUp.otherMode') }}
         <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank" rel="noreferrer noopener" :style="{ textDecoration: 'none' }">
-          {{ $t('walletTopUp.writeToUs') }}
+          {{ t('walletTopUp.writeToUs') }}
         </a>
       </div>
     </div>

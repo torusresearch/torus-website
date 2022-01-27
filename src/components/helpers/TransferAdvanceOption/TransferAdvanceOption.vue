@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" persistent>
     <template #activator="{ on }">
       <a v-show="displayAmount" id="advance-option-link" class="float-right torusBrand1--text" :class="isConfirm ? 'caption' : 'body-2'" v-on="on">
-        {{ isConfirm ? 'Edit' : $t('walletTransfer.advancedOptions') }}
+        {{ isConfirm ? 'Edit' : t('walletTransfer.advancedOptions') }}
       </a>
     </template>
     <v-card class="advance-option py-4">
@@ -10,34 +10,34 @@
         <v-form ref="advanceOptionForm" v-model="advanceOptionFormValid" lazy-validation @submit.prevent="saveOptions">
           <v-layout wrap>
             <v-flex xs12 px-4>
-              <div class="font-weight-bold headline">{{ $t('walletTransfer.transferDetails') }}</div>
-              <div class="font-weight-bold text-subtitle-2">{{ $t('walletTransfer.customizeGas') }}</div>
+              <div class="font-weight-bold headline">{{ t('walletTransfer.transferDetails') }}</div>
+              <div class="font-weight-bold text-subtitle-2">{{ t('walletTransfer.customizeGas') }}</div>
             </v-flex>
             <v-flex xs12 mt-4>
               <v-layout wrap>
                 <v-flex xs12 sm6 px-4>
                   <div class="text-subtitle-2 mb-2">
-                    {{ $t('walletTransfer.gasPrice') }} (GWEI)
-                    <HelpTooltip :title="$t('walletTransfer.gasPrice')">
+                    {{ t('walletTransfer.gasPrice') }} (GWEI)
+                    <HelpTooltip :title="t('walletTransfer.gasPrice')">
                       <template #description>
                         <div class="body-2 text_3--text text-justify">
-                          <span class="font-weight-medium">{{ $t('walletTransfer.gasPriceDesc1') }}</span>
-                          {{ $t('walletTransfer.gasPriceDesc2') }}
-                          <span class="font-weight-medium">{{ $t('walletTransfer.gasPriceDesc3') }}</span>
-                          {{ $t('walletTransfer.gasPriceDesc4') }}
+                          <span class="font-weight-medium">{{ t('walletTransfer.gasPriceDesc1') }}</span>
+                          {{ t('walletTransfer.gasPriceDesc2') }}
+                          <span class="font-weight-medium">{{ t('walletTransfer.gasPriceDesc3') }}</span>
+                          {{ t('walletTransfer.gasPriceDesc4') }}
                         </div>
                         <div class="caption mt-1 text_3--text">
                           1 Gwei=10
                           <sup>-9</sup>
                           {{ networkTicker }}
-                          <small>({{ $t('walletTransfer.gasPriceDesc5') }})</small>
+                          <small>({{ t('walletTransfer.gasPriceDesc5') }})</small>
                         </div>
                       </template>
                     </HelpTooltip>
                   </div>
                   <v-text-field
                     id="gas-price"
-                    :placeholder="$t('walletTransfer.enterValue')"
+                    :placeholder="t('walletTransfer.enterValue')"
                     outlined
                     :value="advancedActiveGasPrice"
                     :rules="[rules.valid, rules.moreThanZero]"
@@ -47,8 +47,8 @@
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
                   <div class="text-subtitle-2 mb-2">
-                    {{ $t('walletTransfer.gasLimit') }}
-                    <HelpTooltip :title="$t('walletTransfer.gasLimit')" :description="$t('walletTransfer.gasLimitDesc')"></HelpTooltip>
+                    {{ t('walletTransfer.gasLimit') }}
+                    <HelpTooltip :title="t('walletTransfer.gasLimit')" :description="t('walletTransfer.gasLimitDesc')"></HelpTooltip>
                   </div>
                   <v-text-field
                     id="advanced-gas"
@@ -63,15 +63,15 @@
                   <div class="text-subtitle-2 mb-2">Nonce</div>
                   <v-combobox id="nonce" v-model="newNonce" outlined :items="nonceItems" :rules="[rules.validNonce]">
                     <template #item="props">
-                      {{ $t(props.item.text) }}
+                      {{ t(props.item.text) }}
                     </template>
                     <template #selection="{ item }">
-                      {{ item.text ? $t(item.text) : item }}
+                      {{ item.text ? t(item.text) : item }}
                     </template>
                   </v-combobox>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
-                  <div class="text-subtitle-2 mb-2">{{ $t('walletTransfer.transferFee') }}</div>
+                  <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.transferFee') }}</div>
                   <template v-if="$vuetify.breakpoint.xsOnly">
                     <span class="float-right">
                       <span id="transaction-fee-mobile">{{ gasAmountDisplay }}</span>
@@ -91,7 +91,7 @@
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mt-5' : ''">
-                  <div class="text-subtitle-2 mb-2">{{ $t('walletTransfer.newTotal') }}</div>
+                  <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.newTotal') }}</div>
                   <template v-if="$vuetify.breakpoint.xsOnly">
                     <span class="float-right text-subtitle-1 font-weight-bold torusBrand1--text">{{ totalCost }}{{ networkTicker }}</span>
                     <v-divider class="mt-1 mb-2"></v-divider>
@@ -111,7 +111,7 @@
           </v-layout>
           <v-layout mt-4 pr-4>
             <v-spacer></v-spacer>
-            <v-btn large text @click="onCancel">{{ $t('walletTransfer.cancel') }}</v-btn>
+            <v-btn large text @click="onCancel">{{ t('walletTransfer.cancel') }}</v-btn>
             <v-btn
               id="adv-opt-submit-btn"
               large
@@ -120,7 +120,7 @@
               type="submit"
               :disabled="!advanceOptionFormValid"
             >
-              {{ $t('walletTransfer.save') }}
+              {{ t('walletTransfer.save') }}
             </v-btn>
           </v-layout>
         </v-form>
@@ -182,15 +182,15 @@ export default {
       advancedGas: new BigNumber('0'),
       CONTRACT_TYPE_ERC20,
       rules: {
-        moreThanZero: (value) => new BigNumber(value || '0').gt(new BigNumber('0')) || this.$t('walletTransfer.invalidAmount'),
-        valid: (value) => !!value || this.$t('walletTransfer.required'),
+        moreThanZero: (value) => new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount'),
+        valid: (value) => !!value || this.t('walletTransfer.required'),
         validNonce: (value) => {
-          if (value === null) return this.$t('walletTransfer.invalidInput')
+          if (value === null) return this.t('walletTransfer.invalidInput')
           const newValue = Number(value.value || value)
           if (Number.isNaN(newValue)) {
-            return value.value === 'default' || this.$t('walletTransfer.invalidInput')
+            return value.value === 'default' || this.t('walletTransfer.invalidInput')
           }
-          return newValue >= 0 || this.$t('walletTransfer.invalidInput')
+          return newValue >= 0 || this.t('walletTransfer.invalidInput')
         },
       },
       newNonce: 0,

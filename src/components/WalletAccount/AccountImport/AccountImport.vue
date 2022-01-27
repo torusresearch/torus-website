@@ -3,11 +3,11 @@
     <v-container>
       <v-layout wrap my-4>
         <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
-          <div class="font-weight-bold headline">{{ $t('accountMenu.importAccount') }}</div>
+          <div class="font-weight-bold headline">{{ t('accountMenu.importAccount') }}</div>
         </v-flex>
         <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
           <v-flex xs12 mt-4>
-            <div class="text-subtitle-2 mb-2">{{ $t('accountMenu.selectImportType') }}</div>
+            <div class="text-subtitle-2 mb-2">{{ t('accountMenu.selectImportType') }}</div>
             <v-select
               v-model="selectedType"
               outlined
@@ -31,7 +31,7 @@
             >
               <v-layout wrap>
                 <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
-                  <div class="text-subtitle-2 mb-2">{{ $t('accountMenu.inputPrivateKey') }}:</div>
+                  <div class="text-subtitle-2 mb-2">{{ t('accountMenu.inputPrivateKey') }}:</div>
                   <v-text-field
                     v-model="privateKey"
                     class="private-key"
@@ -39,7 +39,7 @@
                     :type="showPrivateKey ? 'text' : 'password'"
                     :rules="[rules.required]"
                     :name="randomName"
-                    :label="$t('accountMenu.privateKey')"
+                    :label="t('accountMenu.privateKey')"
                     single-line
                     @input="canShowError = false"
                   >
@@ -56,7 +56,7 @@
                 <v-flex xs12 class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <v-spacer></v-spacer>
                   <v-btn text @click="onClose">
-                    {{ $t('accountMenu.back') }}
+                    {{ t('accountMenu.back') }}
                   </v-btn>
                   <v-btn
                     id="import-account-private"
@@ -67,7 +67,7 @@
                     class="px-8 white--text"
                     type="submit"
                   >
-                    {{ $t('accountMenu.import') }}
+                    {{ t('accountMenu.import') }}
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -81,21 +81,21 @@
                 <v-flex xs12 mb-2 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <v-layout wrap align-center justify-space-between>
                     <v-flex grow>
-                      <span class="mr-1">{{ $t('accountMenu.uploadJsonLabel') }}</span>
-                      <HelpTooltip :title="$t('accountMenu.uploadJsonTitle')" :description="$t('accountMenu.uploadJsonDesc')"></HelpTooltip>
+                      <span class="mr-1">{{ t('accountMenu.uploadJsonLabel') }}</span>
+                      <HelpTooltip :title="t('accountMenu.uploadJsonTitle')" :description="t('accountMenu.uploadJsonDesc')"></HelpTooltip>
                     </v-flex>
                     <v-flex shrink>
                       <v-btn outlined class="upload-button" color="torusBrand1" @click.prevent="openFilePicker">
                         <v-icon left>$vuetify.icons.question</v-icon>
-                        {{ $t('accountMenu.upload') }}
+                        {{ t('accountMenu.upload') }}
                       </v-btn>
                       <input v-show="false" ref="keystoreUpload" multiple="false" type="file" @change="processFile" />
                     </v-flex>
                   </v-layout>
-                  <div v-show="selectedFileName !== ''" class="text-right">{{ $t('accountMenu.selectedFile') }}: {{ selectedFileName }}</div>
+                  <div v-show="selectedFileName !== ''" class="text-right">{{ t('accountMenu.selectedFile') }}: {{ selectedFileName }}</div>
                 </v-flex>
                 <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
-                  <div class="text-subtitle-2 mb-2">{{ $t('accountMenu.enterPassword') }}:</div>
+                  <div class="text-subtitle-2 mb-2">{{ t('accountMenu.enterPassword') }}:</div>
                   <v-text-field
                     v-model="jsonPassword"
                     class="password-input"
@@ -103,7 +103,7 @@
                     name="password"
                     :rules="[rules.required]"
                     :type="showJsonPassword ? 'text' : 'password'"
-                    :placeholder="$t('accountMenu.password')"
+                    :placeholder="t('accountMenu.password')"
                     autocomplete="current-password"
                     @click:append="toggleJsonPasswordShow"
                   >
@@ -122,7 +122,7 @@
                 <v-flex xs12 class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <v-spacer></v-spacer>
                   <v-btn text @click="onClose">
-                    {{ $t('accountMenu.back') }}
+                    {{ t('accountMenu.back') }}
                   </v-btn>
                   <v-btn
                     id="import-account-keystore"
@@ -133,7 +133,7 @@
                     class="px-8 white--text gmt-import-account"
                     type="submit"
                   >
-                    {{ $t('accountMenu.import') }}
+                    {{ t('accountMenu.import') }}
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -178,7 +178,7 @@ export default {
       isLoadingPrivate: false,
       isLoadingKeystore: false,
       rules: {
-        required: (value) => !!value || this.$t('accountMenu.required'),
+        required: (value) => !!value || this.t('accountMenu.required'),
       },
     }
   },
@@ -186,11 +186,11 @@ export default {
     options() {
       return [
         // {
-        //   name: this.$t('accountMenu.privateKey'),
+        //   name: this.t('accountMenu.privateKey'),
         //   value: 'private',
         // },
         {
-          name: this.$t('accountMenu.keystore'),
+          name: this.t('accountMenu.keystore'),
           value: 'keystore',
         },
       ]
@@ -290,7 +290,7 @@ export default {
       }
     },
     setErrorState(error) {
-      this.error = error && error.message && error.message.includes('wrong passphrase') ? this.$t('accountMenu.incorrectPassword') : error
+      this.error = error && error.message && error.message.includes('wrong passphrase') ? this.t('accountMenu.incorrectPassword') : error
       this.canShowError = true
       log.error(error)
       this.isLoadingKeystore = false

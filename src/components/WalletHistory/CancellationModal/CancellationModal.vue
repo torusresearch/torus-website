@@ -3,7 +3,7 @@
     <v-card class="cancel-transaction-modal">
       <v-card-text class="pa-0">
         <div class="card-header text-center xs12 py-6 px-6">
-          <div class="text-body2 text_1--text font-weight-bold">{{ $t('walletActivity.cancelModalTitle') }}</div>
+          <div class="text-body2 text_1--text font-weight-bold">{{ t('walletActivity.cancelModalTitle') }}</div>
           <v-btn class="close-btn" icon aria-label="Close cancel transaction" title="Close cancel transaction" @click="close">
             <v-icon>$vuetify.icons.close</v-icon>
           </v-btn>
@@ -40,21 +40,21 @@
               :ripple="false"
             />
             <label for="is-confirmed" class="text-caption is-confirmed-label">
-              {{ $t('walletActivity.cancelModalDesc') }} {{ cancellationFeeEstimate }}.
+              {{ t('walletActivity.cancelModalDesc') }} {{ cancellationFeeEstimate }}.
             </label>
           </div>
-          <div class="ma-2 text-caption">{{ $t('walletActivity.cancelModalNote') }}</div>
+          <div class="ma-2 text-caption">{{ t('walletActivity.cancelModalNote') }}</div>
         </div>
       </v-card-text>
       <v-card-actions>
         <v-layout class="pb-4">
           <v-flex xs6>
-            <v-btn block text color="text_2" @click="close">{{ $t('walletActivity.cancelModalClose') }}</v-btn>
+            <v-btn block text color="text_2" @click="close">{{ t('walletActivity.cancelModalClose') }}</v-btn>
           </v-flex>
           <v-divider vertical></v-divider>
           <v-flex xs6>
             <v-btn color="torusBrand1" depressed block class="py-1 white--text" :disabled="!isConfirmed" @click="cancelTransaction">
-              {{ $t('walletActivity.cancelModalConfirm') }}
+              {{ t('walletActivity.cancelModalConfirm') }}
             </v-btn>
           </v-flex>
         </v-layout>

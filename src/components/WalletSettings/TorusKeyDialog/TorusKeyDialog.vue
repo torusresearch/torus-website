@@ -3,7 +3,7 @@
     <v-card-text class="py-6">
       <v-layout wrap>
         <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
-          <div class="font-weight-bold headline">{{ $t('walletSettings.customKey.setCustomPrivateKey') }}</div>
+          <div class="font-weight-bold headline">{{ t('walletSettings.customKey.setCustomPrivateKey') }}</div>
         </v-flex>
         <v-flex xs12 mb-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <v-form ref="customPrivateKeyForm" v-model="customPrivateKeyFormValid" lazy-validation @submit.prevent="setKey">
@@ -21,14 +21,14 @@
                   type="submit"
                   :disabled="!customPrivateKeyFormValid"
                 >
-                  {{ $t('walletSettings.customKey.replace') }}
+                  {{ t('walletSettings.customKey.replace') }}
                 </v-btn>
               </v-flex>
             </v-layout>
           </v-form>
         </v-flex>
         <v-flex xs12>
-          <div class="caption text_3--text mb-4 px-5">{{ $t('walletSettings.customKey.noteReplaceWarning') }}</div>
+          <div class="caption text_3--text mb-4 px-5">{{ t('walletSettings.customKey.noteReplaceWarning') }}</div>
         </v-flex>
         <v-flex xs12>
           <v-flex xs4 sm4 class="mr-auto" px-4>
@@ -40,7 +40,7 @@
               :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
               @click="resetKey"
             >
-              {{ $t('walletSettings.customKey.resetToDefault') }}
+              {{ t('walletSettings.customKey.resetToDefault') }}
             </v-btn>
           </v-flex>
         </v-flex>
@@ -54,7 +54,7 @@
       <v-card>
         <v-form ref="warningForm" v-model="warningFormValid" lazy-validation @submit.prevent="agree">
           <v-card-title class="headline">
-            {{ $t('walletSettings.customKey.areYouSure') }}
+            {{ t('walletSettings.customKey.areYouSure') }}
           </v-card-title>
           <v-card-text>
             {{
@@ -63,7 +63,7 @@
                 : `${t('walletSettings.customKey.resetKeyWarning')} ${t('walletSettings.customKey.reloginWarning')}`
             }}
           </v-card-text>
-          <v-card-text xs12>{{ $t('walletSettings.customKey.enterTextToContinue') }}</v-card-text>
+          <v-card-text xs12>{{ t('walletSettings.customKey.enterTextToContinue') }}</v-card-text>
           <v-card-text xs12>
             <v-text-field
               v-model="warningCheckText"
@@ -75,9 +75,9 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn text type="button" @click="disagree">
-              {{ $t('walletSettings.customKey.disagree') }}
+              {{ t('walletSettings.customKey.disagree') }}
             </v-btn>
-            <v-btn :disabled="!warningFormValid" text type="submit">{{ $t('walletSettings.customKey.agree') }}</v-btn>
+            <v-btn :disabled="!warningFormValid" text type="submit">{{ t('walletSettings.customKey.agree') }}</v-btn>
           </v-card-actions>
         </v-form>
       </v-card>
@@ -121,20 +121,20 @@ export default {
     privateKeyValidation(v) {
       try {
         if (v.length !== 64) {
-          return this.$t('walletSettings.customKey.invalidPrivateKeyLength') // 'Invalid private key length'
+          return this.t('walletSettings.customKey.invalidPrivateKeyLength') // 'Invalid private key length'
         }
         const customPrivBN = new BN(v, 16)
         if (customPrivBN.cmp(new BN(0)) === 0) {
-          return this.$t('walletSettings.customKey.privateKeyCannotBeZero') // 'Private key cannot be 0'
+          return this.t('walletSettings.customKey.privateKeyCannotBeZero') // 'Private key cannot be 0'
         }
         const prefixed = addHexPrefix(v)
         const buffer = toBuffer(prefixed)
         if (!isValidPrivate(buffer)) {
-          return this.$t('walletSettings.customKey.invalidPrivateKey') // 'Invalid private key'
+          return this.t('walletSettings.customKey.invalidPrivateKey') // 'Invalid private key'
         }
       } catch (error) {
         log.error(error)
-        return this.$t('walletSettings.customKey.unableToValidatePrivateKey') // 'Unable to validate private key'
+        return this.t('walletSettings.customKey.unableToValidatePrivateKey') // 'Unable to validate private key'
       }
       return true
     },

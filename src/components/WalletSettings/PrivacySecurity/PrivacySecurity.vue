@@ -6,7 +6,7 @@
           <v-icon :small="$vuetify.breakpoint.xsOnly" size="20" class="ext_2--text" :style="{ marginRight: '10px' }" v-text="'$vuetify.icons.key'" />
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title class="body-2 text_1--text">{{ $t('walletSettings.accountDetails') }}</v-list-item-title>
+          <v-list-item-title class="body-2 text_1--text">{{ t('walletSettings.accountDetails') }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-list>

@@ -1,9 +1,9 @@
 <template>
   <div v-if="showLoginTkey" class="container d-flex">
     <span class="caption">
-      {{ $t('dappCreateTkey.linkDesc1') }}
-      <a @click="openOnboarding">{{ $t('dappCreateTkey.linkDesc2') }}</a>
-      {{ $t('dappCreateTkey.linkDesc3') }}
+      {{ t('dappCreateTkey.linkDesc1') }}
+      <a @click="openOnboarding">{{ t('dappCreateTkey.linkDesc2') }}</a>
+      {{ t('dappCreateTkey.linkDesc3') }}
     </span>
     <v-spacer />
     <v-btn x-small icon class="ml-3" @click="showLoginTkey = false">

@@ -1,7 +1,7 @@
 <template>
   <div :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
     <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
-      <div class="body-2 mb-2">{{ $t('walletSettings.selectNetwork') }}</div>
+      <div class="body-2 mb-2">{{ t('walletSettings.selectNetwork') }}</div>
       <v-layout wrap>
         <v-flex xs12>
           <v-select
@@ -24,26 +24,26 @@
         <v-flex xs12>
           <v-text-field
             v-model="rpc.networkName"
-            :placeholder="$t('walletSettings.enterNetworkName')"
+            :placeholder="t('walletSettings.enterNetworkName')"
             :rules="[rules.required]"
             outlined
           ></v-text-field>
         </v-flex>
 
         <v-flex xs12>
-          <v-text-field v-model="rpc.host" :placeholder="$t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
+          <v-text-field v-model="rpc.host" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
         </v-flex>
 
         <v-flex xs12>
-          <v-text-field v-model="rpc.chainId" :placeholder="$t('walletSettings.enterChainId')" outlined></v-text-field>
+          <v-text-field v-model="rpc.chainId" :placeholder="t('walletSettings.enterChainId')" outlined></v-text-field>
         </v-flex>
 
         <v-flex xs12>
-          <v-text-field v-model="rpc.ticker" :placeholder="$t('walletSettings.enterSymbol')" outlined></v-text-field>
+          <v-text-field v-model="rpc.ticker" :placeholder="t('walletSettings.enterSymbol')" outlined></v-text-field>
         </v-flex>
 
         <v-flex xs12>
-          <v-text-field v-model="rpc.blockExplorer" :placeholder="$t('walletSettings.enterBlockExplorer')" outlined></v-text-field>
+          <v-text-field v-model="rpc.blockExplorer" :placeholder="t('walletSettings.enterBlockExplorer')" outlined></v-text-field>
         </v-flex>
 
         <v-flex xs12 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
@@ -63,11 +63,11 @@
                       depressed
                       @click="setRPC"
                     >
-                      {{ $t('walletSettings.save') }}
+                      {{ t('walletSettings.save') }}
                     </v-btn>
                   </span>
                 </template>
-                <span>{{ $t('walletSettings.resolveErrors') }}</span>
+                <span>{{ t('walletSettings.resolveErrors') }}</span>
               </v-tooltip>
             </v-flex>
           </v-layout>

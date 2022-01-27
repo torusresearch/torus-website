@@ -15,7 +15,7 @@
             <div id="account-name" class="torus-account--name mr-1">
               <span>{{ userName }}</span>
             </div>
-            <div>{{ $t('accountMenu.account') }}</div>
+            <div>{{ t('accountMenu.account') }}</div>
           </div>
         </v-list-item-title>
       </v-list-item>
@@ -75,7 +75,7 @@
         <v-list-item-action class="mr-2">
           <v-icon size="24" class="text_2--text" v-text="'$vuetify.icons.add'" />
         </v-list-item-action>
-        <v-list-item-content class="caption font-weight-bold text_1--text">{{ $t('accountMenu.importAccount') }}</v-list-item-content>
+        <v-list-item-content class="caption font-weight-bold text_1--text">{{ t('accountMenu.importAccount') }}</v-list-item-content>
       </v-list-item>
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
         <AccountImport @onClose="accountImportDialog = false" />
@@ -107,14 +107,14 @@
         <v-list-item-action class="mr-2 justify-center">
           <v-icon size="20" class="text_2--text" v-text="'$vuetify.icons.info'" />
         </v-list-item-action>
-        <v-list-item-content class="caption font-weight-bold">{{ $t('accountMenu.infoSupport') }}</v-list-item-content>
+        <v-list-item-content class="caption font-weight-bold">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
       </v-list-item>
       <LanguageSelector v-if="$vuetify.breakpoint.smAndDown && showLanguageSelector"></LanguageSelector>
     </v-list>
 
     <v-divider></v-divider>
     <div class="text-right py-4 px-3">
-      <v-btn text class="caption text_2--text font-weight-bold" @click="logout">{{ $t('accountMenu.logOut') }}</v-btn>
+      <v-btn text class="caption text_2--text font-weight-bold" @click="logout">{{ t('accountMenu.logOut') }}</v-btn>
     </div>
   </v-card>
 </template>
@@ -196,7 +196,7 @@ export default {
       return ''
     },
     userName() {
-      if (!this.userInfo.name) return this.$t('login.your')
+      if (!this.userInfo.name) return this.t('login.your')
       let userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
       userName = userName.length > 20 ? userName.split(' ')[0] : userName
       return `${userName}'s`
@@ -247,15 +247,15 @@ export default {
     },
     userEmail(account) {
       if (account.accountType === ACCOUNT_TYPE.THRESHOLD) {
-        return `OpenLogin ${this.$t('accountMenu.wallet')}`
+        return `OpenLogin ${this.t('accountMenu.wallet')}`
       }
       if (account.accountType === ACCOUNT_TYPE.IMPORTED) {
         const index = Object.keys(this.wallet)
           .filter((x) => this.wallet[x].accountType === ACCOUNT_TYPE.IMPORTED)
           .indexOf(account.address)
-        return `${this.$t('accountMenu.importedAccount')} ${index + 1}`
+        return `${this.t('accountMenu.importedAccount')} ${index + 1}`
       }
-      return getUserEmail(this.userInfo, this.loginConfig, this.$t('accountMenu.wallet'))
+      return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
     },
     checksummedAccount(address) {
       return toChecksumAddressByChainId(address, this.$store.state.networkId)

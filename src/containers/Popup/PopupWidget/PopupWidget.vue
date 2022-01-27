@@ -39,7 +39,7 @@
         <div class="d-flex torus-widget__amount-details mt-5">
           <div>
             <div>
-              <span class="caption text_2--text">{{ $t('dappPopup.totalValue') }}</span>
+              <span class="caption text_2--text">{{ t('dappPopup.totalValue') }}</span>
             </div>
             <div class="mt-1">
               <span class="amount text_2--text">{{ totalPortfolioValue }} {{ selectedCurrency }}</span>
@@ -77,9 +77,9 @@
         </div>
         <div class="torus-widget__transaction-details mt-5">
           <div class="d-flex">
-            <span class="caption text_2--text">{{ $t('dappPopup.recentActivity') }}</span>
+            <span class="caption text_2--text">{{ t('dappPopup.recentActivity') }}</span>
             <span class="caption primary--text ml-auto wallet-open" @click="showWalletPopup({ path: '/home' })">
-              {{ $t('dappPopup.openWallet') }}
+              {{ t('dappPopup.openWallet') }}
             </span>
           </div>
           <v-divider class="my-1"></v-divider>
@@ -146,7 +146,7 @@
             </div>
           </div>
           <div v-else class="text-center">
-            <span class="caption text_2--text">{{ $t('walletActivity.noTransaction') }}</span>
+            <span class="caption text_2--text">{{ t('walletActivity.noTransaction') }}</span>
           </div>
         </div>
       </div>
@@ -241,15 +241,15 @@ export default {
     },
     userEmail() {
       if (this.accountType === ACCOUNT_TYPE.THRESHOLD) {
-        return `OpenLogin ${this.$t('accountMenu.wallet')}`
+        return `OpenLogin ${this.t('accountMenu.wallet')}`
       }
       if (this.accountType === ACCOUNT_TYPE.IMPORTED) {
         const index = Object.keys(this.wallet)
           .filter((x) => this.wallet[x].accountType === ACCOUNT_TYPE.IMPORTED)
           .indexOf(this.fullAddress)
-        return `${this.$t('accountMenu.importedAccount')} ${index + 1}`
+        return `${this.t('accountMenu.importedAccount')} ${index + 1}`
       }
-      return getUserEmail(this.userInfo, this.embedState.loginConfig, this.$t('accountMenu.wallet'))
+      return getUserEmail(this.userInfo, this.embedState.loginConfig, this.t('accountMenu.wallet'))
     },
     userIcon() {
       return getUserIcon(this.accountType, this.userInfo.typeOfLogin)
@@ -291,16 +291,16 @@ export default {
     },
     getActionText(transaction) {
       if (transaction.type_name === 'n/a' || transaction.type === 'n/a') {
-        return `${transaction.action === ACTIVITY_ACTION_SEND ? this.$t('walletActivity.sent') : this.$t('walletActivity.received')} ${
+        return `${transaction.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
           transaction.type_name !== 'n/a' ? transaction.type_name : transaction.type?.toUpperCase() || ''
         }`
       }
       if (transaction.type_name || transaction.type) {
-        return `${transaction.action === ACTIVITY_ACTION_SEND ? this.$t('walletActivity.sent') : this.$t('walletActivity.received')} ${
+        return `${transaction.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
           transaction.type === 'eth' ? transaction.type_name?.toUpperCase() || '' : transaction.type_name
         }`
       }
-      return `${`${this.$t(transaction.action)} ${transaction.from}`} `
+      return `${`${this.t(transaction.action)} ${transaction.from}`} `
     },
     showWidget() {
       const currentWidgetVisibility = this.activeWidget

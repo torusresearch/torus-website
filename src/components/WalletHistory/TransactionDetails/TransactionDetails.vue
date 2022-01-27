@@ -29,7 +29,7 @@
       </v-flex>
       <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs6 ml-auto text-right mt-3 order-3' : 'xs2 ml-auto text-right order-4'" px-4>
         <v-chip class="status-chip black--text" :color="getChipColor(transaction.statusText)" small>
-          {{ $t(transaction.statusText) }}
+          {{ t(transaction.statusText) }}
         </v-chip>
       </v-flex>
     </v-layout>
