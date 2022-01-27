@@ -113,7 +113,14 @@ function resetStore(store, handler, initState) {
 export default {
   async logOut({ commit, state }, _) {
     const { selectedAddress } = state
-    commit('logOut', { ...initialState, networkType: state.networkType, networkId: state.networkId })
+    commit('logOut', {
+      ...initialState,
+      networkType: state.networkType,
+      networkId: state.networkId,
+      whiteLabel: state.whiteLabel,
+      theme: state.theme,
+      embedState: cloneDeep(state.embedState || {}),
+    })
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
 
