@@ -574,7 +574,6 @@ export default {
         required: (value) => !!value || 'walletTransfer.required',
         contactRequired: (value) => !!value || 'walletTransfer.required',
       },
-      nodeDetails: {},
       messageModalShow: false,
       messageModalType: '',
       messageModalTitle: '',
@@ -775,14 +774,6 @@ export default {
     })
 
     this.updateFieldsBasedOnRoute()
-
-    torus.nodeDetailManager
-      .getNodeDetails(false, true)
-      .then((nodeDetails) => {
-        log.info('fetched node details', nodeDetails)
-        this.nodeDetails = nodeDetails
-      })
-      .catch((error) => log.error(error))
 
     this.$vuetify.goTo(0)
   },
@@ -1095,14 +1086,18 @@ export default {
         try {
           const { loginConfig } = this.$store.state.embedState
           const walletVerifier = Object.keys(loginConfig).find((x) => loginConfig[x].typeOfLogin === this.selectedVerifier)
-          const validVeriferId = await this.getIdFromNick(this.toAddress, this.selectedVerifier)
-          this.convertedVerifierId = validVeriferId
+          const validVerifierId = await this.getIdFromNick(this.toAddress, this.selectedVerifier)
+          this.convertedVerifierId = validVerifierId
           const openloginVerifier = WALLET_OPENLOGIN_VERIFIER_MAP[walletVerifier]
           if (walletVerifier && openloginVerifier) {
-            toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
+            const { torusNodeEndpoints, torusNodePub } = await torus.nodeDetailManager.getNodeDetails({
+              verifier: openloginVerifier,
+              verifierId: validVerifierId,
+            })
+            toAddress = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, {
               walletVerifier,
               openloginVerifier,
-              verifierId: validVeriferId.startsWith('@') ? validVeriferId.replace('@', '').toLowerCase() : validVeriferId.toLowerCase(),
+              verifierId: validVerifierId.startsWith('@') ? validVerifierId.replace('@', '').toLowerCase() : validVerifierId.toLowerCase(),
             })
           }
         } catch (error) {
