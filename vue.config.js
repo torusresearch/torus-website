@@ -60,6 +60,7 @@ module.exports = {
       crypto: require.resolve('crypto-browserify'),
       assert: require.resolve('assert/'),
       stream: require.resolve('stream-browserify'),
+      url: require.resolve('url/'),
     }
   },
   // chainWebpack: (config) => {
