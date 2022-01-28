@@ -1345,7 +1345,7 @@ export default {
           // when suggestedMaxPriorityFeePerGas + baseFee is more than user defined limit
           const minFeeReq = new BigNumber(suggestedMaxPriorityFeePerGas).plus(new BigNumber(gasPriceEstimates.estimatedBaseFee))
           if (new BigNumber(this.activeGasPrice).lt(minFeeReq)) {
-            this.transactionWarning = this.t('walletTransfer.fee-error-likely-fail', this.activeGasPrice.toString(), minFeeReq.toString())
+            this.transactionWarning = this.t('walletTransfer.fee-error-likely-fail', { 0: this.activeGasPrice.toString(), 1: minFeeReq.toString() })
           } else {
             this.transactionWarning = ''
           }

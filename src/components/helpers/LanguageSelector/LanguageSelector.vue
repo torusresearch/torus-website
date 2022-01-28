@@ -52,7 +52,7 @@ export default {
   },
   computed: {
     localeSelected() {
-      return this.$vuetify.lang.current
+      return this.$i18n.locale
     },
     selectedLabel() {
       return LOCALES.find((locale) => locale.value === this.localeSelected).name
