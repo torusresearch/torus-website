@@ -116,7 +116,7 @@
     "codecov": "^3.8.3",
     "cross-env": "^7.0.3",
     "crypto-browserify": "^3.12.0",
-    "dotenv": "^10.0.0",
+    "dotenv": "^14.3.2",
     "empty-module": "0.0.2",
     "eslint": "^8.7.0",
     "eslint-config-airbnb-base": "^15.0.0",
