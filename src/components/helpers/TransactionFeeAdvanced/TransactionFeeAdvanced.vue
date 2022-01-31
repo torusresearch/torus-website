@@ -37,7 +37,9 @@
                     <div class="d-flex align-center">
                       <div class="body-2 font-weight-bold text_1--text speed-list_label">{{ speed.label }}</div>
                       <div class="ml-4">
-                        <div class="body-2 font-weight-bold text_1--text">{{ t('walletTransfer.fee-upto').replace(/{amount}/gi, speed.amount) }}</div>
+                        <div class="body-2 font-weight-bold text_1--text">
+                          {{ t('walletTransfer.fee-upto').replace(/{amount}/gi, speed.amount) }}
+                        </div>
                         <div class="body-2 text_2--text">{{ speed.time }}</div>
                       </div>
                     </div>

@@ -78,7 +78,9 @@
         <div class="torus-widget__transaction-details mt-5">
           <div class="d-flex">
             <span class="caption text_2--text">{{ t('dappPopup.recentActivity') }}</span>
-            <span class="caption primary--text ml-auto wallet-open" @click="showWalletPopup({ path: '/home' })">{{ t('dappPopup.openWallet') }}</span>
+            <span class="caption primary--text ml-auto wallet-open" @click="showWalletPopup({ path: '/home' })">
+              {{ t('dappPopup.openWallet') }}
+            </span>
           </div>
           <v-divider class="my-1"></v-divider>
           <div v-if="recentTransaction" class="d-flex mb-4 mt-2">

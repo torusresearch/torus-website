@@ -60,7 +60,7 @@ export default {
   computed: {
     ...mapGetters(['collectibleBalances']),
     localeSelected() {
-      return this.$vuetify.lang.current
+      return this.$i18n.locale
     },
   },
 }

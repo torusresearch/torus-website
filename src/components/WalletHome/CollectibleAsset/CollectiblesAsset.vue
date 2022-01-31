@@ -32,7 +32,9 @@
           <div class="font-weight-light text_2--text mb-2">#{{ asset.tokenId }}</div>
           <div class="font-weight-medium">{{ t('walletHome.description') }}</div>
           <div class="font-weight-light text_2--text" :class="{ 'text-clamp-two': !viewMore }">{{ asset.description }}</div>
-          <a class="caption text_3--text" @click.stop="viewMore = !viewMore">{{ viewMore ? t('walletHome.viewLess') : t('walletHome.viewMore') }}</a>
+          <a class="caption text_3--text" @click.stop="viewMore = !viewMore">
+            {{ viewMore ? t('walletHome.viewLess') : t('walletHome.viewMore') }}
+          </a>
           <div class="mt-4">
             <v-btn block depressed :outlined="$vuetify.theme.dark" color="torusBrand1" class="white--text mb-2" @click="transferAsset(asset)">
               {{ t('walletHome.transfer') }}
