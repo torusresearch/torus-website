@@ -36,7 +36,7 @@
     "@metamask/eth-sig-util": "^4.0.0",
     "@metamask/obs-store": "^7.0.0",
     "@rsksmart/rsk-utils": "^1.1.0",
-    "@sentry/browser": "^6.17.2",
+    "@sentry/browser": "^6.17.3",
     "@sentry/vue": "^6.17.2",
     "@toruslabs/fetch-node-details": "^5.0.0",
     "@toruslabs/http-helpers": "^2.2.0",
