@@ -390,7 +390,10 @@ export default {
         whiteLabel,
         loginConfigItem: currentVerifierConfig,
       })
-      const { keys, userInfo, postboxKey } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, error } = await loginHandler.handleLoginWindow()
+      if (error) {
+        throw new Error(error)
+      }
       // Get all open login results
       userInfo.verifier = verifier
       commit('setUserInfo', userInfo)

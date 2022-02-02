@@ -35,8 +35,11 @@ export default {
       let whiteLabel = {}
       let loginConfig = {}
 
+      let loginError = ''
+
       if (result) {
         const resultParams = JSON.parse(safeatob(result))
+        loginError = resultParams.error
         const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
         whiteLabel = appStateParams.whiteLabel || {}
         loginConfig = appStateParams.loginConfig || {}
@@ -86,7 +89,7 @@ export default {
       // debugger
       const bc = new BroadcastChannel(`redirect_openlogin_channel_${parsedAppState.instanceId}`, broadcastChannelOptions)
       await bc.postMessage({
-        data: { type: POPUP_RESULT, userInfo, keys, postboxKey },
+        data: { type: POPUP_RESULT, userInfo, keys, postboxKey, error: loginError },
       })
       bc.close()
       log.info(bc)
