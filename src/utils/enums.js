@@ -28,6 +28,12 @@ export const XDAI = 'xdai'
 export const RSK_MAINNET = 'rsk_mainnet'
 export const RSK_TESTNET = 'rsk_testnet'
 export const REEF = 'reef'
+export const ARBITRUM_MAINNET = 'arbitrum_mainnet'
+export const ARBITRUM_TESTNET = 'arbitrum_testnet'
+export const OPTIMISM_MAINNET = 'optimism_mainnet'
+export const OPTIMISM_TESTNET = 'optimism_testnet'
+export const AVALANCHE_MAINNET = 'avalanche_mainnet'
+export const AVALANCHE_TESTNET = 'avalanche_testnet'
 
 export const MAINNET_CODE = 1
 export const ROPSTEN_CODE = 3
@@ -43,6 +49,12 @@ export const XDAI_CODE = 100
 export const RSK_MAINNET_CODE = 30
 export const RSK_TESTNET_CODE = 31
 export const REEF_CODE = 101
+export const ARBITRUM_MAINNET_CODE = 42_161
+export const ARBITRUM_TESTNET_CODE = 421_611
+export const OPTIMISM_MAINNET_CODE = 10
+export const OPTIMISM_TESTNET_CODE = 69
+export const AVALANCHE_MAINNET_CODE = 43_114
+export const AVALANCHE_TESTNET_CODE = 43_113
 
 export const MAINNET_CHAIN_ID = '0x1'
 export const ROPSTEN_CHAIN_ID = '0x3'
@@ -55,10 +67,14 @@ export const BSC_MAINNET_CHAIN_ID = '0x38'
 export const BSC_TESTNET_CHAIN_ID = '0x61'
 export const XDAI_CHAIN_ID = '0x64'
 export const REEF_CHAIN_ID = '0x65'
-export const OPTIMISM_CHAIN_ID = '0xa'
-export const OPTIMISM_TESTNET_CHAIN_ID = '0x45'
 export const RSK_MAINNET_CHAIN_ID = '0x1e'
 export const RSK_TESTNET_CHAIN_ID = '0x1f'
+export const ARBITRUM_MAINNET_CHAIN_ID = '0xa4b1'
+export const ARBITRUM_TESTNET_CHAIN_ID = '0x66eeb'
+export const OPTIMISM_MAINNET_CHAIN_ID = '0xa'
+export const OPTIMISM_TESTNET_CHAIN_ID = '0x45'
+export const AVALANCHE_MAINNET_CHAIN_ID = '0xa86a'
+export const AVALANCHE_TESTNET_CHAIN_ID = '0xa869'
 
 export const NFT_SUPPORTED_NETWORKS = {
   [MATIC]: MATIC_CODE,
@@ -91,6 +107,12 @@ export const XDAI_DISPLAY_NAME = 'xDai'
 export const RSK_MAINNET_DISPLAY_NAME = 'RSK Mainnet'
 export const RSK_TESTNET_DISPLAY_NAME = 'RSK Testnet'
 export const REEF_DISPLAY_NAME = 'Reef Chain'
+export const ARBITRUM_MAINNET_DISPLAY_NAME = 'Arbitrum One'
+export const ARBITRUM_TESTNET_DISPLAY_NAME = 'Arbitrum Testnet'
+export const OPTIMISM_MAINNET_DISPLAY_NAME = 'Optimism'
+export const OPTIMISM_TESTNET_DISPLAY_NAME = 'Optimism Kovan'
+export const AVALANCHE_MAINNET_DISPLAY_NAME = 'Avalanche Mainnet C-Chain'
+export const AVALANCHE_TESTNET_DISPLAY_NAME = 'Avalanche Testnet C-Chain'
 
 export const MATIC_URL = `https://polygon-mainnet.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
 export const MATIC_BLOCK_EXPLORER = 'https://polygonscan.com'
@@ -115,11 +137,32 @@ export const RSK_TESTNET_BLOCK_EXPLORER = 'https://explorer.testnet.rsk.co'
 export const REEF_URL = 'https://reef.finance/'
 export const REEF_BLOCK_EXPLORER = 'https://reefscan.com/'
 
+export const ARBITRUM_MAINNET_URL = `https://arbitrum-mainnet.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
+export const ARBITRUM_MAINNET_BLOCK_EXPLORER = 'https://arbiscan.io'
+
+export const ARBITRUM_TESTNET_URL = `https://arbitrum-rinkeby.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
+export const ARBITRUM_TESTNET_BLOCK_EXPLORER = 'https://testnet.arbiscan.io'
+
+export const OPTIMISM_MAINNET_URL = `https://optimism-mainnet.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
+export const OPTIMISM_MAINNET_BLOCK_EXPLORER = 'https://optimistic.etherscan.io'
+
+export const OPTIMISM_TESTNET_URL = `https://optimism-kovan.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
+export const OPTIMISM_TESTNET_BLOCK_EXPLORER = 'https://kovan-optimistic.etherscan.io'
+
+export const AVALANCHE_MAINNET_URL = 'https://api.avax.network/ext/bc/C/rpc'
+export const AVALANCHE_MAINNET_BLOCK_EXPLORER = 'https://snowtrace.io'
+
+export const AVALANCHE_TESTNET_URL = 'https://api.avax-test.network/ext/bc/C/rpc'
+export const AVALANCHE_TESTNET_BLOCK_EXPLORER = 'https://testnet.snowtrace.io'
+
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
 export const XDAI_TICKER = 'DAI'
 export const RSK_MAINNET_TICKER = 'RBTC'
 export const RSK_TESTNET_TICKER = 'RBTC'
+export const ARBITRUM_TICKER = 'ETH'
+export const OPTIMISM_TICKER = 'ETH'
+export const AVALANCHE_TICKER = 'AVAX'
 
 export const MESSAGE_TYPE = {
   ETH_DECRYPT: 'eth_decrypt',
@@ -216,6 +259,12 @@ export const CHAIN_ID_TO_TYPE_MAP = {
   [BSC_TESTNET_CHAIN_ID]: { networkId: BSC_TESTNET_CODE, name: BSC_TESTNET },
   [XDAI_CHAIN_ID]: { networkId: XDAI_CODE, name: XDAI },
   [REEF_CHAIN_ID]: { networkId: REEF_CODE, name: REEF },
+  [ARBITRUM_MAINNET_CHAIN_ID]: { networkId: ARBITRUM_MAINNET_CODE, name: ARBITRUM_MAINNET },
+  [ARBITRUM_TESTNET_CHAIN_ID]: { networkId: ARBITRUM_TESTNET_CODE, name: ARBITRUM_TESTNET },
+  [OPTIMISM_MAINNET_CHAIN_ID]: { networkId: OPTIMISM_MAINNET_CODE, name: OPTIMISM_MAINNET },
+  [OPTIMISM_TESTNET_CHAIN_ID]: { networkId: OPTIMISM_TESTNET_CODE, name: OPTIMISM_TESTNET },
+  [AVALANCHE_MAINNET_CHAIN_ID]: { networkId: AVALANCHE_MAINNET_CODE, name: AVALANCHE_MAINNET },
+  [AVALANCHE_TESTNET_CHAIN_ID]: { networkId: AVALANCHE_TESTNET_CODE, name: AVALANCHE_TESTNET },
 }
 
 export const SUPPORTED_NETWORK_TYPES = {
@@ -287,6 +336,66 @@ export const SUPPORTED_NETWORK_TYPES = {
     RSK_TESTNET_URL
   ),
   [REEF]: createNetwork(REEF, REEF_DISPLAY_NAME, REEF_CODE, REEF_BLOCK_EXPLORER, 'REEF', 'Reef', 'eth.svg', undefined),
+  [OPTIMISM_MAINNET]: createNetwork(
+    OPTIMISM_MAINNET,
+    OPTIMISM_MAINNET_DISPLAY_NAME,
+    OPTIMISM_MAINNET_CODE,
+    OPTIMISM_MAINNET_BLOCK_EXPLORER,
+    OPTIMISM_TICKER,
+    'Ethereum',
+    'eth.svg',
+    OPTIMISM_MAINNET_URL
+  ),
+  [OPTIMISM_TESTNET]: createNetwork(
+    OPTIMISM_TESTNET,
+    OPTIMISM_TESTNET_DISPLAY_NAME,
+    OPTIMISM_TESTNET_CODE,
+    OPTIMISM_TESTNET_BLOCK_EXPLORER,
+    OPTIMISM_TICKER,
+    'Ethereum',
+    'eth.svg',
+    OPTIMISM_TESTNET_URL
+  ),
+  [ARBITRUM_MAINNET]: createNetwork(
+    ARBITRUM_MAINNET,
+    ARBITRUM_MAINNET_DISPLAY_NAME,
+    ARBITRUM_MAINNET_CODE,
+    ARBITRUM_MAINNET_BLOCK_EXPLORER,
+    ARBITRUM_TICKER,
+    'Ethereum',
+    'eth.svg',
+    ARBITRUM_MAINNET_URL
+  ),
+  [ARBITRUM_TESTNET]: createNetwork(
+    ARBITRUM_TESTNET,
+    ARBITRUM_TESTNET_DISPLAY_NAME,
+    ARBITRUM_TESTNET_CODE,
+    ARBITRUM_TESTNET_BLOCK_EXPLORER,
+    ARBITRUM_TICKER,
+    'Ethereum',
+    'eth.svg',
+    ARBITRUM_TESTNET_URL
+  ),
+  [AVALANCHE_MAINNET]: createNetwork(
+    AVALANCHE_MAINNET,
+    AVALANCHE_MAINNET_DISPLAY_NAME,
+    AVALANCHE_MAINNET_CODE,
+    AVALANCHE_MAINNET_BLOCK_EXPLORER,
+    AVALANCHE_TICKER,
+    'Avalanche',
+    'avax.svg',
+    AVALANCHE_MAINNET_URL
+  ),
+  [AVALANCHE_TESTNET]: createNetwork(
+    AVALANCHE_TESTNET,
+    AVALANCHE_TESTNET_DISPLAY_NAME,
+    AVALANCHE_TESTNET_CODE,
+    AVALANCHE_TESTNET_BLOCK_EXPLORER,
+    AVALANCHE_TICKER,
+    'Avalanche',
+    'avax.svg',
+    AVALANCHE_TESTNET_URL
+  ),
 }
 
 export const WALLET_HEADERS_HOME = 'My Wallet'
@@ -622,9 +731,11 @@ export const GAS_ESTIMATE_TYPES = {
   ETH_GASPRICE: 'eth_gasPrice',
   NONE: 'none',
 }
+
+// https://help.optimism.io/hc/en-us/articles/4411895794715-Transaction-fees
 export const CHAIN_ID_TO_GAS_LIMIT_BUFFER_MAP = {
-  [OPTIMISM_CHAIN_ID]: 1,
-  [OPTIMISM_TESTNET_CHAIN_ID]: 1,
+  [OPTIMISM_MAINNET_CHAIN_ID]: 1.5,
+  [OPTIMISM_TESTNET_CHAIN_ID]: 1.5,
 }
 
 export const TEST_CHAINS = [ROPSTEN_CHAIN_ID, RINKEBY_CHAIN_ID, GOERLI_CHAIN_ID, KOVAN_CHAIN_ID]
@@ -662,6 +773,22 @@ export const COINGECKO_PLATFORMS_CHAIN_CODE_MAP = {
   [RSK_MAINNET_CODE]: {
     platform: 'rootstock',
     currency: 'rbtc',
+  },
+  [ARBITRUM_MAINNET_CODE]: {
+    platform: 'arbitrum-one',
+    currency: 'eth',
+  },
+  [OPTIMISM_MAINNET_CODE]: {
+    platform: 'optimistic-ethereum',
+    currency: 'eth',
+  },
+  [XDAI_CODE]: {
+    platform: 'xdai',
+    currency: 'xDAI',
+  },
+  [AVALANCHE_MAINNET_CODE]: {
+    platform: 'avalanche',
+    currency: 'avax',
   },
 }
 

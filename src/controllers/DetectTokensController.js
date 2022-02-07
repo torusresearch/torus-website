@@ -184,6 +184,7 @@ class DetectTokensController {
       if (x.network === localNetwork) acc.push(x)
       return acc
     }, [])
+    const chainId = this.network.getCurrentChainId()
     let nonZeroTokens = await Promise.all(
       currentNetworkTokens.map(async (x) => {
         try {
@@ -201,7 +202,7 @@ class DetectTokensController {
             logo: 'eth.svg',
             name: tokenInstance.name,
             symbol: tokenInstance.symbol,
-            tokenAddress: toChecksumAddressByChainId(tokenInstance.address, this.$store.state.networkId),
+            tokenAddress: toChecksumAddressByChainId(tokenInstance.address, chainId),
             balance: `0x${balance}`,
             customTokenId: x.id,
             network: localNetwork,

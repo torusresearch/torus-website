@@ -295,18 +295,19 @@ export default {
       if (activity.action === ACTIVITY_ACTION_TOPUP) {
         return `provider-${activity.from.toLowerCase()}.svg`
       }
+      const actionSplits = activity.action.split('.')
+      const fallbackIcon = actionSplits.length > 0 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''
       if (activity.action === ACTIVITY_ACTION_SEND || activity.action === ACTIVITY_ACTION_RECEIVE) {
         if (activity.type === CONTRACT_TYPE_ERC721 || activity.type === CONTRACT_TYPE_ERC1155) {
-          return activity.type_image_link // will be an opensea image url
+          return activity.type_image_link || this.networkType.logo // will be an opensea image url
         }
         if (activity.type === CONTRACT_TYPE_ERC20) {
-          return activity.type_image_link
+          return activity.type_image_link || this.networkType.logo
         }
         if (activity.type === CONTRACT_TYPE_ETH) {
           return this.networkType.logo
         }
-        const action = activity.action.split('.')
-        return action.length > 0 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''
+        return fallbackIcon
       }
       return ''
     },

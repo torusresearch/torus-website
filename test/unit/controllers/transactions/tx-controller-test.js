@@ -906,7 +906,7 @@ describe('Transaction Controller', function () {
         from: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
         to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
         gas: '0x5209',
-        gasPrice: '0xa',
+        gasPrice: '0x28fa6ae00',
       }
       txController.txStateManager._addTransactionsToState([
         {
@@ -918,7 +918,7 @@ describe('Transaction Controller', function () {
         },
       ])
 
-      expectedTxParams = { ...txParams, gasPrice: '0xb' }
+      expectedTxParams = { ...txParams, gasPrice: '0x2d1375900' }
     })
 
     afterEach(function () {
@@ -937,7 +937,7 @@ describe('Transaction Controller', function () {
       assert.deepEqual(
         { gasPrice: previousGasParams.gasPrice, type },
         {
-          gasPrice: '0xa',
+          gasPrice: '0x28fa6ae00',
           type: TRANSACTION_TYPES.RETRY,
         }
       )
@@ -960,7 +960,7 @@ describe('Transaction Controller', function () {
       assert.deepEqual(
         { gasPrice: previousGasParams.gasPrice, type },
         {
-          gasPrice: '0xa',
+          gasPrice: '0x28fa6ae00',
           type: TRANSACTION_TYPES.RETRY,
         }
       )

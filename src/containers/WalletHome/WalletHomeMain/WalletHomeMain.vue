@@ -302,7 +302,7 @@ export default {
     },
     events() {
       const events = []
-      const lang = this.$vuetify.lang.current
+      const lang = this.$i18n.locale
 
       Object.keys(this.billboard).forEach((key) => {
         const event = this.billboard[key]

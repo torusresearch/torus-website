@@ -7,10 +7,12 @@ import log from 'loglevel'
 import Vue from 'vue'
 
 import App from './App.vue'
-import { vuetify } from './plugins'
+import i18n, { loadLanguageAsync } from './plugins/i18n-setup'
+import vuetify from './plugins/vuetify'
 import router from './router'
 import store from './store'
 import { installSentry } from './utils/sentry'
+import { getUserLanguage } from './utils/utils'
 // import torus from './torus'
 
 log.enableAll()
@@ -54,21 +56,23 @@ Vue.use(VueGtm, {
 
 Vue.mixin({
   methods: {
-    t(data, ...params) {
+    t(data, params) {
       if (data === '') return data
-      const translated = vuetify.framework.lang.t(`$vuetify.${data}`, ...params)
-      return translated.replace('$vuetify.', '')
+      const translated = i18n.t(`${data}`, params)
+      return translated
     },
   },
 })
 
 installSentry(Vue)
+loadLanguageAsync(getUserLanguage())
 
 new Vue({
   router,
   store,
   render: (h) => h(App),
   vuetify,
+  i18n,
 }).$mount('#app')
 
 // window.Vue = vue

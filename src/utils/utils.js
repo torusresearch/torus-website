@@ -6,7 +6,7 @@ import log from 'loglevel'
 import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
-import languages from '../plugins/locales'
+import { languageMap } from '../plugins/i18n-setup'
 import {
   ACCOUNT_TYPE,
   ACTIVE,
@@ -14,6 +14,14 @@ import {
   ACTIVITY_ACTION_SEND,
   ALLOWED_VERIFIERS,
   APPLE,
+  ARBITRUM_MAINNET_CHAIN_ID,
+  ARBITRUM_MAINNET_CODE,
+  ARBITRUM_TESTNET_CHAIN_ID,
+  ARBITRUM_TESTNET_CODE,
+  AVALANCHE_MAINNET_CHAIN_ID,
+  AVALANCHE_MAINNET_CODE,
+  AVALANCHE_TESTNET_CHAIN_ID,
+  AVALANCHE_TESTNET_CODE,
   BANXA,
   BSC_MAINNET_CHAIN_ID,
   BSC_MAINNET_CODE,
@@ -53,6 +61,10 @@ import {
   MOONPAY,
   MUMBAI_CHAIN_ID,
   MUMBAI_CODE,
+  OPTIMISM_MAINNET_CHAIN_ID,
+  OPTIMISM_MAINNET_CODE,
+  OPTIMISM_TESTNET_CHAIN_ID,
+  OPTIMISM_TESTNET_CODE,
   PASSWORDLESS,
   PLATFORM_BRAVE,
   PLATFORM_CHROME,
@@ -574,6 +586,12 @@ export const standardNetworkId = {
   [XDAI_CODE.toString()]: XDAI_CHAIN_ID,
   [RSK_MAINNET_CODE.toString()]: RSK_MAINNET_CHAIN_ID,
   [RSK_TESTNET_CODE.toString()]: RSK_TESTNET_CHAIN_ID,
+  [ARBITRUM_MAINNET_CODE.toString()]: ARBITRUM_MAINNET_CHAIN_ID,
+  [ARBITRUM_TESTNET_CODE.toString()]: ARBITRUM_TESTNET_CHAIN_ID,
+  [OPTIMISM_MAINNET_CODE.toString()]: OPTIMISM_MAINNET_CHAIN_ID,
+  [OPTIMISM_TESTNET_CODE.toString()]: OPTIMISM_TESTNET_CHAIN_ID,
+  [AVALANCHE_MAINNET_CODE.toString()]: AVALANCHE_MAINNET_CHAIN_ID,
+  [AVALANCHE_TESTNET_CODE.toString()]: AVALANCHE_TESTNET_CHAIN_ID,
 }
 
 export const isMain = window.self === window.top
@@ -609,7 +627,7 @@ export function formatSmallNumbers(number, currency = 'usd', noTilde = false) {
 export const getUserLanguage = () => {
   let userLanguage = window.navigator.userLanguage || window.navigator.language || 'en-US'
   userLanguage = userLanguage.split('-')
-  userLanguage = Object.prototype.hasOwnProperty.call(languages, userLanguage[0]) ? userLanguage[0] : 'en'
+  userLanguage = Object.prototype.hasOwnProperty.call(languageMap, userLanguage[0]) ? userLanguage[0] : 'en'
   return userLanguage
 }
 
