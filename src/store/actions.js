@@ -1,6 +1,6 @@
 import randomId from '@chaitanyapotti/random-id'
 import deepmerge from 'deepmerge'
-import { BN } from 'ethereumjs-util'
+import { BN, privateToAddress } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
@@ -80,6 +80,7 @@ const userInfoStream = communicationMux.getStream('user_info')
 const providerChangeStream = communicationMux.getStream('provider_change')
 const widgetStream = communicationMux.getStream('widget')
 const windowStream = communicationMux.getStream('window')
+const loginWithPrivateKeyStream = communicationMux.getStream('login_with_private_key')
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
@@ -295,6 +296,51 @@ export default {
         })
     })
   },
+  async handleLoginWithPrivateKey({ state, dispatch, commit }, { privateKey, userInfo }) {
+    dispatch('subscribeToControllers')
+    commit('setUserInfo', userInfo)
+
+    const defaultAddresses = await dispatch('initTorusKeyring', {
+      keys: [
+        {
+          privKey: privateKey,
+          ethAddress: `0x${privateToAddress(Buffer.from(privateKey, 'hex')).toString('hex')}`,
+        },
+      ],
+    })
+
+    const selectedDefaultAddress = defaultAddresses[0] || defaultAddresses[1]
+    const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : Object.keys(state.wallet)[0]
+
+    if (!selectedAddress) {
+      loginWithPrivateKeyStream.write({
+        name: 'login_with_private_key_response',
+        data: {
+          success: false,
+          error: 'No Accounts available',
+        },
+      })
+      dispatch('logOut')
+      throw new Error('No Accounts available')
+    }
+
+    dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+    prefsController.getBillboardContents()
+    prefsController.getAnnouncementsContents()
+    // continue enable function
+    setTimeout(() => {
+      oauthStream.write({ selectedAddress })
+      commit('setOAuthModalStatus', false)
+    }, 50)
+    // TODO: deprecate rehydrate false for the next major version bump
+    statusStream.write({ loggedIn: true, rehydrate: false, verifier: userInfo.verifier })
+    loginWithPrivateKeyStream.write({
+      name: 'login_with_private_key_response',
+      data: {
+        success: true,
+      },
+    })
+  },
   async finishImportAccount({ dispatch }, payload) {
     const { privKey } = payload
     const address = torus.generateAddressFromPrivKey(privKey)
@@ -466,7 +512,6 @@ export default {
     const {
       userInfo: { verifier },
     } = state
-
     dispatch('subscribeToControllers')
 
     const defaultAddresses = await dispatch('initTorusKeyring', {

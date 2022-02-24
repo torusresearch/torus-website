@@ -790,6 +790,7 @@ export function getUserIcon(accountType, typeOfLogin) {
   if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
     return 'tkey_seed_phrase'
   }
+  if (!typeOfLogin) return 'person_circle'
   return typeOfLogin.toLowerCase()
 }
 

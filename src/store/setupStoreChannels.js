@@ -46,6 +46,12 @@ if (!isMain) {
     VuexStore.dispatch('initiateTopup', chunk.data)
   })
 
+  // login with private key
+  torus.communicationMux.getStream('login_with_private_key').on('data', (chunk) => {
+    log.debug('setup login_with_private_key')
+    if (chunk.name === 'login_with_private_key_request') VuexStore.dispatch('handleLoginWithPrivateKey', chunk.data)
+  })
+
   const initStream = torus.communicationMux.getStream('init_stream')
   initStream.on('data', (chunk) => {
     const {
