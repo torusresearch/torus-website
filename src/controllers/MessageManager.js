@@ -120,10 +120,7 @@ export default class MessageManager extends EventEmitter {
 
     if (messageParameters.customPrefix && messageParameters.customMessage) {
       const hashBuffer = keccak256(
-        Buffer.from(
-          `${messageParameters.customPrefix}${messageParameters.customMessage.length.toString()}${messageParameters.customMessage}`,
-          'utf-8'
-        )
+        Buffer.from(`${messageParameters.customPrefix}${messageParameters.customMessage.length.toString()}${messageParameters.customMessage}`, 'utf8')
       )
       const hash = `0x${hashBuffer.toString('hex').toLowerCase()}`
       if (hash === messageParameters.data.toLowerCase()) {

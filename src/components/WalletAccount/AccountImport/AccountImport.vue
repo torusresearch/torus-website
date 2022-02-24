@@ -309,7 +309,7 @@ export default {
             }.bind(this)
           }.bind(this)(this.$refs.keyStoreUpload)
         )
-        fileReader.readAsText(file, 'utf-8')
+        fileReader.readAsText(file, 'utf8')
       } catch (error) {
         log.error(error)
         this.setErrorState(error)
