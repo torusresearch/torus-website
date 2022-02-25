@@ -296,7 +296,7 @@ export default {
         })
     })
   },
-  async handleLoginWithPrivateKey({ state, dispatch, commit }, { privateKey, userInfo }) {
+  async handleLoginWithPrivateKey({ dispatch, commit }, { privateKey, userInfo }) {
     dispatch('subscribeToControllers')
     commit('setUserInfo', userInfo)
 
@@ -309,8 +309,7 @@ export default {
       ],
     })
 
-    const selectedDefaultAddress = defaultAddresses[0] || defaultAddresses[1]
-    const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : Object.keys(state.wallet)[0]
+    const selectedAddress = defaultAddresses[0]
 
     if (!selectedAddress) {
       loginWithPrivateKeyStream.write({
