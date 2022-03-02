@@ -74,7 +74,6 @@ export default {
         let typeName
         let typeImageLink
         let symbol
-        // debugger
         if (contractParams.erc1155) {
           ;[, amountTo, amountValue] = methodParams || []
 

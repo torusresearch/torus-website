@@ -81,6 +81,7 @@ const providerChangeStream = communicationMux.getStream('provider_change')
 const widgetStream = communicationMux.getStream('widget')
 const windowStream = communicationMux.getStream('window')
 const loginWithPrivateKeyStream = communicationMux.getStream('login_with_private_key')
+const walletConnectStream = communicationMux.getStream('wallet_connect_stream')
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
@@ -628,5 +629,28 @@ export default {
   },
   updateGasFees(context, payload) {
     context.commit('setGasFees', payload.gasFees)
+  },
+  handleShowWalletConnectReq({ commit }) {
+    log.debug('handleShowWalletConnectReq')
+    commit('setShowWalletConnect', true)
+  },
+  sendWalletConnectResponse({ commit }, { success, errorMessage }) {
+    commit('setShowWalletConnect', false)
+    if (success) {
+      walletConnectStream.write({
+        name: 'wallet_connect_stream_res',
+        data: {
+          success,
+        },
+      })
+    } else {
+      walletConnectStream.write({
+        name: 'wallet_connect_stream_res',
+        data: {
+          success,
+          error: errorMessage || 'Something went wrong',
+        },
+      })
+    }
   },
 }

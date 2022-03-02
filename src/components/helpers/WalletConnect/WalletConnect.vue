@@ -9,7 +9,15 @@
       </div>
     </v-dialog>
 
-    <v-btn v-if="hasStreamApiSupport" small class="wallet-connect-btn ml-2" icon title="Capture QR" aria-label="Capture QR" @click="toggleWC">
+    <v-btn
+      v-if="hasStreamApiSupport && !isIframe"
+      small
+      class="wallet-connect-btn ml-2"
+      icon
+      title="Capture QR"
+      aria-label="Capture QR"
+      @click="toggleWC"
+    >
       <v-icon v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">$vuetify.icons.disconnect</v-icon>
       <v-icon v-else size="16">$vuetify.icons.walletconnect</v-icon>
     </v-btn>
@@ -21,8 +29,16 @@ import log from 'loglevel'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapActions, mapMutations, mapState } from 'vuex'
 
+import { isMain } from '../../../utils/utils'
+
 export default {
   components: { QrcodeStream },
+  props: {
+    showFromEmbed: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       camera: 'off',
@@ -33,6 +49,9 @@ export default {
   },
   computed: {
     ...mapState(['wcConnectorSession']),
+    isIframe() {
+      return !isMain
+    },
   },
   watch: {
     qrErrorMsg(value) {
@@ -41,9 +60,13 @@ export default {
         this.qrErrorMsg = ''
       }
     },
+    showFromEmbed(value) {
+      this.showQrScanner = value
+      this.camera = 'auto'
+    },
   },
   methods: {
-    ...mapActions(['updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
+    ...mapActions(['updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect', 'sendWalletConnectResponse']),
     ...mapMutations(['setErrorMsg']),
     toggleWC() {
       if (this.wcConnectorSession?.connected) {
@@ -57,8 +80,10 @@ export default {
       try {
         log.info(result, 'qr decoded')
         await this.initWalletConnect({ uri: result })
+        if (this.isIframe) await this.sendWalletConnectResponse({ success: true })
       } catch (error) {
         log.error(error)
+        if (this.isIframe) await this.sendWalletConnectResponse({ success: false, errorMessage: error?.message })
       } finally {
         this.camera = 'off'
         this.showQrScanner = false
@@ -70,32 +95,46 @@ export default {
         this.qrLoading = false
       } catch (error) {
         log.error(error)
+        let rpcErrorMessage = error.message || 'Something went wrong'
         if (error.name === 'NotAllowedError') {
+          rpcErrorMessage = 'ERROR: you need to grant camera access permisson'
           this.qrErrorMsg = 'accountMenu.qrErrorNeedCameraPermission'
           log.error('ERROR: you need to grant camera access permisson')
         } else if (error.name === 'NotFoundError') {
+          rpcErrorMessage = 'ERROR: no camera on this device'
           this.qrErrorMsg = 'accountMenu.qrErrorNoCamera'
           log.error('ERROR: no camera on this device')
         } else if (error.name === 'NotSupportedError') {
+          rpcErrorMessage = 'ERROR: secure context required (HTTPS, localhost)'
           this.qrErrorMsg = 'accountMenu.qrErrorSecureContextRequired'
           log.error('ERROR: secure context required (HTTPS, localhost)')
         } else if (error.name === 'NotReadableError') {
+          rpcErrorMessage = 'ERROR: is the camera already in use?'
           this.qrErrorMsg = 'accountMenu.qrErrorCameraAlreadyInUse'
           log.error('ERROR: is the camera already in use?')
         } else if (error.name === 'OverconstrainedError') {
+          rpcErrorMessage = 'ERROR: installed cameras are not suitable'
           this.qrErrorMsg = 'accountMenu.qrErrorInstalledCamerasAreNotSuitable'
           log.error('ERROR: installed cameras are not suitable')
         } else if (error.name === 'StreamApiNotSupportedError') {
+          rpcErrorMessage = 'ERROR: Stream Api not supported'
           this.qrErrorMsg = 'accountMenu.qrErrorStreamAPINotSupported'
           log.error('ERROR: Stream Api not supported')
 
           this.hasStreamApiSupport = false
         }
+
+        if (this.isIframe && this.showQrScanner) {
+          this.sendWalletConnectResponse({ success: false, errorMessage: rpcErrorMessage })
+        }
       }
     },
-    closeQRScanner() {
+    async closeQRScanner() {
       this.camera = 'off'
       this.showQrScanner = false
+      if (this.isIframe && this.showFromEmbed) {
+        await this.sendWalletConnectResponse({ success: false, errorMessage: 'User Closed Scanner' })
+      }
     },
   },
 }
