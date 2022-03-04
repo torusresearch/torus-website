@@ -10,7 +10,6 @@
 
 ```sh
 npm install
-find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
 
 Add `.env` the project's root directory:
