@@ -1,16 +1,19 @@
 <template>
   <v-container class="wallet-topup-view pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <div class="d-flex align-center">
-      <div class="font-weight-bold text-left text_2--text page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
+      <div class="font-weight-bold text-left text_2--text page-title mr-auto" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
         <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
           {{ t('walletTopUp.purchaseVia') }}
           <span class="text-capitalize">{{ selectedProvider }}</span>
         </span>
         <span v-else>{{ t('walletTopUp.selectProvider') }}</span>
       </div>
-      <div class="ml-auto">
+      <span class="mx-2">
+        <NetworkDisplay :store-network-type="networkType" />
+      </span>
+      <span>
         <QuickAddress />
-      </div>
+      </span>
     </div>
     <v-layout mt-7 mx-n4 wrap>
       <TopupProviders
@@ -42,6 +45,7 @@
 <script>
 import { mapState } from 'vuex'
 
+import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../../components/helpers/QuickAddress'
 import TopupProviders from '../../../components/WalletTopup/TopupProviders'
 import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../../../utils/enums'
@@ -51,6 +55,7 @@ export default {
   components: {
     TopupProviders,
     QuickAddress,
+    NetworkDisplay,
   },
   data() {
     return {
@@ -58,7 +63,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['theme', 'whiteLabel']),
+    ...mapState(['theme', 'whiteLabel', 'networkType']),
     providers() {
       if (this.whiteLabel.isActive) {
         return getPaymentProviders(this.whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME)
