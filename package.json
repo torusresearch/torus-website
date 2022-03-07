@@ -122,7 +122,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.4.0",
     "eslint-config-problems": "^6.0.0",
-    "eslint-config-standard": "^17.0.0-0",
+    "eslint-config-standard": "^17.0.0-1",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-n": "^15.0.1",
     "eslint-plugin-node": "^11.1.0",
