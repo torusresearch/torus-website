@@ -87,3 +87,81 @@ Notes:
 cd node_modules/@metamask/contract-metadata
 aws s3 cp images s3://images.toruswallet.io/ --cache-control "public, max-age=604800, immutable" --metadata-directive REPLACE --recursive
 ```
+
+## Providers and their cryptocurrencies that we support (to be finalised)
+
+| Provider | Chain            | Symbol      |
+| -------- | ---------------- | ----------- |
+| Mercuryo | Ethereum mainnet | ETH         |
+| Mercuryo | Ethereum mainnet | BAT         |
+| Mercuryo | Ethereum mainnet | USDT        |
+| Mercuryo | Ethereum mainnet | DAI         |
+| Mercuryo | BNB              | BNB         |
+| Mercuryo | BNB              | BUSD        |
+| Mercuryo | BNB              | 1INCH       |
+| Xanpool  | Ethereum mainnet | ETH         |
+| Xanpool  | Ethereum mainnet | USDT        |
+| Wyre     | Ethereum mainnet | AAVE        |
+| Wyre     | Ethereum mainnet | BAT         |
+| Wyre     | Ethereum mainnet | BUSD        |
+| Wyre     | Ethereum mainnet | DAI         |
+| Wyre     | Ethereum mainnet | ETH         |
+| Wyre     | Ethereum mainnet | MKR         |
+| Wyre     | Ethereum mainnet | UNI         |
+| Wyre     | Ethereum mainnet | USDC        |
+| Wyre     | Ethereum mainnet | USDT        |
+| Wyre     | Matic            | USDC        |
+| Wyre     | Avalanche        | AVAXC       |
+| Simplex  | Ethereum mainnet | AAVE        |
+| Simplex  | Ethereum mainnet | BAT         |
+| Simplex  | Ethereum mainnet | BUSD        |
+| Simplex  | Ethereum mainnet | DAI         |
+| Simplex  | Ethereum mainnet | ETH         |
+| Simplex  | Ethereum mainnet | MKR         |
+| Simplex  | Ethereum mainnet | MATIC-ERC20 |
+| Simplex  | Ethereum mainnet | USDT        |
+| Simplex  | Ethereum mainnet | USDC        |
+| Simplex  | BNB              | BNB         |
+| Simplex  | BNB              | BUSD-SC     |
+| Simplex  | BNB              | CAKE        |
+| Simplex  | BNB              | USDC-SC     |
+| Simplex  | Matic            | MATIC       |
+| Simplex  | Matic            | USDC-MATIC  |
+| Simplex  | Avalanche        | AVAX-C      |
+| Transak  | Ethereum mainnet | AAVE        |
+| Transak  | Ethereum mainnet | DAI         |
+| Transak  | Ethereum mainnet | ETH         |
+| Transak  | Ethereum mainnet | USDC        |
+| Transak  | Ethereum mainnet | USDT        |
+| Transak  | BNB              | BNB         |
+| Transak  | BNB              | BUSD        |
+| Transak  | Matic            | AAVE        |
+| Transak  | Matic            | DAI         |
+| Transak  | Matic            | MATIC       |
+| Transak  | Matic            | USDC        |
+| Transak  | Matic            | USDT        |
+| Transak  | Matic            | WETH        |
+| Transak  | Avalanche        | AVAX        |
+| Ramp     | Ethereum mainnet | ETH         |
+| Ramp     | Ethereum mainnet | DAI         |
+| Ramp     | Ethereum mainnet | USDC        |
+| Ramp     | Ethereum mainnet | USDT        |
+| Ramp     | Matic            | DAI         |
+| Ramp     | Matic            | MATIC       |
+| Ramp     | Matic            | USDC        |
+| Ramp     | Avalanche        | AVAX        |
+| Ramp     | XDAI             | XDAI        |
+| MoonPay  | Ethereum mainnet | AAVE        |
+| MoonPay  | Ethereum mainnet | BAT         |
+| MoonPay  | Ethereum mainnet | DAI         |
+| MoonPay  | Ethereum mainnet | ETH         |
+| MoonPay  | Ethereum mainnet | MKR         |
+| MoonPay  | Ethereum mainnet | MATIC       |
+| MoonPay  | Ethereum mainnet | USDT        |
+| MoonPay  | Ethereum mainnet | USDC        |
+| MoonPay  | BNB              | BNB - BSC   |
+| MoonPay  | BNB              | BUSD - BSC  |
+| MoonPay  | Matic            | ETH         |
+| MoonPay  | Matic            | MATIC       |
+| MoonPay  | Matic            | USDC        |
+| MoonPay  | Avalanche        | AVAX        |
