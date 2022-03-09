@@ -433,6 +433,16 @@ export const paymentProviders = {
     maxOrderValue: 20_000,
     validCurrencies: SUPPORTED_FIAT_CURRENCIES.simplex,
     validCryptoCurrencies: ['ETH', 'BNB'],
+    validCryptoCurrenciesByChain: {
+      // TODO constantize cryptos e.g. {[ETH]: sdfsaf, [USDC]: {}}
+      [SUPPORTED_NETWORK_TYPES.mainnet]: ['AAVE', 'BAT', 'BUSD', 'DAI', 'ETH', 'MKR', 'MATIC-ERC20', 'USDT', 'USDC'],
+      // BUSD? BUSD-BSC? BUSD-SC?
+      // USDC-SC or USDC?
+      [SUPPORTED_NETWORK_TYPES.bsc_mainnet]: ['BNB', 'BUSD-SC', 'CAKE', 'USDC-SC'],
+      [SUPPORTED_NETWORK_TYPES.matic]: ['MATIC', 'USDC-MATIC'],
+      // AVAXC or AVAX-C?
+      [SUPPORTED_NETWORK_TYPES.avalanche_mainnet]: ['AVAX-C'],
+    },
     includeFees: true,
     api: true,
     enforceMax: true,
@@ -449,6 +459,12 @@ export const paymentProviders = {
     maxOrderValue: 50_000,
     validCurrencies: SUPPORTED_FIAT_CURRENCIES.moonpay,
     validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT', 'BNB_BSC', 'BUSD_BSC'],
+    validCryptoCurrenciesByChain: {
+      [SUPPORTED_NETWORK_TYPES.mainnet]: ['AAVE', 'BAT', 'DAI', 'ETH', 'MKR', 'MATIC', 'USDT', 'USDC'],
+      [SUPPORTED_NETWORK_TYPES.bsc_mainnet]: ['BNB_BSC', 'BUSD_BSC'],
+      [SUPPORTED_NETWORK_TYPES.matic]: ['ETH', 'MATIC', 'USDC'],
+      [SUPPORTED_NETWORK_TYPES.avalanche_mainnet]: ['AVAX'],
+    },
     includeFees: true,
     api: true,
     enforceMax: false,
@@ -465,6 +481,12 @@ export const paymentProviders = {
     maxOrderValue: 500,
     validCurrencies: SUPPORTED_FIAT_CURRENCIES.wyre,
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
+    validCryptoCurrenciesByChain: {
+      [SUPPORTED_NETWORK_TYPES.mainnet]: ['AAVE', 'BAT', 'BUSD', 'DAI', 'ETH', 'MKR', 'UNI', 'USDC', 'USDT'],
+      [SUPPORTED_NETWORK_TYPES.matic]: ['USDC'],
+      // AVAXC? or AVAX?
+      [SUPPORTED_NETWORK_TYPES.avalanche_mainnet]: ['AVAXC'],
+    },
     includeFees: false,
     api: true,
     enforceMax: false,
@@ -481,6 +503,13 @@ export const paymentProviders = {
     maxOrderValue: 20_000,
     validCurrencies: SUPPORTED_FIAT_CURRENCIES.rampnetwork,
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'BSC_BNB'],
+    validCryptoCurrenciesByChain: {
+      [SUPPORTED_NETWORK_TYPES.mainnet]: ['ETH', 'DAI', 'USDC', 'USDT'],
+      [SUPPORTED_NETWORK_TYPES.matic]: ['DAI', 'MATIC', 'USDC'],
+      // what about AVAXC?
+      [SUPPORTED_NETWORK_TYPES.avalanche_mainnet]: ['AVAX'],
+      [SUPPORTED_NETWORK_TYPES.xdai]: ['XDAI'],
+    },
     includeFees: true,
     api: true,
     receiveHint: 'walletTopUp.receiveHintRamp',
@@ -498,6 +527,9 @@ export const paymentProviders = {
     maxOrderValue: 2500,
     validCurrencies: SUPPORTED_FIAT_CURRENCIES.xanpool,
     validCryptoCurrencies: ['ETH', 'USDT'],
+    validCryptoCurrenciesByChain: {
+      [SUPPORTED_NETWORK_TYPES.mainnet]: ['ETH', 'USDT'],
+    },
     includeFees: true,
     api: true,
     sell: true,
@@ -515,6 +547,10 @@ export const paymentProviders = {
     maxOrderValue: 5000,
     validCurrencies: SUPPORTED_FIAT_CURRENCIES.mercuryo,
     validCryptoCurrencies: ['ETH', 'DAI', 'BAT', 'USDT', 'OKB'],
+    validCryptoCurrenciesByChain: {
+      [SUPPORTED_NETWORK_TYPES.mainnet]: ['ETH', 'BAT', 'USDT', 'DAI'],
+      [SUPPORTED_NETWORK_TYPES.bsc_mainnet]: ['BNB', 'BUSD', '1INCH'],
+    },
     includeFees: true,
     api: true,
     enforceMax: false,
@@ -531,6 +567,12 @@ export const paymentProviders = {
     maxOrderValue: 500,
     validCurrencies: SUPPORTED_FIAT_CURRENCIES.transak,
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
+    validCryptoCurrenciesByChain: {
+      [SUPPORTED_NETWORK_TYPES.mainnet]: ['AAVE', 'DAI', 'ETH', 'USDC', 'USDT'],
+      [SUPPORTED_NETWORK_TYPES.bsc_mainnet]: ['BNB', 'BUSD'],
+      [SUPPORTED_NETWORK_TYPES.matic]: ['AAVE', 'DAI', 'MATIC', 'USDC', 'USDT', 'WETH'],
+      [SUPPORTED_NETWORK_TYPES.avalanche_mainnet]: ['AVAX'],
+    },
     includeFees: true,
     api: true,
     enforceMax: true,
