@@ -64,6 +64,8 @@ export default {
       this.showQrScanner = value
       if (value) {
         this.camera = 'auto'
+      } else {
+        this.camera = 'off'
       }
     },
   },
