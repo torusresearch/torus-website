@@ -62,7 +62,9 @@ export default {
     },
     showFromEmbed(value) {
       this.showQrScanner = value
-      this.camera = 'auto'
+      if (value) {
+        this.camera = 'auto'
+      }
     },
   },
   methods: {
@@ -80,10 +82,10 @@ export default {
       try {
         log.info(result, 'qr decoded')
         await this.initWalletConnect({ uri: result })
-        if (this.isIframe) await this.sendWalletConnectResponse({ success: true })
+        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
       } catch (error) {
         log.error(error)
-        if (this.isIframe) await this.sendWalletConnectResponse({ success: false, errorMessage: error?.message })
+        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: false, errorMessage: error?.message })
       } finally {
         this.camera = 'off'
         this.showQrScanner = false
@@ -95,37 +97,30 @@ export default {
         this.qrLoading = false
       } catch (error) {
         log.error(error)
-        let rpcErrorMessage = error.message || 'Something went wrong'
         if (error.name === 'NotAllowedError') {
-          rpcErrorMessage = 'ERROR: you need to grant camera access permisson'
           this.qrErrorMsg = 'accountMenu.qrErrorNeedCameraPermission'
           log.error('ERROR: you need to grant camera access permisson')
         } else if (error.name === 'NotFoundError') {
-          rpcErrorMessage = 'ERROR: no camera on this device'
           this.qrErrorMsg = 'accountMenu.qrErrorNoCamera'
           log.error('ERROR: no camera on this device')
         } else if (error.name === 'NotSupportedError') {
-          rpcErrorMessage = 'ERROR: secure context required (HTTPS, localhost)'
           this.qrErrorMsg = 'accountMenu.qrErrorSecureContextRequired'
           log.error('ERROR: secure context required (HTTPS, localhost)')
         } else if (error.name === 'NotReadableError') {
-          rpcErrorMessage = 'ERROR: is the camera already in use?'
           this.qrErrorMsg = 'accountMenu.qrErrorCameraAlreadyInUse'
           log.error('ERROR: is the camera already in use?')
         } else if (error.name === 'OverconstrainedError') {
-          rpcErrorMessage = 'ERROR: installed cameras are not suitable'
           this.qrErrorMsg = 'accountMenu.qrErrorInstalledCamerasAreNotSuitable'
           log.error('ERROR: installed cameras are not suitable')
         } else if (error.name === 'StreamApiNotSupportedError') {
-          rpcErrorMessage = 'ERROR: Stream Api not supported'
           this.qrErrorMsg = 'accountMenu.qrErrorStreamAPINotSupported'
           log.error('ERROR: Stream Api not supported')
 
           this.hasStreamApiSupport = false
         }
 
-        if (this.isIframe && this.showQrScanner) {
-          this.sendWalletConnectResponse({ success: false, errorMessage: rpcErrorMessage })
+        if (this.isIframe && this.showFromEmbed) {
+          this.sendWalletConnectResponse({ success: false, errorMessage: this.t(this.qrErrorMsg) })
         }
       }
     },
