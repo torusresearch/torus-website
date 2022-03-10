@@ -7,7 +7,7 @@ import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import { languageMap } from '../plugins/i18n-setup'
-import { SUPPORTED_FIAT_CURRENCIES } from '../supportedCurrencies'
+import { supportedFiatCurrencies } from '../supportedCurrencies'
 import {
   ACCOUNT_TYPE,
   ACTIVE,
@@ -435,7 +435,7 @@ export const paymentProviders = {
     supportPage: 'https://www.simplex.com/support/',
     minOrderValue: 50,
     maxOrderValue: 20_000,
-    validCurrencies: SUPPORTED_FIAT_CURRENCIES.simplex,
+    validCurrencies: supportedFiatCurrencies(SIMPLEX),
     validCryptoCurrencies: ['ETH', 'BNB'],
     validCryptoCurrenciesByChain: {
       // TODO constantize cryptos e.g. {[ETH]: sdfsaf, [USDC]: {}}
@@ -461,7 +461,7 @@ export const paymentProviders = {
     supportPage: 'https://help.moonpay.io/en/',
     minOrderValue: 24.99,
     maxOrderValue: 50_000,
-    validCurrencies: SUPPORTED_FIAT_CURRENCIES.moonpay,
+    validCurrencies: supportedFiatCurrencies(MOONPAY),
     validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT', 'BNB_BSC', 'BUSD_BSC'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: ['AAVE', 'BAT', 'DAI', 'ETH', 'MKR', 'MATIC', 'USDT', 'USDC'],
@@ -483,7 +483,7 @@ export const paymentProviders = {
     supportPage: 'https://support.sendwyre.com/en/',
     minOrderValue: 5,
     maxOrderValue: 500,
-    validCurrencies: SUPPORTED_FIAT_CURRENCIES.wyre,
+    validCurrencies: supportedFiatCurrencies(WYRE),
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: ['AAVE', 'BAT', 'BUSD', 'DAI', 'ETH', 'MKR', 'UNI', 'USDC', 'USDT'],
@@ -505,7 +505,7 @@ export const paymentProviders = {
     supportPage: 'https://instant.ramp.network/',
     minOrderValue: 50,
     maxOrderValue: 20_000,
-    validCurrencies: SUPPORTED_FIAT_CURRENCIES.rampnetwork,
+    validCurrencies: supportedFiatCurrencies(RAMPNETWORK),
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'BSC_BNB'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: ['ETH', 'DAI', 'USDC', 'USDT'],
@@ -529,7 +529,7 @@ export const paymentProviders = {
     supportPage: 'mailto:support@xanpool.com',
     minOrderValue: 100,
     maxOrderValue: 2500,
-    validCurrencies: SUPPORTED_FIAT_CURRENCIES.xanpool,
+    validCurrencies: supportedFiatCurrencies(XANPOOL),
     validCryptoCurrencies: ['ETH', 'USDT'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: ['ETH', 'USDT'],
@@ -549,7 +549,7 @@ export const paymentProviders = {
     supportPage: 'mailto:support@mercuryo.io',
     minOrderValue: 30,
     maxOrderValue: 5000,
-    validCurrencies: SUPPORTED_FIAT_CURRENCIES.mercuryo,
+    validCurrencies: supportedFiatCurrencies(MERCURYO),
     validCryptoCurrencies: ['ETH', 'DAI', 'BAT', 'USDT', 'OKB'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: ['ETH', 'BAT', 'USDT', 'DAI'],
@@ -569,7 +569,7 @@ export const paymentProviders = {
     supportPage: 'https://support.transak.com/hc/en-US',
     minOrderValue: 20,
     maxOrderValue: 500,
-    validCurrencies: SUPPORTED_FIAT_CURRENCIES.transak,
+    validCurrencies: supportedFiatCurrencies(TRANSAK),
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: ['AAVE', 'DAI', 'ETH', 'USDC', 'USDT'],

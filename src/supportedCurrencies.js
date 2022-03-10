@@ -292,12 +292,11 @@ export const CRYPTO_COMPARE_CURRENCIES = [
   'MIM',
 ]
 
-const cryptoCompareCurrenciesSet = new Set(CRYPTO_COMPARE_CURRENCIES)
-
 /**
+ * currencies supported by the payment provider
  * Last updated: Date of commit
  */
-export const SUPPORTED_FIAT_CURRENCIES = {
+const PROVIDER_SUPPORTED_FIAT_CURRENCIES = {
   // https://integrations.simplex.com/supported_currencies
   [SIMPLEX]: [
     'ALL',
@@ -399,7 +398,7 @@ export const SUPPORTED_FIAT_CURRENCIES = {
     'UZS',
     'VND',
     'ZMW',
-  ].filter((currency) => cryptoCompareCurrenciesSet.has(currency)),
+  ],
   // https://support.moonpay.com/hc/en-gb/articles/360011931457-Which-fiat-currencies-are-supported-
   [MOONPAY]: [
     'AUD',
@@ -445,7 +444,7 @@ export const SUPPORTED_FIAT_CURRENCIES = {
     'USD',
     'VND',
     'ZAR',
-  ].filter((currency) => cryptoCompareCurrenciesSet.has(currency)),
+  ],
   /**
    * https://docs.sendwyre.com/docs/supported-currencies#fiat
    * The ones where credit card is supported
@@ -479,13 +478,13 @@ export const SUPPORTED_FIAT_CURRENCIES = {
     'THB',
     'VND',
     'ZAR',
-  ].filter((currency) => cryptoCompareCurrenciesSet.has(currency)),
+  ],
   // https://support.ramp.network/en/articles/471-why-am-i-paying-in-usd-eur-gbp
-  [RAMPNETWORK]: ['USD', 'EUR', 'GBP'].filter((currency) => cryptoCompareCurrenciesSet.has(currency)),
+  [RAMPNETWORK]: ['USD', 'EUR', 'GBP'],
   // From https://xanpool.com/ fiat select dropdown
-  [XANPOOL]: ['SGD', 'HKD', 'THB', 'PHP', 'INR', 'IDR', 'MYR', 'AUD', 'NZD', 'KRW'].filter((currency) => cryptoCompareCurrenciesSet.has(currency)),
+  [XANPOOL]: ['SGD', 'HKD', 'THB', 'PHP', 'INR', 'IDR', 'MYR', 'AUD', 'NZD', 'KRW'],
   // https://support.aax.com/en/articles/5295762-mercuryo
-  [MERCURYO]: ['EUR', 'RUB', 'USD', 'GBP', 'TRY', 'UAH'].filter((currency) => cryptoCompareCurrenciesSet.has(currency)),
+  [MERCURYO]: ['EUR', 'RUB', 'USD', 'GBP', 'TRY', 'UAH'],
   /**
    * https://support.transak.com/hc/en-us/articles/360020615578-Credit-and-Debit-Card-Payments-through-Transak
    * or
@@ -536,7 +535,16 @@ export const SUPPORTED_FIAT_CURRENCIES = {
     'TZS',
     'USD',
     'ZAR',
-  ].filter((currency) => cryptoCompareCurrenciesSet.has(currency)),
+  ],
+}
+
+const cryptoCompareCurrenciesSet = new Set(CRYPTO_COMPARE_CURRENCIES)
+/**
+ * Fiat currencies that we support
+ */
+export function supportedFiatCurrencies(provider) {
+  const providerSupportedFiatCurrencies = PROVIDER_SUPPORTED_FIAT_CURRENCIES[provider]
+  return providerSupportedFiatCurrencies.filter((currency) => cryptoCompareCurrenciesSet.has(currency))
 }
 
 // TODO use symbols for currencies
