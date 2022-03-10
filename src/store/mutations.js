@@ -154,6 +154,12 @@ export default {
       skipTKey: payload || false,
     }
   },
+  setShowWalletConnect(state, payload) {
+    state.embedState = {
+      ...state.embedState,
+      showWalletConnect: payload || false,
+    }
+  },
   setButtonPosition(state, payload) {
     state.embedState = { ...state.embedState, buttonPosition: payload || 'bottom-left' }
   },

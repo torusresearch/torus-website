@@ -9,7 +9,15 @@
       </div>
     </v-dialog>
 
-    <v-btn v-if="hasStreamApiSupport" small class="wallet-connect-btn ml-2" icon title="Capture QR" aria-label="Capture QR" @click="toggleWC">
+    <v-btn
+      v-if="hasStreamApiSupport && !isIframe"
+      small
+      class="wallet-connect-btn ml-2"
+      icon
+      title="Capture QR"
+      aria-label="Capture QR"
+      @click="toggleWC"
+    >
       <v-icon v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">$vuetify.icons.disconnect</v-icon>
       <v-icon v-else size="16">$vuetify.icons.walletconnect</v-icon>
     </v-btn>
@@ -21,8 +29,16 @@ import log from 'loglevel'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapActions, mapMutations, mapState } from 'vuex'
 
+import { isMain } from '../../../utils/utils'
+
 export default {
   components: { QrcodeStream },
+  props: {
+    showFromEmbed: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       camera: 'off',
@@ -33,6 +49,9 @@ export default {
   },
   computed: {
     ...mapState(['wcConnectorSession']),
+    isIframe() {
+      return !isMain
+    },
   },
   watch: {
     qrErrorMsg(value) {
@@ -41,9 +60,17 @@ export default {
         this.qrErrorMsg = ''
       }
     },
+    showFromEmbed(value) {
+      this.showQrScanner = value
+      if (value) {
+        this.camera = 'auto'
+      } else {
+        this.camera = 'off'
+      }
+    },
   },
   methods: {
-    ...mapActions(['updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
+    ...mapActions(['updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect', 'sendWalletConnectResponse']),
     ...mapMutations(['setErrorMsg']),
     toggleWC() {
       if (this.wcConnectorSession?.connected) {
@@ -57,8 +84,10 @@ export default {
       try {
         log.info(result, 'qr decoded')
         await this.initWalletConnect({ uri: result })
+        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
       } catch (error) {
         log.error(error)
+        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: false, errorMessage: error?.message })
       } finally {
         this.camera = 'off'
         this.showQrScanner = false
@@ -91,11 +120,18 @@ export default {
 
           this.hasStreamApiSupport = false
         }
+
+        if (this.isIframe && this.showFromEmbed) {
+          this.sendWalletConnectResponse({ success: false, errorMessage: this.t(this.qrErrorMsg) })
+        }
       }
     },
-    closeQRScanner() {
+    async closeQRScanner() {
       this.camera = 'off'
       this.showQrScanner = false
+      if (this.isIframe && this.showFromEmbed) {
+        await this.sendWalletConnectResponse({ success: false, errorMessage: 'User Closed Scanner' })
+      }
     },
   },
 }
