@@ -46,6 +46,17 @@ if (!isMain) {
     VuexStore.dispatch('initiateTopup', chunk.data)
   })
 
+  // login with private key
+  torus.communicationMux.getStream('login_with_private_key').on('data', (chunk) => {
+    log.debug('setup login_with_private_key')
+    if (chunk.name === 'login_with_private_key_request') VuexStore.dispatch('handleLoginWithPrivateKey', chunk.data)
+  })
+
+  // show wallet connect scanner.
+  torus.communicationMux.getStream('wallet_connect_stream').on('data', (chunk) => {
+    log.debug('showing wallet connect scanner using rpc')
+    if (chunk.name === 'wallet_connect_stream_req') VuexStore.dispatch('handleShowWalletConnectReq', chunk.data)
+  })
   const initStream = torus.communicationMux.getStream('init_stream')
   initStream.on('data', (chunk) => {
     const {

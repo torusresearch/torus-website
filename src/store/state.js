@@ -71,6 +71,7 @@ const initialState = {
     apiKey: 'torus-default',
     skipTKey: false,
     loginInProgress: false,
+    showWalletConnect: false,
   },
   whiteLabel: {
     isActive: false,
