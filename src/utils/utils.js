@@ -583,6 +583,31 @@ export const paymentProviders = {
   },
 }
 
+/**
+ * {
+ *   [MAINNET]: [SIMPLEX, TRANSAK, WYRE, ...],
+ *   [BSC_MAINNET]: [SIMPLEX, ...],
+ *   ...
+ * }
+ */
+export const SUPPORTED_PROVIDERS_PER_NETWORK = (() => {
+  const supportedProvidersPerNetwork = Object.keys(SUPPORTED_NETWORK_TYPES).reduce((acc, networkName) => {
+    const supportedPaymentProviders = Object.entries(paymentProviders)
+      .filter(([_, paymentProvider]) => {
+        const paymentProviderSupportedNetworks = Object.keys(paymentProvider.validCryptoCurrenciesByChain)
+        return paymentProviderSupportedNetworks.includes(networkName)
+      })
+      .map(([key]) => key)
+
+    return {
+      ...acc,
+      [networkName]: supportedPaymentProviders,
+    }
+  }, {})
+
+  return supportedProvidersPerNetwork
+})()
+
 export function getPaymentProviders(theme) {
   return Object.keys(paymentProviders).map((x) => {
     const item = paymentProviders[x]
