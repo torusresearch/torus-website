@@ -31,7 +31,7 @@
             </div>
             <div>
               <span class="font-weight-medium">{{ t('walletTopUp.currencies') }}</span>
-              : {{ targetProvider.line4 }}
+              : {{ supportedNetworkCryptosForProvider(targetProvider).join(', ') }}
             </div>
           </v-list-item-content>
         </v-list-item>
@@ -72,6 +72,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import { ACTIVE, INACTIVE } from '../../../utils/enums'
 
 export default {
@@ -93,6 +95,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['networkType']),
     activeProviders() {
       return this.providers.filter((provider) => provider.status === ACTIVE)
     },
@@ -125,6 +128,10 @@ export default {
           })
         }
       }, 0)
+    },
+    supportedNetworkCryptosForProvider(targetProvider) {
+      const network = this.networkType.host
+      return targetProvider.validCryptoCurrenciesByChain[network]
     },
   },
 }
