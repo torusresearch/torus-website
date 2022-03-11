@@ -75,6 +75,7 @@
               <div v-if="!$vuetify.breakpoint.xsOnly" class="mb-2 d-flex align-center" :style="{ height: '20px' }">
                 <span class="body-2">&nbsp;</span>
               </div>
+              <!-- TODO turn into searchable dropdown -->
               <v-select
                 id="currency-selector"
                 v-model="selectedCurrency"
