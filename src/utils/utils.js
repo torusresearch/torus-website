@@ -608,8 +608,12 @@ export const SUPPORTED_PROVIDERS_PER_NETWORK = (() => {
   return supportedProvidersPerNetwork
 })()
 
-export function getPaymentProviders(theme) {
-  return Object.keys(paymentProviders).map((x) => {
+export function getPaymentProviders(network, theme) {
+  const supportedProviders = Object.keys(paymentProviders).filter((paymentProvider) =>
+    SUPPORTED_PROVIDERS_PER_NETWORK[network].includes(paymentProvider)
+  )
+
+  return supportedProviders.map((x) => {
     const item = paymentProviders[x]
     return {
       ...item,

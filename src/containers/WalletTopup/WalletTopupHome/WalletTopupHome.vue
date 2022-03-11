@@ -65,10 +65,11 @@ export default {
   computed: {
     ...mapState(['theme', 'whiteLabel', 'networkType']),
     providers() {
+      const network = this.networkType.host
       if (this.whiteLabel.isActive) {
-        return getPaymentProviders(this.whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME)
+        return getPaymentProviders(network, this.whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME)
       }
-      return getPaymentProviders(this.theme)
+      return getPaymentProviders(network, this.theme)
     },
   },
   mounted() {
