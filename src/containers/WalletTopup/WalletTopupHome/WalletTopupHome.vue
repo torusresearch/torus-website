@@ -82,6 +82,10 @@ export default {
     this.selectedProvider = foundPath ? foundPath.name : ''
 
     this.$vuetify.goTo(0)
+
+    if (this.providers.length === 0) {
+      this.$store.commit('setErrorMsg', this.$i18n.t('walletTopUp.topUpNotSupported', [this.networkType.networkName]))
+    }
   },
 }
 </script>
