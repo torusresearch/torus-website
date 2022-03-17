@@ -36,6 +36,7 @@ export default {
   },
   error: {
     base: '#EF4C56',
+    lighten4: '#FEB7C0',
     lighten5: '#F3DBE4',
     darken1: '#ED838C',
   },
