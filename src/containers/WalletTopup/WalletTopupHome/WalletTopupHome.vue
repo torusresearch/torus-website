@@ -16,7 +16,10 @@
         </router-link>
       </div>
     </div>
-    <v-container class="wallet-topup-view pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+
+    <NoSupportedProvidersForNetworkPlaceholder v-if="noSupportedProvidersForNetwork" />
+
+    <v-container v-else class="wallet-topup-view pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
       <div class="d-flex align-center">
         <div class="font-weight-bold text-left text_2--text page-title mr-auto" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
           <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
@@ -68,12 +71,14 @@ import QuickAddress from '../../../components/helpers/QuickAddress'
 import TopupProviders from '../../../components/WalletTopup/TopupProviders'
 import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../../../utils/enums'
 import { getPaymentProviders } from '../../../utils/utils'
+import NoSupportedProvidersForNetworkPlaceholder from './NoSupportedProvidersForNetworkPlaceholder.vue'
 
 export default {
   components: {
     TopupProviders,
     QuickAddress,
     NetworkDisplay,
+    NoSupportedProvidersForNetworkPlaceholder,
   },
   data() {
     return {
