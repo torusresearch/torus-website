@@ -60,7 +60,9 @@
       <span>Coming Soon</span>
     </v-tooltip>
 
-    <WriteToUs />
+    <div id="write-to-us">
+      <WriteToUs />
+    </div>
   </v-flex>
 </template>
 
