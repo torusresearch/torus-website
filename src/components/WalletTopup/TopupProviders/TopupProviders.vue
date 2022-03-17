@@ -69,8 +69,8 @@
 <script>
 import { mapState } from 'vuex'
 
-import WriteToUs from '../../../containers/WalletTopup/WalletTopupHome/WriteToUs.vue'
 import { ACTIVE, INACTIVE } from '../../../utils/enums'
+import WriteToUs from '../WriteToUs'
 
 export default {
   components: { WriteToUs },
