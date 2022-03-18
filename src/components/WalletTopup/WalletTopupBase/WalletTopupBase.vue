@@ -75,17 +75,15 @@
               <div v-if="!$vuetify.breakpoint.xsOnly" class="mb-2 d-flex align-center" :style="{ height: '20px' }">
                 <span class="body-2">&nbsp;</span>
               </div>
-              <!-- TODO turn into searchable dropdown -->
-              <v-select
+              <v-autocomplete
                 id="currency-selector"
                 v-model="selectedCurrency"
-                class="curency-selector"
                 outlined
                 :items="supportedCurrencies"
                 append-icon="$vuetify.icons.select"
                 aria-label="Currency Selector"
                 @change="onCurrencyChange"
-              ></v-select>
+              />
             </v-flex>
           </v-layout>
 
