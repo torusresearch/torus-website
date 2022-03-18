@@ -41,6 +41,12 @@
               </a>
             </div>
             <v-spacer></v-spacer>
+            <div>
+              <a class="text-decoration-none text_2--text" :href="privacyPolicy" target="_blank" rel="noreferrer noopener">
+                {{ t('dappLogin.privacyPolicy') }}
+              </a>
+            </div>
+            <v-spacer></v-spacer>
             <div v-if="!whiteLabel.isActive">
               <div class="d-flex align-center mb-2">
                 <span class="text_2--text mr-1">{{ t('dappLogin.poweredBy') }}</span>
