@@ -20,18 +20,23 @@
     <NoSupportedProvidersForNetworkPlaceholder v-if="noSupportedProvidersForNetwork" />
 
     <v-container v-else class="wallet-topup-view pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
-      <div class="d-flex align-center">
-        <div class="font-weight-bold text-left text_2--text page-title mr-auto" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
+      <div class="d-flex flex-wrap align-center">
+        <div
+          class="font-weight-bold text-left text_2--text page-title mr-auto order-0 order-md-first"
+          :class="{ 'display-1': $vuetify.breakpoint.width > 390 }"
+        >
           <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
             {{ t('walletTopUp.purchaseVia') }}
             <span class="text-capitalize">{{ selectedProvider }}</span>
           </span>
           <span v-else>{{ t('walletTopUp.selectProvider') }}</span>
         </div>
-        <span class="mx-2">
-          <NetworkDisplay :store-network-type="networkType" />
-        </span>
-        <span>
+        <div class="order-first order-md-0 d-md-inline-flex mx-md-2" :style="{ width: $vuetify.breakpoint.smAndDown ? '100%' : 'auto' }">
+          <div class="d-inline-block">
+            <NetworkDisplay :store-network-type="networkType" />
+          </div>
+        </div>
+        <span class="order-last">
           <QuickAddress />
         </span>
       </div>
