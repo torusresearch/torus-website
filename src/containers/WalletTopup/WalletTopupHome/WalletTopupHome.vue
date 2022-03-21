@@ -17,9 +17,28 @@
       </div>
     </div>
 
-    <NoSupportedProvidersForNetworkPlaceholder v-if="noSupportedProvidersForNetwork" />
+    <NoSupportedProvidersForNetworkPlaceholder v-if="noSupportedProvidersForNetwork">
+      <!-- Placeholder Topup Header -->
+      <div class="d-flex flex-wrap align-center">
+        <div
+          class="font-weight-bold text-left text_2--text page-title mr-auto order-0 order-md-first"
+          :class="{ 'display-1': $vuetify.breakpoint.width > 390 }"
+        >
+          <span style="opacity: 0.4">{{ t('walletTopUp.selectProvider') }}</span>
+        </div>
+        <div class="order-first order-md-0 d-md-inline-flex mx-md-2" :style="{ width: $vuetify.breakpoint.smAndDown ? '100%' : 'auto' }">
+          <div class="d-inline-block">
+            <NetworkDisplay :store-network-type="networkType" />
+          </div>
+        </div>
+        <span class="order-last">
+          <QuickAddress />
+        </span>
+      </div>
+    </NoSupportedProvidersForNetworkPlaceholder>
 
     <v-container v-else class="wallet-topup-view pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+      <!-- Normal Topup Header -->
       <div class="d-flex flex-wrap align-center">
         <div
           class="font-weight-bold text-left text_2--text page-title mr-auto order-0 order-md-first"
@@ -40,6 +59,7 @@
           <QuickAddress />
         </span>
       </div>
+
       <v-layout mt-7 mx-n4 wrap>
         <TopupProviders
           :selected-provider="selectedProvider"
