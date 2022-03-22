@@ -50,9 +50,18 @@
             </v-list-item-avatar>
             <v-list-item-content class="align-self-center text-right text_1--text caption">
               <div>{{ targetProvider.line1 }}</div>
-              <div v-html="targetProvider.line2"></div>
-              <div>{{ targetProvider.line3 }}</div>
-              <div>{{ targetProvider.line4 }}</div>
+              <div>
+                <span class="font-weight-medium">{{ t('walletTopUp.fees') }}</span>
+                : {{ targetProvider.line2 }}
+              </div>
+              <div>
+                <span class="font-weight-medium">{{ t('walletTopUp.limits') }}</span>
+                : {{ targetProvider.line3 }}
+              </div>
+              <div>
+                <span class="font-weight-medium">{{ t('walletTopUp.currencies') }}</span>
+                : {{ supportedNetworkCryptosForProvider(targetProvider).join(', ') }}
+              </div>
             </v-list-item-content>
           </v-list-item>
         </v-card>
