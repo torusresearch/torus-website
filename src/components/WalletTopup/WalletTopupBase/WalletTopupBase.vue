@@ -192,6 +192,7 @@ export default {
     },
     ...mapState({
       storeSelectedCurrency: 'selectedCurrency',
+      networkType: 'networkType',
     }),
     sendPlaceholder() {
       return `0.00 (Min ${formatCurrencyNumber(this.minOrderValue)})`
@@ -209,8 +210,12 @@ export default {
       if (Number.parseFloat(this.currencyRate) !== 0) return significantDigits(1 / this.currencyRate)
       return 0
     },
+    validCryptoCurrencies() {
+      const network = this.networkType.host
+      return this.selectedProviderObj.validCryptoCurrenciesByChain[network]
+    },
     selectedCryptoCurrencies() {
-      return this.selectedProviderObj.validCryptoCurrencies.map((x) => {
+      return this.validCryptoCurrencies.map((x) => {
         const splits = x.split('_')
         let displayValue = splits[0]
         if (this.selectedProvider === RAMPNETWORK && splits.length > 1) {
@@ -244,9 +249,9 @@ export default {
         ;[this.selectedCurrency] = this.selectedProviderObj.validCurrencies
       }
 
-      if (this.selectedProviderObj.validCryptoCurrencies.includes(selectedCryptoCurrency)) this.selectedCryptoCurrency = selectedCryptoCurrency
+      if (this.validCryptoCurrencies.includes(selectedCryptoCurrency)) this.selectedCryptoCurrency = selectedCryptoCurrency
       else {
-        ;[this.selectedCryptoCurrency] = this.selectedProviderObj.validCryptoCurrencies
+        ;[this.selectedCryptoCurrency] = this.validCryptoCurrencies
       }
     }
     this.setFiatValue(fiatValue || this.minOrderValue)
