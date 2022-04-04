@@ -150,7 +150,7 @@
     "os-browserify": "^0.3.0",
     "prettier": "^2.5.1",
     "process": "^0.11.10",
-    "puppeteer": "^13.4.0",
+    "puppeteer": "^13.5.2",
     "sass": "~1.32.13",
     "sass-loader": "^12.6.0",
     "sinon": "^13.0.1",
