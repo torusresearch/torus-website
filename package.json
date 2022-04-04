@@ -37,7 +37,7 @@
     "@metamask/obs-store": "^7.0.0",
     "@rsksmart/rsk-utils": "^1.1.0",
     "@sentry/browser": "^6.18.1",
-    "@sentry/vue": "^6.17.9",
+    "@sentry/vue": "^6.19.3",
     "@toruslabs/fetch-node-details": "^5.0.1",
     "@toruslabs/http-helpers": "^2.2.0",
     "@toruslabs/loglevel-sentry": "^2.7.2",
