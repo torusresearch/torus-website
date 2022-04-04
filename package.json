@@ -106,7 +106,7 @@
     "@babel/plugin-proposal-class-properties": "^7.16.7",
     "@babel/preset-env": "^7.16.11",
     "@babel/register": "^7.17.0",
-    "@sentry/cli": "^1.73.0",
+    "@sentry/cli": "^1.74.3",
     "@vue/cli-plugin-babel": "^5.0.1",
     "@vue/cli-plugin-eslint": "^5.0.1",
     "@vue/cli-plugin-pwa": "^5.0.1",
