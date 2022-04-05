@@ -90,11 +90,16 @@
         :items-per-page.sync="itemsPerPage"
         :page.sync="page"
         hide-default-footer
-        :loading="isLoadingDapps"
-        :loading-text="t('walletDiscover.loading')"
+        :loading="isLoadingDapps || redirectUrl"
         :no-results-text="t('walletDiscover.noData')"
         :no-data-text="t('walletDiscover.noData')"
       >
+        <template #loading>
+          <div>
+            <BoxLoader class="mt-5 mb-2" />
+            <div>{{ redirectUrl ? t('walletDiscover.redirecting').replace(/\{url\}/gi, redirectUrl.href) : t('walletDiscover.loading') }}</div>
+          </div>
+        </template>
         <template #default="props">
           <v-row>
             <v-col v-for="dapp in props.items" :key="dapp.title + dapp.network" class="col-sm-6 col-md-4 col-lg-3 col-xl-3">
@@ -117,8 +122,10 @@
   </v-container>
 </template>
 <script>
+import log from 'loglevel'
 import { mapState } from 'vuex'
 
+import BoxLoader from '../../components/helpers/BoxLoader'
 import Dapp from '../../components/WalletDiscover/Dapp'
 import torus from '../../torus'
 import { SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
@@ -127,10 +134,11 @@ const ALL_CATEGORIES = 'All DApps'
 const ALL_NETWORKS = 'All networks'
 export default {
   name: 'WalletDiscover',
-  components: { Dapp },
+  components: { BoxLoader, Dapp },
   data() {
     return {
       isLoadingDapps: true,
+      redirectUrl: undefined,
       dapps: [],
       selectedCategory: ALL_CATEGORIES,
       selectedNetwork: ALL_NETWORKS,
@@ -186,10 +194,22 @@ export default {
   },
   async mounted() {
     this.$vuetify.goTo(0)
-    const dappRecords = await this.fetchDapps()
-    this.dapps = dappRecords?.records || []
-    this.isLoadingDapps = false
-    this.selectedNetwork = this.$store?.state?.networkType?.host || ALL_NETWORKS // set default network as user's setting default
+    try {
+      if (this.$route.query.url) {
+        this.redirectUrl = new URL(this.$route.query.url)
+        window.location.href = this.redirectUrl.href
+      }
+    } catch (error) {
+      log.error(error)
+    } finally {
+      // Fetch dapps if not redirecting
+      if (!this.redirectUrl) {
+        const dappRecords = await this.fetchDapps()
+        this.dapps = dappRecords?.records || []
+        this.isLoadingDapps = false
+        this.selectedNetwork = this.$store?.state?.networkType?.host || ALL_NETWORKS // set default network as user's setting default
+      }
+    }
   },
   created() {
     this.ALL_NETWORKS = ALL_NETWORKS
