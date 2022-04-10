@@ -162,6 +162,7 @@ function ensureProperTransactionEnvelopeTypeProvided(txParams, field) {
         )
       }
       break
+    // eslint-disable-next-line unicorn/no-useless-switch-case
     case 'gasPrice':
     default:
       if (txParams.type && txParams.type === TRANSACTION_ENVELOPE_TYPES.FEE_MARKET) {

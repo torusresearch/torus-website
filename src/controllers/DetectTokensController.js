@@ -213,7 +213,7 @@ class DetectTokensController {
         }
       })
     )
-    nonZeroTokens = nonZeroTokens.filter((x) => x)
+    nonZeroTokens = nonZeroTokens.filter(Boolean)
     const currentTokens = this.detectedTokensStore.getState()[userAddress] || []
     this.detectedTokensStore.updateState({ [userAddress]: mergeCustomTokenArrays(currentTokens, nonZeroTokens) })
   }
