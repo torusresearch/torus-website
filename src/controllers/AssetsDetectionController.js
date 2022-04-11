@@ -138,7 +138,7 @@ export default class AssetsDetectionController {
         }
       })
     )
-    nonZeroTokens = nonZeroTokens.filter((x) => x)
+    nonZeroTokens = nonZeroTokens.filter(Boolean)
     if (forceUpdateStore) await this.assetController.addCollectibles(nonZeroTokens, false)
     return [nonZeroTokens, collectiblesMap]
   }

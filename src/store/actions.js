@@ -327,11 +327,6 @@ export default {
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
     prefsController.getBillboardContents()
     prefsController.getAnnouncementsContents()
-    // continue enable function
-    setTimeout(() => {
-      oauthStream.write({ selectedAddress })
-      commit('setOAuthModalStatus', false)
-    }, 50)
     // TODO: deprecate rehydrate false for the next major version bump
     statusStream.write({ loggedIn: true, rehydrate: false, verifier: userInfo.verifier })
     loginWithPrivateKeyStream.write({
