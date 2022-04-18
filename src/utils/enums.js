@@ -24,6 +24,8 @@ export const MATIC = 'matic'
 export const MUMBAI = 'mumbai'
 export const BSC_MAINNET = 'bsc_mainnet'
 export const BSC_TESTNET = 'bsc_testnet'
+export const OKC_MAINNET = 'okxchain_mainnet'
+export const OKC_TESTNET = 'okxchain_testnet'
 export const XDAI = 'xdai'
 export const RSK_MAINNET = 'rsk_mainnet'
 export const RSK_TESTNET = 'rsk_testnet'
@@ -45,6 +47,8 @@ export const MUMBAI_CODE = 80_001
 export const LOCALHOST_CODE = 5777
 export const BSC_MAINNET_CODE = 56
 export const BSC_TESTNET_CODE = 97
+export const OKC_MAINNET_CODE = 66
+export const OKC_TESTNET_CODE = 65
 export const XDAI_CODE = 100
 export const RSK_MAINNET_CODE = 30
 export const RSK_TESTNET_CODE = 31
@@ -65,6 +69,8 @@ export const MATIC_CHAIN_ID = '0x89'
 export const MUMBAI_CHAIN_ID = '0x13881'
 export const BSC_MAINNET_CHAIN_ID = '0x38'
 export const BSC_TESTNET_CHAIN_ID = '0x61'
+export const OKC_MAINNET_CHAIN_ID = '0x42'
+export const OKC_TESTNET_CHAIN_ID = '0x41'
 export const XDAI_CHAIN_ID = '0x64'
 export const REEF_CHAIN_ID = '0x65'
 export const RSK_MAINNET_CHAIN_ID = '0x1e'
@@ -103,6 +109,8 @@ export const MATIC_DISPLAY_NAME = 'Polygon Mainnet'
 export const MUMBAI_DISPLAY_NAME = 'Matic Mumbai'
 export const BSC_MAINNET_DISPLAY_NAME = 'Binance Smart Chain Mainnet'
 export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
+export const OKC_MAINNET_DISPLAY_NAME = 'OKXChain Mainnet'
+export const OKC_TESTNET_DISPLAY_NAME = 'OKXChain Testnet'
 export const XDAI_DISPLAY_NAME = 'xDai'
 export const RSK_MAINNET_DISPLAY_NAME = 'RSK Mainnet'
 export const RSK_TESTNET_DISPLAY_NAME = 'RSK Testnet'
@@ -128,6 +136,12 @@ export const BSC_MAINNET_BLOCK_EXPLORER = 'https://bscscan.com'
 
 export const BSC_TESTNET_URL = 'https://data-seed-prebsc-2-s3.binance.org:8545'
 export const BSC_TESTNET_BLOCK_EXPLORER = 'https://testnet.bscscan.com'
+
+export const OKC_MAINNET_URL = 'https://exchainrpc.okex.org'
+export const OKC_MAINNET_BLOCK_EXPLORER = 'https://www.oklink.com/en/oec'
+
+export const OKC_TESTNET_URL = 'https://exchaintestrpc.okex.org'
+export const OKC_TESTNET_BLOCK_EXPLORER = 'https://www.oklink.com/en/oec-test'
 
 export const RSK_MAINNET_URL = 'https://public-node.rsk.co'
 export const RSK_MAINNET_BLOCK_EXPLORER = 'https://explorer.rsk.co'
@@ -157,6 +171,7 @@ export const AVALANCHE_TESTNET_BLOCK_EXPLORER = 'https://testnet.snowtrace.io'
 
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
+export const OKC_TICKER = 'OKT'
 export const XDAI_TICKER = 'DAI'
 export const RSK_MAINNET_TICKER = 'RBTC'
 export const RSK_TESTNET_TICKER = 'RBTC'
@@ -257,6 +272,8 @@ export const CHAIN_ID_TO_TYPE_MAP = {
   [MUMBAI_CHAIN_ID]: { networkId: MUMBAI_CODE, name: MUMBAI },
   [BSC_MAINNET_CHAIN_ID]: { networkId: BSC_MAINNET_CODE, name: BSC_MAINNET },
   [BSC_TESTNET_CHAIN_ID]: { networkId: BSC_TESTNET_CODE, name: BSC_TESTNET },
+  [OKC_MAINNET_CHAIN_ID]: { networkId: OKC_MAINNET_CODE, name: OKC_MAINNET },
+  [OKC_TESTNET_CHAIN_ID]: { networkId: OKC_TESTNET_CODE, name: OKC_TESTNET },
   [XDAI_CHAIN_ID]: { networkId: XDAI_CODE, name: XDAI },
   [REEF_CHAIN_ID]: { networkId: REEF_CODE, name: REEF },
   [ARBITRUM_MAINNET_CHAIN_ID]: { networkId: ARBITRUM_MAINNET_CODE, name: ARBITRUM_MAINNET },
@@ -313,6 +330,26 @@ export const SUPPORTED_NETWORK_TYPES = {
     'Binance Coin',
     'bnb.png',
     BSC_TESTNET_URL
+  ),
+  [OKC_MAINNET]: createNetwork(
+    OKC_MAINNET,
+    OKC_MAINNET_DISPLAY_NAME,
+    OKC_MAINNET_CODE,
+    OKC_MAINNET_BLOCK_EXPLORER,
+    OKC_TICKER,
+    'OKX Coin',
+    'okx.png',
+    OKC_MAINNET_URL
+  ),
+  [OKC_TESTNET]: createNetwork(
+    OKC_TESTNET,
+    OKC_TESTNET_DISPLAY_NAME,
+    OKC_TESTNET_CODE,
+    OKC_TESTNET_BLOCK_EXPLORER,
+    OKC_TICKER,
+    'OKX Coin',
+    'okx.png',
+    OKC_TESTNET_URL
   ),
   [XDAI]: createNetwork(XDAI, XDAI_DISPLAY_NAME, XDAI_CODE, XDAI_BLOCK_EXPLORER, XDAI_TICKER, 'xDai Network Token', 'xdai.svg', XDAI_URL),
   [RSK_MAINNET]: createNetwork(
@@ -764,6 +801,10 @@ export const COINGECKO_PLATFORMS_CHAIN_CODE_MAP = {
   [BSC_MAINNET_CODE]: {
     platform: 'binance-smart-chain',
     currency: 'bnb',
+  },
+  [OKC_MAINNET_CODE]: {
+    platform: 'oec-token',
+    currency: 'okt',
   },
   [MAINNET_CODE]: {
     platform: 'ethereum',
