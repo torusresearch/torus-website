@@ -199,7 +199,7 @@ class TransactionController extends SafeEventEmitter {
     // since we only support EVM compatible chains, and then override the
     // name, chainId and networkId properties. This is done using the
     // `forCustomChain` static method on the Common class.
-    const chainId = this._getCurrentChainId()
+    const chainId = this.getChainId()
     const networkId = this.networkStore.getState()
 
     return Common.custom({ chainId, name, defaultHardfork: hardfork, networkId: networkId === 'loading' ? 0 : Number.parseInt(networkId, 10) })
