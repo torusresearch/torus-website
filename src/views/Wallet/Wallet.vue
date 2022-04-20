@@ -12,6 +12,19 @@
     </v-navigation-drawer>
     <v-main>
       <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
+      <div class="toast-container">
+        <SystemBar type="lrc" icon="info" :message="lrcMsg" />
+        <SystemBar
+          v-for="announcement in localeAnnouncements"
+          :key="announcement.id"
+          type="announcement"
+          :message="announcement.announcement"
+          icon="info"
+          @onClose="hideAnnouncement(announcement)"
+        />
+        <SystemBar type="success" :message="successMsg" icon="check_circle" @onClose="clearMsg('SuccessMsg')" />
+        <SystemBar type="error" :message="errorMsg" icon="alert" @onClose="clearMsg('ErrorMsg')" />
+      </div>
       <router-view></router-view>
     </v-main>
     <v-dialog v-model="showConfirmDialog" persistent width="500">
@@ -33,31 +46,29 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ConfirmForm from '../../components/Confirm/ConfirmForm'
 import Navbar from '../../components/helpers/Navbar'
+import SystemBar from '../../components/helpers/SystemBar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
-// import BadgesAlert from '../../components/WalletHome/BadgesAlert'
-import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION } from '../../utils/enums'
 
 export default {
   components: {
     Navbar,
     AccountMenu,
     ConfirmForm,
-    // BadgesAlert,
+    SystemBar,
   },
   data() {
     return {
       drawer: false,
-      BADGES_COLLECTIBLE,
-      BADGES_TOPUP,
-      BADGES_TRANSACTION,
     }
   },
   computed: {
     ...mapState({
+      announcements: 'announcements',
+      successMsg: 'successMsg',
+      errorMsg: 'errorMsg',
       networkType: 'networkType',
       selectedAddress: 'selectedAddress',
       whiteLabel: 'whiteLabel',
-      badgesCompletion: 'badgesCompletion',
       pastTransactions: 'pastTransactions',
       paymentTxStore: 'paymentTx',
       wallet: 'wallet',
@@ -67,6 +78,15 @@ export default {
       deviceShare: (state) => state.tKeyStore.settingsPageData && state.tKeyStore.settingsPageData.deviceShare,
     }),
     ...mapGetters(['collectibleBalances']),
+    localeAnnouncements() {
+      return this.announcements[this.$i18n.locale] || []
+    },
+    lrcMsg() {
+      if (process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc') {
+        return 'navBar.lrcMsg'
+      }
+      return ''
+    },
     showConfirmDialog() {
       return !!this.currentConfirmModal
     },
@@ -90,40 +110,6 @@ export default {
       }
       return items
     },
-    badges() {
-      return {
-        [BADGES_TOPUP]: {
-          type: BADGES_TOPUP,
-          image: 'badge-topped-wallet',
-          header: this.t('walletHome.topupTitle'),
-          details1: this.t('walletHome.topupDetails1'),
-          details2: this.t('walletHome.topupDetails2'),
-        },
-        [BADGES_TRANSACTION]: {
-          type: BADGES_TRANSACTION,
-          image: 'badge-first-transaction',
-          header: this.t('walletHome.topupTransactionTitle'),
-          details1: this.t('walletHome.topupTransactionDetails1'),
-          details2: this.t('walletHome.topupTransactionDetails2'),
-        },
-        [BADGES_COLLECTIBLE]: {
-          type: BADGES_COLLECTIBLE,
-          image: 'badge-first-collectible',
-          header: this.t('walletHome.collectiblesTitle'),
-          details1: this.t('walletHome.collectiblesDetails1'),
-          details2: this.t('walletHome.collectiblesDetails2'),
-        },
-      }
-    },
-    badgesCollectibleDialog() {
-      return this.collectibleBalances && this.collectibleBalances.length > 0 && this.badgesCompletion[BADGES_COLLECTIBLE] === false
-    },
-    badgesTopupDialog() {
-      return this.paymentTxStore && this.paymentTxStore.length > 0 && this.badgesCompletion[BADGES_TOPUP] === false
-    },
-    badgesTransactionDialog() {
-      return this.pastTransactions && this.pastTransactions.length > 0 && this.badgesCompletion[BADGES_TRANSACTION] === false
-    },
     currentTkeyConfirmDialog() {
       if (this.shareTransferRequests?.length > 0) {
         return this.shareTransferRequests[0]
@@ -143,7 +129,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setUserBadge', 'handleConfirmModal', 'approveShareTransferRequest', 'denyShareTransferRequest']),
+    ...mapActions(['setUserBadge', 'handleConfirmModal', 'approveShareTransferRequest', 'denyShareTransferRequest', 'hideAnnouncement']),
     closeBadge(data) {
       this.setUserBadge(data.type)
       if (data.returnHome && !['walletHomeMain', 'walletHome'].includes(this.$route.name)) this.$router.push({ name: 'walletHome' }).catch((_) => {})
@@ -153,6 +139,9 @@ export default {
     },
     denyShareTransfer(encPubKeyX) {
       this.denyShareTransferRequest(encPubKeyX)
+    },
+    clearMsg(statusMessage) {
+      this.$store.commit(`set${statusMessage}`, '')
     },
   },
 }
