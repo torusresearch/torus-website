@@ -915,7 +915,7 @@ export const COINGECKO_SUPPORTED_CURRENCIES = new Set([
 
 export const WALLET_CONNECT_CARD_DATA = {
   [LOCALE_EN]: {
-    title: 'Explore & connect to dapps via wallet connect',
+    title: 'Explore & Connect to dapps via Wallet Connect',
     ctaText: 'Get Started',
     ctaDisconnectText: 'Disconnect',
   },
@@ -940,7 +940,7 @@ export const WALLET_CONNECT_CARD_DATA = {
     ctaDisconnectText: '연결 해제',
   },
   [LOCALE_ZH]: {
-    title: '通过 wallet connect 探索并连接到 dapp',
+    title: '通过 Wallet Connect 探索并连接到 dapp',
     ctaText: '开始使用',
     ctaDisconnectText: '断开连接',
   },
