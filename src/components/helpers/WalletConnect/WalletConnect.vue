@@ -9,8 +9,8 @@
       </div>
     </v-dialog>
 
-    <v-btn
-      v-if="hasStreamApiSupport && !isIframe"
+    <!-- <v-btn
+      v-if="hasStreamApiSupport && !isIframe && btnStyle === 'icon'"
       small
       class="wallet-connect-btn ml-2"
       icon
@@ -20,6 +20,21 @@
     >
       <v-icon v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">$vuetify.icons.disconnect</v-icon>
       <v-icon v-else size="16">$vuetify.icons.walletconnect</v-icon>
+    </v-btn> -->
+
+    <v-btn
+      v-if="hasStreamApiSupport && !isIframe"
+      depressed
+      large
+      block
+      class="torus-btn1 torusBrand1--text gmt-billboard-cta"
+      title="Capture QR"
+      aria-label="Capture QR"
+      :loading="showQrScanner"
+      @click="toggleWC"
+    >
+      <span v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">{{ ctaDisconnectText }}</span>
+      <span v-else size="16">{{ ctaText }}</span>
     </v-btn>
   </div>
 </template>
@@ -37,6 +52,18 @@ export default {
     showFromEmbed: {
       type: Boolean,
       default: false,
+    },
+    btnStyle: {
+      type: String,
+      default: 'icon',
+    },
+    ctaText: {
+      type: String,
+      default: 'Get Started',
+    },
+    ctaDisconnectText: {
+      type: String,
+      default: 'Disconnect',
     },
   },
   data() {

@@ -13,9 +13,9 @@
         <v-icon x-small v-text="'$vuetify.icons.qr'" />
       </ExportQrCode>
     </div>
-    <div v-if="$vuetify.breakpoint.xsOnly && apiStreamSupported">
+    <!-- <div v-if="apiStreamSupported">
       <WalletConnect />
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -25,10 +25,10 @@ import { mapState } from 'vuex'
 import { apiStreamSupported, toChecksumAddressByChainId } from '../../../utils/utils'
 import ExportQrCode from '../ExportQrCode'
 import ShowToolTip from '../ShowToolTip'
-import WalletConnect from '../WalletConnect'
+// import WalletConnect from '../WalletConnect'
 
 export default {
-  components: { ExportQrCode, ShowToolTip, WalletConnect },
+  components: { ExportQrCode, ShowToolTip },
   computed: {
     ...mapState({
       selectedAddress(state) {
