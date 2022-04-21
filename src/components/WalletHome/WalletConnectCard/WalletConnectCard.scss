@@ -1,0 +1,28 @@
+.promotion-card {
+  height: 159px;
+  .torus-btn1--whitelabel {
+    border: 1px solid var(--v-torusBrand1-base) !important;
+  }
+  &.isMobile {
+    height: inherit;
+  }
+}
+.more-details-container {
+  margin-top: 16px;
+  @media screen and (max-width: 600px) {
+    margin-top: 16px;
+    position: inherit;
+  }
+}
+
+.copy-link {
+  border: 1px solid var(--v-text_3-base);
+  border-radius: 4px;
+  height: 44px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  &.theme--dark {
+    border: 1px solid var(--v-text_3-base);
+  }
+}
