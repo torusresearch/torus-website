@@ -1,9 +1,15 @@
 <template>
   <v-card class="elevation-1 promotion-card" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
     <v-layout class="d-flex flex-column fill-height py-4 px-6">
-      <v-flex class="flex-grow-1 d-flex">
+      <v-flex class="flex-grow-1 d-flex mb-2">
         <div class="promotion-text pr-3">
-          <div class="text-body-1 font-weight-bold text_1--text" :class="'text-clamp-three'">{{ walletConnectCardData.title }}</div>
+          <div
+            class="text-body-2 text-sm-body-1 font-weight-bold text_1--text"
+            :class="{ 'text-clamp-three': !$vuetify.breakpoint.xsOnly }"
+            :title="walletConnectCardData.title"
+          >
+            {{ walletConnectCardData.title }}
+          </div>
           <!-- <div class="caption text_1--text" :title="subtitle">
             {{ subtitle }}
           </div> -->
@@ -16,7 +22,7 @@
               contain
               position="right center"
               max-width="170"
-              :style="$vuetify.breakpoint.smAndDown ? 'height: 42px' : 'height: 50px'"
+              :style="$vuetify.breakpoint.smAndDown ? 'width: 100px' : 'width: 170px'"
               :alt="`${walletConnectCardData.title}`"
             />
           </div>
