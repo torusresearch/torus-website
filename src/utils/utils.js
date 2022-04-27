@@ -376,8 +376,8 @@ export async function getEthTxStatus(hash, web3) {
 
 export const browserInfo = Bowser.parse(navigator.userAgent)
 export const broadcastChannelOptions = {
-  methods: browserInfo.engine.name === Bowser.ENGINE_MAP.WebKit ? ['idb', 'localstorage'] : ['native', 'idb', 'localstorage'],
-  // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
+  // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
+  type: browserInfo.engine.name === Bowser.ENGINE_MAP.WebKit ? 'localstorage' : undefined,
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
