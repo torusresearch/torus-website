@@ -1,6 +1,7 @@
 import * as rskUtils from '@rsksmart/rsk-utils'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
+import Bowser, { ENGINE_MAP } from 'bowser'
 import { addHexPrefix, BN, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
@@ -373,7 +374,10 @@ export async function getEthTxStatus(hash, web3) {
   return undefined
 }
 
+export const browserInfo = Bowser.parse(navigator.userAgent)
+
 export const broadcastChannelOptions = {
+  methods: browserInfo.engine.name === ENGINE_MAP.WebKit ? ['idb', 'localstorage'] : ['native', 'idb', 'localstorage'],
   // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
