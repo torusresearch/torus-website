@@ -1,5 +1,5 @@
 import randomId from '@chaitanyapotti/random-id'
-import { BroadcastChannel } from 'broadcast-channel'
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
 
 import torus from '../../torus'

@@ -150,7 +150,7 @@
 /* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable import/extensions */
 import randomId from '@chaitanyapotti/random-id'
-import { BroadcastChannel } from 'broadcast-channel'
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
