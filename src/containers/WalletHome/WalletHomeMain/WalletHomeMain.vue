@@ -123,7 +123,7 @@
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex
+      <!-- <v-flex
         v-for="(event, i) in isFreshAccount || whiteLabel.featuredBillboardHide ? [] : events"
         :key="`event-${i}`"
         px-4
@@ -140,6 +140,13 @@
           :details-link-two="event.callToActionLinkTwo"
           :details-text="event.callToActionText"
         ></PromotionCard>
+      </v-flex> -->
+      <v-flex v-if="!whiteLabel.featuredBillboardHide && apiStreamSupported" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
+        <WalletConnectCard
+          image-path="https://images.web3auth.io/wallet-connect.svg"
+          image-dark-path="https://images.web3auth.io/wallet-connect.svg"
+          :wallet-connect-card-data="walletConnectCardData"
+        ></WalletConnectCard>
       </v-flex>
     </v-layout>
 
@@ -250,13 +257,15 @@ import QuickAddress from '../../../components/helpers/QuickAddress'
 // import Badges from '../../../components/WalletHome/Badges'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 import Onboarding from '../../../components/WalletHome/Onboarding'
-import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
-import { LOCALE_EN, MAINNET } from '../../../utils/enums'
+// import PromotionCard from '../../../components/WalletHome/PromotionCard'
+import WalletConnectCard from '../../../components/WalletHome/WalletConnectCard'
+import { LOCALE_EN, MAINNET, WALLET_CONNECT_CARD_DATA } from '../../../utils/enums'
+import { apiStreamSupported } from '../../../utils/utils'
 
 export default {
   name: 'WalletHome',
-  components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, Onboarding, ComponentLoader, NetworkDisplay },
+  components: { TokenBalancesTable, CollectiblesList, QuickAddress, WalletConnectCard, Onboarding, ComponentLoader, NetworkDisplay },
   data() {
     return {
       selected: [],
@@ -314,6 +323,13 @@ export default {
     },
     hasCustomToken() {
       return this.filteredBalancesArray.some((x) => !!x.customTokenId)
+    },
+    walletConnectCardData() {
+      const lang = this.$i18n.locale
+      return WALLET_CONNECT_CARD_DATA[lang] || WALLET_CONNECT_CARD_DATA[LOCALE_EN]
+    },
+    apiStreamSupported() {
+      return apiStreamSupported()
     },
   },
   mounted() {
