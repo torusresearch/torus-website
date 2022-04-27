@@ -13,9 +13,9 @@
 </template>
 
 <script>
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { safeatob } from '@toruslabs/openlogin-utils'
 import Torus from '@toruslabs/torus.js'
-import { BroadcastChannel } from 'broadcast-channel'
 import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
 
