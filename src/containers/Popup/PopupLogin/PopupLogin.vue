@@ -22,7 +22,10 @@
             class="text_3--text footer-notes"
             :class="$vuetify.breakpoint.xsOnly ? 'pb-13' : ''"
           >
-            <span>{{ t('dappLogin.termsAuth01') }}</span>
+            <div class="mb-2 text_1--text">{{ t('login.note') }}:</div>
+            <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
+
+            <!-- <span>{{ t('dappLogin.termsAuth01') }}</span>
             <br />
             <span>{{ thirdPartyAuthenticators }}.</span>
             <a
@@ -32,27 +35,27 @@
               rel="noreferrer noopener"
             >
               {{ t('dappLogin.termsLearnMore') }}
-            </a>
+            </a> -->
           </div>
           <div class="d-flex justify-center footer-links pt-3 pb-4" :class="{ smallScreen: $vuetify.breakpoint.width < 385 }">
             <div>
               <a class="text-decoration-none text_2--text" :href="tncLink" target="_blank" rel="noreferrer noopener">
                 {{ t('dappLogin.termsConditions') }}
               </a>
+              <div class="caption text-left text_2--text font-italic">{{ t('dappLogin.version').replace(/\{version\}/gi, appVersion) }}</div>
             </div>
             <v-spacer></v-spacer>
-            <div>
+            <!-- <div>
               <a class="text-decoration-none text_2--text" :href="privacyPolicy" target="_blank" rel="noreferrer noopener">
                 {{ t('dappLogin.privacyPolicy') }}
               </a>
             </div>
-            <v-spacer></v-spacer>
+            <v-spacer></v-spacer> -->
             <div v-if="!whiteLabel.isActive">
-              <div class="d-flex align-center mb-2">
-                <span class="text_2--text mr-1">{{ t('dappLogin.poweredBy') }}</span>
-                <img alt="Torus Logo" height="10" :src="getLogo.logo" />
+              <div class="caption text-right text_2--text">{{ t('dappLogin.selfCustodial') }}</div>
+              <div class="text-right">
+                <img alt="Web3Auth Logo" height="15" src="../../../assets/images/web3auth-dark.svg" />
               </div>
-              <div class="caption text-right text_2--text font-italic">{{ t('dappLogin.version').replace(/\{version\}/gi, appVersion) }}</div>
             </div>
           </div>
         </v-card>
