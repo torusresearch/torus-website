@@ -61,14 +61,17 @@ class StreamWindow {
             })
         }
       })
-      this.writeInterval = setInterval(() => {
-        bc.postMessage({
-          data: {
-            preopenInstanceId: this.preopenInstanceId,
-            message: 'setup_complete',
-          },
-        })
-      }, 200)
+      this.writeInterval = setInterval(
+        () => {
+          bc.postMessage({
+            data: {
+              preopenInstanceId: this.preopenInstanceId,
+              message: 'setup_complete',
+            },
+          })
+        },
+        bc.type === 'server' ? 500 : 200
+      )
       this.preopenHandler = (chunk) => {
         const { preopenInstanceId, closed } = chunk.data
         if (preopenInstanceId === this.preopenInstanceId && closed) {
