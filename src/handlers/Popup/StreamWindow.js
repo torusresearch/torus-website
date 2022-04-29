@@ -70,7 +70,7 @@ class StreamWindow {
             },
           })
         },
-        bc.type === 'server' ? 500 : 200
+        bc.method.type === 'server' ? 500 : 200
       )
       this.preopenHandler = (chunk) => {
         const { preopenInstanceId, closed } = chunk.data
