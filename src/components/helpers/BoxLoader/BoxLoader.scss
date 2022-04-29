@@ -1,34 +1,86 @@
-.box-loader {
+.spinner {
   display: inline-block;
   position: relative;
-  width: 80px;
-  height: 80px;
-}
-.box-loader div {
-  box-sizing: border-box;
-  display: block;
-  position: absolute;
-  width: 64px;
-  height: 64px;
-  margin: 8px;
-  border: 8px solid #FFF;
+  background-color: var(--v-torusBrand1-base);
+  height: 60px;
+  width: 60px;
   border-radius: 50%;
-  animation: box-loader 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-}
-.box-loader div:nth-child(1) {
-  animation-delay: -0.45s;
-}
-.box-loader div:nth-child(2) {
-  animation-delay: -0.3s;
-}
-.box-loader div:nth-child(3) {
-  animation-delay: -0.15s;
-}
-@keyframes box-loader {
-  0% {
-    transform: rotate(0deg);
+  background: conic-gradient(transparent, var(--v-torusBrand1-base));
+  animation: rotate 1s linear infinite;
+  .mask,
+  .head {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
   }
-  100% {
-    transform: rotate(360deg);
+  .mask {
+    width: 50px;
+    height: 50px;
+    top: 5px;
+    left: 5px;
+    background-color: #ffffff;
+  }
+  .head {
+    height: 5px;
+    width: 5px;
+    background-color: var(--v-torusBrand1-base);
+    top: 0;
+    left: 26px;
+  }
+
+  &.theme--dark {
+    .mask {
+      background-color: var(--v-torusBlack-base);
+    }
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotateZ(0);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
+.ping-container {
+  display: inline-flex;
+  position: relative;
+}
+
+.ping-animate {
+  background-color: #f3ba2f;
+  opacity: 0.5;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  border-radius: 50%;
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.ping-content {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+  img.custom-logo {
+    width: 75%;
+    height: 75%;
+  }
+}
+
+@keyframes ping {
+  75%,
+  to {
+    transform: scale(1.5);
+    opacity: 0;
   }
 }

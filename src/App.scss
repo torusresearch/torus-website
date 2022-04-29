@@ -2,7 +2,7 @@
 
 .torus-app.v-application {
   @media (min-width: 1904px) {
-    .container {
+    .container:not(.container--fluid) {
       max-width: 1400px;
     }
   }

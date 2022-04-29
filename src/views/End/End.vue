@@ -1,8 +1,8 @@
 <template>
-  <v-container fill-height text-center>
+  <v-container fluid fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <BoxLoader />
+        <BoxLoader :white-label="whiteLabel" />
       </v-flex>
       <div class="footer">
         <div class="powered-by">{{ t('login.secured-by') }}</div>
@@ -44,6 +44,8 @@ export default {
         whiteLabel = appStateParams.whiteLabel || {}
         loginConfig = appStateParams.loginConfig || {}
       }
+
+      this.whiteLabel = whiteLabel
 
       const torus = new Torus()
       const openLogin = await getOpenLoginInstance(whiteLabel, loginConfig)
