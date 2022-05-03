@@ -27,7 +27,7 @@ import {
   USER_INFO_REQUEST_APPROVED,
   USER_INFO_REQUEST_REJECTED,
 } from '../utils/enums'
-import { remove } from '../utils/httpHelpers'
+import { get, remove } from '../utils/httpHelpers'
 import { fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
 import {
   accountTrackerHandler,
@@ -523,6 +523,7 @@ export default {
       throw new Error('No Accounts available')
     }
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+    dispatch('getUserDapps', { selectedAddress })
     prefsController.getBillboardContents()
     prefsController.getAnnouncementsContents()
     // continue enable function
@@ -536,6 +537,12 @@ export default {
     statusStream.write({ loggedIn: true, rehydrate: false, verifier })
     // torus.updateStaticData({ isUnlocked: true })
     dispatch('cleanupOAuth', { oAuthToken })
+  },
+  async getUserDapps({ commit }, { selectedAddress }) {
+    const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm&public_address=${selectedAddress}`)
+    // eslint-disable-next-line no-console
+    console.log('ACTION-getUserDapps', selectedAddress, response.user_projects)
+    commit('setUserDapps', { address: selectedAddress, dapps: response.user_projects })
   },
   cleanupOAuth({ state }, payload) {
     const {

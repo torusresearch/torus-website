@@ -248,6 +248,10 @@ export default {
   setLastLoginInfo(state, payload) {
     state.lastLoginInfo = { ...state.lastLoginInfo, ...payload }
   },
+  setUserDapps(state, data) {
+    const { address, dapps } = data
+    state.userDapps[address] = dapps
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]

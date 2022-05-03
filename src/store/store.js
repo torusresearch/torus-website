@@ -58,6 +58,7 @@ if (storageAvailable(isPwa || config.dappStorageKey ? 'localStorage' : 'sessionS
       wcConnectorSession: state.wcConnectorSession,
       postboxKey: state.postboxKey,
       lastLoginInfo: state.lastLoginInfo,
+      userDapps: state.userDapps,
     }),
   })
 }

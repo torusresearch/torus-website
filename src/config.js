@@ -79,6 +79,7 @@ const {
   VUE_APP_OPENLOGIN_URL,
   VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
   VUE_APP_PASSWORDLESS_DOMAIN,
+  VUE_APP_DEVELOPER_DASHBOARD_URL,
 } = process.env
 
 const baseUrl = window.location.origin
@@ -114,7 +115,7 @@ export default {
   openLoginClientId: 'BCY9aYsh8iGshQuzNjBbONYE-tKD0JM389l87IiMOVeOU1TBmRaZphKOyphkUpo41fuSMnO6QRlloxCV-3nt8dU',
   openLoginUrl: VUE_APP_OPENLOGIN_URL,
   openLoginOriginSig: VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
-
+  developerDashboardUrl: VUE_APP_DEVELOPER_DASHBOARD_URL,
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
 

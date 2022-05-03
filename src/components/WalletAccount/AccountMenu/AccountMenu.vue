@@ -69,6 +69,54 @@
         </div>
       </div>
     </div>
+    <!-- APP-SCOPED KEYS -->
+    <div class="px-3 mb-3 account-list">
+      <div
+        v-for="key in dappKeys"
+        :key="key.address"
+        class="d-flex flex-column mb-2 py-2 px-3"
+        :class="{ active: false, 'theme--dark': $vuetify.theme.dark }"
+      >
+        <div class="d-flex align-center">
+          <div class="mr-2" :style="{ lineHeight: '0' }">
+            <v-icon :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
+              $vuetify.icons.{{ userIcon(key.accountType) }}
+            </v-icon>
+          </div>
+          <div class="caption text_1--text font-weight-bold account-list__user-email" :style="{ paddingLeft: '2px' }">
+            <span>
+              {{ key.appName }}
+            </span>
+          </div>
+          <div class="caption ml-auto text_2--text text-right">
+            <span>{{ 0 }} {{ selectedCurrency }}</span>
+          </div>
+        </div>
+        <div class="d-flex align-start mt-1">
+          <div class="account-list__address-container pt-1" :style="{ maxWidth: $vuetify.breakpoint.xsOnly ? '140px' : '180px' }">
+            <div v-if="userId && index === 0" class="account-list__address">{{ userId }}</div>
+            <div class="account-list__address mt-1">{{ checksummedAccount(key.address) }}</div>
+          </div>
+          <div class="ml-auto">
+            <span class="mr-1">
+              <ShowToolTip :is-btn="true" :address="key.address">
+                <v-icon size="12" class="torusFont2--text" v-text="'$vuetify.icons.copy'" />
+              </ShowToolTip>
+            </span>
+            <span class="mr-1">
+              <ExportQrCode :custom-address="key.address">
+                <v-icon class="torusFont2--text" x-small v-text="'$vuetify.icons.qr'" />
+              </ExportQrCode>
+            </span>
+            <span>
+              <v-btn icon small class="etherscan-lnk" :href="etherscanAddressLink(key.address)" target="_blank" rel="noreferrer noopener">
+                <v-icon class="torusFont2--text" x-small v-text="'$vuetify.icons.link'" />
+              </v-btn>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
     <v-divider></v-divider>
     <v-list class="ml-1 py-1">
       <v-list-item id="import-account-btn" @click="accountImportDialog = true">
@@ -124,6 +172,7 @@ import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE, DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
+import { getScopedAddress } from '../../../utils/keys'
 import {
   addressSlicer,
   broadcastChannelOptions,
@@ -182,6 +231,7 @@ export default {
     }),
     ...mapGetters({
       wallets: 'walletBalances',
+      userDapps: 'userDapps',
     }),
     userId() {
       if (this.userInfo.typeOfLogin === DISCORD) {
@@ -213,9 +263,19 @@ export default {
       }
       return []
     },
+    dappKeys() {
+      const keys = []
+      if (!this.userDapps || !this.userDapps[this.selectedAddress]) return keys
+      const { privateKey, accountType } = this.wallet[this.selectedAddress]
+      this.userDapps[this.selectedAddress].forEach((project) => {
+        const publicAddress = getScopedAddress(privateKey, project.project_id)
+        keys.push({ address: publicAddress, appName: project.name, accountType })
+      })
+      return keys
+    },
   },
   methods: {
-    ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
+    ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect', 'getUserDapps']),
     etherscanAddressLink(address) {
       return getEtherScanAddressLink(toChecksumAddressByChainId(address, this.$store.state.networkId), this.networkType.host)
     },
@@ -229,6 +289,9 @@ export default {
       this.logOut()
     },
     async changeAccount(newAddress) {
+      if (this.userDapps[this.selectedAddress] === undefined || this.userDapps[this.selectedAddress] === null) {
+        await this.getUserDapps({ selectedAddress: this.selectedAddress })
+      }
       this.updateSelectedAddress({ selectedAddress: newAddress })
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
       if (urlInstance && urlInstance !== '') {
