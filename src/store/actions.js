@@ -1,4 +1,5 @@
 import randomId from '@chaitanyapotti/random-id'
+import { subkey } from '@toruslabs/openlogin-subkey'
 import deepmerge from 'deepmerge'
 import { BN, privateToAddress } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
@@ -538,11 +539,19 @@ export default {
     // torus.updateStaticData({ isUnlocked: true })
     dispatch('cleanupOAuth', { oAuthToken })
   },
-  async getUserDapps({ commit }, { selectedAddress }) {
+  async getUserDapps({ commit, dispatch, state }, { selectedAddress }) {
     const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm&public_address=${selectedAddress}`)
-    // eslint-disable-next-line no-console
-    console.log('ACTION-getUserDapps', selectedAddress, response.user_projects)
-    commit('setUserDapps', { address: selectedAddress, dapps: response.user_projects })
+    const privKey = state.wallet[selectedAddress].privateKey
+    const keys = []
+    const userDapps = {}
+    response.user_projects.forEach((project) => {
+      const scopedKey = subkey(privKey, Buffer.from(project.project_id, 'base64'))
+      const address = torus.generateAddressFromPrivKey(scopedKey)
+      userDapps[address] = project.name
+      keys.push({ ethAddress: address, privKey: scopedKey, accountType: ACCOUNT_TYPE.APP_SCOPED })
+    })
+    await commit('setUserDapps', userDapps)
+    await dispatch('initTorusKeyring', { keys })
   },
   cleanupOAuth({ state }, payload) {
     const {

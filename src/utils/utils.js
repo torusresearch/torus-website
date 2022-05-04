@@ -796,6 +796,9 @@ export function getUserIcon(accountType, typeOfLogin) {
   if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
     return 'tkey_seed_phrase'
   }
+  if (accountType === ACCOUNT_TYPE.APP_SCOPED) {
+    return 'device_tablet'
+  }
   if (!typeOfLogin) return 'person_circle'
   return typeOfLogin.toLowerCase()
 }
