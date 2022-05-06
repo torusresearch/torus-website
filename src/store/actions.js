@@ -540,18 +540,22 @@ export default {
     dispatch('cleanupOAuth', { oAuthToken })
   },
   async getUserDapps({ commit, dispatch, state }, { selectedAddress }) {
-    const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm&public_address=${selectedAddress}`)
-    const privKey = state.wallet[selectedAddress].privateKey
-    const keys = []
-    const userDapps = {}
-    response.user_projects.forEach((project) => {
-      const scopedKey = subkey(privKey, Buffer.from(project.project_id, 'base64'))
-      const address = torus.generateAddressFromPrivKey(scopedKey)
-      userDapps[address] = project.name
-      keys.push({ ethAddress: address, privKey: scopedKey, accountType: ACCOUNT_TYPE.APP_SCOPED })
-    })
-    await commit('setUserDapps', userDapps)
-    await dispatch('initTorusKeyring', { keys })
+    try {
+      const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm&public_address=${selectedAddress}`)
+      const privKey = state.wallet[selectedAddress].privateKey
+      const keys = []
+      const userDapps = {}
+      response.user_projects.forEach((project) => {
+        const scopedKey = subkey(privKey, Buffer.from(project.project_id, 'base64'))
+        const address = torus.generateAddressFromPrivKey(scopedKey)
+        userDapps[address] = project.name
+        keys.push({ ethAddress: address, privKey: scopedKey, accountType: ACCOUNT_TYPE.APP_SCOPED })
+      })
+      await commit('setUserDapps', userDapps)
+      await dispatch('initTorusKeyring', { keys })
+    } catch (error) {
+      log.error('Failed to get app-scoped keys', error)
+    }
   },
   cleanupOAuth({ state }, payload) {
     const {
