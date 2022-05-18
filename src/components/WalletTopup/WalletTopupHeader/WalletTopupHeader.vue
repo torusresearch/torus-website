@@ -47,15 +47,19 @@ import NetworkDisplay from '../../helpers/NetworkDisplay'
 import QuickAddress from '../../helpers/QuickAddress'
 
 export default {
+  components: { NetworkDisplay, QuickAddress },
   props: {
     placeholder: {
       type: Boolean,
       default: false,
     },
+    selectedProvider: {
+      type: String,
+      default: '',
+    },
   },
   computed: {
     ...mapState(['networkType']),
   },
-  components: { NetworkDisplay, QuickAddress },
 }
 </script>

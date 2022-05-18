@@ -19,12 +19,12 @@
 
     <NoSupportedProvidersForNetworkPlaceholder v-if="noSupportedProvidersForNetwork">
       <!-- Placeholder Topup Header -->
-      <WalletTopupHeader :placeholder="true" />
+      <WalletTopupHeader :placeholder="true" :selected-provider="selectedProvider" />
     </NoSupportedProvidersForNetworkPlaceholder>
 
     <v-container v-else class="wallet-topup-view pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
       <!-- Normal Topup Header -->
-      <WalletTopupHeader />
+      <WalletTopupHeader :selected-provider="selectedProvider" />
 
       <v-layout mt-7 mx-n4 wrap>
         <TopupProviders
