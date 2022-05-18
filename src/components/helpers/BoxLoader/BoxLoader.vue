@@ -25,6 +25,10 @@ export default {
         }
       },
     },
+    isCustomVerifier: {
+      type: Boolean,
+      default: false,
+    },
     spinnerBackground: {
       type: String,
       default: '',
@@ -76,7 +80,7 @@ export default {
       return this.$vuetify.theme.dark
     },
     useSpinner() {
-      return this.forceSpinner || (this.whiteLabel.isActive && !this.whiteLabelLogo)
+      return this.forceSpinner || (this.whiteLabel.isActive && (!this.isCustomVerifier || !this.whiteLabelLogo))
     },
     pingContentStyle() {
       const backgroundColor = this.isDark ? '#fff' : this.primaryColor

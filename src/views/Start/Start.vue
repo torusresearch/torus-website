@@ -2,11 +2,11 @@
   <v-container fluid fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <div class="text_2--text font-weight-bold text-body-2 mb-10">
+        <div v-if="showConstructing" class="text_2--text font-weight-bold text-body-2 mb-10">
           {{ t('login.constructYourKey') }}
           <a :href="dappUrl" class="torusBrand1--text" target="_blank" rel="noreferrer noopener">{{ dappName }}</a>
         </div>
-        <BoxLoader :white-label="whiteLabel" />
+        <BoxLoader :white-label="whiteLabel" :is-custom-verifier="isCustomVerifier" />
       </v-flex>
       <div class="footer">
         <div class="powered-by">{{ t('login.selfCustodial') }}</div>
@@ -29,14 +29,18 @@ export default {
   data() {
     return {
       whiteLabel: undefined,
+      isCustomVerifier: false,
     }
   },
   computed: {
     dappName() {
-      return this.whiteLabel?.name || 'Web3Auth'
+      return this.isCustomVerifier ? this.whiteLabel?.name : 'Web3Auth'
     },
     dappUrl() {
-      return this.whiteLabel?.url || 'https://app.tor.us'
+      return this.isCustomVerifier ? this.whiteLabel?.url : 'https://app.tor.us'
+    },
+    showConstructing() {
+      return (this.whiteLabel?.isActive && this.isCustomVerifier && this.dappName && this.dappUrl) || !this.whiteLabel.isActive || !this.whiteLabel
     },
   },
   async created() {
@@ -45,8 +49,8 @@ export default {
       const stateParams = JSON.parse(safeatob(state))
       log.info('logging in with', loginProvider, state, skipTKey, rest)
       const { whiteLabel, loginConfig = {} } = stateParams
-
       this.whiteLabel = whiteLabel
+      this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
       const openLogin = await getOpenLoginInstance(whiteLabel, loginConfig)
 
