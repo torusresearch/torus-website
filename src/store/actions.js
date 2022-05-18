@@ -1,6 +1,6 @@
 import randomId from '@chaitanyapotti/random-id'
 import deepmerge from 'deepmerge'
-import { BN } from 'ethereumjs-util'
+import { BN, privateToAddress } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
@@ -80,6 +80,8 @@ const userInfoStream = communicationMux.getStream('user_info')
 const providerChangeStream = communicationMux.getStream('provider_change')
 const widgetStream = communicationMux.getStream('widget')
 const windowStream = communicationMux.getStream('window')
+const loginWithPrivateKeyStream = communicationMux.getStream('login_with_private_key')
+const walletConnectStream = communicationMux.getStream('wallet_connect_stream')
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
@@ -295,6 +297,45 @@ export default {
         })
     })
   },
+  async handleLoginWithPrivateKey({ dispatch, commit }, { privateKey, userInfo }) {
+    dispatch('subscribeToControllers')
+    commit('setUserInfo', userInfo)
+
+    const defaultAddresses = await dispatch('initTorusKeyring', {
+      keys: [
+        {
+          privKey: privateKey,
+          ethAddress: `0x${privateToAddress(Buffer.from(privateKey, 'hex')).toString('hex')}`,
+        },
+      ],
+    })
+
+    const selectedAddress = defaultAddresses[0]
+
+    if (!selectedAddress) {
+      loginWithPrivateKeyStream.write({
+        name: 'login_with_private_key_response',
+        data: {
+          success: false,
+          error: 'No Accounts available',
+        },
+      })
+      dispatch('logOut')
+      throw new Error('No Accounts available')
+    }
+
+    dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+    prefsController.getBillboardContents()
+    prefsController.getAnnouncementsContents()
+    // TODO: deprecate rehydrate false for the next major version bump
+    statusStream.write({ loggedIn: true, rehydrate: false, verifier: userInfo.verifier })
+    loginWithPrivateKeyStream.write({
+      name: 'login_with_private_key_response',
+      data: {
+        success: true,
+      },
+    })
+  },
   async finishImportAccount({ dispatch }, payload) {
     const { privKey } = payload
     const address = torus.generateAddressFromPrivKey(privKey)
@@ -466,7 +507,6 @@ export default {
     const {
       userInfo: { verifier },
     } = state
-
     dispatch('subscribeToControllers')
 
     const defaultAddresses = await dispatch('initTorusKeyring', {
@@ -584,5 +624,28 @@ export default {
   },
   updateGasFees(context, payload) {
     context.commit('setGasFees', payload.gasFees)
+  },
+  handleShowWalletConnectReq({ commit }) {
+    log.debug('handleShowWalletConnectReq')
+    commit('setShowWalletConnect', true)
+  },
+  sendWalletConnectResponse({ commit }, { success, errorMessage }) {
+    commit('setShowWalletConnect', false)
+    if (success) {
+      walletConnectStream.write({
+        name: 'wallet_connect_stream_res',
+        data: {
+          success,
+        },
+      })
+    } else {
+      walletConnectStream.write({
+        name: 'wallet_connect_stream_res',
+        data: {
+          success,
+          error: errorMessage || 'Something went wrong',
+        },
+      })
+    }
   },
 }

@@ -1,5 +1,5 @@
 import randomId from '@chaitanyapotti/random-id'
-import { BroadcastChannel } from 'broadcast-channel'
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
 
 import torus from '../../torus'
@@ -61,14 +61,17 @@ class StreamWindow {
             })
         }
       })
-      this.writeInterval = setInterval(() => {
-        bc.postMessage({
-          data: {
-            preopenInstanceId: this.preopenInstanceId,
-            message: 'setup_complete',
-          },
-        })
-      }, 200)
+      this.writeInterval = setInterval(
+        () => {
+          bc.postMessage({
+            data: {
+              preopenInstanceId: this.preopenInstanceId,
+              message: 'setup_complete',
+            },
+          })
+        },
+        bc.method.type === 'server' ? 1000 : 200
+      )
       this.preopenHandler = (chunk) => {
         const { preopenInstanceId, closed } = chunk.data
         if (preopenInstanceId === this.preopenInstanceId && closed) {

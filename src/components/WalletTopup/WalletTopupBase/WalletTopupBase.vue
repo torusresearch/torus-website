@@ -135,7 +135,7 @@
 </template>
 
 <script>
-import { BroadcastChannel } from 'broadcast-channel'
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { mapState } from 'vuex'
 
 import { RAMPNETWORK, XANPOOL } from '../../../utils/enums'

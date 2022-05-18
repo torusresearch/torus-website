@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { BroadcastChannel } from 'broadcast-channel'
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 

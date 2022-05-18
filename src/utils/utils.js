@@ -64,6 +64,10 @@ import {
   MOONPAY,
   MUMBAI_CHAIN_ID,
   MUMBAI_CODE,
+  OKC_MAINNET_CHAIN_ID,
+  OKC_MAINNET_CODE,
+  OKC_TESTNET_CHAIN_ID,
+  OKC_TESTNET_CODE,
   OPTIMISM_MAINNET_CHAIN_ID,
   OPTIMISM_MAINNET_CODE,
   OPTIMISM_TESTNET_CHAIN_ID,
@@ -632,6 +636,8 @@ export const standardNetworkId = {
   [MUMBAI_CODE.toString()]: MUMBAI_CHAIN_ID,
   [BSC_MAINNET_CODE.toString()]: BSC_MAINNET_CHAIN_ID,
   [BSC_TESTNET_CODE.toString()]: BSC_TESTNET_CHAIN_ID,
+  [OKC_MAINNET_CODE.toString()]: OKC_MAINNET_CHAIN_ID,
+  [OKC_TESTNET_CODE.toString()]: OKC_TESTNET_CHAIN_ID,
   [XDAI_CODE.toString()]: XDAI_CHAIN_ID,
   [RSK_MAINNET_CODE.toString()]: RSK_MAINNET_CHAIN_ID,
   [RSK_TESTNET_CODE.toString()]: RSK_TESTNET_CHAIN_ID,
@@ -859,6 +865,7 @@ export function getUserIcon(accountType, typeOfLogin) {
   if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
     return 'tkey_seed_phrase'
   }
+  if (!typeOfLogin) return 'person_circle'
   return typeOfLogin.toLowerCase()
 }
 

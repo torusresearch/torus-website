@@ -36,35 +36,19 @@
 
       <AccountMenu></AccountMenu>
     </v-menu>
-    <div class="toast-container">
-      <SystemBar type="lrc" icon="info" :message="lrcMsg" />
-      <SystemBar
-        v-for="announcement in localeAnnouncements"
-        :key="announcement.id"
-        type="announcement"
-        :message="announcement.announcement"
-        icon="info"
-        @onClose="hideAnnouncement(announcement)"
-      />
-      <SystemBar type="success" :message="successMsg" icon="check_circle" @onClose="clearMsg('SuccessMsg')" />
-      <SystemBar type="error" :message="errorMsg" icon="alert" @onClose="clearMsg('ErrorMsg')" />
-    </div>
   </v-app-bar>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
-import { capitalizeFirstLetter } from '../../../utils/utils'
 import AccountMenu from '../../WalletAccount/AccountMenu'
 import LanguageSelector from '../LanguageSelector'
-import SystemBar from '../SystemBar'
 
 export default {
   components: {
     AccountMenu,
     LanguageSelector,
-    SystemBar,
   },
   props: {
     headerItems: {
@@ -82,24 +66,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(['announcements', 'userInfo', 'successMsg', 'errorMsg']),
+    ...mapState(['userInfo']),
     ...mapGetters(['getLogo']),
-    localeAnnouncements() {
-      return this.announcements[this.$i18n.locale] || []
-    },
-    lrcMsg() {
-      if (process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc') {
-        return 'navBar.lrcMsg'
-      }
-      return ''
-    },
-  },
-  methods: {
-    ...mapActions(['hideAnnouncement']),
-    capitalizeFirstLetter,
-    clearMsg(statusMessage) {
-      this.$store.commit(`set${statusMessage}`, '')
-    },
   },
 }
 </script>
