@@ -169,7 +169,7 @@ export const AVALANCHE_MAINNET_BLOCK_EXPLORER = 'https://snowtrace.io'
 export const AVALANCHE_TESTNET_URL = 'https://api.avax-test.network/ext/bc/C/rpc'
 export const AVALANCHE_TESTNET_BLOCK_EXPLORER = 'https://testnet.snowtrace.io'
 
-export const BIT_HOST_URL = 'https://indexer-basic.did.id'
+export const BIT_HOST_URL = 'https://indexer-v1.did.id'
 
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'

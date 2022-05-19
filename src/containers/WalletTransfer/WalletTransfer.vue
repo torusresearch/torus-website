@@ -148,7 +148,7 @@
                       @update:search-input="listenInput"
                     >
                       <template v-if="apiStreamSupported" #append>
-                        <v-chip v-show="addressLogoUrl && isBitMode && toAddress && selectedVerifier === bitVerifier" class="address-chip">
+                        <v-chip v-show="toAddress && selectedVerifier === bitVerifier" class="address-chip">
                           <v-avatar class="accent white--text">
                             <img class="address-logo" :src="addressLogoUrl" />
                           </v-avatar>
@@ -820,7 +820,7 @@ export default {
         this.selectedVerifier = ENS
       } else if (/.crypto$/.test(toAddress)) {
         this.selectedVerifier = UNSTOPPABLE_DOMAINS
-      } else if (toAddress.indexOf(this.bitTail) > 0 && toAddress.indexOf(this.bitTail) === toAddress.length - toAddress.length) {
+      } else if (new RegExp(`${this.bitTail}$`).test(toAddress)) {
         this.selectedVerifier = BIT
       }
     },
@@ -931,7 +931,7 @@ export default {
       return this.selectedVerifier === BIT && this.bitError ? this.bitError : true
     },
     getToAddressComboboxItems() {
-      return !this.isBitMode ? this.contactList : this.multipleAddress
+      return this.isBitMode ? this.multipleAddress : this.contactList
     },
     unstoppableDomainsRule() {
       return this.selectedVerifier === UNSTOPPABLE_DOMAINS && this.unstoppableDomainsError ? this.unstoppableDomainsError : true
@@ -958,9 +958,8 @@ export default {
       this.bitError = ''
       this.toAddress = ''
       this.toEthAddress = ''
-      const tail = DOT_STRING + BIT
       let addressCount = 0
-      if (input.indexOf(tail) > 0 && input.indexOf(tail) === input.length - tail.length) {
+      if (new RegExp(`${this.bitTail}$`).test(input)) {
         const multipleAddress = []
         this.theBitAddress = input
         this.selectedVerifier = BIT
