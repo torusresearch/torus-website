@@ -134,24 +134,38 @@
                       class="recipient-address"
                       :class="{ hasQrError: qrErrorMsg !== '' }"
                       :value="contactSelected"
-                      :items="contactList"
+                      :items="getToAddressComboboxItems()"
                       :placeholder="verifierPlaceholder"
                       required
-                      :rules="[contactRule, rules.contactRequired, ensRule, unstoppableDomainsRule]"
+                      :rules="[contactRule, rules.contactRequired, ensRule, unstoppableDomainsRule, bitRule]"
                       outlined
                       item-text="name"
                       item-value="value"
                       aria-label="Recipient Address"
-                      :return-object="false"
+                      :return-object="getReturnObject()"
                       @input="contactChanged"
+                      @blur="checkContact"
+                      @update:search-input="listenInput"
                     >
                       <template v-if="apiStreamSupported" #append>
+                        <v-chip v-show="addressLogoUrl && isBitMode && toAddress && selectedVerifier === bitVerifier" class="address-chip">
+                          <v-avatar class="accent white--text">
+                            <img class="address-logo" :src="addressLogoUrl" />
+                          </v-avatar>
+                          {{ bitSelectedAddress() }}
+                        </v-chip>
                         <v-btn icon small color="torusBrand1" title="Capture QR" tabindex="-1" aria-label="Capture QR" @click="startQrScanning">
                           <v-icon small>$vuetify.icons.scan</v-icon>
                         </v-btn>
                       </template>
                       <template #message="props">
                         {{ t(props.message) }}
+                      </template>
+                      <template v-if="isBitMode" #item="{ item }">
+                        <v-list-content class="bitAddress">
+                          {{ item.value }}
+                          <v-chip v-if="item.label" label small class="bitLabelChip">{{ item.label }}</v-chip>
+                        </v-list-content>
                       </template>
                     </v-combobox>
                     <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
@@ -195,7 +209,7 @@
                     </v-select>
                   </v-flex>
                   <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
-                    <AddContact :contact="contactSelected" :verifier="selectedVerifier"></AddContact>
+                    <AddContact :contact="getContactSelected()" :verifier="selectedVerifier"></AddContact>
                   </v-flex>
                 </v-layout>
               </v-flex>
@@ -374,7 +388,7 @@
                   <TransferConfirm
                     :converted-verifier-id="convertedVerifierId"
                     :to-address="toEthAddress"
-                    :to-verifier-id="toAddress"
+                    :to-verifier-id="getVerifierId()"
                     :to-verifier="selectedVerifier"
                     :from-address="selectedAddress"
                     :from-verifier-id="userInfo.verifierId"
@@ -471,6 +485,7 @@
 import randomId from '@chaitanyapotti/random-id'
 import Resolution from '@unstoppabledomains/resolution'
 import BigNumber from 'bignumber.js'
+import Das from 'das-sdk'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import { cloneDeep, isEqual } from 'lodash'
@@ -491,16 +506,21 @@ import MessageModal from '../../components/WalletTransfer/MessageModal'
 import config from '../../config'
 import torus from '../../torus'
 import {
+  BIT,
+  BIT_HOST_URL,
+  CHAIN_TO_BIT_NAMESPACE,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
+  DOT_STRING,
   ENS,
   ETH,
   GAS_ESTIMATE_TYPES,
   GITHUB,
   GOOGLE,
   MAINNET,
+  MAINNET_CODE,
   MESSAGE_MODAL_TYPE_FAIL,
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
@@ -550,9 +570,11 @@ export default {
       displayAmount: new BigNumber('0'),
       convertedAmount: '',
       contactSelected: '',
+      multipleAddress: [],
       toAddress: '',
       formValid: false,
       ensError: '',
+      bitError: '',
       unstoppableDomainsError: '',
       toggle_exclusive: 0,
       gas: new BigNumber('21000'),
@@ -598,6 +620,11 @@ export default {
       londonSpeedTiming: '',
       londonSpeedTimingModalDisplay: '',
       transactionWarning: '',
+      addressLogoUrl: '',
+      theBitAddress: '',
+      isBitMode: false,
+      bitTail: DOT_STRING + BIT,
+      bitVerifier: BIT,
     }
   },
   computed: {
@@ -793,6 +820,8 @@ export default {
         this.selectedVerifier = ENS
       } else if (/.crypto$/.test(toAddress)) {
         this.selectedVerifier = UNSTOPPABLE_DOMAINS
+      } else if (toAddress.indexOf(this.bitTail) > 0 && toAddress.indexOf(this.bitTail) === toAddress.length - toAddress.length) {
+        this.selectedVerifier = BIT
       }
     },
     async getIdFromNick(nick, typeOfLogin) {
@@ -898,6 +927,12 @@ export default {
     ensRule() {
       return this.selectedVerifier === ENS && this.ensError ? this.ensError : true
     },
+    bitRule() {
+      return this.selectedVerifier === BIT && this.bitError ? this.bitError : true
+    },
+    getToAddressComboboxItems() {
+      return !this.isBitMode ? this.contactList : this.multipleAddress
+    },
     unstoppableDomainsRule() {
       return this.selectedVerifier === UNSTOPPABLE_DOMAINS && this.unstoppableDomainsError ? this.unstoppableDomainsError : true
     },
@@ -909,7 +944,104 @@ export default {
         this.toEthAddress = await this.calculateEthAddress()
       }
     },
+    getReturnObject() {
+      return this.isBitMode
+    },
+    async listenInput(input) {
+      if (input == null) {
+        return
+      }
+      this.contactSelected = input
+
+      // check tail of .bit begin
+      this.multipleAddress = []
+      this.bitError = ''
+      this.toAddress = ''
+      this.toEthAddress = ''
+      const tail = DOT_STRING + BIT
+      let addressCount = 0
+      if (input.indexOf(tail) > 0 && input.indexOf(tail) === input.length - tail.length) {
+        const multipleAddress = []
+        this.theBitAddress = input
+        this.selectedVerifier = BIT
+        const das = new Das({
+          url: BIT_HOST_URL,
+        })
+        das
+          .getAvatar(input)
+          .then((res) => {
+            this.addressLogoUrl = res.url
+          })
+          .catch((error) => {
+            log.error(error)
+          })
+        // if multiple address then select
+        multipleAddress.push({
+          header: this.$t('walletSettings.multipleAddressShouldBeSelect'),
+        })
+        await das
+          .records(input)
+          .then((records) => {
+            records.forEach((record) => {
+              if (record.key !== (CHAIN_TO_BIT_NAMESPACE[this.$store.state.networkId] ?? CHAIN_TO_BIT_NAMESPACE[MAINNET_CODE])) {
+                return
+              }
+              this.isBitMode = true
+              addressCount += 1
+              multipleAddress.push({
+                name: input,
+                value: record.value,
+                label: record.label,
+                verifier: BIT,
+              })
+            })
+          })
+          .catch((error) => {
+            log.error(error)
+          })
+        // if multiple address then select, or one auto select
+        if (addressCount === 1) {
+          this.$refs.contactSelected.setValue(this.theBitAddress)
+          this.contactSelected = this.theBitAddress
+          this.toAddress = multipleAddress.pop().value
+        } else if (addressCount > 1) {
+          this.multipleAddress = multipleAddress
+        } else {
+          this.bitError = 'walletSettings.notAnyBitAddress'
+          this.$refs.form.validate()
+        }
+        // .bit end
+      } else {
+        this.isBitMode = false
+      }
+      if (!this.bitError && addressCount <= 1) {
+        this.toEthAddress = await this.calculateEthAddress()
+      }
+    },
+    bitSelectedAddress() {
+      return `${this.toAddress.slice(0, 4)}...${this.toAddress.slice(-4)}`
+    },
+    getVerifierId() {
+      return this.isBitMode ? this.theBitAddress : this.toAddress
+    },
+    getContactSelected() {
+      return this.isBitMode ? this.toAddress : this.contactSelected
+    },
+    async checkContact() {
+      this.toEthAddress = await this.calculateEthAddress()
+    },
     async contactChanged(contact) {
+      if (this.isBitMode) {
+        // .bit address is different from wallet rule, so set a new branch
+        if (contact.value) this.toAddress = contact.value
+        log.info(this.toAddress, 'contactChanged')
+        this.bitError = ''
+        this.selectedVerifier = BIT
+        if (this.selectedVerifier) {
+          this.toEthAddress = await this.calculateEthAddress()
+        }
+        return
+      }
       this.contactSelected = contact
       if (contact) this.toAddress = contact
       log.info(contact, 'contactChanged')
@@ -1080,6 +1212,13 @@ export default {
         } catch (error) {
           log.error(error)
           this.unstoppableDomainsError = 'walletSettings.invalidUnstoppable'
+          this.$refs.form.validate()
+        }
+      } else if (this.selectedVerifier === BIT) {
+        if (this.toAddress) {
+          toAddress = toChecksumAddress(this.toAddress)
+        } else {
+          this.bitError = 'walletSettings.invalidBit'
           this.$refs.form.validate()
         }
       } else {

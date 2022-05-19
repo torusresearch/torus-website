@@ -56,6 +56,7 @@
     "copy-to-clipboard": "^3.3.1",
     "core-js": "^3.22.3",
     "create-hash": "^1.2.0",
+    "das-sdk": "^1.8.0",
     "deepmerge": "^4.2.2",
     "eth-block-tracker": "^5.0.1",
     "eth-json-rpc-filters": "^4.2.2",
