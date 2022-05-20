@@ -3,14 +3,14 @@
     <div class="ml-auto">
       <ShowToolTip :address="selectedAddress">
         <v-btn small class="address-btn" aria-label="Copy Address">
-          <v-icon left size="9" v-text="'$vuetify.icons.address'" />
+          <v-icon left size="9">$vuetify.icons.address</v-icon>
           <span>{{ slicedAddress }}</span>
         </v-btn>
       </ShowToolTip>
     </div>
     <div class="ml-2">
       <ExportQrCode>
-        <v-icon x-small v-text="'$vuetify.icons.qr'" />
+        <v-icon x-small>$vuetify.icons.qr</v-icon>
       </ExportQrCode>
     </div>
     <!-- <div v-if="apiStreamSupported">

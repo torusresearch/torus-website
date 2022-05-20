@@ -24,7 +24,7 @@
           <div class="mb-2">
             <ShowToolTip :address="selectedAddress">
               <span class="public-address torusFont2--text">{{ selectedAddress }}</span>
-              <v-icon size="12" class="torusFont2--text ml-1" v-text="'$vuetify.icons.copy'" />
+              <v-icon size="12" class="torusFont2--text ml-1">$vuetify.icons.copy</v-icon>
             </ShowToolTip>
           </div>
           <div class="qr-container mb-8">

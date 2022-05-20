@@ -10,7 +10,7 @@
             <!-- Download JSON -->
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <v-icon size="26" class="text_3--text" :style="{ marginRight: '10px' }" v-text="'$vuetify.icons.json'" />
+                <v-icon size="26" class="text_3--text" :style="{ marginRight: '10px' }">$vuetify.icons.json</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="text-subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.downloadSoftCopy') }} (JSON)</div>
