@@ -72,7 +72,7 @@
           </div>
         </div>
         <div class="d-flex align-center text_2--text" :style="{ marginTop: '2px' }">
-          <v-icon size="8" v-text="'$vuetify.icons.network'"></v-icon>
+          <v-icon size="8">$vuetify.icons.network</v-icon>
           <span class="network-name ml-1">{{ networkType.networkName || networkType.host }}</span>
         </div>
         <div class="torus-widget__transaction-details mt-5">

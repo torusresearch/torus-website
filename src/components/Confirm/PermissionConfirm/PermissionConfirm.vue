@@ -22,7 +22,7 @@
           </v-flex>
           <v-flex xs6>
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="pt-2 network-container">
-              <v-icon size="12" v-text="'$vuetify.icons.network'"></v-icon>
+              <v-icon size="12">$vuetify.icons.network</v-icon>
               <span class="">{{ selectedNetwork }}</span>
             </div>
           </v-flex>
@@ -49,7 +49,7 @@
         <v-card class="permission-list card-shadow px-3 py-4 mb-4">
           <div class="mb-4">
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--title">
-              <v-icon size="12" v-text="'$vuetify.icons.person'"></v-icon>
+              <v-icon size="12">$vuetify.icons.person</v-icon>
               {{ t('dappPermission.accessUserInfo') }}
             </div>
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--subtitle">
@@ -58,14 +58,14 @@
           </div>
           <div class="mb-4">
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--title">
-              <v-icon size="12" v-text="'$vuetify.icons.time'"></v-icon>
+              <v-icon size="12">$vuetify.icons.time</v-icon>
               {{ t('dappPermission.transactHours').replace(/\{num\}/gi, 6) }}
             </div>
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--subtitle"></div>
           </div>
           <div class="mb-4">
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--title">
-              <v-icon size="12" v-text="'$vuetify.icons.network'"></v-icon>
+              <v-icon size="12">$vuetify.icons.network</v-icon>
               {{ t('dappPermission.changeNetwork').replace(/\{network\}/gi, 'Rinkeby Network') }}
             </div>
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--subtitle"></div>

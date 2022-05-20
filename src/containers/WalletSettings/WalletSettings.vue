@@ -15,7 +15,7 @@
         <v-expansion-panels v-model="leftPanel" multiple>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="privacy-panel-header">
-              <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
+              <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.lock</v-icon>
               <div class="grow font-weight-bold title text_1--text">
                 {{ t('walletSettings.privacySecurity') }}
               </div>
@@ -26,7 +26,7 @@
           </v-expansion-panel>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="contact-list-panel-header">
-              <v-icon size="16" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.list'" />
+              <v-icon size="16" class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.list</v-icon>
               <div class="grow font-weight-bold title text_1--text">
                 {{ t('walletSettings.addressBook') }}
               </div>
@@ -37,7 +37,7 @@
           </v-expansion-panel>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="privacy-panel-header">
-              <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.device_detailed'" />
+              <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.device_detailed</v-icon>
               <div class="grow font-weight-bold title text_1--text">
                 {{ t('walletSettings.crashReport') }}
               </div>
@@ -52,7 +52,7 @@
         <v-expansion-panels v-model="rightPanel" multiple>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="network-panel-header">
-              <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.globe'" />
+              <v-icon small class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.globe</v-icon>
               <div class="grow font-weight-bold title text_1--text">
                 {{ t('walletSettings.network') }}
               </div>
@@ -63,7 +63,7 @@
           </v-expansion-panel>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="display-panel-header">
-              <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.server'" />
+              <v-icon small class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.server</v-icon>
               <div class="grow font-weight-bold title text_1--text">
                 {{ t('walletSettings.display') }}
               </div>
@@ -74,7 +74,7 @@
           </v-expansion-panel>
           <v-expansion-panel readonly class="my-2">
             <v-expansion-panel-header id="display-panel-header">
-              <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.person_circle'" />
+              <v-icon small class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.person_circle</v-icon>
               <div class="grow font-weight-bold title text_1--text">{{ t('tkeySettings.accountManagement') }}</div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
@@ -83,7 +83,7 @@
           </v-expansion-panel>
           <v-expansion-panel v-show="canShowSetCustomKey" readonly class="my-2">
             <v-expansion-panel-header id="display-panel-header">
-              <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.person_circle'" />
+              <v-icon small class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.person_circle</v-icon>
               <div class="grow font-weight-bold title text_1--text">{{ 'Set Torus Key' }}</div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
