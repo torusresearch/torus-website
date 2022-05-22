@@ -3,8 +3,8 @@
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
         <BoxLoader v-if="loading" />
-        <div>
-          <div class="text-h5 font-weight-bold mb-8">Select an account to continue</div>
+        <div v-else>
+          <div class="text-h5 font-weight-bold mb-8">{{ t('login.selectAnAccount') }}</div>
           <div class="px-3 mb-3 account-list mb-8">
             <v-checkbox
               v-for="(app, address) in userDapps"
@@ -30,7 +30,7 @@
             </v-checkbox>
           </div>
           <v-btn id="less-details-link" large color="white" text class="px-8 white--text gmt-wallet-transfer" @click="continueToApp">
-            {{ 'Continue to app' || t('end.continueToApp') }}
+            {{ t('login.continueToApp') }}
           </v-btn>
         </div>
       </v-flex>
@@ -62,22 +62,8 @@ export default {
   components: { BoxLoader },
   data() {
     return {
-      wallets: [
-        {
-          app: 'Ladder Caster',
-          address: '0xCC00De14EaF13008EBdC12C18a4679E837ab8E50',
-        },
-        {
-          app: '100thieves',
-          address: '0xCC00De14EaF13008EBdC12C18a4679E837ab8E51',
-        },
-        {
-          app: 'Web3auth',
-          address: '0xCC00De14EaF13008EBdC12C18a4679E837ab8E52',
-        },
-      ],
-      selectedAccount: '',
       loading: false,
+      selectedAccount: '',
       broadcastData: {},
       channelId: '',
       userDapps: {},
@@ -175,6 +161,11 @@ export default {
 
       // prepare data
       this.broadcastData = { type: POPUP_RESULT, userInfo, keys, postboxKey, userDapps, error: loginError }
+
+      // if there are no app accounts to choose, continue
+      if (Object.keys(this.userDapps).length === 0) {
+        await this.continueToApp()
+      }
     } catch (error) {
       log.error(error, 'something went wrong')
     }
@@ -190,9 +181,11 @@ export default {
         // move selected key to the first position of keys
         const { keys } = this.broadcastData
         const id = keys.findIndex((k) => k.ethAddress === this.selectedAccount)
-        const selectedKey = keys[id]
-        keys.splice(id, 1)
-        keys.unshift(selectedKey)
+        if (id > -1) {
+          const selectedKey = keys[id]
+          keys.splice(id, 1)
+          keys.unshift(selectedKey)
+        }
 
         const bc = new BroadcastChannel(`redirect_openlogin_channel_${this.channelId}`, broadcastChannelOptions)
         await bc.postMessage({ data: this.broadcastData })
