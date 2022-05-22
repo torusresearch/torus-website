@@ -1,5 +1,4 @@
 import randomId from '@chaitanyapotti/random-id'
-import { subkey } from '@toruslabs/openlogin-subkey'
 import deepmerge from 'deepmerge'
 import { BN, privateToAddress } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
@@ -28,7 +27,7 @@ import {
   USER_INFO_REQUEST_APPROVED,
   USER_INFO_REQUEST_REJECTED,
 } from '../utils/enums'
-import { get, remove } from '../utils/httpHelpers'
+import { remove } from '../utils/httpHelpers'
 import { fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
 import {
   accountTrackerHandler,
@@ -432,7 +431,7 @@ export default {
         whiteLabel,
         loginConfigItem: currentVerifierConfig,
       })
-      const { keys, userInfo, postboxKey, error } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
       if (error) {
         throw new Error(error)
       }
@@ -440,6 +439,7 @@ export default {
       userInfo.verifier = verifier
       commit('setUserInfo', userInfo)
       commit('setPostboxKey', postboxKey)
+      commit('setUserDapps', userDapps)
       await dispatch('handleLogin', {
         calledFromEmbed,
         oAuthToken: userInfo.idToken || userInfo.accessToken,
@@ -511,21 +511,21 @@ export default {
     dispatch('subscribeToControllers')
 
     // derive app scoped keys from tkey
-    try {
-      const tkey = keys.find((k) => k.accountType === ACCOUNT_TYPE.THRESHOLD) || keys.find((k) => k.accountType === ACCOUNT_TYPE.NORMAL)
-      const ethAddress = torus.generateAddressFromPrivKey(new BN(tkey.privKey, 'hex'))
-      const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm&public_address=${ethAddress}`)
-      const userDapps = {}
-      response.user_projects.forEach((project) => {
-        const scopedKey = subkey(tkey.privKey, Buffer.from(project.project_id, 'base64'))
-        const address = torus.generateAddressFromPrivKey(scopedKey)
-        userDapps[address] = project.name
-        keys.push({ ethAddress: address, privKey: scopedKey, accountType: ACCOUNT_TYPE.APP_SCOPED })
-      })
-      await commit('setUserDapps', userDapps)
-    } catch (error) {
-      log.error('Failed to derive app-scoped keys', error)
-    }
+    // try {
+    //   const tkey = keys.find((k) => k.accountType === ACCOUNT_TYPE.THRESHOLD) || keys.find((k) => k.accountType === ACCOUNT_TYPE.NORMAL)
+    //   const ethAddress = torus.generateAddressFromPrivKey(new BN(tkey.privKey, 'hex'))
+    //   const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm&public_address=${ethAddress}`)
+    //   const userDapps = {}
+    //   response.user_projects.forEach((project) => {
+    //     const scopedKey = subkey(tkey.privKey, Buffer.from(project.project_id, 'base64'))
+    //     const address = torus.generateAddressFromPrivKey(scopedKey)
+    //     userDapps[address] = project.name
+    //     keys.push({ ethAddress: address, privKey: scopedKey, accountType: ACCOUNT_TYPE.APP_SCOPED })
+    //   })
+    //   await commit('setUserDapps', userDapps)
+    // } catch (error) {
+    //   log.error('Failed to derive app-scoped keys', error)
+    // }
 
     const defaultAddresses = await dispatch('initTorusKeyring', {
       keys,

@@ -29,3 +29,39 @@
     color: #b7b8bd;
   }
 }
+
+.account-item-checkbox {
+  justify-content: center;
+  width: 400px;
+  padding: 10px 20px;
+  margin: auto;
+  border: 1px solid #FFFFFF;
+  border-radius: 6px;
+}
+
+.account-item-checkbox:hover {
+  border-color: #DADADA;
+  border-radius: 6px;
+}
+
+.account-item-checkbox.selected {
+  border-color: #DADADA;
+  background-color: #F9F9FB;
+  
+  ::v-deep .v-input__slot {
+    background-color: #F9F9FB !important;
+  }
+}
+
+.account-app {
+  font-size: 14px;
+}
+.account-address {
+  font-size: 12px;
+}
+
+.v-btn {
+  background-color: var(--v-torusBrand1-base);
+  color: #FFFFFF;
+  width: 400px;
+}
