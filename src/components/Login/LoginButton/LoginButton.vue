@@ -1,33 +1,42 @@
 <template>
-  <v-btn
-    class="gmt-login text_2--text"
-    :aria-label="`login with ${verifier.name.toLowerCase()}`"
-    :class="[{ active, isDark: $vuetify.theme.dark }, `gmt-login-${iconName}`, { 'is-long': isLong }, { 'is-popup': isPopup }]"
-    :type="buttonType"
-    :block="block"
+  <button
+    v-ripple="{ center: true }"
+    class="gmt-login login-btn text_2--text"
     :disabled="disabled"
+    :type="buttonType"
+    :class="[
+      { active, 'theme--dark': $vuetify.theme.dark },
+      `gmt-login-${iconName}`,
+      { 'is-long': isLong },
+      { 'is-popup': isPopup },
+      { 'no-icon': noIcon },
+    ]"
     @mouseover="onMouseover"
     @click="onClick"
   >
     <img
       v-if="(active || $vuetify.breakpoint.xsOnly) && buttonType !== 'submit'"
-      :src="
-        verifier.logoHover ||
-        require(`../../../assets/img/icons/login-${iconName}${verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''}.svg`)
-      "
+      :src="verifier.logoHover || require(`../../../assets/img/icons/login-${iconName}${hasLightLogo && $vuetify.theme.dark ? '-light' : ''}.svg`)"
       :alt="`${verifier.name} Icon`"
+      :class="{ 'mr-3': isLong }"
     />
     <img
       v-else-if="$vuetify.theme.isDark && verifier.logoLight && buttonType !== 'submit'"
       :src="verifier.logoLight"
       :alt="`${verifier.name} Icon`"
+      :class="{ 'mr-3': isLong }"
     />
-    <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark && buttonType !== 'submit'" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
-    <v-icon v-else-if="buttonType !== 'submit'" class="text_3--text">
+    <img
+      v-else-if="!$vuetify.theme.isDark && verifier.logoDark && buttonType !== 'submit'"
+      :src="verifier.logoDark"
+      :alt="`${verifier.name} Icon`"
+      :class="{ 'mr-3': isLong }"
+    />
+    <v-icon v-else-if="buttonType !== 'submit'" class="text_3--text" :class="{ 'mr-3': isLong }">
       {{ `$vuetify.icons.${iconName}` }}
     </v-icon>
     <span v-if="isLong">{{ formatDescription }}</span>
-  </v-btn>
+  </button>
 </template>
 
 <script>
@@ -45,11 +54,11 @@ export default {
       type: Boolean,
       default: false,
     },
-    block: {
+    isLong: {
       type: Boolean,
       default: false,
     },
-    isLong: {
+    noIcon: {
       type: Boolean,
       default: false,
     },
@@ -75,6 +84,9 @@ export default {
       const normalVerifier = config.loginConfig[this.verifier.verifier]
       if (normalVerifier) return this.verifier.name.toLowerCase()
       return this.verifier.typeOfLogin.toLowerCase()
+    },
+    hasLightLogo() {
+      return config.loginsWithLightLogo.includes(this.iconName)
     },
   },
   methods: {

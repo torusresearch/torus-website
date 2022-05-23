@@ -1,16 +1,19 @@
-.v-btn:not(.v-btn--text):not(.v-btn--icon) {
+.login-btn {
   background: #ffffff;
   border: 1px solid #f9f9fb;
   box-sizing: border-box;
   box-shadow: 2px 2px 12px rgba(3, 100, 255, 0.05);
   border-radius: 6px;
-  min-width: inherit;
-  padding: 0;
-  margin-right: 4px;
+  width: 100%;
+  min-height: 60px;
+  display: flex;
+  outline: 0;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 8px;
-  width: 56px;
-  height: 56px;
-  &.isDark {
+  text-align: left;
+  position: relative;
+  &.theme--dark {
     background: #2f3136 !important;
     border: 1px solid #404145 !important;
     box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
@@ -19,60 +22,51 @@
     width: 26px;
     height: 26px;
   }
-}
-
-.v-btn.is-long {
-  ::v-deep .v-btn__content {
-    font-weight: normal;
-    font-size: 18px;
-    line-height: 21px;
-    letter-spacing: 0;
-    img + span,
-    .v-icon + span {
-      margin-left: 8px;
-    }
+  &::before {
+    background-color: currentColor;
+    border-radius: inherit;
+    bottom: 0;
+    color: inherit;
+    content: '';
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.6, 1);
+  }
+  &:focus::before {
+    opacity: 0.24;
   }
 }
 
-@media only screen and (min-height: 1080px) {
-  .v-btn.is-popup:not(.v-btn--text):not(.v-btn--icon) {
-    height: 6.7vh;
-    margin-bottom: 0.8vh;
-    img,
-    ::v-deep .v-icon .v-icon__component {
-      width: 3.3vh;
-      height: 3.3vh;
-    }
+.login-btn.is-long {
+  background: #ffffff;
+  height: unset;
+  min-height: 56px;
+  &:not(.no-icon) {
+    justify-content: left;
   }
-  .v-btn.is-popup.is-long {
-    ::v-deep .v-btn__content {
-      font-size: 1.7vh;
-      line-height: 1.2em;
-      img + span,
-      .v-icon + span {
-        margin-left: 1.5vh;
-      }
-    }
+  &.is-popup {
+    padding: 8px 30px;
   }
 }
-@media only screen and (min-height: 1440px) {
-  .v-btn.is-popup:not(.v-btn--text):not(.v-btn--icon) {
-    height: 5.5vh;
-    margin-bottom: 0.6vh;
-    img,
-    ::v-deep .v-icon .v-icon__component {
-      width: 3vh;
-      height: 3vh;
+
+.login-btn:disabled {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+  color: rgba(0, 0, 0, 0.26) !important;
+}
+
+@media only screen and (min-width: 425px) {
+  .login-btn.is-long {
+    height: unset;
+    min-height: 56px;
+    &:not(.no-icon) {
+      justify-content: left;
     }
-  }
-  .v-btn.is-popup.is-long {
-    ::v-deep .v-btn__content {
-      font-size: 2vh;
-      line-height: 1.2em;
-      img + span,
-      .v-icon + span {
-        margin-left: 1.25vh;
-      }
+    &.is-popup {
+      padding: 8px 38px;
     }
   }
 }

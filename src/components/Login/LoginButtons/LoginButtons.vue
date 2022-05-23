@@ -1,12 +1,5 @@
 <template>
   <v-flex class="login-buttons" :class="isPopup ? 'is-popup xs-12' : 'xs10 sm12'" ml-auto mr-auto>
-    <!-- <div
-      v-if="(mainButtonsLong.length > 0 || mainButtons.length > 0) && !$vuetify.breakpoint.xsOnly && !isPopup"
-      class="headline font-weight-regular mb-2"
-      :class="$vuetify.theme.dark ? '' : 'text_2--text'"
-    >
-      {{ t('login.signUpIn') }}
-    </div>-->
     <div :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
       <v-btn
         v-if="hasExistingAccount && existingLoginTypeAvailable"
@@ -32,7 +25,6 @@
         :key="verifier.verifier"
         :verifier="verifier"
         :active="verifier.verifier === activeButton"
-        :block="true"
         :is-long="true"
         :is-popup="isPopup"
         @mouseover="loginBtnHover(verifier.verifier)"
@@ -48,7 +40,6 @@
         <LoginButton
           :verifier="verifier"
           :active="verifier.verifier === activeButton"
-          :block="true"
           @mouseover="loginBtnHover(verifier.verifier)"
           @click="triggerLogin(verifier.verifier)"
         />
@@ -80,9 +71,9 @@
           <LoginButton
             :verifier="verifier"
             :active="verifier.verifier === activeButton"
-            :block="true"
             :is-long="true"
             :disabled="!passwordlessEmailFormValid"
+            :no-icon="true"
             button-type="submit"
             @mouseover="loginBtnHover(verifier.verifier)"
           />
@@ -91,7 +82,6 @@
           v-else
           :verifier="verifier"
           :active="verifier.verifier === activeButton"
-          :block="true"
           :is-long="true"
           :is-popup="isPopup"
           @mouseover="loginBtnHover(verifier.verifier)"
@@ -164,12 +154,12 @@ export default {
         (button) =>
           ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
           button.mainOption &&
-          button.description !== ''
+          !!button.description
       )
     },
     mainButtons() {
       return this.loginButtonsArray.filter((button) => {
-        const descCheck = this.hasExistingAccount || button.description === ''
+        const descCheck = (this.hasExistingAccount || !button.description) && button.verifier !== HOSTED_EMAIL_PASSWORDLESS_VERIFIER
         if (this.viewMoreOptions) {
           return ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) && descCheck
         }
@@ -177,12 +167,13 @@ export default {
       })
     },
     loginButtonsLong() {
-      return this.loginButtonsArray.filter(
+      const buttons = this.loginButtonsArray.filter(
         (button) =>
           ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
           !button.mainOption &&
-          button.description !== ''
+          !!button.description
       )
+      return buttons
     },
     allActiveButtons() {
       return [...this.mainButtonsLong, ...this.mainButtons, ...this.loginButtonsLong]
