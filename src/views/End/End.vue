@@ -5,13 +5,13 @@
         <BoxLoader v-if="loading" />
         <div v-else>
           <div class="text-h5 font-weight-bold mb-8">{{ t('login.selectAnAccount') }}</div>
-          <div class="px-3 mb-3 account-list mb-8">
+          <div class="account-list mb-8">
             <v-checkbox
-              v-for="(app, address) in userDapps"
+              v-for="(app, address) in accounts"
               :key="address"
               :input-value="selectedAccount === address"
               messages=""
-              :class="selectedAccount === address ? 'selected' : ''"
+              :class="[selectedAccount === address ? 'selected' : '', $vuetify.theme.dark ? 'dark-theme' : '']"
               class="account-item-checkbox mb-2"
               on-icon="$vuetify.icons.checkbox_marked"
               off-icon="$vuetify.icons.checkbox_blank"
@@ -53,7 +53,7 @@ import log from 'loglevel'
 import BoxLoader from '../../components/helpers/BoxLoader'
 import config from '../../config'
 import { getOpenLoginInstance } from '../../openlogin'
-import { ACCOUNT_TYPE, POPUP_RESULT } from '../../utils/enums'
+import { ACCOUNT_TYPE, APPLE, POPUP_RESULT } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
 import { broadcastChannelOptions } from '../../utils/utils'
 
@@ -66,7 +66,7 @@ export default {
       selectedAccount: '',
       broadcastData: {},
       channelId: '',
-      userDapps: {},
+      accounts: {},
     }
   },
   async created() {
@@ -93,51 +93,6 @@ export default {
       const { state } = openLogin
       log.info(state, 'state')
 
-      // keys
-      const keys = []
-      let postboxKey
-      if (state.walletKey) {
-        keys.push({
-          privKey: state.walletKey,
-          accountType: ACCOUNT_TYPE.NORMAL,
-          ethAddress: torus.generateAddressFromPrivKey(new BN(state.walletKey, 'hex')),
-        })
-      }
-      if (state.tKey && state.tKey !== state.walletKey) {
-        keys.push({
-          privKey: state.tKey,
-          accountType: ACCOUNT_TYPE.THRESHOLD,
-          ethAddress: torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex')),
-        })
-      }
-      if (state.oAuthPrivateKey) {
-        postboxKey = {
-          privKey: state.oAuthPrivateKey,
-          ethAddress: torus.generateAddressFromPrivKey(new BN(state.oAuthPrivateKey, 'hex')),
-        }
-      }
-
-      // derive app scoped keys from tkey
-      const userDapps = {}
-      try {
-        const tkey = state.tKey || state.walletKey
-        const ethAddress = torus.generateAddressFromPrivKey(new BN(tkey, 'hex'))
-        const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm&public_address=${ethAddress}`)
-        log.info(response, 'user projects from developer dashboard')
-        response.user_projects.forEach((project) => {
-          const subKey = subkey(tkey, Buffer.from(project.project_id, 'base64'))
-          const subAddress = torus.generateAddressFromPrivKey(subKey)
-          userDapps[subAddress] = project.name
-          keys.push({ ethAddress: subAddress, privKey: subKey, accountType: ACCOUNT_TYPE.APP_SCOPED })
-        })
-      } catch (error) {
-        log.error('Failed to derive app-scoped keys', error)
-      }
-      this.userDapps = userDapps
-
-      // set default selected account
-      this.selectedAccount = Object.keys(this.userDapps)[0] ?? ''
-
       // user info
       const allInfo = state.store.getStore()
       log.info('allInfo', allInfo)
@@ -151,6 +106,59 @@ export default {
         typeOfLogin: allInfo.typeOfLogin,
       }
 
+      // keys
+      const keys = []
+      let postboxKey
+      if (state.walletKey) {
+        const ethAddress = torus.generateAddressFromPrivKey(new BN(state.walletKey, 'hex'))
+        keys.push({
+          privKey: state.walletKey,
+          accountType: ACCOUNT_TYPE.NORMAL,
+          ethAddress,
+        })
+        const typeOfLoginDisplay = userInfo.typeOfLogin.charAt(0).toUpperCase() + userInfo.typeOfLogin.slice(1)
+        const accountDisplay = (userInfo.typeOfLogin !== APPLE && userInfo.email) || userInfo.name
+        this.accounts[ethAddress] = `${typeOfLoginDisplay} ${this.t('accountMenu.account')} ${accountDisplay}`
+      }
+      if (state.tKey && state.tKey !== state.walletKey) {
+        const ethAddress = torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex'))
+        keys.push({
+          privKey: state.tKey,
+          accountType: ACCOUNT_TYPE.THRESHOLD,
+          ethAddress: torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex')),
+        })
+        this.accounts[ethAddress] = `OpenLogin ${this.t('accountMenu.wallet')}`
+      }
+      if (state.oAuthPrivateKey) {
+        postboxKey = {
+          privKey: state.oAuthPrivateKey,
+          ethAddress: torus.generateAddressFromPrivKey(new BN(state.oAuthPrivateKey, 'hex')),
+        }
+      }
+
+      // derive app scoped keys from tkey
+      const userDapps = {}
+      if (state.tKey) {
+        const tkey = state.tKey
+        try {
+          const ethAddress = torus.generateAddressFromPrivKey(new BN(tkey, 'hex'))
+          const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm&public_address=${ethAddress}`)
+          log.info(response, 'user projects from developer dashboard')
+          response.user_projects.forEach((project) => {
+            const subKey = subkey(tkey, Buffer.from(project.project_id, 'base64'))
+            const subAddress = torus.generateAddressFromPrivKey(subKey)
+            userDapps[subAddress] = project.name
+            keys.push({ ethAddress: subAddress, privKey: subKey, accountType: ACCOUNT_TYPE.APP_SCOPED })
+          })
+        } catch (error) {
+          log.error('Failed to derive app-scoped keys', error)
+        }
+      }
+      this.accounts = { ...this.accounts, ...userDapps }
+
+      // set default selected account
+      this.selectedAccount = Object.keys(this.accounts)[0] ?? ''
+
       // broadcast channel ID
       const { appState } = allInfo
       log.info(appState, 'appState')
@@ -163,7 +171,7 @@ export default {
       this.broadcastData = { type: POPUP_RESULT, userInfo, keys, postboxKey, userDapps, error: loginError }
 
       // if there are no app accounts to choose, continue
-      if (Object.keys(this.userDapps).length === 0) {
+      if (Object.keys(userDapps).length === 0) {
         await this.continueToApp()
       }
     } catch (error) {

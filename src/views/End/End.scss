@@ -30,26 +30,50 @@
   }
 }
 
+.account-list {
+  width: 420px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin: auto;
+  padding: 0 10px;
+}
+
 .account-item-checkbox {
   justify-content: center;
-  width: 400px;
   padding: 10px 20px;
-  margin: auto;
   border: 1px solid #FFFFFF;
   border-radius: 6px;
-}
 
-.account-item-checkbox:hover {
-  border-color: #DADADA;
-  border-radius: 6px;
-}
+  &:hover {
+    border-color: #DADADA;
+  }
 
-.account-item-checkbox.selected {
-  border-color: #DADADA;
-  background-color: #F9F9FB;
-  
-  ::v-deep .v-input__slot {
-    background-color: #F9F9FB !important;
+  &.selected {
+    border-color: #DADADA;
+    background-color: #F9F9FB;
+    
+    ::v-deep .v-input__slot {
+      background-color: #F9F9FB !important;
+    }
+  }
+
+  &.dark-theme {
+    background-color: #2f3136;
+    border-color: #404145;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+
+    &:hover {
+      border-color: #DADADA;
+    }
+
+    &.selected {
+      border-color: #DADADA;
+      background-color: #3f4146;
+
+      ::v-deep .v-input__slot {
+        background-color: #3f4146 !important;
+      }
+    }
   }
 }
 

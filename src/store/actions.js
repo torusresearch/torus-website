@@ -510,23 +510,6 @@ export default {
     } = state
     dispatch('subscribeToControllers')
 
-    // derive app scoped keys from tkey
-    // try {
-    //   const tkey = keys.find((k) => k.accountType === ACCOUNT_TYPE.THRESHOLD) || keys.find((k) => k.accountType === ACCOUNT_TYPE.NORMAL)
-    //   const ethAddress = torus.generateAddressFromPrivKey(new BN(tkey.privKey, 'hex'))
-    //   const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm&public_address=${ethAddress}`)
-    //   const userDapps = {}
-    //   response.user_projects.forEach((project) => {
-    //     const scopedKey = subkey(tkey.privKey, Buffer.from(project.project_id, 'base64'))
-    //     const address = torus.generateAddressFromPrivKey(scopedKey)
-    //     userDapps[address] = project.name
-    //     keys.push({ ethAddress: address, privKey: scopedKey, accountType: ACCOUNT_TYPE.APP_SCOPED })
-    //   })
-    //   await commit('setUserDapps', userDapps)
-    // } catch (error) {
-    //   log.error('Failed to derive app-scoped keys', error)
-    // }
-
     const defaultAddresses = await dispatch('initTorusKeyring', {
       keys,
       calledFromEmbed,
