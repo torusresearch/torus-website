@@ -21,27 +21,27 @@
         </div>
       </v-btn>
       <LoginButton
-        v-for="verifier in mainButtonsLong"
-        :key="verifier.verifier"
-        :verifier="verifier"
-        :active="verifier.verifier === activeButton"
+        v-for="loginConfigItem in mainButtonsLong"
+        :key="loginConfigItem.verifier"
+        :login-config-item="loginConfigItem"
+        :active="loginConfigItem.verifier === activeButton"
         :is-long="true"
         :is-popup="isPopup"
-        @mouseover="loginBtnHover(verifier.verifier)"
-        @click="triggerLogin(verifier.verifier)"
+        @mouseover="loginBtnHover(loginConfigItem.verifier)"
+        @click="triggerLogin(loginConfigItem.verifier)"
       />
     </div>
     <v-layout class="buttons-container" wrap :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
       <v-flex
-        v-for="verifier in mainButtons"
-        :key="verifier.verifier"
+        v-for="loginConfigItem in mainButtons"
+        :key="loginConfigItem.verifier"
         :class="[!viewMoreOptions || isPopup || $vuetify.breakpoint.xsOnly ? 'xs4' : 'xs2']"
       >
         <LoginButton
-          :verifier="verifier"
-          :active="verifier.verifier === activeButton"
-          @mouseover="loginBtnHover(verifier.verifier)"
-          @click="triggerLogin(verifier.verifier)"
+          :login-config-item="loginConfigItem"
+          :active="loginConfigItem.verifier === activeButton"
+          @mouseover="loginBtnHover(loginConfigItem.verifier)"
+          @click="triggerLogin(loginConfigItem.verifier)"
         />
       </v-flex>
     </v-layout>
@@ -53,12 +53,12 @@
         </div>
         <v-divider />
       </div>
-      <div v-for="verifier in loginButtonsLong" :key="verifier.verifier" class="buttons-bottom-container">
+      <div v-for="loginConfigItem in loginButtonsLong" :key="loginConfigItem.verifier" class="buttons-bottom-container">
         <v-form
-          v-if="verifier.verifier === HOSTED_EMAIL_PASSWORDLESS_VERIFIER"
+          v-if="loginConfigItem.verifier === HOSTED_EMAIL_PASSWORDLESS_VERIFIER"
           ref="passwordlessEmailForm"
           v-model="passwordlessEmailFormValid"
-          @submit.prevent="triggerLogin(verifier.verifier, passwordlessEmail)"
+          @submit.prevent="triggerLogin(loginConfigItem.verifier, passwordlessEmail)"
         >
           <v-text-field
             v-model="passwordlessEmail"
@@ -69,23 +69,23 @@
             outlined
           />
           <LoginButton
-            :verifier="verifier"
-            :active="verifier.verifier === activeButton"
+            :login-config-item="loginConfigItem"
+            :active="loginConfigItem.verifier === activeButton"
             :is-long="true"
             :disabled="!passwordlessEmailFormValid"
             :no-icon="true"
             button-type="submit"
-            @mouseover="loginBtnHover(verifier.verifier)"
+            @mouseover="loginBtnHover(loginConfigItem.verifier)"
           />
         </v-form>
         <LoginButton
           v-else
-          :verifier="verifier"
-          :active="verifier.verifier === activeButton"
+          :login-config-item="loginConfigItem"
+          :active="loginConfigItem.verifier === activeButton"
           :is-long="true"
           :is-popup="isPopup"
-          @mouseover="loginBtnHover(verifier.verifier)"
-          @click="triggerLogin(verifier.verifier)"
+          @mouseover="loginBtnHover(loginConfigItem.verifier)"
+          @click="triggerLogin(loginConfigItem.verifier)"
         />
       </div>
     </div>

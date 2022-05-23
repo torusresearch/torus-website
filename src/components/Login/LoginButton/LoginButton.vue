@@ -16,20 +16,22 @@
   >
     <img
       v-if="(active || $vuetify.breakpoint.xsOnly) && buttonType !== 'submit'"
-      :src="verifier.logoHover || require(`../../../assets/img/icons/login-${iconName}${hasLightLogo && $vuetify.theme.dark ? '-light' : ''}.svg`)"
-      :alt="`${verifier.name} Icon`"
+      :src="
+        loginConfigItem.logoHover || require(`../../../assets/img/icons/login-${iconName}${hasLightLogo && $vuetify.theme.dark ? '-light' : ''}.svg`)
+      "
+      :alt="`${loginConfigItem.name} Icon`"
       :class="{ 'mr-3': isLong }"
     />
     <img
-      v-else-if="$vuetify.theme.isDark && verifier.logoLight && buttonType !== 'submit'"
-      :src="verifier.logoLight"
-      :alt="`${verifier.name} Icon`"
+      v-else-if="$vuetify.theme.isDark && loginConfigItem.logoLight && buttonType !== 'submit'"
+      :src="loginConfigItem.logoLight"
+      :alt="`${loginConfigItem.name} Icon`"
       :class="{ 'mr-3': isLong }"
     />
     <img
-      v-else-if="!$vuetify.theme.isDark && verifier.logoDark && buttonType !== 'submit'"
-      :src="verifier.logoDark"
-      :alt="`${verifier.name} Icon`"
+      v-else-if="!$vuetify.theme.isDark && loginConfigItem.logoDark && buttonType !== 'submit'"
+      :src="loginConfigItem.logoDark"
+      :alt="`${loginConfigItem.name} Icon`"
       :class="{ 'mr-3': isLong }"
     />
     <v-icon v-else-if="buttonType !== 'submit'" class="text_3--text" :class="{ 'mr-3': isLong }">
@@ -44,7 +46,7 @@ import config from '../../../config'
 
 export default {
   props: {
-    verifier: {
+    loginConfigItem: {
       type: Object,
       default() {
         return {}
@@ -77,13 +79,13 @@ export default {
   },
   computed: {
     formatDescription() {
-      const finalDesc = this.verifier.description ? this.t(this.verifier.description) : this.t('dappLogin.continue')
-      return finalDesc.replace(/{verifier}/gi, this.verifier.name.charAt(0).toUpperCase() + this.verifier.name.slice(1))
+      const finalDesc = this.loginConfigItem.description ? this.t(this.loginConfigItem.description) : this.t('dappLogin.continue')
+      return finalDesc.replace(/{verifier}/gi, this.loginConfigItem.name.charAt(0).toUpperCase() + this.loginConfigItem.name.slice(1))
     },
     iconName() {
-      const normalVerifier = config.loginConfig[this.verifier.verifier]
-      if (normalVerifier) return this.verifier.name.toLowerCase()
-      return this.verifier.typeOfLogin.toLowerCase()
+      const normalVerifier = config.loginConfig[this.loginConfigItem.verifier]
+      if (normalVerifier) return this.loginConfigItem.name.toLowerCase()
+      return this.loginConfigItem.typeOfLogin.toLowerCase()
     },
     hasLightLogo() {
       return config.loginsWithLightLogo.includes(this.iconName)
