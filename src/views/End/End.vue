@@ -177,7 +177,7 @@ export default {
 
       // if there are no app accounts to choose, continue
       if (Object.keys(userDapps).length === 0) {
-        // await this.continueToApp()
+        await this.continueToApp()
       }
     } catch (error) {
       log.error(error, 'something went wrong')
