@@ -138,11 +138,10 @@ export default {
 
       // derive app scoped keys from tkey
       const userDapps = {}
-      if (state.tKey) {
-        const tkey = state.tKey
+      if (state.tKey && state.oAuthPrivateKey) {
         try {
-          const ethAddress = torus.generateAddressFromPrivKey(new BN(tkey, 'hex'))
-          const headers = generateTorusAuthHeaders(tkey, ethAddress)
+          // projects are stored on oAuthPrivateKey but subkey is derived from tkey
+          const headers = generateTorusAuthHeaders(postboxKey.privKey, postboxKey.ethAddress)
           log.info(headers, 'headers')
           const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm`, {
             headers,
@@ -151,7 +150,7 @@ export default {
           const userProjects = response.user_projects ?? []
           userProjects.sort((a, b) => (a.last_login < b.last_login ? 1 : -1))
           userProjects.forEach((project) => {
-            const subKey = subkey(tkey, Buffer.from(project.project_id, 'base64'))
+            const subKey = subkey(state.tKey, Buffer.from(project.project_id, 'base64'))
             const subAddress = torus.generateAddressFromPrivKey(subKey)
             userDapps[subAddress] = project.name
             keys.push({ ethAddress: subAddress, privKey: subKey, accountType: ACCOUNT_TYPE.APP_SCOPED })
