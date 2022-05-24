@@ -281,7 +281,7 @@
         <v-flex v-if="showEncrypted" xs12 mb-2 class="text-right">
           <ShowToolTip :address="encryptedMessage">
             <v-btn small class="copy-encrypted-btn" aria-label="Copy encrypted message">
-              <v-icon class="caption text_2--text" left size="12" v-text="'$vuetify.icons.copy'" />
+              <v-icon class="caption text_2--text" left size="12">$vuetify.icons.copy</v-icon>
               <span class="caption text_2--text">{{ t('dappProvider.copyEncrypted') }}</span>
             </v-btn>
           </ShowToolTip>

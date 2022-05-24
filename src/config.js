@@ -182,7 +182,6 @@ export default {
         showOnDesktop: true,
         showOnMobile: true,
         // For torus only
-        hasLightLogo: false,
         loginProvider: GOOGLE_LOGIN_PROVIDER,
       },
     }),
@@ -201,7 +200,6 @@ export default {
         showOnDesktop: true,
         showOnMobile: true,
         // For torus only
-        hasLightLogo: false,
         loginProvider: FACEBOOK_LOGIN_PROVIDER,
       },
     }),
@@ -225,7 +223,6 @@ export default {
           isVerifierIdCaseSensitive: false,
         },
         // For torus only
-        hasLightLogo: false,
         loginProvider: TWITTER_LOGIN_PROVIDER,
       },
     }),
@@ -244,7 +241,6 @@ export default {
         showOnDesktop: true,
         showOnMobile: true,
         // For torus only
-        hasLightLogo: false,
         loginProvider: DISCORD_LOGIN_PROVIDER,
       },
     }),
@@ -266,7 +262,6 @@ export default {
           connection: 'line',
         },
         // For torus only
-        hasLightLogo: false,
         loginProvider: LINE_LOGIN_PROVIDER,
       },
     }),
@@ -289,7 +284,6 @@ export default {
           connection: 'Reddit',
         },
         // For torus only
-        hasLightLogo: false,
         loginProvider: REDDIT_LOGIN_PROVIDER,
       },
     }),
@@ -311,7 +305,6 @@ export default {
           connection: 'apple',
         },
         // For torus only
-        hasLightLogo: true,
         loginProvider: APPLE_LOGIN_PROVIDER,
       },
     }),
@@ -334,7 +327,6 @@ export default {
           isVerifierIdCaseSensitive: false,
         },
         // For torus only
-        hasLightLogo: true,
         loginProvider: GITHUB_LOGIN_PROVIDER,
       },
     }),
@@ -352,7 +344,6 @@ export default {
         showOnDesktop: true,
         showOnMobile: true,
         // For torus only
-        hasLightLogo: false,
         loginProvider: TWITCH_LOGIN_PROVIDER,
       },
     }),
@@ -374,7 +365,6 @@ export default {
           connection: 'linkedin',
         },
         // For torus only
-        hasLightLogo: false,
         loginProvider: LINKEDIN_LOGIN_PROVIDER,
       },
     }),
@@ -396,7 +386,6 @@ export default {
           connection: 'Wechat',
         },
         // For torus only
-        hasLightLogo: false,
         loginProvider: WECHAT_LOGIN_PROVIDER,
       },
     }),
@@ -418,7 +407,6 @@ export default {
           connection: 'Kakao',
         },
         // For torus only
-        hasLightLogo: false,
         loginProvider: KAKAO_LOGIN_PROVIDER,
       },
     }),
@@ -442,7 +430,6 @@ export default {
           isVerifierIdCaseSensitive: false,
         },
         // For torus only
-        hasLightLogo: true,
         loginProvider: EMAIL_PASSWORDLESS_LOGIN_PROVIDER,
       },
     }),
@@ -466,4 +453,5 @@ export default {
     //   },
     // }),
   },
+  loginsWithLightLogo: [APPLE, GITHUB, JWT],
 }
