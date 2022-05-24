@@ -182,6 +182,7 @@ export default {
     }),
     ...mapGetters({
       wallets: 'walletBalances',
+      userDapps: 'userDapps',
     }),
     userId() {
       if (this.userInfo.typeOfLogin === DISCORD) {
@@ -248,6 +249,9 @@ export default {
     userEmail(account) {
       if (account.accountType === ACCOUNT_TYPE.THRESHOLD) {
         return `OpenLogin ${this.t('accountMenu.wallet')}`
+      }
+      if (account.accountType === ACCOUNT_TYPE.APP_SCOPED) {
+        return this.userDapps[account.address]
       }
       if (account.accountType === ACCOUNT_TYPE.IMPORTED) {
         const index = Object.keys(this.wallet)

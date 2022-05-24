@@ -148,6 +148,8 @@ function calculateBalances(state, y) {
   return { finalBalancesArray, totalPortfolioValueReturn }
 }
 
+const userDapps = (state) => state.userDapps
+
 export default {
   unApprovedTransactions,
   tokenBalances,
@@ -159,4 +161,5 @@ export default {
   getIcon,
   supportedCurrencies,
   filteredContacts,
+  userDapps,
 }
