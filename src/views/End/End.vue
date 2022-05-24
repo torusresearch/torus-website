@@ -147,8 +147,10 @@ export default {
           const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm`, {
             headers,
           })
-          log.info(response, 'user projects from developer dashboard')
-          response.user_projects.forEach((project) => {
+          log.info(response, 'User projects from developer dashboard')
+          const userProjects = response.user_projects ?? []
+          userProjects.sort((a, b) => (a.last_login < b.last_login ? 1 : -1))
+          userProjects.forEach((project) => {
             const subKey = subkey(tkey, Buffer.from(project.project_id, 'base64'))
             const subAddress = torus.generateAddressFromPrivKey(subKey)
             userDapps[subAddress] = project.name
@@ -156,11 +158,6 @@ export default {
           })
         } catch (error) {
           log.error('Failed to derive app-scoped keys', error)
-          try {
-            const errorMsg = await error.json()
-            log.error(errorMsg)
-          } catch {}
-          debugger
         }
       }
       this.accounts = { ...this.accounts, ...userDapps }
@@ -174,7 +171,6 @@ export default {
       const parsedAppState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(appState))))
       log.info(parsedAppState.instanceId, keys, userInfo, postboxKey)
       this.channelId = parsedAppState.instanceId
-      // debugger
 
       // prepare data
       this.broadcastData = { type: POPUP_RESULT, userInfo, keys, postboxKey, userDapps, error: loginError }
