@@ -55,7 +55,7 @@ import config from '../../config'
 import { getOpenLoginInstance } from '../../openlogin'
 import { ACCOUNT_TYPE, APPLE, POPUP_RESULT } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
-import { broadcastChannelOptions } from '../../utils/utils'
+import { broadcastChannelOptions, generateTorusAuthHeaders } from '../../utils/utils'
 
 export default {
   name: 'End',
@@ -142,7 +142,11 @@ export default {
         const tkey = state.tKey
         try {
           const ethAddress = torus.generateAddressFromPrivKey(new BN(tkey, 'hex'))
-          const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm&public_address=${ethAddress}`)
+          const headers = generateTorusAuthHeaders(tkey, ethAddress)
+          log.info(headers, 'headers')
+          const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm`, {
+            headers,
+          })
           log.info(response, 'user projects from developer dashboard')
           response.user_projects.forEach((project) => {
             const subKey = subkey(tkey, Buffer.from(project.project_id, 'base64'))
@@ -152,6 +156,11 @@ export default {
           })
         } catch (error) {
           log.error('Failed to derive app-scoped keys', error)
+          try {
+            const errorMsg = await error.json()
+            log.error(errorMsg)
+          } catch {}
+          debugger
         }
       }
       this.accounts = { ...this.accounts, ...userDapps }
@@ -172,7 +181,7 @@ export default {
 
       // if there are no app accounts to choose, continue
       if (Object.keys(userDapps).length === 0) {
-        await this.continueToApp()
+        // await this.continueToApp()
       }
     } catch (error) {
       log.error(error, 'something went wrong')
