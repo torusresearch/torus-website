@@ -140,7 +140,7 @@ export default {
   },
   computed: {
     mainButtonsLong() {
-      if (this.hasExistingAccount) return []
+      if (this.lastLoginConfigItem) return []
       return this.loginButtonsArray.filter(
         (button) =>
           ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
@@ -150,7 +150,7 @@ export default {
     },
     mainButtons() {
       return this.loginButtonsArray.filter((button) => {
-        const descCheck = (this.hasExistingAccount || !button.description) && button.verifier !== HOSTED_EMAIL_PASSWORDLESS_VERIFIER
+        const descCheck = (this.lastLoginConfigItem || !button.description) && button.verifier !== HOSTED_EMAIL_PASSWORDLESS_VERIFIER
         if (this.viewMoreOptions) {
           return ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) && descCheck
         }
@@ -173,9 +173,6 @@ export default {
       if (this.$vuetify.breakpoint.height >= 1440) return '3.47vh'
       if (this.$vuetify.breakpoint.height >= 1080) return '4.6vh'
       return '40'
-    },
-    hasExistingAccount() {
-      return this.lastLoginInfo.typeOfLogin && this.lastLoginInfo.verifierId
     },
     lastLoginVerifierId() {
       const { email } = this.lastLoginInfo

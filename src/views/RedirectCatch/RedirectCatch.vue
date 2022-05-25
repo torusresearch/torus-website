@@ -2,7 +2,7 @@
   <v-container fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <BoxLoader />
+        <BoxLoader :force-spinner="true" />
         <div v-if="showCloseText" class="redirect-title font-weight-bold mt-2">
           {{ t('dappGeneral.loading') }}
         </div>

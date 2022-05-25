@@ -2,7 +2,7 @@
   <v-container fluid fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <BoxLoader v-if="loading" :white-label="whiteLabel" />
+        <BoxLoader v-if="loading" :white-label="whiteLabel" :is-custom-verifier="isCustomVerifier" />
         <div v-else>
           <div class="text-h5 font-weight-bold mb-8">{{ t('login.selectAnAccount') }}</div>
           <div class="account-list mb-8">
@@ -67,6 +67,7 @@ export default {
       broadcastData: {},
       channelId: '',
       accounts: {},
+      isCustomVerifier: false,
     }
   },
   async created() {
@@ -86,6 +87,7 @@ export default {
         const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
         whiteLabel = appStateParams.whiteLabel || {}
         loginConfig = appStateParams.loginConfig || {}
+        this.isCustomVerifier = Object.keys(loginConfig).length > 0
       }
 
       this.whiteLabel = whiteLabel
