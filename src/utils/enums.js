@@ -541,6 +541,7 @@ export const ACCOUNT_TYPE = {
   NORMAL: 'normal',
   THRESHOLD: 'threshold',
   IMPORTED: 'imported',
+  APP_SCOPED: 'app_scoped',
 }
 
 export const OLD_ERC721_LIST = {
