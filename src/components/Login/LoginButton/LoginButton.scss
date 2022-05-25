@@ -42,6 +42,7 @@
 }
 
 .login-btn.is-long {
+  padding: 8px 9.5vw;
   background: #ffffff;
   height: unset;
   min-height: 56px;
@@ -49,7 +50,7 @@
     justify-content: left;
   }
   &.is-popup {
-    padding: 8px 30px;
+    padding: 8px 8vw;
   }
 }
 
@@ -68,5 +69,41 @@
     &.is-popup {
       padding: 8px 38px;
     }
+  }
+}
+
+@media only screen and (min-width: 480px) {
+  .login-btn.is-long {
+    padding: 8px 46px;
+  }
+}
+
+@media only screen and (min-width: 600px) {
+  .login-btn.is-long {
+    padding: 8px 5vw;
+  }
+}
+
+@media only screen and (min-width: 750px) {
+  .login-btn.is-long {
+    padding: 8px 5.4vw;
+  }
+}
+
+@media only screen and (min-width: 870px) {
+  .login-btn.is-long {
+    padding: 8px 5.0vw;
+  }
+}
+
+@media only screen and (min-width: 960px) {
+  .login-btn.is-long {
+    padding: 8px 4vw;
+  }
+}
+
+@media only screen and (min-width: 1110px) {
+  .login-btn.is-long {
+    padding: 8px 44px;
   }
 }
