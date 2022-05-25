@@ -7,6 +7,7 @@
           :email="lastLoginVerifierId"
           :is-existing-login="true"
           :is-long="true"
+          :is-popup="isPopup"
           @click="loginExisting"
         />
       </v-col>

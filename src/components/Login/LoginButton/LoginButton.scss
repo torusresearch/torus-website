@@ -47,11 +47,22 @@
     min-height: 56px;
     padding: 8px 9.5vw;
     justify-content: left;
+    .last-login-email {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 53vw;
+      max-width: 254px;
+      white-space: nowrap;
+    }
     &.no-icon {
       justify-content: center;
     }
     &.is-popup {
-      padding: 8px 30px;
+      padding: 8px 8.5vw;
+      .last-login-email {
+        width: 48vw;
+        max-width: 220px;
+      }
     }
   }
 
@@ -65,12 +76,18 @@
 @media only screen and (min-width: 480px) {
   .login-btn.is-long {
     padding: 8px 46px;
+    &.is-popup {
+      padding: 8px 40px;
+    }
   }
 }
 
 @media only screen and (min-width: 600px) {
   .login-btn.is-long {
     padding: 8px 5vw;
+    .last-login-email {
+      width: 30vw;
+    }
   }
 }
 
@@ -82,13 +99,16 @@
 
 @media only screen and (min-width: 870px) {
   .login-btn.is-long {
-    padding: 8px 5.0vw;
+    padding: 8px 5vw;
   }
 }
 
 @media only screen and (min-width: 960px) {
   .login-btn.is-long {
     padding: 8px 4vw;
+    .last-login-email {
+      width: 22vw;
+    }
   }
 }
 
