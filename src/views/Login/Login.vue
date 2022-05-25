@@ -7,7 +7,7 @@
             <v-flex v-if="$vuetify.breakpoint.xsOnly" class="mobile-login-container" xs12>
               <section class="py-10 py-sm-12">
                 <v-layout wrap>
-                  <v-flex class="mb-8" xs10 sm8 ml-auto mr-auto>
+                  <v-flex class="mb-8" xs10 ml-auto mr-auto>
                     <img
                       height="25"
                       :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
@@ -15,7 +15,9 @@
                     />
                   </v-flex>
                   <LoginTitle class="mb-6" />
-                  <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
+                  <v-flex xs10 mx-auto mt-4>
+                    <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
+                  </v-flex>
                   <LoginFooter :authenticators="thirdPartyAuthenticators" />
                 </v-layout>
               </section>
@@ -34,7 +36,7 @@
             <!-- Desktop -->
             <v-flex v-else xs12>
               <v-layout wrap>
-                <v-flex class="mb-10" xs10 sm8 ml-auto mr-auto>
+                <v-flex mt-4 mb-10 xs10 sm8 ml-auto mr-auto>
                   <img height="25" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                 </v-flex>
                 <LoginTitle />

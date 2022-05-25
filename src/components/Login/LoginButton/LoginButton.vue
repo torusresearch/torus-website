@@ -1,21 +1,15 @@
 <template>
   <button
     v-ripple="{ center: true }"
-    class="gmt-login login-btn text_2--text"
+    class="gmt-login login-btn"
     :disabled="disabled"
-    :type="buttonType"
-    :class="[
-      { active, 'theme--dark': $vuetify.theme.dark },
-      `gmt-login-${iconName}`,
-      { 'is-long': isLong },
-      { 'is-popup': isPopup },
-      { 'no-icon': noIcon },
-    ]"
+    :class="buttonClass"
+    :style="buttonStyles"
     @mouseover="onMouseover"
     @click="onClick"
   >
     <img
-      v-if="(active || $vuetify.breakpoint.xsOnly) && buttonType !== 'submit'"
+      v-if="(active || $vuetify.breakpoint.xsOnly) && buttonType !== 'submit' && !isExistingLogin"
       :src="
         loginConfigItem.logoHover || require(`../../../assets/img/icons/login-${iconName}${hasLightLogo && $vuetify.theme.dark ? '-light' : ''}.svg`)
       "
@@ -23,7 +17,7 @@
       :class="{ 'mr-3': isLong }"
     />
     <img
-      v-else-if="$vuetify.theme.isDark && loginConfigItem.logoLight && buttonType !== 'submit'"
+      v-else-if="($vuetify.theme.isDark || isExistingLogin) && loginConfigItem.logoLight && buttonType !== 'submit'"
       :src="loginConfigItem.logoLight"
       :alt="`${loginConfigItem.name} Icon`"
       :class="{ 'mr-3': isLong }"
@@ -34,15 +28,22 @@
       :alt="`${loginConfigItem.name} Icon`"
       :class="{ 'mr-3': isLong }"
     />
-    <v-icon v-else-if="buttonType !== 'submit'" class="text_3--text" :class="{ 'mr-3': isLong }">
+    <v-icon v-else-if="buttonType !== 'submit'" :class="[{ 'mr-3': isLong }, isExistingLogin ? 'white--text' : 'text_3--text']">
       {{ `$vuetify.icons.${iconName}` }}
     </v-icon>
-    <span v-if="isLong">{{ formatDescription }}</span>
+
+    <div v-if="isLong" class="button-text">
+      <div>{{ formatDescription }}</div>
+      <div v-if="email" class="font-weight-bold last-login-email">
+        {{ email }}
+      </div>
+    </div>
   </button>
 </template>
 
 <script>
 import config from '../../../config'
+import { capitalizeFirstLetter } from '../../../utils/utils'
 
 export default {
   props: {
@@ -76,10 +77,23 @@ export default {
       type: Boolean,
       default: false,
     },
+    isExistingLogin: {
+      type: Boolean,
+      default: false,
+    },
+    email: {
+      type: String,
+      default: '',
+    },
   },
   computed: {
     formatDescription() {
-      const finalDesc = this.loginConfigItem.description ? this.t(this.loginConfigItem.description) : this.t('dappLogin.continue')
+      let finalDesc = ''
+      if (this.isExistingLogin) {
+        finalDesc = this.t('dappLogin.continueWith').replace(/{verifier}/gi, capitalizeFirstLetter(this.loginConfigItem.name))
+      } else {
+        finalDesc = this.loginConfigItem.description ? this.t(this.loginConfigItem.description) : this.t('dappLogin.continue')
+      }
       return finalDesc.replace(/{verifier}/gi, this.loginConfigItem.name.charAt(0).toUpperCase() + this.loginConfigItem.name.slice(1))
     },
     iconName() {
@@ -89,6 +103,18 @@ export default {
     },
     hasLightLogo() {
       return config.loginsWithLightLogo.includes(this.iconName)
+    },
+    buttonClass() {
+      return [
+        { active: this.active, 'theme--dark': this.$vuetify.theme.dark, 'is-long': this.isLong, 'is-popup': this.isPopup, 'no-icon': this.noIcon },
+        `gmt-login-${this.iconName}`,
+        this.isExistingLogin ? 'white--text' : 'text_2--text',
+      ]
+    },
+    buttonStyles() {
+      return {
+        background: this.isExistingLogin ? 'var(--v-torusBrand1-base)' : undefined,
+      }
     },
   },
   methods: {
