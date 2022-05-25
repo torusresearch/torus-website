@@ -151,9 +151,9 @@ export default {
           userProjects.sort((a, b) => (a.last_login < b.last_login ? 1 : -1))
           userProjects.forEach((project) => {
             const subKey = subkey(state.tKey, Buffer.from(project.project_id, 'base64'))
-            const subAddress = torus.generateAddressFromPrivKey(subKey)
-            userDapps[subAddress] = project.name
-            keys.push({ ethAddress: subAddress, privKey: subKey, accountType: ACCOUNT_TYPE.APP_SCOPED })
+            const subAddress = torus.generateAddressFromPrivKey(new BN(subKey, 'hex'))
+            userDapps[subAddress] = `${project.name} (${project.hostname})`
+            keys.push({ ethAddress: subAddress, privKey: subKey.padStart(64, '0'), accountType: ACCOUNT_TYPE.APP_SCOPED })
           })
         } catch (error) {
           log.error('Failed to derive app-scoped keys', error)
