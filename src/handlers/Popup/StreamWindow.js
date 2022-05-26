@@ -41,9 +41,8 @@ class StreamWindow {
       let popupSuccess = false
       bc.addEventListener('message', (ev) => {
         const { preopenInstanceId: openedId, message } = ev.data
-        popupSuccess = true
         if (this.preopenInstanceId === openedId && message === 'popup_loaded') {
-          // if (this.writeInterval) clearInterval(this.writeInterval)
+          popupSuccess = true
           log.info(ev.data, getIFrameOrigin())
           bc.postMessage({
             data: {
