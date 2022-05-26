@@ -79,6 +79,7 @@ const {
   VUE_APP_OPENLOGIN_URL,
   VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
   VUE_APP_PASSWORDLESS_DOMAIN,
+  VUE_APP_DEVELOPER_DASHBOARD_URL,
 } = process.env
 
 const baseUrl = window.location.origin
@@ -114,7 +115,7 @@ export default {
   openLoginClientId: 'BCY9aYsh8iGshQuzNjBbONYE-tKD0JM389l87IiMOVeOU1TBmRaZphKOyphkUpo41fuSMnO6QRlloxCV-3nt8dU',
   openLoginUrl: VUE_APP_OPENLOGIN_URL,
   openLoginOriginSig: VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
-
+  developerDashboardUrl: VUE_APP_DEVELOPER_DASHBOARD_URL,
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
 
@@ -181,7 +182,6 @@ export default {
         showOnDesktop: true,
         showOnMobile: true,
         // For torus only
-        hasLightLogo: false,
         loginProvider: GOOGLE_LOGIN_PROVIDER,
       },
     }),
@@ -200,7 +200,6 @@ export default {
         showOnDesktop: true,
         showOnMobile: true,
         // For torus only
-        hasLightLogo: false,
         loginProvider: FACEBOOK_LOGIN_PROVIDER,
       },
     }),
@@ -224,7 +223,6 @@ export default {
           isVerifierIdCaseSensitive: false,
         },
         // For torus only
-        hasLightLogo: false,
         loginProvider: TWITTER_LOGIN_PROVIDER,
       },
     }),
@@ -243,7 +241,6 @@ export default {
         showOnDesktop: true,
         showOnMobile: true,
         // For torus only
-        hasLightLogo: false,
         loginProvider: DISCORD_LOGIN_PROVIDER,
       },
     }),
@@ -265,7 +262,6 @@ export default {
           connection: 'line',
         },
         // For torus only
-        hasLightLogo: false,
         loginProvider: LINE_LOGIN_PROVIDER,
       },
     }),
@@ -288,7 +284,6 @@ export default {
           connection: 'Reddit',
         },
         // For torus only
-        hasLightLogo: false,
         loginProvider: REDDIT_LOGIN_PROVIDER,
       },
     }),
@@ -310,7 +305,6 @@ export default {
           connection: 'apple',
         },
         // For torus only
-        hasLightLogo: true,
         loginProvider: APPLE_LOGIN_PROVIDER,
       },
     }),
@@ -333,7 +327,6 @@ export default {
           isVerifierIdCaseSensitive: false,
         },
         // For torus only
-        hasLightLogo: true,
         loginProvider: GITHUB_LOGIN_PROVIDER,
       },
     }),
@@ -351,7 +344,6 @@ export default {
         showOnDesktop: true,
         showOnMobile: true,
         // For torus only
-        hasLightLogo: false,
         loginProvider: TWITCH_LOGIN_PROVIDER,
       },
     }),
@@ -373,7 +365,6 @@ export default {
           connection: 'linkedin',
         },
         // For torus only
-        hasLightLogo: false,
         loginProvider: LINKEDIN_LOGIN_PROVIDER,
       },
     }),
@@ -395,7 +386,6 @@ export default {
           connection: 'Wechat',
         },
         // For torus only
-        hasLightLogo: false,
         loginProvider: WECHAT_LOGIN_PROVIDER,
       },
     }),
@@ -417,7 +407,6 @@ export default {
           connection: 'Kakao',
         },
         // For torus only
-        hasLightLogo: false,
         loginProvider: KAKAO_LOGIN_PROVIDER,
       },
     }),
@@ -441,7 +430,6 @@ export default {
           isVerifierIdCaseSensitive: false,
         },
         // For torus only
-        hasLightLogo: true,
         loginProvider: EMAIL_PASSWORDLESS_LOGIN_PROVIDER,
       },
     }),
@@ -465,4 +453,5 @@ export default {
     //   },
     // }),
   },
+  loginsWithLightLogo: [APPLE, GITHUB, JWT],
 }

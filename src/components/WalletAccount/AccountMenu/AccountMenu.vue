@@ -52,17 +52,17 @@
           <div class="ml-auto">
             <span class="mr-1">
               <ShowToolTip :is-btn="true" :address="acc.address">
-                <v-icon size="12" class="torusFont2--text" v-text="'$vuetify.icons.copy'" />
+                <v-icon size="12" class="torusFont2--text">$vuetify.icons.copy</v-icon>
               </ShowToolTip>
             </span>
             <span class="mr-1">
               <ExportQrCode :custom-address="acc.address">
-                <v-icon class="torusFont2--text" x-small v-text="'$vuetify.icons.qr'" />
+                <v-icon class="torusFont2--text" x-small>$vuetify.icons.qr</v-icon>
               </ExportQrCode>
             </span>
             <span>
               <v-btn icon small class="etherscan-lnk" :href="etherscanAddressLink(acc.address)" target="_blank" rel="noreferrer noopener">
-                <v-icon class="torusFont2--text" x-small v-text="'$vuetify.icons.link'" />
+                <v-icon class="torusFont2--text" x-small>$vuetify.icons.link</v-icon>
               </v-btn>
             </span>
           </div>
@@ -73,7 +73,7 @@
     <v-list class="ml-1 py-1">
       <v-list-item id="import-account-btn" @click="accountImportDialog = true">
         <v-list-item-action class="mr-2">
-          <v-icon size="24" class="text_2--text" v-text="'$vuetify.icons.add'" />
+          <v-icon size="24" class="text_2--text">$vuetify.icons.add</v-icon>
         </v-list-item-action>
         <v-list-item-content class="caption font-weight-bold text_1--text">{{ t('accountMenu.importAccount') }}</v-list-item-content>
       </v-list-item>
@@ -94,7 +94,7 @@
         :to="headerItem.route"
       >
         <v-list-item-action class="mr-1" :style="{ marginLeft: '3px' }">
-          <v-icon :size="headerItem.icon === 'transaction' ? 13 : 15" class="text_2--text" v-text="`$vuetify.icons.${headerItem.icon}`" />
+          <v-icon :size="headerItem.icon === 'transaction' ? 13 : 15" class="text_2--text">{{ `$vuetify.icons.${headerItem.icon}` }}</v-icon>
         </v-list-item-action>
         <v-list-item-content>
           <v-list-item-title class="caption font-weight-bold text_1--text">{{ headerItem.display }}</v-list-item-title>
@@ -105,7 +105,7 @@
     <v-list class="ml-1">
       <v-list-item href="https://docs.tor.us/#users" target="_blank" rel="noreferrer noopener">
         <v-list-item-action class="mr-2 justify-center">
-          <v-icon size="20" class="text_2--text" v-text="'$vuetify.icons.info'" />
+          <v-icon size="20" class="text_2--text">$vuetify.icons.info</v-icon>
         </v-list-item-action>
         <v-list-item-content class="caption font-weight-bold">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
       </v-list-item>
@@ -182,6 +182,7 @@ export default {
     }),
     ...mapGetters({
       wallets: 'walletBalances',
+      userDapps: 'userDapps',
     }),
     userId() {
       if (this.userInfo.typeOfLogin === DISCORD) {
@@ -248,6 +249,9 @@ export default {
     userEmail(account) {
       if (account.accountType === ACCOUNT_TYPE.THRESHOLD) {
         return `OpenLogin ${this.t('accountMenu.wallet')}`
+      }
+      if (account.accountType === ACCOUNT_TYPE.APP_SCOPED) {
+        return this.userDapps[account.address]
       }
       if (account.accountType === ACCOUNT_TYPE.IMPORTED) {
         const index = Object.keys(this.wallet)
