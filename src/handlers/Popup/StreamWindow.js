@@ -81,7 +81,7 @@ class StreamWindow {
       let currentDelay = bc.type === 'server' ? 1000 : 200
 
       const recursiveFn = async () => {
-        if (!popupSuccess) {
+        if (!popupSuccess && !this.closed) {
           const localResponse = await postMsg()
           if (bc.type === 'server') {
             const serverResponse = localResponse
