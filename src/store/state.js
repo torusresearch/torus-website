@@ -90,6 +90,7 @@ const initialState = {
   isTkeySeedPhraseInputRequired: false,
   ethTransferOnly: config.ethTransferOnly,
   lastLoginInfo: {},
+  userDapps: {},
 }
 
 export default initialState
