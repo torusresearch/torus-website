@@ -164,6 +164,14 @@ export default {
     state.embedState = { ...state.embedState, buttonPosition: payload || 'bottom-left' }
   },
   async setWhiteLabel(state, payload) {
+    if (!payload && storageAvailable('sessionStorage')) {
+      state.whiteLabel = {
+        isActive: false,
+      }
+      localThemeSet(THEME_LIGHT_BLUE_NAME, state)
+      sessionStorage.removeItem('torus-white-label')
+      return
+    }
     state.whiteLabel = {
       ...state.whiteLabel,
       isActive: true,
