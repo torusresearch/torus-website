@@ -37,7 +37,7 @@
     <v-icon v-else-if="buttonType !== 'submit'" class="text_3--text" :class="{ 'mr-3': isLong }">
       {{ `$vuetify.icons.${iconName}` }}
     </v-icon>
-    <span v-if="isLong">{{ formatDescription }}</span>
+    <span v-if="isLong" class="login-btn__text">{{ formatDescription }}</span>
   </button>
 </template>
 
