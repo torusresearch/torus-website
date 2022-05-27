@@ -13,6 +13,24 @@
   text-align: left;
   position: relative;
 
+  .login-btn__text {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5rem;
+    letter-spacing: 0.03125em;
+  }
+
+  .login-btn__text--existing {
+    font-size: 0.875rem;
+    line-height: 1.2rem;
+  }
+
+  img,
+  ::v-deep .v-icon .v-icon__component {
+    width: 26px;
+    height: 26px;
+  }
+
   &.theme--dark {
     background: #2f3136;
     border: 1px solid #404145;
@@ -38,13 +56,12 @@
     opacity: 0.24;
   }
 
-  &:disabled .button-text {
+  &:disabled .login-btn__text {
     opacity: 0.4;
   }
 
   &.is-long {
     height: unset;
-    min-height: 56px;
     padding: 8px 9.5vw;
     justify-content: left;
     .last-login-email {
@@ -64,12 +81,6 @@
         max-width: 220px;
       }
     }
-  }
-
-  img,
-  ::v-deep .v-icon .v-icon__component {
-    width: 26px;
-    height: 26px;
   }
 }
 

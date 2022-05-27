@@ -32,7 +32,7 @@
       {{ `$vuetify.icons.${iconName}` }}
     </v-icon>
 
-    <div v-if="isLong" class="button-text">
+    <div v-if="isLong" class="login-btn__text" :class="{ 'login-btn__text--existing': isExistingLogin }">
       <div>{{ formatDescription }}</div>
       <div v-if="email" class="font-weight-bold last-login-email">
         {{ email }}
@@ -88,12 +88,9 @@ export default {
   },
   computed: {
     formatDescription() {
-      let finalDesc = ''
-      if (this.isExistingLogin) {
-        finalDesc = this.t('dappLogin.continueWith').replace(/{verifier}/gi, capitalizeFirstLetter(this.loginConfigItem.name))
-      } else {
-        finalDesc = this.loginConfigItem.description ? this.t(this.loginConfigItem.description) : this.t('dappLogin.continue')
-      }
+      if (this.isExistingLogin) return this.t('dappLogin.continueWith').replace(/{verifier}/gi, capitalizeFirstLetter(this.loginConfigItem.name))
+
+      const finalDesc = this.loginConfigItem.description ? this.t(this.loginConfigItem.description) : this.t('dappLogin.continue')
       return finalDesc.replace(/{verifier}/gi, this.loginConfigItem.name.charAt(0).toUpperCase() + this.loginConfigItem.name.slice(1))
     },
     iconName() {
