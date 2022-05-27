@@ -54,9 +54,8 @@
   }
 }
 
-.login-btn:disabled {
-  background-color: rgba(0, 0, 0, 0.12) !important;
-  color: rgba(0, 0, 0, 0.26) !important;
+.login-btn:disabled .login-btn__text {
+  opacity: 0.4;
 }
 
 @media only screen and (min-width: 425px) {
@@ -92,7 +91,7 @@
 
 @media only screen and (min-width: 870px) {
   .login-btn.is-long {
-    padding: 8px 5.0vw;
+    padding: 8px 5vw;
   }
 }
 
