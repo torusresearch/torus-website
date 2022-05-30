@@ -22,6 +22,7 @@ import log from 'loglevel'
 
 import BoxLoader from '../../components/helpers/BoxLoader'
 import { getOpenLoginInstance } from '../../openlogin'
+import { getIFrameOriginObject } from '../../utils/utils'
 
 export default {
   name: 'Start',
@@ -30,14 +31,18 @@ export default {
     return {
       whiteLabel: undefined,
       isCustomVerifier: false,
+      iframeOrigin: {
+        href: '',
+        hostname: '',
+      },
     }
   },
   computed: {
     dappName() {
-      return this.isCustomVerifier ? this.whiteLabel?.name : 'Web3Auth'
+      return this.isCustomVerifier ? this.whiteLabel?.name || this.iframeOrigin.hostname : 'Web3Auth'
     },
     dappUrl() {
-      return this.isCustomVerifier ? this.whiteLabel?.url : 'https://app.tor.us'
+      return this.isCustomVerifier ? this.whiteLabel?.url || this.iframeOrigin.href : 'https://app.tor.us'
     },
     showConstructing() {
       return (this.whiteLabel?.isActive && this.isCustomVerifier && this.dappName && this.dappUrl) || !this.whiteLabel.isActive || !this.whiteLabel
@@ -49,6 +54,7 @@ export default {
       const stateParams = JSON.parse(safeatob(state))
       log.info('logging in with', loginProvider, state, skipTKey, rest)
       const { whiteLabel, loginConfig = {} } = stateParams
+      this.iframeOrigin = getIFrameOriginObject()
       this.whiteLabel = whiteLabel
       this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
