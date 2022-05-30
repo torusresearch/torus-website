@@ -105,7 +105,7 @@
     "@babel/eslint-parser": "^7.17.0",
     "@babel/eslint-plugin": "^7.17.7",
     "@babel/plugin-proposal-class-properties": "^7.17.12",
-    "@babel/preset-env": "^7.18.0",
+    "@babel/preset-env": "^7.18.2",
     "@babel/register": "^7.17.7",
     "@sentry/cli": "^1.74.3",
     "@vue/cli-plugin-babel": "^5.0.4",
