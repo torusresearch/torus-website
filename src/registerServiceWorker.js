@@ -116,7 +116,7 @@ function checkValidServiceWorker(swUrl, config) {
         navigator.serviceWorker.ready
           .then((registration) => registration.unregister())
           .then(() => {
-            if (isMain) window.location.reload()
+            if (isMain && !window.loginInProgress) window.location.reload()
           })
           .catch(log.error)
       } else {
