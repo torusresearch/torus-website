@@ -96,9 +96,9 @@
       </v-layout>
     </template>
     <template v-else>
-      <v-container class="spinner" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
+      <v-container class="spinner" fluid :class="$vuetify.theme.dark ? 'torus-dark' : ''">
         <component :is="activeLoader" />
-        <p class="bottom-text">
+        <p class="bottom-text text-body1 text-center font-weight-medium">
           {{ t('login.loader') }}
         </p>
       </v-container>

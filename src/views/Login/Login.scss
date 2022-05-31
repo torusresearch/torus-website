@@ -87,13 +87,6 @@ html {
   .bottom-text {
     position: absolute;
     bottom: 3rem;
-    font-size: 1rem!important;
-    font-weight: 500;
-    line-height: 1.5rem;
-    left: 1rem;
-    right: 1rem;
-    text-align: center;
-    letter-spacing: .03125em!important;
-    font-family: Roboto,sans-serif!important;
+    padding: 0 1rem;
   }
 }
