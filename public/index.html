@@ -62,6 +62,12 @@
       .skeleton-holder {
         display: none;
       }
+
+      @media screen and (max-width: 150px) {
+        .crisp-client {
+          display: none;
+        }
+      }
     </style>
   </head>
 
@@ -509,7 +515,6 @@
       } else if (/\/end/i.test(redirectPath) || /\/start/i.test(redirectPath)) {
         selectedLoader = ''
       }
-      
       if (selectedLoader) {
         const loaderElement = document.querySelector('#' + selectedLoader)
         if (theme === 'dark') {
