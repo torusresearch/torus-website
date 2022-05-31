@@ -96,7 +96,12 @@
       </v-layout>
     </template>
     <template v-else>
-      <component :is="activeLoader" />
+      <v-container class="spinner" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
+        <component :is="activeLoader" />
+        <p class="bottom-text">
+          {{ t('login.loader') }}
+        </p>
+      </v-container>
     </template>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
@@ -109,6 +114,7 @@
 import log from 'loglevel'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
+import BoxLoader from '../../components/helpers/BoxLoader'
 import LoginButtons from '../../components/Login/LoginButtons'
 import LoginFooter from '../../components/Login/LoginFooter'
 import LoginSlide from '../../components/Login/LoginSlide'
@@ -119,8 +125,6 @@ import {
   WalletActivityLoaderMobile,
   WalletCollectiblesLoader,
   WalletCollectiblesLoaderMobile,
-  WalletHomeLoader,
-  WalletHomeLoaderMobile,
   WalletLoginLoader,
   WalletLoginLoaderMobile,
   WalletSettingsLoader,
@@ -178,7 +182,7 @@ export default {
       if (/^\/wallet\/home\/collectibles/.test(redirectPath)) {
         return this.$vuetify.breakpoint.xsOnly ? WalletCollectiblesLoaderMobile : WalletCollectiblesLoader
       }
-      return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
+      return BoxLoader
     },
     thirdPartyAuthenticators() {
       return thirdPartyAuthenticators(this.loginConfig)
