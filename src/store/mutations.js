@@ -234,6 +234,9 @@ export default {
     state.isTkeySeedPhraseInputRequired = payload
   },
   setLoginInProgress(state, payload) {
+    if (typeof window != 'undefined') {
+      window.loginInProcess = payload
+    }
     state.embedState = { ...state.embedState, loginInProgress: payload }
   },
   setAnnouncements(state, payload) {
