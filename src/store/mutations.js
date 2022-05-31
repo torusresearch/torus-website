@@ -235,7 +235,7 @@ export default {
   },
   setLoginInProgress(state, payload) {
     if (typeof window != 'undefined') {
-      window.loginInProcess = payload
+      window.loginInProgress = payload
     }
     state.embedState = { ...state.embedState, loginInProgress: payload }
   },
