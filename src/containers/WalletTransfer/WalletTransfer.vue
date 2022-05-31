@@ -148,9 +148,15 @@
                       @update:search-input="listenInput"
                     >
                       <template v-if="apiStreamSupported" #append>
-                        <v-chip v-show="toAddress && selectedVerifier === bitVerifier" class="address-chip">
+                        <v-chip v-if="isBitMode && toAddress && selectedVerifier === bitVerifier" class="address-chip">
                           <v-avatar class="accent white--text">
-                            <img class="address-logo" :src="addressLogoUrl" />
+                            <img
+                              class="address-logo"
+                              :src="addressLogoUrl"
+                              onerror="if (!this.src.includes('/images/logos/bitIcon.png'))
+                              this.src = '/images/logos/bitIcon.png';"
+                              alt=""
+                            />
                           </v-avatar>
                           {{ bitSelectedAddress() }}
                         </v-chip>
@@ -951,15 +957,14 @@ export default {
       if (input == null) {
         return
       }
-      this.contactSelected = input
-
       // check tail of .bit begin
-      this.multipleAddress = []
-      this.bitError = ''
-      this.toAddress = ''
-      this.toEthAddress = ''
-      let addressCount = 0
       if (new RegExp(`${this.bitTail}$`).test(input)) {
+        this.contactSelected = input
+        this.multipleAddress = []
+        this.toAddress = ''
+        this.bitError = ''
+        this.toEthAddress = ''
+        let addressCount = 0
         const multipleAddress = []
         this.theBitAddress = input
         this.selectedVerifier = BIT
@@ -1007,14 +1012,11 @@ export default {
           this.multipleAddress = multipleAddress
         } else {
           this.bitError = 'walletSettings.notAnyBitAddress'
-          this.$refs.form.validate()
         }
+        this.$refs.form.validate()
         // .bit end
       } else {
         this.isBitMode = false
-      }
-      if (!this.bitError && addressCount <= 1) {
-        this.toEthAddress = await this.calculateEthAddress()
       }
     },
     bitSelectedAddress() {
@@ -1214,9 +1216,10 @@ export default {
           this.$refs.form.validate()
         }
       } else if (this.selectedVerifier === BIT) {
-        if (this.toAddress) {
+        try {
           toAddress = toChecksumAddress(this.toAddress)
-        } else {
+        } catch (error) {
+          log.error('invalidBit', this.toAddress, error)
           this.bitError = 'walletSettings.invalidBit'
           this.$refs.form.validate()
         }
