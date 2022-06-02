@@ -41,6 +41,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    delay: {
+      type: Number,
+      default: 500,
+    },
   },
   data() {
     return {
