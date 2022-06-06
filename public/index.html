@@ -467,8 +467,12 @@
               if (whiteLabelData.theme) {
                 theme = whiteLabelData.theme.isDark ? 'dark' : 'light'
                 if (whiteLabelData.theme.colors && whiteLabelData.theme.colors.torusBrand1) {
-                  const beats = document.querySelectorAll('.spinner .beat')
-                  beats.forEach((beat) => (beat.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1))
+                  const redirectSpinner = document.querySelector('#skeleton-redirect-spinner')
+                  const redirectSpinnerHead = document.querySelector('#skeleton-redirect-spinner .head')
+                  const redirectSpinnerMask = document.querySelector('#skeleton-redirect-spinner .mask')
+                  redirectSpinner.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1
+                  redirectSpinner.style.background = `conic-gradient(transparent, ${whiteLabelData.theme.colors.torusBrand1})`
+                  redirectSpinnerHead.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1
                 }
               }
             } catch (error) {
