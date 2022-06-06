@@ -96,7 +96,7 @@
       >
         <template #loading>
           <div>
-            <BoxLoader class="mt-5 mb-2" />
+            <BoxLoader :force-spinner="true" :size="50" class="mt-5 mb-2" />
             <div>{{ redirectUrl ? t('walletDiscover.redirecting').replace(/\{url\}/gi, redirectUrl.href) : t('walletDiscover.loading') }}</div>
           </div>
         </template>

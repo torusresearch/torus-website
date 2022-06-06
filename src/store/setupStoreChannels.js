@@ -75,7 +75,11 @@ if (!isMain) {
     if (name === 'init_stream') {
       VuexStore.commit('setButtonPosition', buttonPosition)
       VuexStore.commit('setAPIKey', apiKey)
-      if (Object.keys(whiteLabel).length > 0) VuexStore.commit('setWhiteLabel', whiteLabel)
+      if (Object.keys(whiteLabel).length > 0) {
+        VuexStore.commit('setWhiteLabel', whiteLabel)
+      } else {
+        VuexStore.commit('setWhiteLabel', undefined)
+      }
       VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
       VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
       VuexStore.commit('setSkipTKey', skipTKey)

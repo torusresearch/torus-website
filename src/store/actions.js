@@ -430,6 +430,7 @@ export default {
         skipTKey: state.embedState.skipTKey,
         whiteLabel,
         loginConfigItem: currentVerifierConfig,
+        origin: getIFrameOriginObject(),
       })
       const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
       if (error) {

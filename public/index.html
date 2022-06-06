@@ -80,18 +80,10 @@
       <!-- REDIRECT LOADER -->
       <div id="skeleton-redirect" class="redirect-skeleton-container skeleton-holder">
         <div class="redirect-skeleton-content">
-          <div class="spinner content">
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
+          <div id="skeleton-redirect-spinner" class="spinner">
+            <div class="head"></div>
+            <div class="mask"></div>
           </div>
-          <!-- <h1 class="title content">Loading</h1> -->
         </div>
       </div>
 
@@ -475,8 +467,12 @@
               if (whiteLabelData.theme) {
                 theme = whiteLabelData.theme.isDark ? 'dark' : 'light'
                 if (whiteLabelData.theme.colors && whiteLabelData.theme.colors.torusBrand1) {
-                  const beats = document.querySelectorAll('.spinner .beat')
-                  beats.forEach((beat) => (beat.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1))
+                  const redirectSpinner = document.querySelector('#skeleton-redirect-spinner')
+                  const redirectSpinnerHead = document.querySelector('#skeleton-redirect-spinner .head')
+                  const redirectSpinnerMask = document.querySelector('#skeleton-redirect-spinner .mask')
+                  redirectSpinner.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1
+                  redirectSpinner.style.background = `conic-gradient(transparent, ${whiteLabelData.theme.colors.torusBrand1})`
+                  redirectSpinnerHead.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1
                 }
               }
             } catch (error) {
@@ -507,11 +503,12 @@
       } else if (/\/popup/.test(redirectPath) || /\/confirm/.test(redirectPath)) {
         selectedLoader = 'skeleton-confirm'
       } else if (/\/redirect/.test(redirectPath)) {
-        document.querySelector('html').style.height = '100%'
-        document.querySelector('body').style.height = '100%'
-        document.querySelector('#app').style.height = '100%'
-        document.querySelector('#app').style.backgroundColor = theme === 'dark' ? '#24252A' : '#FCFCFC'
-        selectedLoader = 'skeleton-redirect'
+      document.querySelector('html').style.height = '100%'
+      document.querySelector('body').style.height = '100%'
+      document.querySelector('#app').style.height = '100%'
+      document.querySelector('#app').style.backgroundColor = theme === 'dark' ? '#24252A' : '#FCFCFC'
+      document.querySelector('#skeleton-redirect-spinner .mask').style.backgroundColor = theme === 'dark' ? '#24252A' : '#FCFCFC'
+      selectedLoader = 'skeleton-redirect'
       } else if (/\/end/i.test(redirectPath) || /\/start/i.test(redirectPath)) {
         selectedLoader = ''
       }

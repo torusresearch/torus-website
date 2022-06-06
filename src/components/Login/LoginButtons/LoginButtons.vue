@@ -1,59 +1,50 @@
 <template>
-  <v-flex class="login-buttons" :class="isPopup ? 'is-popup xs-12' : 'xs10 sm12'" ml-auto mr-auto>
-    <div :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
-      <v-btn
-        v-if="hasExistingAccount && existingLoginTypeAvailable"
-        large
-        color="torusBrand1"
-        class="white--text font-weight-regular btn-existing mb-2"
-        :class="$vuetify.breakpoint.xsOnly ? 'body-2' : 'headline'"
-        block
-        @click="loginExisting"
-      >
-        <v-icon class="text_3--text mr-3" color="white">
-          {{ `$vuetify.icons.${lastLoginIcon}` }}
-        </v-icon>
-        <div>
-          {{ t('dappLogin.continueWith').replace(/\{verifier\}/gi, capitalizeFirstLetter(existingLoginTypeAvailable.name)) }}
-          <div v-if="lastLoginVerifierId" class="font-weight-bold last-login-email">
-            {{ lastLoginVerifierId }}
-          </div>
-        </div>
-      </v-btn>
-      <LoginButton
-        v-for="loginConfigItem in mainButtonsLong"
-        :key="loginConfigItem.verifier"
-        :login-config-item="loginConfigItem"
-        :active="loginConfigItem.verifier === activeButton"
-        :is-long="true"
-        :is-popup="isPopup"
-        @mouseover="loginBtnHover(loginConfigItem.verifier)"
-        @click="triggerLogin(loginConfigItem.verifier)"
-      />
-    </div>
-    <v-layout class="buttons-container" wrap :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
-      <v-flex
-        v-for="loginConfigItem in mainButtons"
-        :key="loginConfigItem.verifier"
-        :class="[!viewMoreOptions || isPopup || $vuetify.breakpoint.xsOnly ? 'xs4' : 'xs2']"
-      >
+  <v-flex class="login-buttons" :class="isPopup ? 'is-popup xs-12' : 'xs10 sm12'" :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
+    <v-row v-if="lastLoginConfigItem || mainButtonsLong.length > 0" dense>
+      <v-col v-if="lastLoginConfigItem" cols="12">
+        <LoginButton
+          :login-config-item="lastLoginConfigItem"
+          :email="lastLoginVerifierId"
+          :is-existing-login="true"
+          :is-long="true"
+          :is-popup="isPopup"
+          @click="loginExisting"
+        />
+      </v-col>
+      <v-col v-for="loginConfigItem in mainButtonsLong" :key="loginConfigItem.verifier" cols="12">
         <LoginButton
           :login-config-item="loginConfigItem"
           :active="loginConfigItem.verifier === activeButton"
+          :is-long="true"
+          :is-popup="isPopup"
           @mouseover="loginBtnHover(loginConfigItem.verifier)"
           @click="triggerLogin(loginConfigItem.verifier)"
         />
-      </v-flex>
-    </v-layout>
-    <div v-if="loginButtonsLong.length > 0" :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
-      <div v-if="mainButtonsLong.length > 0 || mainButtons.length > 0" class="d-flex or-container align-center">
-        <v-divider />
-        <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
-          <div class="text_2--text">{{ t('login.or') }}</div>
-        </div>
-        <v-divider />
+      </v-col>
+    </v-row>
+    <v-row v-if="mainButtons.length > 0" dense>
+      <v-col v-for="loginConfigItem in mainButtons" :key="loginConfigItem.verifier" cols="4">
+        <LoginButton
+          :login-config-item="loginConfigItem"
+          :active="loginConfigItem.verifier === activeButton"
+          :is-popup="isPopup"
+          @mouseover="loginBtnHover(loginConfigItem.verifier)"
+          @click="triggerLogin(loginConfigItem.verifier)"
+        />
+      </v-col>
+    </v-row>
+    <div
+      v-if="(lastLoginConfigItem || mainButtonsLong.length > 0 || mainButtons.length > 0) && loginButtonsLong.length > 0"
+      class="d-flex or-container align-center"
+    >
+      <v-divider />
+      <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
+        <div class="text_2--text">{{ t('login.or') }}</div>
       </div>
-      <div v-for="loginConfigItem in loginButtonsLong" :key="loginConfigItem.verifier" class="buttons-bottom-container">
+      <v-divider />
+    </div>
+    <v-row v-if="loginButtonsLong.length > 0" dense>
+      <v-col v-for="loginConfigItem in loginButtonsLong" :key="loginConfigItem.verifier" cols="12">
         <v-form
           v-if="loginConfigItem.verifier === HOSTED_EMAIL_PASSWORDLESS_VERIFIER"
           ref="passwordlessEmailForm"
@@ -72,8 +63,9 @@
             :login-config-item="loginConfigItem"
             :active="loginConfigItem.verifier === activeButton"
             :is-long="true"
-            :disabled="!passwordlessEmailFormValid"
             :no-icon="true"
+            :is-popup="isPopup"
+            :disabled="!passwordlessEmailFormValid"
             button-type="submit"
             @mouseover="loginBtnHover(loginConfigItem.verifier)"
           />
@@ -87,9 +79,9 @@
           @mouseover="loginBtnHover(loginConfigItem.verifier)"
           @click="triggerLogin(loginConfigItem.verifier)"
         />
-      </div>
-    </div>
-    <div class="d-flex align-center" :style="{ maxWidth: isPopup ? 'unset' : '372px' }">
+      </v-col>
+    </v-row>
+    <div class="d-flex align-center mt-4" :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
       <v-spacer></v-spacer>
       <v-btn :class="{ 'has-more': viewMoreOptions }" class="view-option-selector" @click="viewMoreOptions = !viewMoreOptions">
         <span class="selector-text">{{ viewMoreOptions ? t('dappLogin.viewLess') : t('dappLogin.viewMore') }}</span>
@@ -103,7 +95,6 @@
 import log from 'loglevel'
 
 import { HOSTED_EMAIL_PASSWORDLESS_VERIFIER } from '../../../utils/enums'
-import { capitalizeFirstLetter } from '../../../utils/utils'
 import LoginButton from '../LoginButton'
 
 export default {
@@ -149,7 +140,7 @@ export default {
   },
   computed: {
     mainButtonsLong() {
-      if (this.hasExistingAccount) return []
+      if (this.lastLoginConfigItem) return []
       return this.loginButtonsArray.filter(
         (button) =>
           ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
@@ -159,7 +150,7 @@ export default {
     },
     mainButtons() {
       return this.loginButtonsArray.filter((button) => {
-        const descCheck = (this.hasExistingAccount || !button.description) && button.verifier !== HOSTED_EMAIL_PASSWORDLESS_VERIFIER
+        const descCheck = (this.lastLoginConfigItem || !button.description) && button.verifier !== HOSTED_EMAIL_PASSWORDLESS_VERIFIER
         if (this.viewMoreOptions) {
           return ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) && descCheck
         }
@@ -183,21 +174,14 @@ export default {
       if (this.$vuetify.breakpoint.height >= 1080) return '4.6vh'
       return '40'
     },
-    hasExistingAccount() {
-      return this.lastLoginInfo.typeOfLogin && this.lastLoginInfo.verifierId
-    },
-    existingLoginTypeAvailable() {
-      const existingVerifier = this.lastLoginInfo.aggregateVerifier || this.lastLoginInfo.verifier
-      const available = this.loginButtonsArray.find((button) => (button.linkedVerifier || button.verifier) === existingVerifier)
-      log.info('existingLoginTypeAvailable', available)
-      return available
-    },
-    lastLoginIcon() {
-      return this.lastLoginInfo.typeOfLogin.toLowerCase()
-    },
     lastLoginVerifierId() {
       const { email } = this.lastLoginInfo
       return email || ''
+    },
+    lastLoginConfigItem() {
+      const existingVerifier = this.lastLoginInfo.aggregateVerifier || this.lastLoginInfo.verifier
+      const config = this.loginButtonsArray.find((button) => (button.linkedVerifier || button.verifier) === existingVerifier)
+      return config
     },
   },
   watch: {
@@ -244,9 +228,6 @@ export default {
     },
     triggerLogin(verifier, email) {
       this.$emit('triggerLogin', verifier, email)
-    },
-    capitalizeFirstLetter(text) {
-      return capitalizeFirstLetter(text)
     },
   },
 }

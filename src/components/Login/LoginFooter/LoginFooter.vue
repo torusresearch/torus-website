@@ -1,21 +1,16 @@
 <template>
   <v-flex xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes" :class="{ 'not-sm': !$vuetify.breakpoint.xsOnly }">
     <div class="text_3--text mb-4 mb-sm-6">
-      <div class="text_3--text mb-2 font-weight-bold">{{ t('login.note') }}:</div>
-      <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
-      <div v-if="authenticators.length > 0">
-        <span>{{ t('dappLogin.termsAuth01') }}</span>
+      <div class="mb-4 self-custodial-footer" :class="{ 'theme--dark': $vuetify.theme.dark }">
+        <span class="self-custodial-footer__title text-caption">{{ t('login.selfCustodial') }}</span>
         <br />
-        <span>{{ authenticators }}.</span>
-        <a
-          class="privacy-learn-more text_3--text ml-1 text-decoration-none"
-          href="https://docs.tor.us/key-infrastructure/role-of-torus-nodes/oauth2-vs-proxy-sign-in"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          {{ t('dappLogin.termsLearnMore') }}
+        <img :src="require(`../../../assets/images/web3auth${$vuetify.theme.dark ? '' : '-dark'}.svg`)" alt="web3auth logo" />
+        <br />
+        <a class="self-custodial-footer__how text-caption" href="https://docs.web3auth.io/" target="_blank" rel="noreferrer noopener">
+          {{ t('login.howWorks') }}
         </a>
       </div>
+      <div class="mb-2">{{ t('login.dataPrivacy') }}</div>
     </div>
     <v-divider class="mb-2" />
     <div class="d-flex footer-links mb-8 mb-sm-10">

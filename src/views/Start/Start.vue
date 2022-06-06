@@ -1,11 +1,15 @@
 <template>
-  <v-container fill-height text-center>
+  <v-container fluid fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <BoxLoader />
+        <div v-if="showConstructing" class="text_2--text font-weight-bold text-body-2 mb-10">
+          {{ t('login.constructYourKey') }}
+          <a :href="dappUrl" class="torusBrand1--text" target="_blank" rel="noreferrer noopener">{{ dappName }}</a>
+        </div>
+        <BoxLoader :white-label="whiteLabel" :is-custom-verifier="isCustomVerifier" />
       </v-flex>
       <div class="footer">
-        <div class="powered-by">{{ t('login.secured-by') }}</div>
+        <div class="powered-by">{{ t('login.selfCustodial') }}</div>
         <img height="26" :src="require(`@/assets/images/web3auth.svg`)" alt="Web3Auth" />
       </div>
     </v-layout>
@@ -22,13 +26,39 @@ import { getOpenLoginInstance } from '../../openlogin'
 export default {
   name: 'Start',
   components: { BoxLoader },
+  data() {
+    return {
+      whiteLabel: undefined,
+      isCustomVerifier: false,
+      iframeOrigin: {
+        href: '',
+        hostname: '',
+      },
+    }
+  },
+  computed: {
+    dappName() {
+      return this.isCustomVerifier ? this.whiteLabel?.name || this.iframeOrigin.hostname : 'Web3Auth'
+    },
+    dappUrl() {
+      return this.isCustomVerifier ? this.whiteLabel?.url || this.iframeOrigin.href : 'https://app.tor.us'
+    },
+    showConstructing() {
+      return (this.whiteLabel?.isActive && this.isCustomVerifier && this.dappName && this.dappUrl) || !this.whiteLabel.isActive || !this.whiteLabel
+    },
+  },
   async created() {
     try {
       const { loginProvider, state, skipTKey, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))
       log.info('logging in with', loginProvider, state, skipTKey, rest)
-      const { whiteLabel, loginConfig = {} } = stateParams
+      const { whiteLabel, loginConfig = {}, origin } = stateParams
+      this.whiteLabel = whiteLabel
+      this.iframeOrigin = origin
+      this.isCustomVerifier = Object.keys(loginConfig).length > 0
+
       const openLogin = await getOpenLoginInstance(whiteLabel, loginConfig)
+
       await openLogin.login({
         loginProvider,
         getWalletKey: true,
