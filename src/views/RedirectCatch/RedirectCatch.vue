@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height text-center>
+  <v-container fill-height fluid text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
         <BoxLoader :force-spinner="true" />

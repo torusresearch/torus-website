@@ -80,18 +80,10 @@
       <!-- REDIRECT LOADER -->
       <div id="skeleton-redirect" class="redirect-skeleton-container skeleton-holder">
         <div class="redirect-skeleton-content">
-          <div class="spinner content">
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
-            <div class="beat"></div>
+          <div id="skeleton-redirect-spinner" class="spinner">
+            <div class="head"></div>
+            <div class="mask"></div>
           </div>
-          <!-- <h1 class="title content">Loading</h1> -->
         </div>
       </div>
 
@@ -507,11 +499,12 @@
       } else if (/\/popup/.test(redirectPath) || /\/confirm/.test(redirectPath)) {
         selectedLoader = 'skeleton-confirm'
       } else if (/\/redirect/.test(redirectPath)) {
-        document.querySelector('html').style.height = '100%'
-        document.querySelector('body').style.height = '100%'
-        document.querySelector('#app').style.height = '100%'
-        document.querySelector('#app').style.backgroundColor = theme === 'dark' ? '#24252A' : '#FCFCFC'
-        selectedLoader = 'skeleton-redirect'
+      document.querySelector('html').style.height = '100%'
+      document.querySelector('body').style.height = '100%'
+      document.querySelector('#app').style.height = '100%'
+      document.querySelector('#app').style.backgroundColor = theme === 'dark' ? '#24252A' : '#FCFCFC'
+      document.querySelector('#skeleton-redirect-spinner .mask').style.backgroundColor = theme === 'dark' ? '#24252A' : '#FCFCFC'
+      selectedLoader = 'skeleton-redirect'
       } else if (/\/end/i.test(redirectPath) || /\/start/i.test(redirectPath)) {
         selectedLoader = ''
       }
