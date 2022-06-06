@@ -22,7 +22,6 @@ import log from 'loglevel'
 
 import BoxLoader from '../../components/helpers/BoxLoader'
 import { getOpenLoginInstance } from '../../openlogin'
-import { getIFrameOriginObject } from '../../utils/utils'
 
 export default {
   name: 'Start',
@@ -53,9 +52,9 @@ export default {
       const { loginProvider, state, skipTKey, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))
       log.info('logging in with', loginProvider, state, skipTKey, rest)
-      const { whiteLabel, loginConfig = {} } = stateParams
-      this.iframeOrigin = getIFrameOriginObject()
+      const { whiteLabel, loginConfig = {}, origin } = stateParams
       this.whiteLabel = whiteLabel
+      this.iframeOrigin = origin
       this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
       const openLogin = await getOpenLoginInstance(whiteLabel, loginConfig)
