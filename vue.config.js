@@ -40,6 +40,9 @@ module.exports = {
       'bn.js': path.resolve(__dirname, 'node_modules/bn.js'),
       'js-sha3': path.resolve(__dirname, 'node_modules/js-sha3'),
       '#': path.resolve(__dirname, 'src/'),
+      'web3-providers-ipc': path.resolve(__dirname, 'node_modules/empty-module'),
+      'web3-providers-ws': path.resolve(__dirname, 'node_modules/empty-module'),
+      lodash: path.resolve(__dirname, 'node_modules/lodash-es'),
     }
     config.plugins.push(new IgnorePlugin({ resourceRegExp: /^\.\/wordlists\/(?!english)/, contextRegExp: /bip39\/src$/ }))
     config.plugins.push(
@@ -50,6 +53,12 @@ module.exports = {
     config.plugins.push(
       new ProvidePlugin({
         process: 'process/browser',
+      })
+    )
+    config.plugins.push(
+      new IgnorePlugin({
+        resourceRegExp: /genesisStates\/[a-z]*\.json$/,
+        contextRegExp: /@ethereumjs\/common/,
       })
     )
     config.resolve.fallback = {

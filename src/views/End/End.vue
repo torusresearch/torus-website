@@ -1,8 +1,8 @@
 <template>
-  <v-container fill-height text-center>
+  <v-container fluid fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <BoxLoader v-if="loading" />
+        <BoxLoader v-if="loading" :white-label="whiteLabel" :is-custom-verifier="isCustomVerifier" />
         <div v-else>
           <div class="text-h5 font-weight-bold mb-8">{{ t('login.selectAnAccount') }}</div>
           <div class="account-list mb-8">
@@ -35,7 +35,7 @@
         </div>
       </v-flex>
       <div class="footer">
-        <div class="powered-by">{{ t('login.secured-by') }}</div>
+        <div class="powered-by">{{ t('login.selfCustodial') }}</div>
         <img height="26" :src="require(`@/assets/images/web3auth.svg`)" alt="Web3Auth" />
       </div>
     </v-layout>
@@ -67,6 +67,7 @@ export default {
       broadcastData: {},
       channelId: '',
       accounts: {},
+      isCustomVerifier: false,
     }
   },
   async created() {
@@ -86,7 +87,10 @@ export default {
         const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
         whiteLabel = appStateParams.whiteLabel || {}
         loginConfig = appStateParams.loginConfig || {}
+        this.isCustomVerifier = Object.keys(loginConfig).length > 0
       }
+
+      this.whiteLabel = whiteLabel
 
       const torus = new Torus()
       const openLogin = await getOpenLoginInstance(whiteLabel, loginConfig)

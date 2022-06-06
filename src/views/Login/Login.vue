@@ -7,7 +7,7 @@
             <v-flex v-if="$vuetify.breakpoint.xsOnly" class="mobile-login-container" xs12>
               <section class="py-10 py-sm-12">
                 <v-layout wrap>
-                  <v-flex class="mb-8" xs10 sm8 ml-auto mr-auto>
+                  <v-flex class="mb-8" xs10 ml-auto mr-auto>
                     <img
                       height="25"
                       :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
@@ -15,7 +15,9 @@
                     />
                   </v-flex>
                   <LoginTitle class="mb-6" />
-                  <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
+                  <v-flex xs10 mx-auto mt-4>
+                    <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
+                  </v-flex>
                   <LoginFooter :authenticators="thirdPartyAuthenticators" />
                 </v-layout>
               </section>
@@ -34,7 +36,7 @@
             <!-- Desktop -->
             <v-flex v-else xs12>
               <v-layout wrap>
-                <v-flex class="mb-10" xs10 sm8 ml-auto mr-auto>
+                <v-flex mt-4 mb-10 xs10 sm8 ml-auto mr-auto>
                   <img height="25" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                 </v-flex>
                 <LoginTitle />
@@ -96,7 +98,12 @@
       </v-layout>
     </template>
     <template v-else>
-      <component :is="activeLoader" />
+      <v-container class="spinner" fluid :class="$vuetify.theme.dark ? 'torus-dark' : ''">
+        <BoxLoader />
+        <p class="bottom-text text-body-1 text-center font-weight-medium">
+          {{ t('login.loader') }}
+        </p>
+      </v-container>
     </template>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
@@ -109,33 +116,18 @@
 import log from 'loglevel'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
+import BoxLoader from '../../components/helpers/BoxLoader'
 import LoginButtons from '../../components/Login/LoginButtons'
 import LoginFooter from '../../components/Login/LoginFooter'
 import LoginSlide from '../../components/Login/LoginSlide'
 import LoginTitle from '../../components/Login/LoginTitle'
 import config from '../../config'
-import {
-  WalletActivityLoader,
-  WalletActivityLoaderMobile,
-  WalletCollectiblesLoader,
-  WalletCollectiblesLoaderMobile,
-  WalletHomeLoader,
-  WalletHomeLoaderMobile,
-  WalletLoginLoader,
-  WalletLoginLoaderMobile,
-  WalletSettingsLoader,
-  WalletSettingsLoaderMobile,
-  WalletTopupLoader,
-  WalletTopupLoaderMobile,
-  WalletTransferLoader,
-  WalletTransferLoaderMobile,
-} from '../../content-loader'
 import { OpenLoginHandler } from '../../handlers/Auth'
 import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/utils'
 
 export default {
   name: 'Login',
-  components: { LoginButtons, LoginFooter, LoginSlide, LoginTitle, WalletLoginLoader, WalletLoginLoaderMobile },
+  components: { LoginButtons, LoginFooter, LoginSlide, LoginTitle, BoxLoader },
   data() {
     return {
       isLogout: false,
@@ -159,26 +151,6 @@ export default {
     ...mapGetters(['loginButtonsArray']),
     loggedIn() {
       return this.selectedAddress !== '' && !this.loginInProgress
-    },
-    activeLoader() {
-      const redirectPath = this.$route.query.redirect
-
-      if (redirectPath === '/wallet/transfer') {
-        return this.$vuetify.breakpoint.xsOnly ? WalletTransferLoaderMobile : WalletTransferLoader
-      }
-      if (redirectPath === '/wallet/topup') {
-        return this.$vuetify.breakpoint.xsOnly ? WalletTopupLoaderMobile : WalletTopupLoader
-      }
-      if (redirectPath === '/wallet/history') {
-        return this.$vuetify.breakpoint.xsOnly ? WalletActivityLoaderMobile : WalletActivityLoader
-      }
-      if (redirectPath === '/wallet/settings') {
-        return this.$vuetify.breakpoint.xsOnly ? WalletSettingsLoaderMobile : WalletSettingsLoader
-      }
-      if (/^\/wallet\/home\/collectibles/.test(redirectPath)) {
-        return this.$vuetify.breakpoint.xsOnly ? WalletCollectiblesLoaderMobile : WalletCollectiblesLoader
-      }
-      return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
     },
     thirdPartyAuthenticators() {
       return thirdPartyAuthenticators(this.loginConfig)
