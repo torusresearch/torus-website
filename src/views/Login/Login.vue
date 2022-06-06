@@ -98,7 +98,12 @@
       </v-layout>
     </template>
     <template v-else>
-      <component :is="activeLoader" />
+      <v-container class="spinner" fluid :class="$vuetify.theme.dark ? 'torus-dark' : ''">
+        <BoxLoader />
+        <p class="bottom-text text-body-1 text-center font-weight-medium">
+          {{ t('login.loader') }}
+        </p>
+      </v-container>
     </template>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
@@ -111,33 +116,18 @@
 import log from 'loglevel'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
+import BoxLoader from '../../components/helpers/BoxLoader'
 import LoginButtons from '../../components/Login/LoginButtons'
 import LoginFooter from '../../components/Login/LoginFooter'
 import LoginSlide from '../../components/Login/LoginSlide'
 import LoginTitle from '../../components/Login/LoginTitle'
 import config from '../../config'
-import {
-  WalletActivityLoader,
-  WalletActivityLoaderMobile,
-  WalletCollectiblesLoader,
-  WalletCollectiblesLoaderMobile,
-  WalletHomeLoader,
-  WalletHomeLoaderMobile,
-  WalletLoginLoader,
-  WalletLoginLoaderMobile,
-  WalletSettingsLoader,
-  WalletSettingsLoaderMobile,
-  WalletTopupLoader,
-  WalletTopupLoaderMobile,
-  WalletTransferLoader,
-  WalletTransferLoaderMobile,
-} from '../../content-loader'
 import { OpenLoginHandler } from '../../handlers/Auth'
 import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/utils'
 
 export default {
   name: 'Login',
-  components: { LoginButtons, LoginFooter, LoginSlide, LoginTitle, WalletLoginLoader, WalletLoginLoaderMobile },
+  components: { LoginButtons, LoginFooter, LoginSlide, LoginTitle, BoxLoader },
   data() {
     return {
       isLogout: false,
@@ -161,26 +151,6 @@ export default {
     ...mapGetters(['loginButtonsArray']),
     loggedIn() {
       return this.selectedAddress !== '' && !this.loginInProgress
-    },
-    activeLoader() {
-      const redirectPath = this.$route.query.redirect
-
-      if (redirectPath === '/wallet/transfer') {
-        return this.$vuetify.breakpoint.xsOnly ? WalletTransferLoaderMobile : WalletTransferLoader
-      }
-      if (redirectPath === '/wallet/topup') {
-        return this.$vuetify.breakpoint.xsOnly ? WalletTopupLoaderMobile : WalletTopupLoader
-      }
-      if (redirectPath === '/wallet/history') {
-        return this.$vuetify.breakpoint.xsOnly ? WalletActivityLoaderMobile : WalletActivityLoader
-      }
-      if (redirectPath === '/wallet/settings') {
-        return this.$vuetify.breakpoint.xsOnly ? WalletSettingsLoaderMobile : WalletSettingsLoader
-      }
-      if (/^\/wallet\/home\/collectibles/.test(redirectPath)) {
-        return this.$vuetify.breakpoint.xsOnly ? WalletCollectiblesLoaderMobile : WalletCollectiblesLoader
-      }
-      return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
     },
     thirdPartyAuthenticators() {
       return thirdPartyAuthenticators(this.loginConfig)
