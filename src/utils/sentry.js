@@ -29,7 +29,7 @@ export function installSentry(Vue) {
     integrations: [
       new BrowserIntegrations.Breadcrumbs({ console: false }),
       new BrowserTracing({
-        tracingOrigins: [config.api, config.metadataHost, config.commonApiHost, config.openLoginUrl],
+        tracingOrigins: [config.api, config.metadataHost, config.commonApiHost],
       }),
     ],
     sampleRate: getSampleRate(),
