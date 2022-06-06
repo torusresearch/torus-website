@@ -1,8 +1,12 @@
-import { Integrations } from '@sentry/browser'
+/* eslint-disable simple-import-sort/imports */
+// Disable ESLint import sorting because '@sentry' require 'vue' and 'browser' packages to be imported before 'tracking' package
 import * as Sentry from '@sentry/vue'
+import { Integrations as BrowserIntegrations } from '@sentry/browser'
+import { BrowserTracing } from '@sentry/tracing'
 import LoglevelSentryPlugin, { redactBreadcrumbData } from '@toruslabs/loglevel-sentry'
 import log from 'loglevel'
 
+import config from '../config'
 import { UserError } from './utils'
 
 function getSampleRate() {
@@ -22,8 +26,14 @@ export function installSentry(Vue) {
     environment: process.env.VUE_APP_TORUS_BUILD_ENV,
     release: `torus-website@${process.env.VUE_APP_TORUS_BUILD_VERSION}`,
     autoSessionTracking: true,
-    integrations: [new Integrations.Breadcrumbs({ console: false })],
+    integrations: [
+      new BrowserIntegrations.Breadcrumbs({ console: false }),
+      new BrowserTracing({
+        tracingOrigins: [config.api, config.metadataHost, config.commonApiHost, config.openLoginUrl],
+      }),
+    ],
     sampleRate: getSampleRate(),
+    tracesSampleRate: getSampleRate(),
     normalizeDepth: 5,
     ignoreErrors: [
       // Happen when user click 'X' on the browser (ref https://forum.sentry.io/t/typeerror-failed-to-fetch-reported-over-and-overe/8447/2)
