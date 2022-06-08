@@ -7,7 +7,7 @@
     <div v-else class="ping-container" :class="{ 'theme--dark': isDark }">
       <div class="ping-animate" :style="pingAnimateStyle"></div>
       <div class="ping-content" :style="pingContentStyle">
-        <img :src="finalLogo" alt="Dapp Logo" :style="pingImageStyle" />
+        <img :src="whiteLabelLogo" alt="Dapp Logo" :style="pingImageStyle" />
       </div>
     </div>
   </div>
@@ -84,7 +84,7 @@ export default {
       return this.$vuetify.theme.dark
     },
     useSpinner() {
-      return this.forceSpinner || (this.whiteLabel.isActive && (!this.isCustomVerifier || !this.whiteLabelLogo))
+      return this.forceSpinner || !this.isCustomVerifier || (this.isCustomVerifier && !this.whiteLabelLogo)
     },
     pingContentStyle() {
       const backgroundColor = this.isDark ? '#fff' : this.primaryColor
@@ -97,12 +97,6 @@ export default {
     pingImageStyle() {
       const computedSize = this.size * 0.56
       return { width: `${computedSize}px`, height: `${computedSize}px` }
-    },
-    finalLogo() {
-      return (
-        this.whiteLabelLogo ||
-        (this.isDark ? 'https://images.web3auth.io/web3auth-logo-w.svg' : 'https://images.web3auth.io/web3auth-logo-w-light.svg')
-      )
     },
   },
   mounted() {
