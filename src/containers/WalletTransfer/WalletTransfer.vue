@@ -991,7 +991,7 @@ export default {
           })
         // if multiple address then select
         multipleAddress.push({
-          header: this.$t('walletSettings.multipleAddressShouldBeSelect'),
+          header: this.$t('walletTransfer.multipleAddressShouldBeSelect'),
         })
         await das
           .records(input)
@@ -1021,7 +1021,7 @@ export default {
         } else if (addressCount > 1) {
           this.multipleAddress = multipleAddress
         } else {
-          this.bitError = 'walletSettings.notAnyBitAddress'
+          this.bitError = 'walletTransfer.notAnyBitAddress'
         }
         this.$refs.form.validate()
         // .bit end
@@ -1213,7 +1213,7 @@ export default {
           toAddress = toChecksumAddress(ethAddr)
         } catch (error) {
           log.error(error)
-          this.unstoppableDomainsError = 'walletSettings.invalidUnstoppable'
+          this.unstoppableDomainsError = 'walletTransfer.invalidUnstoppable'
           this.$refs.form.validate()
         }
       } else if (this.selectedVerifier === BIT) {
@@ -1221,7 +1221,7 @@ export default {
           toAddress = toChecksumAddress(this.toAddress)
         } catch (error) {
           log.error('invalidBit', this.toAddress, error)
-          this.bitError = 'walletSettings.invalidBit'
+          this.bitError = 'walletTransfer.invalidBit'
           this.$refs.form.validate()
         }
       } else {
