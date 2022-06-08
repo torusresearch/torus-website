@@ -2,7 +2,7 @@
   <v-container fluid fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <div v-if="showConstructing" class="text_2--text font-weight-bold text-body-2 mb-10">
+        <div v-if="isCustomVerifier" class="text_2--text font-weight-bold text-body-2 mb-10">
           {{ t('login.constructYourKey') }}
           <a :href="dappUrl" class="torusBrand1--text" target="_blank" rel="noreferrer noopener">{{ dappName }}</a>
         </div>
@@ -42,9 +42,6 @@ export default {
     },
     dappUrl() {
       return this.isCustomVerifier ? this.whiteLabel?.url || this.iframeOrigin.href : 'https://app.tor.us'
-    },
-    showConstructing() {
-      return (this.whiteLabel?.isActive && this.isCustomVerifier && this.dappName && this.dappUrl) || !this.whiteLabel.isActive || !this.whiteLabel
     },
   },
   async created() {
