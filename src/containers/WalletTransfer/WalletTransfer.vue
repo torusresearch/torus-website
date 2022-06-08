@@ -134,7 +134,7 @@
                       class="recipient-address"
                       :class="{ hasQrError: qrErrorMsg !== '' }"
                       :value="contactSelected"
-                      :items="getToAddressComboboxItems()"
+                      :items="getToAddressComboboxItems"
                       :placeholder="verifierPlaceholder"
                       required
                       :rules="[contactRule, rules.contactRequired, ensRule, unstoppableDomainsRule, bitRule]"
@@ -142,7 +142,7 @@
                       item-text="name"
                       item-value="value"
                       aria-label="Recipient Address"
-                      :return-object="getReturnObject()"
+                      :return-object="getReturnObject"
                       @input="contactChanged"
                       @blur="checkContact"
                       @update:search-input="listenInput"
@@ -158,7 +158,7 @@
                               alt=""
                             />
                           </v-avatar>
-                          {{ bitSelectedAddress() }}
+                          {{ bitSelectedAddress }}
                         </v-chip>
                         <v-btn icon small color="torusBrand1" title="Capture QR" tabindex="-1" aria-label="Capture QR" @click="startQrScanning">
                           <v-icon small>$vuetify.icons.scan</v-icon>
@@ -215,7 +215,7 @@
                     </v-select>
                   </v-flex>
                   <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
-                    <AddContact :contact="getContactSelected()" :verifier="selectedVerifier"></AddContact>
+                    <AddContact :contact="getContactSelected" :verifier="selectedVerifier"></AddContact>
                   </v-flex>
                 </v-layout>
               </v-flex>
@@ -394,7 +394,7 @@
                   <TransferConfirm
                     :converted-verifier-id="convertedVerifierId"
                     :to-address="toEthAddress"
-                    :to-verifier-id="getVerifierId()"
+                    :to-verifier-id="getVerifierId"
                     :to-verifier="selectedVerifier"
                     :from-address="selectedAddress"
                     :from-verifier-id="userInfo.verifierId"
@@ -772,6 +772,21 @@ export default {
       const estimatedTime = this.t('walletTransfer.transferApprox').replace(/{time}/gi, this.timeTaken)
       return this.t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, estimatedTime)
     },
+    getToAddressComboboxItems() {
+      return this.isBitMode ? this.multipleAddress : this.contactList
+    },
+    getContactSelected() {
+      return this.isBitMode ? this.toAddress : this.contactSelected
+    },
+    getVerifierId() {
+      return this.isBitMode ? this.theBitAddress : this.toAddress
+    },
+    bitSelectedAddress() {
+      return `${this.toAddress.slice(0, 4)}...${this.toAddress.slice(-4)}`
+    },
+    getReturnObject() {
+      return this.isBitMode
+    },
   },
   watch: {
     selectedAddress(newValue, oldValue) {
@@ -936,9 +951,7 @@ export default {
     bitRule() {
       return this.selectedVerifier === BIT && this.bitError ? this.bitError : true
     },
-    getToAddressComboboxItems() {
-      return this.isBitMode ? this.multipleAddress : this.contactList
-    },
+
     unstoppableDomainsRule() {
       return this.selectedVerifier === UNSTOPPABLE_DOMAINS && this.unstoppableDomainsError ? this.unstoppableDomainsError : true
     },
@@ -949,9 +962,6 @@ export default {
       if (this.selectedVerifier && this.toAddress) {
         this.toEthAddress = await this.calculateEthAddress()
       }
-    },
-    getReturnObject() {
-      return this.isBitMode
     },
     async listenInput(input) {
       if (input == null) {
@@ -1018,15 +1028,6 @@ export default {
       } else {
         this.isBitMode = false
       }
-    },
-    bitSelectedAddress() {
-      return `${this.toAddress.slice(0, 4)}...${this.toAddress.slice(-4)}`
-    },
-    getVerifierId() {
-      return this.isBitMode ? this.theBitAddress : this.toAddress
-    },
-    getContactSelected() {
-      return this.isBitMode ? this.toAddress : this.contactSelected
     },
     async checkContact() {
       this.toEthAddress = await this.calculateEthAddress()
