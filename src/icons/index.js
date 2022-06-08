@@ -8,9 +8,11 @@ import AlertIcon from './AlertIcon.vue'
 import BalanceIcon from './BalanceIcon.vue'
 import BrowserIcon from './BrowserIcon.vue'
 import CalendarIcon from './CalendarIcon.vue'
+import CheckboxBlankIcon from './CheckboxBlankIcon.vue'
 import CheckboxCheckedIcon from './CheckboxCheckedIcon.vue'
 import CheckboxDarkCheckedIcon from './CheckboxDarkCheckedIcon.vue'
 import CheckboxDarkUncheckedIcon from './CheckboxDarkUncheckedIcon.vue'
+import CheckboxMarkedIcon from './CheckboxMarkedIcon.vue'
 import CheckboxUncheckedIcon from './CheckboxUncheckedIcon.vue'
 import CheckCircleFilledIcon from './CheckCircleFilledIcon.vue'
 import CheckCircleIcon from './CheckCircleIcon.vue'
@@ -346,6 +348,12 @@ export default {
   },
   checkbox_unchecked: {
     component: CheckboxUncheckedIcon,
+  },
+  checkbox_marked: {
+    component: CheckboxMarkedIcon,
+  },
+  checkbox_blank: {
+    component: CheckboxBlankIcon,
   },
   checkbox_dark_checked: {
     component: CheckboxDarkCheckedIcon,

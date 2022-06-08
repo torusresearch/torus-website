@@ -22,6 +22,8 @@ export async function getOpenLoginInstance(whiteLabel = {}, loginConfig = {}) {
   if (whiteLabel.logoDark) whiteLabelOpenLogin.logoDark = whiteLabel.logoDark
   if (whiteLabel.logoLight) whiteLabelOpenLogin.logoLight = whiteLabel.logoLight
   if (whiteLabel.defaultLanguage) whiteLabelOpenLogin.defaultLanguage = whiteLabel.defaultLanguage
+  if (whiteLabel.name) whiteLabelOpenLogin.name = whiteLabel.name
+  if (whiteLabel.url) whiteLabelOpenLogin.url = whiteLabel.url
   const openLogin = new OpenLogin({
     clientId: config.openLoginClientId,
     _iframeUrl: config.openLoginUrl,

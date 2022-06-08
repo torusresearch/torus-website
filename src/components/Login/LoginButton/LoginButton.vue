@@ -1,41 +1,53 @@
 <template>
-  <v-btn
-    class="gmt-login text_2--text"
-    :aria-label="`login with ${verifier.name.toLowerCase()}`"
-    :class="[{ active, isDark: $vuetify.theme.dark }, `gmt-login-${iconName}`, { 'is-long': isLong }, { 'is-popup': isPopup }]"
-    :type="buttonType"
-    :block="block"
+  <button
+    v-ripple="{ center: true }"
+    class="gmt-login login-btn"
     :disabled="disabled"
+    :class="buttonClass"
+    :style="buttonStyles"
     @mouseover="onMouseover"
     @click="onClick"
   >
     <img
-      v-if="(active || $vuetify.breakpoint.xsOnly) && buttonType !== 'submit'"
+      v-if="(active || $vuetify.breakpoint.xsOnly) && buttonType !== 'submit' && !isExistingLogin"
       :src="
-        verifier.logoHover ||
-        require(`../../../assets/img/icons/login-${iconName}${verifier.hasLightLogo && $vuetify.theme.dark ? '-light' : ''}.svg`)
+        loginConfigItem.logoHover || require(`../../../assets/img/icons/login-${iconName}${hasLightLogo && $vuetify.theme.dark ? '-light' : ''}.svg`)
       "
-      :alt="`${verifier.name} Icon`"
+      :alt="`${loginConfigItem.name} Icon`"
+      :class="{ 'mr-3': isLong }"
     />
     <img
-      v-else-if="$vuetify.theme.isDark && verifier.logoLight && buttonType !== 'submit'"
-      :src="verifier.logoLight"
-      :alt="`${verifier.name} Icon`"
+      v-else-if="($vuetify.theme.isDark || isExistingLogin) && loginConfigItem.logoLight && buttonType !== 'submit'"
+      :src="loginConfigItem.logoLight"
+      :alt="`${loginConfigItem.name} Icon`"
+      :class="{ 'mr-3': isLong }"
     />
-    <img v-else-if="!$vuetify.theme.isDark && verifier.logoDark && buttonType !== 'submit'" :src="verifier.logoDark" :alt="`${verifier.name} Icon`" />
-    <v-icon v-else-if="buttonType !== 'submit'" class="text_3--text">
+    <img
+      v-else-if="!$vuetify.theme.isDark && loginConfigItem.logoDark && buttonType !== 'submit'"
+      :src="loginConfigItem.logoDark"
+      :alt="`${loginConfigItem.name} Icon`"
+      :class="{ 'mr-3': isLong }"
+    />
+    <v-icon v-else-if="buttonType !== 'submit'" :class="[{ 'mr-3': isLong }, isExistingLogin ? 'white--text' : 'text_3--text']">
       {{ `$vuetify.icons.${iconName}` }}
     </v-icon>
-    <span v-if="isLong">{{ formatDescription }}</span>
-  </v-btn>
+
+    <div v-if="isLong" class="login-btn__text" :class="{ 'login-btn__text--existing': isExistingLogin }">
+      <div>{{ formatDescription }}</div>
+      <div v-if="email" class="font-weight-bold last-login-email">
+        {{ email }}
+      </div>
+    </div>
+  </button>
 </template>
 
 <script>
 import config from '../../../config'
+import { capitalizeFirstLetter } from '../../../utils/utils'
 
 export default {
   props: {
-    verifier: {
+    loginConfigItem: {
       type: Object,
       default() {
         return {}
@@ -45,11 +57,11 @@ export default {
       type: Boolean,
       default: false,
     },
-    block: {
+    isLong: {
       type: Boolean,
       default: false,
     },
-    isLong: {
+    noIcon: {
       type: Boolean,
       default: false,
     },
@@ -65,16 +77,41 @@ export default {
       type: Boolean,
       default: false,
     },
+    isExistingLogin: {
+      type: Boolean,
+      default: false,
+    },
+    email: {
+      type: String,
+      default: '',
+    },
   },
   computed: {
     formatDescription() {
-      const finalDesc = this.verifier.description ? this.t(this.verifier.description) : this.t('dappLogin.continue')
-      return finalDesc.replace(/{verifier}/gi, this.verifier.name.charAt(0).toUpperCase() + this.verifier.name.slice(1))
+      if (this.isExistingLogin) return this.t('dappLogin.continueWith').replace(/{verifier}/gi, capitalizeFirstLetter(this.loginConfigItem.name))
+
+      const finalDesc = this.loginConfigItem.description ? this.t(this.loginConfigItem.description) : this.t('dappLogin.continue')
+      return finalDesc.replace(/{verifier}/gi, this.loginConfigItem.name.charAt(0).toUpperCase() + this.loginConfigItem.name.slice(1))
     },
     iconName() {
-      const normalVerifier = config.loginConfig[this.verifier.verifier]
-      if (normalVerifier) return this.verifier.name.toLowerCase()
-      return this.verifier.typeOfLogin.toLowerCase()
+      const normalVerifier = config.loginConfig[this.loginConfigItem.verifier]
+      if (normalVerifier) return this.loginConfigItem.name.toLowerCase()
+      return this.loginConfigItem.typeOfLogin.toLowerCase()
+    },
+    hasLightLogo() {
+      return config.loginsWithLightLogo.includes(this.iconName)
+    },
+    buttonClass() {
+      return [
+        { active: this.active, 'theme--dark': this.$vuetify.theme.dark, 'is-long': this.isLong, 'is-popup': this.isPopup, 'no-icon': this.noIcon },
+        `gmt-login-${this.iconName}`,
+        this.isExistingLogin ? 'white--text' : 'text_2--text',
+      ]
+    },
+    buttonStyles() {
+      return {
+        background: this.isExistingLogin ? 'var(--v-torusBrand1-base)' : undefined,
+      }
     },
   },
   methods: {

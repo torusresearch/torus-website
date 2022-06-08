@@ -164,6 +164,14 @@ export default {
     state.embedState = { ...state.embedState, buttonPosition: payload || 'bottom-left' }
   },
   async setWhiteLabel(state, payload) {
+    if (!payload && storageAvailable('sessionStorage')) {
+      state.whiteLabel = {
+        isActive: false,
+      }
+      localThemeSet(THEME_LIGHT_BLUE_NAME, state)
+      sessionStorage.removeItem('torus-white-label')
+      return
+    }
     state.whiteLabel = {
       ...state.whiteLabel,
       isActive: true,
@@ -234,6 +242,9 @@ export default {
     state.isTkeySeedPhraseInputRequired = payload
   },
   setLoginInProgress(state, payload) {
+    if (typeof window != 'undefined') {
+      window.loginInProgress = payload
+    }
     state.embedState = { ...state.embedState, loginInProgress: payload }
   },
   setAnnouncements(state, payload) {
@@ -247,6 +258,9 @@ export default {
   },
   setLastLoginInfo(state, payload) {
     state.lastLoginInfo = { ...state.lastLoginInfo, ...payload }
+  },
+  setUserDapps(state, payload) {
+    state.userDapps = payload
   },
 }
 function localThemeSet(payload, state) {

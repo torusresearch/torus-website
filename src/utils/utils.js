@@ -1,7 +1,8 @@
+import { concatSig } from '@metamask/eth-sig-util'
 import * as rskUtils from '@rsksmart/rsk-utils'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
-import { addHexPrefix, BN, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
+import { addHexPrefix, BN, ecsign, keccak, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
@@ -865,6 +866,9 @@ export function getUserIcon(accountType, typeOfLogin) {
   if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
     return 'tkey_seed_phrase'
   }
+  if (accountType === ACCOUNT_TYPE.APP_SCOPED) {
+    return 'device_tablet'
+  }
   if (!typeOfLogin) return 'person_circle'
   return typeOfLogin.toLowerCase()
 }
@@ -1052,4 +1056,24 @@ export function getFungibleTokenStandard(chainId) {
     default:
       return 'ERC20'
   }
+}
+
+export function getTorusMessage(message) {
+  const prefix = Buffer.from(`\u0019${window.location.hostname} Signed Message:\n${message.length.toString()}`, 'utf8')
+  return Buffer.concat([prefix, message])
+}
+
+export function generateTorusAuthHeaders(privateKey, publicAddress) {
+  let challenge = Date.now()
+  challenge = ((challenge - (challenge % 1000)) / 1000).toString()
+  const message = getTorusMessage(Buffer.from(challenge, 'utf8'))
+  const hash = keccak(message)
+  const messageSig = ecsign(hash, Buffer.from(privateKey, 'hex'))
+  const signature = concatSig(messageSig.v, messageSig.r, messageSig.s)
+  const authHeaders = {
+    'Auth-Challenge': challenge,
+    'Auth-Signature': signature,
+    'Auth-Public-Address': publicAddress,
+  }
+  return authHeaders
 }

@@ -19,7 +19,7 @@
           <div class="details-container d-flex flex-column pr-2 ml-2">
             <div class="d-flex align-center">
               <v-icon size="12" class="details-container__icon text_2--text">{{ `$vuetify.icons.${userIcon}` }}</v-icon>
-              <div class="details-container__text ml-2 font-weight-bold" :title="userEmail">{{ userEmail }}</div>
+              <div class="details-container__text ml-2 font-weight-bold text_2--text" :title="userEmail">{{ userEmail }}</div>
               <!-- Will add when dropdown available -->
               <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->
             </div>
@@ -28,7 +28,7 @@
               <div class="details-container__text caption ml-2">
                 <ShowToolTip :address="fullAddress">
                   <div class="d-flex align-center">
-                    {{ address }}
+                    <span class="text_2--text">{{ address }}</span>
                     <v-icon size="12" class="ml-4 text_2--text">$vuetify.icons.copy_outline</v-icon>
                   </div>
                 </ShowToolTip>
@@ -72,7 +72,7 @@
           </div>
         </div>
         <div class="d-flex align-center text_2--text" :style="{ marginTop: '2px' }">
-          <v-icon size="8" v-text="'$vuetify.icons.network'"></v-icon>
+          <v-icon size="8">$vuetify.icons.network</v-icon>
           <span class="network-name ml-1">{{ networkType.networkName || networkType.host }}</span>
         </div>
         <div class="torus-widget__transaction-details mt-5">
@@ -257,6 +257,9 @@ export default {
     accountType() {
       return this.wallet[this.fullAddress]?.accountType
     },
+  },
+  mounted() {
+    window.$crisp.push(['do', 'chat:hide'])
   },
   methods: {
     ...mapActions({

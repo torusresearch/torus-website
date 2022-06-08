@@ -430,8 +430,9 @@ export default {
         skipTKey: state.embedState.skipTKey,
         whiteLabel,
         loginConfigItem: currentVerifierConfig,
+        origin: getIFrameOriginObject(),
       })
-      const { keys, userInfo, postboxKey, error } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
       if (error) {
         throw new Error(error)
       }
@@ -439,6 +440,7 @@ export default {
       userInfo.verifier = verifier
       commit('setUserInfo', userInfo)
       commit('setPostboxKey', postboxKey)
+      commit('setUserDapps', userDapps)
       await dispatch('handleLogin', {
         calledFromEmbed,
         oAuthToken: userInfo.idToken || userInfo.accessToken,

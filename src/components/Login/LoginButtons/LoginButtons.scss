@@ -23,35 +23,8 @@
     }
   }
 
-  ::v-deep .v-btn.btn-existing {
-    height: unset;
-    padding: 8px 19.5555555556px;
-    min-height: 56px;
-    .v-btn__content {
-      max-width: 280px;
-      .last-login-email {
-        overflow: hidden;
-        width: 220px;
-        text-overflow: ellipsis;
-      }
-    }
-  }
-  .buttons-container {
-    margin-left: -4px;
-    margin-right: -4px;
-    .flex {
-      padding-left: 4px;
-      padding-right: 4px;
-    }
-  }
-
-  .buttons-bottom-container {
-    margin-bottom: 8px;
-  }
-
   .v-input.passwordless-email {
     margin-bottom: 8px;
-    margin-top: 16px;
     ::v-deep .v-input__control {
       .v-text-field__details {
         display: none;
@@ -69,7 +42,7 @@
 
   .or-container {
     margin-top: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     font-size: 0.875rem;
     line-height: 1.25rem;
   }
@@ -83,20 +56,8 @@
       font-size: 1.5vh;
       line-height: 1.2em;
     }
-    .buttons-container {
-      margin-left: -0.4vh;
-      margin-right: -0.4vh;
-      .flex {
-        padding-left: 0.4vh;
-        padding-right: 0.4vh;
-      }
-    }
-    .buttons-bottom-container {
-      margin-bottom: 1.6vh;
-    }
     .v-input.passwordless-email {
       margin-bottom: 0.8vh;
-      margin-top: 1.6vh;
       ::v-deep .v-input__control {
         .v-input__slot input {
           font-size: 1.7vh;
@@ -142,20 +103,8 @@
       font-size: 1.3vh;
       line-height: 1.2em;
     }
-    .buttons-container {
-      margin-left: -0.3vh;
-      margin-right: -0.3vh;
-      .flex {
-        padding-left: 0.3vh;
-        padding-right: 0.3vh;
-      }
-    }
-    .buttons-bottom-container {
-      margin-bottom: 1.6vh;
-    }
     .v-input.passwordless-email {
       margin-bottom: 0.6vh;
-      margin-top: 1.2vh;
       ::v-deep .v-input__control {
         .v-input__slot input {
           font-size: 1.5vh;
