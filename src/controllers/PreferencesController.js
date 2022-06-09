@@ -136,7 +136,11 @@ class PreferencesController extends SafeEventEmitter {
     return id
   }
 
-  approveToken(tokenRequestId) {
+  async approveToken(tokenRequestId) {
+    const tokenRequests = this.unApprovedTokensStore.getState()
+    const tokenData = tokenRequests[tokenRequestId]
+    // todo: normalize this tokenData;
+    await this.addCustomToken(tokenData)
     this._setMsgStatus(tokenRequestId, 'approved')
   }
 
