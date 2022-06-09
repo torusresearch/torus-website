@@ -111,11 +111,11 @@ class PreferencesController extends SafeEventEmitter {
       this.once(`${id}:finished`, (data) => {
         switch (data.status) {
           case 'signed':
-            return resolve(data.rawSig)
+            return resolve()
           case 'rejected':
-            return reject(ethErrors.provider.userRejectedRequest('Torus Message Signature: User denied message signature.'))
+            return reject(ethErrors.provider.userRejectedRequest('Torus Watch Asset: User denied watch asset request.'))
           default:
-            return reject(new Error(`Torus Message Signature: Unknown problem: ${JSON.stringify(tokenParameters)}`))
+            return reject(new Error(`Torus Watch Asset: Unknown problem: ${JSON.stringify(tokenParameters)}`))
         }
       })
     })
