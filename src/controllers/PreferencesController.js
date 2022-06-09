@@ -1,6 +1,7 @@
 import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import deepmerge from 'deepmerge'
+import { ethErrors } from 'eth-rpc-errors'
 import { hashPersonalMessage } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
@@ -18,6 +19,7 @@ import {
   BADGES_TRANSACTION,
   ERROR_TIME,
   ETHERSCAN_SUPPORTED_NETWORKS,
+  MESSAGE_TYPE,
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
@@ -95,6 +97,76 @@ class PreferencesController extends SafeEventEmitter {
     this.successStore = new ObservableStore('')
     this.billboardStore = new ObservableStore({})
     this.announcementsStore = new ObservableStore({})
+    this.unApprovedTokensStore = new ObservableStore({})
+  }
+
+  addUnapprovedTokenAsync(tokenParameters, request, id) {
+    return new Promise((resolve, reject) => {
+      this.addUnapprovedMessage(tokenParameters, request, id)
+      // await finished
+      this.once(`${id}:finished`, (data) => {
+        switch (data.status) {
+          case 'signed':
+            return resolve(data.rawSig)
+          case 'rejected':
+            return reject(ethErrors.provider.userRejectedRequest('Torus Message Signature: User denied message signature.'))
+          default:
+            return reject(new Error(`Torus Message Signature: Unknown problem: ${JSON.stringify(tokenParameters)}`))
+        }
+      })
+    })
+  }
+
+  addUnapprovedToken(tokenParameters, request, id) {
+    // add origin from request
+    if (request) tokenParameters.origin = request.origin
+    const time = Date.now()
+    const tokenData = {
+      id,
+      tokenParams: tokenParameters,
+      time,
+      status: 'unapproved',
+      type: MESSAGE_TYPE.WATCH_ASSET,
+    }
+
+    this._updateTokenRequest(tokenData)
+
+    // signal update
+    this.emit('update')
+    return id
+  }
+
+  approveToken(tokenRequestId) {
+    this._setMsgStatus(tokenRequestId, 'approved')
+  }
+
+  rejectToken(tokenRequestId) {
+    this._setMsgStatus(tokenRequestId, 'rejected')
+  }
+
+  _setTokenRequestStatus(requestId, status) {
+    const tokenRequest = this.getTokenRequest(requestId)
+    if (!tokenRequest) throw new Error(`Preferences - Token Request not found for id: "${requestId}".`)
+    tokenRequest.status = status
+    this._updateTokenRequest(tokenRequest)
+    this.emit(`${requestId}:${status}`, tokenRequest)
+    if (status === 'rejected' || status === 'signed') {
+      this.emit(`${requestId}:finished`, tokenRequest)
+    }
+  }
+
+  _updateTokenRequest(tokenData) {
+    this.unApprovedTokensStore.updateState({
+      unApprovedTokens: {
+        ...this.unApprovedTokensStore.getState(),
+        [tokenData.id]: tokenData,
+      },
+    })
+  }
+
+  getTokenRequest(tokenRequestId) {
+    const tokenRequests = { ...this.unApprovedTokensStore.getState() }
+    return tokenRequests[tokenRequestId]
   }
 
   headers(address) {

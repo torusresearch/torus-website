@@ -265,6 +265,11 @@ function handleConfirm(ev) {
       log.info('New txMeta: ', txMeta)
     }
     torusController.updateAndApproveTransaction(txMeta)
+  } else if (ev.data.txType === MESSAGE_TYPE.WATCH_ASSET) {
+    const msgParams = state.unApprovedTokens[ev.data.id]
+    log.info('WATCH ASSET MSG PARAMS:', msgParams)
+    msgParams.metamaskId = Number.parseInt(ev.data.id, 10)
+    torusController.approveWatchToken(msgParams)
   } else {
     throw new Error('No new transactions.')
   }
@@ -284,6 +289,8 @@ function handleDeny(id, txType) {
     torusController.cancelEncryptionPublicKey(Number.parseInt(id, 10))
   } else if (txType === MESSAGE_TYPE.ETH_DECRYPT) {
     torusController.cancelDecryptMessage(Number.parseInt(id, 10))
+  } else if (txType === MESSAGE_TYPE.WATCH_ASSET) {
+    torusController.cancelWatchToken(Number.parseInt(id, 10))
   }
 }
 
@@ -296,6 +303,9 @@ function getLatestMessageParameters(id) {
   } else if (VuexStore.state.unapprovedPersonalMsgs[id]) {
     message = VuexStore.state.unapprovedPersonalMsgs[id]
     type = MESSAGE_TYPE.PERSONAL_SIGN
+  } else if (VuexStore.state.unApprovedTokens[id]) {
+    message = VuexStore.state.unApprovedTokens[id]
+    type = MESSAGE_TYPE.WATCH_ASSET
   }
 
   // handle hex-based messages and convert to text

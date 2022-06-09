@@ -279,6 +279,7 @@ export default class TorusController extends SafeEventEmitter {
         })[0],
       processEncryptionPublicKey: this.newUnsignedEncryptionPublicKey.bind(this),
       processDecryptMessage: this.newUnsignedDecryptMessage.bind(this),
+      processAddToken: this.newUnapprovedToken.bind(this),
     }
     const providerProxy = this.networkController.initializeProvider(providerOptions)
     return providerProxy
@@ -458,6 +459,14 @@ export default class TorusController extends SafeEventEmitter {
     return promise
   }
 
+  newUnapprovedToken(tokenParameters, request) {
+    const id = createRandomId()
+    const promise = this.prefsController.addUnapprovedTokenAsync(tokenParameters, request, id)
+    this.sendUpdate()
+    this.opts.showUnconfirmedMessage(id, request)
+    return promise
+  }
+
   /**
    * Signifies user intent to complete an eth_sign method.
    *
@@ -490,6 +499,19 @@ export default class TorusController extends SafeEventEmitter {
   cancelMessage(messageId, callback) {
     const { messageManager } = this
     messageManager.rejectMsg(messageId)
+    if (callback && typeof callback === 'function') {
+      return callback(null, this.getState())
+    }
+    return undefined
+  }
+
+  approveWatchToken(tokenRequestId) {
+    log.info('MetaMaskController - signMessage')
+    return this.prefsController.approveToken(tokenRequestId).then(() => this.getState())
+  }
+
+  cancelWatchToken(tokenRequestId, callback) {
+    this.prefsController.rejectToken(tokenRequestId)
     if (callback && typeof callback === 'function') {
       return callback(null, this.getState())
     }

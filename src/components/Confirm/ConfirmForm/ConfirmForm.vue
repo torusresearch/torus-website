@@ -200,7 +200,17 @@
         </v-flex>
       </v-layout>
     </template>
-
+    <template v-if="type === MESSAGE_TYPE.WATCH_ASSET">
+      <AddTokenConfirm
+        :balance="balance"
+        :symbol="msgParams.symbol"
+        :decimals="msgParams.decimals"
+        :address="msgParams.address"
+        :image="msgParams.image"
+        @triggerAddCustomToken="triggerSign"
+        @triggerRejectCustomToken="triggerDeny"
+      />
+    </template>
     <template
       v-if="
         type === MESSAGE_TYPE.PERSONAL_SIGN ||
@@ -395,6 +405,7 @@ import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import TransactionFee from '../../helpers/TransactionFee'
 import TransactionSpeedSelect from '../../helpers/TransactionSpeedSelect'
+import AddTokenConfirm from '../AddTokenConfirm'
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
 
@@ -406,6 +417,7 @@ export default {
     TransactionSpeedSelect,
     NetworkDisplay,
     ShowToolTip,
+    AddTokenConfirm,
   },
   props: {
     currentConfirmModal: {
@@ -482,6 +494,7 @@ export default {
       londonSpeedTiming: '',
       initialMaxFeePerGas: new BigNumber(0),
       initialMaxPriorityFeePerGas: new BigNumber(0),
+      msgParams: {},
     }
   },
   computed: {
@@ -615,8 +628,20 @@ export default {
     ...mapActions(['decryptMessage']),
     async updateConfirmModal() {
       if (!this.currentConfirmModal) return
-      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, currencyData, network, networkDetails, gasFees } =
-        this.currentConfirmModal || {}
+      const {
+        type,
+        msgParams,
+        txParams,
+        origin,
+        balance,
+        selectedCurrency,
+        tokenRates,
+        currencyData,
+        network,
+        networkDetails,
+        gasFees,
+        addTokenParams,
+      } = this.currentConfirmModal || {}
       this.selectedCurrency = selectedCurrency
       this.currencyData = currencyData
       this.balance = new BigNumber(balance)
@@ -624,6 +649,9 @@ export default {
       this.gasFees = gasFees
       log.info({ msgParams, txParams, gasFees })
       this.origin = origin || this.origin
+      if (type === MESSAGE_TYPE.WATCH_ASSET) {
+        this.msgParams = addTokenParams
+      }
       if (type === MESSAGE_TYPE.ETH_DECRYPT) {
         const { msgParams: { data, from } = {}, id = '' } = msgParams || {}
         this.id = id
