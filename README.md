@@ -9,7 +9,7 @@
 ## Project setup
 
 ```sh
-npm install
+npm install --legacy-peer-deps
 find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
 

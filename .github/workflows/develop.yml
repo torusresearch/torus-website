@@ -39,7 +39,7 @@ jobs:
             ${{ matrix.os }}-node-
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Pre-build setup
         run: npm run pre-build
@@ -86,7 +86,7 @@ jobs:
             ${{ matrix.os }}-node-
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Run build
         run: npm run build:testing
@@ -146,7 +146,7 @@ jobs:
             ${{ matrix.os }}-node-
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Run build
         run: npm run build:lrc
