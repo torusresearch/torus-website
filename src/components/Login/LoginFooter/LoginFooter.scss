@@ -10,3 +10,20 @@
     font-size: 12px;
   }
 }
+
+.self-custodial-footer {
+  &__title {
+    color: var(--v-text_2-base);
+  }
+  &__how {
+    color: #979797;
+  }
+  &.theme--dark {
+    .self-custodial-footer__title {
+      color: #b7b8bd;
+    }
+    .self-custodial-footer__how {
+      color: #979797;
+    }
+  }
+}

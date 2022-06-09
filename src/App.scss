@@ -2,7 +2,7 @@
 
 .torus-app.v-application {
   @media (min-width: 1904px) {
-    .container {
+    .container:not(.container--fluid) {
       max-width: 1400px;
     }
   }
@@ -223,7 +223,7 @@
       border-radius: 6px;
     }
   }
-  
+
   .v-btn.v-btn--text {
     &:focus {
       color: var(--v-torusBrand2-base) !important;

@@ -17,42 +17,27 @@
           <div class="buttons-holder">
             <LoginButtons :login-buttons-array="loginButtonsArray" :is-popup="true" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
           </div>
-          <div
-            v-if="!canHideDisclaimer1 && !viewMoreOptions && thirdPartyAuthenticators.length > 0"
-            class="text_3--text footer-notes"
-            :class="$vuetify.breakpoint.xsOnly ? 'pb-13' : ''"
-          >
-            <span>{{ t('dappLogin.termsAuth01') }}</span>
-            <br />
-            <span>{{ thirdPartyAuthenticators }}.</span>
-            <a
-              class="privacy-learn-more text_3--text"
-              href="https://docs.tor.us/key-infrastructure/role-of-torus-nodes/oauth2-vs-proxy-sign-in"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              {{ t('dappLogin.termsLearnMore') }}
-            </a>
-          </div>
-          <div class="d-flex justify-center footer-links pt-3 pb-4" :class="{ smallScreen: $vuetify.breakpoint.width < 385 }">
-            <div>
-              <a class="text-decoration-none text_2--text" :href="tncLink" target="_blank" rel="noreferrer noopener">
-                {{ t('dappLogin.termsConditions') }}
-              </a>
-            </div>
-            <v-spacer></v-spacer>
-            <div>
-              <a class="text-decoration-none text_2--text" :href="privacyPolicy" target="_blank" rel="noreferrer noopener">
-                {{ t('dappLogin.privacyPolicy') }}
-              </a>
-            </div>
-            <v-spacer></v-spacer>
-            <div v-if="!whiteLabel.isActive">
-              <div class="d-flex align-center mb-2">
-                <span class="text_2--text mr-1">{{ t('dappLogin.poweredBy') }}</span>
-                <img alt="Torus Logo" height="10" :src="getLogo.logo" />
+          <div v-if="!canHideDisclaimer1 && !viewMoreOptions && thirdPartyAuthenticators.length > 0" class="text_3--text footer-notes">
+            <div class="mb-2 text_1--text">{{ t('login.note') }}:</div>
+            <div class="mb-5">{{ t('login.dataPrivacy') }}</div>
+            <div class="d-flex justify-center footer-links pt-3 pb-4">
+              <div>
+                <a class="text-decoration-none text_2--text d-block d-sm-inline" :href="tncLink" target="_blank" rel="noreferrer noopener">
+                  {{ t('dappLogin.termsConditions') }}
+                </a>
+                <span class="d-none d-sm-inline">|</span>
+                <a class="text-decoration-none text_2--text d-block d-sm-inline" :href="privacyPolicy" target="_blank" rel="noreferrer noopener">
+                  {{ t('dappLogin.privacyPolicy') }}
+                </a>
+                <div class="caption text-left text_2--text font-italic">{{ t('dappLogin.version').replace(/\{version\}/gi, appVersion) }}</div>
               </div>
-              <div class="caption text-right text_2--text font-italic">{{ t('dappLogin.version').replace(/\{version\}/gi, appVersion) }}</div>
+              <v-spacer></v-spacer>
+              <div>
+                <div class="caption text-right text_2--text">{{ t('dappLogin.selfCustodial') }}</div>
+                <div class="text-right">
+                  <img height="15" :src="require(`../../../assets/images/web3auth${$vuetify.theme.dark ? '' : '-dark'}.svg`)" alt="web3auth logo" />
+                </div>
+              </div>
             </div>
           </div>
         </v-card>
