@@ -16,6 +16,7 @@ export default function createMetamaskMiddleware({
   getPendingTransactionByHash,
   processEncryptionPublicKey,
   processDecryptMessage,
+  processWatchAsset,
 }) {
   const metamaskMiddleware = mergeMiddleware([
     createScaffoldMiddleware({
@@ -34,11 +35,37 @@ export default function createMetamaskMiddleware({
       processEncryptionPublicKey,
       processDecryptMessage,
     }),
+    createWatchTokenMiddleware({ processWatchAsset }),
     createRequestAccountsMiddleware({ getAccounts }),
     createPendingNonceMiddleware({ getPendingNonce }),
     createPendingTxMiddleware({ getPendingTransactionByHash }),
   ])
   return metamaskMiddleware
+}
+
+export function createWatchTokenMiddleware({ processWatchAsset }) {
+  return createAsyncMiddleware(async (request, response, next) => {
+    if (request.method !== 'wallet_watchAsset') return next()
+    const type = request.params[0]
+    const options = request.params[1]
+    /**
+     * {
+          type: 'ERC20',
+          options: {
+            address: '0xb60e8dd61c5d32be8058bb8eb970870f07233155',
+            symbol: 'FOO',
+            decimals: 18,
+            image: 'https://foo.io/token-image.svg',
+          }
+       }
+     */
+    const tokenDataParams = {
+      type,
+      options,
+    }
+    response.result = await processWatchAsset(tokenDataParams)
+    return undefined
+  })
 }
 
 export function createPendingNonceMiddleware({ getPendingNonce }) {

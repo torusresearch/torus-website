@@ -33,7 +33,9 @@ import {
   getIFrameOrigin,
   getUserLanguage,
   isMain,
+  normalizeWatchAssetParams,
   storageAvailable,
+  validateWatchAssetParams,
   waitForMs,
 } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
@@ -100,9 +102,11 @@ class PreferencesController extends SafeEventEmitter {
     this.unApprovedTokensStore = new ObservableStore({})
   }
 
-  addUnapprovedTokenAsync(tokenParameters, request, id) {
+  async addUnapprovedTokenAsync(tokenParameters, request, id) {
+    await validateWatchAssetParams(tokenParameters, this.web3)
+    const normalizedTokenParams = await normalizeWatchAssetParams(tokenParameters, this.web3)
     return new Promise((resolve, reject) => {
-      this.addUnapprovedMessage(tokenParameters, request, id)
+      this.addUnapprovedMessage(normalizedTokenParams, request, id)
       // await finished
       this.once(`${id}:finished`, (data) => {
         switch (data.status) {
@@ -139,8 +143,15 @@ class PreferencesController extends SafeEventEmitter {
   async approveToken(tokenRequestId) {
     const tokenRequests = this.unApprovedTokensStore.getState()
     const tokenData = tokenRequests[tokenRequestId]
-    // todo: normalize this tokenData;
-    await this.addCustomToken(tokenData)
+    const { address, symbol, decimals } = tokenData.options
+    const { network, name } = tokenData.metadata
+    await this.addCustomToken({
+      token_address: address,
+      network,
+      token_symbol: symbol,
+      token_name: name || symbol,
+      decimals,
+    })
     this._setMsgStatus(tokenRequestId, 'approved')
   }
 

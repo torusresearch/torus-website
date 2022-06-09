@@ -279,7 +279,7 @@ export default class TorusController extends SafeEventEmitter {
         })[0],
       processEncryptionPublicKey: this.newUnsignedEncryptionPublicKey.bind(this),
       processDecryptMessage: this.newUnsignedDecryptMessage.bind(this),
-      processAddToken: this.newUnapprovedToken.bind(this),
+      processWatchAsset: this.newUnapprovedToken.bind(this),
     }
     const providerProxy = this.networkController.initializeProvider(providerOptions)
     return providerProxy

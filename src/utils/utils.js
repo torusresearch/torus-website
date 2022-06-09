@@ -2,11 +2,13 @@ import { concatSig } from '@metamask/eth-sig-util'
 import * as rskUtils from '@rsksmart/rsk-utils'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
+import { ethErrors } from 'eth-rpc-errors'
 import { addHexPrefix, BN, ecsign, keccak, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
+import TokenHandler from '../handlers/Token/TokenHandler'
 import { languageMap } from '../plugins/i18n-setup'
 import {
   ACCOUNT_TYPE,
@@ -27,6 +29,7 @@ import {
   BSC_MAINNET_CODE,
   BSC_TESTNET_CHAIN_ID,
   BSC_TESTNET_CODE,
+  CHAIN_ID_TO_TYPE_MAP,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
@@ -1007,4 +1010,41 @@ export function generateTorusAuthHeaders(privateKey, publicAddress) {
     'Auth-Public-Address': publicAddress,
   }
   return authHeaders
+}
+
+export async function validateWatchAssetParams(tokenParams, web3) {
+  if (tokenParams.type !== 'erc20') {
+    throw ethErrors.rpc.invalidParams('Invalid watch token params: only erc20 token type is supported.')
+  }
+  const { address } = tokenParams.options || {}
+  if (!address) throw ethErrors.rpc.invalidParams('Invalid watch token params: token address is required.')
+  const chainId = await web3.eth.getChainId()
+  const isValidAddress = await validateContractAddress(web3, address, chainId)
+  if (!isValidAddress) throw ethErrors.rpc.invalidParams(`Invalid watch token params: Invalid token address ${address}`)
+}
+
+export async function normalizeWatchAssetParams(tokenParams, web3) {
+  const { address, decimals, symbol } = tokenParams.options || {}
+  if (!address) throw ethErrors.rpc.invalidParams('Invalid watch token params: token address is required.')
+  const tokenHandler = new TokenHandler({ address: address.toLowerCase(), web3 })
+  const options = tokenParams.options || {}
+  if (!decimals) options.decimals = await tokenHandler.getDecimals()
+  if (!symbol) options.symbol = await tokenHandler.getSymbol()
+  const chainId = await web3.eth.getChainId()
+  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const network = CHAIN_ID_TO_TYPE_MAP[parsedChainId]
+  const name = await tokenHandler.getName()
+  const metadata = {
+    network: network || 'custom',
+    name,
+  }
+  const finalParams = {
+    ...tokenParams,
+    options: {
+      ...tokenParams,
+      ...options,
+    },
+    metadata,
+  }
+  return finalParams
 }

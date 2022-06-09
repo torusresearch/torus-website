@@ -3,9 +3,6 @@
     <v-layout class="card-header" wrap>
       <v-flex text-center xs12 py-10 px-6>
         <div class="display-1">{{ isHideMode ? t('homeToken.hideTokens') : t('homeToken.addTokens') }}</div>
-        <v-btn class="close-btn" icon aria-label="Close Add Token" title="Close Add Token" @click="closeForm">
-          <v-icon>$vuetify.icons.close</v-icon>
-        </v-btn>
       </v-flex>
     </v-layout>
     <v-layout mx-6 pt-6 pb-4 wrap>
@@ -23,12 +20,12 @@
       </v-flex>
       <v-flex xs8>
         <div class="d-flex align-center">
-          <img :src="`${logosUrl}/eth.svg`" class="inline-small d-inline-flex" height="36" />
-          <div class="ml-2 body-1">{{ customName }}</div>
+          <img :src="`${image}`" class="inline-small d-inline-flex" height="36" />
+          <div class="ml-2 body-1">{{ name }}</div>
         </div>
       </v-flex>
       <v-flex xs4 text-right>
-        <div class="body-2">{{ customBalance }}</div>
+        <div class="body-2">{{ balance }}</div>
       </v-flex>
     </v-layout>
     <v-layout v-if="isHideMode" mb-15 mx-6 wrap>
@@ -61,9 +58,9 @@
 import { mapState } from 'vuex'
 
 import config from '../../../config'
-// import TokenHandler from '../../../handlers/Token/TokenHandler'
 
 export default {
+  name: 'AddTokenConfirm',
   props: {
     address: {
       type: String,
@@ -71,13 +68,11 @@ export default {
     },
     symbol: {
       type: String,
-      required: false,
-      default: '',
+      required: true,
     },
     decimals: {
       type: String,
-      required: false,
-      default: '',
+      required: true,
     },
     balance: {
       type: String,
@@ -86,7 +81,7 @@ export default {
     image: {
       type: String,
       required: false,
-      default: '',
+      default: `${this.logosUrl}/eth.svg`,
     },
   },
   data() {
