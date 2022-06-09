@@ -43,7 +43,7 @@ jobs:
             ${{ matrix.os }}-node-
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Pre-build setup
         run: npm run pre-build

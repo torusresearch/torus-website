@@ -99,7 +99,7 @@
     </template>
     <template v-else>
       <v-container class="spinner" fluid :class="$vuetify.theme.dark ? 'torus-dark' : ''">
-        <BoxLoader />
+        <BoxLoader :force-spinner="true" />
         <p class="bottom-text text-body-1 text-center font-weight-medium">
           {{ t('login.loader') }}
         </p>
