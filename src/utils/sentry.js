@@ -31,10 +31,7 @@ export function installSentry(Vue) {
       new BrowserTracing({
         tracingOrigins: [
           config.api,
-          config.metadataHost,
           config.commonApiHost,
-          config.openLoginUrl,
-          config.tkeyEmailHost,
           config.simplexApiHost,
           config.moonpayApiHost,
           config.wyreApiHost,
