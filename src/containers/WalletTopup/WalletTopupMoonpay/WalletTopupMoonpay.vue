@@ -3,6 +3,7 @@
     selected-provider="moonpay"
     :crypto-currency-value="cryptoCurrencyValue"
     :currency-rate="currencyRate"
+    :fetch-quote-error="fetchQuoteError"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
     @clearQuote="clearQuote"
@@ -15,6 +16,7 @@ import log from 'loglevel'
 import { mapState } from 'vuex'
 
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
+import cleanTopupQuoteError from '../../../utils/cleanTopupQuoteError'
 
 export default {
   components: {
@@ -25,12 +27,14 @@ export default {
       cryptoCurrencyValue: 0,
       currencyRate: 0,
       currentOrder: {},
+      fetchQuoteError: '',
     }
   },
   computed: mapState(['selectedAddress']),
   methods: {
     fetchQuote(payload) {
       const self = this
+      this.fetchQuoteError = ''
       throttle(() => {
         self.$store
           .dispatch('fetchMoonpayQuote', payload)
@@ -39,7 +43,14 @@ export default {
             self.currencyRate = result.quoteCurrencyAmount / result.totalAmount
             self.currentOrder = result
           })
-          .catch((error) => log.error(error))
+          .catch(async (error) => {
+            this.fetchQuoteError = await cleanTopupQuoteError(error)
+            log.error(error)
+
+            this.cryptoCurrencyValue = 0
+            this.currencyRate = 0
+            this.currentOrder = {}
+          })
       }, 0)()
     },
     sendOrder(callback) {

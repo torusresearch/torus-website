@@ -109,7 +109,7 @@
                 <span v-on="on">
                   <v-btn
                     class="px-8 white--text gmt-topup"
-                    :disabled="!formValid || !isQuoteFetched"
+                    :disabled="!formValid || !isQuoteFetched || !!fetchQuoteError"
                     large
                     depressed
                     color="torusBrand1"
@@ -158,6 +158,10 @@ export default {
     currencyRate: {
       type: [Number, String],
       default: 0,
+    },
+    fetchQuoteError: {
+      type: String,
+      default: '',
     },
   },
   data() {
@@ -238,6 +242,16 @@ export default {
   watch: {
     cryptoCurrencyValue(newValue, oldValue) {
       if (newValue !== oldValue && Number.parseFloat(newValue) > 0) this.isQuoteFetched = true
+    },
+    fetchQuoteError(newValue) {
+      if (newValue) {
+        this.snackbar = true
+        this.snackbarColor = 'error'
+        this.snackbarText = newValue
+      } else {
+        this.snackbar = false
+        this.snackbarText = ''
+      }
     },
   },
   mounted() {
