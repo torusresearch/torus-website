@@ -260,7 +260,7 @@ class PreferencesController extends SafeEventEmitter {
       }
       return undefined
     } catch (error) {
-      log.error(error)
+      log.warn(error)
       return undefined
     } finally {
       Promise.all([
