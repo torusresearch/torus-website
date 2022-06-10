@@ -337,7 +337,11 @@
               <TransactionSpeedSelect
                 v-else
                 :reset-speed="resetSpeed"
-                :symbol="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 ? selectedItem.symbol : networkType.ticker"
+                :symbol="
+                  contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && selectedItem
+                    ? selectedItem.symbol
+                    : networkType.ticker
+                "
                 :contract-type="contractType"
                 :network-ticker="networkType.ticker"
                 :gas="gas"
@@ -390,7 +394,7 @@
                             !!toggle_exclusive
                               ? contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155
                                 ? ''
-                                : selectedItem.symbol
+                                : selectedItem && selectedItem.symbol
                               : selectedCurrency
                           }`
                         : ''
@@ -399,7 +403,7 @@
                       !toggle_exclusive
                         ? contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155
                           ? ''
-                          : selectedItem.symbol
+                          : selectedItem && selectedItem.symbol
                         : selectedCurrency
                     }`"
                     :asset-selected="contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155 ? assetSelected : {}"
