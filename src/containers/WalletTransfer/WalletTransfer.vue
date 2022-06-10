@@ -54,7 +54,7 @@
                   <v-menu transition="slide-y-transition" bottom>
                     <template #activator="{ on }">
                       <v-btn class="select-coin" label :outlined="$vuetify.theme.dark" v-on="on">
-                        <span class="select-coin-name">{{ selectedItemDisplay.name }}</span>
+                        <span class="select-coin-name">{{ selectedItemDisplay && selectedItemDisplay.name }}</span>
                         <div class="flex-grow-1 text-right pr-2">
                           <v-icon right>$vuetify.icons.select</v-icon>
                         </div>
@@ -247,7 +247,11 @@
                   id="you-send"
                   ref="youSend"
                   :hint="
-                    amount <= 0 ? '' : convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''
+                    amount <= 0
+                      ? ''
+                      : convertedAmount
+                      ? `~ ${convertedAmount} ${!!toggle_exclusive && selectedItem ? selectedItem.symbol : selectedCurrency}`
+                      : ''
                   "
                   persistent-hint
                   type="number"
@@ -1148,6 +1152,7 @@ export default {
       }
     },
     sendAll() {
+      if (!this.selectedItem) return
       const ethBalance = this.selectedItem.computedBalance
       const currencyBalance = ethBalance.times(this.getCurrencyTokenRate)
       const ethGasPrice = this.getEthAmount(this.gas, this.activeGasPrice)
