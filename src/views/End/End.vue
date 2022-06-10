@@ -127,7 +127,7 @@ export default {
       if (state.tKey && state.tKey !== state.walletKey) {
         const ethAddress = torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex'))
         keys.push({
-          privKey: state.tKey,
+          privKey: state.tKey.padStart(64, '0'),
           accountType: ACCOUNT_TYPE.THRESHOLD,
           ethAddress: torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex')),
         })
@@ -135,7 +135,7 @@ export default {
       }
       if (state.oAuthPrivateKey) {
         postboxKey = {
-          privKey: state.oAuthPrivateKey,
+          privKey: state.oAuthPrivateKey.padStart(64, '0'),
           ethAddress: torus.generateAddressFromPrivKey(new BN(state.oAuthPrivateKey, 'hex')),
         }
       }
