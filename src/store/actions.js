@@ -46,6 +46,7 @@ import {
   tokenRatesControllerHandler,
   transactionControllerHandler,
   typedMessageManagerHandler,
+  unapprovedAssetMsgsHandler,
   unapprovedDecryptMsgsHandler,
   walletConnectHandler,
 } from './controllerSubscriptions'
@@ -70,6 +71,7 @@ const {
   walletConnectController,
   encryptionPublicKeyManager,
   decryptMessageManager,
+  watchAssetManager,
 } = torusController || {}
 
 // stream to send logged in status
@@ -145,6 +147,7 @@ export default {
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
     resetStore(encryptionPublicKeyManager.store, encryptionPublicKeyHandler)
     resetStore(decryptMessageManager.store, unapprovedDecryptMsgsHandler)
+    resetStore(watchAssetManager.store, unapprovedAssetMsgsHandler)
     assetDetectionController.stopAssetDetection()
     // torus.updateStaticData({ isUnlocked: false })
     if (isMain && selectedAddress) {
@@ -479,6 +482,7 @@ export default {
     walletConnectController.store.subscribe(walletConnectHandler)
     encryptionPublicKeyManager.store.subscribe(encryptionPublicKeyHandler)
     decryptMessageManager.store.subscribe(unapprovedDecryptMsgsHandler)
+    watchAssetManager.store.subscribe(unapprovedAssetMsgsHandler)
   },
   async initTorusKeyring({ dispatch, commit, state }, payload) {
     const { keys, calledFromEmbed, rehydrate, postboxAddress } = payload

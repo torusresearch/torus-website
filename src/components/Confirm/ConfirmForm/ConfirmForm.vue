@@ -201,12 +201,13 @@
       </v-layout>
     </template>
     <template v-if="type === MESSAGE_TYPE.WATCH_ASSET">
-      <AddTokenConfirm
-        :balance="balance"
-        :symbol="msgParams.symbol"
-        :decimals="msgParams.decimals"
-        :address="msgParams.address"
-        :image="msgParams.image"
+      <AddAssetConfirm
+        :balance="balance.toNumber()"
+        :symbol="assetParams.options.symbol"
+        :name="assetParams.metadata.name"
+        :decimals="assetParams.options.decimals"
+        :address="assetParams.options.address"
+        :image="assetParams.options.image"
         @triggerAddCustomToken="triggerSign"
         @triggerRejectCustomToken="triggerDeny"
       />
@@ -405,7 +406,7 @@ import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import TransactionFee from '../../helpers/TransactionFee'
 import TransactionSpeedSelect from '../../helpers/TransactionSpeedSelect'
-import AddTokenConfirm from '../AddTokenConfirm'
+import AddAssetConfirm from '../AddAssetConfirm'
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
 
@@ -417,7 +418,7 @@ export default {
     TransactionSpeedSelect,
     NetworkDisplay,
     ShowToolTip,
-    AddTokenConfirm,
+    AddAssetConfirm,
   },
   props: {
     currentConfirmModal: {
@@ -494,7 +495,11 @@ export default {
       londonSpeedTiming: '',
       initialMaxFeePerGas: new BigNumber(0),
       initialMaxPriorityFeePerGas: new BigNumber(0),
-      msgParams: {},
+      assetParams: {
+        type: '',
+        options: {},
+        metadata: {},
+      },
     }
   },
   computed: {
@@ -628,20 +633,8 @@ export default {
     ...mapActions(['decryptMessage']),
     async updateConfirmModal() {
       if (!this.currentConfirmModal) return
-      const {
-        type,
-        msgParams,
-        txParams,
-        origin,
-        balance,
-        selectedCurrency,
-        tokenRates,
-        currencyData,
-        network,
-        networkDetails,
-        gasFees,
-        addTokenParams,
-      } = this.currentConfirmModal || {}
+      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, currencyData, network, networkDetails, gasFees } =
+        this.currentConfirmModal || {}
       this.selectedCurrency = selectedCurrency
       this.currencyData = currencyData
       this.balance = new BigNumber(balance)
@@ -650,7 +643,7 @@ export default {
       log.info({ msgParams, txParams, gasFees })
       this.origin = origin || this.origin
       if (type === MESSAGE_TYPE.WATCH_ASSET) {
-        this.msgParams = addTokenParams
+        this.assetParams = { ...msgParams.msgParams.assetParams }
       }
       if (type === MESSAGE_TYPE.ETH_DECRYPT) {
         const { msgParams: { data, from } = {}, id = '' } = msgParams || {}

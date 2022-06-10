@@ -102,7 +102,6 @@ const VuexStore = new Vuex.Store({
       const windowId = isTx ? payload.id : payload
       const channelName = `torus_channel_${windowId}`
       const finalUrl = `${baseRoute}confirm?instanceId=${windowId}&integrity=true&id=${windowId}`
-
       const popupPayload = {
         id: windowId,
         origin: getIFrameOriginObject(),
@@ -266,10 +265,7 @@ function handleConfirm(ev) {
     }
     torusController.updateAndApproveTransaction(txMeta)
   } else if (ev.data.txType === MESSAGE_TYPE.WATCH_ASSET) {
-    const msgParams = state.unApprovedTokens[ev.data.id]
-    log.info('WATCH ASSET MSG PARAMS:', msgParams)
-    msgParams.metamaskId = Number.parseInt(ev.data.id, 10)
-    torusController.approveWatchToken(msgParams)
+    torusController.approveWatchAsset(ev.data.id)
   } else {
     throw new Error('No new transactions.')
   }
@@ -290,7 +286,7 @@ function handleDeny(id, txType) {
   } else if (txType === MESSAGE_TYPE.ETH_DECRYPT) {
     torusController.cancelDecryptMessage(Number.parseInt(id, 10))
   } else if (txType === MESSAGE_TYPE.WATCH_ASSET) {
-    torusController.cancelWatchToken(Number.parseInt(id, 10))
+    torusController.cancelWatchAsset(Number.parseInt(id, 10))
   }
 }
 
@@ -303,9 +299,6 @@ function getLatestMessageParameters(id) {
   } else if (VuexStore.state.unapprovedPersonalMsgs[id]) {
     message = VuexStore.state.unapprovedPersonalMsgs[id]
     type = MESSAGE_TYPE.PERSONAL_SIGN
-  } else if (VuexStore.state.unApprovedTokens[id]) {
-    message = VuexStore.state.unApprovedTokens[id]
-    type = MESSAGE_TYPE.WATCH_ASSET
   }
 
   // handle hex-based messages and convert to text
@@ -333,6 +326,13 @@ function getLatestMessageParameters(id) {
   if (VuexStore.state.unapprovedDecryptMsgs[id]) {
     message = VuexStore.state.unapprovedDecryptMsgs[id]
     type = MESSAGE_TYPE.ETH_DECRYPT
+  }
+
+  if (VuexStore.state.unApprovedAssets[id]) {
+    message = {
+      msgParams: VuexStore.state.unApprovedAssets[id],
+    }
+    type = MESSAGE_TYPE.WATCH_ASSET
   }
 
   return message ? { msgParams: message.msgParams, id, type } : {}

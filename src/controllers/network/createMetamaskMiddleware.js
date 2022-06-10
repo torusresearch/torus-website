@@ -1,7 +1,7 @@
 import { createAsyncMiddleware, createScaffoldMiddleware, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
 import { createWalletMiddleware } from 'eth-json-rpc-middleware'
 
-import { TRANSACTION_ENVELOPE_TYPES } from '../../utils/enums'
+import { MESSAGE_TYPE, TRANSACTION_ENVELOPE_TYPES } from '../../utils/enums'
 
 export default function createMetamaskMiddleware({
   version,
@@ -35,7 +35,7 @@ export default function createMetamaskMiddleware({
       processEncryptionPublicKey,
       processDecryptMessage,
     }),
-    createWatchTokenMiddleware({ processWatchAsset }),
+    createWatchAssetMiddleware({ processWatchAsset }),
     createRequestAccountsMiddleware({ getAccounts }),
     createPendingNonceMiddleware({ getPendingNonce }),
     createPendingTxMiddleware({ getPendingTransactionByHash }),
@@ -43,12 +43,12 @@ export default function createMetamaskMiddleware({
   return metamaskMiddleware
 }
 
-export function createWatchTokenMiddleware({ processWatchAsset }) {
+export function createWatchAssetMiddleware({ processWatchAsset }) {
   return createAsyncMiddleware(async (request, response, next) => {
-    if (request.method !== 'wallet_watchAsset') return next()
-    const type = request.params[0]
-    const options = request.params[1]
+    if (request.method !== MESSAGE_TYPE.WATCH_ASSET) return next()
+
     /**
+     * request.params
      * {
           type: 'ERC20',
           options: {
@@ -59,11 +59,12 @@ export function createWatchTokenMiddleware({ processWatchAsset }) {
           }
        }
      */
-    const tokenDataParams = {
-      type,
-      options,
-    }
-    response.result = await processWatchAsset(tokenDataParams)
+
+    const { type, options = {} } = request.params || {}
+    if (!type) throw new Error('createWatchAssetMiddleware - params.type not provided')
+    if (!options.address) throw new Error('createWatchAssetMiddleware - params.options.address not provided')
+
+    response.result = await processWatchAsset(request.params, request)
     return undefined
   })
 }

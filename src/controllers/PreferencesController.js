@@ -1,7 +1,6 @@
 import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import deepmerge from 'deepmerge'
-import { ethErrors } from 'eth-rpc-errors'
 import { hashPersonalMessage } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
@@ -19,7 +18,6 @@ import {
   BADGES_TRANSACTION,
   ERROR_TIME,
   ETHERSCAN_SUPPORTED_NETWORKS,
-  MESSAGE_TYPE,
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
@@ -33,9 +31,7 @@ import {
   getIFrameOrigin,
   getUserLanguage,
   isMain,
-  normalizeWatchAssetParams,
   storageAvailable,
-  validateWatchAssetParams,
   waitForMs,
 } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
@@ -100,88 +96,6 @@ class PreferencesController extends SafeEventEmitter {
     this.billboardStore = new ObservableStore({})
     this.announcementsStore = new ObservableStore({})
     this.unApprovedTokensStore = new ObservableStore({})
-  }
-
-  async addUnapprovedTokenAsync(tokenParameters, request, id) {
-    await validateWatchAssetParams(tokenParameters, this.web3)
-    const normalizedTokenParams = await normalizeWatchAssetParams(tokenParameters, this.web3)
-    return new Promise((resolve, reject) => {
-      this.addUnapprovedMessage(normalizedTokenParams, request, id)
-      // await finished
-      this.once(`${id}:finished`, (data) => {
-        switch (data.status) {
-          case 'signed':
-            return resolve()
-          case 'rejected':
-            return reject(ethErrors.provider.userRejectedRequest('Torus Watch Asset: User denied watch asset request.'))
-          default:
-            return reject(new Error(`Torus Watch Asset: Unknown problem: ${JSON.stringify(tokenParameters)}`))
-        }
-      })
-    })
-  }
-
-  addUnapprovedToken(tokenParameters, request, id) {
-    // add origin from request
-    if (request) tokenParameters.origin = request.origin
-    const time = Date.now()
-    const tokenData = {
-      id,
-      tokenParams: tokenParameters,
-      time,
-      status: 'unapproved',
-      type: MESSAGE_TYPE.WATCH_ASSET,
-    }
-
-    this._updateTokenRequest(tokenData)
-
-    // signal update
-    this.emit('update')
-    return id
-  }
-
-  async approveToken(tokenRequestId) {
-    const tokenRequests = this.unApprovedTokensStore.getState()
-    const tokenData = tokenRequests[tokenRequestId]
-    const { address, symbol, decimals } = tokenData.options
-    const { network, name } = tokenData.metadata
-    await this.addCustomToken({
-      token_address: address,
-      network,
-      token_symbol: symbol,
-      token_name: name || symbol,
-      decimals,
-    })
-    this._setMsgStatus(tokenRequestId, 'approved')
-  }
-
-  rejectToken(tokenRequestId) {
-    this._setMsgStatus(tokenRequestId, 'rejected')
-  }
-
-  _setTokenRequestStatus(requestId, status) {
-    const tokenRequest = this.getTokenRequest(requestId)
-    if (!tokenRequest) throw new Error(`Preferences - Token Request not found for id: "${requestId}".`)
-    tokenRequest.status = status
-    this._updateTokenRequest(tokenRequest)
-    this.emit(`${requestId}:${status}`, tokenRequest)
-    if (status === 'rejected' || status === 'signed') {
-      this.emit(`${requestId}:finished`, tokenRequest)
-    }
-  }
-
-  _updateTokenRequest(tokenData) {
-    this.unApprovedTokensStore.updateState({
-      unApprovedTokens: {
-        ...this.unApprovedTokensStore.getState(),
-        [tokenData.id]: tokenData,
-      },
-    })
-  }
-
-  getTokenRequest(tokenRequestId) {
-    const tokenRequests = { ...this.unApprovedTokensStore.getState() }
-    return tokenRequests[tokenRequestId]
   }
 
   headers(address) {

@@ -15,6 +15,7 @@ import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, TRANSACTION_STATUSES } from '../u
 import createRandomId from '../utils/random-id'
 import { isMain } from '../utils/utils'
 import AccountTracker from './AccountTracker'
+import WatchAssetManager from './AddAssetsManager'
 import AssetContractController from './AssetsContractController'
 import AssetController from './AssetsController'
 import AssetDetectionController from './AssetsDetectionController'
@@ -109,6 +110,14 @@ export default class TorusController extends SafeEventEmitter {
       signMessage: this.keyringController.signMessage.bind(this.keyringController),
       storeDispatch: this.opts.storeDispatch,
     })
+
+    this.watchAssetManager = new WatchAssetManager({
+      network: this.networkController,
+      provider: this.provider,
+      prefsController: this.prefsController,
+    })
+
+    this.watchAssetManager.on('newUnapprovedAsset', (assetData, request) => options.showUnconfirmedMessage(assetData.id, request))
 
     this.permissionsController = new PermissionsController({
       getKeyringAccounts: this.keyringController.getAccounts.bind(this.keyringController),
@@ -213,6 +222,7 @@ export default class TorusController extends SafeEventEmitter {
       MessageManager: this.messageManager.store,
       PersonalMessageManager: this.personalMessageManager.store,
       DecryptMessageManager: this.decryptMessageManager.store,
+      WatchAssetManager: this.watchAssetManager.store,
       EncryptionPublicKeyManager: this.encryptionPublicKeyManager.store,
       TypesMessageManager: this.typedMessageManager.store,
       PreferencesController: this.prefsController.store,
@@ -279,7 +289,7 @@ export default class TorusController extends SafeEventEmitter {
         })[0],
       processEncryptionPublicKey: this.newUnsignedEncryptionPublicKey.bind(this),
       processDecryptMessage: this.newUnsignedDecryptMessage.bind(this),
-      processWatchAsset: this.newUnapprovedToken.bind(this),
+      processWatchAsset: this.newUnapprovedAsset.bind(this),
     }
     const providerProxy = this.networkController.initializeProvider(providerOptions)
     return providerProxy
@@ -459,12 +469,9 @@ export default class TorusController extends SafeEventEmitter {
     return promise
   }
 
-  newUnapprovedToken(tokenParameters, request) {
+  async newUnapprovedAsset(assetParameters, request) {
     const id = createRandomId()
-    const promise = this.prefsController.addUnapprovedTokenAsync(tokenParameters, request, id)
-    this.sendUpdate()
-    this.opts.showUnconfirmedMessage(id, request)
-    return promise
+    return this.watchAssetManager.addUnapprovedAssetAsync(assetParameters, request, id)
   }
 
   /**
@@ -505,13 +512,12 @@ export default class TorusController extends SafeEventEmitter {
     return undefined
   }
 
-  approveWatchToken(tokenRequestId) {
-    log.info('MetaMaskController - signMessage')
-    return this.prefsController.approveToken(tokenRequestId).then(() => this.getState())
+  approveWatchAsset(assetId) {
+    return this.watchAssetManager.approveAsset(assetId).then(() => this.getState())
   }
 
-  cancelWatchToken(tokenRequestId, callback) {
-    this.prefsController.rejectToken(tokenRequestId)
+  cancelWatchAsset(assetId, callback) {
+    this.watchAssetManager.rejectAsset(assetId)
     if (callback && typeof callback === 'function') {
       return callback(null, this.getState())
     }
