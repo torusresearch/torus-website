@@ -89,7 +89,8 @@
 
           <v-flex xs12 class="text-right">
             <div class="body-2">{{ t('walletTopUp.receive') }}</div>
-            <div class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrencyDisplay }}</div>
+            <ComponentLoader v-if="fetchingQuote" class="mt-1" />
+            <div v-else class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrencyDisplay }}</div>
             <div class="description">
               {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrencyDisplay }} = {{ displayRateString }} {{ selectedCurrency }}
             </div>
@@ -109,9 +110,10 @@
                 <span v-on="on">
                   <v-btn
                     class="px-8 white--text gmt-topup"
-                    :disabled="!formValid || !isQuoteFetched || !!fetchQuoteError"
+                    :disabled="!formValid || !isQuoteFetched || !!fetchQuoteError || fetchingQuote"
                     large
                     depressed
+                    :loading="fetchingQuote"
                     color="torusBrand1"
                     type="submit"
                     @click.prevent="sendOrder"
@@ -140,10 +142,12 @@ import { mapState } from 'vuex'
 
 import { RAMPNETWORK, XANPOOL } from '../../../utils/enums'
 import { broadcastChannelOptions, formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
+import ComponentLoader from '../../helpers/ComponentLoader'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
 export default {
   components: {
+    ComponentLoader,
     HelpTooltip,
   },
   props: {
@@ -158,6 +162,10 @@ export default {
     currencyRate: {
       type: [Number, String],
       default: 0,
+    },
+    fetchingQuote: {
+      type: Boolean,
+      default: false,
     },
     fetchQuoteError: {
       type: String,

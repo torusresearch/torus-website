@@ -3,6 +3,7 @@
     selected-provider="mercuryo"
     :crypto-currency-value="cryptoCurrencyValue"
     :currency-rate="currencyRate"
+    :fetching-quote="fetchingQuote"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
     @clearQuote="clearQuote"
@@ -25,6 +26,7 @@ export default {
       cryptoCurrencyValue: 0,
       currencyRate: 0,
       currentOrder: {},
+      fetchingQuote: false,
     }
   },
   computed: mapState(['selectedAddress']),
@@ -32,6 +34,7 @@ export default {
     fetchQuote(payload) {
       const self = this
       throttle(() => {
+        this.fetchingQuote = true
         self.$store
           .dispatch('fetchMercuryoQuote', payload)
           .then((result) => {
@@ -39,8 +42,12 @@ export default {
             self.currencyRate = Number.parseFloat(amount) / Number.parseFloat(fiat_amount)
             self.cryptoCurrencyValue = amount
             self.currentOrder = result.data
+            this.fetchingQuote = false
           })
-          .catch((error) => log.error(error))
+          .catch((error) => {
+            log.error(error)
+            this.fetchingQuote = false
+          })
       }, 0)()
     },
     sendOrder(callback) {

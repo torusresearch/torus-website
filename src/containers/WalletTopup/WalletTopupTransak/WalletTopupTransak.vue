@@ -4,6 +4,7 @@
     :crypto-currency-value="cryptoCurrencyValue"
     :currency-rate="currencyRate"
     :fetch-quote-error="fetchQuoteError"
+    :fetching-quote="fetchingQuote"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
     @clearQuote="clearQuote"
@@ -17,6 +18,14 @@ import { mapState } from 'vuex'
 
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 import cleanTopupQuoteError from '../../../utils/cleanTopupQuoteError'
+import { AVALANCHE_MAINNET, BSC_MAINNET, MAINNET, MATIC } from '../../../utils/enums'
+
+const TRANSAK_NETWORK_MAP = {
+  [MAINNET]: 'ethereum',
+  [BSC_MAINNET]: 'bsc',
+  [MATIC]: 'polygon',
+  [AVALANCHE_MAINNET]: 'avaxcchain',
+}
 
 export default {
   components: {
@@ -28,13 +37,16 @@ export default {
       currencyRate: 0,
       currentOrder: {},
       fetchQuoteError: '',
+      fetchingQuote: false,
     }
   },
-  computed: mapState(['selectedAddress']),
+  computed: mapState(['selectedAddress', 'networkType']),
   methods: {
     fetchQuote(payload) {
       const self = this
       this.fetchQuoteError = ''
+      this.fetchingQuote = true
+      payload.network = TRANSAK_NETWORK_MAP[this.networkType.host]
       throttle(() => {
         self.$store
           .dispatch('fetchTransakQuote', payload)
@@ -42,10 +54,12 @@ export default {
             self.cryptoCurrencyValue = result.response.cryptoAmount
             self.currencyRate = result.response.conversionPrice
             self.currentOrder = result.response
+            this.fetchingQuote = false
           })
           .catch(async (error) => {
             this.fetchQuoteError = await cleanTopupQuoteError(error)
             log.error(error)
+            this.fetchingQuote = false
 
             this.cryptoCurrencyValue = 0
             this.currencyRate = 0

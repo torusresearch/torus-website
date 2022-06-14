@@ -13,6 +13,7 @@ export default {
       digital_currency: payload.selectedCryptoCurrency && payload.selectedCryptoCurrency.toLowerCase(),
       fiat_currency: payload.selectedCurrency && payload.selectedCurrency.toLowerCase(),
       requested_amount: +Number.parseFloat(payload.fiatValue),
+      network: payload.network,
     })
   },
   fetchTransakOrder({ state, dispatch }, { currentOrder, colorCode, preopenInstanceId: preopenInstanceIdPayload, selectedAddress }) {

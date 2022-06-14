@@ -4,6 +4,7 @@
     :crypto-currency-value="cryptoCurrencyValue"
     :currency-rate="currencyRate"
     :fetch-quote-error="fetchQuoteError"
+    :fetching-quote="fetchingQuote"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
     @clearQuote="clearQuote"
@@ -28,6 +29,7 @@ export default {
       currencyRate: 0,
       currentOrder: {},
       fetchQuoteError: '',
+      fetchingQuote: false,
     }
   },
   computed: mapState(['selectedAddress']),
@@ -35,18 +37,20 @@ export default {
     fetchQuote(payload) {
       const self = this
       this.fetchQuoteError = ''
+      this.fetchingQuote = true
       throttle(() => {
         self.$store
           .dispatch('fetchSimplexQuote', payload)
           .then((result) => {
-            log.error('simplex result', result)
             self.cryptoCurrencyValue = result.result.digital_money.amount
             self.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
             self.currentOrder = result.result
+            this.fetchingQuote = false
           })
           .catch(async (error) => {
             this.fetchQuoteError = await cleanTopupQuoteError(error)
             log.error(error)
+            this.fetchingQuote = false
 
             this.cryptoCurrencyValue = 0
             this.currencyRate = 0

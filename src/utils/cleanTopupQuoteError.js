@@ -8,34 +8,24 @@ async function cleanTopupQuoteError(error) {
 
     if (typeof result.success === 'boolean' && !result.success) {
       // Case 1
-      // {
-      //   error: { public_address: 'public_address is required and not present in the decoded token' },
-      //   success: false
-      // }
+      // {"error": { public_address: 'public_address is required and not present in the decoded token' },"success": false}
       errorMessage = Object.values(result.error)[0]
     } else if (typeof result.success === 'boolean' && result.error) {
       // Case 2
-      // {
-      //   error: true,
-      //   result: {
-      //     error: 'Cannot get quote: Sorry! Looks like this service is not available in your current location.',
-      //   },
-      // }
+      // {"error": true,"result": {"error": 'Cannot get quote: Sorry! Looks like this service is not available in your current location.'},
       errorMessage = result.result.error
     } else if (result.message) {
       // Case 3
-      // {
-      //   errors: [],
-      //   message: "Minimum purchase of 33 DAI required.",
-      //   type: "BadRequestError"
-      // }
+      // {"errors": [],"message": "Minimum purchase of 33 DAI required.","type": "BadRequestError"}
       errorMessage = result.message
+    } else if (result.error && result.error.message) {
+      // Case 3
+      // {"error":{"statusCode":400,"name":"Bad Request","message":"We are not supporting BUSD bsc network with USD Credit/Debit card"}}
+      errorMessage = result.error.message
     } else {
       errorMessage = 'Unknown error'
     }
   }
-  // eslint-disable-next-line no-console
-  console.log('errorMessage', errorMessage)
   return errorMessage
 }
 
