@@ -8,7 +8,7 @@ export default {
   fetchRampNetworkQuote(_, payload) {
     // returns a promise
     return postQuote({
-      cryptoAssetSymbol: (payload.selectedCryptoCurrency || ETH).toLowerCase(),
+      cryptoAssetSymbol: (payload.selectedCryptoCurrency || ETH).toUpperCase(),
       fiatCurrency: (payload.selectedCurrency || paymentProviders.rampnetwork.validCurrencies[0]).toLowerCase(),
       fiatValue: +Number.parseFloat(payload.fiatValue || paymentProviders.rampnetwork.minOrderValue),
       paymentMethodType: 'CARD_PAYMENT',
