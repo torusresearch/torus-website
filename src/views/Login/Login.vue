@@ -123,6 +123,7 @@ import LoginSlide from '../../components/Login/LoginSlide'
 import LoginTitle from '../../components/Login/LoginTitle'
 import config from '../../config'
 import { OpenLoginHandler } from '../../handlers/Auth'
+import { getOpenLoginInstance } from '../../openlogin'
 import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/utils'
 
 export default {
@@ -164,13 +165,25 @@ export default {
       if (newAddress !== oldAddress && newAddress !== '') {
         let redirectPath = this.$route.query.redirect
         if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
-
         this.$router.push(redirectPath).catch((_) => {})
       }
     },
   },
   async mounted() {
-    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
+    if (this.selectedAddress !== '') {
+      this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
+    } else {
+      // auto login if openlogin session is available
+      this.loginInProgress = true
+      const { state } = await getOpenLoginInstance()
+      if (state.walletKey || state.tKey) {
+        log.info('auto-login with openlogin session')
+        await this.autoLogin(state)
+        this.loginInProgress = false
+        return
+      }
+      this.loginInProgress = false
+    }
 
     this.isLogout = this.$route.name !== 'login'
 
@@ -219,6 +232,7 @@ export default {
     ...mapActions({
       triggerLogin: 'triggerLogin',
       handleLogin: 'handleLogin',
+      autoLogin: 'autoLogin',
     }),
     ...mapMutations(['setUserInfo']),
     async startLogin(verifier, email) {
