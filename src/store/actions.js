@@ -10,7 +10,7 @@ import config from '../config'
 import { OpenLoginHandler } from '../handlers/Auth'
 import PopupHandler from '../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
-import { getOpenLoginInstance } from '../openlogin'
+import { getKeysInfo, getOpenLoginInstance, getUserInfo } from '../openlogin'
 // import vuetify from '../plugins/vuetify'
 import router from '../router'
 import torus from '../torus'
@@ -461,6 +461,18 @@ export default {
     } finally {
       commit('setLoginInProgress', false)
     }
+  },
+  async autoLogin({ commit, dispatch }, openloginState) {
+    const { keys, postboxKey, userDapps } = await getKeysInfo(openloginState)
+    const userInfo = getUserInfo(openloginState)
+    commit('setUserInfo', userInfo)
+    commit('setPostboxKey', postboxKey)
+    commit('setUserDapps', userDapps)
+    await dispatch('handleLogin', {
+      calledFromEmbed: false,
+      oAuthToken: userInfo.idToken || userInfo.accessToken,
+      keys,
+    })
   },
   subscribeToControllers() {
     accountTracker.store.subscribe(accountTrackerHandler)
