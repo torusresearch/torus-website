@@ -81,6 +81,15 @@
               <DefaultAccount :has-threshold-logged="hasThresholdLogged" />
             </v-expansion-panel-content>
           </v-expansion-panel>
+          <v-expansion-panel class="my-2">
+            <v-expansion-panel-header id="redirect-panel-header">
+              <v-icon small class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.person_circle</v-icon>
+              <div class="grow font-weight-bold title text_1--text">{{ 'Set Torus Key' }}</div>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-btn @click="onRedirectHandlerClick">Redirect to openlogin</v-btn>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
           <v-expansion-panel v-show="canShowSetCustomKey" readonly class="my-2">
             <v-expansion-panel-header id="display-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.person_circle</v-icon>
@@ -98,6 +107,8 @@
 <script>
 import log from 'loglevel'
 import { mapState } from 'vuex'
+
+import config from '@/config'
 
 import QuickAddress from '../../components/helpers/QuickAddress'
 import ContactList from '../../components/WalletSettings/ContactList'
@@ -144,6 +155,12 @@ export default {
   },
   mounted() {
     this.$vuetify.goTo(0)
+  },
+  methods: {
+    onRedirectHandlerClick() {
+      window.location = config.openLoginUrl
+      return null
+    },
   },
 }
 </script>
