@@ -1,0 +1,19 @@
+.container {
+  max-width: 100%;
+}
+
+.redirect-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  .torus-dark {
+    color: #b7b8bd;
+  }
+}
+
+.footer {
+  position: fixed;
+  bottom: 60px;
+  width: 100%;
+}

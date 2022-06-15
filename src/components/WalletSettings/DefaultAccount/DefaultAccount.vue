@@ -4,18 +4,29 @@
       {{ computedWallets.length > 1 ? t('tkeySettings.accounts') : t('tkeySettings.account') }}
     </div>
 
-    <v-list dense outlined class="pa-0 account-list mb-2">
+    <v-list dense outlined class="pa-0 account-list mb-2" :class="$vuetify.breakpoint.xsOnly ? 'account-list--mobile' : ''">
       <v-list-item v-for="wallet in computedWallets" :key="wallet.key" class="pl-0 pr-1">
-        <v-list-item-avatar class="ma-0">
-          <v-icon size="16" class="torusGray1--text">{{ `$vuetify.icons.${wallet.icon}` }}</v-icon>
-        </v-list-item-avatar>
         <v-list-item-content>
+          <v-list-item-avatar horizontal class="ma-0">
+            <v-icon size="16" class="torusGray1--text">{{ `$vuetify.icons.${wallet.icon}` }}</v-icon>
+          </v-list-item-avatar>
           <v-list-item-title class="font-weight-regular caption">
-            <span class="text_1--text">{{ wallet.title }}</span>
+            <span class="body-2 text_1--text">{{ wallet.title }}</span>
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-action class="ma-0">
-          <div v-if="wallet.isDefault" class="caption torus_1--text" :style="{ marginRight: '15px' }">
+          <v-btn
+            v-if="canShowSettings"
+            text
+            small
+            :x-small="$vuetify.breakpoint.xsOnly"
+            color="torusBrand1"
+            class="text-body-2"
+            @click="initiateRedirectToOpenlogin"
+          >
+            {{ t('tkeySettings.manageSettingsBtn') }}
+          </v-btn>
+          <div v-else-if="wallet.isDefault" class="caption torus_1--text" :style="{ marginRight: '15px' }">
             {{ t('tkeySettings.default') }}
           </div>
           <v-btn v-else-if="hasThresholdLogged" text small color="torusBrand1" class="caption" @click="setDefaultPublicAddress(wallet.key)">
@@ -72,7 +83,7 @@
       </v-list-item> -->
     </v-list>
 
-    <div class="caption text_3--text mb-4 px-5">{{ t('tkeySettings.note') }}: {{ t('tkeySettings.theSelectedAccount') }}</div>
+    <div class="caption text_3--text mb-4">{{ t('tkeySettings.manageSettings') }}</div>
   </div>
 </template>
 
@@ -86,6 +97,10 @@ export default {
   name: 'DefaultAccount',
   props: {
     hasThresholdLogged: {
+      type: Boolean,
+      default: false,
+    },
+    canShowSettings: {
       type: Boolean,
       default: false,
     },
@@ -149,6 +164,9 @@ export default {
     },
     accountIcon(accountType) {
       return getUserIcon(accountType, this.userInfo.typeOfLogin)
+    },
+    initiateRedirectToOpenlogin() {
+      this.$router.push({ name: 'walletSettings', hash: '#openlogin_redirect_initiated=true' })
     },
   },
 }

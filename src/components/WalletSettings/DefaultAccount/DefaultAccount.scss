@@ -6,6 +6,7 @@
     & > svg, & > .v-icon {
       margin: auto;
     }
+    max-width: 40px;
   }
   .v-list-item {
     border-bottom: 1px solid #D3D5E2;
@@ -13,6 +14,10 @@
       border-bottom: 1px solid #202125;
     }
   }
+  .v-list-item__content {
+    flex-wrap: nowrap;
+  }
+
   .v-list-item:last-child {
     border-bottom: 0;
     &.theme--dark {
@@ -25,7 +30,34 @@
       background: #28292E;
     }
   }
-  
+
+  &--mobile {
+    .v-list-item {
+      justify-content: center;
+      align-items: flex-start;
+      padding: 16px 0;
+      flex-direction: column;
+
+      .v-avatar {
+        max-height: 16px;
+      }
+
+      .v-list-item__content {
+        align-self: flex-start;
+        padding: 0px;
+        padding-bottom: 8px;
+      }
+
+      .v-list-item__action {
+        align-self: flex-start;
+      }
+
+      &::after {
+        min-height: unset;
+      }
+    }
+  }
+
   .tkey-features {
     padding-left: 16px
   }

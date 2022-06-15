@@ -1,5 +1,15 @@
 <template>
-  <v-container class="wallet-settings" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+  <v-container v-if="showRedirectScreen" fluid fill-height text-center>
+    <RedirectConfirm
+      :description="t('tkeySettings.description')"
+      link-title="app.openlogin.com"
+      :footer-header-text="t('tkeySettings.footerHeaderText')"
+      :footer-body-text="t('tkeySettings.footerBodyText')"
+      question-redirect-link="https://docs.web3auth.io/overview/key-management#censorship-resistant"
+      :redirect-url="goToOpenloginSettingsUrl"
+    />
+  </v-container>
+  <v-container v-else class="wallet-settings" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
       <v-flex xs6>
         <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
@@ -78,16 +88,7 @@
               <div class="grow font-weight-bold title text_1--text">{{ t('tkeySettings.accountManagement') }}</div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <DefaultAccount :has-threshold-logged="hasThresholdLogged" />
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-          <v-expansion-panel class="my-2">
-            <v-expansion-panel-header id="redirect-panel-header">
-              <v-icon small class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.person_circle</v-icon>
-              <div class="grow font-weight-bold title text_1--text">{{ 'Set Torus Key' }}</div>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <v-btn @click="onRedirectHandlerClick">Redirect to openlogin</v-btn>
+              <DefaultAccount :can-show-settings="canShowSettingsCTA" :has-threshold-logged="hasThresholdLogged" />
             </v-expansion-panel-content>
           </v-expansion-panel>
           <v-expansion-panel v-show="canShowSetCustomKey" readonly class="my-2">
@@ -110,6 +111,7 @@ import { mapState } from 'vuex'
 
 import config from '@/config'
 
+import RedirectConfirm from '../../components/Confirm/RedirectConfirm/RedirectConfirm.vue'
 import QuickAddress from '../../components/helpers/QuickAddress'
 import ContactList from '../../components/WalletSettings/ContactList'
 import CrashReport from '../../components/WalletSettings/CrashReport'
@@ -131,11 +133,13 @@ export default {
     Display,
     DefaultAccount,
     SetTorusKey,
+    RedirectConfirm,
   },
   data() {
     return {
       leftPanel: [0, 1, 2],
       rightPanel: [0, 1, 2, 3],
+      showRedirectScreen: false,
     }
   },
   computed: {
@@ -152,14 +156,34 @@ export default {
     hasThresholdLogged() {
       return Object.values(this.wallet).some((x) => x.accountType === ACCOUNT_TYPE.THRESHOLD)
     },
+    goToOpenloginSettingsUrl() {
+      return `${config.openLoginUrl}#clientId=${config.openLoginClientId}&redirectCode=account`
+    },
+    canShowSettingsCTA() {
+      return Object.keys(this.wallet).length === 1
+    },
+  },
+  watch: {
+    '$route.hash': {
+      handler(newRouteValue) {
+        this.onHashChange(newRouteValue)
+      },
+    },
   },
   mounted() {
     this.$vuetify.goTo(0)
+    const { hash } = this.$router.currentRoute
+    this.onHashChange(hash)
   },
   methods: {
-    onRedirectHandlerClick() {
-      window.location = config.openLoginUrl
-      return null
+    onHashChange(hash, _oldHash = '') {
+      const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
+      const openLoginRedirectInitiated = hashUrl.searchParams.get('openlogin_redirect_initiated')
+      if (openLoginRedirectInitiated && !this.showRedirectScreen) {
+        this.showRedirectScreen = true
+      } else if (!openLoginRedirectInitiated && this.showRedirectScreen) {
+        this.showRedirectScreen = false
+      }
     },
   },
 }
