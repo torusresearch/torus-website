@@ -147,6 +147,7 @@ export default {
       loginConfig: (state) => state.embedState.loginConfig,
       userInfo: 'userInfo',
       lastLoginInfo: 'lastLoginInfo',
+      wallet: 'wallet',
     }),
     ...mapGetters(['loginButtonsArray']),
     loggedIn() {
@@ -169,7 +170,7 @@ export default {
     },
   },
   async mounted() {
-    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
+    if (this.selectedAddress !== '' && Object.keys(this.wallet) > 0) this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
 
     this.isLogout = this.$route.name !== 'login'
     if (!this.isLogout) {
