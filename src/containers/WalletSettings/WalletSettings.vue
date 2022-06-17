@@ -1,15 +1,5 @@
 <template>
-  <v-container v-if="showRedirectScreen" fluid fill-height text-center>
-    <RedirectConfirm
-      :description="t('tkeySettings.description')"
-      link-title="app.openlogin.com"
-      :footer-header-text="t('tkeySettings.footerHeaderText')"
-      :footer-body-text="t('tkeySettings.footerBodyText')"
-      question-redirect-link="https://docs.web3auth.io/overview/key-management#censorship-resistant"
-      :redirect-url="goToOpenloginSettingsUrl"
-    />
-  </v-container>
-  <v-container v-else class="wallet-settings" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+  <v-container class="wallet-settings" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
       <v-flex xs6>
         <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
@@ -103,6 +93,16 @@
         </v-expansion-panels>
       </v-flex>
     </v-layout>
+    <v-dialog v-model="showRedirectScreen" max-width="1000" fullscreen>
+      <RedirectConfirm
+        :description="t('tkeySettings.description')"
+        link-title="app.openlogin.com"
+        :footer-header-text="t('tkeySettings.footerHeaderText')"
+        :footer-body-text="t('tkeySettings.footerBodyText')"
+        question-redirect-link="https://docs.web3auth.io/overview/key-management#censorship-resistant"
+        :redirect-url="goToOpenloginSettingsUrl"
+      />
+    </v-dialog>
   </v-container>
 </template>
 <script>

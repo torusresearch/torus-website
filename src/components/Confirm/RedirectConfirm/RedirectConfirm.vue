@@ -1,6 +1,6 @@
 <template>
-  <v-container fluid fill-height text-center :class="$vuetify.theme.dark ? 'torus-dark' : ''">
-    <v-layout class="redirect-container" align-center>
+  <v-card class="text-center">
+    <v-layout class="redirect-container pt-16" align-center>
       <div class="body px-4" align-center>
         <img height="86" class="mb-16" :src="require(`@/assets/images/torus-icon-blue.svg`)" alt="torus-icon" />
         <div class="font-weight-bold text-h5 pb-3">{{ t('redirect.headerText') }}</div>
@@ -20,7 +20,7 @@
         </div>
       </div>
     </v-layout>
-  </v-container>
+  </v-card>
 </template>
 
 <script>
