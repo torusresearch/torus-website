@@ -175,11 +175,16 @@ export default {
     this.isLogout = this.$route.name !== 'login'
     if (!this.isLogout) {
       // auto login if openlogin session is available
-      const { state } = await getOpenLoginInstance()
-      if (state.walletKey || state.tKey) {
-        this.loginInProgress = true
-        log.info('auto-login with openlogin session')
-        await this.autoLogin(state)
+      this.loginInProgress = true
+      try {
+        const { state } = await getOpenLoginInstance()
+        if (state.walletKey || state.tKey) {
+          log.info('auto-login with openlogin session')
+          await this.autoLogin(state)
+        }
+      } catch (error) {
+        log.error(error)
+      } finally {
         this.loginInProgress = false
       }
     }
