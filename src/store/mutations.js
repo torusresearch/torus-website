@@ -208,20 +208,11 @@ export default {
   setEtherscanTx(state, payload) {
     state.etherscanTx = payload
   },
-  setBadgesCompletion(state, payload) {
-    state.badgesCompletion = payload
-  },
   setRehydrationStatus(state, payload) {
     state.isRehydrationComplete = payload
   },
-  setTKeyOnboardingComplete(state, payload) {
-    state.tKeyOnboardingComplete = payload
-  },
   setDefaultPublicAddress(state, payload) {
     state.defaultPublicAddress = payload
-  },
-  setTKey(state, payload) {
-    state.tKeyStore = payload
   },
   addConfirmModal(state, payload) {
     state.confirmModals = [...state.confirmModals, payload]
@@ -237,9 +228,6 @@ export default {
   },
   setPostboxKey(state, payload) {
     state.postboxKey = payload
-  },
-  setIsTkeySeedPhraseInputRequired(state, payload) {
-    state.isTkeySeedPhraseInputRequired = payload
   },
   setLoginInProgress(state, payload) {
     if (typeof window != 'undefined') {
