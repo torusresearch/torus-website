@@ -74,9 +74,6 @@ export default {
       paymentTxStore: 'paymentTx',
       wallet: 'wallet',
       confirmModals: 'confirmModals',
-      isTkeySeedPhraseInputRequired: 'isTkeySeedPhraseInputRequired',
-      shareTransferRequests: (state) => state.tKeyStore.shareTransferRequests,
-      deviceShare: (state) => state.tKeyStore.settingsPageData && state.tKeyStore.settingsPageData.deviceShare,
     }),
     ...mapGetters(['collectibleBalances']),
     localeAnnouncements() {

@@ -90,10 +90,6 @@ const redirectURI = `${baseUrl}/redirect`
 
 const LOGIN_DOMAIN = VUE_APP_LOGIN_DOMAIN
 
-const { hash } = window.location
-const hashUrl = new URL(`${baseUrl}?${hash.slice(1)}`)
-const dappStorageKey = hashUrl.searchParams.get('dappStorageKey')
-
 const appVersion = process.env.VUE_APP_TORUS_BUILD_VERSION
 
 const rampApiKey = 'dw9fe8drpzmdfuks79ub5hvmqzuyjbme4kwkwkqf'
@@ -116,8 +112,6 @@ export default {
   developerDashboardUrl: VUE_APP_DEVELOPER_DASHBOARD_URL,
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
-
-  dappStorageKey,
 
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',

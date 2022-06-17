@@ -30,7 +30,7 @@ export default {
       showCloseText: false,
     }
   },
-  async mounted() {
+  async created() {
     let bc
     try {
       // reddit error - hash params

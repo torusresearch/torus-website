@@ -12,11 +12,13 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import log from 'loglevel'
+import { mapActions, mapMutations, mapState } from 'vuex'
 
 import WalletConnect from '../../components/helpers/WalletConnect'
 import PopupLogin from '../../containers/Popup/PopupLogin'
 import PopupWidget from '../../containers/Popup/PopupWidget'
+import { getOpenLoginInstance } from '../../openlogin'
 import { apiStreamSupported } from '../../utils/utils'
 
 export default {
@@ -35,13 +37,31 @@ export default {
       return apiStreamSupported()
     },
   }),
-  mounted() {
+  async mounted() {
     window.$crisp.push(['do', 'chat:hide'])
+
+    // auto login if openlogin session is available
+    this.setLoginInProgress(true)
+    try {
+      const { state } = await getOpenLoginInstance()
+      if (state.walletKey || state.tKey) {
+        log.info('auto-login with openlogin session')
+        await this.autoLogin(state)
+      }
+    } catch (error) {
+      log.error(error)
+    } finally {
+      this.setLoginInProgress(false)
+    }
   },
   methods: {
     ...mapActions({
       cancelLogin: 'cancelLogin',
       startLogin: 'startLogin',
+      autoLogin: 'autoLogin',
+    }),
+    ...mapMutations({
+      setLoginInProgress: 'setLoginInProgress',
     }),
   },
 }

@@ -724,10 +724,6 @@ export const SAFE_METHODS = [
   'wallet_watchAsset',
 ]
 
-export const BADGES_TOPUP = 'topUp'
-export const BADGES_TRANSACTION = 'transaction'
-export const BADGES_COLLECTIBLE = 'collectible'
-
 export const POPUP_LOADED = 'popup-loaded'
 export const POPUP_RESULT = 'popup_result'
 export const FEATURES_PROVIDER_CHANGE_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375'

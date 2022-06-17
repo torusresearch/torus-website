@@ -11,10 +11,6 @@ const { torusController } = torus || {}
 const { prefsController } = torusController || {}
 
 export default {
-  setTKeyOnboardingStatus({ state }, payload) {
-    if (state.selectedAddress) return prefsController.setTKeyOnboardingStatus(payload, state.selectedAddress)
-    return undefined
-  },
   setUserBadge(_, payload) {
     prefsController.setUserBadge(payload)
   },

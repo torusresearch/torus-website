@@ -144,7 +144,6 @@ export default {
   computed: {
     ...mapState({
       selectedAddress: 'selectedAddress',
-      tKeyOnboardingComplete: 'tKeyOnboardingComplete',
       loginConfig: (state) => state.embedState.loginConfig,
       userInfo: 'userInfo',
       lastLoginInfo: 'lastLoginInfo',
