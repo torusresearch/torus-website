@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isLoaded">
     <Navbar :show-language-selector="true" :header-items="headerItems">
       <template #drawer>
         <v-btn v-if="$vuetify.breakpoint.smAndDown" id="menu-dropdown-mobile-btn" icon aria-label="Open Account Menu" @click="drawer = !drawer">
@@ -59,6 +59,7 @@ export default {
   data() {
     return {
       drawer: false,
+      isLoaded: false,
     }
   },
   computed: {
@@ -123,9 +124,17 @@ export default {
       return this.deviceShare && this.deviceShare.share ? this.deviceShare.share.share.shareIndex.toString('hex') : ''
     },
   },
-  mounted() {
+  created() {
     if (Object.keys(this.wallet).length === 0) {
-      this.$router.push({ name: 'login' }).catch((_) => {})
+      // eslint-disable-next-line promise/catch-or-return
+      this.$router
+        .push({ name: 'login' })
+        .catch((_) => {})
+        .finally(() => {
+          this.isLoaded = true
+        })
+    } else {
+      this.isLoaded = true
     }
   },
   methods: {
