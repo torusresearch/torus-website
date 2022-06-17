@@ -170,22 +170,19 @@ export default {
     },
   },
   async mounted() {
-    if (this.selectedAddress !== '') {
-      this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
-    } else {
+    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
+
+    this.isLogout = this.$route.name !== 'login'
+    if (!this.isLogout) {
       // auto login if openlogin session is available
-      this.loginInProgress = true
       const { state } = await getOpenLoginInstance()
       if (state.walletKey || state.tKey) {
+        this.loginInProgress = true
         log.info('auto-login with openlogin session')
         await this.autoLogin(state)
         this.loginInProgress = false
-        return
       }
-      this.loginInProgress = false
     }
-
-    this.isLogout = this.$route.name !== 'login'
 
     this.scroll()
 
