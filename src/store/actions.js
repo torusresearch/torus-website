@@ -126,6 +126,9 @@ export default {
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
 
+    resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
+    torusController.lock()
+
     statusStream.write({ loggedIn: false })
     resetStore(accountTracker.store, accountTrackerHandler)
     resetStore(txController.store, transactionControllerHandler)
@@ -136,7 +139,6 @@ export default {
     resetStore(detectTokensController.detectedTokensStore, detectTokensControllerHandler, detectTokensController.initState)
     resetStore(tokenRatesController.store, tokenRatesControllerHandler)
     resetStore(prefsController.billboardStore, billboardHandler)
-    resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
     resetStore(prefsController.announcementsStore, announcemenstHandler)
