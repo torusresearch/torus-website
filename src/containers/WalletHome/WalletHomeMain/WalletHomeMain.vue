@@ -123,13 +123,21 @@
           </v-card-text>
         </v-card>
       </v-flex> -->
+      <v-flex v-if="!whiteLabel.featuredBillboardHide && apiStreamSupported" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
+        <WalletConnectCard
+          image-path="https://images.web3auth.io/wallet-connect.svg"
+          image-dark-path="https://images.web3auth.io/wallet-connect.svg"
+          :wallet-connect-card-data="walletConnectCardData"
+        ></WalletConnectCard>
+      </v-flex>
       <v-flex
         v-for="(event, i) in isFreshAccount || whiteLabel.featuredBillboardHide ? [] : events"
         :key="`event-${i}`"
         px-4
         xs12
-        md6
-        :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'"
+        md8
+        offset-md2
+        :class="$vuetify.breakpoint.mdAndUp && event.length === 0 ? 'mt-0' : 'mt-7'"
       >
         <PromotionCard
           :title="event.eventName"
@@ -140,19 +148,6 @@
           :details-link-two="event.callToActionLinkTwo"
           :details-text="event.callToActionText"
         ></PromotionCard>
-      </v-flex>
-      <v-flex
-        v-if="!whiteLabel.featuredBillboardHide && apiStreamSupported && events.length === 0"
-        px-4
-        xs12
-        md6
-        :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'"
-      >
-        <WalletConnectCard
-          image-path="https://images.web3auth.io/wallet-connect.svg"
-          image-dark-path="https://images.web3auth.io/wallet-connect.svg"
-          :wallet-connect-card-data="walletConnectCardData"
-        ></WalletConnectCard>
       </v-flex>
     </v-layout>
 
