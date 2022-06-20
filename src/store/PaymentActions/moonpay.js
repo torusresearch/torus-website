@@ -42,7 +42,7 @@ export default {
         defaultCurrencyCode: currentOrder.currency.code || undefined,
         walletAddresses: selectedAddress ? JSON.stringify({ eth: selectedAddress, bnb_bsc: selectedAddress, busd_bsc: selectedAddress }) : undefined,
         colorCode,
-        baseCurrencyAmount: currentOrder.baseCurrencyAmount || undefined,
+        baseCurrencyAmount: currentOrder.totalAmount || undefined,
         baseCurrencyCode: currentOrder.baseCurrency.code || undefined,
         email: state.userInfo.email || undefined,
         externalCustomerId: selectedAddress || state.selectedAddress,
