@@ -202,14 +202,19 @@
     </template>
     <template v-if="type === MESSAGE_TYPE.WATCH_ASSET">
       <AddAssetConfirm
-        :balance="balance.toNumber()"
-        :symbol="assetParams.options.symbol"
-        :name="assetParams.metadata.name"
-        :decimals="assetParams.options.decimals"
+        :id="assetParams.options.id"
+        :balance="assetParams.type === CONTRACT_TYPE_ERC20 ? balance.toNumber() : 0"
+        :symbol="assetParams.type === CONTRACT_TYPE_ERC20 ? assetParams.options.symbol : ''"
+        :name="assetParams.type === CONTRACT_TYPE_ERC20 ? assetParams.metadata.name : assetParams.metadata.nftName"
+        :decimals="assetParams.type === CONTRACT_TYPE_ERC20 ? assetParams.options.decimals : 0"
         :address="assetParams.options.address"
         :image="assetParams.options.image"
+        :type="assetParams.type"
+        :description="assetParams.options.description"
+        @triggerAddCustomNft="triggerSign"
         @triggerAddCustomToken="triggerSign"
         @triggerRejectCustomToken="triggerDeny"
+        @triggerRejectCustomNft="triggerDeny"
       />
     </template>
     <template

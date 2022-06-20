@@ -869,7 +869,7 @@ export async function validateImageUrl(url) {
 export function sanitizeNftMetdataUrl(url) {
   let finalUri = url
   if (url.startsWith('ipfs')) {
-    const ipfsPath = url.split('ipfs://ipfs/')[1]
+    const ipfsPath = url.split('ipfs://')[1]
     finalUri = getIpfsEndpoint(ipfsPath)
   }
   return finalUri

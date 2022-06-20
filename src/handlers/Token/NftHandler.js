@@ -90,7 +90,6 @@ class NftHandler {
       try {
         if (await validateImageUrl(sanitizedNftMetdataUrl)) this.nftImageLink = sanitizedNftMetdataUrl
       } catch {}
-
       this.nftName = object.name || (await this.getAssetName())
       this.description = Object.prototype.hasOwnProperty.call(object, 'description') ? object.description : ''
       const { nftName, nftImageLink, description, nftStandard } = this
