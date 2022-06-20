@@ -203,14 +203,20 @@
     <template v-if="type === MESSAGE_TYPE.WATCH_ASSET">
       <AddAssetConfirm
         :id="assetParams.options.id"
-        :balance="assetParams.type === CONTRACT_TYPE_ERC20 ? balance.toNumber() : assetParams.type === CONTRACT_TYPE_ERC721 ? 1 : assetParams.balance"
-        :explorerlink="assetParams.type === CONTRACT_TYPE_ERC20 ? '' : assetParams.options.explorerLink"
-        :symbol="assetParams.type === CONTRACT_TYPE_ERC20 ? assetParams.options.symbol : ''"
+        :balance="
+          assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20
+            ? parseInt(assetParams.options.balance)
+            : assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC721
+            ? 1
+            : parseInt(assetParams.options.balance)
+        "
+        :explorerlink="assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20 ? '' : assetParams.options.explorerLink"
+        :symbol="assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20 ? assetParams.options.symbol : ''"
         :name="assetParams.metadata.name"
-        :decimals="assetParams.type === CONTRACT_TYPE_ERC20 ? assetParams.options.decimals : 0"
+        :decimals="assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20 ? assetParams.options.decimals : 0"
         :address="assetParams.options.address"
         :image="assetParams.options.image"
-        :type="assetParams.type"
+        :type="assetParams.type.toLowerCase()"
         :description="assetParams.options.description"
         @triggerAddCustomToken="triggerSign"
         @triggerRejectCustomToken="triggerDeny"

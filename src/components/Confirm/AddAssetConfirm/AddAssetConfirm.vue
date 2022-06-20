@@ -67,11 +67,11 @@
           <div>
             <img
               :src="image"
-              style="width: 136px; height: auto"
+              style="width: 90px; height: auto"
               onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
             />
           </div>
-          <div class="ml-auto flex-shrink-1" style="width: 136px">
+          <div class="ml-auto flex-shrink-1">
             <div class="body-2 text_1--text mb-3">{{ name }}</div>
             <div class="caption text_1--text mb-1">{{ t('homeAssets.infoId') }}</div>
             <div class="caption text_3--text mb-2">{{ id }}</div>
@@ -105,6 +105,7 @@
 
 <script>
 import config from '../../../config'
+import { CONTRACT_TYPE_ERC20 } from '../../../utils/enums'
 
 export default {
   name: 'AddAssetConfirm',
@@ -141,8 +142,8 @@ export default {
       required: true,
     },
     id: {
-      type: Number,
-      default: 0,
+      type: String,
+      default: '',
     },
     description: {
       type: String,
@@ -157,6 +158,7 @@ export default {
     return {
       logosUrl: config.logosUrl,
       viewMore: false,
+      CONTRACT_TYPE_ERC20,
     }
   },
   mounted() {},

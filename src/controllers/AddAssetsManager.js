@@ -96,7 +96,7 @@ export default class WatchAssetManager extends EventEmitter {
   async approveAsset(assetId) {
     const assetData = this.getAsset(assetId)
     const { options, metadata, type } = assetData.assetParams
-    if (assetData.type.toLowerCase() === CONTRACT_TYPE_ERC20) {
+    if (type.toLowerCase() === CONTRACT_TYPE_ERC20) {
       const { address, symbol, decimals } = options
       const { network, name } = metadata
       await this.prefsController.addCustomToken({
@@ -186,12 +186,14 @@ export default class WatchAssetManager extends EventEmitter {
     const nft_contract_standard = [CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155]
     let finalParams = {}
     if (assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20) {
-      const { address, decimals, symbol } = assetParams.options || {}
+      const userAddress = this.prefsController.store.getState().selectedAddress
+      const { address, decimals, symbol, balance } = assetParams.options || {}
       if (!address) throw ethErrors.rpc.invalidParams('Invalid watch asset params: asset address is required.')
       const tokenHandler = new TokenHandler({ address: address.toLowerCase(), web3 })
       const options = assetParams.options || {}
       if (!decimals) options.decimals = await tokenHandler.getDecimals()
       if (!symbol) options.symbol = await tokenHandler.getSymbol()
+      if (!balance) options.balance = await tokenHandler.getUserBalance(userAddress)
       const name = await tokenHandler.getName()
       const metadata = {
         network: providerConfig.host,
