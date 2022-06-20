@@ -46,10 +46,11 @@ export default {
       const { state } = await getOpenLoginInstance()
       if (state.walletKey || state.tKey) {
         log.info('auto-login with openlogin session')
-        await this.autoLogin(state)
+        await this.autoLogin({ openloginState: state, calledFromEmbed: true })
       }
     } catch (error) {
       log.error(error)
+      this.setOAuthModalStatus(false)
     } finally {
       this.setLoginInProgress(false)
     }
@@ -62,6 +63,7 @@ export default {
     }),
     ...mapMutations({
       setLoginInProgress: 'setLoginInProgress',
+      setOAuthModalStatus: 'setOAuthModalStatus',
     }),
   },
 }

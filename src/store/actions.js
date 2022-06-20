@@ -462,14 +462,14 @@ export default {
       commit('setLoginInProgress', false)
     }
   },
-  async autoLogin({ commit, dispatch }, openloginState) {
+  async autoLogin({ commit, dispatch }, { openloginState, calledFromEmbed }) {
     const { keys, postboxKey, userDapps } = await getKeysInfo(openloginState)
     const userInfo = getUserInfo(openloginState)
     commit('setUserInfo', userInfo)
     commit('setPostboxKey', postboxKey)
     commit('setUserDapps', userDapps)
     await dispatch('handleLogin', {
-      calledFromEmbed: false,
+      calledFromEmbed,
       oAuthToken: userInfo.idToken || userInfo.accessToken,
       keys,
     })
