@@ -215,7 +215,7 @@ export default class WatchAssetManager extends EventEmitter {
       if (!name) options.name = await nftHandler.getAssetName()
       if (!balance) options.balance = await nftHandler.fetchNftBalance()
 
-      const metadata = { network: providerConfig.host }
+      const metadata = { name, network: providerConfig.host }
       finalParams = {
         id: assetId,
         ...assetParams,
