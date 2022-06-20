@@ -104,8 +104,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-
 import config from '../../../config'
 
 export default {
@@ -160,9 +158,6 @@ export default {
       logosUrl: config.logosUrl,
       viewMore: false,
     }
-  },
-  computed: {
-    ...mapState(['networkType']),
   },
   mounted() {},
   methods: {
