@@ -1,13 +1,12 @@
 import { ObservableStore } from '@metamask/obs-store'
 import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'
-import log from 'loglevel'
 import Web3 from 'web3'
 
 import NftHandler from '../handlers/Token/NftHandler'
 import TokenHandler from '../handlers/Token/TokenHandler'
 import { CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MESSAGE_TYPE } from '../utils/enums'
-import { validateContractAddress } from '../utils/utils'
+import { getEtherScanAddressLink, validateContractAddress } from '../utils/utils'
 
 export default class WatchAssetManager extends EventEmitter {
   /**
@@ -96,7 +95,7 @@ export default class WatchAssetManager extends EventEmitter {
 
   async approveAsset(assetId) {
     const assetData = this.getAsset(assetId)
-    const { options, metadata } = assetData.assetParams
+    const { options, metadata, type } = assetData.assetParams
     if (assetData.type.toLowerCase() === CONTRACT_TYPE_ERC20) {
       const { address, symbol, decimals } = options
       const { network, name } = metadata
@@ -109,13 +108,13 @@ export default class WatchAssetManager extends EventEmitter {
       })
     } else {
       const { address, id } = options
-      const { network, nftName, nftStandard } = metadata
+      const { network, nftName } = metadata
       await this.prefsController.addCustomNft({
         nft_address: address,
         network,
         nft_name: nftName,
         nft_id: id,
-        nft_contract_standard: nftStandard,
+        nft_contract_standard: type,
       })
     }
     this.setAssetStatusApproved(assetId)
@@ -207,8 +206,8 @@ export default class WatchAssetManager extends EventEmitter {
     if (nft_contract_standard.includes(assetParams.type.toLowerCase())) {
       const { address, id, image, name, balance } = assetParams.options || {}
       const userAddress = this.prefsController.store.getState().selectedAddress
-      log.info(userAddress)
       if (!address) throw ethErrors.rpc.invalidParams('Invalid watch asset params: asset address is required.')
+      const explorerLink = getEtherScanAddressLink(address, providerConfig.host)
       const nftHandler = new NftHandler({ userAddress, tokenId: id, address: address.toLowerCase(), web3 })
       const nft_standard = await nftHandler.checkNftStandard().standard
       const options = assetParams.options || {}
@@ -218,13 +217,13 @@ export default class WatchAssetManager extends EventEmitter {
       let metadata = await nftHandler.getNftMetadata(nft_standard)
 
       metadata = { ...metadata, network: providerConfig.host }
-      // log.info('metada:', metadata)
       finalParams = {
         id: assetId,
         ...assetParams,
         options: {
           ...assetParams.options,
           ...options,
+          explorerLink,
         },
         metadata,
       }
