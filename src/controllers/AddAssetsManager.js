@@ -167,11 +167,16 @@ export default class WatchAssetManager extends EventEmitter {
   async validateWatchAssetParams(assetParams, web3) {
     // log.debug('asset params', assetParams)
     const supported_asset_types = [CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155]
+    const nft_contract_standard = [CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155]
+
     if (!supported_asset_types.includes(assetParams.type.toLowerCase())) {
       throw ethErrors.rpc.invalidParams('Invalid watch asset params: only erc20/erc721/erc1155 asset types are supported.')
     }
-    const { address } = assetParams.options || {}
+    const { address, id } = assetParams.options || {}
     if (!address) throw ethErrors.rpc.invalidParams('Invalid watch asset params: asset address is required.')
+    if (nft_contract_standard.includes(assetParams.type.toLowerCase()) && !id) {
+      throw ethErrors.rpc.invalidParams('Invalid watch asset params: asset id is required.')
+    }
     const chainId = await web3.eth.getChainId()
     const isValidAddress = await validateContractAddress(web3, address, chainId)
     if (!isValidAddress) throw ethErrors.rpc.invalidParams(`Invalid watch asset params: Invalid asset address ${address}`)
@@ -207,7 +212,6 @@ export default class WatchAssetManager extends EventEmitter {
       const { address, id, image, name, balance } = assetParams.options || {}
       const userAddress = this.prefsController.store.getState().selectedAddress
       if (!address) throw ethErrors.rpc.invalidParams('Invalid watch asset params: asset address is required.')
-      if (!id) throw ethErrors.rpc.invalidParams('Invalid watch asset params: asset id is required.')
       const explorerLink = getEtherScanAddressLink(address, providerConfig.host)
       const nftHandler = new NftHandler({ userAddress, tokenId: id, address: address.toLowerCase(), web3 })
       const nft_standard = await nftHandler.checkNftStandard().standard
