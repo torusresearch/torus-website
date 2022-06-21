@@ -106,7 +106,7 @@ import {
   WEIBO,
   WYRE,
   XANPOOL,
-  XDAI,
+  // XDAI,
   XDAI_CHAIN_ID,
   XDAI_CODE,
 } from './enums'
@@ -543,13 +543,14 @@ export const paymentProviders = {
         { value: 'USDT', display: 'USDT' },
       ],
       [MATIC]: [
-        { value: 'DAI', display: 'DAI' },
-        { value: 'MATIC', display: 'MATIC' },
-        { value: 'USDC', display: 'USDC' },
+        { value: 'MATIC_DAI', display: 'DAI' },
+        { value: 'MATIC_MATIC', display: 'MATIC' },
+        { value: 'MATIC_USDC', display: 'USDC' },
       ],
       // what about AVAXC?
       [AVALANCHE_MAINNET]: [{ value: 'AVAX', display: 'AVAX' }],
-      [XDAI]: [{ value: 'XDAI', display: 'XDAI' }],
+      // Temporary unavailable
+      // [XDAI]: [{ value: 'XDAI_XDAI', display: 'XDAI' }],
     },
     includeFees: true,
     api: true,
