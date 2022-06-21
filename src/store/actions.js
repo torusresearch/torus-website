@@ -400,7 +400,7 @@ export default {
     else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
     return undefined
   },
-  async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint }) {
+  async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint, sessionId }) {
     try {
       commit('setLoginInProgress', true)
       // This is to maintain backward compatibility
@@ -433,6 +433,7 @@ export default {
         whiteLabel,
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
+        sessionId,
       })
       const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
       if (error) {
