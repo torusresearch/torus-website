@@ -49,13 +49,10 @@
     <v-layout class="card-header" wrap>
       <v-flex text-center xs12 py-10 px-6>
         <div class="display-1">{{ t('homeAssets.add') }}</div>
-        <v-btn class="close-btn" icon aria-label="Close Add Token" title="Close Add Token" @click="rejectAddToken">
-          <v-icon>$vuetify.icons.close</v-icon>
-        </v-btn>
       </v-flex>
     </v-layout>
     <v-layout mx-7 pt-6 pb-4 wrap>
-      <v-flex xs12 class="text-center">
+      <v-flex xs12>
         <div class="title">{{ t('homeAssets.infoTitle') }}</div>
       </v-flex>
     </v-layout>
@@ -81,9 +78,9 @@
         </div>
         <div class="caption text_1--text mb-3">{{ t('homeAssets.infoExplorer') }}</div>
         <div class="caption text_3--text mb-4">{{ explorerlink }}</div>
-        <div class="caption text_1--text mb-3">{{ t('homeAssets.infoDesc') }}</div>
-        <div class="caption text_3--text mb-1" :class="{ 'text-clamp-one': !viewMore }">{{ description }}</div>
-        <div class="text-right">
+        <div v-if="description !== ''" class="caption text_1--text mb-3">{{ t('homeAssets.infoDesc') }}</div>
+        <div v-if="description !== ''" class="caption text_3--text mb-1" :class="{ 'text-clamp-one': !viewMore }">{{ description }}</div>
+        <div v-if="description !== ''" class="text-right">
           <a class="caption torusBrand1--text" @click="viewMore = !viewMore">
             {{ viewMore ? t('homeAssets.viewLess') : t('homeAssets.viewMore') }}
           </a>
@@ -92,7 +89,7 @@
       <v-flex xs12 mt-10>
         <v-layout mx-n2>
           <v-flex xs6 px-2>
-            <v-btn block large text @click="tab = 0">{{ t('homeToken.back') }}</v-btn>
+            <v-btn block large text @click="rejectAddToken">{{ t('homeToken.cancel') }}</v-btn>
           </v-flex>
           <v-flex xs6 px-2>
             <v-btn block large color="torusBrand1" class="white--text" @click="approveAddToken">{{ t('homeAssets.add') }}</v-btn>
