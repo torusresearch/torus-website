@@ -46,6 +46,7 @@ export default {
             self.currencyRate = result.quoteCurrencyAmount / result.totalAmount
             self.currentOrder = result
             this.fetchingQuote = false
+            this.fetchQuoteError = ''
           })
           .catch(async (error) => {
             this.fetchQuoteError = await cleanTopupQuoteError(error)

@@ -9,8 +9,8 @@
       display: none;
     }
 
-    ::v-deep .error--text {
-      .v-text-field__details {
+    &.error--text {
+      ::v-deep .v-text-field__details {
         display: inherit;
       }
     }

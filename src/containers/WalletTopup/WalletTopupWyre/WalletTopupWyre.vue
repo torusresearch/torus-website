@@ -46,6 +46,7 @@ export default {
             self.cryptoCurrencyValue = result.data.destAmount
             self.currentOrder = result.data
             this.fetchingQuote = false
+            this.fetchQuoteError = ''
           })
           .catch(async (error) => {
             this.fetchQuoteError = await cleanTopupQuoteError(error)

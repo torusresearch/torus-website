@@ -55,6 +55,7 @@ export default {
             self.currencyRate = result.response.conversionPrice
             self.currentOrder = result.response
             this.fetchingQuote = false
+            this.fetchQuoteError = ''
           })
           .catch(async (error) => {
             this.fetchQuoteError = await cleanTopupQuoteError(error)

@@ -52,6 +52,7 @@ export default {
               cryptoCurrencySymbol: asset.symbol,
             }
             this.fetchingQuote = false
+            this.fetchQuoteError = ''
           })
           .catch(async (error) => {
             this.fetchQuoteError = await cleanTopupQuoteError(error)

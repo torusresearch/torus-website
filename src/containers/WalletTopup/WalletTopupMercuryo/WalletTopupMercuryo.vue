@@ -43,6 +43,7 @@ export default {
             self.cryptoCurrencyValue = amount
             self.currentOrder = result.data
             this.fetchingQuote = false
+            this.fetchQuoteError = ''
           })
           .catch((error) => {
             log.error(error)
