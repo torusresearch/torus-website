@@ -52,7 +52,7 @@ export default {
   },
   methods: {
     supportedNetworkCryptosForProvider(targetProvider) {
-      return targetProvider.validCryptoCurrenciesByChain[MAINNET]
+      return targetProvider.validCryptoCurrenciesByChain[MAINNET].map((currency) => currency.display)
     },
   },
 }

@@ -14,7 +14,8 @@ const getQuote = (requestObject) => {
     }
     return get(
       `${config.moonpayApiQuoteHost}/v3/currencies/${requestObject.digital_currency}/quote?apiKey=${config.moonpayLiveAPIKEY}` +
-        `&baseCurrencyAmount=${requestObject.requested_amount}&baseCurrencyCode=${requestObject.fiat_currency}&areFeesIncluded=true`,
+        `&baseCurrencyAmount=${requestObject.requested_amount}&baseCurrencyCode=${requestObject.fiat_currency}` +
+        '&areFeesIncluded=true&fixed=true&regionalPricing=true',
       options
     )
   } catch (error) {

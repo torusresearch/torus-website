@@ -39,7 +39,7 @@ export default {
       const parameters = {
         apiKey: config.moonpayLiveAPIKEY,
         enabledPaymentMethods: 'credit_debit_card,sepa_bank_transfer,gbp_bank_transfer',
-        defaultCurrencyCode: currentOrder.currency.code || undefined,
+        defaultCurrencyCode: currentOrder.quoteCurrency.code || undefined,
         walletAddresses: selectedAddress ? JSON.stringify({ eth: selectedAddress, bnb_bsc: selectedAddress, busd_bsc: selectedAddress }) : undefined,
         colorCode,
         baseCurrencyAmount: currentOrder.totalAmount || undefined,

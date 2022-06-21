@@ -137,7 +137,7 @@ export default {
     },
     supportedNetworkCryptosForProvider(targetProvider) {
       const network = this.networkType.host
-      return targetProvider.validCryptoCurrenciesByChain[network]
+      return targetProvider.validCryptoCurrenciesByChain[network].map((currency) => currency.display)
     },
   },
 }

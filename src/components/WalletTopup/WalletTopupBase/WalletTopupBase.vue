@@ -18,9 +18,9 @@
               class="cryptocurrency-selector"
               outlined
               append-icon="$vuetify.icons.select"
-              :items="selectedCryptoCurrencies"
-              item-value="key"
-              item-text="displayValue"
+              :items="validCryptoCurrencies"
+              item-value="value"
+              item-text="display"
               aria-label="Cryptocurrency Selector"
               @change="fetchQuote"
             ></v-select>
@@ -226,19 +226,19 @@ export default {
       const network = this.networkType.host
       return this.selectedProviderObj.validCryptoCurrenciesByChain[network]
     },
-    selectedCryptoCurrencies() {
-      return this.validCryptoCurrencies.map((x) => {
-        const splits = x.split('_')
-        let displayValue = splits[0]
-        if (this.selectedProvider === RAMPNETWORK && splits.length > 1) {
-          displayValue = splits[1]
-        }
-        return {
-          key: x,
-          displayValue,
-        }
-      })
-    },
+    // selectedCryptoCurrencies() {
+    //   return this.validCryptoCurrencies.map((x) => {
+    //     const splits = x.split('_')
+    //     let displayValue = splits[0]
+    //     if (this.selectedProvider === RAMPNETWORK && splits.length > 1) {
+    //       displayValue = splits[1]
+    //     }
+    //     return {
+    //       key: x,
+    //       displayValue,
+    //     }
+    //   })
+    // },
     selectedCryptoCurrencyDisplay() {
       const splits = this.selectedCryptoCurrency.split('_')
       if (this.selectedProvider === RAMPNETWORK && splits.length > 1) {
@@ -273,7 +273,7 @@ export default {
 
       if (this.validCryptoCurrencies.includes(selectedCryptoCurrency)) this.selectedCryptoCurrency = selectedCryptoCurrency
       else {
-        ;[this.selectedCryptoCurrency] = this.validCryptoCurrencies
+        this.selectedCryptoCurrency = this.validCryptoCurrencies[0].value
       }
     }
     this.setFiatValue(fiatValue || this.minOrderValue)
