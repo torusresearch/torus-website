@@ -22,6 +22,7 @@
               item-value="value"
               item-text="display"
               aria-label="Cryptocurrency Selector"
+              return-object
               @change="fetchQuote"
             ></v-select>
           </v-flex>
@@ -90,9 +91,9 @@
           <v-flex xs12 class="text-right">
             <div class="body-2">{{ t('walletTopUp.receive') }}</div>
             <ComponentLoader v-if="fetchingQuote" class="mt-1" />
-            <div v-else class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrencyDisplay }}</div>
-            <div class="description">
-              {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrencyDisplay }} = {{ displayRateString }} {{ selectedCurrency }}
+            <div v-else class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrency.display }}</div>
+            <div v-if="!fetchQuoteError" class="description">
+              {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency.display }} = {{ displayRateString }} {{ selectedCurrency }}
             </div>
 
             <div class="description mt-6">{{ t('walletTopUp.theProcess') }} 10 - 15 {{ t('walletTopUp.minSmall') }}.</div>
@@ -140,7 +141,7 @@
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { mapState } from 'vuex'
 
-import { RAMPNETWORK, XANPOOL } from '../../../utils/enums'
+import { XANPOOL } from '../../../utils/enums'
 import { broadcastChannelOptions, formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
 import ComponentLoader from '../../helpers/ComponentLoader'
 import HelpTooltip from '../../helpers/HelpTooltip'
@@ -177,7 +178,7 @@ export default {
       isQuoteFetched: false,
       formValid: true,
       fiatValue: '',
-      selectedCryptoCurrency: '',
+      selectedCryptoCurrency: {},
       paymentProviders,
       rules: {
         required: (value) => !!value || 'Required',
@@ -226,26 +227,6 @@ export default {
       const network = this.networkType.host
       return this.selectedProviderObj.validCryptoCurrenciesByChain[network]
     },
-    // selectedCryptoCurrencies() {
-    //   return this.validCryptoCurrencies.map((x) => {
-    //     const splits = x.split('_')
-    //     let displayValue = splits[0]
-    //     if (this.selectedProvider === RAMPNETWORK && splits.length > 1) {
-    //       displayValue = splits[1]
-    //     }
-    //     return {
-    //       key: x,
-    //       displayValue,
-    //     }
-    //   })
-    // },
-    selectedCryptoCurrencyDisplay() {
-      const splits = this.selectedCryptoCurrency.split('_')
-      if (this.selectedProvider === RAMPNETWORK && splits.length > 1) {
-        return splits[1]
-      }
-      return splits[0]
-    },
   },
   watch: {
     cryptoCurrencyValue(newValue, oldValue) {
@@ -271,9 +252,11 @@ export default {
         ;[this.selectedCurrency] = this.selectedProviderObj.validCurrencies
       }
 
-      if (this.validCryptoCurrencies.includes(selectedCryptoCurrency)) this.selectedCryptoCurrency = selectedCryptoCurrency
-      else {
-        this.selectedCryptoCurrency = this.validCryptoCurrencies[0].value
+      const validCryptoCurrency = this.validCryptoCurrencies.find((currency) => currency.value === selectedCryptoCurrency)
+      if (validCryptoCurrency) {
+        this.selectedCryptoCurrency = validCryptoCurrency
+      } else {
+        this.selectedCryptoCurrency = this.validCryptoCurrencies[0]
       }
     }
     this.setFiatValue(fiatValue || this.minOrderValue)
@@ -293,7 +276,7 @@ export default {
       this.$emit('fetchQuote', {
         selectedCurrency: this.selectedCurrency,
         fiatValue: this.fiatValue,
-        selectedCryptoCurrency: this.selectedCryptoCurrency,
+        selectedCryptoCurrency: this.selectedCryptoCurrency.value,
       })
     },
     sendOrder() {
@@ -325,7 +308,7 @@ export default {
             this.$emit('clearQuote', {
               selectedCurrency: this.selectedCurrency,
               fiatValue: this.fiatValue,
-              selectedCryptoCurrency: this.selectedCryptoCurrency,
+              selectedCryptoCurrency: this.selectedCryptoCurrency.value,
             })
             if (bc) {
               await bc.postMessage({

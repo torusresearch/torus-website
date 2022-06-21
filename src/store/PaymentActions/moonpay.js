@@ -40,7 +40,7 @@ export default {
         apiKey: config.moonpayLiveAPIKEY,
         enabledPaymentMethods: 'credit_debit_card,sepa_bank_transfer,gbp_bank_transfer',
         defaultCurrencyCode: currentOrder.quoteCurrency.code || undefined,
-        walletAddresses: selectedAddress ? JSON.stringify({ eth: selectedAddress, bnb_bsc: selectedAddress, busd_bsc: selectedAddress }) : undefined,
+        walletAddresses: selectedAddress ? JSON.stringify({ [currentOrder.quoteCurrency.code]: selectedAddress }) : undefined,
         colorCode,
         baseCurrencyAmount: currentOrder.totalAmount || undefined,
         baseCurrencyCode: currentOrder.baseCurrency.code || undefined,
