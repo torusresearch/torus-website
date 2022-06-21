@@ -135,8 +135,6 @@
         :key="`event-${i}`"
         px-4
         xs12
-        md8
-        offset-md2
         :class="$vuetify.breakpoint.mdAndUp && event.length === 0 ? 'mt-0' : 'mt-7'"
       >
         <PromotionCard
