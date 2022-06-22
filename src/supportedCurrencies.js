@@ -484,7 +484,8 @@ const PROVIDER_SUPPORTED_FIAT_CURRENCIES = {
   // From https://xanpool.com/ fiat select dropdown
   [XANPOOL]: ['SGD', 'HKD', 'THB', 'PHP', 'INR', 'IDR', 'MYR', 'AUD', 'NZD', 'KRW'],
   // https://support.aax.com/en/articles/5295762-mercuryo
-  [MERCURYO]: ['EUR', 'RUB', 'USD', 'GBP', 'TRY', 'UAH'],
+  // RUB / UAH currently not supported
+  [MERCURYO]: ['EUR', 'USD', 'GBP', 'TRY', 'JPY', 'BRL', 'NGN', 'VND', 'MXN', 'KRW'],
   /**
    * https://support.transak.com/hc/en-us/articles/360020615578-Credit-and-Debit-Card-Payments-through-Transak
    * or

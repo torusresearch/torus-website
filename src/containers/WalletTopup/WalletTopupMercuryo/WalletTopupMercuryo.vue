@@ -4,6 +4,7 @@
     :crypto-currency-value="cryptoCurrencyValue"
     :currency-rate="currencyRate"
     :fetching-quote="fetchingQuote"
+    :fetch-quote-error="fetchQuoteError"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
     @clearQuote="clearQuote"
@@ -27,6 +28,7 @@ export default {
       currencyRate: 0,
       currentOrder: {},
       fetchingQuote: false,
+      fetchQuoteError: '',
     }
   },
   computed: mapState(['selectedAddress']),
@@ -34,6 +36,7 @@ export default {
     fetchQuote(payload) {
       const self = this
       throttle(() => {
+        this.fetchQuoteError = ''
         this.fetchingQuote = true
         self.$store
           .dispatch('fetchMercuryoQuote', payload)
@@ -45,8 +48,22 @@ export default {
             this.fetchingQuote = false
             this.fetchQuoteError = ''
           })
-          .catch((error) => {
+          .catch(async (error) => {
+            const result = await error.json()
+            const { data } = result
+            if (data.code === 400_005) {
+              const { selectedCurrency } = payload
+              this.fetchQuoteError =
+                `Purchase limit of ${data.data[selectedCurrency].min} ${selectedCurrency}` +
+                ` to ${data.data[selectedCurrency].max} ${selectedCurrency} is required.`
+            } else if (data.code === 400_001) {
+              this.fetchQuoteError = data.data.from[0]
+            }
             log.error(error)
+
+            this.cryptoCurrencyValue = 0
+            this.currencyRate = 0
+            this.currentOrder = {}
             this.fetchingQuote = false
           })
       }, 0)()
