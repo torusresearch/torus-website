@@ -618,6 +618,9 @@ export default {
   disconnectWalletConnect(_, __) {
     return walletConnectController.disconnect()
   },
+  getWalletConnectedApp(_, __) {
+    return walletConnectController.getPeerMetaURL()
+  },
   decryptMessage(_, payload) {
     return torusController.decryptMessageInline(payload)
   },

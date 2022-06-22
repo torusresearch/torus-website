@@ -916,9 +916,14 @@ export const COINGECKO_SUPPORTED_CURRENCIES = new Set([
 
 export const WALLET_CONNECT_CARD_DATA = {
   [LOCALE_EN]: {
-    title: 'Explore & Connect to dapps via Wallet Connect',
+    title: 'Connect to Web3 Apps via WalletConnect',
+    caption: 'Paste the WalletConnect QR code on Web3 App below to connect',
     ctaText: 'Get Started',
     ctaDisconnectText: 'Disconnect',
+    inputPlaceholder: 'wc:ff9e1dfa-68be-47ed-b900-72a4...',
+    ctaViewGuide: 'View guide',
+    ctaHideGuide: 'Hide guide',
+    gotoApp: 'Continue on Web3 App',
   },
   [LOCALE_DE]: {
     title: 'Entdecken und verbinden Sie sich mit Dapps über Wallet Connect',

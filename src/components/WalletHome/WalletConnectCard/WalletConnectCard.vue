@@ -10,9 +10,9 @@
           >
             {{ walletConnectCardData.title }}
           </div>
-          <!-- <div class="caption text_1--text" :title="subtitle">
-            {{ subtitle }}
-          </div> -->
+          <div class="caption text_1--text" :title="walletConnectCardData.caption">
+            {{ walletConnectCardData.caption }}
+          </div>
         </div>
         <slot name="image">
           <div class="ml-auto mt-1">
@@ -33,6 +33,10 @@
           btn-style="button"
           :cta-text="walletConnectCardData.ctaText"
           :cta-disconnect-text="walletConnectCardData.ctaDisconnectText"
+          :cta-view-guide="walletConnectCardData.ctaViewGuide"
+          :cta-hide-guide="walletConnectCardData.ctaHideGuide"
+          :cta-placeholder="walletConnectCardData.inputPlaceholder"
+          :cta-goto-app="walletConnectCardData.gotoApp"
         ></WalletConnect>
       </v-flex>
     </v-layout>
