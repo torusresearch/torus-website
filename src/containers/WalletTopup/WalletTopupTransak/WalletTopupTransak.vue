@@ -75,6 +75,7 @@ export default {
           currentOrder: this.currentOrder,
           colorCode: this.$vuetify.theme.currentTheme.torusBrand1,
           selectedAddress: selectedAddress || this.selectedAddress,
+          network: TRANSAK_NETWORK_MAP[this.networkType.host],
         })
       )
     },

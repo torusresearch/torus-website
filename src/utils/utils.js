@@ -614,7 +614,7 @@ export const paymentProviders = {
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://support.transak.com/hc/en-US',
-    minOrderValue: 20,
+    minOrderValue: 30,
     maxOrderValue: 500,
     validCurrencies: supportedFiatCurrencies(TRANSAK),
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
@@ -626,10 +626,6 @@ export const paymentProviders = {
         { value: 'USDC', display: 'USDC' },
         { value: 'USDT', display: 'USDT' },
       ],
-      [BSC_MAINNET]: [
-        { value: 'BNB', display: 'BNB' },
-        { value: 'BUSD', display: 'BUSD' },
-      ],
       [MATIC]: [
         { value: 'AAVE', display: 'AAVE' },
         { value: 'DAI', display: 'DAI' },
@@ -638,7 +634,11 @@ export const paymentProviders = {
         { value: 'USDT', display: 'USDT' },
         { value: 'WETH', display: 'WETH' },
       ],
-      [AVALANCHE_MAINNET]: ['AVAX'],
+      [BSC_MAINNET]: [
+        { value: 'BNB', display: 'BNB' },
+        { value: 'BUSD', display: 'BUSD' },
+      ],
+      [AVALANCHE_MAINNET]: [{ value: 'AVAX', display: 'AVAX' }],
     },
     includeFees: true,
     api: true,
