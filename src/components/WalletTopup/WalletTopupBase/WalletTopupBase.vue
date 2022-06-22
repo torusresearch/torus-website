@@ -132,7 +132,9 @@
     </v-card>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
-      <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
+      <template #action>
+        <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
+      </template>
     </v-snackbar>
   </div>
 </template>
@@ -188,7 +190,7 @@ export default {
         minValidation: (value) => Number.parseFloat(value) >= this.minOrderValue || `Min topup amount is ${this.minOrderValue}`,
       },
       snackbar: false,
-      snackbarText: '',
+      snackbarText: 'Sample',
       snackbarColor: 'success',
       selectedCurrency: '',
       XANPOOL,

@@ -49,15 +49,21 @@ export default {
             this.fetchQuoteError = ''
           })
           .catch(async (error) => {
-            const result = await error.json()
-            const { data } = result
-            if (data.code === 400_005) {
-              const { selectedCurrency } = payload
-              this.fetchQuoteError =
-                `Purchase limit of ${data.data[selectedCurrency].min} ${selectedCurrency}` +
-                ` to ${data.data[selectedCurrency].max} ${selectedCurrency} is required.`
-            } else if (data.code === 400_001) {
-              this.fetchQuoteError = data.data.from[0]
+            if ('json' in error) {
+              const result = await error.json()
+              const { data } = result
+              if (data?.code === 400_005) {
+                const { selectedCurrency } = payload
+                this.fetchQuoteError =
+                  `Purchase limit of ${data.data[selectedCurrency].min} ${selectedCurrency}` +
+                  ` to ${data.data[selectedCurrency].max} ${selectedCurrency} is required.`
+              } else if (data?.code === 400_001) {
+                this.fetchQuoteError = data.data.from[0]
+              } else {
+                this.fetchQuoteError = 'Unknown error'
+              }
+            } else {
+              this.fetchQuoteError = 'Unknown error'
             }
             log.error(error)
 
