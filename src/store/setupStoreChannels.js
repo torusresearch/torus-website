@@ -186,6 +186,16 @@ if (!isMain) {
     }
   })
 
+  const selectedCurrencyChannel = new BroadcastChannel(`selected_currency_channel_${torus.instanceId}`, broadcastChannelOptions)
+  selectedCurrencyChannel.addEventListener('message', (ev) => {
+    if (ev.data && ev.data.name === 'selected_currency' && ev.data.payload) {
+      log.info('setting selected currency', ev.data)
+      if (VuexStore.state.selectedCurrency !== ev.data.payload) {
+        VuexStore.dispatch('setSelectedCurrency', { selectedCurrency: ev.data.payload, origin: 'home' })
+      }
+    }
+  })
+
   // used for communication between popup and iframe
   const providerChangeChannel = new BroadcastChannel(`provider_change_${torus.instanceId}`, broadcastChannelOptions)
   providerChangeChannel.addEventListener('message', (ev) => {

@@ -248,6 +248,7 @@
 </template>
 
 <script>
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
@@ -260,7 +261,7 @@ import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
 import WalletConnectCard from '../../../components/WalletHome/WalletConnectCard'
 import { LOCALE_EN, MAINNET, WALLET_CONNECT_CARD_DATA } from '../../../utils/enums'
-import { apiStreamSupported } from '../../../utils/utils'
+import { apiStreamSupported, broadcastChannelOptions } from '../../../utils/utils'
 
 export default {
   name: 'WalletHome',
@@ -349,8 +350,19 @@ export default {
         }
       })
     },
-    onCurrencyChange(value) {
+    async onCurrencyChange(value) {
       this.setSelectedCurrency({ selectedCurrency: value, origin: 'home' })
+      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      if (urlInstance && urlInstance !== '') {
+        const selectedCurrencyChannel = new BroadcastChannel(`selected_currency_channel_${urlInstance}`, broadcastChannelOptions)
+        await selectedCurrencyChannel.postMessage({
+          data: {
+            name: 'selected_currency',
+            payload: value,
+          },
+        })
+        selectedCurrencyChannel.close()
+      }
     },
     refreshBalances() {
       this.forceFetchTokens()
