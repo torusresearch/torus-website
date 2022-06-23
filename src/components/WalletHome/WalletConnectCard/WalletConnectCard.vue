@@ -33,10 +33,6 @@
           btn-style="button"
           :cta-text="walletConnectCardData.ctaText"
           :cta-disconnect-text="walletConnectCardData.ctaDisconnectText"
-          :cta-view-guide="walletConnectCardData.ctaViewGuide"
-          :cta-hide-guide="walletConnectCardData.ctaHideGuide"
-          :cta-placeholder="walletConnectCardData.inputPlaceholder"
-          :cta-goto-app="walletConnectCardData.gotoApp"
         ></WalletConnect>
       </v-flex>
     </v-layout>

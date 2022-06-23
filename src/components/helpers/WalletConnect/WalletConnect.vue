@@ -3,7 +3,16 @@
     <!-- <v-container> -->
     <v-row justify="space-around">
       <v-col cols="12" sm="6">
-        <v-text-field dense hide-details outlined height="44" class="custom-placeholer" :placeholder="ctaPlaceholder" @paste="onPaste"></v-text-field>
+        <v-text-field
+          v-model="walletAddress"
+          dense
+          hide-details
+          outlined
+          height="44"
+          class="custom-placeholer"
+          :placeholder="ctaPlaceholder"
+          @paste="onPaste"
+        ></v-text-field>
       </v-col>
       <v-col cols="12" sm="6">
         <!-- <div v-if="(wcConnectorSession && wcConnectorSession.connected) || false" class="ma-0 pa-0"> -->
@@ -14,7 +23,7 @@
           class="torus-btn1 torusBrand1--text"
           @click="toggleWC"
         >
-          <span size="16">{{ ctaGotoApp }}</span>
+          <span size="16">{{ t('walletConnect.gotoApp') }}</span>
         </v-btn>
         <v-menu
           v-else
@@ -27,7 +36,7 @@
         >
           <template #activator="{ attrs }">
             <v-btn justify="end" block large class="torus-btn1 torusBrand1--text" v-bind="attrs" @click="toggleWC">
-              {{ !guideOn ? ctaViewGuide : ctaHideGuide }}
+              {{ !guideOn ? t('walletConnect.viewGuide') : t('walletConnect.hideGuide') }}
             </v-btn>
           </template>
           <v-card class="pb-4 guide-menu">
@@ -38,17 +47,8 @@
                 <v-icon>$vuetify.icons.close</v-icon>
               </v-btn>
             </v-card-actions>
-            <div style="text-align: center" class="custom-placeholer mb-2">
-              <span>
-                Click on
-                <span class="font-weight-bold">“Copy to clipboard”</span>
-                below the
-              </span>
-              <br />
-              <span>QR code when connecting with</span>
-              <br />
-              <span>WalletConnect on your Web3 App.</span>
-              <br />
+            <div style="max-width: 180px" class="custom-placeholer mb-2 text-center mx-auto">
+              <p>{{ t('walletConnect.guideInfo') }}</p>
             </div>
             <v-img :src="require(`../../../assets/images/walletGuide.svg`)" max-height="200" max-width="151" class="mx-auto pa-20"></v-img>
           </v-card>
@@ -76,29 +76,9 @@ export default {
       type: String,
       default: 'icon',
     },
-    ctaText: {
-      type: String,
-      default: 'Get Started',
-    },
     ctaDisconnectText: {
       type: String,
       default: 'Disconnect',
-    },
-    ctaViewGuide: {
-      type: String,
-      default: 'View guide',
-    },
-    ctaHideGuide: {
-      type: String,
-      default: 'hide guide',
-    },
-    ctaPlaceholder: {
-      type: String,
-      default: 'wc:ff9e1dfa-68be-47ed-b900-72a4...',
-    },
-    ctaGotoApp: {
-      type: String,
-      default: 'Continue on Web3 App',
     },
   },
   data() {
@@ -110,6 +90,7 @@ export default {
       walletAddress: '',
       guideOn: false,
       menu: false,
+      ctaPlaceholder: 'wc:ff9e1dfa-68be-47ed-b900-72a4...',
     }
   },
   computed: {
@@ -136,6 +117,11 @@ export default {
     menu(value) {
       if (!value) this.guideOn = false
     },
+    wcConnectorSession(value) {
+      if (value.connected) {
+        this.$store.dispatch('setSuccessMessage', 'walletConnect.connected')
+      }
+    },
   },
   methods: {
     ...mapActions(['updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect', 'sendWalletConnectResponse', 'getWalletConnectedApp']),
@@ -157,7 +143,6 @@ export default {
         log.info(this.wcConnectorSession)
         await this.initWalletConnect({ uri: pastedData })
         if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
-        this.$store.dispatch('setSuccessMessage', 'Connected to Torus Wallet on Web3 App!')
       } catch (error) {
         log.error(error)
         if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: false, errorMessage: error?.message })
