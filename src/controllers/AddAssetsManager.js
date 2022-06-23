@@ -215,9 +215,9 @@ export default class WatchAssetManager extends EventEmitter {
       const userAddress = this.prefsController.store.getState().selectedAddress
       if (!address) throw ethErrors.rpc.invalidParams('Invalid watch asset params: asset address is required.')
       const explorerLink = getEtherScanAddressLink(address, providerConfig.host)
-      const nftHandler = new NftHandler({ userAddress, tokenId: id, address: address.toLowerCase(), web3 })
+      const nftHandler = new NftHandler({ userAddress, tokenId: id, address: address.toLowerCase(), web3, prefController: this.prefsController })
 
-      const nftData = await nftHandler.getNftMetadata()
+      const nftData = await Promise.any([nftHandler.getNftMetadataFromApi(), nftHandler.getNftMetadata()])
       const options = assetParams.options || {}
       if (!balance) options.balance = await nftHandler.fetchNftBalance()
       options.name = nftData.nftName
