@@ -3,13 +3,13 @@
  */
 async function cleanTopupQuoteError(error) {
   let errorMessage = ''
-  if ([400, 404].includes(error.status)) {
+  if ([400, 401, 404].includes(error.status)) {
     const result = await error.json()
 
     if (typeof result.success === 'boolean' && !result.success) {
       // Case 1
       // {"error": { public_address: 'public_address is required and not present in the decoded token' },"success": false}
-      errorMessage = Object.values(result.error)[0]
+      errorMessage = typeof result.error === 'string' ? result.error : Object.values(result.error)[0]
     } else if (typeof result.success === 'boolean' && result.error) {
       // Case 2
       // {"error": true,"result": {"error": 'Cannot get quote: Sorry! Looks like this service is not available in your current location.'},

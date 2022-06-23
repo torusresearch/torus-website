@@ -444,13 +444,31 @@ export const paymentProviders = {
     // Disable simplex until API is fixed
     validCryptoCurrenciesByChain: {
       // TODO constantize cryptos e.g. {[ETH]: sdfsaf, [USDC]: {}}
-      // [MAINNET]: ['AAVE', 'BAT', 'BUSD', 'DAI', 'ETH', 'MKR', 'MATIC-ERC20', 'USDT', 'USDC'],
+      [MAINNET]: [
+        { value: 'AAVE', display: 'AAVE' },
+        { value: 'BAT', display: 'BAT' },
+        { value: 'BUSD', display: 'BUSD' },
+        { value: 'DAI', display: 'DAI' },
+        { value: 'ETH', display: 'ETH' },
+        { value: 'MKR', display: 'MKR' },
+        { value: 'MATIC-ERC20', display: 'MATIC' },
+        { value: 'USDT', display: 'USDT' },
+        { value: 'USDC', display: 'USDC' },
+      ],
       // BUSD? BUSD-BSC? BUSD-SC?
       // USDC-SC or USDC?
-      // [BSC_MAINNET]: ['BNB', 'BUSD-SC', 'CAKE', 'USDC-SC'],
-      // [MATIC]: ['MATIC', 'USDC-MATIC'],
+      [BSC_MAINNET]: [
+        { value: 'BNB', display: 'BNB' },
+        { value: 'BUSD-SC', display: 'BUSD' },
+        { value: 'CAKE', display: 'CAKE' },
+        { value: 'USDC-SC', display: 'USDC' },
+      ],
+      [MATIC]: [
+        { value: 'MATIC', display: 'MATIC' },
+        { value: 'USDC-MATIC', display: 'USDC' },
+      ],
       // AVAXC or AVAX-C?
-      // [AVALANCHE_MAINNET]: ['AVAX-C'],
+      [AVALANCHE_MAINNET]: [{ value: 'AVAX-C', display: 'AVAX' }],
     },
     includeFees: true,
     api: true,

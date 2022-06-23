@@ -42,11 +42,20 @@ export default {
         self.$store
           .dispatch('fetchSimplexQuote', payload)
           .then((result) => {
-            self.cryptoCurrencyValue = result.result.digital_money.amount
-            self.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
-            self.currentOrder = result.result
-            this.fetchingQuote = false
-            this.fetchQuoteError = ''
+            log.info('result', result)
+            if (result.error) {
+              this.fetchQuoteError = result.result.error
+              this.fetchingQuote = false
+              this.cryptoCurrencyValue = 0
+              this.currencyRate = 0
+              this.currentOrder = {}
+            } else {
+              self.cryptoCurrencyValue = result.result.digital_money.amount
+              self.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
+              self.currentOrder = result.result
+              this.fetchingQuote = false
+              this.fetchQuoteError = ''
+            }
           })
           .catch(async (error) => {
             this.fetchQuoteError = await cleanTopupQuoteError(error)
