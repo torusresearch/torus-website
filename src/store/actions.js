@@ -486,7 +486,7 @@ export default {
     encryptionPublicKeyManager.store.subscribe(encryptionPublicKeyHandler)
     decryptMessageManager.store.subscribe(unapprovedDecryptMsgsHandler)
   },
-  async initTorusKeyring({ dispatch, commit, state }, payload) {
+  async initTorusKeyring({ dispatch, commit, getters, state }, payload) {
     const { keys, calledFromEmbed, rehydrate, postboxAddress } = payload
     await torusController.initTorusKeyring(
       keys.map((x) => x.privKey),
@@ -507,6 +507,7 @@ export default {
           accountType: x.accountType,
           postboxAddress,
           customCurrency: state.customCurrency,
+          supportedCurrencies: getters.supportedCurrencies,
         })
       })
     )

@@ -130,6 +130,7 @@ class PreferencesController extends SafeEventEmitter {
     dispatch,
     commit,
     customCurrency,
+    supportedCurrencies,
   }) {
     let response = { token: jwtToken }
     if (this.state(address)) return this.state(address).defaultPublicAddress || address
@@ -155,7 +156,11 @@ class PreferencesController extends SafeEventEmitter {
     let defaultPublicAddress = address
     if (user?.data) {
       const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId, default_public_address } = user.data || {}
-      dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
+      if (supportedCurrencies.includes(defaultCurrency)) {
+        dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
+      } else {
+        dispatch('setSelectedCurrency', { selectedCurrency: customCurrency || currentState.selectedCurrency, origin: 'home' })
+      }
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
       defaultPublicAddress = default_public_address
     } else {
