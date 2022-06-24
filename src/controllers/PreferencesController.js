@@ -129,6 +129,7 @@ class PreferencesController extends SafeEventEmitter {
     postboxAddress,
     dispatch,
     commit,
+    customCurrency,
   }) {
     let response = { token: jwtToken }
     if (this.state(address)) return this.state(address).defaultPublicAddress || address
@@ -158,10 +159,11 @@ class PreferencesController extends SafeEventEmitter {
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
       defaultPublicAddress = default_public_address
     } else {
+      // Use customCurrency if available for new user
       const accountState = this.store.getState()[postboxAddress] || currentState
-      await this.createUser(accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
+      await this.createUser(customCurrency || accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
       commit('setNewUser', true)
-      dispatch('setSelectedCurrency', { selectedCurrency: accountState.selectedCurrency, origin: 'store' })
+      dispatch('setSelectedCurrency', { selectedCurrency: customCurrency || accountState.selectedCurrency, origin: 'home' })
     }
     if (!rehydrate) this.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate }, address)
     return defaultPublicAddress

@@ -83,9 +83,7 @@ if (!isMain) {
       VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
       VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
       VuexStore.commit('setSkipTKey', skipTKey)
-      if (VuexStore.state.networkType.host !== network.host) {
-        VuexStore.dispatch('setProviderType', { network })
-      }
+      VuexStore.dispatch('setProviderType', { network })
       const { isRehydrationComplete } = VuexStore.state
       if (isRehydrationComplete) {
         initStream.write({
