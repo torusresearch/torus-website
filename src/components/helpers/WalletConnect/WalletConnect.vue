@@ -50,7 +50,7 @@
             <div style="max-width: 180px" class="custom-placeholer mb-2 text-center mx-auto">
               <p>{{ t('walletConnect.guideInfo') }}</p>
             </div>
-            <v-img :src="require(`../../../assets/images/walletGuide.svg`)" max-height="200" max-width="151" class="mx-auto pa-20"></v-img>
+            <v-img :src="require(`../../../assets/images/walletGuide.svg`)" max-height="200" max-width="151" class="mx-auto mb-7"></v-img>
           </v-card>
         </v-menu>
         <!-- </div> -->
