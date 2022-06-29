@@ -44,6 +44,7 @@ export default {
           ? JSON.stringify({
               eth: selectedAddress,
               bnb_bsc: selectedAddress,
+              matic_polygon: selectedAddress,
               matic: selectedAddress,
               [currentOrder.quoteCurrency.code]: selectedAddress,
             })
