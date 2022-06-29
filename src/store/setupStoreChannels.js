@@ -83,9 +83,7 @@ if (!isMain) {
       VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
       VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
       VuexStore.commit('setSkipTKey', skipTKey)
-      if (VuexStore.state.networkType.host !== network.host) {
-        VuexStore.dispatch('setProviderType', { network })
-      }
+      VuexStore.dispatch('setProviderType', { network })
       const { isRehydrationComplete } = VuexStore.state
       if (isRehydrationComplete) {
         initStream.write({
@@ -182,6 +180,16 @@ if (!isMain) {
       log.info('setting selected address')
       if (VuexStore.state.selectedAddress !== ev.data.payload) {
         VuexStore.dispatch('updateSelectedAddress', { selectedAddress: ev.data.payload })
+      }
+    }
+  })
+
+  const selectedCurrencyChannel = new BroadcastChannel(`selected_currency_channel_${torus.instanceId}`, broadcastChannelOptions)
+  selectedCurrencyChannel.addEventListener('message', (ev) => {
+    if (ev.data && ev.data.name === 'selected_currency' && ev.data.payload) {
+      log.info('setting selected currency', ev.data)
+      if (VuexStore.state.selectedCurrency !== ev.data.payload) {
+        VuexStore.dispatch('setSelectedCurrency', { selectedCurrency: ev.data.payload, origin: 'home' })
       }
     }
   })
