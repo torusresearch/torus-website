@@ -1,3 +1,4 @@
+import { CRYPTO_COMPARE_CURRENCIES } from './supportedCurrencies'
 import {
   APPLE,
   APPLE_LINKED_VERIFIER,
@@ -159,7 +160,9 @@ export default {
   transakTestAPIKEY: 'e5adb5e3-b30c-4fa8-85ea-adcbadc98198',
 
   redirect_uri: redirectURI,
-  supportedCurrencies: ['USD', 'AUD', 'BTC', 'CAD', 'DAI', 'ETC', 'EUR', 'GBP', 'HKD', 'IDR', 'INR', 'JPY', 'PHP', 'RUB', 'SGD', 'UAH'],
+  supportedCurrencies: CRYPTO_COMPARE_CURRENCIES,
+  // TODO clarify what additionalCurrencies is
+  // TODO BAT also found on crypto compare list (overlap)
   additionalCurrencies: ['ANT', 'BAT', 'DASH', 'DGD', 'GNO', 'LTC', 'QTUM', 'REP', 'SAI', 'XEM', 'XLM', 'XMR', 'XRP', 'ZEC'],
   logosUrl: 'https://images.toruswallet.io',
 

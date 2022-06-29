@@ -255,7 +255,7 @@ import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../../components/helpers/QuickAddress'
 // import Badges from '../../../components/WalletHome/Badges'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
-import Onboarding from '../../../components/WalletHome/Onboarding'
+// import Onboarding from '../../../components/WalletHome/Onboarding'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
 import WalletConnectCard from '../../../components/WalletHome/WalletConnectCard'
@@ -264,7 +264,7 @@ import { apiStreamSupported } from '../../../utils/utils'
 
 export default {
   name: 'WalletHome',
-  components: { TokenBalancesTable, CollectiblesList, QuickAddress, WalletConnectCard, Onboarding, ComponentLoader, NetworkDisplay, PromotionCard },
+  components: { TokenBalancesTable, CollectiblesList, QuickAddress, WalletConnectCard, ComponentLoader, NetworkDisplay, PromotionCard },
   data() {
     return {
       selected: [],

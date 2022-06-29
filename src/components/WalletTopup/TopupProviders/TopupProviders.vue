@@ -31,7 +31,7 @@
             </div>
             <div>
               <span class="font-weight-medium">{{ t('walletTopUp.currencies') }}</span>
-              : {{ targetProvider.line4 }}
+              : {{ supportedNetworkCryptosForProvider(targetProvider).join(', ') }}
             </div>
           </v-list-item-content>
         </v-list-item>
@@ -50,9 +50,18 @@
             </v-list-item-avatar>
             <v-list-item-content class="align-self-center text-right text_1--text caption">
               <div>{{ targetProvider.line1 }}</div>
-              <div v-html="targetProvider.line2"></div>
-              <div>{{ targetProvider.line3 }}</div>
-              <div>{{ targetProvider.line4 }}</div>
+              <div>
+                <span class="font-weight-medium">{{ t('walletTopUp.fees') }}</span>
+                : {{ targetProvider.line2 }}
+              </div>
+              <div>
+                <span class="font-weight-medium">{{ t('walletTopUp.limits') }}</span>
+                : {{ targetProvider.line3 }}
+              </div>
+              <div>
+                <span class="font-weight-medium">{{ t('walletTopUp.currencies') }}</span>
+                : {{ supportedNetworkCryptosForProvider(targetProvider).join(', ') }}
+              </div>
             </v-list-item-content>
           </v-list-item>
         </v-card>
@@ -60,21 +69,20 @@
       <span>Coming Soon</span>
     </v-tooltip>
 
-    <div id="write-to-us" class="mt-4 py-4 px-1 text-gray caption">
-      <div>
-        {{ t('walletTopUp.otherMode') }}
-        <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank" rel="noreferrer noopener" :style="{ textDecoration: 'none' }">
-          {{ t('walletTopUp.writeToUs') }}
-        </a>
-      </div>
+    <div id="write-to-us">
+      <WriteToUs />
     </div>
   </v-flex>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import { ACTIVE, INACTIVE } from '../../../utils/enums'
+import WriteToUs from '../WriteToUs'
 
 export default {
+  components: { WriteToUs },
   props: {
     selectedProvider: {
       type: String,
@@ -93,6 +101,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['networkType']),
     activeProviders() {
       return this.providers.filter((provider) => provider.status === ACTIVE)
     },
@@ -125,6 +134,10 @@ export default {
           })
         }
       }, 0)
+    },
+    supportedNetworkCryptosForProvider(targetProvider) {
+      const network = this.networkType.host
+      return targetProvider.validCryptoCurrenciesByChain[network].map((currency) => currency.display)
     },
   },
 }

@@ -3,6 +3,8 @@
     selected-provider="mercuryo"
     :crypto-currency-value="cryptoCurrencyValue"
     :currency-rate="currencyRate"
+    :fetching-quote="fetchingQuote"
+    :fetch-quote-error="fetchQuoteError"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
     @clearQuote="clearQuote"
@@ -25,6 +27,8 @@ export default {
       cryptoCurrencyValue: 0,
       currencyRate: 0,
       currentOrder: {},
+      fetchingQuote: false,
+      fetchQuoteError: '',
     }
   },
   computed: mapState(['selectedAddress']),
@@ -32,6 +36,8 @@ export default {
     fetchQuote(payload) {
       const self = this
       throttle(() => {
+        this.fetchQuoteError = ''
+        this.fetchingQuote = true
         self.$store
           .dispatch('fetchMercuryoQuote', payload)
           .then((result) => {
@@ -39,8 +45,33 @@ export default {
             self.currencyRate = Number.parseFloat(amount) / Number.parseFloat(fiat_amount)
             self.cryptoCurrencyValue = amount
             self.currentOrder = result.data
+            this.fetchingQuote = false
+            this.fetchQuoteError = ''
           })
-          .catch((error) => log.error(error))
+          .catch(async (error) => {
+            if ('json' in error) {
+              const result = await error.json()
+              const { data } = result
+              if (data?.code === 400_005) {
+                const { selectedCurrency } = payload
+                this.fetchQuoteError =
+                  `Purchase limit of ${data.data[selectedCurrency].min} ${selectedCurrency}` +
+                  ` to ${data.data[selectedCurrency].max} ${selectedCurrency} is required.`
+              } else if (data?.code === 400_001) {
+                this.fetchQuoteError = data.data.from[0]
+              } else {
+                this.fetchQuoteError = 'Unknown error'
+              }
+            } else {
+              this.fetchQuoteError = 'Unknown error'
+            }
+            log.error(error)
+
+            this.cryptoCurrencyValue = 0
+            this.currencyRate = 0
+            this.currentOrder = {}
+            this.fetchingQuote = false
+          })
       }, 0)()
     },
     sendOrder(callback) {
