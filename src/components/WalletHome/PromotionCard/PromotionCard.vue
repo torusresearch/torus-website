@@ -3,9 +3,12 @@
     <v-layout class="d-flex flex-column fill-height py-4 px-6">
       <v-flex class="flex-grow-1 d-flex">
         <div class="promotion-text pr-3">
-          <div class="text-body-1 font-weight-bold text_1--text" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
+          <div class="text-body-1 font-weight-bold text_1--text text-clamp-two">{{ title }}</div>
           <div class="caption text_1--text" :title="subtitle">
             {{ subtitle }}
+            <a class="text-decoration-none torusBrand1--text font-weight-bold" :href="detailsLink" target="_blank" rel="noreferrer noopener">
+              {{ detailsText }}
+            </a>
           </div>
         </div>
         <slot name="image">
@@ -22,7 +25,7 @@
           </div>
         </slot>
       </v-flex>
-      <v-flex class="flex-grow-0">
+      <!-- <v-flex class="flex-grow-0">
         <v-layout wrap class="mx-n3 more-details-container">
           <v-flex v-if="!!detailsLinkTwo" xs12 sm6 px-3 :class="$vuetify.breakpoint.xsOnly ? 'mb-2' : ''">
             <ShowToolTip :address="detailsLinkTwo">
@@ -47,16 +50,16 @@
             </v-btn>
           </v-flex>
         </v-layout>
-      </v-flex>
+      </v-flex> -->
     </v-layout>
   </v-card>
 </template>
 
 <script>
-import ShowToolTip from '../../helpers/ShowToolTip'
+// import ShowToolTip from '../../helpers/ShowToolTip'
 
 export default {
-  components: { ShowToolTip },
+  // components: { ShowToolTip },
   props: {
     title: { type: String, default: '' },
     subtitle: { type: String, default: '' },
