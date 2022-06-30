@@ -192,7 +192,6 @@ export default {
   methods: {
     ...mapActions({
       triggerLogin: 'triggerLogin',
-      handleLogin: 'handleLogin',
       autoLogin: 'autoLogin',
     }),
     ...mapMutations(['setUserInfo']),

@@ -480,6 +480,7 @@ export default {
       calledFromEmbed,
       oAuthToken: userInfo.idToken || userInfo.accessToken,
       keys,
+      rehydrate: true,
     })
   },
   async getUserDapps({ commit, dispatch }, { postboxKey, calledFromEmbed }) {
@@ -539,7 +540,7 @@ export default {
       })
     )
   },
-  async handleLogin({ state, dispatch, commit }, { calledFromEmbed, oAuthToken, keys }) {
+  async handleLogin({ state, dispatch, commit }, { calledFromEmbed, oAuthToken, keys, rehydrate }) {
     // The error in this is caught above
     const {
       userInfo: { verifier },
@@ -549,30 +550,34 @@ export default {
     const defaultAddresses = await dispatch('initTorusKeyring', {
       keys,
       calledFromEmbed,
-      rehydrate: false,
+      rehydrate,
     })
 
-    const selectedDefaultAddress = defaultAddresses[0] || defaultAddresses[1]
-    const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : Object.keys(state.wallet)[0]
+    if (!rehydrate) {
+      const selectedDefaultAddress = defaultAddresses[0] || defaultAddresses[1]
+      const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : Object.keys(state.wallet)[0]
 
-    if (!selectedAddress) {
-      dispatch('logOut')
-      throw new Error('No Accounts available')
+      if (!selectedAddress) {
+        dispatch('logOut')
+        throw new Error('No Accounts available')
+      }
+      dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+
+      prefsController.getBillboardContents()
+      prefsController.getAnnouncementsContents()
+
+      // continue enable function
+      if (calledFromEmbed) {
+        setTimeout(() => {
+          oauthStream.write({ selectedAddress })
+          commit('setOAuthModalStatus', false)
+        }, 50)
+      }
+      // TODO: deprecate rehydrate false for the next major version bump
+      statusStream.write({ loggedIn: true, rehydrate, verifier })
+      // torus.updateStaticData({ isUnlocked: true })
+      dispatch('cleanupOAuth', { oAuthToken })
     }
-    dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
-    prefsController.getBillboardContents()
-    prefsController.getAnnouncementsContents()
-    // continue enable function
-    if (calledFromEmbed) {
-      setTimeout(() => {
-        oauthStream.write({ selectedAddress })
-        commit('setOAuthModalStatus', false)
-      }, 50)
-    }
-    // TODO: deprecate rehydrate false for the next major version bump
-    statusStream.write({ loggedIn: true, rehydrate: false, verifier })
-    // torus.updateStaticData({ isUnlocked: true })
-    dispatch('cleanupOAuth', { oAuthToken })
   },
   cleanupOAuth({ state }, payload) {
     const {
