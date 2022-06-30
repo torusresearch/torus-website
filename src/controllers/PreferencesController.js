@@ -95,7 +95,6 @@ class PreferencesController extends SafeEventEmitter {
     this.successStore = new ObservableStore('')
     this.billboardStore = new ObservableStore({})
     this.announcementsStore = new ObservableStore({})
-    this.unApprovedTokensStore = new ObservableStore({})
   }
 
   headers(address) {
