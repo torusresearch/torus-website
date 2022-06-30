@@ -169,6 +169,8 @@ export const AVALANCHE_MAINNET_BLOCK_EXPLORER = 'https://snowtrace.io'
 export const AVALANCHE_TESTNET_URL = 'https://api.avax-test.network/ext/bc/C/rpc'
 export const AVALANCHE_TESTNET_BLOCK_EXPLORER = 'https://testnet.snowtrace.io'
 
+export const BIT_HOST_URL = 'https://indexer-v1.did.id'
+
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
 export const OKC_TICKER = 'OKT'
@@ -532,6 +534,9 @@ export const ENS_LABEL = 'walletSettings.ensId'
 export const UNSTOPPABLE_DOMAINS_LABEL = 'walletSettings.unstoppableDomainsId'
 export const TWITTER_LABEL = 'walletSettings.twitterId'
 export const GITHUB_LABEL = 'walletSettings.githubId'
+export const DOT_STRING = '.'
+export const BIT = 'bit'
+export const BIT_LABEL = 'walletSettings.bitId'
 
 // Format: [dark/light]-[colorName]
 export const THEME_DARK_BLACK_NAME = 'dark-black'
@@ -570,6 +575,10 @@ export const ALLOWED_VERIFIERS = [
   {
     name: DISCORD_LABEL,
     value: DISCORD,
+  },
+  {
+    name: BIT_LABEL,
+    value: BIT,
   },
   {
     name: ENS_LABEL,
@@ -945,4 +954,17 @@ export const WALLET_CONNECT_CARD_DATA = {
     ctaText: '开始使用',
     ctaDisconnectText: '断开连接',
   },
+}
+
+export const CHAIN_TO_BIT_NAMESPACE = {
+  [MAINNET_CODE]: 'address.eth',
+  [MATIC_CODE]: 'address.polygon',
+  [BSC_MAINNET_CODE]: 'address.bsc',
+  [OKC_MAINNET_CODE]: 'address.okc',
+  [XDAI_CODE]: 'address.xdai',
+  [RSK_MAINNET_CODE]: 'address.rsk',
+  [REEF_CODE]: 'address.reef',
+  [ARBITRUM_MAINNET_CODE]: 'address.arbitrum',
+  [OPTIMISM_MAINNET_CODE]: 'address.op',
+  [AVALANCHE_MAINNET_CODE]: 'address.avalanche',
 }
