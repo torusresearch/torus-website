@@ -12,11 +12,18 @@ import { ACCOUNT_TYPE } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
 import { generateTorusAuthHeaders } from '../../utils/utils'
 
+const mutex = new Mutex()
+
 class OpenLoginHandler {
-  openLoginInstance = null
+  static openLoginHandlerInstance = null
 
-  mutex = new Mutex()
+  static getInstance(whiteLabel = {}, loginConfig = {}) {
+    if (OpenLoginHandler.openLoginHandlerInstance) return OpenLoginHandler.openLoginHandlerInstance
+    OpenLoginHandler.openLoginHandlerInstance = new OpenLoginHandler(whiteLabel, loginConfig)
+    return OpenLoginHandler.openLoginHandlerInstance
+  }
 
+  // This constructor is private. Don't call it
   constructor(whiteLabel = {}, loginConfig = {}) {
     const whiteLabelOpenLogin = {}
     if (whiteLabel.theme) {
@@ -69,9 +76,11 @@ class OpenLoginHandler {
   }
 
   async init() {
-    const releaseLock = await this.mutex.acquire()
-    log.info(this.openLoginInstance.provider, 'inita')
-    if (this.openLoginInstance.provider) return this.openLoginInstance
+    const releaseLock = await mutex.acquire()
+    if (this.openLoginInstance.provider.initialized) {
+      releaseLock()
+      return this.openLoginInstance
+    }
     await this.openLoginInstance.init()
     log.info('initialized openlogin instance')
     releaseLock()
@@ -126,6 +135,7 @@ class OpenLoginHandler {
     }
 
     // derive app scoped keys from tkey
+    log.info(keys, postboxKey)
 
     return { keys, postboxKey }
   }

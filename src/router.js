@@ -11,7 +11,7 @@ const router = new Router({
       path: '/',
       name: 'login',
       component: () => import(/* webpackChunkName: "login" */ './views/Login'),
-      meta: { requiresAuth: false, title: 'Login', skipOpenLoginCheck: false },
+      meta: { requiresAuth: false, title: 'Login' },
     },
     {
       path: '/start',
@@ -35,7 +35,7 @@ const router = new Router({
       path: '/popup',
       name: 'popup',
       component: () => import(/* webpackChunkName: "popup" */ './views/Popup'),
-      meta: { requiresAuth: false, skipOpenLoginCheck: false },
+      meta: { requiresAuth: false },
     },
     {
       path: '/redirect',

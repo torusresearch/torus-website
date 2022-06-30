@@ -20,6 +20,7 @@ import { mapActions } from 'vuex'
 
 import BoxLoader from './components/helpers/BoxLoader'
 import { OpenLoginHandler } from './handlers/Auth'
+import { isMain } from './utils/utils'
 /* eslint-disable vue-scoped-css/enforce-style-type */
 export default {
   components: { BoxLoader },
@@ -38,13 +39,16 @@ export default {
     if (!this.$route.meta.skipOpenLoginCheck) {
       this.loginInProgress = true
       try {
-        const openLoginHandler = new OpenLoginHandler()
+        const openLoginHandler = OpenLoginHandler.getInstance()
         const sessionInfo = await openLoginHandler.getActiveSession()
         if (sessionInfo && (sessionInfo.walletKey || sessionInfo.tKey)) {
           // already logged in
           // call autoLogin
           log.info('auto-login with openlogin session')
-          await this.autoLogin({ calledFromEmbed: true })
+          await this.autoLogin({ calledFromEmbed: !isMain })
+          if (this.$route.name !== 'popup' && this.$route.meta.requiresAuth === false) {
+            await this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
+          }
         } else {
           log.info('no openlogin session, redirect to login')
         }

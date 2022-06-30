@@ -151,7 +151,7 @@ export default {
     if (isMain && selectedAddress) {
       router.push({ path: '/logout' }).catch(() => {})
       try {
-        const openLoginHandler = new OpenLoginHandler()
+        const openLoginHandler = OpenLoginHandler.getInstance()
         await openLoginHandler.init()
         const { openLoginInstance } = openLoginHandler
         if (openLoginInstance.state.support3PC) {
@@ -469,7 +469,7 @@ export default {
     }
   },
   async autoLogin({ commit, dispatch }, { calledFromEmbed }) {
-    const openLoginHandler = new OpenLoginHandler()
+    const openLoginHandler = OpenLoginHandler.getInstance()
     await openLoginHandler.init()
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()
@@ -483,7 +483,7 @@ export default {
     })
   },
   async getUserDapps({ commit, dispatch }, { postboxKey, calledFromEmbed }) {
-    const openLoginHandler = new OpenLoginHandler()
+    const openLoginHandler = OpenLoginHandler.getInstance()
     await openLoginHandler.init()
     const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
     commit('setUserDapps', userDapps)

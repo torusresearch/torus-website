@@ -87,7 +87,7 @@ export default {
 
       this.whiteLabel = whiteLabel
 
-      const openLoginHandler = new OpenLoginHandler(whiteLabel, loginConfig)
+      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
       await openLoginHandler.init()
       const { state } = openLoginHandler
       log.info(state, 'state')
