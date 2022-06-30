@@ -213,6 +213,7 @@ class PreferencesController extends SafeEventEmitter {
           default_public_address,
           customTokens,
           customNfts,
+          customNetworks,
         } = user.data || {}
         let whiteLabelLocale
         let badgesCompletion = DEFAULT_BADGES_COMPLETION
@@ -237,7 +238,6 @@ class PreferencesController extends SafeEventEmitter {
             log.error(error)
           }
         }
-
         this.updateStore(
           {
             contacts,
@@ -252,6 +252,13 @@ class PreferencesController extends SafeEventEmitter {
             defaultPublicAddress: default_public_address || public_address,
             customTokens,
             customNfts,
+            customNetworks: customNetworks.map((i) => ({
+              blockExplorer: i.block_explorer_url,
+              chainId: i.chain_id,
+              host: i.rpc_url,
+              networkName: i.network_name,
+              ticker: i.symbol,
+            })),
           },
           public_address
         )
@@ -692,6 +699,22 @@ class PreferencesController extends SafeEventEmitter {
       this.handleSuccess('navBar.snackSuccessCustomNftAdd')
     } catch {
       this.handleError('navBar.snackFailCustomNftAdd')
+    }
+  }
+
+  async addCustomNetwork(type, network) {
+    try {
+      const payload = {
+        network_name: network.networkName,
+        rpc_url: network.host,
+        chain_id: network.chainId,
+        symbol: network.symbol,
+        block_explorer_url: network.blockExplorer || undefined,
+      }
+      await this.api.post(`${config.api}/customnetwork/${type}`, payload, this.headers(), { useAPIKey: true })
+      this.network.updateSupportedNetworks(network)
+    } catch {
+      this.handleError('navBar.snackFailCustomNetworkAdd')
     }
   }
 

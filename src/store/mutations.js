@@ -47,6 +47,17 @@ export default {
     }
     state.networkType = { ...networkType, networkName: networkType.networkName || networkType.host }
   },
+  setCustomNetworks(state, networks) {
+    const customNetworks = {}
+    networks.forEach((i) => {
+      customNetworks[i.host] = { ...i, networkName: i.networkName || i.host }
+    })
+
+    state.supportedNetworks = {
+      ...state.supportedNetworks,
+      ...customNetworks,
+    }
+  },
   setTransactions(state, transactions) {
     state.transactions = transactions
   },

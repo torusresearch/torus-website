@@ -33,12 +33,13 @@ export default class NetworkController extends EventEmitter {
     super()
     this.defaultMaxListeners = 100
     const providerConfig = options.provider || defaultProviderConfig
-    log.info(providerConfig)
+    const supportedNetworkStore = options.supportedNetworks || SUPPORTED_NETWORK_TYPES
     // if (!SUPPORTED_NETWORK_TYPES[providerConfig.rpcTarget]) {
     //   providerConfig.type = RPC
     // }
     this.providerStore = new ObservableStore(providerConfig)
     this.networkStore = new ObservableStore('loading')
+    this.supportedNetworkStore = new ObservableStore(supportedNetworkStore)
     this.networkDetails = new ObservableStore(
       options.networkDetails || {
         ...defaultNetworkDetailsState,
@@ -143,6 +144,26 @@ export default class NetworkController extends EventEmitter {
   }
 
   /**
+   * Get supported networks
+   */
+  getSupportedNetworks() {
+    return this.supportedNetworkStore.getState()
+  }
+
+  /**
+   * Update supported networks
+   */
+  updateSupportedNetworks(network) {
+    const currentHosts = Object.keys(this.getSupportedNetworks())
+    if (!currentHosts.includes(network.host)) {
+      this.supportedNetworkStore.updateState({
+        ...this.getSupportedNetworks(),
+        [network.host]: network,
+      })
+    }
+  }
+
+  /**
    * Set network state
    * @param {string} network
    * @param {Object} type
@@ -243,8 +264,8 @@ export default class NetworkController extends EventEmitter {
    */
   async setProviderType(type, rpcUrl = '', ticker = 'ETH', nickname = '') {
     assert.notStrictEqual(type, RPC, 'NetworkController - cannot call "setProviderType" with type \'rpc\'. use "setRpcTarget"')
-    assert.ok(SUPPORTED_NETWORK_TYPES[type] !== undefined, `NetworkController - Unknown rpc type "${type}"`)
-    const { chainId, ...rest } = SUPPORTED_NETWORK_TYPES[type]
+    assert.ok(this.getSupportedNetworks()[type] !== undefined, `NetworkController - Unknown rpc type "${type}"`)
+    const { chainId, ...rest } = this.getSupportedNetworks()[type]
     const providerConfig = { type, rpcUrl, ticker, nickname, chainId, ...rest }
     this.setProviderConfig(providerConfig)
   }
@@ -293,8 +314,8 @@ export default class NetworkController extends EventEmitter {
     } else if (type === LOCALHOST) {
       this._configureLocalhostProvider()
       // url-based rpc endpoints
-    } else if (SUPPORTED_NETWORK_TYPES[type] !== undefined) {
-      const { chainId: localChainId, rpcUrl: localUrl } = SUPPORTED_NETWORK_TYPES[type]
+    } else if (this.getSupportedNetworks()[type] !== undefined) {
+      const { chainId: localChainId, rpcUrl: localUrl } = this.getSupportedNetworks()[type]
       this._configureStandardProvider({
         rpcUrl: rpcUrl || localUrl,
         chainId: chainId || localChainId,

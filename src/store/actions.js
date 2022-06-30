@@ -380,11 +380,11 @@ export default {
     const activeChainId = networkType.chainId && (isHexStrict(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`)
     const chainIdConfig = CHAIN_ID_TO_TYPE_MAP[activeChainId]
     if (chainIdConfig) {
-      const networkConfig = SUPPORTED_NETWORK_TYPES[chainIdConfig.name]
+      const networkConfig = state.supportedNetworks[chainIdConfig.name]
       networkType = { ...networkConfig, ...networkType }
     }
-    if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
-      networkType = SUPPORTED_NETWORK_TYPES[networkType.host]
+    if (state.supportedNetworks[networkType.host]) {
+      networkType = state.supportedNetworks[networkType.host]
       isSupportedNetwork = true
     }
     const currentTicker = networkType.ticker || 'ETH'

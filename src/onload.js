@@ -42,11 +42,13 @@ function onloadTorus(torus) {
   }
 
   const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || SUPPORTED_NETWORK_TYPES[MAINNET]
+  const supportedNetworks = (sessionData && JSON.parse(sessionData).supportedNetworks) || SUPPORTED_NETWORK_TYPES
 
   const torusController = new TorusController({
     initState: {
       NetworkController: {
         provider: sessionCachedNetwork,
+        supportedNetworks,
       },
     },
     showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
