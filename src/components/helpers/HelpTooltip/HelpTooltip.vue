@@ -23,6 +23,14 @@ export default {
       type: String,
       default: '',
     },
+    icon: {
+      type: String,
+      default: 'question_filled',
+    },
+    iconSize: {
+      type: Number,
+      default: 14,
+    },
   },
 }
 </script>
