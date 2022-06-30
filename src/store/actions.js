@@ -128,6 +128,9 @@ export default {
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
 
+    resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
+    torusController.lock()
+
     statusStream.write({ loggedIn: false })
     resetStore(accountTracker.store, accountTrackerHandler)
     resetStore(txController.store, transactionControllerHandler)
@@ -138,7 +141,6 @@ export default {
     resetStore(detectTokensController.detectedTokensStore, detectTokensControllerHandler, detectTokensController.initState)
     resetStore(tokenRatesController.store, tokenRatesControllerHandler)
     resetStore(prefsController.billboardStore, billboardHandler)
-    resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
     resetStore(prefsController.announcementsStore, announcemenstHandler)
@@ -375,7 +377,7 @@ export default {
     context.commit('setNetworkId', payload.networkId)
     // torus.updateStaticData({ networkId: payload.networkId })
   },
-  async setProviderType({ commit, dispatch, state }, payload) {
+  async setProviderType({ commit, dispatch, getters, state }, payload) {
     let networkType = payload.network
     let isSupportedNetwork = false
     const activeChainId = networkType.chainId && (isHexStrict(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`)
@@ -385,7 +387,7 @@ export default {
       networkType = { ...networkConfig, ...networkType }
     }
     if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
-      networkType = SUPPORTED_NETWORK_TYPES[networkType.host]
+      networkType = { ...SUPPORTED_NETWORK_TYPES[networkType.host], ...networkType }
       isSupportedNetwork = true
     }
     const currentTicker = networkType.ticker || 'ETH'
@@ -399,6 +401,10 @@ export default {
     if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency)
       await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home' })
     else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
+
+    // Set custom currency
+    if (getters.supportedCurrencies.includes(networkType.ticker) && networkType.ticker !== state.selectedCurrency)
+      await commit('setCustomCurrency', networkType.ticker)
     return undefined
   },
   async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint }) {
@@ -484,7 +490,7 @@ export default {
     decryptMessageManager.store.subscribe(unapprovedDecryptMsgsHandler)
     watchAssetManager.store.subscribe(unapprovedAssetMsgsHandler)
   },
-  async initTorusKeyring({ dispatch, commit, state }, payload) {
+  async initTorusKeyring({ dispatch, commit, getters, state }, payload) {
     const { keys, calledFromEmbed, rehydrate, postboxAddress } = payload
     await torusController.initTorusKeyring(
       keys.map((x) => x.privKey),
@@ -504,6 +510,8 @@ export default {
           jwtToken: x.jwtToken,
           accountType: x.accountType,
           postboxAddress,
+          customCurrency: state.customCurrency,
+          supportedCurrencies: getters.supportedCurrencies,
         })
       })
     )

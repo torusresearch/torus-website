@@ -3,6 +3,8 @@
     selected-provider="xanpool"
     :crypto-currency-value="cryptoCurrencyValue"
     :currency-rate="currencyRate"
+    :fetch-quote-error="fetchQuoteError"
+    :fetching-quote="fetchingQuote"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
     @clearQuote="clearQuote"
@@ -15,6 +17,7 @@ import log from 'loglevel'
 import { mapState } from 'vuex'
 
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
+import cleanTopupQuoteError from '../../../utils/cleanTopupQuoteError'
 
 export default {
   components: {
@@ -25,12 +28,16 @@ export default {
       cryptoCurrencyValue: 0,
       currencyRate: 0,
       currentOrder: {},
+      fetchQuoteError: '',
+      fetchingQuote: false,
     }
   },
   computed: mapState(['selectedAddress']),
   methods: {
     fetchQuote(payload) {
       const self = this
+      this.fetchQuoteError = ''
+      this.fetchingQuote = true
       throttle(() => {
         self.$store
           .dispatch('fetchXanpoolQuote', payload)
@@ -38,9 +45,13 @@ export default {
             self.cryptoCurrencyValue = result.crypto
             self.currencyRate = 1 / result.cryptoPrice
             self.currentOrder = { ...result, ...payload }
+            this.fetchingQuote = false
+            this.fetchQuoteError = ''
           })
-          .catch((error) => {
+          .catch(async (error) => {
+            this.fetchQuoteError = await cleanTopupQuoteError(error)
             log.error(error)
+            this.fetchingQuote = false
             const result = {
               crypto: 0.201,
               fiat: 50,

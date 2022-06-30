@@ -130,6 +130,8 @@ class PreferencesController extends SafeEventEmitter {
     postboxAddress,
     dispatch,
     commit,
+    customCurrency,
+    supportedCurrencies,
   }) {
     let response = { token: jwtToken }
     if (this.state(address)) return this.state(address).defaultPublicAddress || address
@@ -155,14 +157,19 @@ class PreferencesController extends SafeEventEmitter {
     let defaultPublicAddress = address
     if (user?.data) {
       const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId, default_public_address } = user.data || {}
-      dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
+      if (supportedCurrencies.includes(defaultCurrency)) {
+        dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
+      } else {
+        dispatch('setSelectedCurrency', { selectedCurrency: customCurrency || currentState.selectedCurrency, origin: 'home' })
+      }
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
       defaultPublicAddress = default_public_address
     } else {
+      // Use customCurrency if available for new user
       const accountState = this.store.getState()[postboxAddress] || currentState
-      await this.createUser(accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
+      await this.createUser(customCurrency || accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
       commit('setNewUser', true)
-      dispatch('setSelectedCurrency', { selectedCurrency: accountState.selectedCurrency, origin: 'store' })
+      dispatch('setSelectedCurrency', { selectedCurrency: customCurrency || accountState.selectedCurrency, origin: 'home' })
     }
     if (!rehydrate) this.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate }, address)
     return defaultPublicAddress
@@ -261,7 +268,7 @@ class PreferencesController extends SafeEventEmitter {
       }
       return undefined
     } catch (error) {
-      log.error(error)
+      log.warn(error)
       return undefined
     } finally {
       Promise.all([

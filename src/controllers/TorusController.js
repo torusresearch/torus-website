@@ -398,6 +398,18 @@ export default class TorusController extends SafeEventEmitter {
     }
   }
 
+  lock() {
+    if (!this.prefsController.store.getState().selectedAddress) {
+      this.notifyAllConnections({
+        method: NOTIFICATION_NAMES.unlockStateChanged,
+        params: {
+          isUnlocked: false,
+          accounts: [],
+        },
+      })
+    }
+  }
+
   async addAccount(key, address) {
     await this.keyringController.addAccount(key)
     this.accountTracker.addAccounts([address])

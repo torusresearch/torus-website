@@ -51,6 +51,7 @@ const initialState = {
   selectedAddress: '',
   supportedNetworks: { ...SUPPORTED_NETWORK_TYPES },
   selectedCurrency: 'USD',
+  customCurrency: '',
   pastTransactions: [],
   paymentTx: [],
   theme: THEME_LIGHT_BLUE_NAME,

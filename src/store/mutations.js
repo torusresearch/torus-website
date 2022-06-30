@@ -56,6 +56,9 @@ export default {
   setSelectedCurrency(state, currency) {
     state.selectedCurrency = currency
   },
+  setCustomCurrency(state, currency) {
+    state.customCurrency = currency
+  },
   setTypedMessages(state, unapprovedTypedMessages) {
     state.unapprovedTypedMessages = unapprovedTypedMessages
   },

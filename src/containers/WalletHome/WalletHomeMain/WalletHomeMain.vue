@@ -94,7 +94,7 @@
           </v-layout>
         </v-card>
       </v-flex>
-      <v-flex v-if="isFreshAccount || events.length === 0" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
+      <!-- <v-flex v-if="isFreshAccount || events.length === 0" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
         <v-card class="card-shadow elevation-1" :style="{ height: $vuetify.breakpoint.xsOnly ? 'inherit' : '159px' }">
           <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
             <v-layout>
@@ -122,14 +122,20 @@
             </v-layout>
           </v-card-text>
         </v-card>
+      </v-flex> -->
+      <v-flex v-if="!whiteLabel.featuredBillboardHide && apiStreamSupported" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
+        <WalletConnectCard
+          image-path="https://images.web3auth.io/wallet-connect.svg"
+          image-dark-path="https://images.web3auth.io/wallet-connect.svg"
+          :wallet-connect-card-data="walletConnectCardData"
+        ></WalletConnectCard>
       </v-flex>
-      <!-- <v-flex
+      <v-flex
         v-for="(event, i) in isFreshAccount || whiteLabel.featuredBillboardHide ? [] : events"
         :key="`event-${i}`"
         px-4
         xs12
-        md6
-        :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'"
+        :class="$vuetify.breakpoint.mdAndUp && event.length === 0 ? 'mt-0' : 'mt-7'"
       >
         <PromotionCard
           :title="event.eventName"
@@ -140,13 +146,6 @@
           :details-link-two="event.callToActionLinkTwo"
           :details-text="event.callToActionText"
         ></PromotionCard>
-      </v-flex> -->
-      <v-flex v-if="!whiteLabel.featuredBillboardHide && apiStreamSupported" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
-        <WalletConnectCard
-          image-path="https://images.web3auth.io/wallet-connect.svg"
-          image-dark-path="https://images.web3auth.io/wallet-connect.svg"
-          :wallet-connect-card-data="walletConnectCardData"
-        ></WalletConnectCard>
       </v-flex>
     </v-layout>
 
@@ -249,6 +248,7 @@
 </template>
 
 <script>
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
@@ -256,16 +256,16 @@ import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../../components/helpers/QuickAddress'
 // import Badges from '../../../components/WalletHome/Badges'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
-import Onboarding from '../../../components/WalletHome/Onboarding'
+// import Onboarding from '../../../components/WalletHome/Onboarding'
+import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
-// import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import WalletConnectCard from '../../../components/WalletHome/WalletConnectCard'
 import { LOCALE_EN, MAINNET, WALLET_CONNECT_CARD_DATA } from '../../../utils/enums'
-import { apiStreamSupported } from '../../../utils/utils'
+import { apiStreamSupported, broadcastChannelOptions } from '../../../utils/utils'
 
 export default {
   name: 'WalletHome',
-  components: { TokenBalancesTable, CollectiblesList, QuickAddress, WalletConnectCard, Onboarding, ComponentLoader, NetworkDisplay },
+  components: { TokenBalancesTable, CollectiblesList, QuickAddress, WalletConnectCard, ComponentLoader, NetworkDisplay, PromotionCard },
   data() {
     return {
       selected: [],
@@ -350,8 +350,19 @@ export default {
         }
       })
     },
-    onCurrencyChange(value) {
+    async onCurrencyChange(value) {
       this.setSelectedCurrency({ selectedCurrency: value, origin: 'home' })
+      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      if (urlInstance && urlInstance !== '') {
+        const selectedCurrencyChannel = new BroadcastChannel(`selected_currency_channel_${urlInstance}`, broadcastChannelOptions)
+        await selectedCurrencyChannel.postMessage({
+          data: {
+            name: 'selected_currency',
+            payload: value,
+          },
+        })
+        selectedCurrencyChannel.close()
+      }
     },
     refreshBalances() {
       this.forceFetchTokens()
