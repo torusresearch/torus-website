@@ -97,7 +97,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect', 'sendWalletConnectResponse']),
+    ...mapActions(['initWalletConnect', 'disconnectWalletConnect', 'sendWalletConnectResponse']),
     ...mapMutations(['setErrorMsg']),
     toggleWC() {
       if (this.wcConnectorSession?.connected) {

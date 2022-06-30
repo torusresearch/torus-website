@@ -468,31 +468,43 @@ export default {
       commit('setLoginInProgress', false)
     }
   },
-  async autoLogin({ commit, dispatch }, { calledFromEmbed }) {
+  async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
+    const { selectedAddress } = state
     const openLoginHandler = OpenLoginHandler.getInstance()
     await openLoginHandler.init()
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()
     commit('setUserInfo', userInfo)
     commit('setPostboxKey', postboxKey)
-    dispatch('getUserDapps', { postboxKey, calledFromEmbed })
+    dispatch('getUserDapps', { postboxKey, calledFromEmbed, selectedAddress })
     await dispatch('handleLogin', {
       calledFromEmbed,
       oAuthToken: userInfo.idToken || userInfo.accessToken,
-      keys,
+      keys: keys.map((x) => ({
+        ethAddress: x.ethAddress,
+        privKey: x.privKey,
+        accountType: x.accountType,
+        jwtToken: state.jwtToken[x.ethAddress],
+      })),
       rehydrate: true,
     })
   },
-  async getUserDapps({ commit, dispatch }, { postboxKey, calledFromEmbed }) {
+  async getUserDapps({ commit, dispatch, state }, { postboxKey, calledFromEmbed, selectedAddress }) {
     const openLoginHandler = OpenLoginHandler.getInstance()
     await openLoginHandler.init()
     const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
     commit('setUserDapps', userDapps)
     await dispatch('initTorusKeyring', {
-      keys,
       calledFromEmbed,
-      rehydrate: false,
+      rehydrate: true,
+      keys: keys.map((x) => ({
+        ethAddress: x.ethAddress,
+        privKey: x.privKey,
+        accountType: x.accountType,
+        jwtToken: state.jwtToken[x.ethAddress],
+      })),
     })
+    await dispatch('rehydrate', { selectedAddress })
   },
   subscribeToControllers() {
     accountTracker.store.subscribe(accountTrackerHandler)
@@ -594,36 +606,19 @@ export default {
       }
     }
   },
-  async rehydrate({ state, dispatch, commit }) {
+  async rehydrate({ state, dispatch, commit }, { selectedAddress }) {
     const {
-      selectedAddress,
       wallet,
       networkType,
       networkId,
-      jwtToken,
       userInfo: { verifier },
       wcConnectorSession,
     } = state
     try {
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
-      const walletKeys = Object.keys(wallet)
       dispatch('subscribeToControllers')
 
-      await dispatch('initTorusKeyring', {
-        keys: walletKeys.map((x) => {
-          const { privateKey, accountType, seedPhrase } = wallet[x]
-          return {
-            ethAddress: x,
-            privKey: privateKey,
-            accountType,
-            jwtToken: jwtToken[x],
-            seedPhrase,
-          }
-        }),
-        calledFromEmbed: false,
-        rehydrate: true,
-      })
       if (selectedAddress && wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })

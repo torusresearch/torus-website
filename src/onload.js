@@ -59,9 +59,6 @@ function onloadTorus(torus) {
       return { selectedAddress, wallet }
     },
     storeDispatch: () => getStore().dispatch,
-    rehydrate() {
-      getStore().dispatch('rehydrate')
-    },
   })
 
   torus.torusController = torusController
