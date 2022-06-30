@@ -18,10 +18,11 @@
               class="cryptocurrency-selector"
               outlined
               append-icon="$vuetify.icons.select"
-              :items="selectedCryptoCurrencies"
-              item-value="key"
-              item-text="displayValue"
+              :items="validCryptoCurrencies"
+              item-value="value"
+              item-text="display"
               aria-label="Cryptocurrency Selector"
+              return-object
               @change="fetchQuote"
             ></v-select>
           </v-flex>
@@ -75,24 +76,24 @@
               <div v-if="!$vuetify.breakpoint.xsOnly" class="mb-2 d-flex align-center" :style="{ height: '20px' }">
                 <span class="body-2">&nbsp;</span>
               </div>
-              <v-select
+              <v-autocomplete
                 id="currency-selector"
                 v-model="selectedCurrency"
-                class="curency-selector"
                 outlined
                 :items="supportedCurrencies"
                 append-icon="$vuetify.icons.select"
                 aria-label="Currency Selector"
                 @change="onCurrencyChange"
-              ></v-select>
+              />
             </v-flex>
           </v-layout>
 
           <v-flex xs12 class="text-right">
             <div class="body-2">{{ t('walletTopUp.receive') }}</div>
-            <div class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrencyDisplay }}</div>
-            <div class="description">
-              {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrencyDisplay }} = {{ displayRateString }} {{ selectedCurrency }}
+            <ComponentLoader v-if="fetchingQuote" class="mt-1" />
+            <div v-else class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrency.display }}</div>
+            <div v-if="!fetchQuoteError" class="description">
+              {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency.display }} = {{ displayRateString }} {{ selectedCurrency }}
             </div>
 
             <div class="description mt-6">{{ t('walletTopUp.theProcess') }} 10 - 15 {{ t('walletTopUp.minSmall') }}.</div>
@@ -110,9 +111,10 @@
                 <span v-on="on">
                   <v-btn
                     class="px-8 white--text gmt-topup"
-                    :disabled="!formValid || !isQuoteFetched"
+                    :disabled="!formValid || !isQuoteFetched || !!fetchQuoteError || fetchingQuote"
                     large
                     depressed
+                    :loading="fetchingQuote"
                     color="torusBrand1"
                     type="submit"
                     @click.prevent="sendOrder"
@@ -130,7 +132,9 @@
     </v-card>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
-      <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
+      <template #action>
+        <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
+      </template>
     </v-snackbar>
   </div>
 </template>
@@ -139,12 +143,14 @@
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { mapState } from 'vuex'
 
-import { RAMPNETWORK, XANPOOL } from '../../../utils/enums'
+import { XANPOOL } from '../../../utils/enums'
 import { broadcastChannelOptions, formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
+import ComponentLoader from '../../helpers/ComponentLoader'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
 export default {
   components: {
+    ComponentLoader,
     HelpTooltip,
   },
   props: {
@@ -160,13 +166,21 @@ export default {
       type: [Number, String],
       default: 0,
     },
+    fetchingQuote: {
+      type: Boolean,
+      default: false,
+    },
+    fetchQuoteError: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
       isQuoteFetched: false,
       formValid: true,
       fiatValue: '',
-      selectedCryptoCurrency: '',
+      selectedCryptoCurrency: {},
       paymentProviders,
       rules: {
         required: (value) => !!value || 'Required',
@@ -176,7 +190,7 @@ export default {
         minValidation: (value) => Number.parseFloat(value) >= this.minOrderValue || `Min topup amount is ${this.minOrderValue}`,
       },
       snackbar: false,
-      snackbarText: '',
+      snackbarText: 'Sample',
       snackbarColor: 'success',
       selectedCurrency: '',
       XANPOOL,
@@ -193,6 +207,7 @@ export default {
     },
     ...mapState({
       storeSelectedCurrency: 'selectedCurrency',
+      networkType: 'networkType',
     }),
     sendPlaceholder() {
       return `0.00 (Min ${formatCurrencyNumber(this.minOrderValue)})`
@@ -210,30 +225,24 @@ export default {
       if (Number.parseFloat(this.currencyRate) !== 0) return significantDigits(1 / this.currencyRate)
       return 0
     },
-    selectedCryptoCurrencies() {
-      return this.selectedProviderObj.validCryptoCurrencies.map((x) => {
-        const splits = x.split('_')
-        let displayValue = splits[0]
-        if (this.selectedProvider === RAMPNETWORK && splits.length > 1) {
-          displayValue = splits[1]
-        }
-        return {
-          key: x,
-          displayValue,
-        }
-      })
-    },
-    selectedCryptoCurrencyDisplay() {
-      const splits = this.selectedCryptoCurrency.split('_')
-      if (this.selectedProvider === RAMPNETWORK && splits.length > 1) {
-        return splits[1]
-      }
-      return splits[0]
+    validCryptoCurrencies() {
+      const network = this.networkType.host
+      return this.selectedProviderObj.validCryptoCurrenciesByChain[network]
     },
   },
   watch: {
     cryptoCurrencyValue(newValue, oldValue) {
       if (newValue !== oldValue && Number.parseFloat(newValue) > 0) this.isQuoteFetched = true
+    },
+    fetchQuoteError(newValue) {
+      if (newValue) {
+        this.snackbar = true
+        this.snackbarColor = 'error'
+        this.snackbarText = newValue
+      } else {
+        this.snackbar = false
+        this.snackbarText = ''
+      }
     },
   },
   mounted() {
@@ -245,9 +254,11 @@ export default {
         ;[this.selectedCurrency] = this.selectedProviderObj.validCurrencies
       }
 
-      if (this.selectedProviderObj.validCryptoCurrencies.includes(selectedCryptoCurrency)) this.selectedCryptoCurrency = selectedCryptoCurrency
-      else {
-        ;[this.selectedCryptoCurrency] = this.selectedProviderObj.validCryptoCurrencies
+      const validCryptoCurrency = this.validCryptoCurrencies.find((currency) => currency.value === selectedCryptoCurrency)
+      if (validCryptoCurrency) {
+        this.selectedCryptoCurrency = validCryptoCurrency
+      } else {
+        this.selectedCryptoCurrency = this.validCryptoCurrencies[0]
       }
     }
     this.setFiatValue(fiatValue || this.minOrderValue)
@@ -267,7 +278,7 @@ export default {
       this.$emit('fetchQuote', {
         selectedCurrency: this.selectedCurrency,
         fiatValue: this.fiatValue,
-        selectedCryptoCurrency: this.selectedCryptoCurrency,
+        selectedCryptoCurrency: this.selectedCryptoCurrency.value,
       })
     },
     sendOrder() {
@@ -299,7 +310,7 @@ export default {
             this.$emit('clearQuote', {
               selectedCurrency: this.selectedCurrency,
               fiatValue: this.fiatValue,
-              selectedCryptoCurrency: this.selectedCryptoCurrency,
+              selectedCryptoCurrency: this.selectedCryptoCurrency.value,
             })
             if (bc) {
               await bc.postMessage({
