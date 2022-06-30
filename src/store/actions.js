@@ -126,6 +126,9 @@ export default {
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
 
+    resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
+    torusController.lock()
+
     statusStream.write({ loggedIn: false })
     resetStore(accountTracker.store, accountTrackerHandler)
     resetStore(txController.store, transactionControllerHandler)
@@ -136,7 +139,6 @@ export default {
     resetStore(detectTokensController.detectedTokensStore, detectTokensControllerHandler, detectTokensController.initState)
     resetStore(tokenRatesController.store, tokenRatesControllerHandler)
     resetStore(prefsController.billboardStore, billboardHandler)
-    resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
     resetStore(prefsController.announcementsStore, announcemenstHandler)
@@ -398,7 +400,7 @@ export default {
     else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
     return undefined
   },
-  async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint }) {
+  async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint, sessionId }) {
     try {
       commit('setLoginInProgress', true)
       // This is to maintain backward compatibility
@@ -431,6 +433,7 @@ export default {
         whiteLabel,
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
+        sessionId,
       })
       const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
       if (error) {
@@ -460,14 +463,14 @@ export default {
       commit('setLoginInProgress', false)
     }
   },
-  async autoLogin({ commit, dispatch }, openloginState) {
+  async autoLogin({ commit, dispatch }, { openloginState, calledFromEmbed }) {
     const { keys, postboxKey, userDapps } = await getKeysInfo(openloginState)
     const userInfo = getUserInfo(openloginState)
     commit('setUserInfo', userInfo)
     commit('setPostboxKey', postboxKey)
     commit('setUserDapps', userDapps)
     await dispatch('handleLogin', {
-      calledFromEmbed: false,
+      calledFromEmbed,
       oAuthToken: userInfo.idToken || userInfo.accessToken,
       keys,
     })

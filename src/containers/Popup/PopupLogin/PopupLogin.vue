@@ -62,7 +62,11 @@ export default {
   props: {
     loginDialog: {
       type: Boolean,
-      dafault: false,
+      default: false,
+    },
+    sessionId: {
+      type: String,
+      default: '',
     },
   },
   data() {
@@ -137,7 +141,7 @@ export default {
     async startLogin(verifier, email) {
       try {
         this.showModal = false
-        await this.triggerLogin({ verifier, calledFromEmbed: true, login_hint: email })
+        await this.triggerLogin({ verifier, calledFromEmbed: true, login_hint: email, sessionId: this.sessionId })
       } catch (error) {
         log.error(error)
         this.closeDialog()

@@ -65,6 +65,11 @@ export function getUserInfo(state) {
   return userInfo
 }
 
+export function getSessionId(state) {
+  const allInfo = state.store.getStore()
+  return allInfo.sessionId
+}
+
 export async function getKeysInfo(state) {
   // keys
   const keys = []
