@@ -48,7 +48,7 @@ import { safeatob } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import BoxLoader from '../../components/helpers/BoxLoader'
-import { getKeysInfo, getOpenLoginInstance, getUserInfo } from '../../openlogin'
+import { OpenLoginHandler } from '../../handlers/Auth'
 import { ACCOUNT_TYPE, APPLE, POPUP_RESULT } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
 
@@ -87,12 +87,15 @@ export default {
 
       this.whiteLabel = whiteLabel
 
-      const openLogin = await getOpenLoginInstance(whiteLabel, loginConfig)
-      const { state } = openLogin
+      const openLoginHandler = new OpenLoginHandler(whiteLabel, loginConfig)
+      await openLoginHandler.init()
+      const { state } = openLoginHandler
       log.info(state, 'state')
 
-      const { keys, postboxKey, userDapps } = await getKeysInfo(state)
-      const userInfo = getUserInfo(state)
+      const { keys, postboxKey } = openLoginHandler.getKeysInfo()
+      const { keys: extraKeys, userDapps } = await openLoginHandler.getUserDapps(postboxKey)
+      const userInfo = openLoginHandler.getUserInfo()
+      keys.push(...extraKeys)
 
       // keys
       const walletKey = keys.find((k) => k.accountType === ACCOUNT_TYPE.NORMAL)

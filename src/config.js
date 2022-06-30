@@ -111,6 +111,7 @@ export default {
   openLoginUrl: VUE_APP_OPENLOGIN_URL,
   openLoginOriginSig: VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
   developerDashboardUrl: VUE_APP_DEVELOPER_DASHBOARD_URL,
+  storageServerUrl: 'https://broadcast-server.tor.us',
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
 

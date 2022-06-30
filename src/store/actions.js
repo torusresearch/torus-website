@@ -7,10 +7,9 @@ import log from 'loglevel'
 import { isHexStrict } from 'web3-utils'
 
 import config from '../config'
-import { OpenLoginHandler } from '../handlers/Auth'
+import { OpenLoginHandler, OpenLoginWindowHandler } from '../handlers/Auth'
 import PopupHandler from '../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
-import { getKeysInfo, getOpenLoginInstance, getUserInfo } from '../openlogin'
 // import vuetify from '../plugins/vuetify'
 import router from '../router'
 import torus from '../torus'
@@ -152,7 +151,9 @@ export default {
     if (isMain && selectedAddress) {
       router.push({ path: '/logout' }).catch(() => {})
       try {
-        const openLoginInstance = await getOpenLoginInstance()
+        const openLoginHandler = new OpenLoginHandler()
+        await openLoginHandler.init()
+        const { openLoginInstance } = openLoginHandler
         if (openLoginInstance.state.support3PC) {
           await openLoginInstance._syncState(await openLoginInstance._getData())
           await openLoginInstance.logout({ clientId: config.openLoginClientId })
@@ -414,7 +415,7 @@ export default {
       if (!currentVerifierConfig) throw new Error('Invalid verifier config')
       const { jwtParameters } = currentVerifierConfig
       log.info('starting login', { calledFromEmbed, verifier, preopenInstanceId, login_hint })
-      const loginHandler = new OpenLoginHandler({
+      const loginHandler = new OpenLoginWindowHandler({
         verifier,
         redirect_uri: config.redirect_uri,
         preopenInstanceId,
@@ -467,16 +468,29 @@ export default {
       commit('setLoginInProgress', false)
     }
   },
-  async autoLogin({ commit, dispatch }, { openloginState, calledFromEmbed }) {
-    const { keys, postboxKey, userDapps } = await getKeysInfo(openloginState)
-    const userInfo = getUserInfo(openloginState)
+  async autoLogin({ commit, dispatch }, { calledFromEmbed }) {
+    const openLoginHandler = new OpenLoginHandler()
+    await openLoginHandler.init()
+    const { keys, postboxKey } = openLoginHandler.getKeysInfo()
+    const userInfo = openLoginHandler.getUserInfo()
     commit('setUserInfo', userInfo)
     commit('setPostboxKey', postboxKey)
-    commit('setUserDapps', userDapps)
+    dispatch('getUserDapps', { postboxKey, calledFromEmbed })
     await dispatch('handleLogin', {
       calledFromEmbed,
       oAuthToken: userInfo.idToken || userInfo.accessToken,
       keys,
+    })
+  },
+  async getUserDapps({ commit, dispatch }, { postboxKey, calledFromEmbed }) {
+    const openLoginHandler = new OpenLoginHandler()
+    await openLoginHandler.init()
+    const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
+    commit('setUserDapps', userDapps)
+    await dispatch('initTorusKeyring', {
+      keys,
+      calledFromEmbed,
+      rehydrate: false,
     })
   },
   subscribeToControllers() {

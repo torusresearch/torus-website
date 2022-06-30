@@ -212,7 +212,7 @@
     }
     &.v-text-field--outlined.v-input--is-focused:not(.error--text) {
       fieldset {
-        border: 1px solid  var(--v-torusFont1-base);
+        border: 1px solid var(--v-torusFont1-base);
       }
     }
   }
@@ -314,5 +314,23 @@
       }
       background-color: var(--v-torusBlack2-base);
     }
+  }
+}
+
+.spinner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  .bottom-text {
+    position: absolute;
+    bottom: 3rem;
+    padding: 0 1rem;
   }
 }

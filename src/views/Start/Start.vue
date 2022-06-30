@@ -21,7 +21,7 @@ import { safeatob } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import BoxLoader from '../../components/helpers/BoxLoader'
-import { getOpenLoginInstance } from '../../openlogin'
+import { OpenLoginHandler } from '../../handlers/Auth'
 
 export default {
   name: 'Start',
@@ -54,9 +54,9 @@ export default {
       this.iframeOrigin = origin
       this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
-      const openLogin = await getOpenLoginInstance(whiteLabel, loginConfig)
-
-      await openLogin.login({
+      const openLoginHandler = new OpenLoginHandler(whiteLabel, loginConfig)
+      await openLoginHandler.init()
+      await openLoginHandler.openLoginInstance.login({
         loginProvider,
         getWalletKey: true,
         relogin: true,
