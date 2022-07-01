@@ -89,7 +89,7 @@ export default {
 
       const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
       await openLoginHandler.init()
-      const { state } = openLoginHandler
+      const { state } = openLoginHandler.openLoginInstance
       log.info(state, 'state')
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()
