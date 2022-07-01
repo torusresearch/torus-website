@@ -16,7 +16,7 @@
 
 <script>
 import log from 'loglevel'
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 
 import BoxLoader from './components/helpers/BoxLoader'
 import { OpenLoginHandler } from './handlers/Auth'
@@ -47,9 +47,11 @@ export default {
             }
           } else {
             log.info('no openlogin session, redirect to login')
+            this.setRehydrationStatus(true)
           }
         } catch (error) {
           log.error(error)
+          this.setRehydrationStatus(true)
         } finally {
           this.loginInProgress = false
         }
@@ -61,6 +63,7 @@ export default {
   },
   methods: {
     ...mapActions(['autoLogin']),
+    ...mapMutations(['setRehydrationStatus']),
     updateBackgrounds(routeName) {
       const pageHtml = document.querySelector('html')
       const pageBody = document.querySelector('body')

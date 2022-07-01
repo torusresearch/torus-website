@@ -1,6 +1,6 @@
 <template>
   <v-container class="pa-0">
-    <PopupLogin :login-dialog="loginDialog" session-id="sessionId" @closeDialog="cancelLogin" />
+    <PopupLogin :login-dialog="loginDialog" :session-id="sessionId" @closeDialog="cancelLogin" />
     <WalletConnect :show-from-embed="showWalletConnect" />
     <PopupWidget
       v-if="torusWidgetVisibility && !showWalletConnect"
@@ -13,11 +13,12 @@
 
 <script>
 // import log from 'loglevel'
-import { mapActions, mapMutations, mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 import WalletConnect from '../../components/helpers/WalletConnect'
 import PopupLogin from '../../containers/Popup/PopupLogin'
 import PopupWidget from '../../containers/Popup/PopupWidget'
+import { OpenLoginHandler } from '../../handlers/Auth'
 import { apiStreamSupported } from '../../utils/utils'
 
 export default {
@@ -43,32 +44,14 @@ export default {
   }),
   async mounted() {
     window.$crisp.push(['do', 'chat:hide'])
-
-    // auto login if openlogin session is available
-    // this.setLoginInProgress(true)
-    // try {
-    //   const { state } = await getOpenLoginInstance()
-    //   this.sessionId = getSessionId(state)
-    //   if (state.walletKey || state.tKey) {
-    //     log.info('auto-login with openlogin session')
-    //     await this.autoLogin({ openloginState: state, calledFromEmbed: true })
-    //   }
-    // } catch (error) {
-    //   log.error(error)
-    //   this.setOAuthModalStatus(false)
-    // } finally {
-    //   this.setLoginInProgress(false)
-    // }
+    const openLoginHandler = OpenLoginHandler.getInstance()
+    const { sessionId } = openLoginHandler.openLoginInstance.state.store.getStore()
+    this.sessionId = sessionId
   },
   methods: {
     ...mapActions({
       cancelLogin: 'cancelLogin',
       startLogin: 'startLogin',
-      autoLogin: 'autoLogin',
-    }),
-    ...mapMutations({
-      setLoginInProgress: 'setLoginInProgress',
-      setOAuthModalStatus: 'setOAuthModalStatus',
     }),
   },
 }
