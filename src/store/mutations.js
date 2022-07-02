@@ -238,6 +238,9 @@ export default {
   setUnapprovedDecryptMsgs(state, unapprovedDecryptMsgs) {
     state.unapprovedDecryptMsgs = unapprovedDecryptMsgs
   },
+  setUnapprovedAssets(state, unApprovedAssets) {
+    state.unApprovedAssets = unApprovedAssets
+  },
   setPostboxKey(state, payload) {
     state.postboxKey = payload
   },
