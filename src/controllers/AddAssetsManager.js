@@ -1,6 +1,7 @@
 import { ObservableStore } from '@metamask/obs-store'
 import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'
+import log from 'loglevel'
 import Web3 from 'web3'
 
 import NftHandler from '../handlers/Token/NftHandler'
@@ -62,11 +63,12 @@ export default class WatchAssetManager extends EventEmitter {
       this.emit('newUnapprovedAsset', normalizedAssetParams, request)
       // await finished
       this.once(`${id}:finished`, (data) => {
+        const asset = this.getAsset(id)
         switch (data.status) {
           case 'approved':
             return resolve()
           case 'rejected':
-            return reject(ethErrors.provider.userRejectedRequest('Torus Watch Asset: User denied watch asset request.'))
+            return reject(ethErrors.provider.userRejectedRequest(`Torus Watch Asset: ${asset.errorMsg || 'User denied watch asset request.'}`))
           default:
             return reject(new Error(`Torus Watch Asset: Unknown problem: ${JSON.stringify(normalizedAssetParams)}`))
         }
@@ -94,34 +96,46 @@ export default class WatchAssetManager extends EventEmitter {
   }
 
   async approveAsset(assetId) {
-    const assetData = this.getAsset(assetId)
-    const { options, metadata, type } = assetData.assetParams
-    if (type.toLowerCase() === CONTRACT_TYPE_ERC20) {
-      const { address, symbol, decimals } = options
-      const { network, name } = metadata
-      await this.prefsController.addCustomToken({
-        token_address: address,
-        network,
-        token_symbol: symbol,
-        token_name: name || symbol,
-        decimals,
-      })
-    } else {
-      const { address, id } = options
-      const { network, nftName } = metadata
-      await this.prefsController.addCustomNft({
-        nft_address: address,
-        network,
-        nft_name: nftName,
-        nft_id: id,
-        nft_contract_standard: type,
-      })
+    try {
+      const assetData = this.getAsset(assetId)
+      const { options, metadata, type } = assetData.assetParams
+      if (type.toLowerCase() === CONTRACT_TYPE_ERC20) {
+        const { address, symbol, decimals } = options
+        const { network, name } = metadata
+        await this.prefsController.addCustomToken(
+          {
+            token_address: address,
+            network,
+            token_symbol: symbol,
+            token_name: name || symbol,
+            decimals,
+          },
+          true
+        )
+      } else {
+        const { address, id } = options
+        const { network, nftName } = metadata
+        await this.prefsController.addCustomNft(
+          {
+            nft_address: address,
+            network,
+            nft_name: nftName,
+            nft_id: id,
+            nft_contract_standard: type,
+          },
+          true
+        )
+      }
+      this.setAssetStatusApproved(assetId)
+    } catch (error) {
+      log.error('error while approving asset watch', error)
+      this.rejectAsset(assetId, error?.message || 'Something went wrong while watching asset')
+      throw error
     }
-    this.setAssetStatusApproved(assetId)
   }
 
-  rejectAsset(assetId) {
-    this._setAssetStatus(assetId, 'rejected')
+  rejectAsset(assetId, errorMsg = '') {
+    this._setAssetStatus(assetId, 'rejected', errorMsg)
   }
 
   addAsset(asset) {
@@ -137,12 +151,15 @@ export default class WatchAssetManager extends EventEmitter {
     this._setAssetStatus(assetId, 'approved')
   }
 
-  _setAssetStatus(assetId, status) {
+  _setAssetStatus(assetId, status, errorMsg = '') {
     const asset = this.getAsset(assetId)
     if (!asset) {
       throw new Error(`AddAssetsManager - Asset not found for id: "${assetId}".`)
     }
     asset.status = status
+    if (errorMsg) {
+      asset.errorMsg = errorMsg
+    }
     this._updateAsset(asset)
     this.emit(`${assetId}:${status}`, asset)
     if (status === 'rejected' || status === 'approved' || status === 'errored') {

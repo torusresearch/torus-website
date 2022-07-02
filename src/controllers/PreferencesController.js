@@ -660,14 +660,19 @@ class PreferencesController extends SafeEventEmitter {
     }
   }
 
-  async addCustomToken(payload) {
+  async addCustomToken(payload, throwError = false) {
     try {
       // payload is { token_address, network, token_symbol, decimals, token_name }
       const response = await this.api.post(`${config.api}/customtoken`, payload, this.headers(), { useAPIKey: true })
       this.updateStore({ customTokens: [...this.state().customTokens, response.data] })
       this.handleSuccess('navBar.snackSuccessCustomTokenAdd')
-    } catch {
-      this.handleError('navBar.snackFailCustomTokenAdd')
+    } catch (error) {
+      if (error.status !== 409) {
+        if (throwError) {
+          throw error
+        }
+        this.handleError('navBar.snackFailCustomTokenAdd')
+      }
     }
   }
 
@@ -683,7 +688,7 @@ class PreferencesController extends SafeEventEmitter {
     }
   }
 
-  async addCustomNft(payload) {
+  async addCustomNft(payload, throwError = false) {
     try {
       // payload is { nft_address, network, nft_name, nft_id, nft_contract_standard, nft_image_link, description, nft_balance }
       const apiPayload = {
@@ -697,8 +702,13 @@ class PreferencesController extends SafeEventEmitter {
       const customNft = { ...payload, ...response.data }
       this.updateStore({ customNfts: [...this.state().customNfts, customNft] })
       this.handleSuccess('navBar.snackSuccessCustomNftAdd')
-    } catch {
-      this.handleError('navBar.snackFailCustomNftAdd')
+    } catch (error) {
+      if (error.status !== 409) {
+        if (throwError) {
+          throw error
+        }
+        this.handleError('navBar.snackFailCustomNftAdd')
+      }
     }
   }
 
