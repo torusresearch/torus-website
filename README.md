@@ -166,14 +166,14 @@ aws s3 cp images s3://images.toruswallet.io/ --cache-control "public, max-age=60
 | MoonPay  | Matic            | USDC        |
 | MoonPay  | Avalanche        | AVAX        |
 
-## Providers supported cryptocurrencies links
+## Providers supported currencies
 
-| Provider        | Supported currencies                                                                                    |
-| --------------- | ------------------------------------------------------------------------------------------------------- |
-| Mercuryo        | https://help.mercuryo.io/en/articles/4519473-mercuryo-widget-faq                                        |
-| Xanpool         | https://xanpool.com/documentation/api/Misc.html#methods-icons                                           |
-| Wyre            | https://docs.sendwyre.com/docs/supported-currencies#blockchains                                         |
-| Simplex         | https://support.simplex.com/hc/en-gb/articles/360020782798-Checking-your-transaction-on-the-blockchain  |
-| Transak Support | https://support.transak.com/hc/en-us/articles/360020147998-Which-Cryptocurrencies-does-Transak-support- |
-| Ramp            | https://support.ramp.network/en/articles/432-what-crypto-assets-do-you-support                          |
-| Moonpay         | https://support.moonpay.com/hc/en-gb/articles/360009280177-Which-cryptocurrencies-do-you-support-       |
+| Provider        | Supported cryptocurrencies                                                                              | Supported fiat currencies                                                                                 |
+| --------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Mercuryo        | https://help.mercuryo.io/en/articles/4519473-mercuryo-widget-faq                                        | https://support.aax.com/en/articles/5295762-mercuryo                                                      |
+| Xanpool         | https://xanpool.com/documentation/api/Misc.html#methods-icons                                           | https://xanpool.com/ Currency select dropdown                                                             |
+| Wyre            | https://docs.sendwyre.com/docs/supported-currencies#blockchains                                         | https://docs.sendwyre.com/docs/supported-currencies#fiat                                                  |
+| Simplex         | https://support.simplex.com/hc/en-gb/articles/360020782798-Checking-your-transaction-on-the-blockchain  | https://integrations.simplex.com/supported_currencies                                                     |
+| Transak Support | https://support.transak.com/hc/en-us/articles/360020147998-Which-Cryptocurrencies-does-Transak-support- | https://support.transak.com/hc/en-us/articles/360020615578-Credit-and-Debit-Card-Payments-through-Transak |
+| Ramp            | https://support.ramp.network/en/articles/432-what-crypto-assets-do-you-support                          | https://support.ramp.network/en/articles/471-why-am-i-paying-in-usd-eur-gbp                               |
+| Moonpay         | https://support.moonpay.com/hc/en-gb/articles/360009280177-Which-cryptocurrencies-do-you-support-       | https://support.moonpay.com/hc/en-gb/articles/360011931457-Which-fiat-currencies-are-supported-           |

@@ -145,6 +145,10 @@ export function unapprovedDecryptMsgsHandler({ unapprovedDecryptMsgs }) {
   getStore().commit('setUnapprovedDecryptMsgs', unapprovedDecryptMsgs)
 }
 
+export function unapprovedAssetMsgsHandler({ unApprovedAssets }) {
+  getStore().commit('setUnapprovedAssets', unApprovedAssets)
+}
+
 export function announcemenstHandler(state) {
   getStore().commit('setAnnouncements', state)
 }

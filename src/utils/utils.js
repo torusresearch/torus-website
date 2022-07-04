@@ -8,6 +8,7 @@ import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import { languageMap } from '../plugins/i18n-setup'
+import { supportedFiatCurrencies } from '../supportedCurrencies'
 import {
   ACCOUNT_TYPE,
   ACTIVE,
@@ -19,10 +20,12 @@ import {
   ARBITRUM_MAINNET_CODE,
   ARBITRUM_TESTNET_CHAIN_ID,
   ARBITRUM_TESTNET_CODE,
+  AVALANCHE_MAINNET,
   AVALANCHE_MAINNET_CHAIN_ID,
   AVALANCHE_MAINNET_CODE,
   AVALANCHE_TESTNET_CHAIN_ID,
   AVALANCHE_TESTNET_CODE,
+  BSC_MAINNET,
   BSC_MAINNET_CHAIN_ID,
   BSC_MAINNET_CODE,
   BSC_TESTNET_CHAIN_ID,
@@ -55,6 +58,7 @@ import {
   MAINNET_CHAIN_ID,
   MAINNET_CODE,
   MAINNET_DISPLAY_NAME,
+  MATIC,
   MATIC_CHAIN_ID,
   MATIC_CODE,
   MERCURYO,
@@ -102,6 +106,7 @@ import {
   WEIBO,
   WYRE,
   XANPOOL,
+  // XDAI,
   XDAI_CHAIN_ID,
   XDAI_CODE,
 } from './enums'
@@ -429,14 +434,42 @@ export const paymentProviders = {
     line1: 'Credit/ Debit Card',
     line2: '5% or 10 USD',
     line3: '$20,000/day, $50,000/mo',
-    line4: 'ETH, BNB',
     status: ACTIVE,
     logoExtension: PNG,
     supportPage: 'https://www.simplex.com/support/',
     minOrderValue: 50,
     maxOrderValue: 20_000,
-    validCurrencies: ['USD', 'EUR'],
+    validCurrencies: supportedFiatCurrencies(SIMPLEX),
     validCryptoCurrencies: ['ETH', 'BNB'],
+    // Disable simplex until API is fixed
+    validCryptoCurrenciesByChain: {
+      // TODO constantize cryptos e.g. {[ETH]: sdfsaf, [USDC]: {}}
+      [MAINNET]: [
+        { value: 'AAVE', display: 'AAVE' },
+        { value: 'BAT', display: 'BAT' },
+        { value: 'BUSD', display: 'BUSD' },
+        { value: 'DAI', display: 'DAI' },
+        { value: 'ETH', display: 'ETH' },
+        { value: 'MKR', display: 'MKR' },
+        { value: 'MATIC-ERC20', display: 'MATIC' },
+        { value: 'USDT', display: 'USDT' },
+        { value: 'USDC', display: 'USDC' },
+      ],
+      // BUSD? BUSD-BSC? BUSD-SC?
+      // USDC-SC or USDC?
+      [BSC_MAINNET]: [
+        { value: 'BNB', display: 'BNB' },
+        { value: 'BUSD-SC', display: 'BUSD' },
+        { value: 'CAKE', display: 'CAKE' },
+        { value: 'USDC-SC', display: 'USDC' },
+      ],
+      [MATIC]: [
+        { value: 'MATIC', display: 'MATIC' },
+        { value: 'USDC-MATIC', display: 'USDC' },
+      ],
+      // AVAXC or AVAX-C?
+      [AVALANCHE_MAINNET]: [{ value: 'AVAX-C', display: 'AVAX' }],
+    },
     includeFees: true,
     api: true,
     enforceMax: true,
@@ -445,14 +478,35 @@ export const paymentProviders = {
     line1: 'Credit/ Debit Card/ Apple Pay',
     line2: '4.5% or 5 USD',
     line3: '2,000€/day, 10,000€/mo',
-    line4: 'ETH, DAI, TUSD, USDC, USDT, BNB, BUSD',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://help.moonpay.io/en/',
     minOrderValue: 24.99,
     maxOrderValue: 50_000,
-    validCurrencies: ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'SGD', 'RUB'],
+    validCurrencies: supportedFiatCurrencies(MOONPAY),
     validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT', 'BNB_BSC', 'BUSD_BSC'],
+    validCryptoCurrenciesByChain: {
+      [MAINNET]: [
+        { value: 'aave', display: 'AAVE' },
+        { value: 'bat', display: 'BAT' },
+        { value: 'dai', display: 'DAI' },
+        { value: 'eth', display: 'ETH' },
+        { value: 'mkr', display: 'MKR' },
+        { value: 'matic', display: 'MATIC' },
+        { value: 'usdt', display: 'USDT' },
+        { value: 'usdc', display: 'USDC' },
+      ],
+      [MATIC]: [
+        { value: 'eth_polygon', display: 'ETH' },
+        { value: 'matic_polygon', display: 'MATIC' },
+        { value: 'usdc_polygon', display: 'USDC' },
+      ],
+      [BSC_MAINNET]: [
+        { value: 'bnb_bsc', display: 'BNB' },
+        { value: 'busd_bsc', display: 'BUSD' },
+      ],
+      [AVALANCHE_MAINNET]: [{ value: 'avax_cchain', display: 'AVAX' }],
+    },
     includeFees: true,
     api: true,
     enforceMax: false,
@@ -461,14 +515,29 @@ export const paymentProviders = {
     line1: 'Apple Pay/ Debit/ Credit Card',
     line2: '4.9% + 30¢ or 5 USD',
     line3: '$250/day',
-    line4: 'ETH, DAI, USDT, USDC',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://support.sendwyre.com/en/',
     minOrderValue: 5,
     maxOrderValue: 500,
-    validCurrencies: ['USD', 'AUD', 'CAD', 'GBP', 'EUR'],
+    validCurrencies: supportedFiatCurrencies(WYRE),
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
+    validCryptoCurrenciesByChain: {
+      [MAINNET]: [
+        { value: 'AAVE', display: 'AAVE' },
+        { value: 'BAT', display: 'BAT' },
+        { value: 'BUSD', display: 'BUSD' },
+        { value: 'DAI', display: 'DAI' },
+        { value: 'ETH', display: 'ETH' },
+        { value: 'MKR', display: 'MKR' },
+        { value: 'UNI', display: 'UNI' },
+        { value: 'USDC', display: 'USDC' },
+        { value: 'USDT', display: 'USDT' },
+      ],
+      [MATIC]: [{ value: 'MUSDC', display: 'USDC' }],
+      // AVAXC? or AVAX?
+      [AVALANCHE_MAINNET]: [{ value: 'AVAXC', display: 'AVAXC' }],
+    },
     includeFees: false,
     api: true,
     enforceMax: false,
@@ -477,14 +546,30 @@ export const paymentProviders = {
     line1: 'Debit Card/ <br>Apple Pay/ Bank transfer',
     line2: '0.49% - 2.9%',
     line3: '5,000€/purchase, 20,000€/mo',
-    line4: 'ETH, DAI, USDC, BNB',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://instant.ramp.network/',
     minOrderValue: 50,
     maxOrderValue: 20_000,
-    validCurrencies: ['EUR', 'GBP', 'USD'],
+    validCurrencies: supportedFiatCurrencies(RAMPNETWORK),
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'BSC_BNB'],
+    validCryptoCurrenciesByChain: {
+      [MAINNET]: [
+        { value: 'ETH', display: 'ETH' },
+        { value: 'DAI', display: 'DAI' },
+        { value: 'USDC', display: 'USDC' },
+        { value: 'USDT', display: 'USDT' },
+      ],
+      [MATIC]: [
+        { value: 'MATIC_DAI', display: 'DAI' },
+        { value: 'MATIC_MATIC', display: 'MATIC' },
+        { value: 'MATIC_USDC', display: 'USDC' },
+      ],
+      // what about AVAXC?
+      [AVALANCHE_MAINNET]: [{ value: 'AVAX', display: 'AVAX' }],
+      // Temporary unavailable
+      // [XDAI]: [{ value: 'XDAI_XDAI', display: 'XDAI' }],
+    },
     includeFees: true,
     api: true,
     receiveHint: 'walletTopUp.receiveHintRamp',
@@ -494,14 +579,19 @@ export const paymentProviders = {
     line1: 'PayNow/ InstaPay/ FPS/ GoJekPay/ UPI/ PromptPay/ <br>ViettelPay/ DuitNow',
     line2: '2.5% buying, 3% selling',
     line3: '$2,500 / day',
-    line4: 'ETH, USDT',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'mailto:support@xanpool.com',
     minOrderValue: 100,
     maxOrderValue: 2500,
-    validCurrencies: ['SGD', 'HKD', 'MYR', 'PHP', 'INR', 'VND', 'THB', 'IDR'],
+    validCurrencies: supportedFiatCurrencies(XANPOOL),
     validCryptoCurrencies: ['ETH', 'USDT'],
+    validCryptoCurrenciesByChain: {
+      [MAINNET]: [
+        { value: 'ETH', display: 'ETH' },
+        { value: 'USDT', display: 'USDT' },
+      ],
+    },
     includeFees: true,
     api: true,
     sell: true,
@@ -511,14 +601,26 @@ export const paymentProviders = {
     line1: 'Credit/ Debit Card/ Apple Pay',
     line2: '3.95% or 4 USD',
     line3: '10,000€/day, 25,000€/mo',
-    line4: 'ETH, DAI, BAT, OKB, USDT',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'mailto:support@mercuryo.io',
     minOrderValue: 30,
     maxOrderValue: 5000,
-    validCurrencies: ['USD', 'EUR', 'RUB', 'TRY', 'GBP', 'UAH'],
+    validCurrencies: supportedFiatCurrencies(MERCURYO),
     validCryptoCurrencies: ['ETH', 'DAI', 'BAT', 'USDT', 'OKB'],
+    validCryptoCurrenciesByChain: {
+      [MAINNET]: [
+        { value: 'ETH', display: 'ETH' },
+        { value: 'BAT', display: 'BAT' },
+        { value: 'USDT', display: 'USDT' },
+        { value: 'DAI', display: 'DAI' },
+      ],
+      [BSC_MAINNET]: [
+        { value: 'BNB', display: 'BNB' },
+        { value: 'BUSD', display: 'BUSD' },
+        { value: '1INCH', display: '1INCH' },
+      ],
+    },
     includeFees: true,
     api: true,
     enforceMax: false,
@@ -527,22 +629,72 @@ export const paymentProviders = {
     line1: 'Credit/ Debit Card/ <br/>Bank Transfer (sepa/gbp)',
     line2: '0.99% - 5.5% or 5 USD',
     line3: '500€/day',
-    line4: 'ETH, DAI, USDC, USDT',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://support.transak.com/hc/en-US',
-    minOrderValue: 20,
+    minOrderValue: 30,
     maxOrderValue: 500,
-    validCurrencies: ['USD', 'EUR', 'GBP', 'AUD', 'CAD', 'SGD'],
+    validCurrencies: supportedFiatCurrencies(TRANSAK),
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
+    validCryptoCurrenciesByChain: {
+      [MAINNET]: [
+        { value: 'AAVE', display: 'AAVE' },
+        { value: 'DAI', display: 'DAI' },
+        { value: 'ETH', display: 'ETH' },
+        { value: 'USDC', display: 'USDC' },
+        { value: 'USDT', display: 'USDT' },
+      ],
+      [MATIC]: [
+        { value: 'AAVE', display: 'AAVE' },
+        { value: 'DAI', display: 'DAI' },
+        { value: 'MATIC', display: 'MATIC' },
+        { value: 'USDC', display: 'USDC' },
+        { value: 'USDT', display: 'USDT' },
+        { value: 'WETH', display: 'WETH' },
+      ],
+      [BSC_MAINNET]: [
+        { value: 'BNB', display: 'BNB' },
+        { value: 'BUSD', display: 'BUSD' },
+      ],
+      [AVALANCHE_MAINNET]: [{ value: 'AVAX', display: 'AVAX' }],
+    },
     includeFees: true,
     api: true,
     enforceMax: true,
   },
 }
 
-export function getPaymentProviders(theme) {
-  return Object.keys(paymentProviders).map((x) => {
+/**
+ * {
+ *   [MAINNET]: [SIMPLEX, TRANSAK, WYRE, ...],
+ *   [BSC_MAINNET]: [SIMPLEX, ...],
+ *   ...
+ * }
+ */
+export const SUPPORTED_PROVIDERS_PER_NETWORK = (() => {
+  const supportedProvidersPerNetwork = Object.keys(SUPPORTED_NETWORK_TYPES).reduce((acc, networkName) => {
+    const supportedPaymentProviders = Object.entries(paymentProviders)
+      .filter(([_, paymentProvider]) => {
+        const paymentProviderSupportedNetworks = Object.keys(paymentProvider.validCryptoCurrenciesByChain)
+        return paymentProviderSupportedNetworks.includes(networkName)
+      })
+      .map(([key]) => key)
+
+    return {
+      ...acc,
+      [networkName]: supportedPaymentProviders,
+    }
+  }, {})
+
+  return supportedProvidersPerNetwork
+})()
+
+export function getPaymentProviders(network, theme) {
+  const supportedProviders = Object.keys(paymentProviders).filter((paymentProvider) =>
+    SUPPORTED_PROVIDERS_PER_NETWORK[network].includes(paymentProvider)
+  )
+
+  return supportedProviders.map((x) => {
     const item = paymentProviders[x]
     return {
       ...item,
@@ -869,7 +1021,7 @@ export async function validateImageUrl(url) {
 export function sanitizeNftMetdataUrl(url) {
   let finalUri = url
   if (url.startsWith('ipfs')) {
-    const ipfsPath = url.split('ipfs://ipfs/')[1]
+    const ipfsPath = url.split('ipfs://')[1]
     finalUri = getIpfsEndpoint(ipfsPath)
   }
   return finalUri

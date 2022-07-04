@@ -1,7 +1,10 @@
 /* eslint-disable no-console */
-const nock = require('nock')
-const log = require('loglevel')
-const Ganache = require('ganache')
+import Register from '@babel/register'
+import Ganache from 'ganache'
+import JSDOM from 'jsdom-global'
+import log from 'loglevel'
+import nock from 'nock'
+import fetch, { Headers, Request, Response } from 'node-fetch'
 
 console.log('requiring helpers for tests in mocha')
 const allowedHosts = ['localhost', 'mainnet.infura.io:443']
@@ -41,26 +44,24 @@ server.listen(8545, (err) => {
 })
 
 log.setDefaultLevel(5)
-global.log = log
+globalThis.log = log
 
 //
 // polyfills
 //
 
 // fetch
-const fetch = require('node-fetch')
-
-global.fetch = fetch
-global.Response = fetch.Response
-global.Headers = fetch.Headers
-global.Request = fetch.Request
+globalThis.fetch = fetch
+globalThis.Response = Response
+globalThis.Headers = Headers
+globalThis.Request = Request
 
 // dom
-require('jsdom-global')('<!doctype html><html><body></body></html>', {
-  url: 'https://example.com',
+JSDOM('', {
+  url: 'http://localhost',
 })
 
-global.matchMedia = global.matchMedia || (() => ({ matches: false, addListener: () => {}, removeListener: () => {} }))
+globalThis.matchMedia = globalThis.matchMedia || (() => ({ matches: false, addListener: () => {}, removeListener: () => {} }))
 
 const storeFn = {
   getItem(key) {
@@ -70,12 +71,10 @@ const storeFn = {
     this[key] = value
   },
 }
-global.localStorage = { ...storeFn }
-global.sessionStorage = { ...storeFn }
+globalThis.localStorage = { ...storeFn }
+globalThis.sessionStorage = { ...storeFn }
 
-const register = require('@babel/register').default
-
-register({
+Register({
   extensions: ['.js'],
   rootMode: 'upward',
   ignore: [/(node_module)/],

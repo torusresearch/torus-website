@@ -1,7 +1,14 @@
 import abiERC721 from 'human-standard-collectible-abi'
 import { ERC1155 as erc1155abi, ERC1155Metadata as erc1155MetadataAbi } from 'multi-token-standard-abi'
 
-import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, ERC721_INTERFACE_ID, ERC1155_INTERFACE_ID, OLD_ERC721_LIST } from '../../utils/enums'
+import {
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC1155,
+  COVALENT_SUPPORTED_CHAIN_IDS,
+  ERC721_INTERFACE_ID,
+  ERC1155_INTERFACE_ID,
+  OLD_ERC721_LIST,
+} from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
 import { sanitizeNftMetdataUrl, validateImageUrl } from '../../utils/utils'
 
@@ -30,7 +37,7 @@ export const getDisplayErrorMsg = (type) => {
   return null
 }
 class NftHandler {
-  constructor({ userAddress, address, tokenId, nftName, nftImageLink, description, nftStandard, isSpecial, web3 }) {
+  constructor({ userAddress, address, tokenId, nftName, nftImageLink, description, nftStandard, isSpecial, web3, prefController }) {
     if (!userAddress) {
       throw new Error('userAddress is required while initializing NftHandler')
     }
@@ -53,6 +60,7 @@ class NftHandler {
     this.nftStandard = nftStandard
     this.isSpecial = isSpecial
     this.contract = null
+    this.prefController = prefController
   }
 
   async getNftMetadata(standard, isSpecial) {
@@ -90,7 +98,6 @@ class NftHandler {
       try {
         if (await validateImageUrl(sanitizedNftMetdataUrl)) this.nftImageLink = sanitizedNftMetdataUrl
       } catch {}
-
       this.nftName = object.name || (await this.getAssetName())
       this.description = Object.prototype.hasOwnProperty.call(object, 'description') ? object.description : ''
       const { nftName, nftImageLink, description, nftStandard } = this
@@ -98,6 +105,33 @@ class NftHandler {
     } catch {
       throw new Error(errorsType.NFT_METADATA_FAILED)
     }
+  }
+
+  async getNftMetadataFromApi() {
+    const chainId = await this.web3.eth.getChainId()
+    if (!COVALENT_SUPPORTED_CHAIN_IDS[chainId]) throw new Error(`ChainId ${chainId} not supported by covalent api`)
+    if (!this.prefController) throw new Error('Preferences controller is not initialized')
+    const api = `https://api.covalenthq.com/v1/${chainId}/tokens/${this.address}/nft_metadata/${this.tokenId}/`
+    const res = await this.prefController.getCovalentNfts(api)
+
+    if (res.success) {
+      const item = res?.data?.data?.items[0]
+      const { contract_name, logo_url } = item || {}
+      const nft = item?.nft_data?.[0]
+      const nftData = nft?.external_data
+      const nftStandard = nft?.supports_erc && nft?.supports_erc.includes[CONTRACT_TYPE_ERC1155] ? CONTRACT_TYPE_ERC1155 : CONTRACT_TYPE_ERC721
+      if (!nftData && !contract_name) {
+        throw new Error('Nft data not found')
+      }
+      return {
+        nftName: nftData?.name || `${contract_name}#${this.tokenId}`,
+        nftImageLink: nftData?.image || logo_url,
+        description: nftData?.description || '',
+        nftStandard,
+      }
+    }
+
+    throw new Error('Nft data not found')
   }
 
   /**

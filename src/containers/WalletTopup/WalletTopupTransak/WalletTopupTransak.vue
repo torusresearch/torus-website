@@ -3,6 +3,8 @@
     selected-provider="transak"
     :crypto-currency-value="cryptoCurrencyValue"
     :currency-rate="currencyRate"
+    :fetch-quote-error="fetchQuoteError"
+    :fetching-quote="fetchingQuote"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
     @clearQuote="clearQuote"
@@ -15,6 +17,15 @@ import log from 'loglevel'
 import { mapState } from 'vuex'
 
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
+import cleanTopupQuoteError from '../../../utils/cleanTopupQuoteError'
+import { AVALANCHE_MAINNET, BSC_MAINNET, MAINNET, MATIC } from '../../../utils/enums'
+
+const TRANSAK_NETWORK_MAP = {
+  [MAINNET]: 'ethereum',
+  [BSC_MAINNET]: 'bsc',
+  [MATIC]: 'polygon',
+  [AVALANCHE_MAINNET]: 'avaxcchain',
+}
 
 export default {
   components: {
@@ -25,12 +36,17 @@ export default {
       cryptoCurrencyValue: 0,
       currencyRate: 0,
       currentOrder: {},
+      fetchQuoteError: '',
+      fetchingQuote: false,
     }
   },
-  computed: mapState(['selectedAddress']),
+  computed: mapState(['selectedAddress', 'networkType']),
   methods: {
     fetchQuote(payload) {
       const self = this
+      this.fetchQuoteError = ''
+      this.fetchingQuote = true
+      payload.network = TRANSAK_NETWORK_MAP[this.networkType.host]
       throttle(() => {
         self.$store
           .dispatch('fetchTransakQuote', payload)
@@ -38,8 +54,18 @@ export default {
             self.cryptoCurrencyValue = result.response.cryptoAmount
             self.currencyRate = result.response.conversionPrice
             self.currentOrder = result.response
+            this.fetchingQuote = false
+            this.fetchQuoteError = ''
           })
-          .catch((error) => log.error(error))
+          .catch(async (error) => {
+            this.fetchQuoteError = await cleanTopupQuoteError(error)
+            log.error(error)
+            this.fetchingQuote = false
+
+            this.cryptoCurrencyValue = 0
+            this.currencyRate = 0
+            this.currentOrder = {}
+          })
       }, 0)()
     },
     sendOrder(callback) {
@@ -49,6 +75,7 @@ export default {
           currentOrder: this.currentOrder,
           colorCode: this.$vuetify.theme.currentTheme.torusBrand1,
           selectedAddress: selectedAddress || this.selectedAddress,
+          network: TRANSAK_NETWORK_MAP[this.networkType.host],
         })
       )
     },
