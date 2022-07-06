@@ -83,7 +83,7 @@
     "register-service-worker": "^1.7.2",
     "single-call-balance-checker-abi": "^1.0.0",
     "swappable-obj-proxy": "^1.1.0",
-    "vue": "^2.6.14",
+    "vue": "^2.7.3",
     "vue-content-loader": "^0.2.3",
     "vue-i18n": "^8.27.1",
     "vue-json-pretty": "^1.8.3",
@@ -168,7 +168,7 @@
     "url": "^0.11.0",
     "vue-cli-plugin-vuetify": "^2.5.1",
     "vue-cli-plugin-webpack-bundle-analyzer": "~4.0.0",
-    "vue-template-compiler": "^2.6.14",
+    "vue-template-compiler": "^2.7.3",
     "vuetify-loader": "^1.7.3",
     "worker-loader": "^3.0.8"
   },
