@@ -690,8 +690,7 @@ export const SUPPORTED_PROVIDERS_PER_NETWORK = (() => {
 })()
 
 export function getPaymentProviders(network, theme) {
-  const supportedProviders = SUPPORTED_PROVIDERS_PER_NETWORK[network]
-
+  const supportedProviders = SUPPORTED_PROVIDERS_PER_NETWORK[network] ?? []
   return supportedProviders.map((x) => {
     const item = paymentProviders[x]
     return {
