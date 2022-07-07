@@ -2,6 +2,6 @@
   "diff": true,
   "extension": ["js"],
   "timeout": 0,
-  "require": ["test/setup.js"],
+  "require": ["test/setup.mjs"],
   "exit": true
 }

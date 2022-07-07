@@ -13,9 +13,10 @@ export default {
       digital_currency: payload.selectedCryptoCurrency && payload.selectedCryptoCurrency.toLowerCase(),
       fiat_currency: payload.selectedCurrency && payload.selectedCurrency.toLowerCase(),
       requested_amount: +Number.parseFloat(payload.fiatValue),
+      network: payload.network,
     })
   },
-  fetchTransakOrder({ state, dispatch }, { currentOrder, colorCode, preopenInstanceId: preopenInstanceIdPayload, selectedAddress }) {
+  fetchTransakOrder({ state, dispatch }, { currentOrder, colorCode, preopenInstanceId: preopenInstanceIdPayload, selectedAddress, network }) {
     return new Promise((resolve, reject) => {
       let preopenInstanceId = preopenInstanceIdPayload
       if (!preopenInstanceId) {
@@ -48,6 +49,7 @@ export default {
         email: state.userInfo.email || undefined,
         partnerCustomerId: selectedAddress || state.selectedAddress,
         redirectURL: `${config.redirect_uri}?state=${instanceState}`,
+        network,
       }
       const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(parameters)))
       const url = `${config.transakHost}?${parameterString.toString()}`

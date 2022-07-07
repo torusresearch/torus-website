@@ -106,3 +106,24 @@
     right: 0;
   }
 }
+.address-chip {
+  position: relative;
+  top: -6px;
+  height: 29px;
+  .v-avatar {
+    left: -7px;
+    height: 19px !important;
+    width: 19px !important;
+  }
+}
+.bitAddress {
+  padding: 10px 5px 10px 0;
+}
+.bitLabelChip {
+  font-size: 12px;
+  display: block;
+  width: fit-content;
+  height: 19px;
+  line-height: 19px;
+  padding: 0 6px;
+}

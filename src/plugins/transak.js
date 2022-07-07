@@ -15,6 +15,7 @@ const getQuote = (requestObject) => {
     return get(
       `${config.transakApiQuoteHost}/currencies/price?cryptoCurrency=${requestObject.digital_currency.toUpperCase()}` +
         `&partnerApiKey=${config.transakLiveAPIKEY}` +
+        `&network=${requestObject.network}` +
         `&fiatAmount=${requestObject.requested_amount}&fiatCurrency=${requestObject.fiat_currency.toUpperCase()}` +
         '&isBuyOrSell=BUY',
       options

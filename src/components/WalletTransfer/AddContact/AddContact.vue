@@ -40,6 +40,8 @@
 import log from 'loglevel'
 
 import {
+  BIT,
+  BIT_LABEL,
   DISCORD,
   DISCORD_LABEL,
   ENS,
@@ -66,6 +68,7 @@ const VERIFIER_LABELS = {
   [TWITTER]: TWITTER_LABEL,
   [GITHUB]: GITHUB_LABEL,
   [ENS]: ENS_LABEL,
+  [BIT]: BIT_LABEL,
   [UNSTOPPABLE_DOMAINS]: UNSTOPPABLE_DOMAINS_LABEL,
 }
 export default {
