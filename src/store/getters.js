@@ -89,11 +89,7 @@ const loginButtonsArray = (state) => {
   return loginButtons
 }
 
-const supportedCurrencies = (state) => {
-  const returnArr = ['ETH', ...config.supportedCurrencies]
-  if (state.networkType.ticker !== 'ETH') returnArr.unshift(state.networkType.ticker)
-  return returnArr
-}
+const supportedCurrencies = () => config.supportedCurrencies
 
 const filteredContacts = (state) =>
   state.contacts.filter((contact) => {
