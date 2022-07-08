@@ -8,12 +8,12 @@ import { MERCURYO, MOONPAY, RAMPNETWORK, SIMPLEX, TRANSAK, WYRE, XANPOOL } from 
  * Last updated: Date of commit
  */
 export const CRYPTO_COMPARE_CURRENCIES = [
+  'ETH',
   'USDT',
   'USDC',
   'TUSD',
   'EOSDT',
   'USD',
-  'ETH',
   'DAI',
   'GUSD',
   'DKKT',
