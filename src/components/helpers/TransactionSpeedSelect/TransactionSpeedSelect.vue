@@ -89,6 +89,7 @@
           :contract-type="contractType"
           :network-ticker="networkTicker"
           :nonce="nonce"
+          :network-host="networkHost"
           @onSave="onSaveAdvanceOptions"
         />
       </v-flex>
