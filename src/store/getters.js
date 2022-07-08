@@ -91,7 +91,7 @@ const loginButtonsArray = (state) => {
 
 const supportedCurrencies = (state) => {
   const returnArr = config.supportedCurrencies
-  const ticker = state.networkType
+  const { ticker } = state.networkType
   if (ticker !== 'ETH') {
     const findTicker = returnArr.indexOf(ticker)
     // make sure network ticker is on first of list if already existing
