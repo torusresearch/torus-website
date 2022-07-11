@@ -112,7 +112,7 @@
     "@sentry/cli": "^2.3.0",
     "@vue/cli-plugin-babel": "^5.0.7",
     "@vue/cli-plugin-eslint": "^5.0.7",
-    "@vue/cli-plugin-pwa": "^5.0.7",
+    "@vue/cli-plugin-pwa": "^5.0.8",
     "@vue/cli-service": "^5.0.7",
     "@vue/eslint-config-standard": "^7.0.0",
     "assert": "^2.0.0",
