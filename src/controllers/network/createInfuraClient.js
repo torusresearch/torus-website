@@ -11,7 +11,7 @@ import {
 } from 'eth-json-rpc-middleware'
 
 import config from '../../config'
-import { NETWORK_TYPE_TO_ID_MAP } from '../../utils/enums'
+import { INFURA_NETWORK_TYPE_TO_ID_MAP } from '../../utils/enums'
 
 export function createInfuraClient({ network }) {
   const infuraMiddleware = createInfuraMiddleware({ network, projectId: config.infuraKey })
@@ -31,10 +31,10 @@ export function createInfuraClient({ network }) {
 }
 
 export function createNetworkAndChainIdMiddleware({ network }) {
-  if (!NETWORK_TYPE_TO_ID_MAP[network.toString()]) {
+  if (!INFURA_NETWORK_TYPE_TO_ID_MAP[network.toString()]) {
     throw new Error(`createInfuraClient - unknown network "${network}"`)
   }
-  const { chainId, networkId } = NETWORK_TYPE_TO_ID_MAP[network]
+  const { chainId, networkId } = INFURA_NETWORK_TYPE_TO_ID_MAP[network]
 
   return createScaffoldMiddleware({
     eth_chainId: chainId,

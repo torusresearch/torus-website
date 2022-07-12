@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { MAINNET } from '../../../utils/enums'
+import { MAINNET, MAINNET_CODE } from '../../../utils/enums'
 import { getPaymentProviders } from '../../../utils/utils'
 import WriteToUs from '../WriteToUs'
 
@@ -47,7 +47,7 @@ export default {
   components: { WriteToUs },
   data() {
     return {
-      providers: getPaymentProviders(MAINNET),
+      providers: getPaymentProviders(MAINNET_CODE),
     }
   },
   methods: {
