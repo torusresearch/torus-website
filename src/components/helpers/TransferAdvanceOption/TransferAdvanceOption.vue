@@ -54,7 +54,7 @@
                     id="advanced-gas"
                     :value="advancedGas"
                     outlined
-                    :rules="[rules.valid, rules.checkValidGasAmount]"
+                    :rules="[rules.valid, rules.moreThanZero]"
                     type="number"
                     @change="onChangeGasLimit"
                   ></v-text-field>
@@ -186,6 +186,7 @@ export default {
       advancedGas: new BigNumber('0'),
       CONTRACT_TYPE_ERC20,
       rules: {
+        moreThanZero: (value) => new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount'),
         checkValidGasAmount: (value) => {
           if (SUPPORTED_NETWORK_TYPES[this.networkHost])
             return new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')

@@ -66,6 +66,7 @@
           :currency-multiplier-eth="currencyMultiplierEth"
           :contract-type="contractType"
           :network-ticker="networkTicker"
+          :network-host="networkHost"
           :nonce="nonce"
           @onSave="onSaveAdvanceOptions"
         />

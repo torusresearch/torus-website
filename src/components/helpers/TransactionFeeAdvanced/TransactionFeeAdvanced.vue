@@ -173,7 +173,7 @@ import BigNumber from 'bignumber.js'
 import { isEqual } from 'lodash'
 import log from 'loglevel'
 
-import { TRANSACTION_SPEED } from '../../../utils/enums'
+import { MAINNET, SUPPORTED_NETWORK_TYPES, TRANSACTION_SPEED } from '../../../utils/enums'
 import { GAS_FORM_ERRORS, getGasFormErrorText } from '../../../utils/gas/utils'
 import { bnEqualTo, bnGreaterThan, bnLessThan, bnLessThanEqualTo, gasTiming, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
@@ -224,6 +224,10 @@ export default {
         return new BigNumber('0')
       },
     },
+    networkHost: {
+      type: String,
+      default: MAINNET,
+    },
   },
   data() {
     return {
@@ -246,8 +250,12 @@ export default {
         },
       ],
       rules: {
-        validMinimumGas: (value) => new BigNumber(value || '0').gte(new BigNumber('21000')) || this.t('walletTransfer.invalidAmount'),
         moreThanZero: (value) => new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount'),
+        validMinimumGas: (value) => {
+          if (SUPPORTED_NETWORK_TYPES[this.networkHost])
+            return new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
+          return new BigNumber(value || '0').gte(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
+        },
         valid: (value) => !!value || this.t('walletTransfer.required'),
         validNonce: (value) => {
           if (value === null) return this.t('walletTransfer.invalidInput')
