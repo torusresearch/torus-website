@@ -309,6 +309,10 @@ export default {
       const currentWidgetVisibility = this.activeWidget
       this.toggleWidgetVisibility(!currentWidgetVisibility)
       this.activeWidget = !currentWidgetVisibility
+      // Make sure chat is hidden when widget is closed
+      if (!this.activeWidget) {
+        window.$crisp.push(['do', 'chat:hide'])
+      }
     },
   },
 }
