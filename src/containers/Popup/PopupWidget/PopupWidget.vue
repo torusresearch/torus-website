@@ -258,9 +258,6 @@ export default {
       return this.wallet[this.fullAddress]?.accountType
     },
   },
-  mounted() {
-    window.$crisp.push(['do', 'chat:hide'])
-  },
   methods: {
     ...mapActions({
       toggleWidgetVisibility: 'toggleWidgetVisibility',
@@ -309,10 +306,6 @@ export default {
       const currentWidgetVisibility = this.activeWidget
       this.toggleWidgetVisibility(!currentWidgetVisibility)
       this.activeWidget = !currentWidgetVisibility
-      // Make sure chat is hidden when widget is closed
-      if (!this.activeWidget) {
-        window.$crisp.push(['do', 'chat:hide'])
-      }
     },
   },
 }
