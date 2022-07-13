@@ -139,7 +139,7 @@ export default class NetworkController extends EventEmitter {
   /**
    * Get network state
    */
-  get getNetworkState() {
+  getNetworkState() {
     return this.networkStore.getState()
   }
 
