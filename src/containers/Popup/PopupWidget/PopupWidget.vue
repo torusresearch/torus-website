@@ -258,9 +258,6 @@ export default {
       return this.wallet[this.fullAddress]?.accountType
     },
   },
-  mounted() {
-    window.$crisp.push(['do', 'chat:hide'])
-  },
   methods: {
     ...mapActions({
       toggleWidgetVisibility: 'toggleWidgetVisibility',
