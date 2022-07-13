@@ -48,7 +48,7 @@ describe('NetworkController', () => {
     })
     describe('#getNetworkState', () => {
       it('should return loading when new', () => {
-        const networkState = networkController.getNetworkState()
+        const networkState = networkController.getNetworkState
         assert.strictEqual(networkState, 'loading', 'network is loading')
       })
     })
@@ -56,7 +56,7 @@ describe('NetworkController', () => {
     describe('#setNetworkState', () => {
       it('should update the network', () => {
         networkController.setNetworkState(1, 'rpc')
-        const networkState = networkController.getNetworkState()
+        const networkState = networkController.getNetworkState
         assert.strictEqual(networkState, 1, 'network is 1')
       })
     })

@@ -97,9 +97,9 @@ export default class NetworkController extends EventEmitter {
     return new Promise((resolve, reject) => {
       const { provider } = this.getProviderAndBlockTracker()
       const ethQuery = new EthQuery(provider)
-      const initialNetwork = this.getNetworkState()
+      const initialNetwork = this.getNetworkState
       ethQuery.sendAsync({ method: 'eth_getBlockByNumber', params: ['latest', false] }, (err, block) => {
-        const currentNetwork = this.getNetworkState()
+        const currentNetwork = this.getNetworkState
         if (currentNetwork !== initialNetwork) {
           log.info('network has been changed')
           return resolve({})
@@ -139,7 +139,7 @@ export default class NetworkController extends EventEmitter {
   /**
    * Get network state
    */
-  getNetworkState() {
+  get getNetworkState() {
     return this.networkStore.getState()
   }
 
@@ -154,10 +154,10 @@ export default class NetworkController extends EventEmitter {
    * Update supported networks
    */
   updateSupportedNetworks(network) {
-    const currentHosts = Object.keys(this.getSupportedNetworks())
+    const currentHosts = Object.keys(this.getSupportedNetworks)
     if (!currentHosts.includes(network.host)) {
       this.supportedNetworkStore.updateState({
-        ...this.getSupportedNetworks(),
+        ...this.getSupportedNetworks,
         [network.host]: network,
       })
     }
@@ -202,7 +202,7 @@ export default class NetworkController extends EventEmitter {
    * Return networking loading status
    */
   isNetworkLoading() {
-    return this.getNetworkState() === 'loading'
+    return this.getNetworkState === 'loading'
   }
 
   /**
@@ -223,10 +223,10 @@ export default class NetworkController extends EventEmitter {
       return
     }
     const ethQuery = new EthQuery(this._provider)
-    const initialNetwork = this.getNetworkState()
+    const initialNetwork = this.getNetworkState
 
     ethQuery.sendAsync({ method: 'net_version' }, (error, network) => {
-      const currentNetwork = this.getNetworkState()
+      const currentNetwork = this.getNetworkState
       if (initialNetwork === currentNetwork) {
         if (error) {
           this.setNetworkState('loading')
@@ -264,8 +264,8 @@ export default class NetworkController extends EventEmitter {
    */
   async setProviderType(type, rpcUrl = '', ticker = 'ETH', nickname = '') {
     assert.notStrictEqual(type, RPC, 'NetworkController - cannot call "setProviderType" with type \'rpc\'. use "setRpcTarget"')
-    assert.ok(this.getSupportedNetworks()[type] !== undefined, `NetworkController - Unknown rpc type "${type}"`)
-    const { chainId, ...rest } = this.getSupportedNetworks()[type]
+    assert.ok(this.getSupportedNetworks[type] !== undefined, `NetworkController - Unknown rpc type "${type}"`)
+    const { chainId, ...rest } = this.getSupportedNetworks[type]
     const providerConfig = { type, rpcUrl, ticker, nickname, chainId, ...rest }
     this.setProviderConfig(providerConfig)
   }
@@ -314,8 +314,8 @@ export default class NetworkController extends EventEmitter {
     } else if (type === LOCALHOST) {
       this._configureLocalhostProvider()
       // url-based rpc endpoints
-    } else if (this.getSupportedNetworks()[type] !== undefined) {
-      const { chainId: localChainId, rpcUrl: localUrl } = this.getSupportedNetworks()[type]
+    } else if (this.getSupportedNetworks[type] !== undefined) {
+      const { chainId: localChainId, rpcUrl: localUrl } = this.getSupportedNetworks[type]
       this._configureStandardProvider({
         rpcUrl: rpcUrl || localUrl,
         chainId: chainId || localChainId,
