@@ -5,7 +5,7 @@ import config from '../../config'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MERCURYO, MOONPAY, RAMPNETWORK, TRANSAK, TRANSAK_NETWORK_MAP, WYRE, XANPOOL } from '../../utils/enums'
+import { MERCURYO, MOONPAY, RAMPNETWORK, SIMPLEX, TRANSAK, TRANSAK_NETWORK_MAP, WYRE, XANPOOL } from '../../utils/enums'
 import { fakeStream, paymentProviders } from '../../utils/utils'
 import mercuryo from './mercuryo'
 import moonpay from './moonpay'
@@ -158,6 +158,17 @@ export default {
             colorCode: state.whiteLabel.theme.colors.torusBrand1 || '',
             selectedAddress: selectedParameters.selectedAddress,
             network: selectedParameters.network,
+            preopenInstanceId,
+          })
+          handleSuccess(success)
+        } else if (provider === SIMPLEX) {
+          const result = await dispatch('fetchSimplexQuote', selectedParameters)
+          if (result.error) throw new Error(result.result.error)
+          const currentOrder = result.result
+
+          const { success } = await dispatch('fetchSimplexOrder', {
+            currentOrder,
+            selectedAddress: selectedParameters.selectedAddress,
             preopenInstanceId,
           })
           handleSuccess(success)
