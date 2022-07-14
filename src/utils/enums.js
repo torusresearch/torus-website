@@ -970,3 +970,10 @@ export const CHAIN_TO_BIT_NAMESPACE = {
   [OPTIMISM_MAINNET_CODE]: 'address.op',
   [AVALANCHE_MAINNET_CODE]: 'address.avalanche',
 }
+
+export const TRANSAK_NETWORK_MAP = {
+  [MAINNET]: 'ethereum',
+  [BSC_MAINNET]: 'bsc',
+  [MATIC]: 'polygon',
+  [AVALANCHE_MAINNET]: 'avaxcchain',
+}
