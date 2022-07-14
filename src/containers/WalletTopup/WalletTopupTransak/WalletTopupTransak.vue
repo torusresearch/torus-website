@@ -18,14 +18,7 @@ import { mapState } from 'vuex'
 
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 import cleanTopupQuoteError from '../../../utils/cleanTopupQuoteError'
-import { AVALANCHE_MAINNET, BSC_MAINNET, MAINNET, MATIC } from '../../../utils/enums'
-
-const TRANSAK_NETWORK_MAP = {
-  [MAINNET]: 'ethereum',
-  [BSC_MAINNET]: 'bsc',
-  [MATIC]: 'polygon',
-  [AVALANCHE_MAINNET]: 'avaxcchain',
-}
+import { TRANSAK_NETWORK_MAP } from '../../../utils/enums'
 
 export default {
   components: {
