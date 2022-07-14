@@ -440,7 +440,6 @@ export const paymentProviders = {
     minOrderValue: 50,
     maxOrderValue: 20_000,
     validCurrencies: supportedFiatCurrencies(SIMPLEX),
-    validCryptoCurrencies: ['ETH', 'BNB'],
     // Disable simplex until API is fixed
     validCryptoCurrenciesByChain: {
       // TODO constantize cryptos e.g. {[ETH]: sdfsaf, [USDC]: {}}
@@ -484,7 +483,6 @@ export const paymentProviders = {
     minOrderValue: 24.99,
     maxOrderValue: 50_000,
     validCurrencies: supportedFiatCurrencies(MOONPAY),
-    validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT', 'BNB_BSC', 'BUSD_BSC'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'aave', display: 'AAVE' },
@@ -521,7 +519,6 @@ export const paymentProviders = {
     minOrderValue: 5,
     maxOrderValue: 500,
     validCurrencies: supportedFiatCurrencies(WYRE),
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'AAVE', display: 'AAVE' },
@@ -552,7 +549,6 @@ export const paymentProviders = {
     minOrderValue: 50,
     maxOrderValue: 20_000,
     validCurrencies: supportedFiatCurrencies(RAMPNETWORK),
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'BSC_BNB'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'ETH', display: 'ETH' },
@@ -585,7 +581,6 @@ export const paymentProviders = {
     minOrderValue: 100,
     maxOrderValue: 2500,
     validCurrencies: supportedFiatCurrencies(XANPOOL),
-    validCryptoCurrencies: ['ETH', 'USDT'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'ETH', display: 'ETH' },
@@ -607,7 +602,6 @@ export const paymentProviders = {
     minOrderValue: 30,
     maxOrderValue: 5000,
     validCurrencies: supportedFiatCurrencies(MERCURYO),
-    validCryptoCurrencies: ['ETH', 'DAI', 'BAT', 'USDT', 'OKB'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'ETH', display: 'ETH' },
@@ -635,7 +629,6 @@ export const paymentProviders = {
     minOrderValue: 30,
     maxOrderValue: 500,
     validCurrencies: supportedFiatCurrencies(TRANSAK),
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'AAVE', display: 'AAVE' },
@@ -690,7 +683,7 @@ export const SUPPORTED_PROVIDERS_PER_NETWORK = (() => {
 })()
 
 export function getPaymentProviders(networkId, theme) {
-  const network = Object.values(SUPPORTED_NETWORK_TYPES).find(({ chainId }) => chainId === networkId)
+  const network = Object.values(SUPPORTED_NETWORK_TYPES).find(({ chainId }) => chainId === Number.parseInt(networkId, 10))
   const supportedProviders = SUPPORTED_PROVIDERS_PER_NETWORK[network?.host] ?? []
   return supportedProviders.map((x) => {
     const item = paymentProviders[x]
