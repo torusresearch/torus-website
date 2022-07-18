@@ -636,6 +636,7 @@ export const paymentProviders = {
         { value: 'ETH', display: 'ETH' },
         { value: 'USDC', display: 'USDC' },
         { value: 'USDT', display: 'USDT' },
+        { value: 'CHAIN', display: 'CHAIN' },
       ],
       [MATIC]: [
         { value: 'AAVE', display: 'AAVE' },
@@ -644,6 +645,7 @@ export const paymentProviders = {
         { value: 'USDC', display: 'USDC' },
         { value: 'USDT', display: 'USDT' },
         { value: 'WETH', display: 'WETH' },
+        { value: 'CHAIN', display: 'CHAIN' },
       ],
       [BSC_MAINNET]: [
         { value: 'BNB', display: 'BNB' },
