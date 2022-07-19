@@ -89,7 +89,6 @@
           :contract-type="contractType"
           :network-ticker="networkTicker"
           :nonce="nonce"
-          :network-host="networkHost"
           @onSave="onSaveAdvanceOptions"
         />
       </v-flex>
@@ -272,7 +271,7 @@ export default {
           const gasPrice = await torus.web3.eth.getGasPrice()
           log.info(gasPrice)
           this.averageGasPrice = new BigNumber(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
-          this.fastestGasPrice = this.averageGasPrice.plus(new BigNumber('5'))
+          this.fastestGasPrice = this.averageGasPrice.gt(0) ? this.averageGasPrice.plus(new BigNumber('5')) : this.averageGasPrice
         }
         // Set selected gas price from confirm
         if (this.activeGasPriceConfirm) {
