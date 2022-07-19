@@ -620,9 +620,9 @@ export const paymentProviders = {
     enforceMax: false,
   },
   [TRANSAK]: {
-    line1: 'Credit/ Debit Card/ <br/>Bank Transfer (sepa/gbp)',
+    line1: 'Apple & Google Pay / Credit/Debit Card<br/>Bangkok Bank Mobile & iPay<br/>Bank Transfer (sepa/gbp) / SCB Mobile & Easy',
     line2: '0.99% - 5.5% or 5 USD',
-    line3: '500€/day',
+    line3: '$5,000/day, $28,000/mo',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://support.transak.com/hc/en-US',
