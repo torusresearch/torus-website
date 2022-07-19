@@ -56,6 +56,9 @@ export default {
   setSelectedCurrency(state, currency) {
     state.selectedCurrency = currency
   },
+  setCustomCurrency(state, currency) {
+    state.customCurrency = currency
+  },
   setTypedMessages(state, unapprovedTypedMessages) {
     state.unapprovedTypedMessages = unapprovedTypedMessages
   },
@@ -234,6 +237,9 @@ export default {
   },
   setUnapprovedDecryptMsgs(state, unapprovedDecryptMsgs) {
     state.unapprovedDecryptMsgs = unapprovedDecryptMsgs
+  },
+  setUnapprovedAssets(state, unApprovedAssets) {
+    state.unApprovedAssets = unApprovedAssets
   },
   setPostboxKey(state, payload) {
     state.postboxKey = payload

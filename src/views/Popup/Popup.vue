@@ -35,7 +35,7 @@ export default {
       return apiStreamSupported()
     },
   }),
-  mounted() {
+  created() {
     window.$crisp.push(['do', 'chat:hide'])
   },
   methods: {

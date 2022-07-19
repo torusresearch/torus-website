@@ -30,6 +30,12 @@ describe('AssetsDetectionController', () => {
   let assetsContract
   let prefsController
   const sandbox = createSandbox()
+  let clock
+
+  before(() => {
+    clock = sandbox.useFakeTimers()
+  })
+
   // let validateImageUrlStub
 
   beforeEach(async () => {
@@ -135,7 +141,6 @@ describe('AssetsDetectionController', () => {
 
   it('should poll and detect assets on interval while on mainnet, binance net, matic mainnet and matic testnet', () =>
     new Promise((resolve) => {
-      const clock = sandbox.useFakeTimers()
       const localNetwork = new NetworkController()
       const networkControllerProviderConfig = {
         getAccounts: noop,
@@ -178,7 +183,6 @@ describe('AssetsDetectionController', () => {
 
   it('should not autodetect while not on covalent supported networks(ie. bsc, matic, mainnet, matic mumbai)', () =>
     new Promise((resolve) => {
-      const clock = sandbox.useFakeTimers()
       const localNetwork = new NetworkController()
       const networkControllerProviderConfig = {
         getAccounts: noop,
@@ -206,7 +210,6 @@ describe('AssetsDetectionController', () => {
 
   it('should start detection when selected address changes', () =>
     new Promise((resolve) => {
-      const clock = sandbox.useFakeTimers()
       const localNetwork = new NetworkController()
       const networkControllerProviderConfig = {
         getAccounts: noop,
@@ -231,7 +234,6 @@ describe('AssetsDetectionController', () => {
 
   it('should restart detection', () =>
     new Promise((resolve) => {
-      const clock = sandbox.useFakeTimers()
       const localNetwork = new NetworkController()
       const networkControllerProviderConfig = {
         getAccounts: noop,

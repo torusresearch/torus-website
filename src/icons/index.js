@@ -76,6 +76,7 @@ import TrashIcon from './TrashIcon.vue'
 import TwoFactorIcon from './TwoFactorIcon.vue'
 import UploadIcon from './UploadIcon.vue'
 import VerifierAppleIcon from './VerifierAppleIcon.vue'
+import VerifierBitIcon from './VerifierBitIcon.vue'
 import VerifierDiscordIcon from './VerifierDiscordIcon.vue'
 import VerifierEmailIcon from './VerifierEmailIcon.vue'
 import VerifierEnsIcon from './VerifierEnsIcon.vue'
@@ -234,6 +235,9 @@ export default {
   },
   ens: {
     component: VerifierEnsIcon,
+  },
+  bit: {
+    component: VerifierBitIcon,
   },
   unstoppable_domains: {
     component: VerifierUnstoppableDomainsIcon,

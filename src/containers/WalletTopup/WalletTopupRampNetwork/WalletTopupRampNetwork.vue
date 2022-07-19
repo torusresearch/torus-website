@@ -3,6 +3,8 @@
     selected-provider="rampnetwork"
     :crypto-currency-value="cryptoCurrencyValue"
     :currency-rate="currencyRate"
+    :fetch-quote-error="fetchQuoteError"
+    :fetching-quote="fetchingQuote"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
     @clearQuote="clearQuote"
@@ -16,6 +18,7 @@ import log from 'loglevel'
 import { mapState } from 'vuex'
 
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
+import cleanTopupQuoteError from '../../../utils/cleanTopupQuoteError'
 
 export default {
   components: {
@@ -26,12 +29,16 @@ export default {
       cryptoCurrencyValue: 0,
       currencyRate: 0,
       currentOrder: {},
+      fetchQuoteError: '',
+      fetchingQuote: false,
     }
   },
   computed: mapState(['selectedAddress']),
   methods: {
     fetchQuote(payload) {
       const self = this
+      this.fetchQuoteError = ''
+      this.fetchingQuote = true
       throttle(() => {
         self.$store
           .dispatch('fetchRampNetworkQuote', payload)
@@ -39,14 +46,23 @@ export default {
             const { asset } = result
 
             self.cryptoCurrencyValue = new BigNumber(result.cryptoAmount).div(new BigNumber(10).pow(asset.decimals)).toNumber()
-            self.cryptoCurrencySymbol = asset.symbol
             self.currencyRate = 1 / result.assetExchangeRate
             self.currentOrder = {
               cryptoCurrencyValue: result.cryptoAmount,
               cryptoCurrencySymbol: asset.symbol,
             }
+            this.fetchingQuote = false
+            this.fetchQuoteError = ''
           })
-          .catch((error) => log.error(error))
+          .catch(async (error) => {
+            this.fetchQuoteError = await cleanTopupQuoteError(error)
+            log.error(error)
+            this.fetchingQuote = false
+
+            this.cryptoCurrencyValue = 0
+            this.currencyRate = 0
+            this.currentOrder = {}
+          })
       }, 0)()
     },
     sendOrder(callback) {

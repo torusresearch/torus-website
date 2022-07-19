@@ -129,6 +129,8 @@ class PreferencesController extends SafeEventEmitter {
     postboxAddress,
     dispatch,
     commit,
+    customCurrency,
+    supportedCurrencies,
   }) {
     let response = { token: jwtToken }
     if (this.state(address)) return this.state(address).defaultPublicAddress || address
@@ -154,14 +156,19 @@ class PreferencesController extends SafeEventEmitter {
     let defaultPublicAddress = address
     if (user?.data) {
       const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId, default_public_address } = user.data || {}
-      dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
+      if (supportedCurrencies.includes(defaultCurrency)) {
+        dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
+      } else {
+        dispatch('setSelectedCurrency', { selectedCurrency: customCurrency || currentState.selectedCurrency, origin: 'home' })
+      }
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
       defaultPublicAddress = default_public_address
     } else {
+      // Use customCurrency if available for new user
       const accountState = this.store.getState()[postboxAddress] || currentState
-      await this.createUser(accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
+      await this.createUser(customCurrency || accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
       commit('setNewUser', true)
-      dispatch('setSelectedCurrency', { selectedCurrency: accountState.selectedCurrency, origin: 'store' })
+      dispatch('setSelectedCurrency', { selectedCurrency: customCurrency || accountState.selectedCurrency, origin: 'home' })
     }
     if (!rehydrate) this.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate }, address)
     return defaultPublicAddress
@@ -653,14 +660,19 @@ class PreferencesController extends SafeEventEmitter {
     }
   }
 
-  async addCustomToken(payload) {
+  async addCustomToken(payload, throwError = false) {
     try {
       // payload is { token_address, network, token_symbol, decimals, token_name }
       const response = await this.api.post(`${config.api}/customtoken`, payload, this.headers(), { useAPIKey: true })
       this.updateStore({ customTokens: [...this.state().customTokens, response.data] })
       this.handleSuccess('navBar.snackSuccessCustomTokenAdd')
-    } catch {
-      this.handleError('navBar.snackFailCustomTokenAdd')
+    } catch (error) {
+      if (error.status !== 409) {
+        if (throwError) {
+          throw error
+        }
+        this.handleError('navBar.snackFailCustomTokenAdd')
+      }
     }
   }
 
@@ -676,7 +688,7 @@ class PreferencesController extends SafeEventEmitter {
     }
   }
 
-  async addCustomNft(payload) {
+  async addCustomNft(payload, throwError = false) {
     try {
       // payload is { nft_address, network, nft_name, nft_id, nft_contract_standard, nft_image_link, description, nft_balance }
       const apiPayload = {
@@ -690,8 +702,13 @@ class PreferencesController extends SafeEventEmitter {
       const customNft = { ...payload, ...response.data }
       this.updateStore({ customNfts: [...this.state().customNfts, customNft] })
       this.handleSuccess('navBar.snackSuccessCustomNftAdd')
-    } catch {
-      this.handleError('navBar.snackFailCustomNftAdd')
+    } catch (error) {
+      if (error.status !== 409) {
+        if (throwError) {
+          throw error
+        }
+        this.handleError('navBar.snackFailCustomNftAdd')
+      }
     }
   }
 
