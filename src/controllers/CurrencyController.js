@@ -2,7 +2,6 @@ import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 
 import config from '../config'
-import { isMain } from '../utils/utils'
 
 // every ten minutes
 const POLLING_INTERVAL = 600_000
@@ -245,11 +244,10 @@ class CurrencyController {
     if (this.conversionInterval) {
       clearInterval(this.conversionInterval)
     }
-    if (isMain)
-      this.conversionInterval = setInterval(() => {
-        this.updateConversionRate()
-        this.updateCommonDenominatorPrice()
-      }, POLLING_INTERVAL)
+    this.conversionInterval = setInterval(() => {
+      this.updateConversionRate()
+      this.updateCommonDenominatorPrice()
+    }, POLLING_INTERVAL)
   }
 }
 
