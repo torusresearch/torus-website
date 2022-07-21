@@ -37,10 +37,11 @@
                   </div>
                   <v-text-field
                     id="gas-price"
+                    :disabled="activeGasPrice.eq('0')"
                     :placeholder="t('walletTransfer.enterValue')"
                     outlined
                     :value="advancedActiveGasPrice"
-                    :rules="[rules.valid, rules.checkValidGasAmount]"
+                    :rules="[rules.valid, rules.moreThanZero]"
                     type="number"
                     @change="onChangeActiveGasPrice"
                   ></v-text-field>
@@ -132,7 +133,7 @@
 <script>
 import BigNumber from 'bignumber.js'
 
-import { CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ETH, MAINNET, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
+import { CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ETH } from '../../../utils/enums'
 import { significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
 
@@ -173,10 +174,6 @@ export default {
       type: String,
       default: '',
     },
-    networkHost: {
-      type: String,
-      default: MAINNET,
-    },
   },
   data() {
     return {
@@ -187,11 +184,6 @@ export default {
       CONTRACT_TYPE_ERC20,
       rules: {
         moreThanZero: (value) => new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount'),
-        checkValidGasAmount: (value) => {
-          if (SUPPORTED_NETWORK_TYPES[this.networkHost])
-            return new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
-          return new BigNumber(value || '0').gte(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
-        },
         valid: (value) => !!value || this.t('walletTransfer.required'),
         validNonce: (value) => {
           if (value === null) return this.t('walletTransfer.invalidInput')
