@@ -352,6 +352,7 @@
                 :selected-currency="selectedCurrency"
                 :currency-multiplier="currencyMultiplier"
                 :toggle-exclusive="toggle_exclusive"
+                :network-host="networkType.host"
                 @save="onTransferFeeSelect"
               />
               <TransactionSpeedSelect

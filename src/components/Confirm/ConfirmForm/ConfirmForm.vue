@@ -76,6 +76,7 @@
           :initial-max-fee-per-gas="initialMaxFeePerGas"
           :initial-max-priority-fee-per-gas="initialMaxPriorityFeePerGas"
           :is-confirm="true"
+          :network-host="network.host"
           @save="onTransferFeeSelect"
         />
         <TransactionSpeedSelect

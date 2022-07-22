@@ -37,6 +37,7 @@
                   </div>
                   <v-text-field
                     id="gas-price"
+                    :disabled="activeGasPrice.eq('0')"
                     :placeholder="t('walletTransfer.enterValue')"
                     outlined
                     :value="advancedActiveGasPrice"
