@@ -204,7 +204,7 @@ import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
-import { RPC, RPC_DISPLAY_NAME, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
+import { RPC, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
 import { broadcastChannelOptions } from '../../../utils/utils'
 
 export default {
@@ -219,32 +219,23 @@ export default {
       },
       addCustomNetwork: false,
       isEdit: false,
-      customNetworks: [],
-      defaultNetworks: [],
+      defaultNetworks: Object.keys(SUPPORTED_NETWORK_TYPES),
     }
   },
   computed: {
     ...mapState(['networkType', 'supportedNetworks']),
     networks() {
-      return [
-        ...Object.values(this.supportedNetworks),
-        {
-          networkName: RPC_DISPLAY_NAME,
-          host: RPC,
-          chainId: '',
-          blockExplorer: '',
-          ticker: '',
-        },
-      ]
+      return [...Object.values(this.supportedNetworks)]
     },
     isRPCSelected() {
       return this.selectedNetwork.host === RPC
     },
+    customNetworks() {
+      return Object.keys(this.supportedNetworks).filter((n) => !Object.keys(SUPPORTED_NETWORK_TYPES).includes(n))
+    },
   },
   mounted() {
     this.selectedNetwork = this.networkType
-    this.customNetworks = this.getCustomnetworks()
-    this.defaultNetworks = this.getDefaultnetworks()
   },
   methods: {
     showNotification(success) {
@@ -324,34 +315,12 @@ export default {
       // log.info(this.supportedNetworks)
       // log.info(this.customNetworks)
     },
-    getCustomnetworks() {
-      // const customNetworkObj = []
-      // const customNetworkArray = Object.keys(this.supportedNetworks).filter((n) => !Object.keys(SUPPORTED_NETWORK_TYPES).includes(n))
-
-      // customNetworkArray.forEach((network) => {
-      //   customNetworkObj.push(this.supportedNetworks[network])
-      // })
-      // for (const network of customNetworkArray) {
-      //   customNetworkObj.push({ network: this.supportedNetworks[network] })
-      // }
-      return Object.keys(this.supportedNetworks).filter((n) => !Object.keys(SUPPORTED_NETWORK_TYPES).includes(n))
-    },
-    getDefaultnetworks() {
-      // const defaultNetworkObj = []
-      // const defaultNetworkArray = Object.keys(this.supportedNetworks).filter((n) => Object.keys(SUPPORTED_NETWORK_TYPES).includes(n))
-      // for (const network of defaultNetworkArray) {
-      //   defaultNetworkObj.push({ network: this.supportedNetworks[network] })
-      // }
-      return Object.keys(this.supportedNetworks).filter((n) => Object.keys(SUPPORTED_NETWORK_TYPES).includes(n))
-    },
     selectedItemChanged(item) {
       this.selectedNetwork = item
       this.changeNetwork(item)
     },
     updateData() {
       this.toggleNetworkView()
-      this.customNetworks = this.getCustomnetworks()
-      this.defaultNetworks = this.getDefaultnetworks()
     },
     editNetwork(network) {
       this.isEdit = true
@@ -365,8 +334,6 @@ export default {
         this.$store
           .dispatch('deleteCustomNetwork', network.id)
           .then(() => {
-            this.customNetworks = this.getCustomnetworks()
-            this.defaultNetworks = this.getDefaultnetworks()
             this.showNotification(true)
             log.info(this.supportedNetworks)
           })

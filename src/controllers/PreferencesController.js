@@ -731,9 +731,10 @@ class PreferencesController extends SafeEventEmitter {
       }
       const res = await this.api.post(`${config.api}/customnetwork/${type}`, payload, this.headers(), { useAPIKey: true })
       this.network.updateSupportedNetworks({ ...network, id: res.data.id })
-      debugger
+      return res.data.id
     } catch {
       this.handleError('navBar.snackFailCustomNetworkAdd')
+      return null
     }
   }
 

@@ -68,10 +68,6 @@ export default {
     state.supportedNetworks = {
       ...temp,
     }
-
-    // console.log(supportedNetworks)
-
-    // console.log(networkId)
   },
   setTransactions(state, transactions) {
     state.transactions = transactions

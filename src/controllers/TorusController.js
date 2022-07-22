@@ -1087,15 +1087,19 @@ export default class TorusController extends SafeEventEmitter {
    * @returns {Promise<String>} - The RPC Target URL confirmed.
    */
   async setCustomRpc(rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {
-    this.prefsController.addCustomNetwork(RPC, {
+    const networkId = await this.prefsController.addCustomNetwork(RPC, {
       networkName: nickname,
       host: rpcUrl,
       chainId,
       symbol: ticker,
       blockExplorer: rpcPrefs.blockExplorerUrl || undefined,
     })
-    this.networkController.setRpcTarget(rpcUrl, chainId, ticker, nickname, rpcPrefs)
-    return rpcUrl
+    if (networkId) {
+      this.networkController.setRpcTarget(networkId, rpcUrl, chainId, ticker, nickname, rpcPrefs)
+      return networkId
+    }
+
+    return null
   }
 
   async deleteCustomRpc(id) {
