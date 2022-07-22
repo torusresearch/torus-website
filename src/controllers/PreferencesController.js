@@ -265,6 +265,7 @@ class PreferencesController extends SafeEventEmitter {
               host: i.rpc_url,
               networkName: i.network_name,
               ticker: i.symbol,
+              id: i.id,
             })),
           },
           public_address
@@ -728,12 +729,37 @@ class PreferencesController extends SafeEventEmitter {
         symbol: network.symbol,
         block_explorer_url: network.blockExplorer || undefined,
       }
-      await this.api.post(`${config.api}/customnetwork/${type}`, payload, this.headers(), { useAPIKey: true })
-      this.network.updateSupportedNetworks(network)
+      const res = await this.api.post(`${config.api}/customnetwork/${type}`, payload, this.headers(), { useAPIKey: true })
+      this.network.updateSupportedNetworks({ ...network, id: res.data.id })
+      debugger
     } catch {
       this.handleError('navBar.snackFailCustomNetworkAdd')
     }
   }
+
+  async deleteCustomNetwork(id) {
+    try {
+      if (id) {
+        const response = await this.api.remove(`${config.api}/customnetwork/${id}`, {}, this.headers(), { useAPIKey: true })
+        const customNetworks = this.state().customNetworks.filter((network) => network.id !== response.data.id)
+        this.network.storeSupportedNetworks({ ...customNetworks })
+        this.handleSuccess('navBar.snackFailCustomNetworkAdd')
+      }
+    } catch {
+      this.handleError('navBar.snackFailCustomNetworkAdd')
+    }
+  }
+
+  // async editCustomNetwork(id, payload) {
+  //   try {
+  //     const response = await this.api.patch(`${config.api}/customnetwork/${id}`, payload, this.headers(), { useAPIKey: true })
+  //     const finalCustomNetworks = this.state().customNetworks.filter((network) => network.id !== response.data.id)
+  //     this.updateStore({ customNetworks: finalCustomNetworks })
+  //     this.handleSuccess('navBar.snackSuccessNetworkDelete')
+  //   } catch {
+  //     this.handleError('navBar.snackFailNetworkDelete')
+  //   }
+  // }
 
   /* istanbul ignore next */
   async revokeDiscord(idToken) {

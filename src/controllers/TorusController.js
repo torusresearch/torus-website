@@ -1097,4 +1097,8 @@ export default class TorusController extends SafeEventEmitter {
     this.networkController.setRpcTarget(rpcUrl, chainId, ticker, nickname, rpcPrefs)
     return rpcUrl
   }
+
+  async deleteCustomRpc(id) {
+    this.prefsController.deleteCustomNetwork(id)
+  }
 }

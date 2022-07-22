@@ -407,6 +407,13 @@ export default {
       await commit('setCustomCurrency', networkType.ticker)
     return undefined
   },
+  async deleteCustomNetwork({ commit }, id) {
+    if (id) {
+      commit('deleteCustomNetwork', id)
+      return torusController.deleteCustomRpc(id)
+    }
+    return undefined
+  },
   async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint }) {
     try {
       commit('setLoginInProgress', true)

@@ -58,6 +58,21 @@ export default {
       ...customNetworks,
     }
   },
+  deleteCustomNetwork(state, networkId) {
+    const { supportedNetworks } = state
+    const temp = {}
+    // debugger
+    Object.keys(supportedNetworks).forEach((network) => {
+      if (supportedNetworks[network].id !== networkId) temp[network] = { ...supportedNetworks[network] }
+    })
+    state.supportedNetworks = {
+      ...temp,
+    }
+
+    // console.log(supportedNetworks)
+
+    // console.log(networkId)
+  },
   setTransactions(state, transactions) {
     state.transactions = transactions
   },

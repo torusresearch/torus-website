@@ -155,12 +155,20 @@ export default class NetworkController extends EventEmitter {
    */
   updateSupportedNetworks(network) {
     const currentHosts = Object.keys(this.getSupportedNetworks)
+    // debugger
     if (!currentHosts.includes(network.host)) {
       this.supportedNetworkStore.updateState({
         ...this.getSupportedNetworks,
         [network.host]: network,
       })
     }
+  }
+
+  /**
+   * Update supported networks
+   */
+  storeSupportedNetworks(networks) {
+    this.supportedNetworkStore.putState(networks)
   }
 
   /**

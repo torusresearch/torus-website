@@ -1,27 +1,135 @@
 <template>
   <div :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
     <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
-      <div class="body-2 mb-2">{{ t('walletSettings.selectNetwork') }}</div>
-      <v-layout wrap>
-        <v-flex xs12>
-          <v-select
-            id="select-network"
-            v-model="selectedNetwork"
-            class="select-network-container gmt-network-change"
-            outlined
-            :items="networks"
-            item-text="networkName"
-            item-value="host"
-            return-object
-            append-icon="$vuetify.icons.select"
-            aria-label="Select Network"
-            @change="changeNetwork"
-          ></v-select>
+      <template v-if="!addCustomNetwork">
+        <div class="body-2 mb-2">{{ t('walletSettings.selectNetwork') }}</div>
+        <v-layout wrap class="network-setting">
+          <v-flex xs12>
+            <!-- <v-select
+              id="select-network"
+              v-model="selectedNetwork"
+              class="select-network-container gmt-network-change"
+              outlined
+              :items="networks"
+              item-text="networkName"
+              item-value="host"
+              return-object
+              append-icon="$vuetify.icons.select"
+              aria-label="Select Network"
+              @change="changeNetwork"
+            ></v-select> -->
+            <v-menu transition="slide-y-transition" offset-y>
+              <template #activator="{ on }">
+                <v-btn class="select-coin" label :outlined="$vuetify.theme.dark" v-on="on">
+                  <span class="select-coin-name">{{ selectedNetwork.networkName }}</span>
+                  <div class="flex-grow-1 text-right pr-2">
+                    <v-icon right>$vuetify.icons.select</v-icon>
+                  </div>
+                </v-btn>
+              </template>
+              <v-list class="select-item-list overflow-y-auto" style="max-height: 240px">
+                <v-list-item
+                  v-for="network in defaultNetworks"
+                  :key="supportedNetworks[network].networkName"
+                  class="select-coin-eth"
+                  @click="selectedItemChanged(supportedNetworks[network])"
+                >
+                  <!-- <v-list-item-icon class="mr-1">
+                    <img
+                      :src="`${logosUrl}/${token.logo}`"
+                      height="20px"
+                      :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+                        $vuetify.theme.dark ? 'dark' : 'light'
+                      }.svg';`"
+                      :alt="supportedNetworks[network].host"
+                    />
+                  </v-list-item-icon> -->
+                  <v-list-item-content>
+                    <v-list-item-title class="body-2">{{ supportedNetworks[network].networkName }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <!-- <v-divider class="mx-3"></v-divider> -->
+                <v-subheader v-if="customNetworks.length > 0" class="subheading">
+                  {{ t('walletSettings.customNetwork') }}
+                </v-subheader>
+                <v-list-item v-for="network in customNetworks" :key="supportedNetworks[network].networkName">
+                  <!-- <v-list-item-icon class="ml-8 mr-1">
+                    <img
+                      :src="`${logosUrl}/${token.logo}`"
+                      height="20px"
+                      :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+                        $vuetify.theme.dark ? 'dark' : 'light'
+                      }.svg';`"
+                      :alt="supportedNetworks[network].host"
+                    />
+                  </v-list-item-icon> -->
+                  <v-list-item-content @click="selectedItemChanged(supportedNetworks[network])">
+                    <v-list-item-title class="body-2">{{ supportedNetworks[network].networkName }}</v-list-item-title>
+                  </v-list-item-content>
+                  <v-list-item-icon>
+                    <v-btn
+                      color="text_3"
+                      icon
+                      small
+                      :aria-label="`Edit ${supportedNetworks[network].networkName}`"
+                      @click="editNetwork(supportedNetworks[network])"
+                    >
+                      {{ t('walletSettings.editNetwork') }}
+                    </v-btn>
+                  </v-list-item-icon>
+                  <v-list-item-icon>
+                    <v-btn
+                      class="delete-btn"
+                      color="text_2"
+                      icon
+                      small
+                      :aria-label="`Delete ${supportedNetworks[network].networkName}`"
+                      @click="deleteNetwork(supportedNetworks[network])"
+                    >
+                      <v-icon x-small>$vuetify.icons.trash</v-icon>
+                    </v-btn>
+                  </v-list-item-icon>
+                </v-list-item>
+                <!-- <v-divider class="mx-3"></v-divider> -->
+                <!-- <v-subheader v-if="collectibles.length > 0" class="body-2">
+                  <v-icon small left class="mr-2">$vuetify.icons.collectibles</v-icon>
+                  {{ t('walletTransfer.collectibles') }}
+                </v-subheader>
+                <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
+                  <v-list-item-icon class="ml-8 mr-1">
+                    <img
+                      :src="collectible.logo"
+                      height="20px"
+                      :alt="collectible.name"
+                      onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
+                    />
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item> -->
+              </v-list>
+            </v-menu>
+          </v-flex>
+        </v-layout>
+        <v-flex class="ml-auto text-right">
+          <v-spacer></v-spacer>
+          <v-btn
+            id="add-custom-network"
+            large
+            class="torus-btn1"
+            :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+            :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
+            type="button"
+            @click="toggleNetworkView"
+          >
+            {{ t('walletSettings.addCustomNetwork') }}
+          </v-btn>
         </v-flex>
-      </v-layout>
-
-      <template v-if="isRPCSelected">
+      </template>
+      <template v-else>
         <v-flex xs12>
+          <div class="caption text_3--text mb-2 plain" @click="toggleNetworkView">Back</div>
           <v-text-field
             v-model="rpc.networkName"
             :placeholder="t('walletSettings.enterNetworkName')"
@@ -54,6 +162,20 @@
                 <template #activator="{ on }">
                   <span v-on="on">
                     <v-btn
+                      v-if="isEdit"
+                      large
+                      class="torus-btn1 py-1"
+                      :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
+                      :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
+                      block
+                      :disabled="!formValid"
+                      depressed
+                      @click="updateRPC"
+                    >
+                      {{ t('walletSettings.save') }}
+                    </v-btn>
+                    <v-btn
+                      v-else
                       large
                       class="torus-btn1 py-1"
                       :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
@@ -82,7 +204,7 @@ import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
-import { RPC, RPC_DISPLAY_NAME } from '../../../utils/enums'
+import { RPC, RPC_DISPLAY_NAME, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
 import { broadcastChannelOptions } from '../../../utils/utils'
 
 export default {
@@ -95,6 +217,10 @@ export default {
       rules: {
         required: (value) => !!value || 'Required',
       },
+      addCustomNetwork: false,
+      isEdit: false,
+      customNetworks: [],
+      defaultNetworks: [],
     }
   },
   computed: {
@@ -117,7 +243,8 @@ export default {
   },
   mounted() {
     this.selectedNetwork = this.networkType
-    this.rpc = { ...this.networkType }
+    this.customNetworks = this.getCustomnetworks()
+    this.defaultNetworks = this.getDefaultnetworks()
   },
   methods: {
     showNotification(success) {
@@ -148,6 +275,7 @@ export default {
           .dispatch('setProviderType', payload)
           .then(() => {
             this.selectedNetwork = this.networks.find((x) => x.host === this.rpc.host)
+            this.updateData()
             this.showNotification(true)
             this.sendToIframe(payload)
           })
@@ -156,6 +284,26 @@ export default {
             log.error(error)
           })
       }
+    },
+    updateRPC() {
+      this.isEdit = false
+      log.info(this.$refs.networkForm.validate())
+      // log.info(SUPPORTED_NETWORK_TYPES)
+      // if (this.$refs.networkForm.validate()) {
+      //   const payload = { network: this.rpc, type: RPC }
+      //   this.$store
+      //     .dispatch('setProviderType', payload)
+      //     .then(() => {
+      //       this.selectedNetwork = this.networks.find((x) => x.host === this.rpc.host)
+      //       this.updateData()
+      //       this.showNotification(true)
+      //       this.sendToIframe(payload)
+      //     })
+      //     .catch((error) => {
+      //       this.showNotification(false)
+      //       log.error(error)
+      //     })
+      // }
     },
     async sendToIframe(payload) {
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
@@ -170,6 +318,67 @@ export default {
         providerChangeChannel.close()
       }
     },
+    toggleNetworkView() {
+      this.addCustomNetwork = !this.addCustomNetwork
+      this.rpc = { chainId: '', networkName: '', host: '', blockExplorer: '', ticker: '' }
+      // log.info(this.supportedNetworks)
+      // log.info(this.customNetworks)
+    },
+    getCustomnetworks() {
+      // const customNetworkObj = []
+      // const customNetworkArray = Object.keys(this.supportedNetworks).filter((n) => !Object.keys(SUPPORTED_NETWORK_TYPES).includes(n))
+
+      // customNetworkArray.forEach((network) => {
+      //   customNetworkObj.push(this.supportedNetworks[network])
+      // })
+      // for (const network of customNetworkArray) {
+      //   customNetworkObj.push({ network: this.supportedNetworks[network] })
+      // }
+      return Object.keys(this.supportedNetworks).filter((n) => !Object.keys(SUPPORTED_NETWORK_TYPES).includes(n))
+    },
+    getDefaultnetworks() {
+      // const defaultNetworkObj = []
+      // const defaultNetworkArray = Object.keys(this.supportedNetworks).filter((n) => Object.keys(SUPPORTED_NETWORK_TYPES).includes(n))
+      // for (const network of defaultNetworkArray) {
+      //   defaultNetworkObj.push({ network: this.supportedNetworks[network] })
+      // }
+      return Object.keys(this.supportedNetworks).filter((n) => Object.keys(SUPPORTED_NETWORK_TYPES).includes(n))
+    },
+    selectedItemChanged(item) {
+      this.selectedNetwork = item
+      this.changeNetwork(item)
+    },
+    updateData() {
+      this.toggleNetworkView()
+      this.customNetworks = this.getCustomnetworks()
+      this.defaultNetworks = this.getDefaultnetworks()
+    },
+    editNetwork(network) {
+      this.isEdit = true
+      this.toggleNetworkView()
+      this.rpc = network
+      // log.info(network)
+    },
+    deleteNetwork(network) {
+      // debugger
+      if (network) {
+        this.$store
+          .dispatch('deleteCustomNetwork', network.id)
+          .then(() => {
+            this.customNetworks = this.getCustomnetworks()
+            this.defaultNetworks = this.getDefaultnetworks()
+            this.showNotification(true)
+            log.info(this.supportedNetworks)
+          })
+          .catch((error) => {
+            this.showNotification(false)
+            log.error(error)
+          })
+      }
+    },
   },
 }
 </script>
+<style lang="scss" scoped>
+@import 'Network.scss';
+</style>
