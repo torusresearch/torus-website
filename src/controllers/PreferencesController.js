@@ -759,7 +759,7 @@ class PreferencesController extends SafeEventEmitter {
         network_name: network.networkName,
         rpc_url: network.host,
         chain_id: network.chainId,
-        symbol: network.symbol || '',
+        symbol: network.symbol || undefined,
         block_explorer_url: network.blockExplorer || undefined,
       }
       const { id } = network
