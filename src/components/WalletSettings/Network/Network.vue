@@ -277,8 +277,24 @@ export default {
       }
     },
     updateRPC() {
-      this.isEdit = false
-      log.info(this.$refs.networkForm.validate())
+      // this.isEdit = false
+      // log.info(this.$refs.networkForm.validate())
+      if (this.$refs.networkForm.validate()) {
+        const payload = { network: this.rpc, type: RPC }
+        this.$store
+          .dispatch('updateCustomNetwork', this.rpc)
+          .then(() => {
+            this.selectedNetwork = this.networks.find((x) => x.host === this.rpc.host)
+            this.updateData()
+            this.isEdit = false
+            this.showNotification(true)
+            this.sendToIframe(payload)
+          })
+          .catch((error) => {
+            this.showNotification(false)
+            log.error(error)
+          })
+      }
       // log.info(SUPPORTED_NETWORK_TYPES)
       // if (this.$refs.networkForm.validate()) {
       //   const payload = { network: this.rpc, type: RPC }

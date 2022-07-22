@@ -744,23 +744,35 @@ class PreferencesController extends SafeEventEmitter {
         const response = await this.api.remove(`${config.api}/customnetwork/${id}`, {}, this.headers(), { useAPIKey: true })
         const customNetworks = this.state().customNetworks.filter((network) => network.id !== response.data.id)
         this.network.storeSupportedNetworks({ ...customNetworks })
-        this.handleSuccess('navBar.snackFailCustomNetworkAdd')
+        this.handleSuccess('navBar.snackSuccessCustomNetworkDelete')
       }
     } catch {
-      this.handleError('navBar.snackFailCustomNetworkAdd')
+      this.handleError('navBar.snackFailCustomNetworkDelete')
     }
   }
 
-  // async editCustomNetwork(id, payload) {
-  //   try {
-  //     const response = await this.api.patch(`${config.api}/customnetwork/${id}`, payload, this.headers(), { useAPIKey: true })
-  //     const finalCustomNetworks = this.state().customNetworks.filter((network) => network.id !== response.data.id)
-  //     this.updateStore({ customNetworks: finalCustomNetworks })
-  //     this.handleSuccess('navBar.snackSuccessNetworkDelete')
-  //   } catch {
-  //     this.handleError('navBar.snackFailNetworkDelete')
-  //   }
-  // }
+  async editCustomNetwork(network) {
+    debugger
+
+    try {
+      const payload = {
+        network_name: network.networkName,
+        rpc_url: network.host,
+        chain_id: network.chainId,
+        symbol: network.symbol || '',
+        block_explorer_url: network.blockExplorer || undefined,
+      }
+      const { id } = network
+      const response = await this.api.patch(`${config.api}/customnetwork/${id}`, payload, this.headers(), { useAPIKey: true })
+      const finalCustomNetworks = this.state().customNetworks.filter((ele) => ele.id !== response.data.id)
+      log.info(response)
+      log.info(finalCustomNetworks)
+      // this.updateStore({ customNetworks: finalCustomNetworks })
+      this.handleSuccess('navBar.snackSuccessNetworkUpdate')
+    } catch {
+      this.handleError('navBar.snackFailNetworkUpdate')
+    }
+  }
 
   /* istanbul ignore next */
   async revokeDiscord(idToken) {

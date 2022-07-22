@@ -419,6 +419,14 @@ export default {
     }
     return undefined
   },
+  async updateCustomNetwork({ commit }, network) {
+    debugger
+    if (network) {
+      return torusController.updateCustomRpc(network)
+    }
+    commit('deleteCustomNetwork', network)
+    return undefined
+  },
   async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint }) {
     try {
       commit('setLoginInProgress', true)
