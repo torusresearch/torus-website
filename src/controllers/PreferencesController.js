@@ -744,7 +744,7 @@ class PreferencesController extends SafeEventEmitter {
         const response = await this.api.remove(`${config.api}/customnetwork/${id}`, {}, this.headers(), { useAPIKey: true })
         const customNetworks = this.state().customNetworks.filter((network) => network.id !== response.data.id)
         this.network.storeSupportedNetworks({ ...customNetworks })
-        this.handleSuccess('navBar.snackSuccessCustomNetworkDelete')
+        // this.handleSuccess('navBar.snackSuccessCustomNetworkDelete')
       }
     } catch {
       this.handleError('navBar.snackFailCustomNetworkDelete')
@@ -752,7 +752,7 @@ class PreferencesController extends SafeEventEmitter {
   }
 
   async editCustomNetwork(network) {
-    debugger
+    // debugger
 
     try {
       const payload = {
@@ -762,13 +762,11 @@ class PreferencesController extends SafeEventEmitter {
         symbol: network.symbol || undefined,
         block_explorer_url: network.blockExplorer || undefined,
       }
+      // log.info(this.state().customNetworks)
       const { id } = network
-      const response = await this.api.patch(`${config.api}/customnetwork/${id}`, payload, this.headers(), { useAPIKey: true })
-      const finalCustomNetworks = this.state().customNetworks.filter((ele) => ele.id !== response.data.id)
-      log.info(response)
-      log.info(finalCustomNetworks)
-      // this.updateStore({ customNetworks: finalCustomNetworks })
-      this.handleSuccess('navBar.snackSuccessNetworkUpdate')
+      await this.api.patch(`${config.api}/customnetwork/${id}`, payload, this.headers(), { useAPIKey: true })
+      const updatedNetwork = this.state().customNetworks.filter((ele) => ele.id === id)
+      log.info(updatedNetwork)
     } catch {
       this.handleError('navBar.snackFailNetworkUpdate')
     }

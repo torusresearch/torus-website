@@ -69,6 +69,16 @@ export default {
       ...temp,
     }
   },
+  updateCustomNetwork(state, payload) {
+    const { supportedNetworks } = state
+    const networkId = payload.id
+    // debugger
+    Object.keys(supportedNetworks).forEach((network) => {
+      if (supportedNetworks[network].id === networkId) {
+        state.supportedNetworks[network] = payload
+      }
+    })
+  },
   setTransactions(state, transactions) {
     state.transactions = transactions
   },

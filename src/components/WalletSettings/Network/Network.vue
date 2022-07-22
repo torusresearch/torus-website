@@ -204,7 +204,7 @@ import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
-import { RPC, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
+import { MAINNET, RPC, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
 import { broadcastChannelOptions } from '../../../utils/utils'
 
 export default {
@@ -277,8 +277,6 @@ export default {
       }
     },
     updateRPC() {
-      // this.isEdit = false
-      // log.info(this.$refs.networkForm.validate())
       if (this.$refs.networkForm.validate()) {
         const payload = { network: this.rpc, type: RPC }
         this.$store
@@ -295,22 +293,6 @@ export default {
             log.error(error)
           })
       }
-      // log.info(SUPPORTED_NETWORK_TYPES)
-      // if (this.$refs.networkForm.validate()) {
-      //   const payload = { network: this.rpc, type: RPC }
-      //   this.$store
-      //     .dispatch('setProviderType', payload)
-      //     .then(() => {
-      //       this.selectedNetwork = this.networks.find((x) => x.host === this.rpc.host)
-      //       this.updateData()
-      //       this.showNotification(true)
-      //       this.sendToIframe(payload)
-      //     })
-      //     .catch((error) => {
-      //       this.showNotification(false)
-      //       log.error(error)
-      //     })
-      // }
     },
     async sendToIframe(payload) {
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
@@ -328,8 +310,6 @@ export default {
     toggleNetworkView() {
       this.addCustomNetwork = !this.addCustomNetwork
       this.rpc = { chainId: '', networkName: '', host: '', blockExplorer: '', ticker: '' }
-      // log.info(this.supportedNetworks)
-      // log.info(this.customNetworks)
     },
     selectedItemChanged(item) {
       this.selectedNetwork = item
@@ -342,16 +322,16 @@ export default {
       this.isEdit = true
       this.toggleNetworkView()
       this.rpc = network
-      // log.info(network)
     },
     deleteNetwork(network) {
-      // debugger
       if (network) {
         this.$store
           .dispatch('deleteCustomNetwork', network.id)
           .then(() => {
+            if (network.id === this.selectedNetwork.id) {
+              this.selectedNetwork = SUPPORTED_NETWORK_TYPES[MAINNET]
+            }
             this.showNotification(true)
-            log.info(this.supportedNetworks)
           })
           .catch((error) => {
             this.showNotification(false)
