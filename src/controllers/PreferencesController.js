@@ -30,7 +30,6 @@ import {
   getEthTxStatus,
   getIFrameOrigin,
   getUserLanguage,
-  idleTimeTracker,
   isMain,
   storageAvailable,
   waitForMs,
@@ -500,23 +499,21 @@ class PreferencesController extends SafeEventEmitter {
     } else userOrigin = window.location.origin
     if (!payload.rehydrate) {
       const interval = setInterval(() => {
-        if (!idleTimeTracker.checkIfIdle()) {
-          const urlParameters = new URLSearchParams(window.location.search)
-          const referrer = urlParameters.get('referrer') || ''
-          if (window.location.href.includes('referrer') && !referrer) return
-          this.api.post(
-            `${config.api}/user/recordLogin`,
-            {
-              hostname: userOrigin,
-              verifier,
-              verifierId,
-              metadata: `referrer:${referrer}`,
-            },
-            this.headers(address),
-            { useAPIKey: true }
-          )
-          clearInterval(interval)
-        }
+        const urlParameters = new URLSearchParams(window.location.search)
+        const referrer = urlParameters.get('referrer') || ''
+        if (window.location.href.includes('referrer') && !referrer) return
+        this.api.post(
+          `${config.api}/user/recordLogin`,
+          {
+            hostname: userOrigin,
+            verifier,
+            verifierId,
+            metadata: `referrer:${referrer}`,
+          },
+          this.headers(address),
+          { useAPIKey: true }
+        )
+        clearInterval(interval)
       }, 1000)
     }
   }
