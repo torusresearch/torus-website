@@ -5,6 +5,7 @@ import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import pify from 'pify'
 
+import { idleTimeTracker } from '../../utils/utils'
 import {
   calculateTimeEstimate,
   fetchEthGasPriceEstimate as defaultFetchEthGasPriceEstimate,
@@ -205,7 +206,9 @@ class GasFeeController {
       clearInterval(this.intervalId)
     }
     this.intervalId = setInterval(async () => {
-      await this._fetchGasFeeEstimateData()
+      if (!idleTimeTracker.checkIfIdle()) {
+        await this._fetchGasFeeEstimateData()
+      }
     }, this.intervalDelay)
   }
 
