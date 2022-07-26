@@ -120,6 +120,7 @@ export default {
     commit('logOut', {
       ...initialState,
       networkType: state.networkType,
+      supportedNetworks: state.supportedNetworks,
       networkId: state.networkId,
       whiteLabel: state.whiteLabel,
       theme: state.theme,
@@ -391,7 +392,7 @@ export default {
       isSupportedNetwork = true
     }
     const currentTicker = networkType.ticker || 'ETH'
-    if ((payload.type && payload.type === RPC) || !isSupportedNetwork) {
+    if (payload.type && payload.type === RPC && !isSupportedNetwork) {
       const networkId = await torusController.setCustomRpc(networkType.host, networkType.chainId || 1, currentTicker, networkType.networkName || '', {
         blockExplorerUrl: networkType.blockExplorer,
       })
