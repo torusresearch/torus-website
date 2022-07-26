@@ -1,5 +1,37 @@
 <template>
   <div>
+    <v-row>
+      <v-menu
+        v-model="menu"
+        :close-on-content-click="false"
+        offset-y
+        :bottom="$vuetify.breakpoint.smAndUp"
+        :top="$vuetify.breakpoint.xsOnly"
+        :nudge-top="$vuetify.breakpoint.xsOnly ? 10 : -10"
+      >
+        <template #activator="{ attrs }">
+          <span class="torusBrand1--text caption ml-3 mt-3" v-bind="attrs" @click="toggleWC">
+            {{ !guideOn ? t('walletConnect.viewGuide') : t('walletConnect.hideGuide') }}
+          </span>
+        </template>
+        <v-card class="pb-4 guide-menu">
+          <v-card-actions class="justify-right">
+            <v-btn class="hidden-btn"></v-btn>
+            <v-spacer></v-spacer>
+            <v-btn class="close-btn" icon @click="toggleWC">
+              <v-icon>$vuetify.icons.close</v-icon>
+            </v-btn>
+          </v-card-actions>
+          <div style="max-width: 180px" class="custom-placeholer mb-2 text-center mx-auto">
+            <p>{{ t('walletConnect.guideInfo') }}</p>
+          </div>
+          <v-img :src="require(`../../../assets/images/walletGuide.svg`)" max-height="200" max-width="151" class="mx-auto mb-5"></v-img>
+        </v-card>
+      </v-menu>
+    </v-row>
+    <!-- <v-btn block large class="torus-btn1 torusBrand1--text" @click="toggleWC">
+      <span size="16">{{ t('walletConnect.gotoApp') }}</span>
+    </v-btn> -->
     <!-- <v-container> -->
     <v-row justify="space-around">
       <v-col cols="12" sm="6">
@@ -12,47 +44,55 @@
           class="custom-placeholer"
           :placeholder="ctaPlaceholder"
           @paste="onPaste"
-        ></v-text-field>
+        >
+          <template #append>
+            <v-btn
+              v-if="(wcConnectorSession && wcConnectorSession.connected && textPasteFlow) || false"
+              text
+              small
+              color="torusBrand1"
+              tabindex="-3"
+              @click="toggleWC"
+            >
+              <!-- <v-icon small>$vuetify.icons.goto</v-icon> -->
+              <span class="caption mr-1">{{ t('walletConnect.gotoApp') }}</span>
+              <v-img :src="require(`../../../assets/images/goto-link.svg`)"></v-img>
+            </v-btn>
+            <!-- <span v-if="(wcConnectorSession && wcConnectorSession.connected) || false" class="mt-1 ma-0 p-0" @click="toggleWC">Go to dApp</span>
+            <v-img
+              v-if="(wcConnectorSession && wcConnectorSession.connected) || false"
+              :src="require(`../../../assets/images/goto-link.svg`)"
+            ></v-img> -->
+          </template>
+        </v-text-field>
       </v-col>
       <v-col cols="12" sm="6">
-        <!-- <div v-if="(wcConnectorSession && wcConnectorSession.connected) || false" class="ma-0 pa-0"> -->
-        <v-btn
-          v-if="(wcConnectorSession && wcConnectorSession.connected) || false"
-          block
-          large
-          class="torus-btn1 torusBrand1--text"
-          @click="toggleWC"
-        >
-          <span size="16">{{ t('walletConnect.gotoApp') }}</span>
-        </v-btn>
-        <v-menu
-          v-else
-          v-model="menu"
-          :close-on-content-click="false"
-          offset-y
-          :bottom="$vuetify.breakpoint.smAndUp"
-          :top="$vuetify.breakpoint.xsOnly"
-          :nudge-top="$vuetify.breakpoint.xsOnly ? 10 : -10"
-        >
-          <template #activator="{ attrs }">
-            <v-btn justify="end" block large class="torus-btn1 torusBrand1--text" v-bind="attrs" @click="toggleWC">
-              {{ !guideOn ? t('walletConnect.viewGuide') : t('walletConnect.hideGuide') }}
+        <!-- <v-btn block large class="torus-btn1 torusBrand1--text" @click="toggleWC">
+          <span size="16">{{ t('walletConnect.scanToConnect') }}</span>
+        </v-btn> -->
+        <v-dialog v-model="showQrScanner" :eager="true" :width="qrLoading ? 0 : 600" @click:outside="closeQRScanner">
+          <div v-if="showQrScanner" class="qr-scan-container">
+            <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
+            <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
+              <v-icon>$vuetify.icons.close</v-icon>
             </v-btn>
-          </template>
-          <v-card class="pb-4 guide-menu">
-            <v-card-actions class="justify-right">
-              <v-btn class="hidden-btn"></v-btn>
-              <v-spacer></v-spacer>
-              <v-btn class="close-btn" icon @click="toggleWC">
-                <v-icon>$vuetify.icons.close</v-icon>
-              </v-btn>
-            </v-card-actions>
-            <div style="max-width: 180px" class="custom-placeholer mb-2 text-center mx-auto">
-              <p>{{ t('walletConnect.guideInfo') }}</p>
-            </div>
-            <v-img :src="require(`../../../assets/images/walletGuide.svg`)" max-height="200" max-width="151" class="mx-auto mb-7"></v-img>
-          </v-card>
-        </v-menu>
+          </div>
+        </v-dialog>
+
+        <v-btn
+          v-if="hasStreamApiSupport && !isIframe"
+          depressed
+          large
+          block
+          class="torus-btn1 torusBrand1--text gmt-billboard-cta"
+          title="Capture QR"
+          aria-label="Capture QR"
+          :loading="showQrScanner"
+          @click="openScanner"
+        >
+          <span v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">{{ t('walletConnect.disconnect') }}</span>
+          <span v-else size="16">{{ t('walletConnect.scanToConnect') }}</span>
+        </v-btn>
         <!-- </div> -->
       </v-col>
     </v-row>
@@ -61,24 +101,17 @@
 
 <script>
 import log from 'loglevel'
+import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapActions, mapMutations, mapState } from 'vuex'
 
-// import {wallet-connect-guide} from '../../../assets/images'
 import { isMain } from '../../../utils/utils'
 
 export default {
+  components: { QrcodeStream },
   props: {
     showFromEmbed: {
       type: Boolean,
       default: false,
-    },
-    btnStyle: {
-      type: String,
-      default: 'icon',
-    },
-    ctaDisconnectText: {
-      type: String,
-      default: 'Disconnect',
     },
   },
   data() {
@@ -90,7 +123,8 @@ export default {
       walletAddress: '',
       guideOn: false,
       menu: false,
-      ctaPlaceholder: 'wc:ff9e1dfa-68be-47ed-b900-72a4...',
+      textPasteFlow: false,
+      ctaPlaceholder: 'wc:ff9e1dfa-68be-47ed...',
     }
   },
   computed: {
@@ -139,21 +173,25 @@ export default {
       try {
         const clipboardData = e.clipboardData || window.clipboardData
         const pastedData = clipboardData.getData('Text')
-        log.info(pastedData, 'qr decoded')
-        log.info(this.wcConnectorSession)
         await this.initWalletConnect({ uri: pastedData })
         if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
+        this.textPasteFlow = true
       } catch (error) {
         log.error(error)
-        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: false, errorMessage: error?.message })
-      } finally {
-        this.camera = 'off'
-        this.showQrScanner = false
+      }
+    },
+    openScanner() {
+      if (this.wcConnectorSession?.connected) {
+        this.disconnectWalletConnect()
+        this.textPasteFlow = false
+      } else {
+        this.camera = 'auto'
+        this.showQrScanner = true
+        this.scannerOpened = true
       }
     },
     async onDecodeQr(result) {
       try {
-        log.info(result, 'qr decoded')
         await this.initWalletConnect({ uri: result })
         if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
       } catch (error) {

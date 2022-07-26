@@ -127,7 +127,6 @@
         <WalletConnectCard
           image-path="https://images.web3auth.io/wallet-connect.svg"
           image-dark-path="https://images.web3auth.io/wallet-connect.svg"
-          :wallet-connect-card-data="walletConnectCardData"
         ></WalletConnectCard>
       </v-flex>
       <v-flex
@@ -260,7 +259,7 @@ import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
 import WalletConnectCard from '../../../components/WalletHome/WalletConnectCard'
-import { LOCALE_EN, MAINNET, WALLET_CONNECT_CARD_DATA } from '../../../utils/enums'
+import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 import { apiStreamSupported, broadcastChannelOptions } from '../../../utils/utils'
 
 export default {
@@ -323,10 +322,6 @@ export default {
     },
     hasCustomToken() {
       return this.filteredBalancesArray.some((x) => !!x.customTokenId)
-    },
-    walletConnectCardData() {
-      const lang = this.$i18n.locale
-      return WALLET_CONNECT_CARD_DATA[lang] || WALLET_CONNECT_CARD_DATA[LOCALE_EN]
     },
     apiStreamSupported() {
       return apiStreamSupported()
