@@ -2,15 +2,16 @@
   <div>
     <v-row>
       <v-menu
-        v-model="menu"
+        :value="guideOn"
         :close-on-content-click="false"
         offset-y
         :bottom="$vuetify.breakpoint.smAndUp"
         :top="$vuetify.breakpoint.xsOnly"
         :nudge-top="$vuetify.breakpoint.xsOnly ? 10 : -10"
+        @change="guideOn = !guideOn"
       >
         <template #activator="{ attrs }">
-          <span class="torusBrand1--text caption ml-3 mt-3" v-bind="attrs" @click="toggleWC">
+          <span class="torusBrand1--text caption ml-3 mt-3" v-bind="attrs" @click="guideOn = !guideOn">
             {{ !guideOn ? t('walletConnect.viewGuide') : t('walletConnect.hideGuide') }}
           </span>
         </template>
@@ -18,7 +19,7 @@
           <v-card-actions class="justify-right">
             <v-btn class="hidden-btn"></v-btn>
             <v-spacer></v-spacer>
-            <v-btn class="close-btn" icon @click="toggleWC">
+            <v-btn class="close-btn" icon @click="guideOn = !guideOn">
               <v-icon>$vuetify.icons.close</v-icon>
             </v-btn>
           </v-card-actions>
@@ -122,7 +123,6 @@ export default {
       hasStreamApiSupport: true,
       walletAddress: '',
       guideOn: false,
-      menu: false,
       textPasteFlow: false,
       ctaPlaceholder: 'wc:ff9e1dfa-68be-47ed...',
     }
@@ -148,9 +148,6 @@ export default {
         this.camera = 'off'
       }
     },
-    menu(value) {
-      if (!value) this.guideOn = false
-    },
     wcConnectorSession(value) {
       if (value.connected) {
         this.$store.dispatch('setSuccessMessage', 'walletConnect.connected')
@@ -165,7 +162,7 @@ export default {
         const url = await this.getWalletConnectedApp()
         window.open(url)
       } else {
-        this.menu = !this.menu
+        // this.menu = !this.menu
         this.guideOn = !this.guideOn
       }
     },
