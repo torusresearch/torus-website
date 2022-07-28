@@ -5,14 +5,14 @@
         <div class="promotion-text pr-3">
           <div
             class="text-body-2 text-sm-body-1 font-weight-bold text_1--text"
-            :class="{ 'text-clamp-three': !$vuetify.breakpoint.xsOnly }"
-            :title="walletConnectCardData.title"
+            :class="{ 'text-clamp-one': !$vuetify.breakpoint.xsOnly }"
+            :title="t('walletConnect.title')"
           >
-            {{ walletConnectCardData.title }}
+            {{ t('walletConnect.title') }}
           </div>
-          <!-- <div class="caption text_1--text" :title="subtitle">
-            {{ subtitle }}
-          </div> -->
+          <div class="caption text_1--text" :title="t('walletConnect.caption')">
+            {{ t('walletConnect.caption') }}
+          </div>
         </div>
         <slot name="image">
           <div class="ml-auto mt-1">
@@ -23,17 +23,13 @@
               position="right center"
               max-width="170"
               :style="$vuetify.breakpoint.smAndDown ? 'width: 100px' : 'width: 170px'"
-              :alt="`${walletConnectCardData.title}`"
+              :alt="t('walletConnect.title')"
             />
           </div>
         </slot>
       </v-flex>
       <v-flex>
-        <WalletConnect
-          btn-style="button"
-          :cta-text="walletConnectCardData.ctaText"
-          :cta-disconnect-text="walletConnectCardData.ctaDisconnectText"
-        ></WalletConnect>
+        <WalletConnect></WalletConnect>
       </v-flex>
     </v-layout>
   </v-card>
@@ -45,14 +41,6 @@ import WalletConnect from '../../helpers/WalletConnect'
 export default {
   components: { WalletConnect },
   props: {
-    walletConnectCardData: {
-      type: Object,
-      default: () => ({
-        title: { type: String, default: '' },
-        ctaText: { type: String, default: '' },
-        ctaDisconnectText: { type: String, default: '' },
-      }),
-    },
     imagePath: { type: String, default: '' },
     imageDarkPath: { type: String, default: '' },
   },
