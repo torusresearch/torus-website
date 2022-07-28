@@ -90,3 +90,15 @@ html {
     padding: 0 1rem;
   }
 }
+
+.selectedText {
+  color: var(--v-torusBrand1-base);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 18px;
+  text-overflow: ellipsis;
+}
+.selectMenu {
+  max-width: 230px;
+  min-width: 100px;
+}
