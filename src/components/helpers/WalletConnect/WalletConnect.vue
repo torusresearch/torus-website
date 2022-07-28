@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row>
+    <v-row v-if="!isIframe">
       <v-menu
         :value="guideOn"
         :close-on-content-click="false"
@@ -34,7 +34,7 @@
       <span size="16">{{ t('walletConnect.gotoApp') }}</span>
     </v-btn> -->
     <!-- <v-container> -->
-    <v-row justify="space-around">
+    <v-row v-if="!isIframe" justify="space-around">
       <v-col cols="12" sm="6">
         <v-text-field
           v-model="walletAddress"
