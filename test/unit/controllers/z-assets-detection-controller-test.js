@@ -69,7 +69,7 @@ describe('AssetsDetectionController', () => {
     assetsDetection = new AssetsDetectionController({
       network,
       assetController: assets,
-      getCovalentNfts: prefsController.getCovalentNfts.bind(prefsController),
+      getNfts: prefsController.getNfts.bind(prefsController),
       getOpenSeaCollectibles: prefsController.getOpenSeaCollectibles.bind(prefsController),
       preferencesStore: prefsController.store,
     })
