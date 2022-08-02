@@ -8,7 +8,7 @@ import log from 'loglevel'
 import Web3 from 'web3'
 
 import NftHandler from '../handlers/Token/NftHandler'
-import { MAINNET, MATIC } from '../utils/enums'
+import { MAINNET, MATIC, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
 import { isMain } from '../utils/utils'
 
 const DEFAULT_INTERVAL = 60_000
@@ -152,12 +152,13 @@ export default class AssetsDetectionController {
     const userAddress = this.selectedAddress
 
     let nfts = []
-
-    try {
-      const response = await this.getNfts(userAddress, currentNetwork)
-      nfts = response.data || []
-    } catch (error) {
-      log.error('error while fetching nfts', error)
+    if (NFT_SUPPORTED_NETWORKS[currentNetwork]) {
+      try {
+        const response = await this.getNfts(userAddress, currentNetwork)
+        nfts = response.data || []
+      } catch (error) {
+        log.error('error while fetching nfts', error)
+      }
     }
     await this.assetController.addCollectibles(nfts, false)
   }
