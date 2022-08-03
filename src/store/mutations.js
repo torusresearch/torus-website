@@ -61,11 +61,9 @@ export default {
   deleteCustomNetwork(state, networkId) {
     const { supportedNetworks } = state
     const temp = {}
-    // debugger
     Object.keys(supportedNetworks).forEach((network) => {
       if (supportedNetworks[network].id !== networkId) temp[network] = supportedNetworks[network]
     })
-    debugger
     state.supportedNetworks = {
       ...temp,
     }
@@ -73,12 +71,17 @@ export default {
   updateCustomNetwork(state, payload) {
     const { supportedNetworks } = state
     const networkId = payload.id
-    // debugger
-    Object.keys(supportedNetworks).forEach((network) => {
-      if (supportedNetworks[network].id === networkId) {
-        state.supportedNetworks[network] = payload
+    const temp = {}
+    Object.keys(supportedNetworks).forEach((host) => {
+      // user can even change the custom network host name as well.
+      if (supportedNetworks[host].id === networkId) {
+        temp[payload.host] = payload
+      } else {
+        temp[host] = supportedNetworks[host]
       }
     })
+    state.supportedNetworks = temp
+    state.networkType = { ...payload, networkName: payload.networkName || payload.host }
   },
   setTransactions(state, transactions) {
     state.transactions = transactions

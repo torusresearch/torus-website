@@ -29,10 +29,10 @@
               </template>
               <v-list class="select-item-list overflow-y-auto" style="max-height: 240px">
                 <v-list-item
-                  v-for="network in defaultNetworks"
-                  :key="supportedNetworks[network].networkName"
+                  v-for="host in defaultNetworks"
+                  :key="supportedNetworks[host].networkName"
                   class="select-coin-eth"
-                  @click="selectedItemChanged(supportedNetworks[network])"
+                  @click="selectedItemChanged(supportedNetworks[host])"
                 >
                   <!-- <v-list-item-icon class="mr-1">
                     <img
@@ -45,14 +45,14 @@
                     />
                   </v-list-item-icon> -->
                   <v-list-item-content>
-                    <v-list-item-title class="body-2">{{ supportedNetworks[network].networkName }}</v-list-item-title>
+                    <v-list-item-title class="body-2">{{ supportedNetworks[host].networkName }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
                 <!-- <v-divider class="mx-3"></v-divider> -->
                 <v-subheader v-if="customNetworks.length > 0" class="subheading">
                   {{ t('walletSettings.customNetwork') }}
                 </v-subheader>
-                <v-list-item v-for="network in customNetworks" :key="supportedNetworks[network].networkName">
+                <v-list-item v-for="host in customNetworks" :key="supportedNetworks[host].networkName">
                   <!-- <v-list-item-icon class="ml-8 mr-1">
                     <img
                       :src="`${logosUrl}/${token.logo}`"
@@ -63,16 +63,16 @@
                       :alt="supportedNetworks[network].host"
                     />
                   </v-list-item-icon> -->
-                  <v-list-item-content @click="selectedItemChanged(supportedNetworks[network])">
-                    <v-list-item-title class="body-2">{{ supportedNetworks[network].networkName }}</v-list-item-title>
+                  <v-list-item-content @click="selectedItemChanged(supportedNetworks[host])">
+                    <v-list-item-title class="body-2">{{ supportedNetworks[host].networkName }}</v-list-item-title>
                   </v-list-item-content>
                   <v-list-item-icon>
                     <v-btn
                       color="text_3"
                       icon
                       small
-                      :aria-label="`Edit ${supportedNetworks[network].networkName}`"
-                      @click="editNetwork(supportedNetworks[network])"
+                      :aria-label="`Edit ${supportedNetworks[host].networkName}`"
+                      @click="editNetwork(supportedNetworks[host])"
                     >
                       {{ t('walletSettings.editNetwork') }}
                     </v-btn>
@@ -83,8 +83,8 @@
                       color="text_2"
                       icon
                       small
-                      :aria-label="`Delete ${supportedNetworks[network].networkName}`"
-                      @click="deleteNetwork(supportedNetworks[network])"
+                      :aria-label="`Delete ${supportedNetworks[host].networkName}`"
+                      @click="deleteNetwork(supportedNetworks[host])"
                     >
                       <v-icon x-small>$vuetify.icons.trash</v-icon>
                     </v-btn>
@@ -211,7 +211,6 @@ export default {
   name: 'NetworkSettings',
   data() {
     return {
-      selectedNetwork: {},
       rpc: { chainId: '', networkName: '', host: '', blockExplorer: '', ticker: '' },
       formValid: true,
       rules: {
@@ -233,9 +232,9 @@ export default {
     customNetworks() {
       return Object.keys(this.supportedNetworks).filter((n) => !Object.keys(SUPPORTED_NETWORK_TYPES).includes(n))
     },
-  },
-  mounted() {
-    this.selectedNetwork = this.networkType
+    selectedNetwork() {
+      return this.networkType
+    },
   },
   methods: {
     showNotification(success) {
@@ -247,7 +246,7 @@ export default {
     changeNetwork(value) {
       log.info(value)
       if (value && value.host !== RPC) {
-        const payload = { network: this.selectedNetwork }
+        const payload = { network: value }
         this.$store
           .dispatch('setProviderType', payload)
           .then(() => {
@@ -266,7 +265,6 @@ export default {
         this.$store
           .dispatch('setProviderType', payload)
           .then(() => {
-            this.selectedNetwork = this.networks.find((x) => x.host === this.rpc.host)
             this.updateData()
             this.showNotification(true)
             this.sendToIframe(payload)
@@ -283,7 +281,6 @@ export default {
         this.$store
           .dispatch('updateCustomNetwork', this.rpc)
           .then(() => {
-            this.selectedNetwork = this.networks.find((x) => x.host === this.rpc.host)
             this.updateData()
             this.isEdit = false
             this.showNotification(true)
@@ -314,7 +311,6 @@ export default {
     },
     selectedItemChanged(item) {
       this.changeNetwork(item)
-      this.selectedNetwork = item
     },
     updateData() {
       this.toggleNetworkView()
@@ -330,8 +326,7 @@ export default {
           .dispatch('deleteCustomNetwork', network.id)
           .then(() => {
             if (network.id === this.selectedNetwork.id) {
-              this.changeNetwork(this.selectedNetwork)
-              this.selectedNetwork = SUPPORTED_NETWORK_TYPES[MAINNET]
+              this.changeNetwork(SUPPORTED_NETWORK_TYPES[MAINNET])
             }
             this.showNotification(true)
           })

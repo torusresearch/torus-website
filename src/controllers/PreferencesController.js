@@ -742,9 +742,7 @@ class PreferencesController extends SafeEventEmitter {
     try {
       if (id) {
         await this.api.remove(`${config.api}/customnetwork/${id}`, {}, this.headers(), { useAPIKey: true })
-        // const customNetworks = this.state().customNetworks.filter((network) => network.id !== response.data.id)
         this.network.deleteCustomNetwork(id)
-        // this.handleSuccess('navBar.snackSuccessCustomNetworkDelete')
       }
     } catch {
       this.handleError('navBar.snackFailCustomNetworkDelete')
@@ -752,8 +750,6 @@ class PreferencesController extends SafeEventEmitter {
   }
 
   async editCustomNetwork(network) {
-    // debugger
-
     try {
       const payload = {
         network_name: network.networkName,
@@ -762,13 +758,9 @@ class PreferencesController extends SafeEventEmitter {
         symbol: network.symbol || undefined,
         block_explorer_url: network.blockExplorer || undefined,
       }
-      // log.info(this.state().customNetworks)
       const { id } = network
       await this.api.patch(`${config.api}/customnetwork/${id}`, payload, this.headers(), { useAPIKey: true })
-      // const updatedNetwork = this.state().customNetworks.filter((ele) => ele.id === id)
       this.network.editSupportedNetworks(network)
-
-      // log.info(updatedNetwork)
     } catch {
       this.handleError('navBar.snackFailNetworkUpdate')
     }
