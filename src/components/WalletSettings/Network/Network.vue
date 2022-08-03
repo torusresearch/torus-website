@@ -245,6 +245,7 @@ export default {
       )
     },
     changeNetwork(value) {
+      log.info(value)
       if (value && value.host !== RPC) {
         const payload = { network: this.selectedNetwork }
         this.$store
@@ -312,8 +313,8 @@ export default {
       this.rpc = { chainId: '', networkName: '', host: '', blockExplorer: '', ticker: '' }
     },
     selectedItemChanged(item) {
-      this.selectedNetwork = item
       this.changeNetwork(item)
+      this.selectedNetwork = item
     },
     updateData() {
       this.toggleNetworkView()
@@ -329,6 +330,7 @@ export default {
           .dispatch('deleteCustomNetwork', network.id)
           .then(() => {
             if (network.id === this.selectedNetwork.id) {
+              this.changeNetwork(this.selectedNetwork)
               this.selectedNetwork = SUPPORTED_NETWORK_TYPES[MAINNET]
             }
             this.showNotification(true)

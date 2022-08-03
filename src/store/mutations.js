@@ -63,8 +63,9 @@ export default {
     const temp = {}
     // debugger
     Object.keys(supportedNetworks).forEach((network) => {
-      if (supportedNetworks[network].id !== networkId) temp[network] = { ...supportedNetworks[network] }
+      if (supportedNetworks[network].id !== networkId) temp[network] = supportedNetworks[network]
     })
+    debugger
     state.supportedNetworks = {
       ...temp,
     }

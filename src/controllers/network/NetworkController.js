@@ -165,10 +165,32 @@ export default class NetworkController extends EventEmitter {
   }
 
   /**
+   * Store supported networks
+   */
+  deleteCustomNetwork(id) {
+    // debugger
+    // this.supportedNetworkStore.putState(networks)
+    const networks = Object.values(this.getSupportedNetworks).filter((network) => network.id !== id)
+    const obj = {}
+    networks.forEach((i) => {
+      obj[i.host] = i
+    })
+    this.supportedNetworkStore.putState(obj)
+  }
+
+  /**
    * Update supported networks
    */
-  storeSupportedNetworks(networks) {
-    this.supportedNetworkStore.putState(networks)
+  editSupportedNetworks(network) {
+    // network host can also change so we need to iterate over all networks
+    // and update exact values for the edited network
+    const { id } = network
+    const obj = {}
+    Object.values(this.getSupportedNetworks).forEach((i) => {
+      if (i.id !== id) obj[i.host] = i
+    })
+    obj[network.host] = network
+    this.supportedNetworkStore.putState(obj)
   }
 
   /**
