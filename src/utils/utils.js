@@ -1153,3 +1153,28 @@ export function generateTorusAuthHeaders(privateKey, publicAddress) {
   }
   return authHeaders
 }
+
+// will return isIdle to true if not activity is detected for 10 minutes.
+export const idleTimeTracker = ((activityThresholdTime) => {
+  let isIdle = false
+  let idleTimeout = null
+  window.addEventListener('load', resetTimer)
+  document.addEventListener('mousemove', resetTimer)
+  document.addEventListener('keydown', resetTimer)
+  function resetTimer() {
+    if (idleTimeout) {
+      clearTimeout(idleTimeout)
+    }
+    isIdle = false
+    idleTimeout = setTimeout(() => {
+      isIdle = true
+    }, activityThresholdTime * 1000)
+  }
+
+  function checkIfIdle() {
+    return isIdle
+  }
+  return {
+    checkIfIdle,
+  }
+})(600)
