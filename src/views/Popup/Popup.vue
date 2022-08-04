@@ -42,7 +42,7 @@ export default {
       return apiStreamSupported()
     },
   }),
-  async mounted() {
+  created() {
     window.$crisp.push(['do', 'chat:hide'])
     const openLoginHandler = OpenLoginHandler.getInstance()
     const { sessionId } = openLoginHandler.openLoginInstance.state.store.getStore()

@@ -100,7 +100,6 @@ const VuexStore = new Vuex.Store({
       const windowId = isTx ? payload.id : payload
       const channelName = `torus_channel_${windowId}`
       const finalUrl = `${baseRoute}confirm?instanceId=${windowId}&integrity=true&id=${windowId}`
-
       const popupPayload = {
         id: windowId,
         origin: getIFrameOriginObject(),
@@ -263,6 +262,8 @@ function handleConfirm(ev) {
       log.info('New txMeta: ', txMeta)
     }
     torusController.updateAndApproveTransaction(txMeta)
+  } else if (ev.data.txType === MESSAGE_TYPE.WATCH_ASSET) {
+    torusController.approveWatchAsset(ev.data.id)
   } else {
     throw new Error('No new transactions.')
   }
@@ -282,6 +283,8 @@ function handleDeny(id, txType) {
     torusController.cancelEncryptionPublicKey(Number.parseInt(id, 10))
   } else if (txType === MESSAGE_TYPE.ETH_DECRYPT) {
     torusController.cancelDecryptMessage(Number.parseInt(id, 10))
+  } else if (txType === MESSAGE_TYPE.WATCH_ASSET) {
+    torusController.cancelWatchAsset(Number.parseInt(id, 10))
   }
 }
 
@@ -321,6 +324,13 @@ function getLatestMessageParameters(id) {
   if (VuexStore.state.unapprovedDecryptMsgs[id]) {
     message = VuexStore.state.unapprovedDecryptMsgs[id]
     type = MESSAGE_TYPE.ETH_DECRYPT
+  }
+
+  if (VuexStore.state.unApprovedAssets[id]) {
+    message = {
+      msgParams: VuexStore.state.unApprovedAssets[id],
+    }
+    type = MESSAGE_TYPE.WATCH_ASSET
   }
 
   return message ? { msgParams: message.msgParams, id, type } : {}

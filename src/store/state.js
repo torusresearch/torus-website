@@ -44,6 +44,7 @@ const initialState = {
   unapprovedMsgs: {},
   unapprovedEncryptionPublicKeyMsgs: {},
   unapprovedDecryptMsgs: {},
+  unApprovedAssets: {},
   // preferences
   defaultPublicAddress: '',
   selectedAddress: '',

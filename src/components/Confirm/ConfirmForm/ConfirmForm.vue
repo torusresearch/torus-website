@@ -76,6 +76,7 @@
           :initial-max-fee-per-gas="initialMaxFeePerGas"
           :initial-max-priority-fee-per-gas="initialMaxPriorityFeePerGas"
           :is-confirm="true"
+          :network-host="network.host"
           @save="onTransferFeeSelect"
         />
         <TransactionSpeedSelect
@@ -200,7 +201,28 @@
         </v-flex>
       </v-layout>
     </template>
-
+    <template v-if="type === MESSAGE_TYPE.WATCH_ASSET">
+      <AddAssetConfirm
+        :id="assetParams.options.id"
+        :balance="
+          assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20
+            ? parseInt(assetParams.options.balance)
+            : assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC721
+            ? 1
+            : parseInt(assetParams.options.balance)
+        "
+        :explorerlink="assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20 ? '' : assetParams.options.explorerLink"
+        :symbol="assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20 ? assetParams.options.symbol : ''"
+        :name="assetParams.metadata.name"
+        :decimals="assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20 ? assetParams.options.decimals : 0"
+        :address="assetParams.options.address"
+        :image="assetParams.options.image"
+        :type="assetParams.type.toLowerCase()"
+        :description="assetParams.options.description"
+        @triggerAddCustomToken="triggerSign"
+        @triggerRejectCustomToken="triggerDeny"
+      />
+    </template>
     <template
       v-if="
         type === MESSAGE_TYPE.PERSONAL_SIGN ||
@@ -376,7 +398,6 @@ import {
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
-  GAS_ESTIMATE_TYPES,
   MESSAGE_TYPE,
   TRANSACTION_ENVELOPE_TYPES,
   TRANSACTION_TYPES,
@@ -395,6 +416,7 @@ import NetworkDisplay from '../../helpers/NetworkDisplay'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import TransactionFee from '../../helpers/TransactionFee'
 import TransactionSpeedSelect from '../../helpers/TransactionSpeedSelect'
+import AddAssetConfirm from '../AddAssetConfirm'
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
 
@@ -406,6 +428,7 @@ export default {
     TransactionSpeedSelect,
     NetworkDisplay,
     ShowToolTip,
+    AddAssetConfirm,
   },
   props: {
     currentConfirmModal: {
@@ -482,6 +505,11 @@ export default {
       londonSpeedTiming: '',
       initialMaxFeePerGas: new BigNumber(0),
       initialMaxPriorityFeePerGas: new BigNumber(0),
+      assetParams: {
+        type: '',
+        options: {},
+        metadata: {},
+      },
     }
   },
   computed: {
@@ -592,7 +620,7 @@ export default {
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
     },
     isEip1559() {
-      return this.networkDetails.EIPS && this.networkDetails.EIPS['1559'] && this.gasFees.gasEstimateType === GAS_ESTIMATE_TYPES.FEE_MARKET
+      return this.networkDetails.EIPS && this.networkDetails.EIPS['1559']
     },
   },
   watch: {
@@ -624,6 +652,9 @@ export default {
       this.gasFees = gasFees
       log.info({ msgParams, txParams, gasFees })
       this.origin = origin || this.origin
+      if (type === MESSAGE_TYPE.WATCH_ASSET) {
+        this.assetParams = { ...msgParams.msgParams.assetParams }
+      }
       if (type === MESSAGE_TYPE.ETH_DECRYPT) {
         const { msgParams: { data, from } = {}, id = '' } = msgParams || {}
         this.id = id

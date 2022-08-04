@@ -1,7 +1,7 @@
 import { createAsyncMiddleware, createScaffoldMiddleware, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
 import { createWalletMiddleware } from 'eth-json-rpc-middleware'
 
-import { TRANSACTION_ENVELOPE_TYPES } from '../../utils/enums'
+import { MESSAGE_TYPE, TRANSACTION_ENVELOPE_TYPES } from '../../utils/enums'
 
 export default function createMetamaskMiddleware({
   version,
@@ -16,6 +16,7 @@ export default function createMetamaskMiddleware({
   getPendingTransactionByHash,
   processEncryptionPublicKey,
   processDecryptMessage,
+  processWatchAsset,
 }) {
   const metamaskMiddleware = mergeMiddleware([
     createScaffoldMiddleware({
@@ -34,11 +35,38 @@ export default function createMetamaskMiddleware({
       processEncryptionPublicKey,
       processDecryptMessage,
     }),
+    createWatchAssetMiddleware({ processWatchAsset }),
     createRequestAccountsMiddleware({ getAccounts }),
     createPendingNonceMiddleware({ getPendingNonce }),
     createPendingTxMiddleware({ getPendingTransactionByHash }),
   ])
   return metamaskMiddleware
+}
+
+export function createWatchAssetMiddleware({ processWatchAsset }) {
+  return createAsyncMiddleware(async (request, response, next) => {
+    if (request.method !== MESSAGE_TYPE.WATCH_ASSET) return next()
+
+    /**
+     * request.params
+     * {
+          type: 'ERC20',
+          options: {
+            address: '0xb60e8dd61c5d32be8058bb8eb970870f07233155',
+            symbol: 'FOO',
+            decimals: 18,
+            image: 'https://foo.io/token-image.svg',
+          }
+       }
+     */
+
+    const { type, options = {} } = request.params || {}
+    if (!type) throw new Error('createWatchAssetMiddleware - params.type not provided')
+    if (!options.address) throw new Error('createWatchAssetMiddleware - params.options.address not provided')
+
+    response.result = await processWatchAsset(request.params, request)
+    return undefined
+  })
 }
 
 export function createPendingNonceMiddleware({ getPendingNonce }) {

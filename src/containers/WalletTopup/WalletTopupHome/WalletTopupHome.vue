@@ -75,13 +75,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(['theme', 'whiteLabel', 'networkType']),
+    ...mapState(['theme', 'whiteLabel', 'networkType', 'networkId']),
     providers() {
-      const network = this.networkType.host
       if (this.whiteLabel.isActive) {
-        return getPaymentProviders(network, this.whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME)
+        return getPaymentProviders(this.networkId, this.whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME)
       }
-      return getPaymentProviders(network, this.theme)
+      return getPaymentProviders(this.networkId, this.theme)
     },
     noSupportedProvidersForNetwork() {
       return this.providers.length === 0
