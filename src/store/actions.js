@@ -408,7 +408,7 @@ export default {
       await commit('setCustomCurrency', networkType.ticker)
     return undefined
   },
-  async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint, sessionId }) {
+  async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint }) {
     try {
       commit('setLoginInProgress', true)
       // This is to maintain backward compatibility
@@ -441,7 +441,6 @@ export default {
         whiteLabel,
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
-        sessionId,
       })
       const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
       if (error) {
@@ -472,15 +471,14 @@ export default {
     }
   },
   async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
-    const { selectedAddress } = state
     const openLoginHandler = OpenLoginHandler.getInstance()
     await openLoginHandler.init()
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()
     commit('setUserInfo', userInfo)
     commit('setPostboxKey', postboxKey)
-    dispatch('getUserDapps', { postboxKey, calledFromEmbed, selectedAddress })
-    await dispatch('handleLogin', {
+    dispatch('getUserDapps', { postboxKey, calledFromEmbed })
+    await dispatch('initTorusKeyring', {
       calledFromEmbed,
       oAuthToken: userInfo.idToken || userInfo.accessToken,
       keys: keys.map((x) => ({
@@ -492,7 +490,7 @@ export default {
       rehydrate: true,
     })
   },
-  async getUserDapps({ commit, dispatch, state }, { postboxKey, calledFromEmbed, selectedAddress }) {
+  async getUserDapps({ commit, dispatch, state }, { postboxKey, calledFromEmbed }) {
     const openLoginHandler = OpenLoginHandler.getInstance()
     await openLoginHandler.init()
     const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
@@ -507,7 +505,6 @@ export default {
         jwtToken: state.jwtToken[x.ethAddress],
       })),
     })
-    await dispatch('rehydrate', { selectedAddress })
   },
   subscribeToControllers() {
     accountTracker.store.subscribe(accountTrackerHandler)
@@ -556,7 +553,7 @@ export default {
       })
     )
   },
-  async handleLogin({ state, dispatch, commit }, { calledFromEmbed, oAuthToken, keys, rehydrate }) {
+  async handleLogin({ state, dispatch, commit }, { calledFromEmbed, oAuthToken, keys }) {
     // The error in this is caught above
     const {
       userInfo: { verifier },
@@ -566,34 +563,32 @@ export default {
     const defaultAddresses = await dispatch('initTorusKeyring', {
       keys,
       calledFromEmbed,
-      rehydrate,
+      rehydrate: false,
     })
 
-    if (!rehydrate) {
-      const selectedDefaultAddress = defaultAddresses[0] || defaultAddresses[1]
-      const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : Object.keys(state.wallet)[0]
+    const selectedDefaultAddress = defaultAddresses[0] || defaultAddresses[1]
+    const selectedAddress = Object.keys(state.wallet).includes(selectedDefaultAddress) ? selectedDefaultAddress : Object.keys(state.wallet)[0]
 
-      if (!selectedAddress) {
-        dispatch('logOut')
-        throw new Error('No Accounts available')
-      }
-      dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
-
-      prefsController.getBillboardContents()
-      prefsController.getAnnouncementsContents()
-
-      // continue enable function
-      if (calledFromEmbed) {
-        setTimeout(() => {
-          oauthStream.write({ selectedAddress })
-          commit('setOAuthModalStatus', false)
-        }, 50)
-      }
-      // TODO: deprecate rehydrate false for the next major version bump
-      statusStream.write({ loggedIn: true, rehydrate, verifier })
-      // torus.updateStaticData({ isUnlocked: true })
-      dispatch('cleanupOAuth', { oAuthToken })
+    if (!selectedAddress) {
+      dispatch('logOut')
+      throw new Error('No Accounts available')
     }
+    dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+
+    prefsController.getBillboardContents()
+    prefsController.getAnnouncementsContents()
+
+    // continue enable function
+    if (calledFromEmbed) {
+      setTimeout(() => {
+        oauthStream.write({ selectedAddress })
+        commit('setOAuthModalStatus', false)
+      }, 50)
+    }
+    // TODO: deprecate rehydrate false for the next major version bump
+    statusStream.write({ loggedIn: true, rehydrate: false, verifier })
+    // torus.updateStaticData({ isUnlocked: true })
+    dispatch('cleanupOAuth', { oAuthToken })
   },
   cleanupOAuth({ state }, payload) {
     const {
@@ -610,24 +605,36 @@ export default {
       }
     }
   },
-  async rehydrate({ state, dispatch, commit }, { selectedAddress }) {
-    const {
-      wallet,
-      networkType,
-      networkId,
-      userInfo: { verifier },
-      wcConnectorSession,
-    } = state
+  async rehydrate({ state, dispatch, commit }) {
+    const { networkType, networkId, wcConnectorSession, selectedAddress } = state
     try {
+      log.info(window.location.pathname, router.match(window.location.pathname), selectedAddress, 'router info')
+      const currentRoute = router.match(window.location.pathname)
+      if (!currentRoute.meta.skipOpenLoginCheck) {
+        const openLoginHandler = OpenLoginHandler.getInstance()
+        const sessionInfo = await openLoginHandler.getActiveSession()
+        if (sessionInfo && (sessionInfo.walletKey || sessionInfo.tKey)) {
+          // already logged in
+          // call autoLogin
+          log.info('auto-login with openlogin session')
+          await dispatch('autoLogin', { calledFromEmbed: !isMain })
+          if (currentRoute.name !== 'popup' && currentRoute.meta.requiresAuth === false) {
+            router.push(currentRoute.query.redirect || '/wallet').catch((_) => {})
+          }
+        } else {
+          log.info('no openlogin session, redirect to login')
+        }
+      }
+
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       dispatch('subscribeToControllers')
 
-      if (selectedAddress && wallet[selectedAddress]) {
+      if (selectedAddress && state.wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
-        statusStream.write({ loggedIn: true, rehydrate: true, verifier })
+        statusStream.write({ loggedIn: true, rehydrate: true, verifier: state.userInfo.verifier })
         if (Object.keys(wcConnectorSession).length > 0) dispatch('initWalletConnect', { session: wcConnectorSession })
         log.info('rehydrated wallet')
         // torus.updateStaticData({ isUnlocked: true })

@@ -1,6 +1,6 @@
 <template>
   <v-container class="pa-0">
-    <PopupLogin :login-dialog="loginDialog" :session-id="sessionId" @closeDialog="cancelLogin" />
+    <PopupLogin :login-dialog="loginDialog" @closeDialog="cancelLogin" />
     <WalletConnect :show-from-embed="showWalletConnect" />
     <PopupWidget
       v-if="torusWidgetVisibility && !showWalletConnect"
@@ -18,17 +18,11 @@ import { mapActions, mapState } from 'vuex'
 import WalletConnect from '../../components/helpers/WalletConnect'
 import PopupLogin from '../../containers/Popup/PopupLogin'
 import PopupWidget from '../../containers/Popup/PopupWidget'
-import { OpenLoginHandler } from '../../handlers/Auth'
 import { apiStreamSupported } from '../../utils/utils'
 
 export default {
   name: 'Popup',
   components: { PopupLogin, PopupWidget, WalletConnect },
-  data() {
-    return {
-      sessionId: '',
-    }
-  },
   computed: mapState({
     loggedIn: (state) => state.selectedAddress !== '',
     loginDialog: (state) => state.embedState.isOAuthModalVisible,
@@ -44,9 +38,6 @@ export default {
   }),
   created() {
     window.$crisp.push(['do', 'chat:hide'])
-    const openLoginHandler = OpenLoginHandler.getInstance()
-    const { sessionId } = openLoginHandler.openLoginInstance.state.store.getStore()
-    this.sessionId = sessionId
   },
   methods: {
     ...mapActions({

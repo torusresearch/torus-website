@@ -64,10 +64,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    sessionId: {
-      type: String,
-      default: '',
-    },
   },
   data() {
     return {
@@ -141,7 +137,7 @@ export default {
     async startLogin(verifier, email) {
       try {
         this.showModal = false
-        await this.triggerLogin({ verifier, calledFromEmbed: true, login_hint: email, sessionId: this.sessionId })
+        await this.triggerLogin({ verifier, calledFromEmbed: true, login_hint: email })
       } catch (error) {
         log.error(error)
         this.closeDialog()

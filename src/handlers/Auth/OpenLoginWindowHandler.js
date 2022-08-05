@@ -8,7 +8,7 @@ import PopupWithBcHandler from '../Popup/PopupWithBcHandler'
 class OpenLoginWindowHandler {
   nonce = randomId()
 
-  constructor({ verifier, redirect_uri, preopenInstanceId, jwtParameters, skipTKey, whiteLabel, loginConfigItem, origin, sessionId }) {
+  constructor({ verifier, redirect_uri, preopenInstanceId, jwtParameters, skipTKey, whiteLabel, loginConfigItem, origin }) {
     this.verifier = verifier
     this.preopenInstanceId = preopenInstanceId
     this.redirect_uri = redirect_uri
@@ -17,7 +17,6 @@ class OpenLoginWindowHandler {
     this.whiteLabel = whiteLabel
     this.loginConfigItem = loginConfigItem
     this.origin = origin
-    this.sessionId = sessionId
     this.setFinalUrl()
   }
 
@@ -39,7 +38,6 @@ class OpenLoginWindowHandler {
           whiteLabel: this.whiteLabel || {},
           loginConfig: !Object.keys(config.loginConfig).includes(this.verifier) ? { [this.loginConfigItem.loginProvider]: this.loginConfigItem } : {},
           origin: this.origin,
-          sessionId: this.sessionId,
         })
       )
     )

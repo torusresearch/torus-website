@@ -171,28 +171,12 @@ export default {
     if (this.selectedAddress !== '' && Object.keys(this.wallet) > 0) this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
 
     this.isLogout = this.$route.name !== 'login'
-    // if (!this.isLogout) {
-    //   // auto login if openlogin session is available
-    //   this.loginInProgress = true
-    //   try {
-    //     const { state } = await getOpenLoginInstance()
-    //     if (state.walletKey || state.tKey) {
-    //       log.info('auto-login with openlogin session')
-    //       await this.autoLogin({ openloginState: state, calledFromEmbed: false })
-    //     }
-    //   } catch (error) {
-    //     log.error(error)
-    //   } finally {
-    //     this.loginInProgress = false
-    //   }
-    // }
 
     this.scroll()
   },
   methods: {
     ...mapActions({
       triggerLogin: 'triggerLogin',
-      autoLogin: 'autoLogin',
     }),
     ...mapMutations(['setUserInfo']),
     async startLogin(verifier, email) {

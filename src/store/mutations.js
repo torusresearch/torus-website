@@ -256,12 +256,6 @@ export default {
   setUserDapps(state, payload) {
     state.userDapps = payload
   },
-  setOpenloginSessionId(_, sessionId) {
-    if (storageAvailable('localStorage')) {
-      const openloginStore = JSON.parse(localStorage.getItem('openlogin_store'))
-      localStorage.setItem('openlogin_store', JSON.stringify({ ...openloginStore, sessionId }))
-    }
-  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]

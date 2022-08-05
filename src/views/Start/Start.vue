@@ -19,7 +19,6 @@
 <script>
 import { safeatob } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
-import { mapMutations } from 'vuex'
 
 import BoxLoader from '../../components/helpers/BoxLoader'
 import { OpenLoginHandler } from '../../handlers/Auth'
@@ -50,10 +49,6 @@ export default {
       const { loginProvider, state, skipTKey, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))
 
-      // Safari browser prevents cross-site tracking so need to sync sessionId between iframe and popup window
-      const { sessionId } = stateParams
-      this.setOpenloginSessionId(sessionId)
-
       log.info('logging in with', loginProvider, state, skipTKey, rest)
       const { whiteLabel, loginConfig = {}, origin } = stateParams
       this.whiteLabel = whiteLabel
@@ -75,9 +70,6 @@ export default {
     } catch (error) {
       log.info(error, 'something went wrong')
     }
-  },
-  methods: {
-    ...mapMutations(['setOpenloginSessionId']),
   },
 }
 </script>
