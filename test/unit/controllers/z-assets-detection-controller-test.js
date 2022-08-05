@@ -19,10 +19,6 @@ const TEST_ADDRESS = '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'
 const TORUS_API = config.api
 const OPEN_SEA_API = config.api
 
-const testAccount = {
-  key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
-  address: '0xa12164FeD66719297D2cF407bb314D07FEb12C02',
-}
 describe('AssetsDetectionController', () => {
   let assetsDetection
   let network
@@ -53,8 +49,8 @@ describe('AssetsDetectionController', () => {
     sandbox.stub(prefsController, 'sync')
     sandbox.stub(prefsController, 'createUser')
     sandbox.stub(prefsController, 'storeUserLogin')
-    await prefsController.init({ address: testAccount.address, rehydrate: true, jwtToken: 'hello', dispatch: noop, commit: noop })
-    prefsController.setSelectedAddress(testAccount.address)
+    prefsController.init({ address: TEST_ADDRESS, rehydrate: true, jwtToken: 'hello', dispatch: noop, commit: noop })
+    prefsController.setSelectedAddress(TEST_ADDRESS)
 
     assetsContract = new AssetsContractController({
       provider: network._providerProxy,
