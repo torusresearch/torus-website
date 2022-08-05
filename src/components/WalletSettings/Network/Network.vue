@@ -129,7 +129,7 @@
       </template>
       <template v-else>
         <v-flex xs12>
-          <div class="caption text_3--text mb-2 plain" @click="toggleNetworkView">Back</div>
+          <v-btn text class="caption text_3--text mb-2 plain" @click="toggleNetworkView">Back</v-btn>
           <v-text-field
             v-model="rpc.networkName"
             :placeholder="t('walletSettings.enterNetworkName')"
