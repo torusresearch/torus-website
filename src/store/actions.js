@@ -608,11 +608,11 @@ export default {
   async rehydrate({ state, dispatch, commit }) {
     const { networkType, networkId, wcConnectorSession, selectedAddress } = state
     try {
-      log.info(window.location.pathname, router.match(window.location.pathname), selectedAddress, 'router info')
       const currentRoute = router.match(window.location.pathname)
       if (!currentRoute.meta.skipOpenLoginCheck) {
         const openLoginHandler = OpenLoginHandler.getInstance()
         const sessionInfo = await openLoginHandler.getActiveSession()
+        // log.info(sessionInfo, 'current session info')
         if (sessionInfo && (sessionInfo.walletKey || sessionInfo.tKey)) {
           // already logged in
           // call autoLogin
@@ -622,7 +622,7 @@ export default {
             router.push(currentRoute.query.redirect || '/wallet').catch((_) => {})
           }
         } else {
-          log.info('no openlogin session, redirect to login')
+          log.info('no openlogin session')
         }
       }
 
@@ -630,6 +630,7 @@ export default {
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       dispatch('subscribeToControllers')
 
+      // log.info(state.wallet, 'state.wallet')
       if (selectedAddress && state.wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
