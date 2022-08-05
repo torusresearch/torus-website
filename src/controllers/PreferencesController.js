@@ -20,24 +20,14 @@ import {
 } from '../utils/enums'
 import { notifyUser } from '../utils/notifications'
 import { setSentryEnabled } from '../utils/sentry'
-import {
-  formatDate,
-  formatPastTx,
-  formatTime,
-  getEthTxStatus,
-  getIFrameOrigin,
-  getUserLanguage,
-  isMain,
-  storageAvailable,
-  waitForMs,
-} from '../utils/utils'
+import { formatDate, formatPastTx, formatTime, getEthTxStatus, getIFrameOrigin, getUserLanguage, isMain, waitForMs } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
 
 let themeGlobal = THEME_LIGHT_BLUE_NAME
-if (storageAvailable('localStorage')) {
+if (config.localStorageAvailable) {
   const torusTheme = localStorage.getItem('torus-theme')
   if (torusTheme) {
     themeGlobal = torusTheme
@@ -212,7 +202,7 @@ class PreferencesController extends SafeEventEmitter {
         let whiteLabelLocale
 
         // White Label override
-        if (storageAvailable('sessionStorage')) {
+        if (config.sessionStorageAvailable) {
           let torusWhiteLabel = sessionStorage.getItem('torus-white-label')
           if (torusWhiteLabel) {
             try {
@@ -511,7 +501,7 @@ class PreferencesController extends SafeEventEmitter {
     if (payload === this.state()?.crashReport) return
     try {
       await this.api.patch(`${config.api}/user/crashreporter`, { enable_crash_reporter: payload }, this.headers(), { useAPIKey: true })
-      if (storageAvailable('localStorage')) {
+      if (config.localStorageAvailable) {
         localStorage.setItem('torus-enable-crash-reporter', String(payload))
       }
       setSentryEnabled(payload)

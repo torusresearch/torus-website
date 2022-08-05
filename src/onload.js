@@ -3,10 +3,11 @@ import { BasePostMessageStream } from '@toruslabs/openlogin-jrpc'
 import log from 'loglevel'
 import Web3 from 'web3'
 
+import config from './config'
 import TorusController from './controllers/TorusController'
 import setupMultiplex from './controllers/utils/setupMultiplex'
 import { MAINNET, SUPPORTED_NETWORK_TYPES } from './utils/enums'
-import { getIFrameOrigin, isMain, storageAvailable } from './utils/utils'
+import { getIFrameOrigin, isMain } from './utils/utils'
 // import store from './store'
 let storeReference
 let deferredDispatch = []
@@ -36,7 +37,7 @@ function triggerUi(type, payload, request) {
 function onloadTorus(torus) {
   let sessionData
 
-  if (storageAvailable('localStorage')) {
+  if (config.localStorageAvailable) {
     const storage = localStorage
     sessionData = storage.getItem('torus-app')
   }

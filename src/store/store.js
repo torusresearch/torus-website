@@ -10,7 +10,7 @@ import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import torus from '../torus'
 import { FEATURES_CONFIRM_WINDOW, MESSAGE_TYPE, TRANSACTION_TYPES } from '../utils/enums'
 import { setSentryEnabled } from '../utils/sentry'
-import { getIFrameOriginObject, isMain, storageAvailable } from '../utils/utils'
+import { getIFrameOriginObject, isMain } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
 import mutations from './mutations'
@@ -24,7 +24,7 @@ Vue.use(Vuex)
 
 let vuexPersist
 
-if (storageAvailable('localStorage')) {
+if (config.localStorageAvailable) {
   vuexPersist = new VuexPersistence({
     key: 'torus-app',
     storage: window.localStorage,
@@ -336,7 +336,7 @@ function getLatestMessageParameters(id) {
   return message ? { msgParams: message.msgParams, id, type } : {}
 }
 
-if (storageAvailable('localStorage')) {
+if (config.localStorageAvailable) {
   const torusTheme = localStorage.getItem('torus-theme')
   if (torusTheme) {
     VuexStore.commit('setTheme', torusTheme)

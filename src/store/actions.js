@@ -124,8 +124,6 @@ export default {
       theme: state.theme,
       embedState: cloneDeep(state.embedState || {}),
     })
-    // commit('setTheme', THEME_LIGHT_BLUE_NAME)
-    // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
 
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     torusController.lock()
@@ -442,12 +440,17 @@ export default {
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
       })
-      const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, userDapps, error, sessionId } = await loginHandler.handleLoginWindow()
       if (error) {
         throw new Error(error)
       }
       // Get all open login results
       userInfo.verifier = verifier
+      if (sessionId && config.localStorageAvailable) {
+        const openLoginStore = localStorage.getItem('openlogin_store')
+        const finalStore = { ...(openLoginStore ? JSON.parse(openLoginStore) : {}), sessionId }
+        localStorage.setItem('openlogin_store', JSON.stringify(finalStore))
+      }
       commit('setUserInfo', userInfo)
       commit('setPostboxKey', postboxKey)
       commit('setUserDapps', userDapps)
@@ -472,6 +475,7 @@ export default {
   },
   async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
     const openLoginHandler = OpenLoginHandler.getInstance()
+    log.info(openLoginHandler.getSessionId(), 'store')
     await openLoginHandler.init()
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()

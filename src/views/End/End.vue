@@ -90,7 +90,6 @@ export default {
       const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
       await openLoginHandler.init()
       const { state } = openLoginHandler.openLoginInstance
-      log.info(state, 'state')
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()
       const { keys: extraKeys, userDapps } = await openLoginHandler.getUserDapps(postboxKey)
@@ -117,13 +116,19 @@ export default {
 
       // broadcast channel ID
       const { appState } = state.store.getStore()
-      log.info(appState, 'appState')
       const parsedAppState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(appState))))
-      log.info(parsedAppState.instanceId, keys, userInfo, postboxKey)
       this.channelId = parsedAppState.instanceId
 
       // prepare data
-      this.broadcastData = { type: POPUP_RESULT, userInfo, keys, postboxKey, userDapps, error: loginError }
+      this.broadcastData = {
+        type: POPUP_RESULT,
+        userInfo,
+        keys,
+        postboxKey,
+        userDapps,
+        error: loginError,
+        sessionId: openLoginHandler.getSessionId(),
+      }
 
       // if there are no app accounts to choose, continue
       if (Object.keys(userDapps).length === 0) {
@@ -153,8 +158,7 @@ export default {
         const bc = new BroadcastChannel(`redirect_openlogin_channel_${this.channelId}`, broadcastChannelOptions)
         await bc.postMessage({ data: this.broadcastData })
         bc.close()
-        log.info(bc)
-        log.info('posted info', POPUP_RESULT)
+        log.info('posted info')
       } catch (error) {
         log.error(error, 'something went wrong')
       }

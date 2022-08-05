@@ -56,8 +56,8 @@ class OpenLoginHandler {
 
   async getActiveSession() {
     try {
+      log.info(this.openLoginInstance.state.store.getStore(), 'store')
       const { sessionId } = this.openLoginInstance.state.store.getStore()
-      log.info(this.openLoginInstance)
       if (sessionId) {
         log.info('found session id', sessionId)
         const publicKeyHex = getPublic(Buffer.from(sessionId, 'hex')).toString('hex')
@@ -81,6 +81,7 @@ class OpenLoginHandler {
       releaseLock()
       return this.openLoginInstance
     }
+    log.info(this.openLoginInstance.state.store.getStore())
     await this.openLoginInstance.init()
     log.info('initialized openlogin instance')
     releaseLock()

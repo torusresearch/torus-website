@@ -60,7 +60,6 @@ export default {
       await openLoginHandler.openLoginInstance.login({
         loginProvider,
         getWalletKey: true,
-        relogin: true,
         appState: state,
         skipTKey: skipTKey === 'true',
         extraLoginOptions: {

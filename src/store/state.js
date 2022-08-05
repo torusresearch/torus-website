@@ -1,15 +1,7 @@
 import { cloneDeep } from 'lodash'
 
 import config from '../config'
-import {
-  LOCALE_EN,
-  MAINNET,
-  MAINNET_CODE,
-  MAINNET_DISPLAY_NAME,
-  SUPPORTED_NETWORK_TYPES,
-  THEME_LIGHT_BLUE_NAME,
-  USER_INFO_REQUEST_NEW,
-} from '../utils/enums'
+import { LOCALE_EN, MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME, THEME_LIGHT_BLUE_NAME, USER_INFO_REQUEST_NEW } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -48,7 +40,7 @@ const initialState = {
   // preferences
   defaultPublicAddress: '',
   selectedAddress: '',
-  supportedNetworks: { ...SUPPORTED_NETWORK_TYPES },
+  supportedNetworks: {},
   selectedCurrency: 'USD',
   customCurrency: '',
   pastTransactions: [],

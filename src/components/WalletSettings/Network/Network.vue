@@ -80,7 +80,7 @@
 <script>
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import { RPC, RPC_DISPLAY_NAME } from '../../../utils/enums'
 import { broadcastChannelOptions } from '../../../utils/utils'
@@ -98,7 +98,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(['networkType', 'supportedNetworks']),
+    ...mapGetters(['supportedNetworks']),
+    ...mapState(['networkType']),
     networks() {
       return [
         ...Object.values(this.supportedNetworks),
