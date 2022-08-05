@@ -77,10 +77,10 @@ const {
   VUE_APP_HIDE_TOPUP,
   VUE_APP_INFURA_KEY,
   VUE_APP_ETH_TRANSFER_ONLY,
-  VUE_APP_OPENLOGIN_URL,
   VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
   VUE_APP_PASSWORDLESS_DOMAIN,
   VUE_APP_DEVELOPER_DASHBOARD_URL,
+  VUE_APP_PROXY_NETWORK,
 } = process.env
 
 const baseUrl = window.location.origin
@@ -144,7 +144,11 @@ export default {
   // api: 'http://localhost:2020',
   infuraKey: VUE_APP_INFURA_KEY,
   openLoginClientId: 'BCY9aYsh8iGshQuzNjBbONYE-tKD0JM389l87IiMOVeOU1TBmRaZphKOyphkUpo41fuSMnO6QRlloxCV-3nt8dU',
-  openLoginUrl: VUE_APP_OPENLOGIN_URL,
+  torusNetwork: VUE_APP_PROXY_NETWORK || 'mainnet',
+  NETWORK_MAP: {
+    mainnet: 'mainnet',
+    testnet: 'ropsten',
+  },
   openLoginOriginSig: VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
   developerDashboardUrl: VUE_APP_DEVELOPER_DASHBOARD_URL,
   storageServerUrl: 'https://broadcast-server.tor.us',

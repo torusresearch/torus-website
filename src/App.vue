@@ -19,8 +19,6 @@ import log from 'loglevel'
 import { mapActions } from 'vuex'
 
 import BoxLoader from './components/helpers/BoxLoader'
-// import { OpenLoginHandler } from './handlers/Auth'
-// import { isMain } from './utils/utils'
 /* eslint-disable vue-scoped-css/enforce-style-type */
 export default {
   components: { BoxLoader },

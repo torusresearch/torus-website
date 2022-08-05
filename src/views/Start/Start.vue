@@ -65,6 +65,8 @@ export default {
         extraLoginOptions: {
           ...rest,
         },
+        curve: 'secp256k1',
+        // sessionTime: '86400',
       })
     } catch (error) {
       log.info(error, 'something went wrong')

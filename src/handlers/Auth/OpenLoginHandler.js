@@ -41,7 +41,6 @@ class OpenLoginHandler {
     if (whiteLabel.url) whiteLabelOpenLogin.url = whiteLabel.url
     this.openLoginInstance = new OpenLogin({
       clientId: config.openLoginClientId,
-      _iframeUrl: config.openLoginUrl,
       redirectUrl: `${config.baseRoute}end`,
       replaceUrlOnRedirect: true,
       uxMode: 'redirect',
@@ -50,7 +49,7 @@ class OpenLoginHandler {
       },
       whiteLabel: whiteLabelOpenLogin,
       loginConfig,
-      // no3PC: true,
+      network: config.torusNetwork,
     })
   }
 
