@@ -159,8 +159,7 @@ export default {
           await openLoginInstance._syncState(await openLoginInstance._getData())
           await openLoginInstance.logout({ clientId: config.openLoginClientId })
         } else {
-          // invalidate Openlogin session
-          localStorage.setItem('openlogin_store', JSON.stringify({}))
+          await openLoginHandler.invalidateSession()
         }
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')

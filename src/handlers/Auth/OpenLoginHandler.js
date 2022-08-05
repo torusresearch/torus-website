@@ -1,5 +1,5 @@
-import { getPublic } from '@toruslabs/eccrypto'
-import { decryptData } from '@toruslabs/metadata-helpers'
+import { getPublic, sign } from '@toruslabs/eccrypto'
+import { decryptData, encryptData, keccak256 } from '@toruslabs/metadata-helpers'
 import OpenLogin from '@toruslabs/openlogin'
 import { subkey } from '@toruslabs/openlogin-subkey'
 import { Mutex } from 'await-semaphore'
@@ -9,7 +9,7 @@ import log from 'loglevel'
 import config from '../../config'
 import torus from '../../torus'
 import { ACCOUNT_TYPE } from '../../utils/enums'
-import { get } from '../../utils/httpHelpers'
+import { get, post } from '../../utils/httpHelpers'
 import { generateTorusAuthHeaders } from '../../utils/utils'
 
 const mutex = new Mutex()
@@ -70,6 +70,23 @@ class OpenLoginHandler {
     } catch (error) {
       log.warn(error)
       return null
+    }
+  }
+
+  async invalidateSession() {
+    try {
+      const { sessionId } = this.openLoginInstance.state.store.getStore()
+      if (sessionId) {
+        const privKey = Buffer.from(sessionId, 'hex')
+        const publicKeyHex = getPublic(privKey).toString('hex')
+        const encData = await encryptData(sessionId, {})
+        const signatureBf = await sign(privKey, keccak256(encData))
+        const signature = signatureBf.toString('hex')
+        await post(`${config.storageServerUrl}/store/set`, { key: publicKeyHex, data: encData, signature, timeout: 1 })
+        this.openLoginInstance._syncState({})
+      }
+    } catch (error) {
+      log.warn(error)
     }
   }
 
