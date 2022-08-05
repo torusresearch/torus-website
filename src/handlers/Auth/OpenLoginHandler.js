@@ -55,10 +55,9 @@ class OpenLoginHandler {
 
   async getActiveSession() {
     try {
-      log.info(this.openLoginInstance.state.store.getStore(), 'store')
       const { sessionId } = this.openLoginInstance.state.store.getStore()
       if (sessionId) {
-        log.info('found session id', sessionId)
+        log.info('found session id')
         const publicKeyHex = getPublic(Buffer.from(sessionId, 'hex')).toString('hex')
         const encData = await get(`${config.storageServerUrl}/store/get?key=${publicKeyHex}`)
         if (encData.message) {
@@ -80,7 +79,6 @@ class OpenLoginHandler {
       releaseLock()
       return this.openLoginInstance
     }
-    log.info(this.openLoginInstance.state.store.getStore())
     await this.openLoginInstance.init()
     log.info('initialized openlogin instance')
     releaseLock()
@@ -134,9 +132,6 @@ class OpenLoginHandler {
       }
     }
 
-    // derive app scoped keys from tkey
-    log.info(keys, postboxKey)
-
     return { keys, postboxKey }
   }
 
@@ -148,11 +143,10 @@ class OpenLoginHandler {
       try {
         // projects are stored on oAuthPrivateKey but subkey is derived from tkey
         const headers = generateTorusAuthHeaders(postboxKey.privKey, postboxKey.ethAddress)
-        log.info(headers, 'headers')
         const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm`, {
           headers,
         })
-        log.info(response, 'User projects from developer dashboard')
+        log.info('got User projects from developer dashboard')
         const userProjects = response.user_projects ?? []
         userProjects.sort((a, b) => (a.last_login < b.last_login ? 1 : -1))
         userProjects.forEach((project) => {

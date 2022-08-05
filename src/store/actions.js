@@ -240,7 +240,6 @@ export default {
   },
   async showUserInfoRequestPopup({ dispatch, state }, payload) {
     const { preopenInstanceId } = payload
-    log.info(preopenInstanceId, 'userinfo')
     const handleDeny = () => {
       log.info('User Info Request denied')
       dispatch('updateUserInfoAccess', { approved: false })
@@ -475,7 +474,6 @@ export default {
   },
   async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
     const openLoginHandler = OpenLoginHandler.getInstance()
-    log.info(openLoginHandler.getSessionId(), 'store')
     await openLoginHandler.init()
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()
@@ -634,7 +632,6 @@ export default {
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       dispatch('subscribeToControllers')
 
-      // log.info(state.wallet, 'state.wallet')
       if (selectedAddress && state.wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
