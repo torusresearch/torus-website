@@ -128,7 +128,7 @@ export const MATIC_BLOCK_EXPLORER = 'https://polygonscan.com'
 export const MUMBAI_URL = `https://polygon-mumbai.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
 export const MUMBAI_BLOCK_EXPLORER = 'https://mumbai.polygonscan.com'
 
-export const XDAI_URL = 'https://rpc.xdaichain.com'
+export const XDAI_URL = 'https://rpc.gnosischain.com'
 export const XDAI_BLOCK_EXPLORER = 'https://blockscout.com/poa/xdai'
 
 export const BSC_MAINNET_URL = 'https://bsc-dataseed.binance.org'

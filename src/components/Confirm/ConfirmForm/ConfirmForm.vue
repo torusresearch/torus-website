@@ -398,7 +398,6 @@ import {
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
-  GAS_ESTIMATE_TYPES,
   MESSAGE_TYPE,
   TRANSACTION_ENVELOPE_TYPES,
   TRANSACTION_TYPES,
@@ -621,7 +620,7 @@ export default {
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
     },
     isEip1559() {
-      return this.networkDetails.EIPS && this.networkDetails.EIPS['1559'] && this.gasFees.gasEstimateType === GAS_ESTIMATE_TYPES.FEE_MARKET
+      return this.networkDetails.EIPS && this.networkDetails.EIPS['1559']
     },
   },
   watch: {
