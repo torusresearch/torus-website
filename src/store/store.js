@@ -47,7 +47,7 @@ if (config.localStorageAvailable) {
       billboard: state.billboard,
       announcements: state.announcements,
       contacts: state.contacts,
-      whiteLabel: state.whiteLabel,
+      // whiteLabel: state.whiteLabel,
       supportedNetworks: state.supportedNetworks,
       pastTransactions: state.pastTransactions,
       paymentTx: state.paymentTx,
