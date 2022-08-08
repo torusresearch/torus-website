@@ -37,14 +37,14 @@
     <v-row v-if="!isIframe" justify="space-around">
       <v-col cols="12" sm="6">
         <v-text-field
-          v-model="walletAddress"
+          v-model="wcCopyPasteLink"
           dense
           hide-details
           outlined
           height="44"
           class="custom-placeholer"
           :placeholder="ctaPlaceholder"
-          @paste="onPaste"
+          @change="onWcInputChanged"
         >
           <template #append>
             <v-btn
@@ -121,7 +121,7 @@ export default {
       showQrScanner: false,
       qrLoading: true,
       hasStreamApiSupport: true,
-      walletAddress: '',
+      wcCopyPasteLink: '',
       guideOn: false,
       ctaPlaceholder: 'wc:ff9e1dfa-68be-47ed...',
     }
@@ -150,6 +150,7 @@ export default {
     wcConnectorSession(value) {
       if (value.connected) {
         this.$store.dispatch('setSuccessMessage', 'walletConnect.connected')
+        if (value.uri) this.wcCopyPasteLink = value.uri
       }
     },
   },
@@ -165,11 +166,9 @@ export default {
         this.guideOn = !this.guideOn
       }
     },
-    async onPaste(e) {
+    async onWcInputChanged() {
       try {
-        const clipboardData = e.clipboardData || window.clipboardData
-        const pastedData = clipboardData.getData('Text')
-        await this.initWalletConnect({ uri: pastedData })
+        await this.initWalletConnect({ uri: this.wcCopyPasteLink })
         if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
         // this.textPasteFlow = true
       } catch (error) {
@@ -180,7 +179,7 @@ export default {
     openScanner() {
       if (this.wcConnectorSession?.connected) {
         this.disconnectWalletConnect()
-        this.walletAddress = ''
+        this.wcCopyPasteLink = ''
         // this.textPasteFlow = false
       } else {
         this.camera = 'auto'
