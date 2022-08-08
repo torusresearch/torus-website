@@ -123,9 +123,10 @@ export default {
   },
   created() {
     if (Object.keys(this.wallet).length === 0) {
+      const { currentRoute } = this.$router
       // eslint-disable-next-line promise/catch-or-return
       this.$router
-        .push({ name: 'login' })
+        .push({ name: 'login', query: currentRoute.query, hash: currentRoute.hash, params: currentRoute.params })
         .catch((_) => {})
         .finally(() => {
           this.isLoaded = true

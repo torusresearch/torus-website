@@ -7,8 +7,6 @@ import StreamWindow from './StreamWindow'
 class PopupHandler extends EventEmitter {
   constructor({ url, target, features, preopenInstanceId }) {
     super()
-    // this.id = randomId()
-    // Add in dapp storage key to all popups as a hash parameter
     const localUrl = url instanceof URL ? url : new URL(url)
     this.url = localUrl.href
     this.target = target || '_blank'

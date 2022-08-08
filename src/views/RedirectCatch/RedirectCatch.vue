@@ -72,8 +72,23 @@ export default {
         bc = new BroadcastChannel(`preopen_channel_${queryParameters.preopenInstanceId}`, broadcastChannelOptions)
         bc.addEventListener('message', (ev) => {
           const { preopenInstanceId: oldId, payload, message } = ev.data
-          if (oldId === queryParameters.preopenInstanceId && payload && payload.url) {
-            window.location.href = payload.url
+          if (oldId === queryParameters.preopenInstanceId && payload?.url) {
+            const url = new URL(payload.url)
+            // if same origin, use router.push
+            if (url.origin === window.location.origin) {
+              const matchedRoute = this.$router.match(url.pathname)
+              const query = url.search
+                .slice(1)
+                .split('&')
+                .reduce((result, item) => {
+                  const [part0, part1] = item.split('=')
+                  result[part0] = part1
+                  return result
+                }, {})
+              this.$router.push({ name: matchedRoute.name, query, hash: url.hash })
+            } else {
+              window.location.href = payload.url
+            }
           } else if (oldId === queryParameters.preopenInstanceId && message === 'setup_complete') {
             bc.postMessage({
               data: {

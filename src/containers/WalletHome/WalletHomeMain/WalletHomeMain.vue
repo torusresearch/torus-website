@@ -340,7 +340,7 @@ export default {
     },
     async onCurrencyChange(value) {
       this.setSelectedCurrency({ selectedCurrency: value, origin: 'home' })
-      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      const urlInstance = this.$route.query.instanceId
       if (urlInstance && urlInstance !== '') {
         const selectedCurrencyChannel = new BroadcastChannel(`selected_currency_channel_${urlInstance}`, broadcastChannelOptions)
         await selectedCurrencyChannel.postMessage({

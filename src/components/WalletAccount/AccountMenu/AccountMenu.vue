@@ -221,7 +221,7 @@ export default {
       return getEtherScanAddressLink(toChecksumAddressByChainId(address, this.$store.state.networkId), this.networkType.host)
     },
     async logout() {
-      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      const urlInstance = this.$route.query.instanceId
       if (urlInstance && urlInstance !== '') {
         const bc = new BroadcastChannel(`torus_logout_channel_${urlInstance}`, broadcastChannelOptions)
         await bc.postMessage({ data: { type: 'logout' } })
@@ -231,7 +231,7 @@ export default {
     },
     async changeAccount(newAddress) {
       this.updateSelectedAddress({ selectedAddress: newAddress })
-      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      const urlInstance = this.$route.query.instanceId
       if (urlInstance && urlInstance !== '') {
         const selectedAddressChannel = new BroadcastChannel(`selected_address_channel_${urlInstance}`, broadcastChannelOptions)
         await selectedAddressChannel.postMessage({

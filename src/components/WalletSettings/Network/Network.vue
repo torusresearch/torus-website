@@ -159,7 +159,7 @@ export default {
       }
     },
     async sendToIframe(payload) {
-      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      const urlInstance = this.$route.query.instanceId
       if (urlInstance && urlInstance !== '') {
         const providerChangeChannel = new BroadcastChannel(`provider_change_${urlInstance}`, broadcastChannelOptions)
         await providerChangeChannel.postMessage({
