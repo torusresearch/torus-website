@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import config from '../../../config'
 
@@ -113,7 +113,6 @@ export default {
     ...mapState({
       networkType: 'networkType',
       whiteLabel: 'whiteLabel',
-      supportedNetworks: 'supportedNetworks',
       selectedNetwork(state) {
         let finalNetwork = ''
 
@@ -124,6 +123,9 @@ export default {
         finalNetwork = !state.networkType.networkName ? state.networkType.host : state.networkType.networkName
         return finalNetwork
       },
+    }),
+    ...mapGetters({
+      supportedNetworks: 'supportedNetworks',
     }),
   },
   methods: {

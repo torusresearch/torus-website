@@ -21,7 +21,7 @@ import { safeatob } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import BoxLoader from '../../components/helpers/BoxLoader'
-import { getOpenLoginInstance } from '../../openlogin'
+import { OpenLoginHandler } from '../../handlers/Auth'
 
 export default {
   name: 'Start',
@@ -48,23 +48,25 @@ export default {
     try {
       const { loginProvider, state, skipTKey, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))
+
       log.info('logging in with', loginProvider, state, skipTKey, rest)
       const { whiteLabel, loginConfig = {}, origin } = stateParams
       this.whiteLabel = whiteLabel
       this.iframeOrigin = origin
       this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
-      const openLogin = await getOpenLoginInstance(whiteLabel, loginConfig)
-
-      await openLogin.login({
+      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
+      await openLoginHandler.init()
+      await openLoginHandler.openLoginInstance.login({
         loginProvider,
         getWalletKey: true,
-        relogin: true,
         appState: state,
         skipTKey: skipTKey === 'true',
         extraLoginOptions: {
           ...rest,
         },
+        curve: 'secp256k1',
+        // sessionTime: '86400',
       })
     } catch (error) {
       log.info(error, 'something went wrong')

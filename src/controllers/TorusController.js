@@ -231,13 +231,6 @@ export default class TorusController extends SafeEventEmitter {
     this.memStore.subscribe(this.sendUpdate.bind(this))
 
     this.publicConfigStore = this.initPublicConfigStore()
-
-    if (typeof options.rehydrate === 'function') {
-      setTimeout(() => {
-        options.rehydrate()
-      }, 50)
-    }
-
     this.prefsController.on('addEtherscanTransactions', (txs, network) => {
       this.txController.addEtherscanTransactions(txs, network)
     })

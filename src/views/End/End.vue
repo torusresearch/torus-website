@@ -44,18 +44,13 @@
 
 <script>
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
-import { subkey } from '@toruslabs/openlogin-subkey'
 import { safeatob } from '@toruslabs/openlogin-utils'
-import Torus from '@toruslabs/torus.js'
-import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
 
 import BoxLoader from '../../components/helpers/BoxLoader'
-import config from '../../config'
-import { getOpenLoginInstance } from '../../openlogin'
+import { OpenLoginHandler } from '../../handlers/Auth'
 import { ACCOUNT_TYPE, APPLE, POPUP_RESULT } from '../../utils/enums'
-import { get } from '../../utils/httpHelpers'
-import { broadcastChannelOptions, generateTorusAuthHeaders } from '../../utils/utils'
+import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   name: 'End',
@@ -92,91 +87,48 @@ export default {
 
       this.whiteLabel = whiteLabel
 
-      const torus = new Torus()
-      const openLogin = await getOpenLoginInstance(whiteLabel, loginConfig)
-      const { state } = openLogin
-      log.info(state, 'state')
+      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
+      await openLoginHandler.init()
+      const { state } = openLoginHandler.openLoginInstance
 
-      // user info
-      const allInfo = state.store.getStore()
-      log.info('allInfo', allInfo)
-      const userInfo = {
-        name: allInfo.name, // first + last name
-        profileImage: allInfo.profileImage, // image url
-        email: allInfo.email,
-        verifier: allInfo.aggregateVerifier, // enum like GOOGLE
-        verifierId: allInfo.verifierId, // usually email or facebook id
-        verifierParams: { verifier_id: allInfo.verifierId }, // general params
-        typeOfLogin: allInfo.typeOfLogin,
-      }
+      const { keys, postboxKey } = openLoginHandler.getKeysInfo()
+      const { keys: extraKeys, userDapps } = await openLoginHandler.getUserDapps(postboxKey)
+      const userInfo = openLoginHandler.getUserInfo()
+      keys.push(...extraKeys)
 
       // keys
-      const keys = []
-      let postboxKey
-      if (state.walletKey) {
-        const ethAddress = torus.generateAddressFromPrivKey(new BN(state.walletKey, 'hex'))
-        keys.push({
-          privKey: state.walletKey,
-          accountType: ACCOUNT_TYPE.NORMAL,
-          ethAddress,
-        })
+      const walletKey = keys.find((k) => k.accountType === ACCOUNT_TYPE.NORMAL)
+      if (walletKey) {
         const typeOfLoginDisplay = userInfo.typeOfLogin.charAt(0).toUpperCase() + userInfo.typeOfLogin.slice(1)
         const accountDisplay = (userInfo.typeOfLogin !== APPLE && userInfo.email) || userInfo.name
-        this.accounts[ethAddress] = `${typeOfLoginDisplay} ${this.t('accountMenu.account')} ${accountDisplay}`
+        this.accounts[walletKey.ethAddress] = `${typeOfLoginDisplay} ${this.t('accountMenu.account')} ${accountDisplay}`
       }
-      if (state.tKey && state.tKey !== state.walletKey) {
-        const ethAddress = torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex'))
-        keys.push({
-          privKey: state.tKey.padStart(64, '0'),
-          accountType: ACCOUNT_TYPE.THRESHOLD,
-          ethAddress: torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex')),
-        })
-        this.accounts[ethAddress] = `OpenLogin ${this.t('accountMenu.wallet')}`
-      }
-      if (state.oAuthPrivateKey) {
-        postboxKey = {
-          privKey: state.oAuthPrivateKey.padStart(64, '0'),
-          ethAddress: torus.generateAddressFromPrivKey(new BN(state.oAuthPrivateKey, 'hex')),
-        }
+      const tKey = keys.find((k) => k.accountType === ACCOUNT_TYPE.THRESHOLD)
+      if (tKey) {
+        this.accounts[tKey.ethAddress] = `OpenLogin ${this.t('accountMenu.wallet')}`
       }
 
       // derive app scoped keys from tkey
-      const userDapps = {}
-      if (state.tKey && state.oAuthPrivateKey) {
-        try {
-          // projects are stored on oAuthPrivateKey but subkey is derived from tkey
-          const headers = generateTorusAuthHeaders(postboxKey.privKey, postboxKey.ethAddress)
-          log.info(headers, 'headers')
-          const response = await get(`${config.developerDashboardUrl}/projects/user-projects?chain_namespace=evm`, {
-            headers,
-          })
-          log.info(response, 'User projects from developer dashboard')
-          const userProjects = response.user_projects ?? []
-          userProjects.sort((a, b) => (a.last_login < b.last_login ? 1 : -1))
-          userProjects.forEach((project) => {
-            const subKey = subkey(state.tKey, Buffer.from(project.project_id, 'base64'))
-            const subAddress = torus.generateAddressFromPrivKey(new BN(subKey, 'hex'))
-            userDapps[subAddress] = `${project.name} (${project.hostname})`
-            keys.push({ ethAddress: subAddress, privKey: subKey.padStart(64, '0'), accountType: ACCOUNT_TYPE.APP_SCOPED })
-          })
-        } catch (error) {
-          log.error('Failed to derive app-scoped keys', error)
-        }
-      }
       this.accounts = { ...this.accounts, ...userDapps }
 
       // set default selected account
       this.selectedAccount = Object.keys(this.accounts)[0] ?? ''
 
       // broadcast channel ID
-      const { appState } = allInfo
-      log.info(appState, 'appState')
+      const { appState } = state.store.getStore()
       const parsedAppState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(appState))))
-      log.info(parsedAppState.instanceId, keys, userInfo, postboxKey)
       this.channelId = parsedAppState.instanceId
 
       // prepare data
-      this.broadcastData = { type: POPUP_RESULT, userInfo, keys, postboxKey, userDapps, error: loginError }
+      this.broadcastData = {
+        type: POPUP_RESULT,
+        userInfo,
+        keys,
+        postboxKey,
+        userDapps,
+        error: loginError,
+        sessionId: openLoginHandler.getSessionId(),
+      }
 
       // if there are no app accounts to choose, continue
       if (Object.keys(userDapps).length === 0) {
@@ -206,8 +158,7 @@ export default {
         const bc = new BroadcastChannel(`redirect_openlogin_channel_${this.channelId}`, broadcastChannelOptions)
         await bc.postMessage({ data: this.broadcastData })
         bc.close()
-        log.info(bc)
-        log.info('posted info', POPUP_RESULT)
+        log.info('posted info')
       } catch (error) {
         log.error(error, 'something went wrong')
       }

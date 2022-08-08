@@ -62,7 +62,7 @@ export default {
   props: {
     loginDialog: {
       type: Boolean,
-      dafault: false,
+      default: false,
     },
   },
   data() {
