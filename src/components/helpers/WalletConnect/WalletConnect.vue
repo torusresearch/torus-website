@@ -48,7 +48,7 @@
         >
           <template #append>
             <v-btn
-              v-if="(wcConnectorSession && wcConnectorSession.connected && textPasteFlow) || false"
+              v-if="(wcConnectorSession && wcConnectorSession.connected) || false"
               text
               small
               color="torusBrand1"
@@ -123,7 +123,6 @@ export default {
       hasStreamApiSupport: true,
       walletAddress: '',
       guideOn: false,
-      textPasteFlow: false,
       ctaPlaceholder: 'wc:ff9e1dfa-68be-47ed...',
     }
   },
@@ -172,15 +171,17 @@ export default {
         const pastedData = clipboardData.getData('Text')
         await this.initWalletConnect({ uri: pastedData })
         if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
-        this.textPasteFlow = true
+        // this.textPasteFlow = true
       } catch (error) {
         log.error(error)
+        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: false, errorMessage: error?.message })
       }
     },
     openScanner() {
       if (this.wcConnectorSession?.connected) {
         this.disconnectWalletConnect()
-        this.textPasteFlow = false
+        this.walletAddress = ''
+        // this.textPasteFlow = false
       } else {
         this.camera = 'auto'
         this.showQrScanner = true
