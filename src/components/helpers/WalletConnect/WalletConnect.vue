@@ -168,6 +168,9 @@ export default {
     },
     async onWcInputChanged() {
       try {
+        if (!this.wcCopyPasteLink.startsWith('wc:')) {
+          return
+        }
         await this.initWalletConnect({ uri: this.wcCopyPasteLink })
         if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
         // this.textPasteFlow = true
