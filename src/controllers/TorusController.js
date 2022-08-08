@@ -196,7 +196,6 @@ export default class TorusController extends SafeEventEmitter {
       getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
     })
 
-    this.networkController.lookupNetwork()
     this.messageManager = new MessageManager()
     this.personalMessageManager = new PersonalMessageManager()
     this.typedMessageManager = new TypedMessageManager({ getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController) })

@@ -34,7 +34,7 @@ class WalletConnectController {
   }
 
   setStoreSession() {
-    this.store.putState(JSON.parse(JSON.stringify(this.walletConnector.session)))
+    this.store.putState({ ...JSON.parse(JSON.stringify(this.walletConnector.session)), uri: this.walletConnector.uri })
   }
 
   _setupListeners() {

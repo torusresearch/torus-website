@@ -37,18 +37,18 @@
     <v-row v-if="!isIframe" justify="space-around">
       <v-col cols="12" sm="6">
         <v-text-field
-          v-model="walletAddress"
+          v-model="wcCopyPasteLink"
           dense
           hide-details
           outlined
           height="44"
           class="custom-placeholer"
           :placeholder="ctaPlaceholder"
-          @paste="onPaste"
+          @change="onWcInputChanged"
         >
           <template #append>
             <v-btn
-              v-if="(wcConnectorSession && wcConnectorSession.connected && textPasteFlow) || false"
+              v-if="(wcConnectorSession && wcConnectorSession.connected) || false"
               text
               small
               color="torusBrand1"
@@ -121,9 +121,8 @@ export default {
       showQrScanner: false,
       qrLoading: true,
       hasStreamApiSupport: true,
-      walletAddress: '',
+      wcCopyPasteLink: '',
       guideOn: false,
-      textPasteFlow: false,
       ctaPlaceholder: 'wc:ff9e1dfa-68be-47ed...',
     }
   },
@@ -151,6 +150,7 @@ export default {
     wcConnectorSession(value) {
       if (value.connected) {
         this.$store.dispatch('setSuccessMessage', 'walletConnect.connected')
+        if (value.uri) this.wcCopyPasteLink = value.uri
       }
     },
   },
@@ -166,21 +166,24 @@ export default {
         this.guideOn = !this.guideOn
       }
     },
-    async onPaste(e) {
+    async onWcInputChanged() {
       try {
-        const clipboardData = e.clipboardData || window.clipboardData
-        const pastedData = clipboardData.getData('Text')
-        await this.initWalletConnect({ uri: pastedData })
+        if (!this.wcCopyPasteLink.startsWith('wc:')) {
+          return
+        }
+        await this.initWalletConnect({ uri: this.wcCopyPasteLink })
         if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
-        this.textPasteFlow = true
+        // this.textPasteFlow = true
       } catch (error) {
         log.error(error)
+        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: false, errorMessage: error?.message })
       }
     },
     openScanner() {
       if (this.wcConnectorSession?.connected) {
         this.disconnectWalletConnect()
-        this.textPasteFlow = false
+        this.wcCopyPasteLink = ''
+        // this.textPasteFlow = false
       } else {
         this.camera = 'auto'
         this.showQrScanner = true
