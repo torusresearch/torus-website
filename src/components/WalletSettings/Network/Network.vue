@@ -5,19 +5,6 @@
         <div class="body-2 mb-2">{{ t('walletSettings.selectNetwork') }}</div>
         <v-layout wrap class="network-setting">
           <v-flex xs12>
-            <!-- <v-select
-              id="select-network"
-              v-model="selectedNetwork"
-              class="select-network-container gmt-network-change"
-              outlined
-              :items="networks"
-              item-text="networkName"
-              item-value="host"
-              return-object
-              append-icon="$vuetify.icons.select"
-              aria-label="Select Network"
-              @change="changeNetwork"
-            ></v-select> -->
             <v-menu transition="slide-y-transition" offset-y>
               <template #activator="{ on }">
                 <v-btn class="select-coin" label :outlined="$vuetify.theme.dark" v-on="on">
@@ -34,36 +21,19 @@
                   class="select-coin-eth"
                   @click="selectedItemChanged(supportedNetworks[host])"
                 >
-                  <!-- <v-list-item-icon class="mr-1">
-                    <img
-                      :src="`${logosUrl}/${token.logo}`"
-                      height="20px"
-                      :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
-                        $vuetify.theme.dark ? 'dark' : 'light'
-                      }.svg';`"
-                      :alt="supportedNetworks[network].host"
-                    />
-                  </v-list-item-icon> -->
                   <v-list-item-content>
                     <v-list-item-title class="body-2">{{ supportedNetworks[host].networkName }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <!-- <v-divider class="mx-3"></v-divider> -->
                 <v-subheader v-if="customNetworks.length > 0" class="subheading">
                   {{ t('walletSettings.customNetwork') }}
                 </v-subheader>
-                <v-list-item v-for="host in customNetworks" :key="supportedNetworks[host].networkName">
-                  <!-- <v-list-item-icon class="ml-8 mr-1">
-                    <img
-                      :src="`${logosUrl}/${token.logo}`"
-                      height="20px"
-                      :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
-                        $vuetify.theme.dark ? 'dark' : 'light'
-                      }.svg';`"
-                      :alt="supportedNetworks[network].host"
-                    />
-                  </v-list-item-icon> -->
-                  <v-list-item-content @click="selectedItemChanged(supportedNetworks[host])">
+                <v-list-item
+                  v-for="host in customNetworks"
+                  :key="supportedNetworks[host].networkName"
+                  @click="selectedItemChanged(supportedNetworks[host])"
+                >
+                  <v-list-item-content>
                     <v-list-item-title class="body-2">{{ supportedNetworks[host].networkName }}</v-list-item-title>
                   </v-list-item-content>
                   <v-list-item-icon>
@@ -72,7 +42,7 @@
                       icon
                       small
                       :aria-label="`Edit ${supportedNetworks[host].networkName}`"
-                      @click="editNetwork(supportedNetworks[host])"
+                      @click.stop="editNetwork(supportedNetworks[host])"
                     >
                       {{ t('walletSettings.editNetwork') }}
                     </v-btn>
@@ -84,30 +54,12 @@
                       icon
                       small
                       :aria-label="`Delete ${supportedNetworks[host].networkName}`"
-                      @click="deleteNetwork(supportedNetworks[host])"
+                      @click.stop="deleteNetwork(supportedNetworks[host])"
                     >
                       <v-icon x-small>$vuetify.icons.trash</v-icon>
                     </v-btn>
                   </v-list-item-icon>
                 </v-list-item>
-                <!-- <v-divider class="mx-3"></v-divider> -->
-                <!-- <v-subheader v-if="collectibles.length > 0" class="body-2">
-                  <v-icon small left class="mr-2">$vuetify.icons.collectibles</v-icon>
-                  {{ t('walletTransfer.collectibles') }}
-                </v-subheader>
-                <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
-                  <v-list-item-icon class="ml-8 mr-1">
-                    <img
-                      :src="collectible.logo"
-                      height="20px"
-                      :alt="collectible.name"
-                      onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
-                    />
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item> -->
               </v-list>
             </v-menu>
           </v-flex>
@@ -129,7 +81,7 @@
       </template>
       <template v-else>
         <v-flex xs12>
-          <v-btn text class="caption text_3--text mb-2 plain" @click="toggleNetworkView">Back</v-btn>
+          <v-btn text class="caption text_3--text mb-2 plain" x-small @click="toggleNetworkView">{{ t('walletSettings.back') }}</v-btn>
           <v-text-field
             v-model="rpc.networkName"
             :placeholder="t('walletSettings.enterNetworkName')"
