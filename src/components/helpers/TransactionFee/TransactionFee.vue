@@ -15,6 +15,7 @@
           :currency-multiplier="currencyMultiplier"
           :initial-max-fee-per-gas="initialMaxFeePerGas"
           :initial-max-priority-fee-per-gas="initialMaxPriorityFeePerGas"
+          :network-host="networkHost"
           @save="onSave"
         />
       </v-flex>
@@ -52,6 +53,7 @@
 import BigNumber from 'bignumber.js'
 import { isEqual } from 'lodash'
 
+import { MAINNET } from '../../../utils/enums'
 import { bnGreaterThan, gasTiming, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
 import TransactionFeeAdvanced from '../TransactionFeeAdvanced'
@@ -90,6 +92,10 @@ export default {
       default() {
         return new BigNumber('0')
       },
+    },
+    networkHost: {
+      type: String,
+      default: MAINNET,
     },
   },
   data() {

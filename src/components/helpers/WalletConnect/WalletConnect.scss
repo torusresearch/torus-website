@@ -15,3 +15,29 @@
     right: 0;
   }
 }
+
+
+.custom-placeholer{
+  font-size: 10px;
+}
+
+
+.close-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: #d3d3d4;
+}
+
+.hidden-btn{
+  visibility: hidden;
+}
+
+.guide-menu.theme--dark{
+  border: 1px white solid;
+  border-radius: 9px;
+}
+
+.goto-button{
+  margin-left: -10px;
+}

@@ -620,9 +620,9 @@ export const paymentProviders = {
     enforceMax: false,
   },
   [TRANSAK]: {
-    line1: 'Credit/ Debit Card/ <br/>Bank Transfer (sepa/gbp)',
+    line1: 'Apple & Google Pay / Credit/Debit Card<br/>Bangkok Bank Mobile & iPay<br/>Bank Transfer (sepa/gbp) / SCB Mobile & Easy',
     line2: '0.99% - 5.5% or 5 USD',
-    line3: '500€/day',
+    line3: '$5,000/day, $28,000/mo',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://support.transak.com/hc/en-US',
@@ -636,6 +636,7 @@ export const paymentProviders = {
         { value: 'ETH', display: 'ETH' },
         { value: 'USDC', display: 'USDC' },
         { value: 'USDT', display: 'USDT' },
+        { value: 'CHAIN', display: 'CHAIN' },
       ],
       [MATIC]: [
         { value: 'AAVE', display: 'AAVE' },
@@ -644,6 +645,7 @@ export const paymentProviders = {
         { value: 'USDC', display: 'USDC' },
         { value: 'USDT', display: 'USDT' },
         { value: 'WETH', display: 'WETH' },
+        { value: 'CHAIN', display: 'CHAIN' },
       ],
       [BSC_MAINNET]: [
         { value: 'BNB', display: 'BNB' },
@@ -1151,3 +1153,28 @@ export function generateTorusAuthHeaders(privateKey, publicAddress) {
   }
   return authHeaders
 }
+
+// will return isIdle to true if not activity is detected for 10 minutes.
+export const idleTimeTracker = ((activityThresholdTime) => {
+  let isIdle = false
+  let idleTimeout = null
+  window.addEventListener('load', resetTimer)
+  document.addEventListener('mousemove', resetTimer)
+  document.addEventListener('keydown', resetTimer)
+  function resetTimer() {
+    if (idleTimeout) {
+      clearTimeout(idleTimeout)
+    }
+    isIdle = false
+    idleTimeout = setTimeout(() => {
+      isIdle = true
+    }, activityThresholdTime * 1000)
+  }
+
+  function checkIfIdle() {
+    return isIdle
+  }
+  return {
+    checkIfIdle,
+  }
+})(600)

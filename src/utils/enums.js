@@ -128,7 +128,7 @@ export const MATIC_BLOCK_EXPLORER = 'https://polygonscan.com'
 export const MUMBAI_URL = `https://polygon-mumbai.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
 export const MUMBAI_BLOCK_EXPLORER = 'https://mumbai.polygonscan.com'
 
-export const XDAI_URL = 'https://rpc.xdaichain.com'
+export const XDAI_URL = 'https://rpc.gnosischain.com'
 export const XDAI_BLOCK_EXPLORER = 'https://blockscout.com/poa/xdai'
 
 export const BSC_MAINNET_URL = 'https://bsc-dataseed.binance.org'
@@ -924,39 +924,6 @@ export const COINGECKO_SUPPORTED_CURRENCIES = new Set([
   'bits',
   'sats',
 ])
-
-export const WALLET_CONNECT_CARD_DATA = {
-  [LOCALE_EN]: {
-    title: 'Explore & Connect to dapps via Wallet Connect',
-    ctaText: 'Get Started',
-    ctaDisconnectText: 'Disconnect',
-  },
-  [LOCALE_DE]: {
-    title: 'Entdecken und verbinden Sie sich mit Dapps über Wallet Connect',
-    ctaText: 'Loslegen',
-    ctaDisconnectText: 'Trennen',
-  },
-  [LOCALE_ES]: {
-    title: 'Explore y conéctese a dapps a través de Wallet Connect',
-    ctaText: 'Empezar',
-    ctaDisconnectText: 'Desconectar',
-  },
-  [LOCALE_JA]: {
-    title: 'ウォレット接続を介してdappsを探索して接続します',
-    ctaText: '始めましょう',
-    ctaDisconnectText: '切断',
-  },
-  [LOCALE_KO]: {
-    title: '지갑 연결을 통해 dapp 탐색 및 연결',
-    ctaText: '시작하다',
-    ctaDisconnectText: '연결 해제',
-  },
-  [LOCALE_ZH]: {
-    title: '通过 Wallet Connect 探索并连接到 dapp',
-    ctaText: '开始使用',
-    ctaDisconnectText: '断开连接',
-  },
-}
 
 export const CHAIN_TO_BIT_NAMESPACE = {
   [MAINNET_CODE]: 'address.eth',

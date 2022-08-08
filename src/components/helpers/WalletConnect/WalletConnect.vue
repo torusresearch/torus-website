@@ -1,41 +1,102 @@
 <template>
   <div>
-    <v-dialog v-model="showQrScanner" :eager="true" :width="qrLoading ? 0 : 600" @click:outside="closeQRScanner">
-      <div v-if="showQrScanner" class="qr-scan-container">
-        <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
-        <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
-          <v-icon>$vuetify.icons.close</v-icon>
-        </v-btn>
-      </div>
-    </v-dialog>
-
-    <!-- <v-btn
-      v-if="hasStreamApiSupport && !isIframe && btnStyle === 'icon'"
-      small
-      class="wallet-connect-btn ml-2"
-      icon
-      title="Capture QR"
-      aria-label="Capture QR"
-      @click="toggleWC"
-    >
-      <v-icon v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">$vuetify.icons.disconnect</v-icon>
-      <v-icon v-else size="16">$vuetify.icons.walletconnect</v-icon>
+    <v-row v-if="!isIframe">
+      <v-menu
+        :value="guideOn"
+        :close-on-content-click="false"
+        offset-y
+        :bottom="$vuetify.breakpoint.smAndUp"
+        :top="$vuetify.breakpoint.xsOnly"
+        :nudge-top="$vuetify.breakpoint.xsOnly ? 10 : -10"
+        @change="guideOn = !guideOn"
+      >
+        <template #activator="{ attrs }">
+          <span class="torusBrand1--text caption ml-3 mt-3" v-bind="attrs" @click="guideOn = !guideOn">
+            {{ !guideOn ? t('walletConnect.viewGuide') : t('walletConnect.hideGuide') }}
+          </span>
+        </template>
+        <v-card class="pb-4 guide-menu">
+          <v-card-actions class="justify-right">
+            <v-btn class="hidden-btn"></v-btn>
+            <v-spacer></v-spacer>
+            <v-btn class="close-btn" icon @click="guideOn = !guideOn">
+              <v-icon>$vuetify.icons.close</v-icon>
+            </v-btn>
+          </v-card-actions>
+          <div style="max-width: 180px" class="custom-placeholer mb-2 text-center mx-auto">
+            <p>{{ t('walletConnect.guideInfo') }}</p>
+          </div>
+          <v-img :src="require(`../../../assets/images/walletGuide.svg`)" max-height="200" max-width="151" class="mx-auto mb-5"></v-img>
+        </v-card>
+      </v-menu>
+    </v-row>
+    <!-- <v-btn block large class="torus-btn1 torusBrand1--text" @click="toggleWC">
+      <span size="16">{{ t('walletConnect.gotoApp') }}</span>
     </v-btn> -->
+    <!-- <v-container> -->
+    <v-row v-if="!isIframe" justify="space-around">
+      <v-col cols="12" sm="6">
+        <v-text-field
+          v-model="wcCopyPasteLink"
+          dense
+          hide-details
+          outlined
+          height="44"
+          class="custom-placeholer"
+          :placeholder="ctaPlaceholder"
+          @change="onWcInputChanged"
+        >
+          <template #append>
+            <v-btn
+              v-if="(wcConnectorSession && wcConnectorSession.connected) || false"
+              text
+              small
+              color="torusBrand1"
+              tabindex="-3"
+              @click="toggleWC"
+            >
+              <!-- <v-icon small>$vuetify.icons.goto</v-icon> -->
+              <span class="caption mr-1">{{ t('walletConnect.gotoApp') }}</span>
+              <v-img :src="require(`../../../assets/images/goto-link.svg`)"></v-img>
+            </v-btn>
+            <!-- <span v-if="(wcConnectorSession && wcConnectorSession.connected) || false" class="mt-1 ma-0 p-0" @click="toggleWC">Go to dApp</span>
+            <v-img
+              v-if="(wcConnectorSession && wcConnectorSession.connected) || false"
+              :src="require(`../../../assets/images/goto-link.svg`)"
+            ></v-img> -->
+          </template>
+        </v-text-field>
+      </v-col>
+      <v-col cols="12" sm="6">
+        <!-- <v-btn block large class="torus-btn1 torusBrand1--text" @click="toggleWC">
+          <span size="16">{{ t('walletConnect.scanToConnect') }}</span>
+        </v-btn> -->
+        <v-dialog v-model="showQrScanner" :eager="true" :width="qrLoading ? 0 : 600" @click:outside="closeQRScanner">
+          <div v-if="showQrScanner" class="qr-scan-container">
+            <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
+            <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
+              <v-icon>$vuetify.icons.close</v-icon>
+            </v-btn>
+          </div>
+        </v-dialog>
 
-    <v-btn
-      v-if="hasStreamApiSupport && !isIframe"
-      depressed
-      large
-      block
-      class="torus-btn1 torusBrand1--text gmt-billboard-cta"
-      title="Capture QR"
-      aria-label="Capture QR"
-      :loading="showQrScanner"
-      @click="toggleWC"
-    >
-      <span v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">{{ ctaDisconnectText }}</span>
-      <span v-else size="16">{{ ctaText }}</span>
-    </v-btn>
+        <v-btn
+          v-if="hasStreamApiSupport && !isIframe"
+          depressed
+          large
+          block
+          class="torus-btn1 torusBrand1--text gmt-billboard-cta"
+          title="Capture QR"
+          aria-label="Capture QR"
+          :loading="showQrScanner"
+          @click="openScanner"
+        >
+          <span v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">{{ t('walletConnect.disconnect') }}</span>
+          <span v-else size="16">{{ t('walletConnect.scanToConnect') }}</span>
+        </v-btn>
+        <!-- </div> -->
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -53,18 +114,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    btnStyle: {
-      type: String,
-      default: 'icon',
-    },
-    ctaText: {
-      type: String,
-      default: 'Get Started',
-    },
-    ctaDisconnectText: {
-      type: String,
-      default: 'Disconnect',
-    },
   },
   data() {
     return {
@@ -72,6 +121,9 @@ export default {
       showQrScanner: false,
       qrLoading: true,
       hasStreamApiSupport: true,
+      wcCopyPasteLink: '',
+      guideOn: false,
+      ctaPlaceholder: 'wc:ff9e1dfa-68be-47ed...',
     }
   },
   computed: {
@@ -95,21 +147,51 @@ export default {
         this.camera = 'off'
       }
     },
+    wcConnectorSession(value) {
+      if (value.connected) {
+        this.$store.dispatch('setSuccessMessage', 'walletConnect.connected')
+        if (value.uri) this.wcCopyPasteLink = value.uri
+      }
+    },
   },
   methods: {
-    ...mapActions(['updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect', 'sendWalletConnectResponse']),
+    ...mapActions(['updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect', 'sendWalletConnectResponse', 'getWalletConnectedApp']),
     ...mapMutations(['setErrorMsg']),
-    toggleWC() {
+    async toggleWC() {
+      if (this.wcConnectorSession?.connected) {
+        const url = await this.getWalletConnectedApp()
+        window.open(url)
+      } else {
+        // this.menu = !this.menu
+        this.guideOn = !this.guideOn
+      }
+    },
+    async onWcInputChanged() {
+      try {
+        if (!this.wcCopyPasteLink.startsWith('wc:')) {
+          return
+        }
+        await this.initWalletConnect({ uri: this.wcCopyPasteLink })
+        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
+        // this.textPasteFlow = true
+      } catch (error) {
+        log.error(error)
+        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: false, errorMessage: error?.message })
+      }
+    },
+    openScanner() {
       if (this.wcConnectorSession?.connected) {
         this.disconnectWalletConnect()
+        this.wcCopyPasteLink = ''
+        // this.textPasteFlow = false
       } else {
         this.camera = 'auto'
         this.showQrScanner = true
+        this.scannerOpened = true
       }
     },
     async onDecodeQr(result) {
       try {
-        log.info(result, 'qr decoded')
         await this.initWalletConnect({ uri: result })
         if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
       } catch (error) {
