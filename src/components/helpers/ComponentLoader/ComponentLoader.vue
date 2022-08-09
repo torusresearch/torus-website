@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import BeatLoader from 'vue-spinner/src/BeatLoader'
+import BeatLoader from 'vue-spinner/src/BeatLoader.vue'
 
 export default {
   name: 'ComponentLoader',

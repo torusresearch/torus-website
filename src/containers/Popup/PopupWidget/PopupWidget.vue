@@ -165,7 +165,7 @@
 </template>
 
 <script>
-import BeatLoader from 'vue-spinner/src/BeatLoader'
+import BeatLoader from 'vue-spinner/src/BeatLoader.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ShowToolTip from '../../../components/helpers/ShowToolTip'
@@ -257,9 +257,6 @@ export default {
     accountType() {
       return this.wallet[this.fullAddress]?.accountType
     },
-  },
-  mounted() {
-    window.$crisp.push(['do', 'chat:hide'])
   },
   methods: {
     ...mapActions({

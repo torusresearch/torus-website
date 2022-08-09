@@ -97,9 +97,9 @@ export default class NetworkController extends EventEmitter {
     return new Promise((resolve, reject) => {
       const { provider } = this.getProviderAndBlockTracker()
       const ethQuery = new EthQuery(provider)
-      const initialNetwork = this.getNetworkState
+      const initialNetwork = this.networkState
       ethQuery.sendAsync({ method: 'eth_getBlockByNumber', params: ['latest', false] }, (err, block) => {
-        const currentNetwork = this.getNetworkState
+        const currentNetwork = this.networkState
         if (currentNetwork !== initialNetwork) {
           log.info('network has been changed')
           return resolve({})
@@ -139,7 +139,7 @@ export default class NetworkController extends EventEmitter {
   /**
    * Get network state
    */
-  get getNetworkState() {
+  get networkState() {
     return this.networkStore.getState()
   }
 
@@ -232,7 +232,7 @@ export default class NetworkController extends EventEmitter {
    * Return networking loading status
    */
   isNetworkLoading() {
-    return this.getNetworkState === 'loading'
+    return this.networkState === 'loading'
   }
 
   /**
@@ -253,10 +253,10 @@ export default class NetworkController extends EventEmitter {
       return
     }
     const ethQuery = new EthQuery(this._provider)
-    const initialNetwork = this.getNetworkState
+    const initialNetwork = this.networkState
 
     ethQuery.sendAsync({ method: 'net_version' }, (error, network) => {
-      const currentNetwork = this.getNetworkState
+      const currentNetwork = this.networkState
       if (initialNetwork === currentNetwork) {
         if (error) {
           this.setNetworkState('loading')

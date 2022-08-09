@@ -18,7 +18,7 @@ import {
   NFT_SUPPORTED_NETWORKS,
   SUPPORTED_NFT_STANDARDS,
 } from '../utils/enums'
-import { isMain } from '../utils/utils'
+import { idleTimeTracker, isMain } from '../utils/utils'
 
 const DEFAULT_INTERVAL = 60_000
 export default class AssetsDetectionController {
@@ -75,7 +75,9 @@ export default class AssetsDetectionController {
     }
     if (isMain)
       this._handle = setInterval(() => {
-        this.detectAssets()
+        if (!idleTimeTracker.checkIfIdle()) {
+          this.detectAssets()
+        }
       }, interval)
   }
 

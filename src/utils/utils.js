@@ -128,42 +128,6 @@ export class UserError extends Error {}
 export const getNetworkDisplayName = (key) => networkToNameMap[key]
 
 /**
- * Checks whether a storage type is available or not
- * For more info on how this works, please refer to MDN documentation
- * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
- *
- * @method storageAvailable
- * @param {String} type the type of storage ('localStorage', 'sessionStorage')
- * @returns {Boolean} a boolean indicating whether the specified storage is available or not
- */
-export function storageAvailable(type) {
-  let storage
-  try {
-    storage = window[type]
-    const x = '__storage_test__'
-    storage.setItem(x, x)
-    storage.removeItem(x)
-    return true
-  } catch (error) {
-    return (
-      error &&
-      // everything except Firefox
-      (error.code === 22 ||
-        // Firefox
-        error.code === 1014 ||
-        // test name field too, because code might not be present
-        // everything except Firefox
-        error.name === 'QuotaExceededError' ||
-        // Firefox
-        error.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
-      // acknowledge QuotaExceededError only if there's something already stored
-      storage &&
-      storage.length > 0
-    )
-  }
-}
-
-/**
  * Used to determine the window type through which the app is being viewed.
  *  - 'popup' refers to the extension opened through the browser app icon (in top right corner in chrome and firefox)
  *  - 'responsive' refers to the main browser window
@@ -440,7 +404,6 @@ export const paymentProviders = {
     minOrderValue: 50,
     maxOrderValue: 20_000,
     validCurrencies: supportedFiatCurrencies(SIMPLEX),
-    validCryptoCurrencies: ['ETH', 'BNB'],
     // Disable simplex until API is fixed
     validCryptoCurrenciesByChain: {
       // TODO constantize cryptos e.g. {[ETH]: sdfsaf, [USDC]: {}}
@@ -484,7 +447,6 @@ export const paymentProviders = {
     minOrderValue: 24.99,
     maxOrderValue: 50_000,
     validCurrencies: supportedFiatCurrencies(MOONPAY),
-    validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT', 'BNB_BSC', 'BUSD_BSC'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'aave', display: 'AAVE' },
@@ -521,7 +483,6 @@ export const paymentProviders = {
     minOrderValue: 5,
     maxOrderValue: 500,
     validCurrencies: supportedFiatCurrencies(WYRE),
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'AAVE', display: 'AAVE' },
@@ -552,7 +513,6 @@ export const paymentProviders = {
     minOrderValue: 50,
     maxOrderValue: 20_000,
     validCurrencies: supportedFiatCurrencies(RAMPNETWORK),
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'BSC_BNB'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'ETH', display: 'ETH' },
@@ -585,7 +545,6 @@ export const paymentProviders = {
     minOrderValue: 100,
     maxOrderValue: 2500,
     validCurrencies: supportedFiatCurrencies(XANPOOL),
-    validCryptoCurrencies: ['ETH', 'USDT'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'ETH', display: 'ETH' },
@@ -607,7 +566,6 @@ export const paymentProviders = {
     minOrderValue: 30,
     maxOrderValue: 5000,
     validCurrencies: supportedFiatCurrencies(MERCURYO),
-    validCryptoCurrencies: ['ETH', 'DAI', 'BAT', 'USDT', 'OKB'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'ETH', display: 'ETH' },
@@ -626,16 +584,15 @@ export const paymentProviders = {
     enforceMax: false,
   },
   [TRANSAK]: {
-    line1: 'Credit/ Debit Card/ <br/>Bank Transfer (sepa/gbp)',
+    line1: 'Apple & Google Pay / Credit/Debit Card<br/>Bangkok Bank Mobile & iPay<br/>Bank Transfer (sepa/gbp) / SCB Mobile & Easy',
     line2: '0.99% - 5.5% or 5 USD',
-    line3: '500€/day',
+    line3: '$5,000/day, $28,000/mo',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://support.transak.com/hc/en-US',
     minOrderValue: 30,
     maxOrderValue: 500,
     validCurrencies: supportedFiatCurrencies(TRANSAK),
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'USDT'],
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'AAVE', display: 'AAVE' },
@@ -643,6 +600,7 @@ export const paymentProviders = {
         { value: 'ETH', display: 'ETH' },
         { value: 'USDC', display: 'USDC' },
         { value: 'USDT', display: 'USDT' },
+        { value: 'CHAIN', display: 'CHAIN' },
       ],
       [MATIC]: [
         { value: 'AAVE', display: 'AAVE' },
@@ -651,6 +609,7 @@ export const paymentProviders = {
         { value: 'USDC', display: 'USDC' },
         { value: 'USDT', display: 'USDT' },
         { value: 'WETH', display: 'WETH' },
+        { value: 'CHAIN', display: 'CHAIN' },
       ],
       [BSC_MAINNET]: [
         { value: 'BNB', display: 'BNB' },
@@ -689,8 +648,9 @@ export const SUPPORTED_PROVIDERS_PER_NETWORK = (() => {
   return supportedProvidersPerNetwork
 })()
 
-export function getPaymentProviders(network, theme) {
-  const supportedProviders = SUPPORTED_PROVIDERS_PER_NETWORK[network] ?? []
+export function getPaymentProviders(networkId, theme) {
+  const network = Object.values(SUPPORTED_NETWORK_TYPES).find(({ chainId }) => chainId === Number.parseInt(networkId, 10))
+  const supportedProviders = SUPPORTED_PROVIDERS_PER_NETWORK[network?.host] ?? []
   return supportedProviders.map((x) => {
     const item = paymentProviders[x]
     return {
@@ -1157,3 +1117,28 @@ export function generateTorusAuthHeaders(privateKey, publicAddress) {
   }
   return authHeaders
 }
+
+// will return isIdle to true if not activity is detected for 10 minutes.
+export const idleTimeTracker = ((activityThresholdTime) => {
+  let isIdle = false
+  let idleTimeout = null
+  window.addEventListener('load', resetTimer)
+  document.addEventListener('mousemove', resetTimer)
+  document.addEventListener('keydown', resetTimer)
+  function resetTimer() {
+    if (idleTimeout) {
+      clearTimeout(idleTimeout)
+    }
+    isIdle = false
+    idleTimeout = setTimeout(() => {
+      isIdle = true
+    }, activityThresholdTime * 1000)
+  }
+
+  function checkIfIdle() {
+    return isIdle
+  }
+  return {
+    checkIfIdle,
+  }
+})(600)

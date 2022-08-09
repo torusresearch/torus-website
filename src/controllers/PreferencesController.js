@@ -13,9 +13,6 @@ import {
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_TOPUP,
-  BADGES_COLLECTIBLE,
-  BADGES_TOPUP,
-  BADGES_TRANSACTION,
   ERROR_TIME,
   ETHERSCAN_SUPPORTED_NETWORKS,
   SUCCESS_TIME,
@@ -23,29 +20,14 @@ import {
 } from '../utils/enums'
 import { notifyUser } from '../utils/notifications'
 import { setSentryEnabled } from '../utils/sentry'
-import {
-  formatDate,
-  formatPastTx,
-  formatTime,
-  getEthTxStatus,
-  getIFrameOrigin,
-  getUserLanguage,
-  isMain,
-  storageAvailable,
-  waitForMs,
-} from '../utils/utils'
+import { formatDate, formatPastTx, formatTime, getEthTxStatus, getIFrameOrigin, getUserLanguage, isMain, waitForMs } from '../utils/utils'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
-const DEFAULT_BADGES_COMPLETION = {
-  [BADGES_COLLECTIBLE]: false,
-  [BADGES_TOPUP]: false,
-  [BADGES_TRANSACTION]: false,
-}
 
 let themeGlobal = THEME_LIGHT_BLUE_NAME
-if (storageAvailable('localStorage')) {
+if (config.localStorageAvailable) {
   const torusTheme = localStorage.getItem('torus-theme')
   if (torusTheme) {
     themeGlobal = torusTheme
@@ -60,12 +42,10 @@ const DEFAULT_ACCOUNT_STATE = {
   locale: getUserLanguage(),
   contacts: [],
   permissions: [],
-  badgesCompletion: {},
   jwtToken: '',
   fetchedPastTx: [],
   pastTransactions: [],
   paymentTx: [],
-  tKeyOnboardingComplete: true,
   defaultPublicAddress: '',
   accountType: ACCOUNT_TYPE.NORMAL,
   customTokens: [],
@@ -207,7 +187,6 @@ class PreferencesController extends SafeEventEmitter {
       const user = await this.api.get(`${config.api}/user?fetchTx=false`, this.headers(address), { useAPIKey: true })
       if (user?.data) {
         const {
-          badge: userBadges,
           default_currency: defaultCurrency,
           contacts,
           theme,
@@ -215,7 +194,6 @@ class PreferencesController extends SafeEventEmitter {
           locale,
           permissions,
           public_address,
-          tkey_onboarding_complete,
           account_type,
           default_public_address,
           customTokens,
@@ -223,10 +201,9 @@ class PreferencesController extends SafeEventEmitter {
           customNetworks,
         } = user.data || {}
         let whiteLabelLocale
-        let badgesCompletion = DEFAULT_BADGES_COMPLETION
 
         // White Label override
-        if (storageAvailable('sessionStorage')) {
+        if (config.sessionStorageAvailable) {
           let torusWhiteLabel = sessionStorage.getItem('torus-white-label')
           if (torusWhiteLabel) {
             try {
@@ -238,13 +215,6 @@ class PreferencesController extends SafeEventEmitter {
           }
         }
 
-        if (userBadges) {
-          try {
-            badgesCompletion = JSON.parse(userBadges)
-          } catch (error) {
-            log.error(error)
-          }
-        }
         this.updateStore(
           {
             contacts,
@@ -253,8 +223,6 @@ class PreferencesController extends SafeEventEmitter {
             selectedCurrency: defaultCurrency,
             locale: whiteLabelLocale || locale || getUserLanguage(),
             permissions,
-            badgesCompletion,
-            tKeyOnboardingComplete: account_type !== ACCOUNT_TYPE.NORMAL ? true : !!tkey_onboarding_complete,
             accountType: account_type || ACCOUNT_TYPE.NORMAL,
             defaultPublicAddress: default_public_address || public_address,
             customTokens,
@@ -491,7 +459,6 @@ class PreferencesController extends SafeEventEmitter {
     this.updateStore(
       {
         theme,
-        tKeyOnboardingComplete: false,
         accountType: ACCOUNT_TYPE.NORMAL,
         defaultPublicAddress: address,
       },
@@ -543,7 +510,7 @@ class PreferencesController extends SafeEventEmitter {
     if (payload === this.state()?.crashReport) return
     try {
       await this.api.patch(`${config.api}/user/crashreporter`, { enable_crash_reporter: payload }, this.headers(), { useAPIKey: true })
-      if (storageAvailable('localStorage')) {
+      if (config.localStorageAvailable) {
         localStorage.setItem('torus-enable-crash-reporter', String(payload))
       }
       setSentryEnabled(payload)
@@ -586,17 +553,6 @@ class PreferencesController extends SafeEventEmitter {
     } catch (error) {
       log.error(error)
       this.handleError('navBar.snackFailCurrency')
-    }
-  }
-
-  async setTKeyOnboardingStatus(payload, address) {
-    // This is called before set selected address is assigned
-    try {
-      await this.api.patch(`${config.api}/user`, { tkey_onboarding_complete: payload }, this.headers(address), { useAPIKey: true })
-      this.updateStore({ tKeyOnboardingComplete: payload }, address)
-      log.info('successfully updated onboarding status')
-    } catch (error) {
-      log.error(error, 'unable to set onboarding status')
     }
   }
 
@@ -818,16 +774,6 @@ class PreferencesController extends SafeEventEmitter {
         if (!this.state(storeSelectedAddress)?.jwtToken) return
         this.sync(storeSelectedAddress)
       }, interval)
-  }
-
-  async setUserBadge(payload) {
-    const newBadgeCompletion = { ...this.state().badgesCompletion, [payload]: true }
-    this.updateStore({ badgesCompletion: newBadgeCompletion })
-    try {
-      await this.api.patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers(), { useAPIKey: true })
-    } catch (error) {
-      log.error('unable to set badge', error)
-    }
   }
 
   async getMessageForSigning(publicAddress) {

@@ -223,7 +223,7 @@ export default {
       }
     },
     informClients(privKey) {
-      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      const urlInstance = this.$route.query.instanceId
       if (urlInstance && urlInstance !== '') {
         const accountImportChannel = new BroadcastChannel(`account_import_channel_${urlInstance}`, broadcastChannelOptions)
         accountImportChannel.postMessage({

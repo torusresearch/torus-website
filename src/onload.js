@@ -3,10 +3,11 @@ import { BasePostMessageStream } from '@toruslabs/openlogin-jrpc'
 import log from 'loglevel'
 import Web3 from 'web3'
 
+import config from './config'
 import TorusController from './controllers/TorusController'
 import setupMultiplex from './controllers/utils/setupMultiplex'
 import { MAINNET, SUPPORTED_NETWORK_TYPES } from './utils/enums'
-import { getIFrameOrigin, isMain, isPwa, storageAvailable } from './utils/utils'
+import { getIFrameOrigin, isMain } from './utils/utils'
 // import store from './store'
 let storeReference
 let deferredDispatch = []
@@ -36,8 +37,8 @@ function triggerUi(type, payload, request) {
 function onloadTorus(torus) {
   let sessionData
 
-  if (storageAvailable(!isPwa ? 'sessionStorage' : 'localStorage')) {
-    const storage = isPwa ? localStorage : sessionStorage
+  if (config.localStorageAvailable) {
+    const storage = localStorage
     sessionData = storage.getItem('torus-app')
   }
 
@@ -61,9 +62,6 @@ function onloadTorus(torus) {
       return { selectedAddress, wallet }
     },
     storeDispatch: () => getStore().dispatch,
-    rehydrate() {
-      getStore().dispatch('rehydrate')
-    },
   })
 
   torus.torusController = torusController
@@ -71,7 +69,10 @@ function onloadTorus(torus) {
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
 
-  torus.nodeDetailManager = new NodeDetailManager({ network: process.env.VUE_APP_PROXY_NETWORK, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
+  torus.nodeDetailManager = new NodeDetailManager({
+    network: config.NETWORK_MAP[config.torusNetwork],
+    proxyAddress: NodeDetailManager[`PROXY_ADDRESS_${config.NETWORK_MAP[config.torusNetwork].toUpperCase().split('-')[0]}`],
+  })
   log.info('torus network', process.env.VUE_APP_PROXY_NETWORK)
 
   // we use this to start accounttracker balances

@@ -5,7 +5,7 @@ import config from '../../config'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MERCURYO, MOONPAY, RAMPNETWORK, WYRE, XANPOOL } from '../../utils/enums'
+import { MERCURYO, MOONPAY, RAMPNETWORK, TRANSAK, TRANSAK_NETWORK_MAP, WYRE, XANPOOL } from '../../utils/enums'
 import { fakeStream, paymentProviders } from '../../utils/utils'
 import mercuryo from './mercuryo'
 import moonpay from './moonpay'
@@ -63,25 +63,30 @@ export default {
           if (requestedOrderAmount > selectedProvider.maxOrderValue && selectedProvider.enforceMax)
             throw new Error('Requested amount is higher than supported')
         }
+
         if (selectedParameters.selectedCurrency && !selectedProvider.validCurrencies.includes(selectedParameters.selectedCurrency))
           throw new Error('Unsupported currency')
-        if (selectedParameters.selectedCryptoCurrency && !selectedProvider.validCryptoCurrencies.includes(selectedParameters.selectedCryptoCurrency))
-          throw new Error('Unsupported cryptoCurrency')
+
+        if (selectedParameters.selectedCryptoCurrency) {
+          const validCryptoCurrenciesByChain = Object.values(selectedProvider.validCryptoCurrenciesByChain)
+            .flat()
+            .map((currency) => currency.value)
+
+          const finalCryptoCurrency =
+            provider === MOONPAY ? selectedParameters.selectedCryptoCurrency.toLowerCase() : selectedParameters.selectedCryptoCurrency
+
+          if (validCryptoCurrenciesByChain && !validCryptoCurrenciesByChain.includes(finalCryptoCurrency))
+            throw new Error('Unsupported cryptoCurrency')
+        }
 
         if (provider === RAMPNETWORK) {
           // rampnetwork
           const currentOrder = { cryptoCurrencyValue: '', cryptoCurrencySymbol: selectedParameters.selectedCryptoCurrency || '' }
           if (selectedParameters.fiatValue && selectedParameters.selectedCurrency && selectedParameters.selectedCryptoCurrency) {
             const result = await dispatch('fetchRampNetworkQuote', selectedParameters)
-            let cryptoValue = 0
-            const asset = result.assets.find((item) => item.symbol === selectedParameters.selectedCryptoCurrency)
-            const fiat = selectedParameters.fiatValue
-            const feeRate = asset.maxFeePercent[selectedParameters.selectedCurrency] / 100
-            const rate = asset.price[selectedParameters.selectedCurrency]
-            const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
-            cryptoValue = fiatWithoutFee / rate // Final Crypto amount
-            currentOrder.cryptoCurrencyValue = Math.trunc(cryptoValue * 10 ** asset.decimals) || ''
+            const { asset } = result
             currentOrder.cryptoCurrencySymbol = asset.symbol || ''
+            currentOrder.cryptoCurrencyValue = result.cryptoAmount
           }
 
           const { success } = await dispatch('fetchRampNetworkOrder', {
@@ -93,10 +98,11 @@ export default {
         } else if (provider === MOONPAY) {
           // moonpay
           const currentOrder = {
-            currency: { code: selectedParameters.selectedCryptoCurrency || '' },
+            currency: { code: selectedParameters.selectedCryptoCurrency.toLowerCase() || '' },
             baseCurrencyAmount: selectedParameters.fiatValue || '',
             baseCurrency: { code: selectedParameters.selectedCurrency || '' },
           }
+
           const { success } = await dispatch('fetchMoonpayOrder', {
             currentOrder,
             colorCode: vuetify.framework.theme.themes.light.primary.base,
@@ -139,6 +145,20 @@ export default {
             currentOrder,
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
+          })
+          handleSuccess(success)
+        } else if (provider === TRANSAK) {
+          // transak
+          if (!selectedParameters.chainNetwork) throw new Error('Requires chainNetwork')
+          selectedParameters.network = TRANSAK_NETWORK_MAP[selectedParameters.chainNetwork]
+          const result = await dispatch('fetchTransakQuote', selectedParameters)
+
+          const { success } = await dispatch('fetchTransakOrder', {
+            currentOrder: result.response,
+            colorCode: state.whiteLabel.theme.colors.torusBrand1 || '',
+            selectedAddress: selectedParameters.selectedAddress,
+            network: selectedParameters.network,
+            preopenInstanceId,
           })
           handleSuccess(success)
         }

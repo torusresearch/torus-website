@@ -6,7 +6,7 @@
       </v-flex>
       <v-flex xs9>
         <v-layout v-if="!isAdvanceOption" mx-n2 xs12>
-          <v-flex xs6 px-2 mb-1>
+          <v-flex v-if="fastestGasPrice.gt('0')" px-2 mb-1>
             <div
               class="btn-speed text-center elevation-3"
               :class="[speedSelected === 'average' ? 'selected' : '', $vuetify.theme.dark ? 'theme--dark' : '', isConfirm ? 'is-confirm' : '']"
@@ -25,7 +25,7 @@
               </div>
             </div>
           </v-flex>
-          <v-flex xs6 px-2 mb-1>
+          <v-flex :class="fastestGasPrice.gt('0') ? 'xs6' : 'xs12'" px-2 mb-1>
             <div
               class="btn-speed text-center elevation-3"
               :class="[speedSelected === 'fastest' ? 'selected' : '', $vuetify.theme.dark ? 'theme--dark' : '', isConfirm ? 'is-confirm' : '']"
@@ -66,6 +66,7 @@
           :currency-multiplier-eth="currencyMultiplierEth"
           :contract-type="contractType"
           :network-ticker="networkTicker"
+          :network-host="networkHost"
           :nonce="nonce"
           @onSave="onSaveAdvanceOptions"
         />
@@ -94,7 +95,7 @@
       </v-flex>
     </v-layout>
     <v-layout v-if="!isAdvanceOption" mx-n2 xs12>
-      <v-flex xs6 px-2 mb-1>
+      <v-flex v-if="fastestGasPrice.gt('0')" xs6 px-2 mb-1>
         <div
           class="btn-speed text-center elevation-3"
           :class="[speedSelected === 'average' ? 'selected' : '', $vuetify.theme.dark ? 'theme--dark' : '']"
@@ -114,7 +115,7 @@
           </div>
         </div>
       </v-flex>
-      <v-flex xs6 px-2 mb-1>
+      <v-flex :class="fastestGasPrice.gt('0') ? 'xs6' : 'xs12'" px-2 mb-1>
         <div
           class="btn-speed text-center elevation-3"
           :class="[speedSelected === 'fastest' ? 'selected' : '', $vuetify.theme.dark ? 'theme--dark' : '']"
@@ -271,11 +272,13 @@ export default {
           const gasPrice = await torus.web3.eth.getGasPrice()
           log.info(gasPrice)
           this.averageGasPrice = new BigNumber(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
-          this.fastestGasPrice = this.averageGasPrice.plus(new BigNumber('5'))
+          this.fastestGasPrice = this.averageGasPrice.gt(0) ? this.averageGasPrice.plus(new BigNumber('5')) : this.averageGasPrice
         }
         // Set selected gas price from confirm
         if (this.activeGasPriceConfirm) {
           this.setSelectedSpeed()
+        } else if (this.fastestGasPrice.eq('0')) {
+          this.selectSpeed('fastest', this.fastestGasPrice)
         } else {
           this.selectSpeed('average', this.averageGasPrice)
         }
