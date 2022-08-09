@@ -1,4 +1,5 @@
 /* eslint-disable unicorn/prefer-add-event-listener */
+/* eslint-disable unicorn/prefer-top-level-await */
 
 import Bowser, { BROWSER_MAP, OS_MAP } from 'bowser'
 import log from 'loglevel'
