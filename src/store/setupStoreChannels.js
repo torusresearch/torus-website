@@ -69,6 +69,7 @@ if (!isMain) {
         torusWidgetVisibility = true,
         loginConfig = {},
         skipTKey = false,
+        mfaLevel = 'optional',
         network = SUPPORTED_NETWORK_TYPES.mainnet,
       },
     } = chunk
@@ -83,6 +84,7 @@ if (!isMain) {
       VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
       VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
       VuexStore.commit('setSkipTKey', skipTKey)
+      VuexStore.commit('setMfaLevel', mfaLevel)
       VuexStore.dispatch('setProviderType', { network })
       const { isRehydrationComplete } = VuexStore.state
       if (isRehydrationComplete) {

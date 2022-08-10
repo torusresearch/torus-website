@@ -63,6 +63,7 @@ const initialState = {
     torusWidgetVisibility: true,
     apiKey: 'torus-default',
     skipTKey: false,
+    mfaLevel: 'optional',
     loginInProgress: false,
     showWalletConnect: false,
   },
