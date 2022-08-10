@@ -66,10 +66,12 @@ class OpenLoginHandler {
           this.openLoginInstance._syncState(loginDetails)
           return loginDetails
         }
+        this.openLoginInstance.state.store.set('sessionId', null)
       }
       return null
     } catch (error) {
       log.warn(error)
+      this.openLoginInstance.state.store.set('sessionId', null)
       return null
     }
   }
