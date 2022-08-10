@@ -66,6 +66,7 @@ export default {
         },
         curve: 'secp256k1',
         // sessionTime: '86400',
+        _sessionNamespace: this.whiteLabel || this.isCustomVerifier ? this.iframeOrigin.hostname : undefined,
       })
     } catch (error) {
       log.info(error, 'something went wrong')
