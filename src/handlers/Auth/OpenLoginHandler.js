@@ -83,7 +83,7 @@ class OpenLoginHandler {
         const signatureBf = await sign(privKey, keccak256(encData))
         const signature = signatureBf.toString('hex')
         await post(`${config.storageServerUrl}/store/set`, { key: publicKeyHex, data: encData, signature, timeout: 1 })
-        this.openLoginInstance._syncState({})
+        this.openLoginInstance.state.store.set('sessionId', null)
       }
     } catch (error) {
       log.warn(error)

@@ -88,7 +88,7 @@ export default {
       this.whiteLabel = whiteLabel
 
       const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
-      await openLoginHandler.init()
+      await openLoginHandler.getActiveSession()
       const { state } = openLoginHandler.openLoginInstance
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()
