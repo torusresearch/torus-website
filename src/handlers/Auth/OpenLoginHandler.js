@@ -50,6 +50,7 @@ class OpenLoginHandler {
       whiteLabel: whiteLabelOpenLogin,
       loginConfig,
       network: config.torusNetwork,
+      no3PC: true,
     })
   }
 
