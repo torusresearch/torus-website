@@ -183,7 +183,12 @@ export default {
       advancedGas: new BigNumber('0'),
       CONTRACT_TYPE_ERC20,
       rules: {
-        moreThanZero: (value) => new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount'),
+        moreThanZero: (value) => {
+          if (this.activeGasPrice.eq(0)) {
+            return new BigNumber(value || '0').gte(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
+          }
+          return new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
+        },
         valid: (value) => !!value || this.t('walletTransfer.required'),
         validNonce: (value) => {
           if (value === null) return this.t('walletTransfer.invalidInput')
