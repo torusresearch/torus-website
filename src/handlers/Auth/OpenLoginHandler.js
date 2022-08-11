@@ -54,13 +54,16 @@ class OpenLoginHandler {
     })
   }
 
-  async getActiveSession() {
+  async getActiveSession(namespace) {
     try {
       const { sessionId } = this.openLoginInstance.state.store.getStore()
       if (sessionId) {
         log.info('found session id')
         const publicKeyHex = getPublic(Buffer.from(sessionId, 'hex')).toString('hex')
-        const encData = await get(`${config.storageServerUrl}/store/get?key=${publicKeyHex}`)
+        const url = new URL(`${config.storageServerUrl}/store/get`)
+        url.searchParams.append('key', publicKeyHex)
+        if (namespace) url.searchParams.append('namespace', namespace)
+        const encData = await get(url.href)
         if (encData.message) {
           const loginDetails = await decryptData(sessionId, encData.message)
           this.openLoginInstance._syncState(loginDetails)
