@@ -48,20 +48,7 @@ export default {
     try {
       const { loginProvider, state, skipTKey, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))
-
-      const parsedOauthParams = {
-        ...rest,
-      }
-
-      Object.keys({ ...rest }).forEach((key) => {
-        try {
-          const decodedVal = decodeURIComponent(rest[key])
-          parsedOauthParams[key] = decodedVal
-        } catch (error) {
-          log.warn('invalid value in params', error)
-        }
-      })
-      log.info('logging in with', loginProvider, state, skipTKey, parsedOauthParams)
+      log.info('logging in with', loginProvider, state, skipTKey, rest)
       const { whiteLabel, loginConfig = {}, origin } = stateParams
       this.whiteLabel = whiteLabel
       this.iframeOrigin = origin
@@ -74,7 +61,7 @@ export default {
         appState: state,
         skipTKey: skipTKey === 'true',
         extraLoginOptions: {
-          ...parsedOauthParams,
+          ...rest,
         },
         curve: 'secp256k1',
         // sessionTime: '86400',
