@@ -73,7 +73,6 @@ export default {
       const result = hashUrl.searchParams.get('result')
       let whiteLabel = {}
       let loginConfig = {}
-      let originInfo = {}
 
       let loginError = ''
 
@@ -83,15 +82,12 @@ export default {
         const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
         whiteLabel = appStateParams.whiteLabel || {}
         loginConfig = appStateParams.loginConfig || {}
-        originInfo = appStateParams.origin || {}
         this.isCustomVerifier = Object.keys(loginConfig).length > 0
       }
 
       this.whiteLabel = whiteLabel
 
       const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
-      const namespace = Object.keys(whiteLabel).length > 0 || this.isCustomVerifier ? originInfo.hostname : undefined
-      await openLoginHandler.getActiveSession(namespace)
       const { state } = openLoginHandler.openLoginInstance
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()
@@ -131,6 +127,7 @@ export default {
         userDapps,
         error: loginError,
         sessionId: openLoginHandler.getSessionId(),
+        sessionNamespace: openLoginHandler.getSessionNamespace(),
       }
 
       // if there are no app accounts to choose, continue

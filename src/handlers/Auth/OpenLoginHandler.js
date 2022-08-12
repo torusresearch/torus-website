@@ -2,7 +2,7 @@ import { getPublic, sign } from '@toruslabs/eccrypto'
 import { decryptData, encryptData, keccak256 } from '@toruslabs/metadata-helpers'
 import OpenLogin from '@toruslabs/openlogin'
 import { subkey } from '@toruslabs/openlogin-subkey'
-import { Mutex } from 'await-semaphore'
+// import { Mutex } from 'await-semaphore'
 import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
 
@@ -12,7 +12,7 @@ import { ACCOUNT_TYPE } from '../../utils/enums'
 import { get, post } from '../../utils/httpHelpers'
 import { generateTorusAuthHeaders } from '../../utils/utils'
 
-const mutex = new Mutex()
+// const mutex = new Mutex()
 
 class OpenLoginHandler {
   static openLoginHandlerInstance = null
@@ -54,15 +54,15 @@ class OpenLoginHandler {
     })
   }
 
-  async getActiveSession(namespace) {
+  async getActiveSession() {
     try {
-      const { sessionId } = this.openLoginInstance.state.store.getStore()
+      const { sessionId, sessionNamespace } = this.openLoginInstance.state.store.getStore()
       if (sessionId) {
         log.info('found session id')
         const publicKeyHex = getPublic(Buffer.from(sessionId, 'hex')).toString('hex')
         const url = new URL(`${config.storageServerUrl}/store/get`)
         url.searchParams.append('key', publicKeyHex)
-        if (namespace) url.searchParams.append('namespace', namespace)
+        if (sessionNamespace) url.searchParams.append('namespace', sessionNamespace)
         const encData = await get(url.href)
         if (encData.message) {
           const loginDetails = await decryptData(sessionId, encData.message)
@@ -96,17 +96,17 @@ class OpenLoginHandler {
     }
   }
 
-  async init() {
-    const releaseLock = await mutex.acquire()
-    if (this.openLoginInstance.provider.initialized) {
-      releaseLock()
-      return this.openLoginInstance
-    }
-    await this.openLoginInstance.init()
-    log.info('initialized openlogin instance')
-    releaseLock()
-    return this.openLoginInstance
-  }
+  // async init() {
+  //   const releaseLock = await mutex.acquire()
+  //   if (this.openLoginInstance.provider.initialized) {
+  //     releaseLock()
+  //     return this.openLoginInstance
+  //   }
+  //   await this.openLoginInstance.init()
+  //   log.info('initialized openlogin instance')
+  //   releaseLock()
+  //   return this.openLoginInstance
+  // }
 
   getUserInfo() {
     const allInfo = this.openLoginInstance.state.store.getStore()
@@ -125,6 +125,11 @@ class OpenLoginHandler {
   getSessionId() {
     const allInfo = this.openLoginInstance.state.store.getStore()
     return allInfo.sessionId
+  }
+
+  getSessionNamespace() {
+    const allInfo = this.openLoginInstance.state.store.getStore()
+    return allInfo.sessionNamespace
   }
 
   getKeysInfo() {

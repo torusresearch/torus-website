@@ -434,7 +434,7 @@ export default {
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
       })
-      const { keys, userInfo, postboxKey, userDapps, error, sessionId } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, userDapps, error, sessionId, sessionNamespace } = await loginHandler.handleLoginWindow()
       if (error) {
         throw new Error(error)
       }
@@ -442,7 +442,7 @@ export default {
       userInfo.verifier = verifier
       if (sessionId && config.localStorageAvailable) {
         const openLoginStore = localStorage.getItem('openlogin_store')
-        const finalStore = { ...(openLoginStore ? JSON.parse(openLoginStore) : {}), sessionId }
+        const finalStore = { ...(openLoginStore ? JSON.parse(openLoginStore) : {}), sessionId, sessionNamespace: sessionNamespace ?? null }
         localStorage.setItem('openlogin_store', JSON.stringify(finalStore))
       }
       commit('setUserInfo', userInfo)
