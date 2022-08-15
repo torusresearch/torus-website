@@ -69,7 +69,7 @@ if (!isMain) {
         torusWidgetVisibility = true,
         loginConfig = {},
         skipTKey = false,
-        mfaLevel = null,
+        mfaLevel = 'default',
         network = SUPPORTED_NETWORK_TYPES.mainnet,
       },
     } = chunk
