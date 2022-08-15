@@ -156,6 +156,12 @@ export default {
       skipTKey: payload || false,
     }
   },
+  setMfaLevel(state, payload) {
+    state.embedState = {
+      ...state.embedState,
+      mfaLevel: payload || 'default',
+    }
+  },
   setShowWalletConnect(state, payload) {
     state.embedState = {
       ...state.embedState,
