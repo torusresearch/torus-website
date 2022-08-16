@@ -615,16 +615,7 @@ export default {
           log.info('auto-login with openlogin session')
           await dispatch('autoLogin', { calledFromEmbed: !isMain })
           if (currentRoute.name !== 'popup' && currentRoute.meta.requiresAuth === false) {
-            const noRedirectQuery = cloneDeep(
-              window.location.search
-                .slice(1)
-                .split('&')
-                .reduce((result, item) => {
-                  const [part0, part1] = item.split('=')
-                  result[part0] = part1
-                  return result
-                }, {})
-            )
+            const noRedirectQuery = Object.fromEntries(new URLSearchParams(window.location.search))
             const { redirect } = noRedirectQuery
             delete noRedirectQuery.redirect
             router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})
