@@ -82,7 +82,7 @@ export default {
                 .split('&')
                 .reduce((result, item) => {
                   const [part0, part1] = item.split('=')
-                  result[part0] = decodeURIComponent(part1).replace(/\+/g, ' ')
+                  result[part0] = decodeURIComponent(part1.replace(/\+/g, ' ')).replace(/\+/g, ' ')
                   return result
                 }, {})
               this.$router.push({ name: matchedRoute.name, query, hash: url.hash })
