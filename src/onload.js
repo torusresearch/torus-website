@@ -37,8 +37,8 @@ function triggerUi(type, payload, request) {
 function onloadTorus(torus) {
   let sessionData
 
-  if (config.localStorageAvailable) {
-    const storage = localStorage
+  if (config.sessionStorageAvailable) {
+    const storage = window.sessionStorage
     sessionData = storage.getItem('torus-app')
   }
 

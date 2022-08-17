@@ -12,19 +12,17 @@ import { ACCOUNT_TYPE } from '../../utils/enums'
 import { get, post } from '../../utils/httpHelpers'
 import { generateTorusAuthHeaders } from '../../utils/utils'
 
-// const mutex = new Mutex()
-
 class OpenLoginHandler {
   static openLoginHandlerInstance = null
 
-  static getInstance(whiteLabel = {}, loginConfig = {}) {
+  static getInstance(iframeOrigin, whiteLabel = {}, loginConfig = {}) {
     if (OpenLoginHandler.openLoginHandlerInstance) return OpenLoginHandler.openLoginHandlerInstance
-    OpenLoginHandler.openLoginHandlerInstance = new OpenLoginHandler(whiteLabel, loginConfig)
+    OpenLoginHandler.openLoginHandlerInstance = new OpenLoginHandler(iframeOrigin, whiteLabel, loginConfig)
     return OpenLoginHandler.openLoginHandlerInstance
   }
 
   // This constructor is private. Don't call it
-  constructor(whiteLabel = {}, loginConfig = {}) {
+  constructor(iframeOrigin, whiteLabel = {}, loginConfig = {}) {
     const whiteLabelOpenLogin = {}
     if (whiteLabel.theme) {
       if (whiteLabel.theme.isDark) whiteLabelOpenLogin.dark = true
@@ -39,6 +37,9 @@ class OpenLoginHandler {
     if (whiteLabel.defaultLanguage) whiteLabelOpenLogin.defaultLanguage = whiteLabel.defaultLanguage
     if (whiteLabel.name) whiteLabelOpenLogin.name = whiteLabel.name
     if (whiteLabel.url) whiteLabelOpenLogin.url = whiteLabel.url
+
+    const isCustomVerifier = Object.keys(loginConfig).length > 0
+
     this.openLoginInstance = new OpenLogin({
       clientId: config.openLoginClientId,
       redirectUrl: `${config.baseRoute}end`,
@@ -51,6 +52,7 @@ class OpenLoginHandler {
       loginConfig,
       network: config.torusNetwork,
       no3PC: true,
+      _sessionNamespace: Object.keys(whiteLabel).length > 0 || isCustomVerifier ? iframeOrigin.hostname : undefined,
     })
   }
 
@@ -79,16 +81,33 @@ class OpenLoginHandler {
     }
   }
 
+  async updateSession(sessionData) {
+    try {
+      const { sessionId, sessionNamespace } = this.openLoginInstance.state.store.getStore()
+      if (sessionId) {
+        const privKey = Buffer.from(sessionId, 'hex')
+        const publicKeyHex = getPublic(privKey).toString('hex')
+        const encData = await encryptData(sessionId, sessionData)
+        const signatureBf = await sign(privKey, keccak256(encData))
+        const signature = signatureBf.toString('hex')
+        await post(`${config.storageServerUrl}/store/update`, { key: publicKeyHex, data: encData, signature, namespace: sessionNamespace })
+        this.openLoginInstance._syncState(sessionData)
+      }
+    } catch (error) {
+      log.warn(error)
+    }
+  }
+
   async invalidateSession() {
     try {
-      const { sessionId } = this.openLoginInstance.state.store.getStore()
+      const { sessionId, sessionNamespace } = this.openLoginInstance.state.store.getStore()
       if (sessionId) {
         const privKey = Buffer.from(sessionId, 'hex')
         const publicKeyHex = getPublic(privKey).toString('hex')
         const encData = await encryptData(sessionId, {})
         const signatureBf = await sign(privKey, keccak256(encData))
         const signature = signatureBf.toString('hex')
-        await post(`${config.storageServerUrl}/store/set`, { key: publicKeyHex, data: encData, signature, timeout: 1 })
+        await post(`${config.storageServerUrl}/store/set`, { key: publicKeyHex, data: encData, signature, timeout: 1, namespace: sessionNamespace })
         this.openLoginInstance.state.store.set('sessionId', null)
       }
     } catch (error) {

@@ -25,10 +25,10 @@ Vue.use(Vuex)
 
 let vuexPersist
 
-if (config.localStorageAvailable) {
+if (config.sessionStorageAvailable) {
   vuexPersist = new VuexPersistence({
     key: 'torus-app',
-    storage: window.localStorage,
+    storage: window.sessionStorage,
     reducer: (state) => ({
       // userInfo: state.userInfo,
       userInfoAccess: state.userInfoAccess,

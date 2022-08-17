@@ -50,7 +50,7 @@ import log from 'loglevel'
 import BoxLoader from '../../components/helpers/BoxLoader'
 import { OpenLoginHandler } from '../../handlers/Auth'
 import { ACCOUNT_TYPE, APPLE, POPUP_RESULT } from '../../utils/enums'
-import { broadcastChannelOptions } from '../../utils/utils'
+import { broadcastChannelOptions, getIFrameOrigin } from '../../utils/utils'
 
 export default {
   name: 'End',
@@ -71,6 +71,8 @@ export default {
       const { hash } = this.$route
       const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
       const result = hashUrl.searchParams.get('result')
+      const sessionNamespace = hashUrl.searchParams.get('sessionNamespace')
+
       let whiteLabel = {}
       let loginConfig = {}
 
@@ -80,14 +82,15 @@ export default {
         const resultParams = JSON.parse(safeatob(result))
         loginError = resultParams.error
         const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
-        whiteLabel = appStateParams.whiteLabel || {}
-        loginConfig = appStateParams.loginConfig || {}
+        const appSessionData = appStateParams[getIFrameOrigin()] || appStateParams
+        whiteLabel = appSessionData.whiteLabel || {}
+        loginConfig = appSessionData.loginConfig || {}
         this.isCustomVerifier = Object.keys(loginConfig).length > 0
       }
 
       this.whiteLabel = whiteLabel
 
-      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
+      const openLoginHandler = OpenLoginHandler.getInstance(sessionNamespace, whiteLabel, loginConfig)
       const { state } = openLoginHandler.openLoginInstance
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()

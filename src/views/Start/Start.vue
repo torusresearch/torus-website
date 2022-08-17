@@ -55,7 +55,7 @@ export default {
       this.iframeOrigin = origin
       this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
-      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
+      const openLoginHandler = OpenLoginHandler.getInstance(this.iframeOrigin, whiteLabel, loginConfig)
       await openLoginHandler.openLoginInstance.login({
         loginProvider,
         getWalletKey: true,
@@ -65,8 +65,6 @@ export default {
           ...rest,
         },
         curve: 'secp256k1',
-        // sessionTime: '86400',
-        _sessionNamespace: this.whiteLabel || this.isCustomVerifier ? this.iframeOrigin.hostname : undefined,
       })
     } catch (error) {
       log.info(error, 'something went wrong')

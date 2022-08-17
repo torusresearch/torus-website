@@ -1,4 +1,5 @@
 import randomId from '@chaitanyapotti/random-id'
+import { safeatob } from '@toruslabs/openlogin-utils'
 import deepmerge from 'deepmerge'
 import { BN, privateToAddress } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
@@ -152,7 +153,7 @@ export default {
     if (isMain && selectedAddress) {
       router.push({ path: '/logout' }).catch(() => {})
       try {
-        const openLoginHandler = OpenLoginHandler.getInstance()
+        const openLoginHandler = OpenLoginHandler.getInstance(getIFrameOriginObject())
         await openLoginHandler.invalidateSession()
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
@@ -468,7 +469,7 @@ export default {
     }
   },
   async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
-    const openLoginHandler = OpenLoginHandler.getInstance()
+    const openLoginHandler = OpenLoginHandler.getInstance(getIFrameOriginObject())
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()
     commit('setUserInfo', userInfo)
@@ -487,7 +488,7 @@ export default {
     })
   },
   async getUserDapps({ commit, dispatch, state }, { postboxKey, calledFromEmbed }) {
-    const openLoginHandler = OpenLoginHandler.getInstance()
+    const openLoginHandler = OpenLoginHandler.getInstance(getIFrameOriginObject())
     const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
     commit('setUserDapps', userDapps)
     await dispatch('initTorusKeyring', {
@@ -605,8 +606,9 @@ export default {
     try {
       const currentRoute = router.match(window.location.pathname)
       if (!currentRoute.meta.skipOpenLoginCheck) {
-        const openLoginHandler = OpenLoginHandler.getInstance()
+        const openLoginHandler = OpenLoginHandler.getInstance(getIFrameOriginObject())
         const sessionInfo = await openLoginHandler.getActiveSession()
+        const { store } = sessionInfo
         // log.info(sessionInfo, 'current session info')
         if (sessionInfo && (sessionInfo.walletKey || sessionInfo.tKey)) {
           // already logged in
@@ -626,6 +628,15 @@ export default {
             )
             const { redirect } = noRedirectQuery
             delete noRedirectQuery.redirect
+            const iframeOrigin = getIFrameOriginObject()
+            const appStateParams = JSON.parse(safeatob(store.appState))
+            const appSessionData = appStateParams[iframeOrigin] || appStateParams
+            if (appSessionData?.whiteLabel) {
+              commit('setWhiteLabel', { ...appSessionData.whiteLabel })
+            }
+            if (appSessionData?.loginConfig) {
+              commit('setLoginConfig', { ...appSessionData?.loginConfig })
+            }
             router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})
           }
         } else {
