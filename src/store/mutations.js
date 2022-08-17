@@ -70,9 +70,6 @@ export default {
   setJwtToken(state, payload) {
     state.jwtToken = { ...state.jwtToken, ...payload }
   },
-  setUserInfoAccess(state, payload) {
-    state.userInfoAccess = payload
-  },
   setNewUser(state, payload) {
     state.isNewUser = payload
   },

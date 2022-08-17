@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash'
 
 import config from '../config'
-import { LOCALE_EN, MAINNET, SUPPORTED_NETWORK_TYPES, THEME_LIGHT_BLUE_NAME, USER_INFO_REQUEST_NEW } from '../utils/enums'
+import { LOCALE_EN, MAINNET, SUPPORTED_NETWORK_TYPES, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -52,7 +52,6 @@ const initialState = {
   announcements: {},
   contacts: [],
   permissions: [],
-  userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
   errorMsg: '',
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },

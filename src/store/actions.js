@@ -24,8 +24,6 @@ import {
   FEATURES_PROVIDER_CHANGE_WINDOW,
   RPC,
   SUPPORTED_NETWORK_TYPES,
-  USER_INFO_REQUEST_APPROVED,
-  USER_INFO_REQUEST_REJECTED,
 } from '../utils/enums'
 import { remove } from '../utils/httpHelpers'
 import { fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
@@ -78,7 +76,6 @@ const {
 const { communicationMux = { getStream: () => fakeStream } } = torus || {}
 const statusStream = communicationMux.getStream('status')
 const oauthStream = communicationMux.getStream('oauth')
-const userInfoStream = communicationMux.getStream('user_info')
 const providerChangeStream = communicationMux.getStream('provider_change')
 const widgetStream = communicationMux.getStream('widget')
 const windowStream = communicationMux.getStream('window')
@@ -234,49 +231,6 @@ export default {
       handleProviderChangeDeny('user denied provider change request')
     }
   },
-  async showUserInfoRequestPopup({ dispatch, state }, payload) {
-    const { preopenInstanceId } = payload
-    const handleDeny = () => {
-      log.info('User Info Request denied')
-      dispatch('updateUserInfoAccess', { approved: false })
-      userInfoStream.write({ name: 'user_info_response', data: { payload: {}, approved: false } })
-    }
-    const handleSuccess = () => {
-      log.info('User Info Request approved')
-      dispatch('updateUserInfoAccess', { approved: true })
-      const returnObject = JSON.parse(JSON.stringify(state.userInfo))
-      delete returnObject.verifierParams
-      userInfoStream.write({ name: 'user_info_response', data: { payload: returnObject, approved: true } })
-    }
-    try {
-      const windowId = randomId()
-      const channelName = `user_info_request_channel_${windowId}`
-      const finalUrl = `${baseRoute}userinforequest?integrity=true&instanceId=${windowId}`
-      const userInfoRequestWindow = new PopupWithBcHandler({
-        url: finalUrl,
-        preopenInstanceId,
-        target: '_blank',
-        features: FEATURES_PROVIDER_CHANGE_WINDOW,
-        channelName,
-      })
-      const result = await userInfoRequestWindow.handleWithHandshake({
-        payload: {
-          origin: getIFrameOriginObject(),
-          payload: { ...payload, typeOfLogin: state.userInfo.typeOfLogin },
-          whiteLabel: state.whiteLabel,
-        },
-      })
-      const { approve = false } = result
-      if (approve) {
-        handleSuccess()
-      } else {
-        handleDeny()
-      }
-    } catch (error) {
-      log.error(error)
-      handleDeny()
-    }
-  },
   showWalletPopup(context, payload) {
     const url = payload.path.includes('tkey') ? `${baseRoute}${payload.path || ''}` : `${baseRoute}wallet${payload.path || ''}`
     const finalUrl = `${url}?integrity=true&instanceId=${torus.instanceId}`
@@ -358,10 +312,6 @@ export default {
         },
       })
     }
-  },
-  updateUserInfoAccess({ commit }, payload) {
-    if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
-    else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
   updateSelectedAddress(_, payload) {
     // torus.updateStaticData({ selectedAddress: payload.selectedAddress })

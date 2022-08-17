@@ -230,10 +230,6 @@ export const SINGLE_CALL_BALANCES_ADDRESS = '0xb1f8e55c7f64d203c1400b9d8555d050f
 export const ACTIVE = 'active'
 export const INACTIVE = 'inactive'
 
-export const USER_INFO_REQUEST_APPROVED = 'user_info_request_approved'
-export const USER_INFO_REQUEST_REJECTED = 'user_info_request_rejected'
-export const USER_INFO_REQUEST_NEW = 'user_info_request_new'
-
 export const CONTRACT_TYPE_ETH = 'eth'
 export const CONTRACT_TYPE_ERC20 = 'erc20'
 export const CONTRACT_TYPE_ERC721 = 'erc721'
