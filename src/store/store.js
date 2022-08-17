@@ -25,10 +25,10 @@ Vue.use(Vuex)
 
 let vuexPersist
 
-if (config.sessionStorageAvailable) {
+if (config.localStorageAvailable) {
   vuexPersist = new VuexPersistence({
-    key: 'torus-app',
-    storage: window.sessionStorage,
+    key: config.isCustomLogin ? `torus_app_${getIFrameOriginObject().hostname}` : 'torus-app',
+    storage: window.localStorageAvailable,
     reducer: (state) => ({
       selectedAddress: state.selectedAddress,
       networkType: state.networkType,
@@ -37,8 +37,6 @@ if (config.sessionStorageAvailable) {
       jwtToken: state.jwtToken,
       theme: state.theme,
       locale: state.locale,
-      billboard: state.billboard,
-      announcements: state.announcements,
       supportedNetworks: state.supportedNetworks,
       defaultPublicAddress: state.defaultPublicAddress,
       wcConnectorSession: state.wcConnectorSession,

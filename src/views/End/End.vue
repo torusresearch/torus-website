@@ -71,7 +71,6 @@ export default {
       const { hash } = this.$route
       const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
       const result = hashUrl.searchParams.get('result')
-      const sessionNamespace = hashUrl.searchParams.get('sessionNamespace')
 
       let whiteLabel = {}
       let loginConfig = {}
@@ -90,7 +89,7 @@ export default {
 
       this.whiteLabel = whiteLabel
 
-      const openLoginHandler = OpenLoginHandler.getInstance(sessionNamespace, whiteLabel, loginConfig)
+      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
       const { state } = openLoginHandler.openLoginInstance
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()

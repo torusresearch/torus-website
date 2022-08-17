@@ -1,6 +1,7 @@
 // import randomId from '@chaitanyapotti/random-id'
 import { EventEmitter } from 'events'
 
+import config from '../../config'
 import { FEATURES_DEFAULT_POPUP_WINDOW } from '../../utils/enums'
 import StreamWindow from './StreamWindow'
 
@@ -8,6 +9,10 @@ class PopupHandler extends EventEmitter {
   constructor({ url, target, features, preopenInstanceId }) {
     super()
     const localUrl = url instanceof URL ? url : new URL(url)
+    if (config.isCustomLogin) {
+      if (localUrl.hash) localUrl.hash += `&dappStorageKey=${config.isCustomLogin}`
+      else localUrl.hash = `#isCustomLogin=${config.isCustomLogin}`
+    }
     this.url = localUrl.href
     this.target = target || '_blank'
     this.features = features || FEATURES_DEFAULT_POPUP_WINDOW

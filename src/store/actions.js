@@ -150,7 +150,7 @@ export default {
     if (isMain && selectedAddress) {
       router.push({ path: '/logout' }).catch(() => {})
       try {
-        const openLoginHandler = OpenLoginHandler.getInstance(getIFrameOriginObject())
+        const openLoginHandler = OpenLoginHandler.getInstance()
         await openLoginHandler.invalidateSession()
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
@@ -278,8 +278,6 @@ export default {
     }
 
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
-    prefsController.getBillboardContents()
-    prefsController.getAnnouncementsContents()
     // TODO: deprecate rehydrate false for the next major version bump
     statusStream.write({ loggedIn: true, rehydrate: false, verifier: userInfo.verifier })
     loginWithPrivateKeyStream.write({
@@ -298,6 +296,25 @@ export default {
       rehydrate: false,
     })
     dispatch('updateSelectedAddress', { selectedAddress: address })
+    const openloginInstance = OpenLoginHandler.getInstance()
+    const existingSessionData = await openloginInstance.getActiveSession()
+    if (!existingSessionData) {
+      dispatch('logOut')
+      return ''
+    }
+    const { accounts: oldAccounts = {} } = existingSessionData
+    const sessionData = {
+      ...existingSessionData,
+      accounts: {
+        ...oldAccounts,
+        [address]: {
+          ethAddress: address,
+          privKey,
+          accountType: ACCOUNT_TYPE.IMPORTED,
+        },
+      },
+    }
+    await openloginInstance.updateSession(sessionData)
     return privKey
   },
   addWallet(context, payload) {
@@ -419,7 +436,7 @@ export default {
     }
   },
   async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
-    const openLoginHandler = OpenLoginHandler.getInstance(getIFrameOriginObject())
+    const openLoginHandler = OpenLoginHandler.getInstance()
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()
     commit('setUserInfo', userInfo)
@@ -438,7 +455,7 @@ export default {
     })
   },
   async getUserDapps({ commit, dispatch, state }, { postboxKey, calledFromEmbed }) {
-    const openLoginHandler = OpenLoginHandler.getInstance(getIFrameOriginObject())
+    const openLoginHandler = OpenLoginHandler.getInstance()
     const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
     commit('setUserDapps', userDapps)
     await dispatch('initTorusKeyring', {
@@ -521,9 +538,6 @@ export default {
     }
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
 
-    prefsController.getBillboardContents()
-    prefsController.getAnnouncementsContents()
-
     // continue enable function
     if (calledFromEmbed) {
       setTimeout(() => {
@@ -556,7 +570,7 @@ export default {
     try {
       const currentRoute = router.match(window.location.pathname)
       if (!currentRoute.meta.skipOpenLoginCheck) {
-        const openLoginHandler = OpenLoginHandler.getInstance(getIFrameOriginObject())
+        const openLoginHandler = OpenLoginHandler.getInstance()
         const sessionInfo = await openLoginHandler.getActiveSession()
         if (!sessionInfo) {
           await dispatch('logOut')
@@ -582,14 +596,12 @@ export default {
             )
             const { redirect } = noRedirectQuery
             delete noRedirectQuery.redirect
-            const iframeOrigin = getIFrameOriginObject()
             const appStateParams = JSON.parse(safeatob(store.appState))
-            const appSessionData = appStateParams[iframeOrigin] || appStateParams
-            if (appSessionData?.whiteLabel) {
-              commit('setWhiteLabel', { ...appSessionData.whiteLabel })
+            if (appStateParams?.whiteLabel) {
+              commit('setWhiteLabel', { ...appStateParams.whiteLabel })
             }
-            if (appSessionData?.loginConfig) {
-              commit('setLoginConfig', { ...appSessionData?.loginConfig })
+            if (appStateParams?.loginConfig) {
+              commit('setLoginConfig', { ...appStateParams?.loginConfig })
             }
             router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})
           }

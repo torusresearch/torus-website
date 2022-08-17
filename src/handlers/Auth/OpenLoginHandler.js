@@ -10,19 +10,19 @@ import config from '../../config'
 import torus from '../../torus'
 import { ACCOUNT_TYPE } from '../../utils/enums'
 import { get, post } from '../../utils/httpHelpers'
-import { generateTorusAuthHeaders } from '../../utils/utils'
+import { generateTorusAuthHeaders, getIFrameOriginObject } from '../../utils/utils'
 
 class OpenLoginHandler {
   static openLoginHandlerInstance = null
 
-  static getInstance(iframeOrigin, whiteLabel = {}, loginConfig = {}) {
+  static getInstance(whiteLabel = {}, loginConfig = {}) {
     if (OpenLoginHandler.openLoginHandlerInstance) return OpenLoginHandler.openLoginHandlerInstance
-    OpenLoginHandler.openLoginHandlerInstance = new OpenLoginHandler(iframeOrigin, whiteLabel, loginConfig)
+    OpenLoginHandler.openLoginHandlerInstance = new OpenLoginHandler(whiteLabel, loginConfig)
     return OpenLoginHandler.openLoginHandlerInstance
   }
 
   // This constructor is private. Don't call it
-  constructor(iframeOrigin, whiteLabel = {}, loginConfig = {}) {
+  constructor(whiteLabel = {}, loginConfig = {}) {
     const whiteLabelOpenLogin = {}
     if (whiteLabel.theme) {
       if (whiteLabel.theme.isDark) whiteLabelOpenLogin.dark = true
@@ -52,7 +52,7 @@ class OpenLoginHandler {
       loginConfig,
       network: config.torusNetwork,
       no3PC: true,
-      _sessionNamespace: Object.keys(whiteLabel).length > 0 || isCustomVerifier ? iframeOrigin.hostname : undefined,
+      _sessionNamespace: Object.keys(whiteLabel).length > 0 || isCustomVerifier ? getIFrameOriginObject().hostname : undefined,
     })
   }
 
@@ -90,7 +90,7 @@ class OpenLoginHandler {
         const encData = await encryptData(sessionId, sessionData)
         const signatureBf = await sign(privKey, keccak256(encData))
         const signature = signatureBf.toString('hex')
-        await post(`${config.storageServerUrl}/store/update`, { key: publicKeyHex, data: encData, signature, namespace: sessionNamespace })
+        await post(`${config.storageServerUrl}/store/set`, { key: publicKeyHex, data: encData, signature, namespace: sessionNamespace })
         this.openLoginInstance._syncState(sessionData)
       }
     } catch (error) {
@@ -152,7 +152,7 @@ class OpenLoginHandler {
   }
 
   getKeysInfo() {
-    const { state } = this.openLoginInstance
+    const { state, store } = this.openLoginInstance
     // keys
     const keys = []
     if (state.walletKey) {
@@ -168,6 +168,16 @@ class OpenLoginHandler {
         privKey: state.tKey.padStart(64, '0'),
         accountType: ACCOUNT_TYPE.THRESHOLD,
         ethAddress: torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex')),
+      })
+    }
+    const allInfo = store.getStore()
+    if (allInfo.accounts && typeof allInfo.accounts === 'object') {
+      Object.values(allInfo.accounts).forEach((val) => {
+        keys.push({
+          privKey: val.privKey.padStart(64, '0'),
+          accountType: val.accountType,
+          ethAddress: val.ethAddress,
+        })
       })
     }
 
