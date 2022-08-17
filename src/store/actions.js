@@ -558,6 +558,10 @@ export default {
       if (!currentRoute.meta.skipOpenLoginCheck) {
         const openLoginHandler = OpenLoginHandler.getInstance(getIFrameOriginObject())
         const sessionInfo = await openLoginHandler.getActiveSession()
+        if (!sessionInfo) {
+          await dispatch('logOut')
+          return
+        }
         const { store } = sessionInfo
         // log.info(sessionInfo, 'current session info')
         if (sessionInfo && (sessionInfo.walletKey || sessionInfo.tKey)) {
