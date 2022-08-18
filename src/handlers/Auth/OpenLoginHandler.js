@@ -170,9 +170,8 @@ class OpenLoginHandler {
         ethAddress: torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex')),
       })
     }
-    const allInfo = state.store.getStore()
-    if (allInfo.accounts && typeof allInfo.accounts === 'object') {
-      Object.values(allInfo.accounts).forEach((val) => {
+    if (state.accounts && typeof state.accounts === 'object') {
+      Object.values(state.accounts).forEach((val) => {
         keys.push({
           privKey: val.privKey.padStart(64, '0'),
           accountType: val.accountType,
