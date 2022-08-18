@@ -27,7 +27,7 @@
                   :value="customAddress"
                   :rules="[rules.required, duplicateTokenRule, addressValidityRule]"
                   outlined
-                  @change="onCustomAddressChange"
+                  @keyup="onCustomAddressChange"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12>
@@ -185,13 +185,13 @@ export default {
   },
   methods: {
     ...mapActions(['addCustomToken', 'deleteCustomToken']),
-    async onCustomAddressChange(value) {
-      this.customAddress = value
+    async onCustomAddressChange(e) {
+      this.customAddress = e.target.value
       // log.debug(await torus.web3.eth.getCode(value))
-      this.isValidAddress = await validateContractAddress(torus.web3, value, this.$store.state.networkId)
+      this.isValidAddress = await validateContractAddress(torus.web3, this.customAddress, this.$store.state.networkId)
       if (this.isValidAddress) {
         try {
-          this.currentToken = new TokenHandler({ address: value.toLowerCase(), web3: torus.web3 })
+          this.currentToken = new TokenHandler({ address: this.customAddress.toLowerCase(), web3: torus.web3 })
           const [symbol, name, balance, decimals] = await Promise.all([
             this.currentToken.getSymbol(),
             this.currentToken.getName(),
