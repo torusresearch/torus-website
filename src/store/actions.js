@@ -592,8 +592,8 @@ export default {
             if (appStateParams?.whiteLabel) {
               commit('setWhiteLabel', { ...appStateParams.whiteLabel })
             }
-            if (appStateParams?.loginConfig) {
-              commit('setLoginConfig', { ...appStateParams?.loginConfig })
+            if (appStateParams?.loginConfig && typeof appStateParams.loginConfig === 'object' && Object.keys(appStateParams.loginConfig).length > 0) {
+              commit('setLoginConfig', { ...appStateParams.loginConfig })
             }
             router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})
           }

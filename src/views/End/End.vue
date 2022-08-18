@@ -77,8 +77,9 @@ export default {
 
       let loginError = ''
 
+      let resultParams = {}
       if (result) {
-        const resultParams = JSON.parse(safeatob(result))
+        resultParams = JSON.parse(safeatob(result))
         loginError = resultParams.error
         const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
         const appSessionData = appStateParams[getIFrameOrigin()] || appStateParams
@@ -90,6 +91,7 @@ export default {
       this.whiteLabel = whiteLabel
 
       const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
+      await openLoginHandler.openLoginInstance._syncState(resultParams)
       const { state } = openLoginHandler.openLoginInstance
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()
