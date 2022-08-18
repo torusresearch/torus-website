@@ -77,7 +77,11 @@ export default {
 
       let loginError = ''
 
-      let resultParams = {}
+      let resultParams = {
+        store: {},
+      }
+      const sessionId = hashUrl.searchParams.get('sessionId') || ''
+      const sessionNamespace = hashUrl.searchParams.get('sessionNamespace') || ''
       if (result) {
         resultParams = JSON.parse(safeatob(result))
         loginError = resultParams.error
@@ -91,7 +95,14 @@ export default {
       this.whiteLabel = whiteLabel
 
       const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
-      await openLoginHandler.openLoginInstance._syncState(resultParams)
+      await openLoginHandler.openLoginInstance._syncState({
+        ...resultParams,
+        store: {
+          ...resultParams.store,
+          sessionId,
+          sessionNamespace,
+        },
+      })
       const { state } = openLoginHandler.openLoginInstance
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()
