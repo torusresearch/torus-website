@@ -38,7 +38,7 @@ function onloadTorus(torus) {
   let sessionData
 
   if (config.localStorageAvailable) {
-    const storage = window.localStorageAvailable
+    const storage = window.localStorage
     sessionData = storage.getItem('torus-app')
   }
 

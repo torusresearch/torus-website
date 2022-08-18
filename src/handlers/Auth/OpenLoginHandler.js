@@ -152,7 +152,7 @@ class OpenLoginHandler {
   }
 
   getKeysInfo() {
-    const { state, store } = this.openLoginInstance
+    const { state } = this.openLoginInstance
     // keys
     const keys = []
     if (state.walletKey) {
@@ -170,7 +170,7 @@ class OpenLoginHandler {
         ethAddress: torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex')),
       })
     }
-    const allInfo = store.getStore()
+    const allInfo = state.store.getStore()
     if (allInfo.accounts && typeof allInfo.accounts === 'object') {
       Object.values(allInfo.accounts).forEach((val) => {
         keys.push({
