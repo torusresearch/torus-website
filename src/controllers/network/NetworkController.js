@@ -251,7 +251,8 @@ export default class NetworkController extends EventEmitter {
     const currentProviderConfig = this.getProviderConfig()
     const areNetworksEqual = areProviderConfigsEqual(currentProviderConfig, providerConfig)
     log.info('current provider config', currentProviderConfig, 'new config', providerConfig, 'are networks equal', areNetworksEqual)
-    if (!areNetworksEqual) this.setProviderConfig(providerConfig)
+    // if (!areNetworksEqual) this.setProviderConfig(providerConfig)
+    this.setProviderConfig(providerConfig)
   }
 
   /**
