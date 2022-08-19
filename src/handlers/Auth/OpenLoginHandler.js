@@ -38,8 +38,8 @@ class OpenLoginHandler {
     if (whiteLabel.name) whiteLabelOpenLogin.name = whiteLabel.name
     if (whiteLabel.url) whiteLabelOpenLogin.url = whiteLabel.url
 
-    const isCustomVerifier = Object.keys(loginConfig).length > 0
-
+    const iframeObj = getIFrameOriginObject()
+    const namespace = config.isCustomLogin ? iframeObj.hostname : undefined
     this.openLoginInstance = new OpenLogin({
       clientId: config.openLoginClientId,
       redirectUrl: `${config.baseRoute}end`,
@@ -52,7 +52,7 @@ class OpenLoginHandler {
       loginConfig,
       network: config.torusNetwork,
       no3PC: true,
-      _sessionNamespace: Object.keys(whiteLabel).length > 0 || isCustomVerifier ? getIFrameOriginObject().hostname : undefined,
+      _sessionNamespace: namespace,
     })
   }
 
@@ -83,7 +83,9 @@ class OpenLoginHandler {
 
   async updateSession(sessionData) {
     try {
-      const { sessionId, sessionNamespace } = this.openLoginInstance.state.store.getStore()
+      const { sessionId } = this.openLoginInstance.state.store.getStore()
+      const { sessionNamespace } = this.openLoginInstance.state
+
       if (sessionId) {
         const privKey = Buffer.from(sessionId, 'hex')
         const publicKeyHex = getPublic(privKey).toString('hex')
@@ -100,7 +102,8 @@ class OpenLoginHandler {
 
   async invalidateSession() {
     try {
-      const { sessionId, sessionNamespace } = this.openLoginInstance.state.store.getStore()
+      const { sessionId } = this.openLoginInstance.state.store.getStore()
+      const { sessionNamespace } = this.openLoginInstance.state
       if (sessionId) {
         const privKey = Buffer.from(sessionId, 'hex')
         const publicKeyHex = getPublic(privKey).toString('hex')

@@ -125,7 +125,6 @@ export default {
 
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     torusController.lock()
-
     statusStream.write({ loggedIn: false })
     resetStore(accountTracker.store, accountTrackerHandler)
     resetStore(txController.store, transactionControllerHandler)
@@ -147,10 +146,15 @@ export default {
     resetStore(watchAssetManager.store, unapprovedAssetMsgsHandler)
     assetDetectionController.stopAssetDetection()
     // torus.updateStaticData({ isUnlocked: false })
-    if (isMain && selectedAddress) {
-      router.push({ path: '/logout' }).catch(() => {})
+    if (selectedAddress) {
+      const openLoginHandler = OpenLoginHandler.getInstance()
+      if (isMain) {
+        router.push({ path: '/logout' }).catch(() => {})
+      } else {
+        // optimistically removing sessionId.
+        openLoginHandler.openLoginInstance.state.store.set('sessionId', null)
+      }
       try {
-        const openLoginHandler = OpenLoginHandler.getInstance()
         await openLoginHandler.invalidateSession()
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
@@ -584,7 +588,7 @@ export default {
           // call autoLogin
           log.info('auto-login with openlogin session')
           await dispatch('autoLogin', { calledFromEmbed: !isMain })
-          if (currentRoute.name !== 'popup' && currentRoute.meta.requiresAuth === false) {
+          if (currentRoute.name !== 'popup' && !currentRoute.meta.requiresAuth) {
             const noRedirectQuery = Object.fromEntries(new URLSearchParams(window.location.search))
             const { redirect } = noRedirectQuery
             delete noRedirectQuery.redirect
