@@ -114,8 +114,9 @@ function calculateBalances(state, y) {
   const tokenData = tokenDataState
   const tokenRates = tokenRatesState
   const formatter = selectedCurrency !== networkType.ticker ? 2 : 3
-  let full = [
-    {
+  let full = []
+  if (!networkType?.isErc20) {
+    full.push({
       balance: weiBalance[y] || '0',
       decimals: 18,
       erc20: false,
@@ -123,12 +124,13 @@ function calculateBalances(state, y) {
       name: networkType.tickerName || '',
       symbol: networkType.ticker,
       tokenAddress: '0x',
-    },
-  ]
+    })
+  }
   if (tokenData && tokenData[y] && Object.keys(tokenData[y]).length > 0) {
     full = [...full, ...tokenData[y].filter((x) => x.network === networkType.host)]
   }
   let totalPortfolioValue = new BigNumber(0)
+
   const finalBalancesArray = full.map((x) => {
     const computedBalance = new BigNumber(x.balance).dividedBy(new BigNumber(10).pow(new BigNumber(x.decimals))) || new BigNumber(0)
     let tokenRateMultiplierNumber = 1

@@ -60,7 +60,7 @@
               </div>
             </div>
             <div class="ml-auto align-self-end text-right">
-              <span class="description text_3--text" :style="{ lineHeight: '0' }">{{ finalBalancesArray[0].currencyRateText }}</span>
+              <span class="description text_3--text" :style="{ lineHeight: '0' }">{{ finalBalancesArray[0]?.currencyRateText || '' }}</span>
             </div>
           </div>
           <v-layout wrap class="mx-n3 mt-2">

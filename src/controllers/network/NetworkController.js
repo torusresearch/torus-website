@@ -15,7 +15,7 @@ import log from 'loglevel'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 
 import { ETH, INFURA_PROVIDER_TYPES, LOCALHOST, MAINNET, MAINNET_CHAIN_ID, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
-import { areProviderConfigsEqual } from '../../utils/utils'
+// import { areProviderConfigsEqual } from '../../utils/utils'
 import { createInfuraClient } from './createInfuraClient'
 import { createJsonRpcClient } from './createJsonRpcClient'
 import createMetamaskMiddleware from './createMetamaskMiddleware'
@@ -248,10 +248,11 @@ export default class NetworkController extends EventEmitter {
     const { chainId, ...rest } = SUPPORTED_NETWORK_TYPES[type]
     const providerConfig = { type, rpcUrl, ticker, nickname, chainId, ...rest }
     // get current provider config and check if it is the same as the new one
-    const currentProviderConfig = this.getProviderConfig()
-    const areNetworksEqual = areProviderConfigsEqual(currentProviderConfig, providerConfig)
-    log.info('current provider config', currentProviderConfig, 'new config', providerConfig, 'are networks equal', areNetworksEqual)
-    if (!areNetworksEqual) this.setProviderConfig(providerConfig)
+    // const currentProviderConfig = this.getProviderConfig()
+    // const areNetworksEqual = areProviderConfigsEqual(currentProviderConfig, providerConfig)
+    // log.info('current provider config', currentProviderConfig, 'new config', providerConfig, 'are networks equal', areNetworksEqual)
+    // if (!areNetworksEqual) this.setProviderConfig(providerConfig)
+    this.setProviderConfig(providerConfig)
   }
 
   /**
