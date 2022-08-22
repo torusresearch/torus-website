@@ -27,8 +27,8 @@ let vuexPersist
 
 if (config.localStorageAvailable) {
   vuexPersist = new VuexPersistence({
-    key: config.isCustomLogin ? `torus_app_${getIFrameOriginObject().hostname}` : 'torus-app',
-    storage: window.localStorageAvailable,
+    key: config.isCustomLogin === true ? `torus_app_${getIFrameOriginObject().hostname}` : 'torus-app',
+    storage: config.isCustomLogin === null ? (config.sessionStorageAvailable ? window.sessionStorage : window.localStorage) : window.localStorage,
     reducer: (state) => ({
       selectedAddress: state.selectedAddress,
       networkType: state.networkType,

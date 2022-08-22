@@ -496,5 +496,5 @@ export default {
     // }),
   },
   loginsWithLightLogo: [APPLE, GITHUB, JWT],
-  isCustomLogin: isCustomLogin ? Boolean(isCustomLogin) : null,
+  isCustomLogin: isCustomLogin === 'true' ? true : isCustomLogin === 'false' ? false : null,
 }
