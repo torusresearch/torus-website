@@ -21,7 +21,6 @@ export default class AssetsDetectionController {
     this.web3 = new Web3(this._provider)
     this.assetController = options.assetController
     this.getNfts = options.getNfts
-    this.getOpenSeaCollectibles = options.getOpenSeaCollectibles
     this.currentNetwork = null
     this.preferencesStore = options.preferencesStore
     this.selectedCustomNfts = []

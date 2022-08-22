@@ -193,7 +193,6 @@ export default class TorusController extends SafeEventEmitter {
       assetController: this.assetController,
       preferencesStore: this.prefsController.store,
       getNfts: this.prefsController.getNfts.bind(this.prefsController),
-      getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
     })
 
     this.networkController.lookupNetwork()

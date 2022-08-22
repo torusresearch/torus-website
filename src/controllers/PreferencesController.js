@@ -808,11 +808,6 @@ class PreferencesController extends SafeEventEmitter {
   }
 
   /* istanbul ignore next */
-  async getOpenSeaCollectibles(api) {
-    return this.api.get(`${config.api}/opensea?url=${encodeURIComponent(api)}`, this.headers(), { useAPIKey: true })
-  }
-
-  /* istanbul ignore next */
   async getTwitterId(payload) {
     const userId = await this.api.get(`${config.api}/twitter?screen_name=${payload.nick}`, this.headers(), { useAPIKey: true })
     return `${payload.typeOfLogin.toLowerCase()}|${userId.data.toString()}`
