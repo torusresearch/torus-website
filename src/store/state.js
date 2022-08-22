@@ -59,6 +59,7 @@ const initialState = {
     loginConfig: cloneDeep(config.loginConfig),
     isOAuthModalVisible: false,
     buttonPosition: 'bottom-left',
+    buttonSize: 56,
     torusWidgetVisibility: true,
     apiKey: 'torus-default',
     skipTKey: false,

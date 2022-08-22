@@ -168,6 +168,9 @@ export default {
   setButtonPosition(state, payload) {
     state.embedState = { ...state.embedState, buttonPosition: payload || 'bottom-left' }
   },
+  setButtonSize(state, payload) {
+    state.embedState = { ...state.embedState, buttonSize: payload || 56 }
+  },
   async setWhiteLabel(state, payload) {
     if (!payload && config.sessionStorageAvailable) {
       state.whiteLabel = {

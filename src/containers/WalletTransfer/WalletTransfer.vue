@@ -82,11 +82,15 @@
                         </v-list-item-content>
                       </v-list-item>
                       <v-divider class="mx-3"></v-divider>
-                      <v-subheader v-if="finalBalancesArrayTokens.length > 0" class="body-2">
+                      <v-subheader v-if="finalBalancesArrayEthOnly.length > 0 && finalBalancesArrayTokens.length > 0" class="body-2">
                         <v-icon small left class="mr-2">$vuetify.icons.token</v-icon>
                         {{ t('walletTransfer.tokens') }}
                       </v-subheader>
-                      <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
+                      <v-list-item
+                        v-for="token in finalBalancesArrayTokens"
+                        :key="token.tokenAddress"
+                        @click="selectedItemChanged(token.tokenAddress)"
+                      >
                         <v-list-item-icon class="ml-8 mr-1">
                           <img
                             :src="`${logosUrl}/${token.logo}`"
@@ -681,7 +685,13 @@ export default {
       return this.tokenBalances.finalBalancesArray.filter((token) => token.tokenAddress === '0x') || []
     },
     selectedItem() {
-      return this.finalBalancesArray.find((x) => x.tokenAddress === this.selectedTokenAddress)
+      if (this.finalBalancesArrayEthOnly.length === 0 && this.finalBalancesArrayTokens.length > 0) {
+        if (this.tokenAddress !== this.finalBalancesArrayTokens[0].tokenAddress) {
+          this.selectedItemChanged(this.finalBalancesArrayTokens[0].tokenAddress)
+        }
+        return this.finalBalancesArrayTokens[0] || {}
+      }
+      return this.finalBalancesArray.find((x) => x.tokenAddress === this.selectedTokenAddress) || {}
     },
     selectedItemDisplay() {
       if (this.contractType !== CONTRACT_TYPE_ERC721 && this.contractType !== CONTRACT_TYPE_ERC1155) return this.selectedItem
