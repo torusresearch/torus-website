@@ -91,7 +91,7 @@
         </v-flex>
 
         <v-flex xs12>
-          <v-text-field v-model="rpc.rpcUrl" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
+          <v-text-field v-model="rpc.host" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
         </v-flex>
 
         <v-flex xs12>
