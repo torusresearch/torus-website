@@ -168,7 +168,7 @@
     "through2": "^4.0.2",
     "uglifyify": "^5.0.2",
     "url": "^0.11.0",
-    "vue-cli-plugin-vuetify": "^2.5.1",
+    "vue-cli-plugin-vuetify": "^2.5.4",
     "vue-cli-plugin-webpack-bundle-analyzer": "~4.0.0",
     "vue-template-compiler": "^2.7.8",
     "vuetify-loader": "^1.9.2",
