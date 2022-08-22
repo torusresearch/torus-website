@@ -43,7 +43,7 @@ function onloadTorus(torus) {
   }
 
   const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || SUPPORTED_NETWORK_TYPES[MAINNET]
-  const supportedNetworks = (sessionData && JSON.parse(sessionData).supportedNetworks) || SUPPORTED_NETWORK_TYPES
+  const supportedNetworks = (sessionData && JSON.parse(sessionData).supportedNetworks) || {}
 
   const torusController = new TorusController({
     initState: {

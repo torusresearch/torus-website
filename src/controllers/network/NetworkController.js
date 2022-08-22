@@ -34,7 +34,7 @@ export default class NetworkController extends EventEmitter {
     super()
     this.defaultMaxListeners = 100
     const providerConfig = options.provider || defaultProviderConfig
-    const supportedNetworkStore = options.supportedNetworks || SUPPORTED_NETWORK_TYPES
+    const supportedNetworkStore = options.supportedNetworks || {}
     // if (!SUPPORTED_NETWORK_TYPES[providerConfig.rpcTarget]) {
     //   providerConfig.type = RPC
     // }
@@ -148,7 +148,10 @@ export default class NetworkController extends EventEmitter {
    * Get supported networks
    */
   get getSupportedNetworks() {
-    return this.supportedNetworkStore.getState()
+    return {
+      ...this.supportedNetworkStore.getState(),
+      ...SUPPORTED_NETWORK_TYPES,
+    }
   }
 
   /**
