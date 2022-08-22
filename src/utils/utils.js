@@ -810,11 +810,7 @@ export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifier
 }
 
 export const handleRedirectParameters = (hash, queryParameters) => {
-  const hashParameters = hash.split('&').reduce((result, item) => {
-    const [part0, part1] = item.split('=')
-    result[part0] = part1
-    return result
-  }, {})
+  const hashParameters = Object.fromEntries(new URLSearchParams(hash))
   log.info(hashParameters, queryParameters)
   let instanceParameters = {}
   let error = ''

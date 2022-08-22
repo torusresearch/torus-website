@@ -9,7 +9,7 @@ import { toHex } from 'web3-utils'
 
 import TokenHandler from '../handlers/Token/TokenHandler'
 import contracts from '../utils/contractMetadata'
-import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET } from '../utils/enums'
+import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, SUPPORTED_NETWORK_TYPES } from '../utils/enums'
 import { idleTimeTracker, toChecksumAddressByChainId } from '../utils/utils'
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
@@ -71,16 +71,37 @@ class DetectTokensController {
   async detectNewTokens() {
     const userAddress = this.selectedAddress
     if (!userAddress) return
-    if (this.network.getNetworkIdentifier() !== MAINNET) {
-      this.detectedTokensStore.updateState({ [userAddress]: [] })
+    const currentNetworkId = this.network.getNetworkIdentifier()
+    const tokensToDetect = []
+    if (!currentNetworkId) {
+      this.detectedTokensStore.updateState({ [userAddress]: [...tokensToDetect] })
       return
     }
-    const tokensToDetect = []
-    for (const contractAddress in contracts) {
-      if (contracts[contractAddress].erc20) {
-        tokensToDetect.push(contractAddress)
+    if (currentNetworkId === MAINNET) {
+      for (const contractAddress in contracts) {
+        if (contracts[contractAddress].erc20) {
+          tokensToDetect.push(contractAddress)
+        }
       }
+      this.detectedTokensStore.updateState({ [userAddress]: tokensToDetect })
+    } else {
+      const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkId]
+
+      if (networkConfig?.isErc20 && networkConfig?.tokenAddress) {
+        tokensToDetect.push({
+          tokenAddress: networkConfig.tokenAddress,
+          name: networkConfig.tickerName,
+          logo: networkConfig.logo,
+          erc20: true,
+          symbol: networkConfig.ticker,
+          decimals: 18,
+          network: networkConfig.host,
+        })
+      }
+      await this.getCustomTokenBalances([...tokensToDetect])
+      return
     }
+
     if (tokensToDetect.length > 0) {
       const web3Instance = this.web3
       const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
@@ -189,10 +210,10 @@ class DetectTokensController {
       currentNetworkTokens.map(async (x) => {
         try {
           const tokenInstance = new TokenHandler({
-            address: x.token_address,
+            address: x.token_address || x.tokenAddress,
             decimals: x.decimals,
-            name: x.token_name,
-            symbol: x.token_symbol,
+            name: x.token_name || x.name,
+            symbol: x.token_symbol || x.symbol,
             web3: this.web3,
           })
           const balance = await tokenInstance.getUserBalance(userAddress)
