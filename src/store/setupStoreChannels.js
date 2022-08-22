@@ -66,6 +66,7 @@ if (!isMain) {
         apiKey = 'torus-default',
         whiteLabel = {},
         buttonPosition = '',
+        buttonSize = 56,
         torusWidgetVisibility = true,
         loginConfig = {},
         skipTKey = false,
@@ -75,6 +76,7 @@ if (!isMain) {
     } = chunk
     if (name === 'init_stream') {
       VuexStore.commit('setButtonPosition', buttonPosition)
+      VuexStore.commit('setButtonSize', buttonSize)
       VuexStore.commit('setAPIKey', apiKey)
       if (Object.keys(whiteLabel).length > 0) {
         VuexStore.commit('setWhiteLabel', whiteLabel)

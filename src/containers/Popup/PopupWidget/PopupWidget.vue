@@ -1,7 +1,7 @@
 <template>
   <div class="torus-widget" :class="embedState.buttonPosition">
     <v-dialog v-if="loggedIn" v-model="activeWidget" max-width="375" @click:outside="showWidget">
-      <div class="torus-widget__panel pa-4" :class="[embedState.buttonPosition, $vuetify.theme.isDark ? 'isDark' : '']">
+      <div class="torus-widget__panel pa-4" :class="$vuetify.theme.isDark ? 'isDark' : ''" :style="panelStyle">
         <div class="d-flex torus-widget__user-details">
           <div class="avatar-container">
             <v-avatar size="32">
@@ -151,15 +151,26 @@
         </div>
       </div>
     </v-dialog>
-    <v-btn v-if="loggedIn" class="torus-widget__btn" color="primary" fab aria-label="Show/Hide Widget Panel" @click="showWidget">
-      <img class="torus-widget__logo" :class="getWhitelabelIcon.isExternal ? '' : 'torus-logo'" :src="getWhitelabelIcon.logo" alt="Torus Logo" />
+    <v-btn v-if="loggedIn" class="torus-widget__btn" color="primary" fab aria-label="Show/Hide Widget Panel" :style="buttonStyle" @click="showWidget">
+      <img
+        class="torus-widget__logo"
+        :class="getWhitelabelIcon.isExternal ? '' : 'torus-logo'"
+        :src="getWhitelabelIcon.logo"
+        alt="Torus Logo"
+        :style="{ width: `${embedState.buttonSize - 14}px`, height: `${embedState.buttonSize - 14}px` }"
+      />
     </v-btn>
-    <v-btn v-else-if="loginDialog" color="primary" fab>
-      <BeatLoader size="10px" color="white" />
+    <v-btn v-else-if="loginDialog" color="primary" :style="buttonStyle" fab>
+      <BeatLoader :size="loaderSize" color="white" />
     </v-btn>
-    <v-btn v-else class="torus-widget__login-btn" color="primary" fab @click="login">
-      <img class="torus-widget__login" src="../../../assets/images/login.png" alt="Login Icon" />
-      <span class="torus-widget__login-with">Login</span>
+    <v-btn v-else class="torus-widget__login-btn" color="primary" fab :style="buttonStyle" @click="login">
+      <img
+        class="torus-widget__login"
+        src="../../../assets/images/login.png"
+        alt="Login Icon"
+        :style="{ width: `${embedState.buttonSize - 16}px`, height: `${embedState.buttonSize - 16}px` }"
+      />
+      <span class="torus-widget__login-with" :style="loginLabelStyle">Login</span>
     </v-btn>
   </div>
 </template>
@@ -180,6 +191,13 @@ import {
   TRANSACTION_TYPES,
 } from '../../../utils/enums'
 import { addressSlicer, getUserEmail, getUserIcon } from '../../../utils/utils'
+
+const BUTTON_POSITION = {
+  BOTTOM_LEFT: 'bottom-left',
+  TOP_LEFT: 'top-left',
+  BOTTOM_RIGHT: 'bottom-right',
+  TOP_RIGHT: 'top-right',
+}
 
 export default {
   name: 'PopupWidget',
@@ -256,6 +274,47 @@ export default {
     },
     accountType() {
       return this.wallet[this.fullAddress]?.accountType
+    },
+    buttonStyle() {
+      return {
+        width: `${this.embedState.buttonSize}px`,
+        height: `${this.embedState.buttonSize}px`,
+        borderRadius: `${this.embedState.buttonSize / 2}px`,
+      }
+    },
+    panelStyle() {
+      const panelPositionSize = `${Math.ceil((this.embedState.buttonSize + 14) / 2)}px` // 14px padding
+      if (this.embedState.buttonPosition === BUTTON_POSITION.TOP_LEFT)
+        return {
+          top: panelPositionSize,
+          left: panelPositionSize,
+        }
+      if (this.embedState.buttonPosition === BUTTON_POSITION.TOP_RIGHT)
+        return {
+          top: panelPositionSize,
+          right: panelPositionSize,
+        }
+      if (this.embedState.buttonPosition === BUTTON_POSITION.BOTTOM_RIGHT)
+        return {
+          bottom: panelPositionSize,
+          right: panelPositionSize,
+        }
+
+      return {
+        bottom: panelPositionSize,
+        left: panelPositionSize,
+      }
+    },
+    loginLabelStyle() {
+      const fontSize = this.embedState.buttonSize - 20
+      return {
+        fontSize: `${fontSize > 12 ? 12 : fontSize}px`,
+      }
+    },
+    loaderSize() {
+      if (this.embedState.buttonSize <= 40) return '6px'
+      if (this.embedState.buttonSize <= 50) return '8px'
+      return '10px'
     },
   },
   methods: {
