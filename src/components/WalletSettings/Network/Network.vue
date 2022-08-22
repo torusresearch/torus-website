@@ -218,7 +218,7 @@ export default {
         this.$store
           .dispatch('setProviderType', payload)
           .then(() => {
-            this.updateData()
+            this.toggleNetworkView()
             this.showNotification(true)
             this.sendToIframe(payload)
           })
@@ -234,8 +234,8 @@ export default {
         this.$store
           .dispatch('updateCustomNetwork', this.rpc)
           .then(() => {
-            this.updateData()
             this.isEdit = false
+            this.toggleNetworkView()
             this.showNotification(true)
             this.sendToIframe(payload)
           })
@@ -258,20 +258,16 @@ export default {
         providerChangeChannel.close()
       }
     },
-    toggleNetworkView() {
+    toggleNetworkView(network) {
       this.addCustomNetwork = !this.addCustomNetwork
-      this.rpc = { chainId: '', networkName: '', host: '', blockExplorer: '', ticker: '' }
+      this.rpc = network || { chainId: '', networkName: '', host: '', blockExplorer: '', ticker: '' }
     },
     selectedItemChanged(item) {
       this.changeNetwork(item)
     },
-    updateData() {
-      this.toggleNetworkView()
-    },
     editNetwork(network) {
       this.isEdit = true
-      this.toggleNetworkView()
-      this.rpc = network
+      this.toggleNetworkView(network)
     },
     deleteNetwork(network) {
       if (network) {
