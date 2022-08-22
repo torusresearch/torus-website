@@ -154,14 +154,7 @@ export default {
       router.push({ path: '/logout' }).catch(() => {})
       try {
         const openLoginHandler = OpenLoginHandler.getInstance()
-        await openLoginHandler.init()
-        const { openLoginInstance } = openLoginHandler
-        if (openLoginInstance.state.support3PC) {
-          await openLoginInstance._syncState(await openLoginInstance._getData())
-          await openLoginInstance.logout({ clientId: config.openLoginClientId })
-        } else {
-          await openLoginHandler.invalidateSession()
-        }
+        await openLoginHandler.invalidateSession()
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
         window.location.href = '/'
@@ -458,6 +451,7 @@ export default {
         ),
         skipTKey: state.embedState.skipTKey,
         whiteLabel,
+        mfaLevel: state.embedState.mfaLevel,
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
       })
@@ -496,7 +490,6 @@ export default {
   },
   async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
     const openLoginHandler = OpenLoginHandler.getInstance()
-    await openLoginHandler.init()
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()
     commit('setUserInfo', userInfo)
@@ -516,7 +509,6 @@ export default {
   },
   async getUserDapps({ commit, dispatch, state }, { postboxKey, calledFromEmbed }) {
     const openLoginHandler = OpenLoginHandler.getInstance()
-    await openLoginHandler.init()
     const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
     commit('setUserDapps', userDapps)
     await dispatch('initTorusKeyring', {
@@ -643,16 +635,7 @@ export default {
           log.info('auto-login with openlogin session')
           await dispatch('autoLogin', { calledFromEmbed: !isMain })
           if (currentRoute.name !== 'popup' && currentRoute.meta.requiresAuth === false) {
-            const noRedirectQuery = cloneDeep(
-              window.location.search
-                .slice(1)
-                .split('&')
-                .reduce((result, item) => {
-                  const [part0, part1] = item.split('=')
-                  result[part0] = part1
-                  return result
-                }, {})
-            )
+            const noRedirectQuery = Object.fromEntries(new URLSearchParams(window.location.search))
             const { redirect } = noRedirectQuery
             delete noRedirectQuery.redirect
             router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})

@@ -15,6 +15,7 @@ import log from 'loglevel'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 
 import { ETH, INFURA_PROVIDER_TYPES, LOCALHOST, MAINNET, MAINNET_CHAIN_ID, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
+import { areProviderConfigsEqual } from '../../utils/utils'
 import { createInfuraClient } from './createInfuraClient'
 import { createJsonRpcClient } from './createJsonRpcClient'
 import createMetamaskMiddleware from './createMetamaskMiddleware'
@@ -101,7 +102,7 @@ export default class NetworkController extends EventEmitter {
       ethQuery.sendAsync({ method: 'eth_getBlockByNumber', params: ['latest', false] }, (err, block) => {
         const currentNetwork = this.networkState
         if (currentNetwork !== initialNetwork) {
-          log.info('network has been changed')
+          log.info('network has been changed', initialNetwork, '->', currentNetwork)
           return resolve({})
         }
         if (err) {
@@ -298,7 +299,11 @@ export default class NetworkController extends EventEmitter {
     assert.ok(this.getSupportedNetworks[type] !== undefined, `NetworkController - Unknown rpc type "${type}"`)
     const { chainId, ...rest } = this.getSupportedNetworks[type]
     const providerConfig = { type, rpcUrl, ticker, nickname, chainId, ...rest }
-    this.setProviderConfig(providerConfig)
+    // get current provider config and check if it is the same as the new one
+    const currentProviderConfig = this.getProviderConfig()
+    const areNetworksEqual = areProviderConfigsEqual(currentProviderConfig, providerConfig)
+    log.info('current provider config', currentProviderConfig, 'new config', providerConfig, 'are networks equal', areNetworksEqual)
+    if (!areNetworksEqual) this.setProviderConfig(providerConfig)
   }
 
   /**

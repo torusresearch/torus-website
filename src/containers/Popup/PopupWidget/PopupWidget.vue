@@ -218,9 +218,9 @@ export default {
       whiteLabel: 'whiteLabel',
       networkType: 'networkType',
     }),
-    ...mapGetters({ getWhitelabelIcon: 'getIcon' }),
+    ...mapGetters({ getWhitelabelIcon: 'getIcon', tokenBalances: 'tokenBalances' }),
     totalPortfolioValue() {
-      return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
+      return this.tokenBalances.totalPortfolioValue || '0'
     },
     recentTransaction() {
       const oldTx = this.pastTransactions

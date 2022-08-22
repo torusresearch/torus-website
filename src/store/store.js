@@ -1,4 +1,5 @@
 import { setAPIKey } from '@toruslabs/http-helpers'
+import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -88,7 +89,7 @@ const fetchGasFeeEstimates = async (state) => {
 
 const VuexStore = new Vuex.Store({
   plugins: vuexPersist ? [vuexPersist.plugin] : [],
-  state: defaultState,
+  state: cloneDeep(defaultState),
   getters: defaultGetters,
   mutations,
   actions: {

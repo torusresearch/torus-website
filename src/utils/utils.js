@@ -274,6 +274,13 @@ export function significantDigits(number, perc = false, length_ = 2) {
   return roundedNumber
 }
 
+export function areProviderConfigsEqual(config1, config2) {
+  if (config1.chainId !== config2.chainId) return false
+  if (config1.host !== config2.host) return false
+  if (config1.rpcUrl !== config2.rpcUrl) return false
+  return true
+}
+
 export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', thousands = ',') {
   try {
     let amt = amount
@@ -803,11 +810,7 @@ export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifier
 }
 
 export const handleRedirectParameters = (hash, queryParameters) => {
-  const hashParameters = hash.split('&').reduce((result, item) => {
-    const [part0, part1] = item.split('=')
-    result[part0] = part1
-    return result
-  }, {})
+  const hashParameters = Object.fromEntries(new URLSearchParams(hash))
   log.info(hashParameters, queryParameters)
   let instanceParameters = {}
   let error = ''

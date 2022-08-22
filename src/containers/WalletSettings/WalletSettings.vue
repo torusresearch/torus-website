@@ -96,7 +96,6 @@
   </v-container>
 </template>
 <script>
-import log from 'loglevel'
 import { mapState } from 'vuex'
 
 import QuickAddress from '../../components/helpers/QuickAddress'
@@ -135,7 +134,6 @@ export default {
     },
     canShowSetCustomKey() {
       const normalAccount = Object.values(this.wallet).find((x) => x.accountType === ACCOUNT_TYPE.NORMAL) || {}
-      log.info(normalAccount.metadataNonceHex)
       return !!normalAccount.metadataNonceHex
     },
     hasThresholdLogged() {

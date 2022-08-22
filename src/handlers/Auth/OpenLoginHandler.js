@@ -50,6 +50,7 @@ class OpenLoginHandler {
       whiteLabel: whiteLabelOpenLogin,
       loginConfig,
       network: config.torusNetwork,
+      no3PC: true,
     })
   }
 
@@ -65,10 +66,12 @@ class OpenLoginHandler {
           this.openLoginInstance._syncState(loginDetails)
           return loginDetails
         }
+        this.openLoginInstance.state.store.set('sessionId', null)
       }
       return null
     } catch (error) {
       log.warn(error)
+      this.openLoginInstance.state.store.set('sessionId', null)
       return null
     }
   }
@@ -83,7 +86,7 @@ class OpenLoginHandler {
         const signatureBf = await sign(privKey, keccak256(encData))
         const signature = signatureBf.toString('hex')
         await post(`${config.storageServerUrl}/store/set`, { key: publicKeyHex, data: encData, signature, timeout: 1 })
-        this.openLoginInstance._syncState({})
+        this.openLoginInstance.state.store.set('sessionId', null)
       }
     } catch (error) {
       log.warn(error)
