@@ -164,7 +164,7 @@
     "stream-http": "^3.2.0",
     "stylus": "^0.58.1",
     "stylus-loader": "^7.0.0",
-    "terser-webpack-plugin": "^5.3.3",
+    "terser-webpack-plugin": "^5.3.5",
     "through2": "^4.0.2",
     "uglifyify": "^5.0.2",
     "url": "^0.11.0",
