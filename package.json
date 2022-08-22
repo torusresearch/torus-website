@@ -162,7 +162,7 @@
     "sinon": "^14.0.0",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
-    "stylus": "^0.58.1",
+    "stylus": "^0.59.0",
     "stylus-loader": "^7.0.0",
     "terser-webpack-plugin": "^5.3.5",
     "through2": "^4.0.2",
