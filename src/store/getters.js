@@ -1,13 +1,11 @@
 import BigNumber from 'bignumber.js'
 
+import fallBackLogoDark from '../assets/images/torus-logo-blue.svg'
+import fallBackLogoLight from '../assets/images/torus-logo-white.svg'
+import fallBackIconDark from '../assets/img/icons/torus-icon-light.svg'
 import config from '../config'
-import { ETH, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { ETH, SUPPORTED_NETWORK_TYPES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { significantDigits } from '../utils/utils'
-
-const fallBackLogoDark = require('#/assets/images/torus-logo-blue.svg')
-const fallBackLogoLight = require('#/assets/images/torus-logo-white.svg')
-
-const fallBackIconDark = require('#/assets/img/icons/torus-icon-light.svg')
 
 const getLogo = (state) => {
   const { whiteLabel, theme } = state
@@ -156,6 +154,8 @@ function calculateBalances(state, y) {
 
 const userDapps = (state) => state.userDapps
 
+const supportedNetworks = (state) => ({ ...state.supportedNetworks, ...SUPPORTED_NETWORK_TYPES })
+
 export default {
   unApprovedTransactions,
   tokenBalances,
@@ -168,4 +168,5 @@ export default {
   supportedCurrencies,
   filteredContacts,
   userDapps,
+  supportedNetworks,
 }

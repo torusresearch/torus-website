@@ -128,42 +128,6 @@ export class UserError extends Error {}
 export const getNetworkDisplayName = (key) => networkToNameMap[key]
 
 /**
- * Checks whether a storage type is available or not
- * For more info on how this works, please refer to MDN documentation
- * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
- *
- * @method storageAvailable
- * @param {String} type the type of storage ('localStorage', 'sessionStorage')
- * @returns {Boolean} a boolean indicating whether the specified storage is available or not
- */
-export function storageAvailable(type) {
-  let storage
-  try {
-    storage = window[type]
-    const x = '__storage_test__'
-    storage.setItem(x, x)
-    storage.removeItem(x)
-    return true
-  } catch (error) {
-    return (
-      error &&
-      // everything except Firefox
-      (error.code === 22 ||
-        // Firefox
-        error.code === 1014 ||
-        // test name field too, because code might not be present
-        // everything except Firefox
-        error.name === 'QuotaExceededError' ||
-        // Firefox
-        error.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
-      // acknowledge QuotaExceededError only if there's something already stored
-      storage &&
-      storage.length > 0
-    )
-  }
-}
-
-/**
  * Used to determine the window type through which the app is being viewed.
  *  - 'popup' refers to the extension opened through the browser app icon (in top right corner in chrome and firefox)
  *  - 'responsive' refers to the main browser window
@@ -308,6 +272,13 @@ export function significantDigits(number, perc = false, length_ = 2) {
   const shift = new BigNumber(10).pow(new BigNumber(depth))
   const roundedNumber = Math.round(shift.times(input).toNumber()) / shift
   return roundedNumber
+}
+
+export function areProviderConfigsEqual(config1, config2) {
+  if (config1.chainId !== config2.chainId) return false
+  if (config1.host !== config2.host) return false
+  if (config1.rpcUrl !== config2.rpcUrl) return false
+  return true
 }
 
 export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', thousands = ',') {
@@ -839,11 +810,7 @@ export const getVerifierId = (userInfo, typeOfLogin, verifierIdField, isVerifier
 }
 
 export const handleRedirectParameters = (hash, queryParameters) => {
-  const hashParameters = hash.split('&').reduce((result, item) => {
-    const [part0, part1] = item.split('=')
-    result[part0] = part1
-    return result
-  }, {})
+  const hashParameters = Object.fromEntries(new URLSearchParams(hash))
   log.info(hashParameters, queryParameters)
   let instanceParameters = {}
   let error = ''

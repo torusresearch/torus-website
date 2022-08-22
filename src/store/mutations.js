@@ -5,8 +5,7 @@ import config from '../config'
 import i18n, { loadLanguageAsync } from '../plugins/i18n-setup'
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
-import { LOCALES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
-import { storageAvailable } from '../utils/utils'
+import { LOCALES, SUPPORTED_NETWORK_TYPES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 export default {
   setWCConnectorSession(state, wcConnectorSession) {
@@ -38,7 +37,7 @@ export default {
     state.networkId = networkId
   },
   setNetworkType(state, networkType) {
-    const currentHosts = Object.keys(state.supportedNetworks)
+    const currentHosts = [...Object.keys(state.supportedNetworks), ...Object.keys(SUPPORTED_NETWORK_TYPES)]
     if (!currentHosts.includes(networkType.host)) {
       state.supportedNetworks = {
         ...state.supportedNetworks,
@@ -157,6 +156,12 @@ export default {
       skipTKey: payload || false,
     }
   },
+  setMfaLevel(state, payload) {
+    state.embedState = {
+      ...state.embedState,
+      mfaLevel: payload || 'default',
+    }
+  },
   setShowWalletConnect(state, payload) {
     state.embedState = {
       ...state.embedState,
@@ -167,7 +172,7 @@ export default {
     state.embedState = { ...state.embedState, buttonPosition: payload || 'bottom-left' }
   },
   async setWhiteLabel(state, payload) {
-    if (!payload && storageAvailable('sessionStorage')) {
+    if (!payload && config.sessionStorageAvailable) {
       state.whiteLabel = {
         isActive: false,
       }
@@ -182,7 +187,7 @@ export default {
     }
     localThemeSet(undefined, state)
     // Set locale here from defaultLanguage
-    if (storageAvailable('sessionStorage') && payload) {
+    if (config.sessionStorageAvailable && payload) {
       // Checks if whitelabel defaultLanguage is supported
       const selectedLocale = LOCALES.find((localeInner) => localeInner.value === payload.defaultLanguage)
       if (selectedLocale) {
@@ -211,20 +216,11 @@ export default {
   setEtherscanTx(state, payload) {
     state.etherscanTx = payload
   },
-  setBadgesCompletion(state, payload) {
-    state.badgesCompletion = payload
-  },
   setRehydrationStatus(state, payload) {
     state.isRehydrationComplete = payload
   },
-  setTKeyOnboardingComplete(state, payload) {
-    state.tKeyOnboardingComplete = payload
-  },
   setDefaultPublicAddress(state, payload) {
     state.defaultPublicAddress = payload
-  },
-  setTKey(state, payload) {
-    state.tKeyStore = payload
   },
   addConfirmModal(state, payload) {
     state.confirmModals = [...state.confirmModals, payload]
@@ -243,9 +239,6 @@ export default {
   },
   setPostboxKey(state, payload) {
     state.postboxKey = payload
-  },
-  setIsTkeySeedPhraseInputRequired(state, payload) {
-    state.isTkeySeedPhraseInputRequired = payload
   },
   setLoginInProgress(state, payload) {
     if (typeof window != 'undefined') {
@@ -284,9 +277,8 @@ function localThemeSet(payload, state) {
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
   }
-  const isLocalStorageAvailable = storageAvailable('localStorage')
-  if (isLocalStorageAvailable && payload) localStorage.setItem('torus-theme', payload)
-  if (isLocalStorageAvailable && !localStorage.getItem('torus-theme')) localStorage.setItem('torus-theme', state.theme)
+  if (config.localStorageAvailable && payload) localStorage.setItem('torus-theme', payload)
+  if (config.localStorageAvailable && !localStorage.getItem('torus-theme')) localStorage.setItem('torus-theme', state.theme)
 }
 async function updateDefaultLanguage(state, language) {
   state.locale = language

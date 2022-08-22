@@ -195,7 +195,6 @@ export default class TorusController extends SafeEventEmitter {
       getNfts: this.prefsController.getNfts.bind(this.prefsController),
     })
 
-    this.networkController.lookupNetwork()
     this.messageManager = new MessageManager()
     this.personalMessageManager = new PersonalMessageManager()
     this.typedMessageManager = new TypedMessageManager({ getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController) })
@@ -231,13 +230,6 @@ export default class TorusController extends SafeEventEmitter {
     this.memStore.subscribe(this.sendUpdate.bind(this))
 
     this.publicConfigStore = this.initPublicConfigStore()
-
-    if (typeof options.rehydrate === 'function') {
-      setTimeout(() => {
-        options.rehydrate()
-      }, 50)
-    }
-
     this.prefsController.on('addEtherscanTransactions', (txs, network) => {
       this.txController.addEtherscanTransactions(txs, network)
     })

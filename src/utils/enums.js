@@ -111,7 +111,7 @@ export const BSC_MAINNET_DISPLAY_NAME = 'Binance Smart Chain Mainnet'
 export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
 export const OKC_MAINNET_DISPLAY_NAME = 'OKXChain Mainnet'
 export const OKC_TESTNET_DISPLAY_NAME = 'OKXChain Testnet'
-export const XDAI_DISPLAY_NAME = 'xDai'
+export const XDAI_DISPLAY_NAME = 'Gnosis Chain'
 export const RSK_MAINNET_DISPLAY_NAME = 'RSK Mainnet'
 export const RSK_TESTNET_DISPLAY_NAME = 'RSK Testnet'
 export const REEF_DISPLAY_NAME = 'Reef Chain'
@@ -734,10 +734,6 @@ export const SAFE_METHODS = [
   'metamask_watchAsset',
   'wallet_watchAsset',
 ]
-
-export const BADGES_TOPUP = 'topUp'
-export const BADGES_TRANSACTION = 'transaction'
-export const BADGES_COLLECTIBLE = 'collectible'
 
 export const POPUP_LOADED = 'popup-loaded'
 export const POPUP_RESULT = 'popup_result'

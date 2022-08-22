@@ -7,10 +7,9 @@ import log from 'loglevel'
 import { isHexStrict } from 'web3-utils'
 
 import config from '../config'
-import { OpenLoginHandler } from '../handlers/Auth'
+import { OpenLoginHandler, OpenLoginWindowHandler } from '../handlers/Auth'
 import PopupHandler from '../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
-import { getOpenLoginInstance } from '../openlogin'
 // import vuetify from '../plugins/vuetify'
 import router from '../router'
 import torus from '../torus'
@@ -125,8 +124,6 @@ export default {
       theme: state.theme,
       embedState: cloneDeep(state.embedState || {}),
     })
-    // commit('setTheme', THEME_LIGHT_BLUE_NAME)
-    // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
 
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     torusController.lock()
@@ -155,11 +152,8 @@ export default {
     if (isMain && selectedAddress) {
       router.push({ path: '/logout' }).catch(() => {})
       try {
-        const openLoginInstance = await getOpenLoginInstance()
-        if (openLoginInstance.state.support3PC) {
-          await openLoginInstance._syncState(await openLoginInstance._getData())
-          await openLoginInstance.logout({ clientId: config.openLoginClientId })
-        }
+        const openLoginHandler = OpenLoginHandler.getInstance()
+        await openLoginHandler.invalidateSession()
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
         window.location.href = '/'
@@ -241,7 +235,6 @@ export default {
   },
   async showUserInfoRequestPopup({ dispatch, state }, payload) {
     const { preopenInstanceId } = payload
-    log.info(preopenInstanceId, 'userinfo')
     const handleDeny = () => {
       log.info('User Info Request denied')
       dispatch('updateUserInfoAccess', { approved: false })
@@ -417,7 +410,7 @@ export default {
       if (!currentVerifierConfig) throw new Error('Invalid verifier config')
       const { jwtParameters } = currentVerifierConfig
       log.info('starting login', { calledFromEmbed, verifier, preopenInstanceId, login_hint })
-      const loginHandler = new OpenLoginHandler({
+      const loginHandler = new OpenLoginWindowHandler({
         verifier,
         redirect_uri: config.redirect_uri,
         preopenInstanceId,
@@ -438,15 +431,21 @@ export default {
         ),
         skipTKey: state.embedState.skipTKey,
         whiteLabel,
+        mfaLevel: state.embedState.mfaLevel,
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
       })
-      const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, userDapps, error, sessionId } = await loginHandler.handleLoginWindow()
       if (error) {
         throw new Error(error)
       }
       // Get all open login results
       userInfo.verifier = verifier
+      if (sessionId && config.localStorageAvailable) {
+        const openLoginStore = localStorage.getItem('openlogin_store')
+        const finalStore = { ...(openLoginStore ? JSON.parse(openLoginStore) : {}), sessionId }
+        localStorage.setItem('openlogin_store', JSON.stringify(finalStore))
+      }
       commit('setUserInfo', userInfo)
       commit('setPostboxKey', postboxKey)
       commit('setUserDapps', userDapps)
@@ -468,6 +467,40 @@ export default {
     } finally {
       commit('setLoginInProgress', false)
     }
+  },
+  async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
+    const openLoginHandler = OpenLoginHandler.getInstance()
+    const { keys, postboxKey } = openLoginHandler.getKeysInfo()
+    const userInfo = openLoginHandler.getUserInfo()
+    commit('setUserInfo', userInfo)
+    commit('setPostboxKey', postboxKey)
+    dispatch('getUserDapps', { postboxKey, calledFromEmbed })
+    await dispatch('initTorusKeyring', {
+      calledFromEmbed,
+      oAuthToken: userInfo.idToken || userInfo.accessToken,
+      keys: keys.map((x) => ({
+        ethAddress: x.ethAddress,
+        privKey: x.privKey,
+        accountType: x.accountType,
+        jwtToken: state.jwtToken[x.ethAddress],
+      })),
+      rehydrate: true,
+    })
+  },
+  async getUserDapps({ commit, dispatch, state }, { postboxKey, calledFromEmbed }) {
+    const openLoginHandler = OpenLoginHandler.getInstance()
+    const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
+    commit('setUserDapps', userDapps)
+    await dispatch('initTorusKeyring', {
+      calledFromEmbed,
+      rehydrate: true,
+      keys: keys.map((x) => ({
+        ethAddress: x.ethAddress,
+        privKey: x.privKey,
+        accountType: x.accountType,
+        jwtToken: state.jwtToken[x.ethAddress],
+      })),
+    })
   },
   subscribeToControllers() {
     accountTracker.store.subscribe(accountTrackerHandler)
@@ -537,8 +570,10 @@ export default {
       throw new Error('No Accounts available')
     }
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+
     prefsController.getBillboardContents()
     prefsController.getAnnouncementsContents()
+
     // continue enable function
     if (calledFromEmbed) {
       setTimeout(() => {
@@ -567,40 +602,38 @@ export default {
     }
   },
   async rehydrate({ state, dispatch, commit }) {
-    const {
-      selectedAddress,
-      wallet,
-      networkType,
-      networkId,
-      jwtToken,
-      userInfo: { verifier },
-      wcConnectorSession,
-    } = state
+    const { networkType, networkId, wcConnectorSession, selectedAddress } = state
     try {
+      const currentRoute = router.match(window.location.pathname)
+      if (!currentRoute.meta.skipOpenLoginCheck) {
+        const openLoginHandler = OpenLoginHandler.getInstance()
+        const sessionInfo = await openLoginHandler.getActiveSession()
+        // log.info(sessionInfo, 'current session info')
+        if (sessionInfo && (sessionInfo.walletKey || sessionInfo.tKey)) {
+          // already logged in
+          // call autoLogin
+          log.info('auto-login with openlogin session')
+          await dispatch('autoLogin', { calledFromEmbed: !isMain })
+          if (currentRoute.name !== 'popup' && currentRoute.meta.requiresAuth === false) {
+            const noRedirectQuery = Object.fromEntries(new URLSearchParams(window.location.search))
+            const { redirect } = noRedirectQuery
+            delete noRedirectQuery.redirect
+            router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})
+          }
+        } else {
+          log.info('no openlogin session')
+        }
+      }
+
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
-      const walletKeys = Object.keys(wallet)
       dispatch('subscribeToControllers')
 
-      await dispatch('initTorusKeyring', {
-        keys: walletKeys.map((x) => {
-          const { privateKey, accountType, seedPhrase } = wallet[x]
-          return {
-            ethAddress: x,
-            privKey: privateKey,
-            accountType,
-            jwtToken: jwtToken[x],
-            seedPhrase,
-          }
-        }),
-        calledFromEmbed: false,
-        rehydrate: true,
-      })
-      if (selectedAddress && wallet[selectedAddress]) {
+      if (selectedAddress && state.wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
-        statusStream.write({ loggedIn: true, rehydrate: true, verifier })
+        statusStream.write({ loggedIn: true, rehydrate: true, verifier: state.userInfo.verifier })
         if (Object.keys(wcConnectorSession).length > 0) dispatch('initWalletConnect', { session: wcConnectorSession })
         log.info('rehydrated wallet')
         // torus.updateStaticData({ isUnlocked: true })

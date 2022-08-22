@@ -1,4 +1,5 @@
 import { setAPIKey } from '@toruslabs/http-helpers'
+import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -10,7 +11,7 @@ import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import torus from '../torus'
 import { FEATURES_CONFIRM_WINDOW, MESSAGE_TYPE, TRANSACTION_TYPES } from '../utils/enums'
 import { setSentryEnabled } from '../utils/sentry'
-import { getIFrameOriginObject, isMain, isPwa, storageAvailable } from '../utils/utils'
+import { getIFrameOriginObject, isMain } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
 import mutations from './mutations'
@@ -24,14 +25,14 @@ Vue.use(Vuex)
 
 let vuexPersist
 
-if (storageAvailable(isPwa || config.dappStorageKey ? 'localStorage' : 'sessionStorage')) {
+if (config.localStorageAvailable) {
   vuexPersist = new VuexPersistence({
-    key: config.dappStorageKey || 'torus-app',
-    storage: isPwa || config.dappStorageKey ? window.localStorage : window.sessionStorage,
+    key: 'torus-app',
+    storage: window.localStorage,
     reducer: (state) => ({
-      userInfo: state.userInfo,
+      // userInfo: state.userInfo,
       userInfoAccess: state.userInfoAccess,
-      wallet: state.wallet,
+      // wallet: state.wallet,
       // weiBalance: state.weiBalance,
       selectedAddress: state.selectedAddress,
       networkType: state.networkType,
@@ -47,16 +48,14 @@ if (storageAvailable(isPwa || config.dappStorageKey ? 'localStorage' : 'sessionS
       billboard: state.billboard,
       announcements: state.announcements,
       contacts: state.contacts,
-      whiteLabel: state.whiteLabel,
+      // whiteLabel: state.whiteLabel,
       supportedNetworks: state.supportedNetworks,
       pastTransactions: state.pastTransactions,
       paymentTx: state.paymentTx,
       etherscanTx: state.etherscanTx,
-      tKeyOnboardingComplete: state.tKeyOnboardingComplete,
       defaultPublicAddress: state.defaultPublicAddress,
-      tKeyStore: { ...state.tKeyStore, shareTransferRequests: [] },
       wcConnectorSession: state.wcConnectorSession,
-      postboxKey: state.postboxKey,
+      // postboxKey: state.postboxKey,
       lastLoginInfo: state.lastLoginInfo,
       userDapps: state.userDapps,
     }),
@@ -90,7 +89,7 @@ const fetchGasFeeEstimates = async (state) => {
 
 const VuexStore = new Vuex.Store({
   plugins: vuexPersist ? [vuexPersist.plugin] : [],
-  state: defaultState,
+  state: cloneDeep(defaultState),
   getters: defaultGetters,
   mutations,
   actions: {
@@ -338,7 +337,7 @@ function getLatestMessageParameters(id) {
   return message ? { msgParams: message.msgParams, id, type } : {}
 }
 
-if (storageAvailable('localStorage')) {
+if (config.localStorageAvailable) {
   const torusTheme = localStorage.getItem('torus-theme')
   if (torusTheme) {
     VuexStore.commit('setTheme', torusTheme)
