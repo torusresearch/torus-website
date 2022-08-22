@@ -91,11 +91,16 @@
         </v-flex>
 
         <v-flex xs12>
-          <v-text-field v-model="rpc.host" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
+          <v-text-field v-model="rpc.rpcUrl" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
         </v-flex>
 
         <v-flex xs12>
-          <v-text-field v-model="rpc.chainId" :placeholder="t('walletSettings.enterChainId')" outlined></v-text-field>
+          <v-text-field
+            v-model="rpc.chainId"
+            :rules="[rules.required, rules.requiredHex]"
+            :placeholder="t('walletSettings.enterChainId')"
+            outlined
+          ></v-text-field>
         </v-flex>
 
         <v-flex xs12>
@@ -155,6 +160,7 @@
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
 import { mapGetters, mapState } from 'vuex'
+import { isHexStrict } from 'web3-utils'
 
 import { MAINNET, RPC, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
 import { broadcastChannelOptions } from '../../../utils/utils'
@@ -167,6 +173,7 @@ export default {
       formValid: true,
       rules: {
         required: (value) => !!value || 'Required',
+        requiredHex: (value) => (!!value && isHexStrict(value)) || 'Please enter chainId in hex format for ex: "0x1"',
       },
       addCustomNetwork: false,
       isEdit: false,

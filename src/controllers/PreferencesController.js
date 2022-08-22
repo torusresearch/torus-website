@@ -793,18 +793,18 @@ class PreferencesController extends SafeEventEmitter {
     }
   }
 
-  /* istanbul ignore next */
-  async getCovalentNfts(api) {
-    return this.api.get(`${config.api}/covalent?url=${encodeURIComponent(api)}`, this.headers(), { useAPIKey: true })
+  async getNfts(userAddress, network) {
+    if (!this.state(userAddress)?.jwtToken) {
+      return {
+        data: [],
+      }
+    }
+    const res = await this.api.get(`${config.api}/nfts?userAddress=${userAddress}&network=${network}`, this.headers(), { useAPIKey: true })
+    return res
   }
 
   async getNftMetadata(api) {
     return this.api.get(`${config.api}/covalent?url=${encodeURIComponent(api)}`, this.headers(), { useAPIKey: true })
-  }
-
-  /* istanbul ignore next */
-  async getOpenSeaCollectibles(api) {
-    return this.api.get(`${config.api}/opensea?url=${encodeURIComponent(api)}`, this.headers(), { useAPIKey: true })
   }
 
   /* istanbul ignore next */

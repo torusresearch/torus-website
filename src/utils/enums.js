@@ -36,6 +36,7 @@ export const OPTIMISM_MAINNET = 'optimism_mainnet'
 export const OPTIMISM_TESTNET = 'optimism_testnet'
 export const AVALANCHE_MAINNET = 'avalanche_mainnet'
 export const AVALANCHE_TESTNET = 'avalanche_testnet'
+export const GXC_TESTNET = 'gxc_testnet'
 
 export const MAINNET_CODE = 1
 export const ROPSTEN_CODE = 3
@@ -59,6 +60,7 @@ export const OPTIMISM_MAINNET_CODE = 10
 export const OPTIMISM_TESTNET_CODE = 69
 export const AVALANCHE_MAINNET_CODE = 43_114
 export const AVALANCHE_TESTNET_CODE = 43_113
+export const GXC_TESTNET_CODE = 1068
 
 export const MAINNET_CHAIN_ID = '0x1'
 export const ROPSTEN_CHAIN_ID = '0x3'
@@ -81,6 +83,7 @@ export const OPTIMISM_MAINNET_CHAIN_ID = '0xa'
 export const OPTIMISM_TESTNET_CHAIN_ID = '0x45'
 export const AVALANCHE_MAINNET_CHAIN_ID = '0xa86a'
 export const AVALANCHE_TESTNET_CHAIN_ID = '0xa869'
+export const GXC_TESTNET_CHAIN_ID = '0x42c'
 
 export const NFT_SUPPORTED_NETWORKS = {
   [MATIC]: MATIC_CODE,
@@ -121,6 +124,7 @@ export const OPTIMISM_MAINNET_DISPLAY_NAME = 'Optimism'
 export const OPTIMISM_TESTNET_DISPLAY_NAME = 'Optimism Kovan'
 export const AVALANCHE_MAINNET_DISPLAY_NAME = 'Avalanche Mainnet C-Chain'
 export const AVALANCHE_TESTNET_DISPLAY_NAME = 'Avalanche Testnet C-Chain'
+export const GXC_TESTNET_DISPLAY_NAME = 'GXC Testnet'
 
 export const MATIC_URL = `https://polygon-mainnet.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
 export const MATIC_BLOCK_EXPLORER = 'https://polygonscan.com'
@@ -168,6 +172,8 @@ export const AVALANCHE_MAINNET_BLOCK_EXPLORER = 'https://snowtrace.io'
 
 export const AVALANCHE_TESTNET_URL = 'https://api.avax-test.network/ext/bc/C/rpc'
 export const AVALANCHE_TESTNET_BLOCK_EXPLORER = 'https://testnet.snowtrace.io'
+export const GXC_TESTNET_URL = 'https://node.taisys.dev/rpc'
+export const GXC_TESTNET_BLOCK_EXPLORER = 'https://node.taisys.dev'
 
 export const BIT_HOST_URL = 'https://indexer-v1.did.id'
 
@@ -180,6 +186,7 @@ export const RSK_TESTNET_TICKER = 'RBTC'
 export const ARBITRUM_TICKER = 'ETH'
 export const OPTIMISM_TICKER = 'ETH'
 export const AVALANCHE_TICKER = 'AVAX'
+export const GXC_TICKER = 'VOC'
 
 export const MESSAGE_TYPE = {
   ETH_DECRYPT: 'eth_decrypt',
@@ -255,7 +262,7 @@ export const INFURA_NETWORK_TYPE_TO_ID_MAP = {
 
 export const getIpfsEndpoint = (path) => `https://infura-ipfs.io/ipfs/${path}`
 
-export const createNetwork = (host, networkName, chainId, blockExplorer, ticker, tickerName, logo, rpcUrl) => ({
+export const createNetwork = (host, networkName, chainId, blockExplorer, ticker, tickerName, logo, rpcUrl, isErc20 = false, tokenAddress = '') => ({
   host,
   networkName,
   chainId,
@@ -264,6 +271,8 @@ export const createNetwork = (host, networkName, chainId, blockExplorer, ticker,
   logo,
   tickerName,
   rpcUrl,
+  isErc20,
+  tokenAddress,
 })
 
 export const CHAIN_ID_TO_TYPE_MAP = {
@@ -286,6 +295,7 @@ export const CHAIN_ID_TO_TYPE_MAP = {
   [OPTIMISM_TESTNET_CHAIN_ID]: { networkId: OPTIMISM_TESTNET_CODE, name: OPTIMISM_TESTNET },
   [AVALANCHE_MAINNET_CHAIN_ID]: { networkId: AVALANCHE_MAINNET_CODE, name: AVALANCHE_MAINNET },
   [AVALANCHE_TESTNET_CHAIN_ID]: { networkId: AVALANCHE_TESTNET_CODE, name: AVALANCHE_TESTNET },
+  [GXC_TESTNET_CHAIN_ID]: { networkId: GXC_TESTNET_CODE, name: GXC_TESTNET },
 }
 
 export const SUPPORTED_NETWORK_TYPES = {
@@ -436,6 +446,18 @@ export const SUPPORTED_NETWORK_TYPES = {
     'Avalanche',
     'avax.svg',
     AVALANCHE_TESTNET_URL
+  ),
+  [GXC_TESTNET]: createNetwork(
+    GXC_TESTNET,
+    GXC_TESTNET_DISPLAY_NAME,
+    GXC_TESTNET_CODE,
+    GXC_TESTNET_BLOCK_EXPLORER,
+    GXC_TICKER,
+    'VOC',
+    'voc.svg',
+    GXC_TESTNET_URL,
+    true,
+    '0xfc3b3a06899f8c14ee8e322f1b4e31e96e37fb11'
   ),
 }
 
