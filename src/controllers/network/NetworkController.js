@@ -34,13 +34,13 @@ export default class NetworkController extends EventEmitter {
     super()
     this.defaultMaxListeners = 100
     const providerConfig = options.provider || defaultProviderConfig
-    const supportedNetworkStore = options.supportedNetworks || {}
+    const customNetworkStore = options.supportedNetworks || {}
     // if (!SUPPORTED_NETWORK_TYPES[providerConfig.rpcTarget]) {
     //   providerConfig.type = RPC
     // }
     this.providerStore = new ObservableStore(providerConfig)
     this.networkStore = new ObservableStore('loading')
-    this.supportedNetworkStore = new ObservableStore(supportedNetworkStore)
+    this.customNetworkStore = new ObservableStore(customNetworkStore)
     this.networkDetails = new ObservableStore(
       options.networkDetails || {
         ...defaultNetworkDetailsState,
@@ -145,56 +145,60 @@ export default class NetworkController extends EventEmitter {
   }
 
   /**
-   * Get supported networks
+   * Get custom + supported networks
    */
-  get getSupportedNetworks() {
+  get supportedNetworks() {
     return {
-      ...this.supportedNetworkStore.getState(),
+      ...this.customNetworks,
       ...SUPPORTED_NETWORK_TYPES,
     }
   }
 
   /**
+   *  Get custom networks.
+   */
+  get customNetworks() {
+    return this.customNetworkStore.getState()
+  }
+
+  /**
    * Update supported networks
    */
-  updateSupportedNetworks(network) {
-    const currentHosts = Object.keys(this.getSupportedNetworks)
-    // debugger
+  addSupportedNetworks(network) {
+    const currentHosts = Object.keys(this.supportedNetworks)
     if (!currentHosts.includes(network.host)) {
-      this.supportedNetworkStore.updateState({
-        ...this.getSupportedNetworks,
+      this.customNetworkStore.updateState({
+        ...this.customNetworks,
         [network.host]: network,
       })
     }
   }
 
   /**
-   * Store supported networks
+   * Delete a network from custom network store.
    */
   deleteCustomNetwork(id) {
-    // debugger
-    // this.supportedNetworkStore.putState(networks)
-    const networks = Object.values(this.getSupportedNetworks).filter((network) => network.id !== id)
+    const networks = Object.values(this.customNetworks).filter((network) => network.id !== id)
     const obj = {}
     networks.forEach((i) => {
       obj[i.host] = i
     })
-    this.supportedNetworkStore.putState(obj)
+    this.customNetworkStore.putState(obj)
   }
 
   /**
-   * Update supported networks
+   * Update custom networks in custom network store.
    */
   editSupportedNetworks(network) {
     // network host can also change so we need to iterate over all networks
     // and update exact values for the edited network
     const { id } = network
     const obj = {}
-    Object.values(this.getSupportedNetworks).forEach((i) => {
+    Object.values(this.customNetworks).forEach((i) => {
       if (i.id !== id) obj[i.host] = i
     })
     obj[network.host] = network
-    this.supportedNetworkStore.putState(obj)
+    this.customNetworkStore.putState(obj)
   }
 
   /**
@@ -299,8 +303,8 @@ export default class NetworkController extends EventEmitter {
    */
   async setProviderType(type, rpcUrl = '', ticker = 'ETH', nickname = '') {
     assert.notStrictEqual(type, RPC, 'NetworkController - cannot call "setProviderType" with type \'rpc\'. use "setRpcTarget"')
-    assert.ok(this.getSupportedNetworks[type] !== undefined, `NetworkController - Unknown rpc type "${type}"`)
-    const { chainId, ...rest } = this.getSupportedNetworks[type]
+    assert.ok(this.supportedNetworks[type] !== undefined, `NetworkController - Unknown rpc type "${type}"`)
+    const { chainId, ...rest } = this.supportedNetworks[type]
     const providerConfig = { type, rpcUrl, ticker, nickname, chainId, ...rest }
     // get current provider config and check if it is the same as the new one
     // const currentProviderConfig = this.getProviderConfig()
@@ -354,8 +358,8 @@ export default class NetworkController extends EventEmitter {
     } else if (type === LOCALHOST) {
       this._configureLocalhostProvider()
       // url-based rpc endpoints
-    } else if (this.getSupportedNetworks[type] !== undefined) {
-      const { chainId: localChainId, rpcUrl: localUrl } = this.getSupportedNetworks[type]
+    } else if (this.supportedNetworks[type] !== undefined) {
+      const { chainId: localChainId, rpcUrl: localUrl } = this.supportedNetworks[type]
       this._configureStandardProvider({
         rpcUrl: rpcUrl || localUrl,
         chainId: chainId || localChainId,

@@ -406,16 +406,17 @@ export default {
       await commit('setCustomCurrency', networkType.ticker)
     return undefined
   },
-  async deleteCustomNetwork({ commit }, id) {
+  async deleteCustomNetwork({ _commit }, id) {
     if (id) {
-      commit('deleteCustomNetwork', id)
       return torusController.deleteCustomRpc(id)
     }
     return undefined
   },
-  async updateCustomNetwork({ commit }, network) {
+  async updateCustomNetwork({ state, commit }, network) {
     if (network) {
-      commit('updateCustomNetwork', network)
+      if (state.networkType.id === network.id) {
+        commit('setNetworkType', network)
+      }
       return torusController.updateCustomRpc(network)
     }
     return undefined

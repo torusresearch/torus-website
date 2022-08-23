@@ -5,7 +5,7 @@ import config from '../config'
 import i18n, { loadLanguageAsync } from '../plugins/i18n-setup'
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
-import { LOCALES, SUPPORTED_NETWORK_TYPES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { LOCALES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 export default {
   setWCConnectorSession(state, wcConnectorSession) {
@@ -37,50 +37,17 @@ export default {
     state.networkId = networkId
   },
   setNetworkType(state, networkType) {
-    const currentHosts = [...Object.keys(state.supportedNetworks), ...Object.keys(SUPPORTED_NETWORK_TYPES)]
-    if (!currentHosts.includes(networkType.host)) {
-      state.supportedNetworks = {
-        ...state.supportedNetworks,
-        [networkType.host]: { ...networkType, networkName: networkType.networkName || networkType.host },
-      }
-    }
     state.networkType = { ...networkType, networkName: networkType.networkName || networkType.host }
   },
   setCustomNetworks(state, networks) {
     const customNetworks = {}
-    networks.forEach((i) => {
+    Object.values(networks).forEach((i) => {
       customNetworks[i.host] = { ...i, networkName: i.networkName || i.host }
     })
 
     state.supportedNetworks = {
-      ...state.supportedNetworks,
       ...customNetworks,
     }
-  },
-  deleteCustomNetwork(state, networkId) {
-    const { supportedNetworks } = state
-    const temp = {}
-    Object.keys(supportedNetworks).forEach((network) => {
-      if (supportedNetworks[network].id !== networkId) temp[network] = supportedNetworks[network]
-    })
-    state.supportedNetworks = {
-      ...temp,
-    }
-  },
-  updateCustomNetwork(state, payload) {
-    const { supportedNetworks } = state
-    const networkId = payload.id
-    const temp = {}
-    Object.keys(supportedNetworks).forEach((host) => {
-      // user can even change the custom network host name as well.
-      if (supportedNetworks[host].id === networkId) {
-        temp[payload.host] = payload
-      } else {
-        temp[host] = supportedNetworks[host]
-      }
-    })
-    state.supportedNetworks = temp
-    state.networkType = { ...payload, networkName: payload.networkName || payload.host }
   },
   setTransactions(state, transactions) {
     state.transactions = transactions

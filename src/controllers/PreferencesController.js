@@ -227,17 +227,23 @@ class PreferencesController extends SafeEventEmitter {
             defaultPublicAddress: default_public_address || public_address,
             customTokens,
             customNfts,
-            customNetworks: customNetworks.map((i) => ({
-              blockExplorer: i.block_explorer_url,
-              chainId: i.chain_id,
-              host: i.rpc_url,
-              networkName: i.network_name,
-              ticker: i.symbol,
-              id: i.id,
-            })),
           },
           public_address
         )
+
+        // update network controller with all the custom network updates.
+        customNetworks.forEach((i) => {
+          const network = {
+            blockExplorer: i.block_explorer_url,
+            chainId: i.chain_id,
+            host: i.rpc_url,
+            networkName: i.network_name,
+            ticker: i.symbol,
+            id: i.id,
+          }
+
+          this.network.addSupportedNetworks(network)
+        })
         setSentryEnabled(Boolean(enable_crash_reporter))
         return user
       }
@@ -686,7 +692,7 @@ class PreferencesController extends SafeEventEmitter {
         block_explorer_url: network.blockExplorer || undefined,
       }
       const res = await this.api.post(`${config.api}/customnetwork/${type}`, payload, this.headers(), { useAPIKey: true })
-      this.network.updateSupportedNetworks({ ...network, id: res.data.id })
+      this.network.addSupportedNetworks({ ...network, id: res.data.id })
       return res.data.id
     } catch {
       this.handleError('navBar.snackFailCustomNetworkAdd')
