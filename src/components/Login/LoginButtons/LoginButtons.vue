@@ -1,5 +1,5 @@
 <template>
-  <v-flex class="login-buttons" :class="isPopup ? 'is-popup xs-12' : 'xs10 sm12'" :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
+  <v-col class="login-buttons" :class="isPopup ? 'is-popup xs-12' : 'xs10 sm12'" :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
     <v-row v-if="lastLoginConfigItem || mainButtonsLong.length > 0" dense>
       <v-col v-if="lastLoginConfigItem" cols="12">
         <LoginButton
@@ -38,8 +38,8 @@
       class="d-flex or-container align-center"
     >
       <v-divider />
-      <div :class="$vuetify.breakpoint.xsOnly ? 'px-5' : 'px-4'">
-        <div class="text_2--text">{{ t('login.or') }}</div>
+      <div :class="$vuetify.display.xsOnly ? 'px-5' : 'px-4'">
+        <div class="text_2--text">{{ $t('login.or') }}</div>
       </div>
       <v-divider />
     </div>
@@ -56,7 +56,7 @@
             :height="textFieldHeight"
             class="passwordless-email"
             :rules="[rules.email]"
-            :placeholder="t('login.enterYourEmail')"
+            :placeholder="$t('login.enterYourEmail')"
             outlined
           />
           <LoginButton
@@ -84,11 +84,11 @@
     <div class="d-flex align-center mt-4" :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
       <v-spacer></v-spacer>
       <v-btn :class="{ 'has-more': viewMoreOptions }" class="view-option-selector" @click="viewMoreOptions = !viewMoreOptions">
-        <span class="selector-text">{{ viewMoreOptions ? t('dappLogin.viewLess') : t('dappLogin.viewMore') }}</span>
+        <span class="selector-text">{{ viewMoreOptions ? $t('dappLogin.viewLess') : $t('dappLogin.viewMore') }}</span>
         <v-icon>$vuetify.icons.select</v-icon>
       </v-btn>
     </div>
-  </v-flex>
+  </v-col>
 </template>
 
 <script>
@@ -141,7 +141,7 @@ export default {
       if (this.lastLoginConfigItem) return []
       return this.loginButtonsArray.filter(
         (button) =>
-          ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
+          ((this.$vuetify.display.xsOnly && button.showOnMobile) || (!this.$vuetify.display.xsOnly && button.showOnDesktop)) &&
           button.mainOption &&
           !!button.description
       )
@@ -150,15 +150,15 @@ export default {
       return this.loginButtonsArray.filter((button) => {
         const descCheck = (this.lastLoginConfigItem || !button.description) && button.verifier !== HOSTED_EMAIL_PASSWORDLESS_VERIFIER
         if (this.viewMoreOptions) {
-          return ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) && descCheck
+          return ((this.$vuetify.display.xsOnly && button.showOnMobile) || (!this.$vuetify.display.xsOnly && button.showOnDesktop)) && descCheck
         }
-        return (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.mainOption && descCheck
+        return (!this.$vuetify.display.xsOnly || button.showOnMobile) && button.mainOption && descCheck
       })
     },
     loginButtonsLong() {
       const buttons = this.loginButtonsArray.filter(
         (button) =>
-          ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
+          ((this.$vuetify.display.xsOnly && button.showOnMobile) || (!this.$vuetify.display.xsOnly && button.showOnDesktop)) &&
           !button.mainOption &&
           !!button.description
       )
@@ -168,8 +168,8 @@ export default {
       return [...this.mainButtonsLong, ...this.mainButtons, ...this.loginButtonsLong]
     },
     textFieldHeight() {
-      if (this.$vuetify.breakpoint.height >= 1440) return '3.47vh'
-      if (this.$vuetify.breakpoint.height >= 1080) return '4.6vh'
+      if (this.$vuetify.display.height >= 1440) return '3.47vh'
+      if (this.$vuetify.display.height >= 1080) return '4.6vh'
       return '40'
     },
     lastLoginVerifierId() {
@@ -189,7 +189,7 @@ export default {
       }
     },
     viewMoreOptions(newValue, oldValue) {
-      if (newValue !== oldValue && !this.$vuetify.breakpoint.xsOnly) {
+      if (newValue !== oldValue && !this.$vuetify.display.xsOnly) {
         this.chooseAndSetActiveButton()
       }
     },
@@ -213,7 +213,7 @@ export default {
       else if (this.loginButtonsLong.length > 0) this.setActiveBtn(this.loginButtonsLong[0].verifier)
     },
     loginBtnHover(verifier) {
-      if (!this.$vuetify.breakpoint.xsOnly) this.setActiveBtn(verifier)
+      if (!this.$vuetify.display.xsOnly) this.setActiveBtn(verifier)
     },
     loginExisting() {
       const existingVerifier = this.lastLoginInfo.aggregateVerifier || this.lastLoginInfo.verifier
@@ -224,7 +224,7 @@ export default {
       this.activeButton = verifier
     },
     triggerLogin(verifier, email) {
-      this.$emit('triggerLogin', verifier, email)
+      this.$emi$t('triggerLogin', verifier, email)
     },
   },
 }

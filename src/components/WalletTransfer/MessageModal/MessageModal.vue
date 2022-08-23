@@ -4,11 +4,11 @@
       <v-icon>$vuetify.icons.close</v-icon>
     </v-btn>
     <v-layout wrap>
-      <v-flex class="elevation-1 text-center" py-8 mb-4 xs12>
+      <v-col class="elevation-1 text-center" py-8 mb-4 xs12>
         <img :src="require(`../../../assets/images/status-${modalType}.svg`)" width="64" :alt="modalType" />
-      </v-flex>
+      </v-col>
 
-      <v-flex xs12 mx-10 class="text-center">
+      <v-col xs12 mx-10 class="text-center">
         <div class="mb-4 font-weight-bold text_2--text headline">{{ title }}</div>
         <div v-if="detailText" class="mb-6 text_2--text body-2">{{ detailText }}</div>
         <slot name="link"></slot>
@@ -22,7 +22,7 @@
         >
           {{ goTo ? 'Continue' : 'Return' }}
         </v-btn>
-      </v-flex>
+      </v-col>
     </v-layout>
   </v-card>
 </template>

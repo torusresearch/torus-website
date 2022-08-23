@@ -9,7 +9,7 @@
       </div>
     </div>
     <v-layout wrap mx-n4 mt-7>
-      <v-flex px-4 xs12 md6>
+      <v-col px-4 xs12 md6>
         <v-card class="card-total elevation-1 px-6 py-4">
           <div class="d-flex align-center" :style="{ marginBottom: '5px' }">
             <div :style="{ lineHeight: '1em' }">
@@ -64,7 +64,7 @@
             </div>
           </div>
           <v-layout wrap class="mx-n3 mt-2">
-            <v-flex xs6 px-3>
+            <v-col xs6 px-3>
               <v-btn
                 v-show="canShowLrc && !whiteLabel.topupHide"
                 block
@@ -77,8 +77,8 @@
                 <v-icon left>$vuetify.icons.add</v-icon>
                 {{ t('walletHome.topUp') }}
               </v-btn>
-            </v-flex>
-            <v-flex xs6 px-3>
+            </v-col>
+            <v-col xs6 px-3>
               <v-btn
                 block
                 large
@@ -90,15 +90,15 @@
                 <v-icon left>$vuetify.icons.send</v-icon>
                 {{ t('walletHome.transfer') }}
               </v-btn>
-            </v-flex>
+            </v-col>
           </v-layout>
         </v-card>
-      </v-flex>
-      <!-- <v-flex v-if="isFreshAccount || events.length === 0" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
+      </v-col>
+      <!-- <v-col v-if="isFreshAccount || events.length === 0" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
         <v-card class="card-shadow elevation-1" :style="{ height: $vuetify.breakpoint.xsOnly ? 'inherit' : '159px' }">
           <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
             <v-layout>
-              <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
+              <v-col class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
                 <div class="text-body-1 font-weight-bold">{{ t('walletHome.welcome') }} Torus.</div>
                 <v-dialog v-model="dialogOnboarding" persistent max-width="600">
                   <template #activator="{ on }">
@@ -111,25 +111,25 @@
                   </template>
                   <Onboarding @onClose="dialogOnboarding = false" />
                 </v-dialog>
-              </v-flex>
-              <v-flex xs4 pt-4 class="text-right hidden-xs-only">
+              </v-col>
+              <v-col xs4 pt-4 class="text-right hidden-xs-only">
                 <img
                   :src="require(`../../../assets/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)"
                   :style="{ height: '120px' }"
                   alt="Onboarding"
                 />
-              </v-flex>
+              </v-col>
             </v-layout>
           </v-card-text>
         </v-card>
-      </v-flex> -->
-      <v-flex v-if="!whiteLabel.featuredBillboardHide && apiStreamSupported" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
+      </v-col> -->
+      <v-col v-if="!whiteLabel.featuredBillboardHide && apiStreamSupported" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
         <WalletConnectCard
           image-path="https://images.web3auth.io/wallet-connect.svg"
           image-dark-path="https://images.web3auth.io/wallet-connect.svg"
         ></WalletConnectCard>
-      </v-flex>
-      <v-flex
+      </v-col>
+      <v-col
         v-for="(event, i) in isFreshAccount || whiteLabel.featuredBillboardHide ? [] : events"
         :key="`event-${i}`"
         px-4
@@ -145,11 +145,11 @@
           :details-link-two="event.callToActionLinkTwo"
           :details-text="event.callToActionText"
         ></PromotionCard>
-      </v-flex>
+      </v-col>
     </v-layout>
 
     <v-layout wrap align-center class="mt-7">
-      <v-flex xs12 md6 :class="{ 'offset-md-3': $vuetify.breakpoint.mdAndUp }">
+      <v-col xs12 md6 :class="{ 'offset-md-3': $vuetify.breakpoint.mdAndUp }">
         <v-tabs v-model="activeTab" class="home-tab" centered hide-slider>
           <v-tab :key="t('walletHome.tokens')" class="home-tab-token gmt-tokens-tab font-weight-bold">
             <v-icon class="mr-1" small left>$vuetify.icons.token</v-icon>
@@ -160,8 +160,8 @@
             {{ t('walletHome.collectibles') }}
           </v-tab>
         </v-tabs>
-      </v-flex>
-      <v-flex v-if="$vuetify.breakpoint.mdAndUp && activeTab === 0" xs12 md3 class="refresh text-right">
+      </v-col>
+      <v-col v-if="$vuetify.breakpoint.mdAndUp && activeTab === 0" xs12 md3 class="refresh text-right">
         <div class="mb-1">
           <v-btn
             class="gmt-refresh-tokens refresh-btn"
@@ -175,8 +175,8 @@
           </v-btn>
         </div>
         <div class="text_3--text refresh-text" small>{{ t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
-      </v-flex>
-      <v-flex v-if="showSearch" xs12 mt-4>
+      </v-col>
+      <v-col v-if="showSearch" xs12 mt-4>
         <v-text-field
           v-model="search"
           class="search-tokens text_2--text body-2"
@@ -185,7 +185,7 @@
           placeholder="Search for Tokens"
           append-icon="$vuetify.icons.search"
         ></v-text-field>
-      </v-flex>
+      </v-col>
     </v-layout>
 
     <v-tabs-items v-model="activeTab" class="token-tab-content mt-8">
@@ -210,7 +210,7 @@
     </v-tabs-items>
 
     <v-layout v-if="$vuetify.breakpoint.smAndDown" class="mt-10">
-      <v-flex xs12 class="refresh text-right">
+      <v-col xs12 class="refresh text-right">
         <div class="mb-1">
           <v-btn
             class="gmt-refresh-tokens refresh-btn"
@@ -235,7 +235,7 @@
           </v-btn>
         </div>
         <div class="text_3--text refresh-text" small>{{ t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
-      </v-flex>
+      </v-col>
     </v-layout>
   </v-container>
 </template>

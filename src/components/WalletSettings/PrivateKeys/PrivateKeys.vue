@@ -2,10 +2,10 @@
   <v-card class="private-key-container">
     <v-card-text class="py-6">
       <v-layout wrap>
-        <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+        <v-col xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <div class="font-weight-bold headline">{{ t('walletSettings.privateKey') }}</div>
-        </v-flex>
-        <v-flex xs12 mt-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+        </v-col>
+        <v-col xs12 mt-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <v-list>
             <!-- Download JSON -->
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
@@ -16,7 +16,7 @@
                 <div class="text-subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.downloadSoftCopy') }} (JSON)</div>
                 <v-expand-transition>
                   <v-layout v-if="isShowGetPassword" wrap align-center justify-space-between class="mt-2 download-form-container">
-                    <v-flex>
+                    <v-col>
                       <v-form ref="downloadForm" v-model="downloadFormValid" lazy-validation @submit.prevent="downloadWallet">
                         <v-text-field
                           id="json-file-password"
@@ -68,8 +68,8 @@
                           </template>
                         </v-text-field>
                       </v-form>
-                    </v-flex>
-                    <v-flex v-if="$vuetify.breakpoint.xsOnly" class="text-right">
+                    </v-col>
+                    <v-col v-if="$vuetify.breakpoint.xsOnly" class="text-right">
                       <v-btn
                         v-if="!walletJson"
                         id="mobile-json-file-confirm-btn"
@@ -98,7 +98,7 @@
                       >
                         {{ t('walletSettings.downloadWallet') }}
                       </v-btn>
-                    </v-flex>
+                    </v-col>
                   </v-layout>
                 </v-expand-transition>
               </v-list-item-content>
@@ -122,19 +122,19 @@
                   {{ isSeedPhrase ? t('tkeySettings.tkeySeedPhrase.showSeedPhrase') : t('walletSettings.showPrivateKey') }}
                 </div>
                 <v-layout v-if="isShowPrivateKey" wrap align-center justify-space-between class="mt-2">
-                  <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12' : ''">
+                  <v-col :class="$vuetify.breakpoint.xsOnly ? 'xs12' : ''">
                     <div class="text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" style="word-break: break-all">
                       {{ selectedKey }}
                     </div>
-                  </v-flex>
-                  <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : ''">
+                  </v-col>
+                  <v-col :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : ''">
                     <ShowToolTip :address="selectedKey">
                       <v-btn id="click-to-copy-btn" text small class="torusBrand1--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
                         <v-icon small class="mr-1">$vuetify.icons.copy</v-icon>
                         <span>{{ t('walletSettings.clickCopy') }}</span>
                       </v-btn>
                     </ShowToolTip>
-                  </v-flex>
+                  </v-col>
                 </v-layout>
               </v-list-item-content>
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'my-3 mx-1' : ''">
@@ -151,7 +151,7 @@
               </v-list-item-icon>
             </v-list-item>
           </v-list>
-        </v-flex>
+        </v-col>
       </v-layout>
       <v-layout mt-4 pr-4>
         <v-spacer></v-spacer>

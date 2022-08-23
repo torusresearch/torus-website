@@ -1,7 +1,7 @@
 <template>
   <div class="contact-list-container" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-0'">
     <v-layout wrap>
-      <v-flex xs12 px-1 mb-1>
+      <v-col xs12 px-1 mb-1>
         <div class="d-flex align-center">
           <div class="body-2">{{ t('walletSettings.listContacts') }}</div>
           <div class="d-flex ml-auto">
@@ -52,35 +52,33 @@
           ></v-text-field>
         </div>
         <v-card class="elevation-1 mt-4">
-          <v-list dense class="pa-0 contact-list">
-            <template v-for="contact in contacts">
-              <v-list-item :key="`contact-${contact.id}`" class="pl-0 pr-1">
-                <v-list-item-avatar class="ma-0">
-                  <img
-                    v-if="contact.verifier === 'eth'"
-                    :src="require(`../../../assets/img/icons/eth-grey${$vuetify.theme.dark ? '-black' : '-white'}.svg`)"
-                    style="width: 16px"
-                    class="ma-1"
-                    :alt="`${contact.verifier} Icon`"
-                  />
-                  <v-icon v-else size="16" class="torusGray1--text">
-                    {{ `$vuetify.icons.${contact.verifier.toLowerCase()}` }}
-                  </v-icon>
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-regular caption">
-                    <span class="text_1--text">{{ contact.name }}</span>
-                    -
-                    <span class="contact-list__id label">{{ contact.contact }}</span>
-                  </v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action class="ma-0">
-                  <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
-                    <v-icon x-small>$vuetify.icons.trash</v-icon>
-                  </v-btn>
-                </v-list-item-action>
-              </v-list-item>
-            </template>
+          <v-list v-for="contact in contacts" :key="`contact-${contact.id}`" dense class="pa-0 contact-list">
+            <v-list-item class="pl-0 pr-1">
+              <v-list-item-avatar class="ma-0">
+                <img
+                  v-if="contact.verifier === 'eth'"
+                  :src="require(`../../../assets/img/icons/eth-grey${$vuetify.theme.dark ? '-black' : '-white'}.svg`)"
+                  style="width: 16px"
+                  class="ma-1"
+                  :alt="`${contact.verifier} Icon`"
+                />
+                <v-icon v-else size="16" class="torusGray1--text">
+                  {{ `$vuetify.icons.${contact.verifier.toLowerCase()}` }}
+                </v-icon>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title class="font-weight-regular caption">
+                  <span class="text_1--text">{{ contact.name }}</span>
+                  -
+                  <span class="contact-list__id label">{{ contact.contact }}</span>
+                </v-list-item-title>
+              </v-list-item-content>
+              <v-list-item-action class="ma-0">
+                <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
+                  <v-icon x-small>$vuetify.icons.trash</v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </v-list-item>
           </v-list>
         </v-card>
 
@@ -88,7 +86,7 @@
 
         <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
           <v-layout wrap class="mt-2 mx-n1">
-            <v-flex xs12 sm7 px-1>
+            <v-col xs12 sm7 px-1>
               <v-text-field
                 id="contact-name"
                 v-model="newContactName"
@@ -97,8 +95,8 @@
                 outlined
                 aria-label="Contact Name"
               ></v-text-field>
-            </v-flex>
-            <v-flex xs12 sm5 px-1>
+            </v-col>
+            <v-col xs12 sm5 px-1>
               <v-select
                 id="select-verifier"
                 v-model="selectedVerifier"
@@ -118,10 +116,10 @@
                 </template>
                 <template #item="{ item }">{{ t(item.name) }}</template>
               </v-select>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout wrap>
-            <v-flex xs12>
+            <v-col xs12>
               <v-text-field
                 id="contact-value"
                 v-model="newContact"
@@ -134,10 +132,10 @@
                   {{ t(props.message) }}
                 </template>
               </v-text-field>
-            </v-flex>
+            </v-col>
 
             <v-layout wrap>
-              <v-flex class="ml-auto xs12 sm6 text-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : ''">
+              <v-col class="ml-auto xs12 sm6 text-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : ''">
                 <v-btn
                   id="contact-submit-btn"
                   large
@@ -149,11 +147,11 @@
                 >
                   {{ t('walletSettings.addContact') }}
                 </v-btn>
-              </v-flex>
+              </v-col>
             </v-layout>
           </v-layout>
         </v-form>
-      </v-flex>
+      </v-col>
     </v-layout>
   </div>
 </template>

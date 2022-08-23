@@ -1,13 +1,13 @@
 <template>
   <v-container fluid fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
-      <v-flex text-center>
+      <v-col text-center>
         <div v-if="isCustomVerifier" class="text_2--text font-weight-bold text-body-2 mb-10">
           {{ t('login.constructYourKey') }}
           <a :href="dappUrl" class="torusBrand1--text" target="_blank" rel="noreferrer noopener">{{ dappName }}</a>
         </div>
         <BoxLoader :white-label="whiteLabel" :is-custom-verifier="isCustomVerifier" />
-      </v-flex>
+      </v-col>
       <div class="footer">
         <div class="powered-by">{{ t('login.selfCustodial') }}</div>
         <img height="26" :src="require(`@/assets/images/web3auth.svg`)" alt="Web3Auth" />

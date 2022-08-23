@@ -3,14 +3,14 @@
     <v-card class="elevation-1 pa-6">
       <v-form ref="paymentForm" v-model="formValid" lazy-validation @submit.prevent="">
         <v-layout wrap class="wallet-topup">
-          <v-flex xs12>
+          <v-col xs12>
             <p class="body-2 text_1--text">
               <span class="text-capitalize selected-provider">{{ selectedProvider }}</span>
               {{ t('walletTopUp.description') }}
             </p>
-          </v-flex>
+          </v-col>
 
-          <v-flex xs12 sm4>
+          <v-col xs12 sm4>
             <div class="body-2 mb-2">{{ t('walletTopUp.wannaBuy') }}</div>
             <v-select
               id="cryptocurrency"
@@ -25,11 +25,11 @@
               return-object
               @change="fetchQuote"
             ></v-select>
-          </v-flex>
-          <v-flex v-if="!$vuetify.breakpoint.xsOnly" xs8></v-flex>
+          </v-col>
+          <v-col v-if="!$vuetify.breakpoint.xsOnly" xs8></v-col>
 
           <v-layout wrap mx-n2>
-            <v-flex xs12 sm8 px-2>
+            <v-col xs12 sm8 px-2>
               <div class="mb-2 d-flex align-center">
                 <span class="body-2">{{ t('walletTopUp.youSend') }}</span>
                 <span class="caption ml-auto">
@@ -58,7 +58,7 @@
                 <div class="v-messages">
                   <div class="v-messages__wrapper">
                     <div class="v-messages__message d-flex">
-                      <v-flex class="description text_2--text">
+                      <v-col class="description text_2--text">
                         <span v-if="selectedProviderObj.includeFees">{{ t('walletTopUp.includes') }} &nbsp;&nbsp;</span>
                         <span v-else>{{ t('walletTopUp.doesntInclude') }} &nbsp;&nbsp;</span>
                         <span v-html="selectedProviderObj.line2 || ''"></span>
@@ -66,13 +66,13 @@
                           :title="t('walletTopUp.serviceFee')"
                           :description="`${t('walletTopUp.serviceFeeDesc1')} ${selectedProvider} ${t('walletTopUp.serviceFeeDesc2')}`"
                         ></HelpTooltip>
-                      </v-flex>
+                      </v-col>
                     </div>
                   </div>
                 </div>
               </div>
-            </v-flex>
-            <v-flex xs12 sm4 px-2>
+            </v-col>
+            <v-col xs12 sm4 px-2>
               <div v-if="!$vuetify.breakpoint.xsOnly" class="mb-2 d-flex align-center" :style="{ height: '20px' }">
                 <span class="body-2">&nbsp;</span>
               </div>
@@ -85,10 +85,10 @@
                 aria-label="Currency Selector"
                 @change="onCurrencyChange"
               />
-            </v-flex>
+            </v-col>
           </v-layout>
 
-          <v-flex xs12 class="text-right">
+          <v-col xs12 class="text-right">
             <div class="body-2">{{ t('walletTopUp.receive') }}</div>
             <ComponentLoader v-if="fetchingQuote" class="mt-1" />
             <div v-else class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrency.display }}</div>
@@ -100,11 +100,11 @@
             <div class="description mt-1">
               {{ selectedProviderObj.receiveHint ? t(selectedProviderObj.receiveHint) : t('walletTopUp.receiveHint') }}
             </div>
-          </v-flex>
+          </v-col>
         </v-layout>
       </v-form>
       <v-layout wrap>
-        <v-flex xs12 class="mt-10">
+        <v-col xs12 class="mt-10">
           <div class="text-right">
             <v-tooltip bottom :disabled="formValid">
               <template #activator="{ on }">
@@ -127,7 +127,7 @@
             </v-tooltip>
             <div class="description mt-1">{{ t('walletTopUp.redirectMessage') }}</div>
           </div>
-        </v-flex>
+        </v-col>
       </v-layout>
     </v-card>
     <v-snackbar v-model="snackbar" :color="snackbarColor">

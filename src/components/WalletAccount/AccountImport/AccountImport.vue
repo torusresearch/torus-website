@@ -2,11 +2,11 @@
   <v-card class="account-import">
     <v-container>
       <v-layout wrap my-4>
-        <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
+        <v-col xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
           <div class="font-weight-bold headline">{{ t('accountMenu.importAccount') }}</div>
-        </v-flex>
-        <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
-          <v-flex xs12 mt-4>
+        </v-col>
+        <v-col xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
+          <v-col xs12 mt-4>
             <div class="text-subtitle-2 mb-2">{{ t('accountMenu.selectImportType') }}</div>
             <v-select
               v-model="selectedType"
@@ -17,10 +17,10 @@
               item-value="value"
               @change="canShowError = false"
             ></v-select>
-          </v-flex>
-        </v-flex>
+          </v-col>
+        </v-col>
         <template v-if="selectedType === 'private'">
-          <v-flex xs12>
+          <v-col xs12>
             <v-form
               ref="privateKeyForm"
               v-model="privateKeyFormValid"
@@ -30,7 +30,7 @@
               @submit.prevent="importViaPrivateKey"
             >
               <v-layout wrap>
-                <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
+                <v-col xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <div class="text-subtitle-2 mb-2">{{ t('accountMenu.inputPrivateKey') }}:</div>
                   <v-text-field
                     v-model="privateKey"
@@ -49,11 +49,11 @@
                       </v-btn>
                     </template>
                   </v-text-field>
-                </v-flex>
-                <v-flex v-show="canShowError" xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
+                </v-col>
+                <v-col v-show="canShowError" xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <span class="red--text">{{ error }}</span>
-                </v-flex>
-                <v-flex xs12 class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
+                </v-col>
+                <v-col xs12 class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <v-spacer></v-spacer>
                   <v-btn text @click="onClose">
                     {{ t('accountMenu.back') }}
@@ -69,32 +69,32 @@
                   >
                     {{ t('accountMenu.import') }}
                   </v-btn>
-                </v-flex>
+                </v-col>
               </v-layout>
             </v-form>
-          </v-flex>
+          </v-col>
         </template>
         <template v-if="selectedType === 'keystore'">
-          <v-flex xs12>
+          <v-col xs12>
             <v-form ref="jsonFileForm" v-model="jsonFileFormValid" lazy-validation @submit.prevent="importViaKeyStoreFile">
               <v-layout wrap>
-                <v-flex xs12 mb-2 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
+                <v-col xs12 mb-2 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <v-layout wrap align-center justify-space-between>
-                    <v-flex grow>
+                    <v-col grow>
                       <span class="mr-1">{{ t('accountMenu.uploadJsonLabel') }}</span>
                       <HelpTooltip :title="t('accountMenu.uploadJsonTitle')" :description="t('accountMenu.uploadJsonDesc')"></HelpTooltip>
-                    </v-flex>
-                    <v-flex shrink>
+                    </v-col>
+                    <v-col shrink>
                       <v-btn outlined class="upload-button" color="torusBrand1" @click.prevent="openFilePicker">
                         <v-icon left>$vuetify.icons.question</v-icon>
                         {{ t('accountMenu.upload') }}
                       </v-btn>
                       <input v-show="false" ref="keystoreUpload" multiple="false" type="file" @change="processFile" />
-                    </v-flex>
+                    </v-col>
                   </v-layout>
                   <div v-show="selectedFileName !== ''" class="text-right">{{ t('accountMenu.selectedFile') }}: {{ selectedFileName }}</div>
-                </v-flex>
-                <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
+                </v-col>
+                <v-col xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <div class="text-subtitle-2 mb-2">{{ t('accountMenu.enterPassword') }}:</div>
                   <v-text-field
                     v-model="jsonPassword"
@@ -115,11 +115,11 @@
                       </v-btn>
                     </template>
                   </v-text-field>
-                </v-flex>
-                <v-flex v-show="canShowError" xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
+                </v-col>
+                <v-col v-show="canShowError" xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <span class="red--text">{{ error }}</span>
-                </v-flex>
-                <v-flex xs12 class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
+                </v-col>
+                <v-col xs12 class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <v-spacer></v-spacer>
                   <v-btn text @click="onClose">
                     {{ t('accountMenu.back') }}
@@ -135,10 +135,10 @@
                   >
                     {{ t('accountMenu.import') }}
                   </v-btn>
-                </v-flex>
+                </v-col>
               </v-layout>
             </v-form>
-          </v-flex>
+          </v-col>
         </template>
       </v-layout>
     </v-container>

@@ -2,16 +2,16 @@
   <v-card class="private-key-container">
     <v-card-text class="py-6">
       <v-layout wrap>
-        <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+        <v-col xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <div class="font-weight-bold headline">{{ t('walletSettings.customKey.setCustomPrivateKey') }}</div>
-        </v-flex>
-        <v-flex xs12 mb-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+        </v-col>
+        <v-col xs12 mb-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <v-form ref="customPrivateKeyForm" v-model="customPrivateKeyFormValid" lazy-validation @submit.prevent="setKey">
             <v-layout wrap align-center>
-              <v-flex>
+              <v-col>
                 <v-text-field v-model="customPrivateKey" :rules="rules.privateKey"></v-text-field>
-              </v-flex>
-              <v-flex xs4 sm2 class="ml-auto" px-4>
+              </v-col>
+              <v-col xs4 sm2 class="ml-auto" px-4>
                 <v-btn
                   large
                   block
@@ -23,15 +23,15 @@
                 >
                   {{ t('walletSettings.customKey.replace') }}
                 </v-btn>
-              </v-flex>
+              </v-col>
             </v-layout>
           </v-form>
-        </v-flex>
-        <v-flex xs12>
+        </v-col>
+        <v-col xs12>
           <div class="caption text_3--text mb-4 px-5">{{ t('walletSettings.customKey.noteReplaceWarning') }}</div>
-        </v-flex>
-        <v-flex xs12>
-          <v-flex xs4 sm4 class="mr-auto" px-4>
+        </v-col>
+        <v-col xs12>
+          <v-col xs4 sm4 class="mr-auto" px-4>
             <v-btn
               block
               large
@@ -42,8 +42,8 @@
             >
               {{ t('walletSettings.customKey.resetToDefault') }}
             </v-btn>
-          </v-flex>
-        </v-flex>
+          </v-col>
+        </v-col>
       </v-layout>
       <v-layout mt-4 pr-4>
         <v-spacer></v-spacer>

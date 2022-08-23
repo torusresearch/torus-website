@@ -9,13 +9,13 @@
       <v-container>
         <v-form ref="advanceOptionForm" v-model="advanceOptionFormValid" lazy-validation @submit.prevent="saveOptions">
           <v-layout wrap>
-            <v-flex xs12 px-4>
+            <v-col xs12 px-4>
               <div class="font-weight-bold headline">{{ t('walletTransfer.transferDetails') }}</div>
               <div class="font-weight-bold text-subtitle-2">{{ t('walletTransfer.customizeGas') }}</div>
-            </v-flex>
-            <v-flex xs12 mt-4>
+            </v-col>
+            <v-col xs12 mt-4>
               <v-layout wrap>
-                <v-flex xs12 sm6 px-4>
+                <v-col xs12 sm6 px-4>
                   <div class="text-subtitle-2 mb-2">
                     {{ t('walletTransfer.gasPrice') }} (GWEI)
                     <HelpTooltip :title="t('walletTransfer.gasPrice')">
@@ -45,8 +45,8 @@
                     type="number"
                     @change="onChangeActiveGasPrice"
                   ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 px-4>
+                </v-col>
+                <v-col xs12 sm6 px-4>
                   <div class="text-subtitle-2 mb-2">
                     {{ t('walletTransfer.gasLimit') }}
                     <HelpTooltip :title="t('walletTransfer.gasLimit')" :description="t('walletTransfer.gasLimitDesc')"></HelpTooltip>
@@ -59,8 +59,8 @@
                     type="number"
                     @change="onChangeGasLimit"
                   ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 px-4>
+                </v-col>
+                <v-col xs12 sm6 px-4>
                   <div class="text-subtitle-2 mb-2">Nonce</div>
                   <v-combobox id="nonce" v-model="newNonce" outlined :items="nonceItems" :rules="[rules.validNonce]">
                     <template #item="props">
@@ -70,8 +70,8 @@
                       {{ item.text ? t(item.text) : item }}
                     </template>
                   </v-combobox>
-                </v-flex>
-                <v-flex xs12 sm6 px-4>
+                </v-col>
+                <v-col xs12 sm6 px-4>
                   <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.transferFee') }}</div>
                   <template v-if="$vuetify.breakpoint.xsOnly">
                     <span class="float-right">
@@ -90,8 +90,8 @@
                     persistent-hint
                     :hint="gasAmountConverted"
                   ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mt-5' : ''">
+                </v-col>
+                <v-col xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mt-5' : ''">
                   <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.newTotal') }}</div>
                   <template v-if="$vuetify.breakpoint.xsOnly">
                     <span class="float-right text-subtitle-1 font-weight-bold torusBrand1--text">{{ totalCost }}{{ networkTicker }}</span>
@@ -106,9 +106,9 @@
                     persistent-hint
                     :hint="totalCostConverted"
                   ></v-text-field>
-                </v-flex>
+                </v-col>
               </v-layout>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout mt-4 pr-4>
             <v-spacer></v-spacer>

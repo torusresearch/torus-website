@@ -1,24 +1,22 @@
-import Vue from 'vue'
-import Vuetify from 'vuetify/lib'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/lib/components'
+import * as directives from 'vuetify/lib/directives'
 
 import iconsValues from '../icons'
 import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import themes from './themes'
 
-Vue.use(Vuetify)
-
-export default new Vuetify({
+export default createVuetify({
+  components,
+  directives,
   theme: {
-    dark: false,
+    defaultTheme: 'light',
     themes: {
-      light: { ...themes[THEME_LIGHT_BLUE_NAME].theme },
-      dark: { ...themes[THEME_DARK_BLACK_NAME].theme },
-    },
-    options: {
-      customProperties: true,
+      light: { ...themes[THEME_LIGHT_BLUE_NAME].theme, dark: false },
+      dark: { ...themes[THEME_DARK_BLACK_NAME].theme, dark: true },
     },
   },
   icons: {
-    values: iconsValues,
+    sets: iconsValues,
   },
 })

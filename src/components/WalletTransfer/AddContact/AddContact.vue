@@ -9,27 +9,27 @@
       <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
         <v-card-text class="py-6">
           <v-layout wrap>
-            <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+            <v-col xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
               <div class="font-weight-bold headline">{{ t('walletTransfer.addContact') }}</div>
               <v-chip small class="caption" light color="#CAF1FE">{{ verifierLabels[verifier] }}</v-chip>
-            </v-flex>
-            <v-flex xs12 mt-6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+            </v-col>
+            <v-col xs12 mt-6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
               <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.contactName') }}</div>
               <v-text-field v-model="newContactName" :placeholder="t('walletTransfer.enterName')" :rules="[rules.required]" outlined></v-text-field>
-            </v-flex>
+            </v-col>
           </v-layout>
         </v-card-text>
 
         <v-card-actions class="pb-6">
-          <v-flex xs6>
+          <v-col xs6>
             <v-btn block text color="text_2" @click="addContactDialog = false">{{ t('walletTransfer.cancel') }}</v-btn>
-          </v-flex>
+          </v-col>
           <v-divider vertical></v-divider>
-          <v-flex xs6>
+          <v-col xs6>
             <v-btn type="submit" color="torusBrand1" depressed class="px-12 py-1 white--text" :disabled="!contactFormValid">
               {{ t('walletTransfer.confirm') }}
             </v-btn>
-          </v-flex>
+          </v-col>
         </v-card-actions>
       </v-form>
     </v-card>

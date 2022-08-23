@@ -9,7 +9,7 @@
       </h3>
 
       <v-layout mx-n2 class="dapp-filters mt-5 mt-md-0">
-        <v-flex xs6 px-sm-2 class="filter-width">
+        <v-col xs6 px-sm-2 class="filter-width">
           <v-menu offset-y>
             <template #activator="{ on }">
               <v-btn
@@ -42,8 +42,8 @@
               </v-list>
             </v-card>
           </v-menu>
-        </v-flex>
-        <v-flex xs6 px-sm-2 class="filter-width">
+        </v-col>
+        <v-col xs6 px-sm-2 class="filter-width">
           <v-menu offset-y>
             <template #activator="{ on }">
               <v-btn
@@ -78,7 +78,7 @@
               </v-list>
             </v-card>
           </v-menu>
-        </v-flex>
+        </v-col>
       </v-layout>
     </div>
 

@@ -151,16 +151,16 @@
         </v-card-text>
         <v-card-actions ref="actions" class="pb-7 px-5">
           <v-layout>
-            <v-flex xs-6>
+            <v-col xs-6>
               <v-btn large block text color="text_2" @click="cancel">
                 {{ t('walletTransfer.cancel') }}
               </v-btn>
-            </v-flex>
-            <v-flex xs-6>
+            </v-col>
+            <v-col xs-6>
               <v-btn :disabled="!advanceOptionFormValid" large color="torusBrand1" depressed block class="py-1 white--text" type="submit">
                 {{ t('walletTransfer.save') }}
               </v-btn>
-            </v-flex>
+            </v-col>
           </v-layout>
         </v-card-actions>
       </v-form>

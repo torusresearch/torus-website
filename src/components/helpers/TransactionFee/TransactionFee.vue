@@ -1,7 +1,7 @@
 <template>
-  <v-flex xs12 mb-3>
+  <v-col xs12 mb-3>
     <v-layout>
-      <v-flex class="body-2 mb-2">
+      <v-col class="body-2 mb-2">
         <span v-if="!isConfirm">
           <span>{{ t('walletTransfer.fee-max-transaction') }}*</span>
           <HelpTooltip :title="t('walletTransfer.fee-max-transaction')" :description="t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
@@ -18,14 +18,14 @@
           :network-host="networkHost"
           @save="onSave"
         />
-      </v-flex>
+      </v-col>
     </v-layout>
     <v-layout :class="isConfirm ? 'align-top' : 'align-center'">
-      <v-flex v-if="isConfirm" xs3 class="caption mt-2">
+      <v-col v-if="isConfirm" xs3 class="caption mt-2">
         <span>{{ t('walletTransfer.fee-max-transaction') }}*</span>
         <HelpTooltip :title="t('walletTransfer.fee-max-transaction')" :description="t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
-      </v-flex>
-      <v-flex mb-1 :class="[isConfirm ? 'xs9' : 'xs12']">
+      </v-col>
+      <v-col mb-1 :class="[isConfirm ? 'xs9' : 'xs12']">
         <v-text-field
           outlined
           :value="t('walletTransfer.fee-upto').replace(/{amount}/gi, maxFeeDisplay)"
@@ -44,9 +44,9 @@
             </div>
           </template>
         </v-text-field>
-      </v-flex>
+      </v-col>
     </v-layout>
-  </v-flex>
+  </v-col>
 </template>
 
 <script>

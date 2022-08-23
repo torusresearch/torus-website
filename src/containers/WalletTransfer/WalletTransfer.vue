@@ -13,7 +13,7 @@
       mx-n4
       :class="[(contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155) && $vuetify.breakpoint.xsOnly ? 'mt-0' : 'mt-7']"
     >
-      <v-flex
+      <v-col
         v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && $vuetify.breakpoint.smAndDown"
         :class="[{ 'mb-4': $vuetify.breakpoint.smOnly }]"
         px-4
@@ -39,8 +39,8 @@
             </div>
           </div>
         </v-card>
-      </v-flex>
-      <v-flex xs12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+      </v-col>
+      <v-col xs12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
         <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="none" autocomplete="off" @submit.prevent="sendCoin">
           <v-card
             :flat="$vuetify.breakpoint.xsOnly"
@@ -48,7 +48,7 @@
             :class="$vuetify.breakpoint.xsOnly ? 'mobile py-6 px-4' : 'elevation-1 pa-6'"
           >
             <v-layout wrap>
-              <v-flex xs12>
+              <v-col xs12>
                 <div class="body-2 mb-2">{{ t('walletTransfer.selectItem') }}</div>
                 <div v-if="selectedItemDisplay">
                   <v-menu transition="slide-y-transition" bottom>
@@ -126,11 +126,11 @@
                     </v-list>
                   </v-menu>
                 </div>
-              </v-flex>
-              <v-flex xs12 mt-6>
+              </v-col>
+              <v-col xs12 mt-6>
                 <div class="body-2 mb-2">{{ t('walletTransfer.transferMode') }}</div>
                 <v-layout wrap class="mx-n2">
-                  <v-flex xs12 sm8 class="recipient-address-container px-2">
+                  <v-col xs12 sm8 class="recipient-address-container px-2">
                     <v-combobox
                       id="recipient-address"
                       ref="contactSelected"
@@ -193,8 +193,8 @@
                         </div>
                       </div>
                     </div>
-                  </v-flex>
-                  <v-flex xs12 sm4 class="recipient-verifier-container px-2">
+                  </v-col>
+                  <v-col xs12 sm4 class="recipient-verifier-container px-2">
                     <v-select
                       id="recipient-verifier"
                       v-model="selectedVerifier"
@@ -217,13 +217,13 @@
                         {{ t(props.message) }}
                       </template>
                     </v-select>
-                  </v-flex>
-                  <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
+                  </v-col>
+                  <v-col v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
                     <AddContact :contact="getContactSelected" :verifier="selectedVerifier"></AddContact>
-                  </v-flex>
+                  </v-col>
                 </v-layout>
-              </v-flex>
-              <v-flex xs12 class="you-send-container">
+              </v-col>
+              <v-col xs12 class="you-send-container">
                 <div class="mb-2">
                   <span class="body-2">{{ t('walletTransfer.youSend') }}</span>
                   <v-btn
@@ -346,7 +346,7 @@
                     {{ $refs.youSendNft && $refs.youSendNft.errorBucket.length === 0 ? props.message : t(props.message) }}
                   </template>
                 </v-text-field>
-              </v-flex>
+              </v-col>
               <TransactionFee
                 v-if="isEip1559"
                 :gas-fees="gasFees"
@@ -378,20 +378,20 @@
                 :network-host="networkType.host"
                 @onSelectSpeed="onSelectSpeed"
               />
-              <v-flex v-if="contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155" xs12 mb-6 class="text-right">
+              <v-col v-if="contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155" xs12 mb-6 class="text-right">
                 <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ getEthAmount(gas, activeGasPrice) }} {{ networkType.ticker }}</div>
                 <div class="caption text_2--text">{{ gasPriceInCurrency }} {{ selectedCurrency }}</div>
-              </v-flex>
-              <v-flex v-else xs12 mb-6 class="text-right">
+              </v-col>
+              <v-col v-else xs12 mb-6 class="text-right">
                 <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ totalCost ? totalCostDisplay : `0 ${totalCostSuffix}` }}</div>
                 <div class="caption text_2--text">
                   {{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}
                 </div>
-              </v-flex>
-              <v-flex v-if="transactionWarning" xs12 mt-3 class="text-right text-caption warning--text">{{ transactionWarning }}</v-flex>
-              <v-flex xs12 mt-3 class="text-right">
+              </v-col>
+              <v-col v-if="transactionWarning" xs12 mt-3 class="text-right text-caption warning--text">{{ transactionWarning }}</v-col>
+              <v-col xs12 mt-3 class="text-right">
                 <v-btn
                   id="wallet-transfer-submit"
                   large
@@ -450,12 +450,12 @@
                     @onConfirm="sendCoin"
                   ></TransferConfirm>
                 </v-dialog>
-              </v-flex>
+              </v-col>
             </v-layout>
           </v-card>
         </v-form>
-      </v-flex>
-      <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && !$vuetify.breakpoint.smAndDown" px-4 xs6>
+      </v-col>
+      <v-col v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && !$vuetify.breakpoint.smAndDown" px-4 xs6>
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
             <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
@@ -476,7 +476,7 @@
             </div>
           </div>
         </v-card>
-      </v-flex>
+      </v-col>
     </v-layout>
     <v-dialog v-model="messageModalShow" max-width="375" persistent>
       <MessageModal

@@ -1,17 +1,17 @@
 <template>
   <v-container class="wallet-settings" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-      <v-flex xs6>
+      <v-col xs6>
         <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
           {{ t('walletSettings.settings') }}
         </div>
-      </v-flex>
-      <v-flex xs6>
+      </v-col>
+      <v-col xs6>
         <QuickAddress />
-      </v-flex>
+      </v-col>
     </v-layout>
     <v-layout wrap mx-n4 mt-7>
-      <v-flex px-4 xs12 md6>
+      <v-col px-4 xs12 md6>
         <v-expansion-panels v-model="leftPanel" multiple>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="privacy-panel-header">
@@ -47,8 +47,8 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
-      </v-flex>
-      <v-flex px-4 xs12 md6>
+      </v-col>
+      <v-col px-4 xs12 md6>
         <v-expansion-panels v-model="rightPanel" multiple>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="network-panel-header">
@@ -91,7 +91,7 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
-      </v-flex>
+      </v-col>
     </v-layout>
   </v-container>
 </template>

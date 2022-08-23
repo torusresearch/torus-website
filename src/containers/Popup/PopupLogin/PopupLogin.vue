@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-flex xs12 text-center>
+    <v-col xs12 text-center>
       <v-dialog class="login-dialog-modal" :value="loginDialog && showModal" :max-width="dialogMaxWidth" persistent>
         <v-card class="login-dialog-container">
           <div class="login-header">
@@ -42,7 +42,7 @@
           </div>
         </v-card>
       </v-dialog>
-    </v-flex>
+    </v-col>
   </v-layout>
 </template>
 

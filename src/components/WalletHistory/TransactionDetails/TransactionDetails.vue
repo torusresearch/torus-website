@@ -1,19 +1,19 @@
 <template>
   <v-card color="elevation-1 activity mb-4 pa-5" :ripple="false" @click="showDetails = !showDetails" @keydown.enter="showDetails = !showDetails">
     <v-layout wrap mx-n4 mb-5 mb-sm-0>
-      <v-flex
+      <v-col
         px-4
         :class="$vuetify.breakpoint.xsOnly ? 'order-2 pt-2' : 'order-0'"
         :style="{ marginLeft: $vuetify.breakpoint.xsOnly ? '48px' : '0', maxWidth: $vuetify.breakpoint.xsOnly ? '150px' : '105px' }"
       >
         <div class="caption text_1--text" :class="{ 'font-weight-medium': !$vuetify.breakpoint.xsOnly }">{{ transaction.dateFormatted }}</div>
         <div class="info text_2--text font-weight-light">{{ transaction.timeFormatted }}</div>
-      </v-flex>
+      </v-col>
       <v-divider v-if="!$vuetify.breakpoint.xsOnly" vertical class="mx-4"></v-divider>
-      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs8 order-0 pr-4 pl-3' : 'xs5 order-1 pl-0 pr-4'">
+      <v-col :class="$vuetify.breakpoint.xsOnly ? 'xs8 order-0 pr-4 pl-3' : 'xs5 order-1 pl-0 pr-4'">
         <TransactionImage :transaction="transaction" />
-      </v-flex>
-      <v-flex class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4 order-1' : 'xs2 order-2'" px-4>
+      </v-col>
+      <v-col class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4 order-1' : 'xs2 order-2'" px-4>
         <div class="caption text_1--text font-weight-medium">
           <span
             v-if="
@@ -26,12 +26,12 @@
           {{ transaction.totalAmountString }}
         </div>
         <div class="info text_2--text font-weight-light">{{ transaction.currencyAmountString }}</div>
-      </v-flex>
-      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs6 ml-auto text-right mt-3 order-3' : 'xs2 ml-auto text-right order-4'" px-4>
+      </v-col>
+      <v-col :class="$vuetify.breakpoint.xsOnly ? 'xs6 ml-auto text-right mt-3 order-3' : 'xs2 ml-auto text-right order-4'" px-4>
         <v-chip class="status-chip black--text" :color="getChipColor(transaction.statusText)" small>
           {{ t(transaction.statusText) }}
         </v-chip>
-      </v-flex>
+      </v-col>
     </v-layout>
     <v-divider v-if="$vuetify.breakpoint.xsOnly && showDetails" class="my-4"></v-divider>
     <TransactionDetailsMore

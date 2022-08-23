@@ -1,25 +1,21 @@
 <template>
   <div :class="[{ 'background-login': !loggedIn }, 'default']">
     <template v-if="!loginInProgress">
-      <v-layout wrap fill-height align-center justify-center class="login-panel-left" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
-        <v-flex xs12 sm8 md6>
-          <v-layout v-if="!isLogout" wrap>
-            <v-flex v-if="$vuetify.breakpoint.xsOnly" class="mobile-login-container" xs12>
+      <v-row wrap fill-height align-center justify-center class="login-panel-left" :class="isDarkMode ? 'torus-dark' : ''">
+        <v-col xs12 sm8 md6>
+          <v-row v-if="!isLogout" wrap>
+            <v-col v-if="$vuetify.display.xsOnly" class="mobile-login-container" xs12>
               <section class="py-10 py-sm-12">
-                <v-layout wrap>
-                  <v-flex class="mb-8" xs10 ml-auto mr-auto>
-                    <img
-                      height="25"
-                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
-                      alt="Torus Logo"
-                    />
-                  </v-flex>
+                <v-row wrap>
+                  <v-col class="mb-8" xs10 ml-auto mr-auto>
+                    <img height="25" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
+                  </v-col>
                   <LoginTitle class="mb-6" />
-                  <v-flex xs10 mx-auto mt-4>
+                  <v-col xs10 mx-auto mt-4>
                     <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
-                  </v-flex>
+                  </v-col>
                   <LoginFooter :authenticators="thirdPartyAuthenticators" />
-                </v-layout>
+                </v-row>
               </section>
               <section>
                 <LoginSlide
@@ -32,58 +28,53 @@
                 />
               </section>
               <v-icon v-if="scrollOnTop" class="more-icon" aria-label="Scroll for more information" role="image">$vuetify.icons.login_more</v-icon>
-            </v-flex>
+            </v-col>
             <!-- Desktop -->
-            <v-flex v-else xs12>
-              <v-layout wrap>
-                <v-flex mt-4 mb-10 xs10 sm8 ml-auto mr-auto>
-                  <img height="25" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
-                </v-flex>
+            <v-col v-else xs12>
+              <v-row wrap>
+                <v-col mt-4 mb-10 xs10 sm8 ml-auto mr-auto>
+                  <img height="25" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
+                </v-col>
                 <LoginTitle />
-                <!-- <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-10']">
-                  <div class="headline font-weight-regular" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
-                </v-flex> -->
-                <v-flex xs8 mx-auto mt-4>
+                <!-- <v-col xs10 sm8 ml-auto mr-auto :class="[$vuetify.display.xsOnly ? 'mt-8' : 'mt-10']">
+                  <div class="headline font-weight-regular" :class="isDarkMode ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
+                </v-col> -->
+                <v-col xs8 mx-auto mt-4>
                   <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
-                </v-flex>
+                </v-col>
                 <LoginFooter :authenticators="thirdPartyAuthenticators" />
-              </v-layout>
-            </v-flex>
-          </v-layout>
-          <v-layout v-else wrap align-center justify-center align-content-center>
-            <v-flex xs12 text-center mb-12>
-              <img width="180" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
-            </v-flex>
-            <v-flex xs12 text-center>
-              <img
-                width="200px"
-                height="auto"
-                :src="require(`../../assets/images/logout${$vuetify.theme.dark ? '-dark' : ''}.svg`)"
-                alt="Logout Image"
-              />
-            </v-flex>
-            <v-flex xs12>
-              <div class="text-center text-subtitle-1 font-weight-bold">{{ t('login.beenLoggedOut') }}</div>
-            </v-flex>
-            <v-flex xs12 mt-4>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row v-else wrap align-center justify-center align-content-center>
+            <v-col xs12 text-center mb-12>
+              <img width="180" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
+            </v-col>
+            <v-col xs12 text-center>
+              <img width="200px" height="auto" :src="require(`../../assets/images/logout${isDarkMode ? '-dark' : ''}.svg`)" alt="Logout Image" />
+            </v-col>
+            <v-col xs12>
+              <div class="text-center text-subtitle-1 font-weight-bold">{{ $t('login.beenLoggedOut') }}</div>
+            </v-col>
+            <v-col xs12 mt-4>
               <div class="text-center">
                 <v-btn
-                  :color="$vuetify.theme.dark ? '' : 'white'"
-                  :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
-                  :depressed="$vuetify.theme.dark"
+                  :color="isDarkMode ? '' : 'white'"
+                  :class="isDarkMode ? 'torus-dark' : 'card-shadow-v8'"
+                  :depressed="isDarkMode"
                   class="px-12 pa-3 font-weight-bold text-body-1 text-uppercase torusBrand1--text logout-btn"
                   type="button"
                   @click="returnHome"
                 >
-                  {{ t('login.returnHome') }}
+                  {{ $t('login.returnHome') }}
                 </v-btn>
               </div>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-        <v-flex v-if="$vuetify.breakpoint.smAndUp" sm4 md6 fill-height class="login-panel-right" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
-          <v-layout wrap fill-height align-center>
-            <v-flex xs12 text-center>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col v-if="$vuetify.display.smAndUp" sm4 md6 fill-height class="login-panel-right" :class="isDarkMode ? 'torus-dark' : ''">
+          <v-row wrap fill-height align-center>
+            <v-col xs12 text-center>
               <LoginSlide
                 :show-spring-festival="showSpringFestival"
                 @change="
@@ -92,22 +83,22 @@
                   }
                 "
               />
-            </v-flex>
-          </v-layout>
-        </v-flex>
-      </v-layout>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
     </template>
     <template v-else>
-      <v-container class="spinner" fluid :class="$vuetify.theme.dark ? 'torus-dark' : ''">
+      <v-container class="spinner" fluid :class="isDarkMode ? 'torus-dark' : ''">
         <BoxLoader :force-spinner="true" />
         <p class="bottom-text text-body-1 text-center font-weight-medium">
-          {{ t('login.loader') }}
+          {{ $t('login.loader') }}
         </p>
       </v-container>
     </template>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
-      <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
+      <v-btn dark text @click="snackbar = false">{{ $t('walletTopUp.close') }}</v-btn>
     </v-snackbar>
   </div>
 </template>
@@ -157,6 +148,9 @@ export default {
     lastLoginProvider() {
       return 'google'
     },
+    isDarkMode() {
+      return this.$vuetify.theme.name === 'dark'
+    },
   },
   watch: {
     selectedAddress(newAddress, oldAddress) {
@@ -188,7 +182,7 @@ export default {
         log.error(error)
         this.snackbar = true
         this.snackbarColor = 'error'
-        this.snackbarText = error.message?.includes('email_verified') ? this.t('login.errorVerifyEmail') : this.t('login.loginError')
+        this.snackbarText = error.message?.includes('email_verified') ? this.$t('login.errorVerifyEmail') : this.$t('login.loginError')
       } finally {
         this.loginInProgress = false
       }

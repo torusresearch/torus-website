@@ -1,12 +1,12 @@
 <template>
   <v-container fill-height fluid text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
-      <v-flex text-center>
+      <v-col text-center>
         <BoxLoader :force-spinner="true" />
         <div v-if="showCloseText" class="redirect-title font-weight-bold mt-2">
           {{ t('dappGeneral.loading') }}
         </div>
-      </v-flex>
+      </v-col>
       <div class="footer">
         <div class="powered-by">{{ t('login.selfCustodial') }}</div>
         <img height="26" :src="require(`@/assets/images/web3auth.svg`)" alt="Web3Auth" />
@@ -76,7 +76,7 @@ export default {
             const url = new URL(payload.url)
             // if same origin, use router.push
             if (url.origin === window.location.origin) {
-              const matchedRoute = this.$router.match(url.pathname)
+              const matchedRoute = this.$router.resolve(url.pathname)
               const query = Object.fromEntries(new URLSearchParams(url.search))
               this.$router.push({ name: matchedRoute.name, query, hash: url.hash })
             } else {

@@ -7,22 +7,22 @@
       <v-tabs-items v-model="tab" touchless>
         <v-tab-item>
           <v-layout class="card-header" wrap>
-            <v-flex text-center xs12 py-10 px-6>
+            <v-col text-center xs12 py-10 px-6>
               <div class="display-1">{{ t('homeAssets.add') }}</div>
               <v-btn class="close-btn" icon aria-label="Close Add Asset" title="Close Add Asset" @click="closeForm">
                 <v-icon>$vuetify.icons.close</v-icon>
               </v-btn>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-form ref="addAssetForm" v-model="addAssetFormValid" class="fill-height" lazy-validation @submit.prevent="nextTab">
             <v-layout mx-7 pt-6 pb-4 wrap>
-              <v-flex xs12 class="text-center">
+              <v-col xs12 class="text-center">
                 <div class="title">{{ t('homeAssets.formTitle') }}</div>
-              </v-flex>
+              </v-col>
             </v-layout>
             <v-divider></v-divider>
             <v-layout mx-7 pt-6 pb-10 wrap>
-              <v-flex xs12>
+              <v-col xs12>
                 <div class="body-2 mb-2">{{ t('homeAssets.contractAddress') }}</div>
                 <v-text-field
                   :value="contractAddress"
@@ -30,8 +30,8 @@
                   outlined
                   @change="setContractAddress"
                 ></v-text-field>
-              </v-flex>
-              <v-flex xs12>
+              </v-col>
+              <v-col xs12>
                 <div class="body-2 mb-2">{{ t('homeAssets.tokenId') }}</div>
                 <v-text-field
                   v-model="tokenId"
@@ -41,44 +41,44 @@
                   :error="!!displayError"
                   @change="setTokenId"
                 ></v-text-field>
-              </v-flex>
-              <v-flex xs12>
+              </v-col>
+              <v-col xs12>
                 <div class="body-2 mb-2">{{ t('homeAssets.tokenName') }}</div>
                 <v-text-field v-model="nftName" :rules="[rules.required]" outlined></v-text-field>
-              </v-flex>
+              </v-col>
 
-              <v-flex xs12 mt-15>
+              <v-col xs12 mt-15>
                 <v-layout mx-n2>
-                  <v-flex xs6 px-2>
+                  <v-col xs6 px-2>
                     <v-btn block large text @click="closeForm">{{ t('homeToken.cancel') }}</v-btn>
-                  </v-flex>
-                  <v-flex xs6 px-2>
+                  </v-col>
+                  <v-col xs6 px-2>
                     <v-btn block large color="torusBrand1" class="white--text" type="submit" :disabled="!addAssetFormValid">
                       {{ t('homeToken.next') }}
                     </v-btn>
-                  </v-flex>
+                  </v-col>
                 </v-layout>
-              </v-flex>
+              </v-col>
             </v-layout>
           </v-form>
         </v-tab-item>
         <v-tab-item>
           <v-layout class="card-header" wrap>
-            <v-flex text-center xs12 py-10 px-6>
+            <v-col text-center xs12 py-10 px-6>
               <div class="display-1">{{ t('homeAssets.add') }}</div>
               <v-btn class="close-btn" icon aria-label="Close Add Token" title="Close Add Token" @click="closeForm">
                 <v-icon>$vuetify.icons.close</v-icon>
               </v-btn>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout mx-7 pt-6 pb-4 wrap>
-            <v-flex xs12 class="text-center">
+            <v-col xs12 class="text-center">
               <div class="title">{{ t('homeAssets.infoTitle') }}</div>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-divider></v-divider>
           <v-layout mb-8 mx-7 pt-6 wrap class="align-center">
-            <v-flex xs12>
+            <v-col xs12>
               <div class="body-2 font-weight-bold">{{ t('homeAssets.infoCollectible') }}</div>
               <div class="d-flex mb-5">
                 <div>
@@ -105,17 +105,17 @@
                   {{ viewMore ? t('homeAssets.viewLess') : t('homeAssets.viewMore') }}
                 </a>
               </div>
-            </v-flex>
-            <v-flex xs12 mt-10>
+            </v-col>
+            <v-col xs12 mt-10>
               <v-layout mx-n2>
-                <v-flex xs6 px-2>
+                <v-col xs6 px-2>
                   <v-btn block large text @click="tab = 0">{{ t('homeToken.back') }}</v-btn>
-                </v-flex>
-                <v-flex xs6 px-2>
+                </v-col>
+                <v-col xs6 px-2>
                   <v-btn block large color="torusBrand1" class="white--text" @click="addCollectible">{{ t('homeAssets.add') }}</v-btn>
-                </v-flex>
+                </v-col>
               </v-layout>
-            </v-flex>
+            </v-col>
           </v-layout>
         </v-tab-item>
       </v-tabs-items>

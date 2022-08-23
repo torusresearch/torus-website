@@ -1,5 +1,5 @@
 <template>
-  <v-flex mb-4 px-4 class="topup-providers" :class="$vuetify.breakpoint.width > 800 ? 'xs5' : 'xs12'">
+  <v-col mb-4 px-4 class="topup-providers" :class="$vuetify.breakpoint.width > 800 ? 'xs5' : 'xs12'">
     <v-card
       v-for="targetProvider in providers"
       :key="targetProvider.name"
@@ -35,7 +35,7 @@
     </v-card>
 
     <WriteToUs />
-  </v-flex>
+  </v-col>
 </template>
 
 <script>

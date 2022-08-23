@@ -3,9 +3,9 @@ import log from 'loglevel'
 
 import config from '../../config'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
-import vuetify from '../../plugins/vuetify'
+import themes from '../../plugins/themes'
 import torus from '../../torus'
-import { MERCURYO, MOONPAY, RAMPNETWORK, TRANSAK, TRANSAK_NETWORK_MAP, WYRE, XANPOOL } from '../../utils/enums'
+import { MERCURYO, MOONPAY, RAMPNETWORK, THEME_LIGHT_BLUE_NAME, TRANSAK, TRANSAK_NETWORK_MAP, WYRE, XANPOOL } from '../../utils/enums'
 import { fakeStream, paymentProviders } from '../../utils/utils'
 import mercuryo from './mercuryo'
 import moonpay from './moonpay'
@@ -105,7 +105,7 @@ export default {
 
           const { success } = await dispatch('fetchMoonpayOrder', {
             currentOrder,
-            colorCode: vuetify.framework.theme.themes.light.primary.base,
+            colorCode: themes[THEME_LIGHT_BLUE_NAME].theme.primary.base,
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
           })

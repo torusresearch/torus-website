@@ -4,7 +4,7 @@ import merge from 'deepmerge'
 import config from '../config'
 import i18n, { loadLanguageAsync } from '../plugins/i18n-setup'
 import themes from '../plugins/themes'
-import vuetify from '../plugins/vuetify'
+// import vuetify from '../plugins/vuetify'
 import { LOCALES, SUPPORTED_NETWORK_TYPES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 export default {
@@ -277,8 +277,8 @@ function localThemeSet(payload, state) {
     state.theme = localThemeEngine
   }
   if (payload || state.whiteLabel.isActive) {
-    vuetify.framework.theme.dark = theme.isDark
-    vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
+    // vuetify.framework.theme.dark = theme.isDark
+    // vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
   }
   if (config.localStorageAvailable && payload) localStorage.setItem('torus-theme', payload)
   if (config.localStorageAvailable && !localStorage.getItem('torus-theme')) localStorage.setItem('torus-theme', state.theme)

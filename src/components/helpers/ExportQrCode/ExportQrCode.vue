@@ -7,7 +7,7 @@
     </template>
     <v-card>
       <v-layout wrap>
-        <v-flex class="card-header text-center" xs12 py-10 px-6>
+        <v-col class="card-header text-center" xs12 py-10 px-6>
           <img
             class="home-link mx-auto"
             alt="Torus Logo"
@@ -18,8 +18,8 @@
           <v-btn class="close-btn" icon aria-label="Close Export QR" title="Close Export QR" @click="qrDialoag = false">
             <v-icon>$vuetify.icons.close</v-icon>
           </v-btn>
-        </v-flex>
-        <v-flex xs12 class="text-center pb-10">
+        </v-col>
+        <v-col xs12 class="text-center pb-10">
           <div class="display-1 text_1--text mb-2">{{ t('walletHome.yourPublicAddress') }}</div>
           <div class="mb-2">
             <ShowToolTip :address="selectedAddress">
@@ -59,7 +59,7 @@
               {{ t('walletHome.downloadQR') }}
             </v-btn>
           </div>
-        </v-flex>
+        </v-col>
       </v-layout>
     </v-card>
   </v-dialog>

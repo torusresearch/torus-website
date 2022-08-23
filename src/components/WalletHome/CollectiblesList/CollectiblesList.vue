@@ -1,6 +1,6 @@
 <template>
   <v-layout class="collectibles-tab-container mx-n4" wrap align-center :justify-center="collectibleBalances.length === 0">
-    <v-flex v-for="(collectible, i) in collectibleBalances" :key="i" class="xs12 sm6 md4 lg3 px-4 mb-4">
+    <v-col v-for="(collectible, i) in collectibleBalances" :key="i" class="xs12 sm6 md4 lg3 px-4 mb-4">
       <v-card class="elevation-1">
         <v-list-item
           :class="$vuetify.breakpoint.xsOnly ? 'pt-3 pb-8 px-4' : 'py-2 px-5'"
@@ -28,8 +28,8 @@
           </div>
         </v-list-item>
       </v-card>
-    </v-flex>
-    <v-flex class="xs12 sm6 md4 lg3 px-4 mb-4">
+    </v-col>
+    <v-col class="xs12 sm6 md4 lg3 px-4 mb-4">
       <v-card color="elevation-1">
         <v-card-text class="pa-0">
           <div class="d-flex align-center py-3 px-4 card-header elevation-1">
@@ -42,7 +42,7 @@
           </div>
         </v-card-text>
       </v-card>
-    </v-flex>
+    </v-col>
   </v-layout>
 </template>
 

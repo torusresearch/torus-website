@@ -1,7 +1,7 @@
 <template>
   <v-card class="elevation-1 promotion-card" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
     <v-layout class="d-flex flex-column fill-height py-4 px-6">
-      <v-flex class="flex-grow-1 d-flex mb-4 mb-md-2">
+      <v-col class="flex-grow-1 d-flex mb-4 mb-md-2">
         <div class="promotion-text pr-3">
           <div
             class="text-body-2 text-sm-body-1 font-weight-bold text_1--text"
@@ -27,10 +27,10 @@
             />
           </div>
         </slot>
-      </v-flex>
-      <v-flex>
+      </v-col>
+      <v-col>
         <WalletConnect></WalletConnect>
-      </v-flex>
+      </v-col>
     </v-layout>
   </v-card>
 </template>

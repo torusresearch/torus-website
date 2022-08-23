@@ -6,7 +6,7 @@
       </template>
     </v-breadcrumbs>
     <v-layout wrap align-end>
-      <v-flex xs12 sm6 px-2>
+      <v-col xs12 sm6 px-2>
         <v-select
           v-model="selectedContract"
           :items="collectibles"
@@ -30,8 +30,8 @@
             />
           </template>
         </v-select>
-      </v-flex>
-      <v-flex xs12 sm6 px-4 class="body-2 text_2--text text-capitalize" :class="$vuetify.breakpoint.xsOnly ? 'text-right mt-1' : 'pb-1'"></v-flex>
+      </v-col>
+      <v-col xs12 sm6 px-4 class="body-2 text_2--text text-capitalize" :class="$vuetify.breakpoint.xsOnly ? 'text-right mt-1' : 'pb-1'"></v-col>
     </v-layout>
     <v-layout v-if="selectedContract" wrap align-top mt-10 mx-n2>
       <CollectibleAsset v-for="asset in selectedContract.assets" :key="asset.tokenId" :asset="asset" @onTransfer="transferAsset" />

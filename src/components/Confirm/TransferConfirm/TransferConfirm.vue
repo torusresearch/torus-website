@@ -1,13 +1,13 @@
 <template>
   <v-card class="confirm-transaction">
     <v-layout py-6 class="elevation-1">
-      <v-flex xs12 text-center>
+      <v-col xs12 text-center>
         <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 70 : 24" :src="getLogo.logo" />
         <div class="headline">{{ t('walletTransfer.confirmTransaction') }}</div>
-      </v-flex>
+      </v-col>
     </v-layout>
     <v-layout py-3 px-6 wrap>
-      <v-flex xs12>
+      <v-col xs12>
         <div class="d-flex transfer-to-from align-center">
           <div class="d-flex icon-container align-center">
             <div class="icon-box elevation-3" :class="{ isDark: $vuetify.theme.isDark }">
@@ -45,8 +45,8 @@
             </div>
           </div>
         </div>
-      </v-flex>
-      <v-flex xs12>
+      </v-col>
+      <v-col xs12>
         <div class="d-flex transfer-to-from__details">
           <div class="name">
             <div class="text-clamp-one">{{ fromVerifierId }}</div>
@@ -64,11 +64,11 @@
             </ShowToolTip>
           </div>
         </div>
-      </v-flex>
+      </v-col>
     </v-layout>
     <v-divider class="mx-6 my-3"></v-divider>
     <v-layout mx-6 py-3 wrap>
-      <v-flex xs12>
+      <v-col xs12>
         <div class="d-flex align-start justify-space-between" :class="isNonFungibleToken ? 'align-center' : 'align-start'">
           <div :style="{ lineHeight: '0px' }">
             <span class="caption">{{ isNonFungibleToken ? t('walletTransfer.assetToSend') : t('walletTransfer.amountToSend') }}</span>
@@ -82,8 +82,8 @@
             <div class="caption-2 text-right">{{ convertedAmount }}</div>
           </div>
         </div>
-      </v-flex>
-      <v-flex xs12 mt-10>
+      </v-col>
+      <v-col xs12 mt-10>
         <div class="d-flex align-start">
           <div :style="{ lineHeight: '0px' }">
             <span class="caption">{{ isEip1559 ? t('walletTransfer.fee-max-transaction') : t('walletTransfer.transferFee') }}</span>
@@ -97,11 +97,11 @@
           <v-icon x-small class="error--text mr-1">$vuetify.icons.alert</v-icon>
           <span class="error--text">{{ t('walletTransfer.gasEstimateFail') }}</span>
         </div>
-      </v-flex>
+      </v-col>
     </v-layout>
     <v-divider class="mx-6 my-3"></v-divider>
     <v-layout mx-6 py-3 wrap>
-      <v-flex xs12>
+      <v-col xs12>
         <div class="d-flex align-start">
           <div :style="{ lineHeight: '0px' }">
             <span class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
@@ -112,16 +112,16 @@
             <div v-if="insufficientFunds" class="caption error--text">{{ t('walletTransfer.insufficient') }}</div>
           </div>
         </div>
-      </v-flex>
+      </v-col>
     </v-layout>
 
     <v-layout wrap mx-6>
-      <v-flex xs12 my-10>
+      <v-col xs12 my-10>
         <v-layout mx-n2>
-          <v-flex xs6 px-2>
+          <v-col xs6 px-2>
             <v-btn block large text @click="onCancel">{{ t('walletTransfer.cancel') }}</v-btn>
-          </v-flex>
-          <v-flex xs6 px-2>
+          </v-col>
+          <v-col xs6 px-2>
             <v-btn
               id="confirm-transfer-btn"
               block
@@ -134,9 +134,9 @@
             >
               {{ t('walletTransfer.confirm') }}
             </v-btn>
-          </v-flex>
+          </v-col>
         </v-layout>
-      </v-flex>
+      </v-col>
     </v-layout>
   </v-card>
 </template>

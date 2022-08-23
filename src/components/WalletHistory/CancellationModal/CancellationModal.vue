@@ -48,15 +48,15 @@
       </v-card-text>
       <v-card-actions>
         <v-layout class="pb-4">
-          <v-flex xs6>
+          <v-col xs6>
             <v-btn block text color="text_2" @click="close">{{ t('walletActivity.cancelModalClose') }}</v-btn>
-          </v-flex>
+          </v-col>
           <v-divider vertical></v-divider>
-          <v-flex xs6>
+          <v-col xs6>
             <v-btn color="torusBrand1" depressed block class="py-1 white--text" :disabled="!isConfirmed" @click="cancelTransaction">
               {{ t('walletActivity.cancelModalConfirm') }}
             </v-btn>
-          </v-flex>
+          </v-col>
         </v-layout>
       </v-card-actions>
     </v-card>

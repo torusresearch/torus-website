@@ -1,12 +1,12 @@
 <template>
-  <v-flex v-if="isConfirm" xs12>
+  <v-col v-if="isConfirm" xs12>
     <v-layout wrap align-center class="mb-2">
-      <v-flex xs3>
+      <v-col xs3>
         <span class="caption">{{ t('walletTransfer.transactionFee') }}</span>
-      </v-flex>
-      <v-flex xs9>
+      </v-col>
+      <v-col xs9>
         <v-layout v-if="!isAdvanceOption" mx-n2 xs12>
-          <v-flex v-if="fastestGasPrice.gt('0')" px-2 mb-1>
+          <v-col v-if="fastestGasPrice.gt('0')" px-2 mb-1>
             <div
               class="btn-speed text-center elevation-3"
               :class="[speedSelected === 'average' ? 'selected' : '', $vuetify.theme.dark ? 'theme--dark' : '', isConfirm ? 'is-confirm' : '']"
@@ -24,8 +24,8 @@
                 </div>
               </div>
             </div>
-          </v-flex>
-          <v-flex :class="fastestGasPrice.gt('0') ? 'xs6' : 'xs12'" px-2 mb-1>
+          </v-col>
+          <v-col :class="fastestGasPrice.gt('0') ? 'xs6' : 'xs12'" px-2 mb-1>
             <div
               class="btn-speed text-center elevation-3"
               :class="[speedSelected === 'fastest' ? 'selected' : '', $vuetify.theme.dark ? 'theme--dark' : '', isConfirm ? 'is-confirm' : '']"
@@ -43,15 +43,15 @@
                 </div>
               </div>
             </div>
-          </v-flex>
+          </v-col>
         </v-layout>
         <v-layout v-if="isAdvanceOption" align-center>
-          <v-flex xs12>
+          <v-col xs12>
             <v-text-field :value="getEthAmountDisplay(gas, activeGasPrice)" outlined readonly hide-details></v-text-field>
-          </v-flex>
+          </v-col>
         </v-layout>
-      </v-flex>
-      <v-flex xs12 class="text-right">
+      </v-col>
+      <v-col xs12 class="text-right">
         <a v-if="isAdvanceOption" class="torusBrand1--text caption" @click="resetAdvanceOption">
           {{ t('walletTransfer.reset') }}
         </a>
@@ -70,12 +70,12 @@
           :nonce="nonce"
           @onSave="onSaveAdvanceOptions"
         />
-      </v-flex>
+      </v-col>
     </v-layout>
-  </v-flex>
-  <v-flex v-else xs12 mb-3>
+  </v-col>
+  <v-col v-else xs12 mb-3>
     <v-layout>
-      <v-flex class="body-2 mb-2">
+      <v-col class="body-2 mb-2">
         <span>
           {{ t('walletTransfer.transferFee') }}
         </span>
@@ -92,10 +92,10 @@
           :nonce="nonce"
           @onSave="onSaveAdvanceOptions"
         />
-      </v-flex>
+      </v-col>
     </v-layout>
     <v-layout v-if="!isAdvanceOption" mx-n2 xs12>
-      <v-flex v-if="fastestGasPrice.gt('0')" xs6 px-2 mb-1>
+      <v-col v-if="fastestGasPrice.gt('0')" xs6 px-2 mb-1>
         <div
           class="btn-speed text-center elevation-3"
           :class="[speedSelected === 'average' ? 'selected' : '', $vuetify.theme.dark ? 'theme--dark' : '']"
@@ -114,8 +114,8 @@
             </div>
           </div>
         </div>
-      </v-flex>
-      <v-flex :class="fastestGasPrice.gt('0') ? 'xs6' : 'xs12'" px-2 mb-1>
+      </v-col>
+      <v-col :class="fastestGasPrice.gt('0') ? 'xs6' : 'xs12'" px-2 mb-1>
         <div
           class="btn-speed text-center elevation-3"
           :class="[speedSelected === 'fastest' ? 'selected' : '', $vuetify.theme.dark ? 'theme--dark' : '']"
@@ -134,20 +134,20 @@
             </div>
           </div>
         </div>
-      </v-flex>
+      </v-col>
     </v-layout>
     <v-layout v-if="isAdvanceOption" align-center>
-      <v-flex xs8 mb-1>
+      <v-col xs8 mb-1>
         <div class="text-subtitle-2 font-weight-bold">
           {{ getEthAmountDisplay(gas, activeGasPrice) }}
           <span class="caption text_2--text">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
         </div>
-      </v-flex>
-      <v-flex xs4 class="text-right">
+      </v-col>
+      <v-col xs4 class="text-right">
         <v-btn id="adv-reset-btn" outlined color="torusBrand1" @click="resetAdvanceOption">{{ t('walletTransfer.reset') }}</v-btn>
-      </v-flex>
+      </v-col>
     </v-layout>
-  </v-flex>
+  </v-col>
 </template>
 
 <script>

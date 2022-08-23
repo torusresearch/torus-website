@@ -3,7 +3,7 @@
     <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
       <div class="body-2 mb-2">{{ t('walletSettings.selectNetwork') }}</div>
       <v-layout wrap>
-        <v-flex xs12>
+        <v-col xs12>
           <v-select
             id="select-network"
             v-model="selectedNetwork"
@@ -17,44 +17,44 @@
             aria-label="Select Network"
             @change="changeNetwork"
           ></v-select>
-        </v-flex>
+        </v-col>
       </v-layout>
 
       <template v-if="isRPCSelected">
-        <v-flex xs12>
+        <v-col xs12>
           <v-text-field
             v-model="rpc.networkName"
             :placeholder="t('walletSettings.enterNetworkName')"
             :rules="[rules.required]"
             outlined
           ></v-text-field>
-        </v-flex>
+        </v-col>
 
-        <v-flex xs12>
+        <v-col xs12>
           <v-text-field v-model="rpc.rpcUrl" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
-        </v-flex>
+        </v-col>
 
-        <v-flex xs12>
+        <v-col xs12>
           <v-text-field
             v-model="rpc.chainId"
             :rules="[rules.required, rules.requiredHex]"
             :placeholder="t('walletSettings.enterChainId')"
             outlined
           ></v-text-field>
-        </v-flex>
+        </v-col>
 
-        <v-flex xs12>
+        <v-col xs12>
           <v-text-field v-model="rpc.ticker" :placeholder="t('walletSettings.enterSymbol')" outlined></v-text-field>
-        </v-flex>
+        </v-col>
 
-        <v-flex xs12>
+        <v-col xs12>
           <v-text-field v-model="rpc.blockExplorer" :placeholder="t('walletSettings.enterBlockExplorer')" outlined></v-text-field>
-        </v-flex>
+        </v-col>
 
-        <v-flex xs12 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
+        <v-col xs12 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
           <v-layout>
             <v-spacer></v-spacer>
-            <v-flex xs4>
+            <v-col xs4>
               <v-tooltip bottom :disabled="formValid">
                 <template #activator="{ on }">
                   <span v-on="on">
@@ -74,9 +74,9 @@
                 </template>
                 <span>{{ t('walletSettings.resolveErrors') }}</span>
               </v-tooltip>
-            </v-flex>
+            </v-col>
           </v-layout>
-        </v-flex>
+        </v-col>
       </template>
     </v-form>
   </div>

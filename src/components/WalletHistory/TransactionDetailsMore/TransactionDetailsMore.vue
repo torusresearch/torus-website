@@ -1,6 +1,6 @@
 <template>
   <v-layout class="mt-3" wrap>
-    <v-flex xs12 class="activity-details" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
+    <v-col xs12 class="activity-details" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
       <div class="caption">
         <div class="text_1--text d-flex mb-2">
           <div class="details-label d-flex mr-6">
@@ -55,7 +55,7 @@
         </div>
       </div>
       <v-layout wrap class="mt-8">
-        <v-flex xs12 sm6>
+        <v-col xs12 sm6>
           <div v-if="transaction.hasCancel" class="caption">
             <div class="text_1--text d-flex mb-2">
               <div class="details-label d-flex mr-6">
@@ -72,10 +72,10 @@
               <div class="details-value">{{ cancellationFee }}</div>
             </div> -->
           </div>
-        </v-flex>
-        <v-flex v-if="transaction.etherscanLink || transaction.statusText === ACTIVITY_STATUS_PENDING" xs12 sm6 class="text-right mt-4 mt-sm-0">
+        </v-col>
+        <v-col v-if="transaction.etherscanLink || transaction.statusText === ACTIVITY_STATUS_PENDING" xs12 sm6 class="text-right mt-4 mt-sm-0">
           <v-layout :class="{ 'd-inline-flex': !$vuetify.breakpoint.xsOnly }">
-            <v-flex>
+            <v-col>
               <v-tooltip top>
                 <template #activator="{ on }">
                   <span v-on="on">
@@ -95,8 +95,8 @@
                   <div class="caption text_3--text text-justify">{{ t('walletActivity.cancelButtonTooltip') }} {{ cancellationFeeEstimate }}</div>
                 </span>
               </v-tooltip>
-            </v-flex>
-            <v-flex>
+            </v-col>
+            <v-col>
               <v-btn
                 v-if="transaction.etherscanLink"
                 class="torus-btn1"
@@ -110,11 +110,11 @@
               >
                 {{ t('walletActivity.viewOnEtherscan') }}
               </v-btn>
-            </v-flex>
+            </v-col>
           </v-layout>
-        </v-flex>
+        </v-col>
       </v-layout>
-    </v-flex>
+    </v-col>
   </v-layout>
 </template>
 

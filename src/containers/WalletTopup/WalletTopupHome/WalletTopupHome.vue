@@ -37,18 +37,18 @@
           "
         />
 
-        <v-flex v-if="selectedProvider && $vuetify.breakpoint.xsOnly" xs12 mb-2>
+        <v-col v-if="selectedProvider && $vuetify.breakpoint.xsOnly" xs12 mb-2>
           <div class="font-weight-bold headline px-4 mb-4 text_2--text">
             <span>
               {{ t('walletTopUp.purchaseVia') }}
               <span class="text-capitalize">{{ selectedProvider }}</span>
             </span>
           </div>
-        </v-flex>
+        </v-col>
 
-        <v-flex id="providerForm" mb-4 px-4 :class="$vuetify.breakpoint.width > 800 ? 'xs7' : 'xs12'">
+        <v-col id="providerForm" mb-4 px-4 :class="$vuetify.breakpoint.width > 800 ? 'xs7' : 'xs12'">
           <router-view></router-view>
-        </v-flex>
+        </v-col>
       </v-layout>
     </v-container>
   </div>

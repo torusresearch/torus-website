@@ -1,14 +1,14 @@
 <template>
   <v-container class="wallet-activity" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout mt-3 wrap>
-      <v-flex xs12 md7>
+      <v-col xs12 md7>
         <div class="text_2--text font-weight-bold float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
           {{ t('walletActivity.transactionActivities') }}
         </div>
-      </v-flex>
-      <v-flex xs12 md5 :class="$vuetify.breakpoint.xsOnly ? 'mt-7' : ''">
+      </v-col>
+      <v-col xs12 md5 :class="$vuetify.breakpoint.xsOnly ? 'mt-7' : ''">
         <v-layout mx-n2>
-          <v-flex xs6 px-2>
+          <v-col xs6 px-2>
             <v-menu offset-y>
               <template #activator="{ on }">
                 <v-btn
@@ -41,8 +41,8 @@
                 </v-list>
               </v-card>
             </v-menu>
-          </v-flex>
-          <v-flex xs6 px-2>
+          </v-col>
+          <v-col xs6 px-2>
             <v-menu offset-y>
               <template #activator="{ on }">
                 <v-btn
@@ -75,10 +75,10 @@
                 </v-list>
               </v-card>
             </v-menu>
-          </v-flex>
+          </v-col>
         </v-layout>
-      </v-flex>
-      <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'mt-6' : 'mt-7'">
+      </v-col>
+      <v-col xs12 :class="$vuetify.breakpoint.xsOnly ? 'mt-6' : 'mt-7'">
         <TxHistoryTable
           :currency-multiplier="currencyMultiplier"
           :selected-action="selectedAction"
@@ -88,7 +88,7 @@
           :cancel-gas-price="cancelGasPrice"
           @cancelTransaction="cancelTransaction"
         />
-      </v-flex>
+      </v-col>
     </v-layout>
   </v-container>
 </template>

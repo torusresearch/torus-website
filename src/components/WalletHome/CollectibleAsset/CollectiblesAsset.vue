@@ -1,5 +1,5 @@
 <template>
-  <v-flex xs12 sm4 md3 lg2 px-3 pb-4>
+  <v-col xs12 sm4 md3 lg2 px-3 pb-4>
     <!-- Asset Desktop View -->
     <v-expand-transition>
       <v-card
@@ -91,7 +91,7 @@
         </v-card-text>
 
         <v-card-actions class="px-2 pt-0 pb-3">
-          <v-flex xs6 class="px-2">
+          <v-col xs6 class="px-2">
             <v-btn
               block
               class="torus-btn1"
@@ -101,16 +101,16 @@
             >
               {{ assetActive ? t('walletHome.lessInfo') : t('walletHome.moreInfo') }}
             </v-btn>
-          </v-flex>
-          <v-flex xs6 class="px-2">
+          </v-col>
+          <v-col xs6 class="px-2">
             <v-btn block depressed :outlined="$vuetify.theme.dark" color="torusBrand1" class="white--text" @click.stop="transferAsset(asset)">
               {{ t('walletHome.transfer') }}
             </v-btn>
-          </v-flex>
+          </v-col>
         </v-card-actions>
       </v-card>
     </v-expand-transition>
-  </v-flex>
+  </v-col>
 </template>
 
 <script>

@@ -1,7 +1,7 @@
 <template>
   <v-container fluid fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
-      <v-flex text-center>
+      <v-col text-center>
         <BoxLoader v-if="loading" :white-label="whiteLabel" :is-custom-verifier="isCustomVerifier" />
         <div v-else>
           <div class="text-h5 font-weight-bold mb-8">{{ t('login.selectAnAccount') }}</div>
@@ -33,7 +33,7 @@
             {{ t('login.continueToApp') }}
           </v-btn>
         </div>
-      </v-flex>
+      </v-col>
       <div class="footer">
         <div class="powered-by">{{ t('login.selfCustodial') }}</div>
         <img height="26" :src="require(`@/assets/images/web3auth.svg`)" alt="Web3Auth" />

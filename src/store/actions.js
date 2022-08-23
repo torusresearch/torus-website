@@ -604,7 +604,7 @@ export default {
   async rehydrate({ state, dispatch, commit }) {
     const { networkType, networkId, wcConnectorSession, selectedAddress } = state
     try {
-      const currentRoute = router.match(window.location.pathname)
+      const currentRoute = router.resolve(window.location.pathname)
       if (!currentRoute.meta.skipOpenLoginCheck) {
         const openLoginHandler = OpenLoginHandler.getInstance()
         const sessionInfo = await openLoginHandler.getActiveSession()
