@@ -575,7 +575,8 @@ export default {
         const openLoginHandler = OpenLoginHandler.getInstance()
         const sessionInfo = await openLoginHandler.getActiveSession()
         if (!sessionInfo) {
-          await dispatch('logOut')
+          commit('setRehydrationStatus', true)
+          if (isMain) await dispatch('logOut')
           return
         }
         const { store } = sessionInfo
