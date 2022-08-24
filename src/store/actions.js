@@ -255,28 +255,23 @@ export default {
     dispatch('subscribeToControllers')
     commit('setUserInfo', userInfo)
 
-    const defaultAddresses = await dispatch('initTorusKeyring', {
+    const selectedAddress = `0x${privateToAddress(Buffer.from(privateKey, 'hex')).toString('hex')}`
+    await dispatch('initTorusKeyring', {
       keys: [
         {
           privKey: privateKey,
-          ethAddress: `0x${privateToAddress(Buffer.from(privateKey, 'hex')).toString('hex')}`,
+          ethAddress: selectedAddress,
         },
       ],
     })
 
-    const selectedAddress = defaultAddresses[0]
-
-    if (!selectedAddress) {
-      loginWithPrivateKeyStream.write({
-        name: 'login_with_private_key_response',
-        data: {
-          success: false,
-          error: 'No Accounts available',
-        },
-      })
-      dispatch('logOut')
-      throw new Error('No Accounts available')
-    }
+    loginWithPrivateKeyStream.write({
+      name: 'login_with_private_key_response',
+      data: {
+        success: false,
+        error: 'No Accounts available',
+      },
+    })
 
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
     // TODO: deprecate rehydrate false for the next major version bump
@@ -319,6 +314,8 @@ export default {
     return privKey
   },
   addWallet(context, payload) {
+    // eslint-disable-next-line no-console
+    console.log('address 2', payload)
     if (payload.ethAddress) {
       context.commit('setWallet', {
         ...context.state.wallet,
@@ -404,17 +401,12 @@ export default {
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
       })
-      const { keys, userInfo, postboxKey, userDapps, error, sessionId, sessionNamespace } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
       if (error) {
         throw new Error(error)
       }
       // Get all open login results
       userInfo.verifier = verifier
-      if (sessionId && config.localStorageAvailable) {
-        const openLoginStore = localStorage.getItem('openlogin_store')
-        const finalStore = { ...(openLoginStore ? JSON.parse(openLoginStore) : {}), sessionId, sessionNamespace: sessionNamespace ?? null }
-        localStorage.setItem('openlogin_store', JSON.stringify(finalStore))
-      }
       commit('setUserInfo', userInfo)
       commit('setPostboxKey', postboxKey)
       commit('setUserDapps', userDapps)
