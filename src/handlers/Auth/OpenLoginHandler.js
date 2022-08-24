@@ -157,6 +157,16 @@ class OpenLoginHandler {
     return allInfo.sessionNamespace
   }
 
+  getWalletKey() {
+    const { state } = this.openLoginInstance
+    if (!state.walletKey) return null
+    const ethAddress = torus.generateAddressFromPrivKey(new BN(state.walletKey, 'hex'))
+    return {
+      privKey: state.walletKey,
+      ethAddress,
+    }
+  }
+
   getKeysInfo() {
     const { state } = this.openLoginInstance
     // keys

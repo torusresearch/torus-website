@@ -1,5 +1,4 @@
-import randomId from '@chaitanyapotti/random-id'
-import { safeatob } from '@toruslabs/openlogin-utils'
+import { randomId, safeatob, safebtoa } from '@toruslabs/openlogin-utils'
 import deepmerge from 'deepmerge'
 import { BN, privateToAddress } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
@@ -251,7 +250,7 @@ export default {
         })
     })
   },
-  async handleLoginWithPrivateKey({ dispatch, commit }, { privateKey, userInfo }) {
+  async handleLoginWithPrivateKey({ dispatch, commit, state }, { privateKey, userInfo }) {
     dispatch('subscribeToControllers')
     commit('setUserInfo', userInfo)
 
@@ -266,6 +265,51 @@ export default {
     })
 
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+
+    const appState = safebtoa(
+      JSON.stringify({
+        instanceId: '',
+        verifier: '',
+        origin: this.origin,
+        whiteLabel: state.whiteLabel || {},
+        loginConfig: {},
+      })
+    )
+
+    const openLoginHandler = OpenLoginHandler.getInstance(state.whiteLabel, {})
+    const activeSession = await openLoginHandler.getActiveSession()
+    if (activeSession && activeSession.walletKey === privateKey) {
+      const _store = activeSession?.store || {}
+      const sessionData = {
+        ...activeSession,
+        store: {
+          ..._store,
+          whiteLabel: state.whiteLabel,
+          appState,
+          ...userInfo,
+        },
+      }
+      await openLoginHandler.updateSession(sessionData)
+    } else {
+      const sessionId = randomId()
+      await openLoginHandler.openLoginInstance._syncState({
+        walletKey: privateKey,
+        store: {
+          sessionId,
+        },
+      })
+      const sessionData = {
+        walletKey: privateKey,
+        store: {
+          whiteLabel: state.whiteLabel,
+          appState,
+          sessionId,
+          ...userInfo,
+        },
+      }
+      await openLoginHandler.updateSession(sessionData)
+    }
+
     // TODO: deprecate rehydrate false for the next major version bump
     statusStream.write({ loggedIn: true, rehydrate: false, verifier: userInfo.verifier })
     loginWithPrivateKeyStream.write({
@@ -552,7 +596,8 @@ export default {
     }
   },
   async rehydrate({ state, dispatch, commit }) {
-    const { networkType, networkId, wcConnectorSession, selectedAddress } = state
+    const { networkType, networkId, wcConnectorSession } = state
+    let walletKey = {}
     try {
       const currentRoute = router.match(window.location.pathname)
       if (!currentRoute.meta.skipOpenLoginCheck) {
@@ -566,6 +611,7 @@ export default {
         const { store } = sessionInfo
         // log.info(sessionInfo, 'current session info')
         if (sessionInfo && (sessionInfo.walletKey || sessionInfo.tKey)) {
+          walletKey = openLoginHandler.getWalletKey()
           // already logged in
           // call autoLogin
           log.info('auto-login with openlogin session')
@@ -574,13 +620,20 @@ export default {
             const noRedirectQuery = Object.fromEntries(new URLSearchParams(window.location.search))
             const { redirect } = noRedirectQuery
             delete noRedirectQuery.redirect
-            const appStateParams = JSON.parse(safeatob(store.appState))
-            if (appStateParams?.whiteLabel) {
-              commit('setWhiteLabel', { ...appStateParams.whiteLabel })
+            if (store.appState) {
+              const appStateParams = JSON.parse(safeatob(store.appState))
+              if (appStateParams?.whiteLabel) {
+                commit('setWhiteLabel', { ...appStateParams.whiteLabel })
+              }
+              if (
+                appStateParams?.loginConfig &&
+                typeof appStateParams.loginConfig === 'object' &&
+                Object.keys(appStateParams.loginConfig).length > 0
+              ) {
+                commit('setLoginConfig', { ...appStateParams.loginConfig })
+              }
             }
-            if (appStateParams?.loginConfig && typeof appStateParams.loginConfig === 'object' && Object.keys(appStateParams.loginConfig).length > 0) {
-              commit('setLoginConfig', { ...appStateParams.loginConfig })
-            }
+
             router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})
           }
         } else {
@@ -592,8 +645,9 @@ export default {
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       dispatch('subscribeToControllers')
 
-      if (selectedAddress && state.wallet[selectedAddress]) {
-        dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+      const _finalSelectedAddress = state.selectedAddress || walletKey.ethAddress
+      if (_finalSelectedAddress && state.wallet[_finalSelectedAddress]) {
+        dispatch('updateSelectedAddress', { selectedAddress: _finalSelectedAddress }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: state.userInfo.verifier })
