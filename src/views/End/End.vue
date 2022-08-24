@@ -50,7 +50,7 @@ import log from 'loglevel'
 import BoxLoader from '../../components/helpers/BoxLoader'
 import { OpenLoginHandler } from '../../handlers/Auth'
 import { ACCOUNT_TYPE, APPLE, POPUP_RESULT } from '../../utils/enums'
-import { broadcastChannelOptions, getIFrameOrigin } from '../../utils/utils'
+import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   name: 'End',
@@ -86,9 +86,8 @@ export default {
         resultParams = JSON.parse(safeatob(result))
         loginError = resultParams.error
         const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
-        const appSessionData = appStateParams[getIFrameOrigin()] || appStateParams
-        whiteLabel = appSessionData.whiteLabel || {}
-        loginConfig = appSessionData.loginConfig || {}
+        whiteLabel = appStateParams.whiteLabel || {}
+        loginConfig = appStateParams.loginConfig || {}
         this.isCustomVerifier = Object.keys(loginConfig).length > 0
       }
 

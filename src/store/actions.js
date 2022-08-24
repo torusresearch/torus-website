@@ -150,9 +150,6 @@ export default {
       const openLoginHandler = OpenLoginHandler.getInstance()
       if (isMain) {
         router.push({ path: '/logout' }).catch(() => {})
-      } else {
-        // optimistically removing sessionId.
-        openLoginHandler.openLoginInstance.state.store.set('sessionId', null)
       }
       try {
         await openLoginHandler.invalidateSession()

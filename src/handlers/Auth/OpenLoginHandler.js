@@ -114,6 +114,9 @@ class OpenLoginHandler {
         this.openLoginInstance.state.store.set('sessionId', null)
       }
     } catch (error) {
+      if (error?.status === 404) {
+        this.openLoginInstance.state.store.set('sessionId', null)
+      }
       log.warn(error)
     }
   }

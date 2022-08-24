@@ -9,7 +9,7 @@ class PopupHandler extends EventEmitter {
   constructor({ url, target, features, preopenInstanceId }) {
     super()
     const localUrl = url instanceof URL ? url : new URL(url)
-    if (localUrl.hash) localUrl.hash += `&dappStorageKey=${config.isCustomLogin}`
+    if (localUrl.hash) localUrl.hash += `&isCustomLogin=${config.isCustomLogin}`
     else localUrl.hash = `#isCustomLogin=${config.isCustomLogin}`
     this.url = localUrl.href
     this.target = target || '_blank'
