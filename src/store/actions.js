@@ -265,14 +265,6 @@ export default {
       ],
     })
 
-    loginWithPrivateKeyStream.write({
-      name: 'login_with_private_key_response',
-      data: {
-        success: false,
-        error: 'No Accounts available',
-      },
-    })
-
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
     // TODO: deprecate rehydrate false for the next major version bump
     statusStream.write({ loggedIn: true, rehydrate: false, verifier: userInfo.verifier })
