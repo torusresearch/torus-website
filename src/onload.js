@@ -7,7 +7,7 @@ import config from './config'
 import TorusController from './controllers/TorusController'
 import setupMultiplex from './controllers/utils/setupMultiplex'
 import { MAINNET, SUPPORTED_NETWORK_TYPES } from './utils/enums'
-import { getIFrameOrigin, isMain } from './utils/utils'
+import { getIFrameOrigin, getIFrameOriginObject, isMain } from './utils/utils'
 // import store from './store'
 let storeReference
 let deferredDispatch = []
@@ -38,8 +38,10 @@ function onloadTorus(torus) {
   let sessionData
 
   if (config.localStorageAvailable) {
-    const storage = window.localStorage
-    sessionData = storage.getItem('torus-app')
+    const storage =
+      config.isCustomLogin === null ? (config.sessionStorageAvailable ? window.sessionStorage : window.localStorage) : window.localStorage
+    const storageKey = config.isCustomLogin === true ? `torus_app_${getIFrameOriginObject().hostname}` : 'torus-app'
+    sessionData = storage.getItem(storageKey)
   }
 
   const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || SUPPORTED_NETWORK_TYPES[MAINNET]
