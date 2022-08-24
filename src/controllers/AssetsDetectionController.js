@@ -175,7 +175,7 @@ export default class AssetsDetectionController {
     preferencesStore.subscribe(async (state) => {
       const { selectedAddress } = state
       if (!selectedAddress) return
-      const { customNfts = [] } = state[selectedAddress]
+      const { customNfts = [] } = state[selectedAddress] || {}
       if (
         !isEqual(
           this.selectedCustomNfts,

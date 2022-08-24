@@ -138,7 +138,7 @@ export const XDAI_BLOCK_EXPLORER = 'https://blockscout.com/poa/xdai'
 export const BSC_MAINNET_URL = 'https://bsc-dataseed.binance.org'
 export const BSC_MAINNET_BLOCK_EXPLORER = 'https://bscscan.com'
 
-export const BSC_TESTNET_URL = 'https://data-seed-prebsc-2-s3.binance.org:8545'
+export const BSC_TESTNET_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545'
 export const BSC_TESTNET_BLOCK_EXPLORER = 'https://testnet.bscscan.com'
 
 export const OKC_MAINNET_URL = 'https://exchainrpc.okex.org'

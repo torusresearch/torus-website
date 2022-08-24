@@ -163,8 +163,8 @@ class CurrencyController {
       let parsedResponse
       try {
         parsedResponse = await response.json()
-      } catch {
-        log.error(new Error(`CurrencyController - Failed to parse response "${response.status}"`))
+      } catch (error) {
+        log.error(new Error(`CurrencyController - Failed to parse response "${response.status}"`), error)
         return
       }
       // set conversion rate
