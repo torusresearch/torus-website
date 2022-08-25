@@ -4,7 +4,7 @@ import { BN, privateToAddress } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
-import { isHexStrict } from 'web3-utils'
+import { isHexStrict, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import { OpenLoginHandler, OpenLoginWindowHandler } from '../handlers/Auth'
@@ -644,8 +644,8 @@ export default {
       dispatch('subscribeToControllers')
 
       const _finalSelectedAddress = state.selectedAddress || walletKey.ethAddress
-      if (_finalSelectedAddress && state.wallet[_finalSelectedAddress]) {
-        dispatch('updateSelectedAddress', { selectedAddress: _finalSelectedAddress }) // synchronous
+      if (_finalSelectedAddress && state.wallet[toChecksumAddress(_finalSelectedAddress)]) {
+        dispatch('updateSelectedAddress', { selectedAddress: toChecksumAddress(_finalSelectedAddress) }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: state.userInfo.verifier })
