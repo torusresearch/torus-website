@@ -124,6 +124,19 @@ export default {
 
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     torusController.lock()
+    if (selectedAddress) {
+      const openLoginHandler = OpenLoginHandler.getInstance()
+      if (isMain) {
+        router.push({ path: '/logout' }).catch(() => {})
+      }
+      try {
+        // openLoginHandler.openLoginInstance.state.store.set('sessionId', null)
+        await openLoginHandler.invalidateSession()
+      } catch (error) {
+        log.warn(error, 'unable to logout with openlogin')
+        window.location.href = '/'
+      }
+    }
     statusStream.write({ loggedIn: false })
     resetStore(accountTracker.store, accountTrackerHandler)
     resetStore(txController.store, transactionControllerHandler)
@@ -145,18 +158,6 @@ export default {
     resetStore(watchAssetManager.store, unapprovedAssetMsgsHandler)
     assetDetectionController.stopAssetDetection()
     // torus.updateStaticData({ isUnlocked: false })
-    if (selectedAddress) {
-      const openLoginHandler = OpenLoginHandler.getInstance()
-      if (isMain) {
-        router.push({ path: '/logout' }).catch(() => {})
-      }
-      try {
-        await openLoginHandler.invalidateSession()
-      } catch (error) {
-        log.warn(error, 'unable to logout with openlogin')
-        window.location.href = '/'
-      }
-    }
   },
   setSelectedCurrency({ commit }, payload) {
     torusController.setCurrentCurrency(payload, (error, data) => {
