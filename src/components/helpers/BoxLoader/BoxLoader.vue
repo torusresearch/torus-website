@@ -74,14 +74,14 @@ export default {
       return this.isDark ? this.whiteLabel.logoDark : this.whiteLabel.logoLight
     },
     primaryColor() {
-      if (!this.whiteLabel.isActive) return 'var(--v-torusBrand1-base)'
-      return this.whiteLabel?.theme?.colors?.torusBrand1 || 'var(--v-torusBrand1-base)'
+      if (!this.whiteLabel.isActive) return 'rgb(var(--v-theme-torusBrand1))'
+      return this.whiteLabel?.theme?.colors?.torusBrand1 || 'rgb(var(--v-theme-torusBrand1))'
     },
     isDark() {
       if (this.whiteLabel.isActive) {
         return this.whiteLabel.theme?.isDark
       }
-      return this.$vuetify.theme.dark
+      return this.$vuetify.theme.name === 'dark'
     },
     useSpinner() {
       return this.forceSpinner || !this.isCustomVerifier || (this.isCustomVerifier && !this.whiteLabelLogo)
