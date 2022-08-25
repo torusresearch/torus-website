@@ -182,7 +182,6 @@ export default {
     }
     state.whiteLabel = {
       ...state.whiteLabel,
-      isActive: true,
       ...payload,
     }
     localThemeSet(undefined, state)
