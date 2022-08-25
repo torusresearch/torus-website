@@ -1,5 +1,5 @@
 <template>
-  <v-col class="mb-2 mb-sm-0" :class="isDapp ? '' : 'ml-auto mr-auto xs10 sm8'">
+  <v-col sm="8" class="mb-2 mb-sm-0" :cols="!isDapp && '10'" :class="isDapp ? '' : 'ml-auto mr-auto'">
     <div
       class="text_2--text"
       :class="isDapp ? 'headline font-weight-medium' : 'display-1 font-weight-bold'"

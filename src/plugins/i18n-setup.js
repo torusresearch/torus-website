@@ -6,6 +6,7 @@ const i18n = createI18n({
   locale: 'en', // set locale
   fallbackLocale: 'en',
   messages: { en }, // set locale messages
+  allowComposition: true,
 })
 
 const loadedLanguages = new Set(['en']) // our default language that is preloaded

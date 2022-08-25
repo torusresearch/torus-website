@@ -4,9 +4,10 @@
   .v-btn.v-btn--icon {
     width: 14px;
     height: 14px;
-    background-color: var(--v-torusGray1-base);
-    &.v-btn--active {
-      background-color: var(--v-torusGray3-base);
+    background-color: rgb(var(--v-theme-torusGray1));
+    margin: 0px 8px;
+    &.v-btn--selected {
+      background-color: rgb(var(--v-theme-torusGray3));
     }
   }
 }

@@ -1,5 +1,11 @@
 <template>
-  <v-col class="login-buttons" :class="isPopup ? 'is-popup xs-12' : 'xs10 sm12'" :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
+  <v-col
+    class="login-buttons pa-0"
+    :cols="!isPopup ? '10' : ''"
+    :sm="isPopup ? '12' : ''"
+    :class="isPopup ? 'is-popup xs-12' : ''"
+    :style="{ maxWidth: isPopup ? 'unset' : '380px' }"
+  >
     <v-row v-if="lastLoginConfigItem || mainButtonsLong.length > 0" dense>
       <v-col v-if="lastLoginConfigItem" cols="12">
         <LoginButton
@@ -57,7 +63,7 @@
             class="passwordless-email"
             :rules="[rules.email]"
             :placeholder="$t('login.enterYourEmail')"
-            outlined
+            variant="outlined"
           />
           <LoginButton
             :login-config-item="loginConfigItem"
@@ -85,7 +91,7 @@
       <v-spacer></v-spacer>
       <v-btn :class="{ 'has-more': viewMoreOptions }" class="view-option-selector" @click="viewMoreOptions = !viewMoreOptions">
         <span class="selector-text">{{ viewMoreOptions ? $t('dappLogin.viewLess') : $t('dappLogin.viewMore') }}</span>
-        <v-icon>$vuetify.icons.select</v-icon>
+        <v-icon>$select</v-icon>
       </v-btn>
     </div>
   </v-col>
@@ -224,7 +230,7 @@ export default {
       this.activeButton = verifier
     },
     triggerLogin(verifier, email) {
-      this.$emi$t('triggerLogin', verifier, email)
+      this.$emit('triggerLogin', verifier, email)
     },
   },
 }

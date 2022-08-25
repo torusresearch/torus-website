@@ -59,15 +59,15 @@ app.use(
   })
 )
 
-app.mixin({
-  methods: {
-    t(data, params) {
-      if (data === '') return data
-      const translated = i18n.t(`${data}`, params)
-      return translated
-    },
-  },
-})
+// app.mixin({
+//   methods: {
+//     t(data, params) {
+//       if (data === '') return data
+//       const translated = i18n.$t(`${data}`, params)
+//       return translated
+//     },
+//   },
+// })
 
 installSentry(app)
 loadLanguageAsync(getUserLanguage())

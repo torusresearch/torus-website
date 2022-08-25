@@ -150,7 +150,7 @@ const router = createRouter({
         },
       ],
     },
-    { path: '/:pathMatch(.*)*', component: () => import(/* webpackChunkName: "login" */ './views/Login') },
+    { path: '/:pathMatch(.*)*', component: () => import(/* webpackChunkName: "login" */ './views/NotFound.vue') },
   ],
 })
 

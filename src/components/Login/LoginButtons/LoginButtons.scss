@@ -3,9 +3,9 @@
     height: 25px;
     border-radius: 12.5px;
     padding: 3px 12px 3px 20px;
-    background: var(--v-torusGray4-base);
+    background: rgb(var(--v-theme-torusGray4));
     box-shadow: none;
-    color: var(--v-text_2-base);
+    color: rgb(var(--v-theme-text_2));
     .selector-text {
       font-size: 0.875rem;
       font-weight: 400;
@@ -18,20 +18,20 @@
       }
     }
     &.theme--dark {
-      background: var(--v-torusBlack2-base);
-      color: var(--v-text_2-base);
+      background: rgb(var(--v-theme-torusBlack2));
+      color: rgb(var(--v-theme-text_2));
     }
   }
 
   .v-input.passwordless-email {
     margin-bottom: 8px;
-    ::v-deep .v-input__control {
+    :deep(.v-input__control) {
       .v-text-field__details {
         display: none;
       }
     }
     &.error--text {
-      ::v-deep .v-input__control {
+      :deep(.v-input__control) {
         .v-text-field__details {
           display: block;
           margin-bottom: 0;
@@ -58,15 +58,13 @@
     }
     .v-input.passwordless-email {
       margin-bottom: 0.8vh;
-      ::v-deep .v-input__control {
-        .v-input__slot input {
-          font-size: 1.7vh;
-          padding-left: 2.5vh;
-          padding-right: 2.5vh;
-        }
+      :deep(input) {
+        font-size: 1.7vh;
+        padding-left: 2.5vh;
+        padding-right: 2.5vh;
       }
       &.error--text {
-        ::v-deep .v-input__control {
+        :deep(.v-input__control) {
           .v-messages {
             font-size: 1.3vh;
             .v-messages__message {
@@ -87,7 +85,7 @@
       }
       .v-icon {
         margin-left: 0.5vh;
-        ::v-deep svg {
+        :deep(svg) {
           height: 2vh;
         }
       }
@@ -105,12 +103,11 @@
     }
     .v-input.passwordless-email {
       margin-bottom: 0.6vh;
-      ::v-deep .v-input__control {
-        .v-input__slot input {
-          font-size: 1.5vh;
-          padding-left: 2.5vh;
-          padding-right: 2.5vh;
-        }
+
+      :deep(input) {
+        font-size: 1.5vh;
+        padding-left: 2.5vh;
+        padding-right: 2.5vh;
       }
     }
     .v-btn.view-option-selector:not(.v-btn--text):not(.v-btn--icon):not(.v-btn--round) {
@@ -124,7 +121,7 @@
       }
       .v-icon {
         margin-left: 0.5vh;
-        ::v-deep svg {
+        :deep(svg) {
           height: 2vh;
         }
       }

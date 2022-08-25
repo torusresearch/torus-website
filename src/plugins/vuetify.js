@@ -11,12 +11,17 @@ export default createVuetify({
   directives,
   theme: {
     defaultTheme: 'light',
+    variations: {
+      colors: ['primary', 'secondary', 'torusBrand1', 'torusGray1', 'torusFont1', 'torusBlack'],
+      lighten: 4,
+      darken: 4,
+    },
     themes: {
-      light: { ...themes[THEME_LIGHT_BLUE_NAME].theme, dark: false },
-      dark: { ...themes[THEME_DARK_BLACK_NAME].theme, dark: true },
+      light: { colors: { ...themes[THEME_LIGHT_BLUE_NAME].theme }, dark: false },
+      dark: { colors: { ...themes[THEME_DARK_BLACK_NAME].theme }, dark: true },
     },
   },
   icons: {
-    sets: iconsValues,
+    aliases: iconsValues,
   },
 })

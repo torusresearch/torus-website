@@ -7,13 +7,13 @@
     :hide-delimiters="$vuetify.display.xsOnly"
     @change="onChange"
   >
-    <v-carousel-item v-for="slide in slides" :key="slide.title" reverse-transition="fade-transition" transition="fade-transition">
-      <v-layout align-center fill-height px-10>
+    <v-carousel-item v-for="slide in slides" :key="slide.title" transition="fade-transition">
+      <v-row align="center" fill-height class="px-10">
         <v-col class="text-center">
           <img class="mb-6 slide-image" :src="require(`../../../assets/images/${slide.image}`)" alt="Login Carousel" />
-          <div class="text-h6 text-sm-h5 font-weight-medium mb-3 text_2--text px-2">{{ t(slide.title) }}</div>
-          <div class="text-caption text-sm-body-1 text_2--text">{{ t(slide.subtitle1) }}</div>
-          <div v-if="slide.subtitle2" class="text-caption text-sm-body-1 text_2--text">{{ t(slide.subtitle2) }}</div>
+          <div class="text-h6 text-sm-h5 font-weight-medium mb-3 text_2--text px-2">{{ $t(slide.title) }}</div>
+          <div class="text-caption text-sm-body-1 text_2--text">{{ $t(slide.subtitle1) }}</div>
+          <div v-if="slide.subtitle2" class="text-caption text-sm-body-1 text_2--text">{{ $t(slide.subtitle2) }}</div>
           <v-btn
             class="learn-more-btn mt-6"
             :class="{ isDark: isDarkMode, isMobile: $vuetify.display.xsOnly }"
@@ -24,7 +24,7 @@
             {{ $t('login.visitOurWebsite') }}
           </v-btn>
         </v-col>
-      </v-layout>
+      </v-row>
     </v-carousel-item>
   </v-carousel>
 </template>

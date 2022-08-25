@@ -1,5 +1,5 @@
 <template>
-  <v-col xs10 sm8 ml-auto mr-auto mb-6 class="footer-notes" :class="{ 'not-sm': !$vuetify.display.xsOnly }">
+  <v-col cols="10" sm="8" class="ml-auto mr-auto mb-6 footer-notes" :class="{ 'not-sm': !$vuetify.display.xsOnly }">
     <div class="text_3--text mb-4 mb-sm-6">
       <div class="mb-4 self-custodial-footer" :class="{ 'theme--dark': isDarkMode }">
         <span class="self-custodial-footer__title text-caption">{{ $t('login.selfCustodial') }}</span>
@@ -30,7 +30,7 @@
         </a>
       </div>
     </div>
-    <div class="caption text_2--text font-italic">{{ $t('dappLogin.version').replace(/\{version\}/gi, appVersion) }}</div>
+    <div class="caption text_2--text font-italic">{{ $t('dappLogin.version', { version: appVersion }) }}</div>
   </v-col>
 </template>
 

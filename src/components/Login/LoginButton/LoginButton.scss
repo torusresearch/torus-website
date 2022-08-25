@@ -26,7 +26,7 @@
   }
 
   img,
-  ::v-deep .v-icon .v-icon__component {
+  :deep(.v-icon svg)  {
     width: 26px;
     height: 26px;
   }
@@ -136,7 +136,7 @@
     font-size: 1.7vh;
     line-height: 1.2em;
     img,
-    ::v-deep .v-icon .v-icon__component {
+    :deep(.v-icon svg)  {
       width: 3.3vh;
       height: 3.3vh;
     }
@@ -150,7 +150,7 @@
     font-size: 2vh;
     line-height: 1.2em;
     img,
-    ::v-deep .v-icon .v-icon__component {
+    :deep(.v-icon svg) {
       width: 3vh;
       height: 3vh;
     }

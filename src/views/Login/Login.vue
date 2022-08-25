@@ -2,16 +2,16 @@
   <div :class="[{ 'background-login': !loggedIn }, 'default']">
     <template v-if="!loginInProgress">
       <v-row wrap fill-height align-center justify-center class="login-panel-left" :class="isDarkMode ? 'torus-dark' : ''">
-        <v-col xs12 sm8 md6>
+        <v-col cols="12" sm="8" md="6">
           <v-row v-if="!isLogout" wrap>
-            <v-col v-if="$vuetify.display.xsOnly" class="mobile-login-container" xs12>
+            <v-col v-if="$vuetify.display.xsOnly" class="mobile-login-container" cols="12">
               <section class="py-10 py-sm-12">
                 <v-row wrap>
-                  <v-col class="mb-8" xs10 ml-auto mr-auto>
+                  <v-col class="mb-8 ml-auto mr-auto" cols="10">
                     <img height="25" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                   </v-col>
                   <LoginTitle class="mb-6" />
-                  <v-col xs10 mx-auto mt-4>
+                  <v-col col="10" class="mx-auto mt-4">
                     <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
                   </v-col>
                   <LoginFooter :authenticators="thirdPartyAuthenticators" />
@@ -27,19 +27,19 @@
                   "
                 />
               </section>
-              <v-icon v-if="scrollOnTop" class="more-icon" aria-label="Scroll for more information" role="image">$vuetify.icons.login_more</v-icon>
+              <v-icon v-if="scrollOnTop" class="more-icon" aria-label="Scroll for more information" role="image">$login_more</v-icon>
             </v-col>
             <!-- Desktop -->
-            <v-col v-else xs12>
+            <v-col v-else cols="12">
               <v-row wrap>
-                <v-col mt-4 mb-10 xs10 sm8 ml-auto mr-auto>
+                <v-col cols="10" sm="8" class="mt-4 mb-10 mx-auto">
                   <img height="25" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                 </v-col>
                 <LoginTitle />
-                <!-- <v-col xs10 sm8 ml-auto mr-auto :class="[$vuetify.display.xsOnly ? 'mt-8' : 'mt-10']">
-                  <div class="headline font-weight-regular" :class="isDarkMode ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
+                <!-- <v-col cols="10" sm="8" class="ml-auto mr-auto" :class="[$vuetify.display.xsOnly ? 'mt-8' : 'mt-10']">
+                  <div class="headline font-weight-regular" :class="isDarkMode ? '' : 'text_2--text'">{{ $t('login.signUpIn') }}</div>
                 </v-col> -->
-                <v-col xs8 mx-auto mt-4>
+                <v-col cols="8" class="mx-auto mt-4">
                   <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
                 </v-col>
                 <LoginFooter :authenticators="thirdPartyAuthenticators" />
@@ -47,16 +47,16 @@
             </v-col>
           </v-row>
           <v-row v-else wrap align-center justify-center align-content-center>
-            <v-col xs12 text-center mb-12>
+            <v-col cols="12" text-center class="mb-12">
               <img width="180" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
             </v-col>
-            <v-col xs12 text-center>
+            <v-col cols="12" text-center>
               <img width="200px" height="auto" :src="require(`../../assets/images/logout${isDarkMode ? '-dark' : ''}.svg`)" alt="Logout Image" />
             </v-col>
-            <v-col xs12>
+            <v-col cols="12">
               <div class="text-center text-subtitle-1 font-weight-bold">{{ $t('login.beenLoggedOut') }}</div>
             </v-col>
-            <v-col xs12 mt-4>
+            <v-col cols="12" class="mt-4">
               <div class="text-center">
                 <v-btn
                   :color="isDarkMode ? '' : 'white'"
@@ -72,9 +72,9 @@
             </v-col>
           </v-row>
         </v-col>
-        <v-col v-if="$vuetify.display.smAndUp" sm4 md6 fill-height class="login-panel-right" :class="isDarkMode ? 'torus-dark' : ''">
-          <v-row wrap fill-height align-center>
-            <v-col xs12 text-center>
+        <v-col v-if="$vuetify.display.smAndUp" sm="4" md="6" fill-height class="login-panel-right" :class="isDarkMode ? 'torus-dark' : ''">
+          <v-row wrap align="center" class="fill-height">
+            <v-col cols="12" class="text-center">
               <LoginSlide
                 :show-spring-festival="showSpringFestival"
                 @change="

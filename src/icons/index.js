@@ -101,307 +101,105 @@ import WalletFillIcon from './WalletFillIcon.vue'
 import WalletIcon from './WalletIcon.vue'
 
 export default {
-  select: {
-    component: SelectIcon,
-  },
-  send: {
-    component: SendIcon,
-  },
-  add: {
-    component: AddIcon,
-  },
-  search: {
-    component: SearchIcon,
-  },
-  refresh: {
-    component: RefreshIcon,
-  },
-  eth: {
-    component: EthIcon,
-  },
-  question: {
-    component: QuestionIcon,
-  },
-  radioOn: {
-    component: RadioCheckedIcon,
-  },
-  radioOff: {
-    component: RadioUncheckedIcon,
-  },
-  visibility_on: {
-    component: VisibilityOnIcon,
-  },
-  visibility_off: {
-    component: VisibilityOffIcon,
-  },
-  check_circle: {
-    component: CheckCircleIcon,
-  },
-  close_circle: {
-    component: CloseCircleIcon,
-  },
-  coins_send: {
-    component: CoinsSendIcon,
-  },
-  coins_receive: {
-    component: CoinsReceiveIcon,
-  },
-  coins_topup: {
-    component: CoinsTopupIcon,
-  },
-  page_prev: {
-    component: ChevronLeftIcon,
-  },
-  page_next: {
-    component: ChevronRightIcon,
-  },
-  page_next_double: {
-    component: ChevronDoubleRightIcon,
-  },
-  scan: {
-    component: ScanIcon,
-  },
-  network: {
-    component: NetworkIcon,
-  },
-  time: {
-    component: TimeIcon,
-  },
-  lock: {
-    component: LockIcon,
-  },
-  key: {
-    component: KeyIcon,
-  },
-  list: {
-    component: ListIcon,
-  },
-  globe: {
-    component: GlobeIcon,
-  },
-  server: {
-    component: ServerIcon,
-  },
-  balance: {
-    component: BalanceIcon,
-  },
-  info: {
-    component: InfoIcon,
-  },
-  transaction: {
-    component: TransactionIcon,
-  },
-  topup: {
-    component: TopupIcon,
-  },
-  person: {
-    component: PersonIcon,
-  },
-  activities: {
-    component: ActivitiesIcon,
-  },
-  settings: {
-    component: SettingsIcon,
-  },
-  close: {
-    component: CloseIcon,
-  },
-  download: {
-    component: DownloadIcon,
-  },
-  collectibles: {
-    component: CollectibleIcon,
-  },
-  token: {
-    component: TokenIcon,
-  },
-  qr: {
-    component: QrIcon,
-  },
-  copy: {
-    component: CopyIcon,
-  },
-  calendar: {
-    component: CalendarIcon,
-  },
-  address: {
-    component: AddressIcon,
-  },
-  login_more: {
-    component: LoginMoreIcon,
-  },
-  trash: {
-    component: TrashIcon,
-  },
-  ens: {
-    component: VerifierEnsIcon,
-  },
-  bit: {
-    component: VerifierBitIcon,
-  },
-  unstoppable_domains: {
-    component: VerifierUnstoppableDomainsIcon,
-  },
-  discord: {
-    component: VerifierDiscordIcon,
-  },
-  facebook: {
-    component: VerifierFacebookIcon,
-  },
-  google: {
-    component: VerifierGoogleIcon,
-  },
-  reddit: {
-    component: VerifierRedditIcon,
-  },
-  twitch: {
-    component: VerifierTwitchIcon,
-  },
-  account: {
-    component: AccountIcon,
-  },
-  github: {
-    component: VerifierGithubIcon,
-  },
-  kakao: {
-    component: VerifierKakaoIcon,
-  },
-  twitter: {
-    component: VerifierTwitterIcon,
-  },
-  wechat: {
-    component: VerifierWechatIcon,
-  },
-  weibo: {
-    component: VerifierWeiboIcon,
-  },
-  linkedin: {
-    component: VerifierLinkedinIcon,
-  },
-  email_password: {
-    component: VerifierEmailIcon,
-  },
-  jwt: {
-    component: VerifierJwtIcon,
-  },
-  email: {
-    component: VerifierPasswordlessIcon,
-  },
-  apple: {
-    component: VerifierAppleIcon,
-  },
-  line: {
-    component: VerifierLineIcon,
-  },
-  menu: {
-    component: MenuIcon,
-  },
-  coins_approve: {
-    component: CoinsApproveIcon,
-  },
-  check_circle_filled: {
-    component: CheckCircleFilledIcon,
-  },
-  person_circle: {
-    component: PersonCircleIcon,
-  },
-  device: {
-    component: DeviceIcon,
-  },
-  two_factor: {
-    component: TwoFactorIcon,
-  },
-  wallet: {
-    component: WalletIcon,
-  },
-  wallet_fill: {
-    component: WalletFillIcon,
-  },
-  device_detailed: {
-    component: DeviceDetailedIcon,
-  },
-  lock_filled: {
-    component: LockFilledIcon,
-  },
-  upload: {
-    component: UploadIcon,
-  },
-  question_filled: {
-    component: QuestionFilledIcon,
-  },
-  browser: {
-    component: BrowserIcon,
-  },
-  shield_lock: {
-    component: ShieldLockIcon,
-  },
-  alert_circle_filled: {
-    component: AlertCircleFilledIcon,
-  },
-  device_desktop: {
-    component: DeviceDesktopIcon,
-  },
-  device_mobile: {
-    component: DeviceMobileIcon,
-  },
-  device_tablet: {
-    component: DeviceTabletIcon,
-  },
-  checkbox_checked: {
-    component: CheckboxCheckedIcon,
-  },
-  checkbox_unchecked: {
-    component: CheckboxUncheckedIcon,
-  },
-  checkbox_marked: {
-    component: CheckboxMarkedIcon,
-  },
-  checkbox_blank: {
-    component: CheckboxBlankIcon,
-  },
-  checkbox_dark_checked: {
-    component: CheckboxDarkCheckedIcon,
-  },
-  checkbox_dark_unchecked: {
-    component: CheckboxDarkUncheckedIcon,
-  },
-  alert: {
-    component: AlertIcon,
-  },
-  copy_outline: {
-    component: CopyOutlineIcon,
-  },
-  walletconnect: {
-    component: WalletConnectIcon,
-  },
-  disconnect: {
-    component: DisconnectIcon,
-  },
-  link: {
-    component: LinkIcon,
-  },
-  pencil_edit: {
-    component: PencilEditIcon,
-  },
-  mnemonic: {
-    component: MnemonicIcon,
-  },
-  mail: {
-    component: MailIcon,
-  },
-  export: {
-    component: ExportIcon,
-  },
-  tkey_seed_phrase: {
-    component: SeedPhraseIcon,
-  },
-  add_circle: {
-    component: AddCircleIcon,
-  },
-  json: {
-    component: JsonIcon,
-  },
-  discover: {
-    component: DiscoverIcon,
-  },
+  select: SelectIcon,
+  send: SendIcon,
+  add: AddIcon,
+  search: SearchIcon,
+  refresh: RefreshIcon,
+  eth: EthIcon,
+  question: QuestionIcon,
+  radioOn: RadioCheckedIcon,
+  radioOff: RadioUncheckedIcon,
+  visibility_on: VisibilityOnIcon,
+  visibility_off: VisibilityOffIcon,
+  check_circle: CheckCircleIcon,
+  close_circle: CloseCircleIcon,
+  coins_send: CoinsSendIcon,
+  coins_receive: CoinsReceiveIcon,
+  coins_topup: CoinsTopupIcon,
+  page_prev: ChevronLeftIcon,
+  page_next: ChevronRightIcon,
+  page_next_double: ChevronDoubleRightIcon,
+  scan: ScanIcon,
+  network: NetworkIcon,
+  time: TimeIcon,
+  lock: LockIcon,
+  key: KeyIcon,
+  list: ListIcon,
+  globe: GlobeIcon,
+  server: ServerIcon,
+  balance: BalanceIcon,
+  info: InfoIcon,
+  transaction: TransactionIcon,
+  topup: TopupIcon,
+  person: PersonIcon,
+  activities: ActivitiesIcon,
+  settings: SettingsIcon,
+  close: CloseIcon,
+  download: DownloadIcon,
+  collectibles: CollectibleIcon,
+  token: TokenIcon,
+  qr: QrIcon,
+  copy: CopyIcon,
+  calendar: CalendarIcon,
+  address: AddressIcon,
+  login_more: LoginMoreIcon,
+  trash: TrashIcon,
+  ens: VerifierEnsIcon,
+  bit: VerifierBitIcon,
+  unstoppable_domains: VerifierUnstoppableDomainsIcon,
+  discord: VerifierDiscordIcon,
+  facebook: VerifierFacebookIcon,
+  google: VerifierGoogleIcon,
+  reddit: VerifierRedditIcon,
+  twitch: VerifierTwitchIcon,
+  account: AccountIcon,
+  github: VerifierGithubIcon,
+  kakao: VerifierKakaoIcon,
+  twitter: VerifierTwitterIcon,
+  wechat: VerifierWechatIcon,
+  weibo: VerifierWeiboIcon,
+  linkedin: VerifierLinkedinIcon,
+  email_password: VerifierEmailIcon,
+  jwt: VerifierJwtIcon,
+  email: VerifierPasswordlessIcon,
+  apple: VerifierAppleIcon,
+  line: VerifierLineIcon,
+  menu: MenuIcon,
+  coins_approve: CoinsApproveIcon,
+  check_circle_filled: CheckCircleFilledIcon,
+  person_circle: PersonCircleIcon,
+  device: DeviceIcon,
+  two_factor: TwoFactorIcon,
+  wallet: WalletIcon,
+  wallet_fill: WalletFillIcon,
+  device_detailed: DeviceDetailedIcon,
+  lock_filled: LockFilledIcon,
+  upload: UploadIcon,
+  question_filled: QuestionFilledIcon,
+  browser: BrowserIcon,
+  shield_lock: ShieldLockIcon,
+  alert_circle_filled: AlertCircleFilledIcon,
+  device_desktop: DeviceDesktopIcon,
+  device_mobile: DeviceMobileIcon,
+  device_tablet: DeviceTabletIcon,
+  checkbox_checked: CheckboxCheckedIcon,
+  checkbox_unchecked: CheckboxUncheckedIcon,
+  checkbox_marked: CheckboxMarkedIcon,
+  checkbox_blank: CheckboxBlankIcon,
+  checkbox_dark_checked: CheckboxDarkCheckedIcon,
+  checkbox_dark_unchecked: CheckboxDarkUncheckedIcon,
+  alert: AlertIcon,
+  copy_outline: CopyOutlineIcon,
+  walletconnect: WalletConnectIcon,
+  disconnect: DisconnectIcon,
+  link: LinkIcon,
+  pencil_edit: PencilEditIcon,
+  mnemonic: MnemonicIcon,
+  mail: MailIcon,
+  export: ExportIcon,
+  tkey_seed_phrase: SeedPhraseIcon,
+  add_circle: AddCircleIcon,
+  json: JsonIcon,
+  discover: DiscoverIcon,
 }
