@@ -350,8 +350,6 @@ export default {
     return privKey
   },
   addWallet(context, payload) {
-    // eslint-disable-next-line no-console
-    console.log('address 2', payload)
     if (payload.ethAddress) {
       context.commit('setWallet', {
         ...context.state.wallet,
