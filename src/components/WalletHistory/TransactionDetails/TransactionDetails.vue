@@ -3,17 +3,17 @@
     <v-layout wrap mx-n4 mb-5 mb-sm-0>
       <v-col
         px-4
-        :class="$vuetify.breakpoint.xsOnly ? 'order-2 pt-2' : 'order-0'"
-        :style="{ marginLeft: $vuetify.breakpoint.xsOnly ? '48px' : '0', maxWidth: $vuetify.breakpoint.xsOnly ? '150px' : '105px' }"
+        :class="$vuetify.display.xs ? 'order-2 pt-2' : 'order-0'"
+        :style="{ marginLeft: $vuetify.display.xs ? '48px' : '0', maxWidth: $vuetify.display.xs ? '150px' : '105px' }"
       >
-        <div class="caption text_1--text" :class="{ 'font-weight-medium': !$vuetify.breakpoint.xsOnly }">{{ transaction.dateFormatted }}</div>
+        <div class="caption text_1--text" :class="{ 'font-weight-medium': !$vuetify.display.xs }">{{ transaction.dateFormatted }}</div>
         <div class="info text_2--text font-weight-light">{{ transaction.timeFormatted }}</div>
       </v-col>
-      <v-divider v-if="!$vuetify.breakpoint.xsOnly" vertical class="mx-4"></v-divider>
-      <v-col :class="$vuetify.breakpoint.xsOnly ? 'xs8 order-0 pr-4 pl-3' : 'xs5 order-1 pl-0 pr-4'">
+      <v-divider v-if="!$vuetify.display.xs" vertical class="mx-4"></v-divider>
+      <v-col :class="$vuetify.display.xs ? 'xs8 order-0 pr-4 pl-3' : 'xs5 order-1 pl-0 pr-4'">
         <TransactionImage :transaction="transaction" />
       </v-col>
-      <v-col class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4 order-1' : 'xs2 order-2'" px-4>
+      <v-col class="text-right" :class="$vuetify.display.xs ? 'xs4 order-1' : 'xs2 order-2'" px-4>
         <div class="caption text_1--text font-weight-medium">
           <span
             v-if="
@@ -27,13 +27,13 @@
         </div>
         <div class="info text_2--text font-weight-light">{{ transaction.currencyAmountString }}</div>
       </v-col>
-      <v-col :class="$vuetify.breakpoint.xsOnly ? 'xs6 ml-auto text-right mt-3 order-3' : 'xs2 ml-auto text-right order-4'" px-4>
+      <v-col :class="$vuetify.display.xs ? 'xs6 ml-auto text-right mt-3 order-3' : 'xs2 ml-auto text-right order-4'" px-4>
         <v-chip class="status-chip black--text" :color="getChipColor(transaction.statusText)" small>
           {{ t(transaction.statusText) }}
         </v-chip>
       </v-col>
     </v-layout>
-    <v-divider v-if="$vuetify.breakpoint.xsOnly && showDetails" class="my-4"></v-divider>
+    <v-divider v-if="$vuetify.display.xs && showDetails" class="my-4"></v-divider>
     <TransactionDetailsMore
       v-if="showDetails"
       :transaction="transaction"

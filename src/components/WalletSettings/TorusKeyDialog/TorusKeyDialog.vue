@@ -2,10 +2,10 @@
   <v-card class="private-key-container">
     <v-card-text class="py-6">
       <v-layout wrap>
-        <v-col xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+        <v-col xs12 :class="$vuetify.display.xs ? '' : 'px-4'">
           <div class="font-weight-bold headline">{{ t('walletSettings.customKey.setCustomPrivateKey') }}</div>
         </v-col>
-        <v-col xs12 mb-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+        <v-col xs12 mb-4 :class="$vuetify.display.xs ? '' : 'px-4'">
           <v-form ref="customPrivateKeyForm" v-model="customPrivateKeyFormValid" lazy-validation @submit.prevent="setKey">
             <v-layout wrap align-center>
               <v-col>

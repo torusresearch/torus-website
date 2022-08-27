@@ -44,7 +44,7 @@
       class="d-flex or-container align-center"
     >
       <v-divider />
-      <div :class="$vuetify.display.xsOnly ? 'px-5' : 'px-4'">
+      <div :class="$vuetify.display.xs ? 'px-5' : 'px-4'">
         <div class="text_2--text">{{ $t('login.or') }}</div>
       </div>
       <v-divider />
@@ -147,7 +147,7 @@ export default {
       if (this.lastLoginConfigItem) return []
       return this.loginButtonsArray.filter(
         (button) =>
-          ((this.$vuetify.display.xsOnly && button.showOnMobile) || (!this.$vuetify.display.xsOnly && button.showOnDesktop)) &&
+          ((this.$vuetify.display.xs && button.showOnMobile) || (!this.$vuetify.display.xs && button.showOnDesktop)) &&
           button.mainOption &&
           !!button.description
       )
@@ -156,15 +156,15 @@ export default {
       return this.loginButtonsArray.filter((button) => {
         const descCheck = (this.lastLoginConfigItem || !button.description) && button.verifier !== HOSTED_EMAIL_PASSWORDLESS_VERIFIER
         if (this.viewMoreOptions) {
-          return ((this.$vuetify.display.xsOnly && button.showOnMobile) || (!this.$vuetify.display.xsOnly && button.showOnDesktop)) && descCheck
+          return ((this.$vuetify.display.xs && button.showOnMobile) || (!this.$vuetify.display.xs && button.showOnDesktop)) && descCheck
         }
-        return (!this.$vuetify.display.xsOnly || button.showOnMobile) && button.mainOption && descCheck
+        return (!this.$vuetify.display.xs || button.showOnMobile) && button.mainOption && descCheck
       })
     },
     loginButtonsLong() {
       const buttons = this.loginButtonsArray.filter(
         (button) =>
-          ((this.$vuetify.display.xsOnly && button.showOnMobile) || (!this.$vuetify.display.xsOnly && button.showOnDesktop)) &&
+          ((this.$vuetify.display.xs && button.showOnMobile) || (!this.$vuetify.display.xs && button.showOnDesktop)) &&
           !button.mainOption &&
           !!button.description
       )
@@ -195,7 +195,7 @@ export default {
       }
     },
     viewMoreOptions(newValue, oldValue) {
-      if (newValue !== oldValue && !this.$vuetify.display.xsOnly) {
+      if (newValue !== oldValue && !this.$vuetify.display.xs) {
         this.chooseAndSetActiveButton()
       }
     },
@@ -219,7 +219,7 @@ export default {
       else if (this.loginButtonsLong.length > 0) this.setActiveBtn(this.loginButtonsLong[0].verifier)
     },
     loginBtnHover(verifier) {
-      if (!this.$vuetify.display.xsOnly) this.setActiveBtn(verifier)
+      if (!this.$vuetify.display.xs) this.setActiveBtn(verifier)
     },
     loginExisting() {
       const existingVerifier = this.lastLoginInfo.aggregateVerifier || this.lastLoginInfo.verifier

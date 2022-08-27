@@ -1,5 +1,5 @@
 <template>
-  <v-container class="wallet-topup-view pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+  <v-container class="wallet-topup-view pt-6" :class="$vuetify.display.xs ? 'px-4' : ''">
     <slot></slot>
 
     <v-layout mt-7 mx-n4 wrap>

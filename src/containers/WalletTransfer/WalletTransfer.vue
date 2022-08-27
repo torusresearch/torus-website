@@ -1,7 +1,7 @@
 <template>
-  <v-container class="wallet-transfer pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4 mobile-view' : ''">
+  <v-container class="wallet-transfer pt-6" :class="$vuetify.display.xs ? 'px-4 mobile-view' : ''">
     <div class="d-flex align-center">
-      <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
+      <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.display.width > 390 }">
         {{ t('walletTransfer.transferDetails') }}
       </div>
       <div class="ml-auto">
@@ -11,11 +11,11 @@
     <v-layout
       wrap
       mx-n4
-      :class="[(contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155) && $vuetify.breakpoint.xsOnly ? 'mt-0' : 'mt-7']"
+      :class="[(contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155) && $vuetify.display.xs ? 'mt-0' : 'mt-7']"
     >
       <v-col
-        v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && $vuetify.breakpoint.smAndDown"
-        :class="[{ 'mb-4': $vuetify.breakpoint.smOnly }]"
+        v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && $vuetify.display.smAndDown"
+        :class="[{ 'mb-4': $vuetify.display.smOnly }]"
         px-4
         xs12
       >
@@ -40,13 +40,9 @@
           </div>
         </v-card>
       </v-col>
-      <v-col xs12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+      <v-col xs12 md6 :class="$vuetify.display.xs ? '' : 'px-4'">
         <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="none" autocomplete="off" @submit.prevent="sendCoin">
-          <v-card
-            :flat="$vuetify.breakpoint.xsOnly"
-            class="form-container"
-            :class="$vuetify.breakpoint.xsOnly ? 'mobile py-6 px-4' : 'elevation-1 pa-6'"
-          >
+          <v-card :flat="$vuetify.display.xs" class="form-container" :class="$vuetify.display.xs ? 'mobile py-6 px-4' : 'elevation-1 pa-6'">
             <v-layout wrap>
               <v-col xs12>
                 <div class="body-2 mb-2">{{ t('walletTransfer.selectItem') }}</div>
@@ -455,7 +451,7 @@
           </v-card>
         </v-form>
       </v-col>
-      <v-col v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && !$vuetify.breakpoint.smAndDown" px-4 xs6>
+      <v-col v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && !$vuetify.display.smAndDown" px-4 xs6>
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
             <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>

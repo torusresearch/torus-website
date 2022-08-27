@@ -1,9 +1,9 @@
 .v-btn.v-btn--icon.wallet-connect-btn {
   background: var(--v-torusGray4-base);
   color: var(--v-torusFont2-base);
-  &.theme--dark {
-    background: var(--v-torusBlack2-base);
-    color: var(--v-torusFont1-base);
+  &.v-theme--dark {
+    background: rgb(var(--v-theme-torusBlack2));
+    color: rgb(var(--v-theme-torusFont1));
   }
 }
 
@@ -33,7 +33,7 @@
   visibility: hidden;
 }
 
-.guide-menu.theme--dark{
+.guide-menu.v-theme--dark{
   border: 1px white solid;
   border-radius: 9px;
 }

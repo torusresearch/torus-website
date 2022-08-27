@@ -1,12 +1,12 @@
 <template>
-  <div class="contact-list-container" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-0'">
+  <div class="contact-list-container" :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-0'">
     <v-layout wrap>
       <v-col xs12 px-1 mb-1>
         <div class="d-flex align-center">
           <div class="body-2">{{ t('walletSettings.listContacts') }}</div>
           <div class="d-flex ml-auto">
             <v-text-field
-              v-if="!$vuetify.breakpoint.smAndDown"
+              v-if="!$vuetify.display.smAndDown"
               id="search-name"
               v-model="searchName"
               class="search-name caption"
@@ -39,7 +39,7 @@
             </v-select>
           </div>
         </div>
-        <div v-if="$vuetify.breakpoint.smAndDown" class="mt-4">
+        <div v-if="$vuetify.display.smAndDown" class="mt-4">
           <v-text-field
             id="search-name"
             v-model="searchName"
@@ -135,7 +135,7 @@
             </v-col>
 
             <v-layout wrap>
-              <v-col class="ml-auto xs12 sm6 text-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : ''">
+              <v-col class="ml-auto xs12 sm6 text-right" :class="$vuetify.display.xs ? 'mt-2' : ''">
                 <v-btn
                   id="contact-submit-btn"
                   large

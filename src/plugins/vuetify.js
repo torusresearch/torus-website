@@ -13,8 +13,8 @@ export default createVuetify({
     defaultTheme: 'light',
     variations: {
       colors: ['primary', 'secondary', 'torusBrand1', 'torusGray1', 'torusFont1', 'torusBlack'],
-      lighten: 4,
-      darken: 4,
+      lighten: 2,
+      darken: 2,
     },
     themes: {
       light: { colors: { ...themes[THEME_LIGHT_BLUE_NAME].theme }, dark: false },

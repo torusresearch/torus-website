@@ -120,13 +120,13 @@ export default {
       return thirdPartyAuthenticators(this.loginConfig)
     },
     dialogMaxWidth() {
-      if (this.$vuetify.breakpoint.height >= 1440) return '35vh'
-      if (this.$vuetify.breakpoint.height >= 1080) return '42vh'
+      if (this.$vuetify.display.height >= 1440) return '35vh'
+      if (this.$vuetify.display.height >= 1080) return '42vh'
       return '375px'
     },
     closeBtnSize() {
-      if (this.$vuetify.breakpoint.height >= 1440) return '2.6vh'
-      if (this.$vuetify.breakpoint.height >= 1080) return '2.6vh'
+      if (this.$vuetify.display.height >= 1440) return '2.6vh'
+      if (this.$vuetify.display.height >= 1080) return '2.6vh'
       return '24px'
     },
     appVersion() {

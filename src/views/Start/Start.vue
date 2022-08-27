@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="fill-height text-center">
-    <v-row wrap align="center" class="fill-height redirect-container" :class="$vuetify.display.xsOnly ? 'redirect-container--mobile' : ''">
+    <v-row wrap align="center" class="fill-height redirect-container" :class="$vuetify.display.xs ? 'redirect-container--mobile' : ''">
       <v-col class="text-center">
         <div v-if="isCustomVerifier" class="text_2--text font-weight-bold text-body-2 mb-10">
           {{ $t('login.constructYourKey') }}

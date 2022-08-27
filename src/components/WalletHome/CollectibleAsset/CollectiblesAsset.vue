@@ -3,7 +3,7 @@
     <!-- Asset Desktop View -->
     <v-expand-transition>
       <v-card
-        v-if="!$vuetify.breakpoint.xsOnly"
+        v-if="!$vuetify.display.xs"
         class="mx-auto asset elevation-1"
         :class="assetActive ? 'asset--active' : ''"
         max-width="344"
@@ -56,7 +56,7 @@
     <!-- Asset Mobile View -->
     <v-expand-transition>
       <v-card
-        v-if="$vuetify.breakpoint.xsOnly"
+        v-if="$vuetify.display.xs"
         class="asset elevation-1 asset--mobile"
         :class="assetActive ? 'asset--active' : ''"
         :ripple="false"

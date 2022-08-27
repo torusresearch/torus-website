@@ -28,7 +28,7 @@
     left: 26px;
   }
 
-  &.theme--dark {
+  &.v-theme--dark {
     .mask {
       background-color: rgb(var(--v-theme-torusBrand1));
     }
@@ -73,7 +73,7 @@
     }
   }
 
-  &.theme--dark {
+  &.v-theme--dark {
     .ping-animate {
       background-color: #fff;
     }

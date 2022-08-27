@@ -1,5 +1,5 @@
 <template>
-  <div :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
+  <div :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-4'">
     <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
       <div class="body-2 mb-2">{{ t('walletSettings.selectNetwork') }}</div>
       <v-layout wrap>
@@ -51,7 +51,7 @@
           <v-text-field v-model="rpc.blockExplorer" :placeholder="t('walletSettings.enterBlockExplorer')" outlined></v-text-field>
         </v-col>
 
-        <v-col xs12 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
+        <v-col xs12 :class="!$vuetify.display.xs ? 'pl-2' : ''">
           <v-layout>
             <v-spacer></v-spacer>
             <v-col xs4>

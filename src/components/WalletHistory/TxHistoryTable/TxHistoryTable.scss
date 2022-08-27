@@ -37,14 +37,14 @@
   ::v-deep .v-pagination__navigation {
     border: 0;
     background: none;
-    color: var(--v-torusFont1-base);
+    color: rgb(var(--v-theme-torusFont1));
     font-weight: 500;
     box-shadow: none;
     opacity: 0.7;
     &.torusBrand1 {
       background: none;
       background-color: transparent !important;
-      color: var(--v-torusBrand1-base);
+      color: rgb(var(--v-theme-torusBrand1));
       opacity: 1;
     }
   }

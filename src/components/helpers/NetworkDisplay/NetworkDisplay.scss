@@ -27,7 +27,7 @@
     }
   }
 
-  &.theme--dark,
+  &.v-theme--dark,
   .v-icon {
     color: #5c6c7f;
   }
@@ -93,7 +93,7 @@
       text-align: left;
       word-break: break-all;
     }
-    &.theme--dark {
+    &.v-theme--dark {
       color: #d3d5e2;
       .v-icon {
         color: #d3d5e2;

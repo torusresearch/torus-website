@@ -1,5 +1,17 @@
-.account-menu.is-mobile {
-  padding-bottom: 100px;
+.account-menu {
+  .user-profile-image {
+    display: inline-flex;
+    height: 40px;
+    width: 40px;
+    min-width: 40px;
+    margin-bottom: 8px;
+    margin-top: 8px;
+    border-radius: 50%;
+  }
+
+  &.is-mobile {
+    padding-bottom: 100px;
+  }
 }
 
 .account-list {
@@ -14,17 +26,17 @@
       box-sizing: border-box;
       box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
       border-radius: 9px;
-      &.theme--dark {
+      &.v-theme--dark {
         border: 0;
-        background: var(--v-torusBlack2-base);
+        background: rgb(var(--v-theme-torusBlack2));
         box-shadow: 5px 5px 10px #212121, -5px -5px 10px rgba(55, 56, 60, 0.25);
       }
     }
     .v-btn.v-btn--icon.etherscan-lnk {
-      background-color: var(--v-torusGray4-base);
-      color: var(--v-torusFont2-base);
-      &.theme--dark {
-        background-color: var(--v-torusBlack2-base);
+      background-color: rbg(var(--v-theme-torusGray4));
+      color: rgb(var(--v-theme-torusFont2));
+      &.v-theme--dark {
+        background-color: rgb(var(--v-theme-torusBlack2));
         color: #5C6C7F;
       }
     }

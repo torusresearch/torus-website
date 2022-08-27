@@ -1,7 +1,16 @@
 <template>
   <v-tooltip bottom>
-    <template #activator="{ on }">
-      <v-btn v-if="isBtn" icon small class="selected-account" aria-label="Copy to clipboard" v-on="on" @click.stop="copyToClip(address)">
+    <template #activator="{ props }">
+      <v-btn
+        v-if="isBtn"
+        icon
+        size="small"
+        density="comfortable"
+        class="selected-account"
+        aria-label="Copy to clipboard"
+        v-bind="props"
+        @click.stop="copyToClip(address)"
+      >
         <slot></slot>
       </v-btn>
       <a
@@ -10,16 +19,16 @@
         tabindex="0"
         :color="$vuetify.theme.torus_accept"
         size="18"
-        v-on="on"
+        v-bind="props"
         @click.stop="copyToClip(address)"
         @keydown.enter.space="copyToClip(address)"
       >
         <slot></slot>
       </a>
     </template>
-    <template v-if="copied">{{ t('walletHome.copy') }}!</template>
+    <template v-if="copied">{{ $t('walletHome.copy') }}!</template>
     <template v-else>
-      {{ t('walletHome.copyToClipboard') }}
+      {{ $t('walletHome.copyToClipboard') }}
     </template>
   </v-tooltip>
 </template>

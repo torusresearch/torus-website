@@ -9,17 +9,17 @@
   }
   .v-list-item {
     border-bottom: 1px solid #D3D5E2;
-    &.theme--dark {
+    &.v-theme--dark {
       border-bottom: 1px solid #202125;
     }
   }
   .v-list-item:last-child {
     border-bottom: 0;
-    &.theme--dark {
+    &.v-theme--dark {
       border-bottom: 0;
     }
   }
-  &.theme--dark {
+  &.v-theme--dark {
     border: 1px solid #202125;
     .v-list-item {
       background: #28292E;

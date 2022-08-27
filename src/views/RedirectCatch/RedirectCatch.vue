@@ -1,6 +1,6 @@
 <template>
   <v-container fill-height fluid text-center>
-    <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
+    <v-layout class="redirect-container" :class="$vuetify.display.xs ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-col text-center>
         <BoxLoader :force-spinner="true" />
         <div v-if="showCloseText" class="redirect-title font-weight-bold mt-2">

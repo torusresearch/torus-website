@@ -1,5 +1,5 @@
 <template>
-  <div class="default-account-container" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
+  <div class="default-account-container" :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-4'">
     <div class="body-2 torusFont1--text text-capitalize mb-2 px-1">
       {{ computedWallets.length > 1 ? t('tkeySettings.accounts') : t('tkeySettings.account') }}
     </div>

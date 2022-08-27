@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="10" sm="8" class="ml-auto mr-auto mb-6 footer-notes" :class="{ 'not-sm': !$vuetify.display.xsOnly }">
+  <v-col cols="10" sm="8" class="ml-auto mr-auto mb-6 footer-notes py-0" :class="{ 'not-sm': !$vuetify.display.xs }">
     <div class="text_3--text mb-4 mb-sm-6">
       <div class="mb-4 self-custodial-footer" :class="{ 'theme--dark': isDarkMode }">
         <span class="self-custodial-footer__title text-caption">{{ $t('login.selfCustodial') }}</span>

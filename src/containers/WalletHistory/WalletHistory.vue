@@ -1,12 +1,12 @@
 <template>
-  <v-container class="wallet-activity" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+  <v-container class="wallet-activity" :class="$vuetify.display.xs ? 'px-4' : ''">
     <v-layout mt-3 wrap>
       <v-col xs12 md7>
-        <div class="text_2--text font-weight-bold float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
+        <div class="text_2--text font-weight-bold float-left page-title" :class="{ 'display-1': $vuetify.display.width > 390 }">
           {{ t('walletActivity.transactionActivities') }}
         </div>
       </v-col>
-      <v-col xs12 md5 :class="$vuetify.breakpoint.xsOnly ? 'mt-7' : ''">
+      <v-col xs12 md5 :class="$vuetify.display.xs ? 'mt-7' : ''">
         <v-layout mx-n2>
           <v-col xs6 px-2>
             <v-menu offset-y>
@@ -20,7 +20,7 @@
                   v-on="on"
                 >
                   <v-icon x-small class="text_2--text">$vuetify.icons.activities</v-icon>
-                  <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedAction) }}</span>
+                  <span class="ml-1 text_1--text" :class="$vuetify.display.xs ? 'caption' : 'body-2'">{{ t(selectedAction) }}</span>
                   <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
                 </v-btn>
               </template>
@@ -54,7 +54,7 @@
                   v-on="on"
                 >
                   <v-icon class="text_2--text" small>$vuetify.icons.calendar</v-icon>
-                  <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedPeriod) }}</span>
+                  <span class="ml-1 text_1--text" :class="$vuetify.display.xs ? 'caption' : 'body-2'">{{ t(selectedPeriod) }}</span>
                   <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
                 </v-btn>
               </template>
@@ -78,7 +78,7 @@
           </v-col>
         </v-layout>
       </v-col>
-      <v-col xs12 :class="$vuetify.breakpoint.xsOnly ? 'mt-6' : 'mt-7'">
+      <v-col xs12 :class="$vuetify.display.xs ? 'mt-6' : 'mt-7'">
         <TxHistoryTable
           :currency-multiplier="currencyMultiplier"
           :selected-action="selectedAction"

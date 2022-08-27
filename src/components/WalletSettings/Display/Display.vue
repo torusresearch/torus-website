@@ -1,5 +1,5 @@
 <template>
-  <div class="select-theme-container" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
+  <div class="select-theme-container" :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-4'">
     <div class="body-2 torusFont1--text mb-2 px-1">{{ t('walletSettings.selectTheme') }}</div>
     <v-layout wrap mx-n3>
       <v-col v-for="theme in themes" :key="theme.name" px-3 xs12 sm6 @click="saveTheme(theme)">
@@ -10,7 +10,7 @@
           :class="[
             $vuetify.theme.isDark ? 'torusBlack2' : 'white',
             theme.name === activeTheme ? 'active' : 'elevation-3',
-            { 'mb-2': $vuetify.breakpoint.xsOnly },
+            { 'mb-2': $vuetify.display.xs },
           ]"
         >
           <span>{{ t(theme.label) }}</span>

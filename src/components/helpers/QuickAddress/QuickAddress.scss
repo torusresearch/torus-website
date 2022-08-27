@@ -6,8 +6,8 @@
     letter-spacing: 0.1px;
     font-size: 12px;
     font-weight: bold;
-    &.theme--dark {
-      background-color: var(--v-torusBlack2-base);
+    &.v-theme--dark {
+      background-color: rgb(var(--v-theme-torusBlack2));
       color: #5C6C7F;
     }
   }

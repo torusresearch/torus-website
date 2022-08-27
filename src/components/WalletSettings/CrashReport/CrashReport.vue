@@ -1,5 +1,5 @@
 <template>
-  <div class="select-theme-container" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
+  <div class="select-theme-container" :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-4'">
     <div class="body-2 torusFont1--text mb-2 px-1">{{ t('walletSettings.explainCrashReport') }}</div>
     <v-layout wrap>
       <v-switch

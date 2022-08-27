@@ -31,7 +31,7 @@
           </template>
         </v-select>
       </v-col>
-      <v-col xs12 sm6 px-4 class="body-2 text_2--text text-capitalize" :class="$vuetify.breakpoint.xsOnly ? 'text-right mt-1' : 'pb-1'"></v-col>
+      <v-col xs12 sm6 px-4 class="body-2 text_2--text text-capitalize" :class="$vuetify.display.xs ? 'text-right mt-1' : 'pb-1'"></v-col>
     </v-layout>
     <v-layout v-if="selectedContract" wrap align-top mt-10 mx-n2>
       <CollectibleAsset v-for="asset in selectedContract.assets" :key="asset.tokenId" :asset="asset" @onTransfer="transferAsset" />

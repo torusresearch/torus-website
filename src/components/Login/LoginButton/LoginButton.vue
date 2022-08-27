@@ -9,7 +9,7 @@
     @click="onClick"
   >
     <img
-      v-if="(active || $vuetify.display.xsOnly) && buttonType !== 'submit' && !isExistingLogin"
+      v-if="(active || $vuetify.display.xs) && buttonType !== 'submit' && !isExistingLogin"
       :src="loginConfigItem.logoHover || require(`../../../assets/img/icons/login-${iconName}${hasLightLogo && isDarkMode ? '-light' : ''}.svg`)"
       :alt="`${loginConfigItem.name} Icon`"
       :class="{ 'mr-3': isLong }"
@@ -103,7 +103,7 @@ export default {
       return [
         { active: this.active, 'theme--dark': this.isDarkMode, 'is-long': this.isLong, 'is-popup': this.isPopup, 'no-icon': this.noIcon },
         `gmt-login-${this.iconName}`,
-        this.isExistingLogin ? 'white--text' : 'text_2--text',
+        this.isExistingLogin ? 'text-white' : 'text-text_2',
       ]
     },
     buttonStyles() {

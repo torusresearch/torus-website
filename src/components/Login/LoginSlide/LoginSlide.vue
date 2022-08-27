@@ -1,10 +1,10 @@
 <template>
   <v-carousel
-    :cycle="!$vuetify.display.xsOnly"
+    :cycle="!$vuetify.display.xs"
     height="650"
     :interval="showSpringFestival && currentCarousel === 0 ? 10000 : 7000"
     :show-arrows="false"
-    :hide-delimiters="$vuetify.display.xsOnly"
+    :hide-delimiters="$vuetify.display.xs"
     @change="onChange"
   >
     <v-carousel-item v-for="slide in slides" :key="slide.title" transition="fade-transition">
@@ -16,7 +16,7 @@
           <div v-if="slide.subtitle2" class="text-caption text-sm-body-1 text_2--text">{{ $t(slide.subtitle2) }}</div>
           <v-btn
             class="learn-more-btn mt-6"
-            :class="{ isDark: isDarkMode, isMobile: $vuetify.display.xsOnly }"
+            :class="{ isDark: isDarkMode, isMobile: $vuetify.display.xs }"
             href="https://tor.us"
             target="_blank"
             rel="noreferrer noopener"

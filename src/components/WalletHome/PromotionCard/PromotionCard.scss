@@ -1,6 +1,6 @@
 .promotion-card {
   .torus-btn1--whitelabel {
-    border: 1px solid var(--v-torusBrand1-base) !important;
+    border: 1px solid rgb(var(--v-theme-torusBrand1)) !important;
   }
   &.isMobile {
     height: inherit;
@@ -21,7 +21,7 @@
   cursor: pointer;
   font-size: 12px;
   font-weight: 500;
-  &.theme--dark {
+  &.v-theme--dark {
     border: 1px solid var(--v-text_3-base);
   }
 }

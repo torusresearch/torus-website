@@ -1,8 +1,8 @@
 <template>
-  <v-container class="dapp-parent d-flex flex-column justify-start align-center" :class="$vuetify.breakpoint.xsOnly ? 'xs-parent px-4' : ''">
+  <v-container class="dapp-parent d-flex flex-column justify-start align-center" :class="$vuetify.display.xs ? 'xs-parent px-4' : ''">
     <div
       class="discover-header d-flex mt-3"
-      :class="$vuetify.breakpoint.smAndDown ? 'flex-column justify-start align-start' : 'flex-row justify-space-between'"
+      :class="$vuetify.display.smAndDown ? 'flex-column justify-start align-start' : 'flex-row justify-space-between'"
     >
       <h3 class="discover-title font-weight-bold" :style="{ color: $vuetify.theme.isDark ? '#EEF2F4' : '#5C6C7F' }">
         {{ t('navBar.discover') }}
@@ -21,7 +21,7 @@
                 v-on="on"
               >
                 <v-icon x-small class="text_2--text">$vuetify.icons.activities</v-icon>
-                <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ selectedCategory }}</span>
+                <span class="ml-1 text_1--text" :class="$vuetify.display.xs ? 'caption' : 'body-2'">{{ selectedCategory }}</span>
                 <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
               </v-btn>
             </template>
@@ -55,7 +55,7 @@
                 v-on="on"
               >
                 <v-icon class="text_2--text" small>$vuetify.icons.calendar</v-icon>
-                <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">
+                <span class="ml-1 text_1--text" :class="$vuetify.display.xs ? 'caption' : 'body-2'">
                   {{ getDisplayName(selectedNetwork) }}
                 </span>
                 <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
@@ -84,7 +84,7 @@
 
     <v-container class="f-width">
       <v-data-iterator
-        :disable-pagination="$vuetify.breakpoint.xsOnly"
+        :disable-pagination="$vuetify.display.xs"
         :items="filteredList"
         item-key="url"
         :items-per-page.sync="itemsPerPage"
@@ -110,7 +110,7 @@
       </v-data-iterator>
     </v-container>
 
-    <div v-if="!$vuetify.breakpoint.xsOnly && pageCount > 1" class="text-center pt-6">
+    <div v-if="!$vuetify.display.xs && pageCount > 1" class="text-center pt-6">
       <v-pagination
         v-model="page"
         class="activity-pagination"

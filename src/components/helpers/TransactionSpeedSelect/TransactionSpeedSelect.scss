@@ -22,10 +22,10 @@
   }
   &:focus-visible {
     outline: none;
-    border: 1px solid  var(--v-torusFont1-base);
+    border: 1px solid  rgb(var(--v-theme-torusFont1));
   }
-  &.theme--dark {
-    background-color: var(--v-torusBlack2-base);
+  &.v-theme--dark {
+    background-color: rgb(var(--v-theme-torusBlack2));
     opacity: 0.4;
     .btn-speed__speed {
       color: #d3d3d4;

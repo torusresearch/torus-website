@@ -3,7 +3,7 @@
     <div
       v-if="noSupportedProvidersForNetwork"
       class="error-box d-md-flex align-center justify-center error lighten-4 py-3 py-sm-5 px-5"
-      :class="{ 'is-mobile': $vuetify.breakpoint.smAndDown }"
+      :class="{ 'is-mobile': $vuetify.display.smAndDown }"
     >
       <div class="d-flex justify-md-center mb-2 mb-md-0">
         <v-icon size="22" class="black--text mr-2">$vuetify.icons.alert</v-icon>
@@ -22,7 +22,7 @@
       <WalletTopupHeader :placeholder="true" :selected-provider="selectedProvider" />
     </NoSupportedProvidersForNetworkPlaceholder>
 
-    <v-container v-else class="wallet-topup-view pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+    <v-container v-else class="wallet-topup-view pt-6" :class="$vuetify.display.xs ? 'px-4' : ''">
       <!-- Normal Topup Header -->
       <WalletTopupHeader :selected-provider="selectedProvider" />
 
@@ -37,7 +37,7 @@
           "
         />
 
-        <v-col v-if="selectedProvider && $vuetify.breakpoint.xsOnly" xs12 mb-2>
+        <v-col v-if="selectedProvider && $vuetify.display.xs" xs12 mb-2>
           <div class="font-weight-bold headline px-4 mb-4 text_2--text">
             <span>
               {{ t('walletTopUp.purchaseVia') }}
@@ -46,7 +46,7 @@
           </div>
         </v-col>
 
-        <v-col id="providerForm" mb-4 px-4 :class="$vuetify.breakpoint.width > 800 ? 'xs7' : 'xs12'">
+        <v-col id="providerForm" mb-4 px-4 :class="$vuetify.display.width > 800 ? 'xs7' : 'xs12'">
           <router-view></router-view>
         </v-col>
       </v-layout>

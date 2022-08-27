@@ -1,21 +1,18 @@
 <template>
   <v-system-bar
     v-show="message"
-    fixed
-    :height="$vuetify.breakpoint.xsOnly ? 46 : ''"
+    :height="$vuetify.display.xs ? 46 : ''"
     :color="barColor"
-    :class="[`${$vuetify.theme.dark ? 'white--text' : `${textColor}--text text--darken-1`}`]"
+    :class="[`${isDarkMode ? 'text-white' : `text-${textColor}`}`]"
   >
-    <div class="container d-flex align-center">
+    <div class="container d-flex align-center w-100">
       <v-spacer />
-      <v-icon v-if="icon" small :class="`${$vuetify.theme.dark ? 'white--text' : `${textColor}--text text--darken-1`}`">
-        $vuetify.icons.{{ icon }}
+      <v-icon v-if="icon" size="small" class="mr-1" :class="`${isDarkMode ? 'text-white' : `text-${textColor}`}`">
+        {{ `$${icon}` }}
       </v-icon>
       <span class="caption">{{ messageFormatted }}</span>
       <v-spacer />
-      <v-icon v-if="hasClose" size="12" :class="`${$vuetify.theme.dark ? 'white--text' : `${textColor}--text text--darken-1`}`" @click="onClose">
-        $vuetify.icons.close
-      </v-icon>
+      <v-icon v-if="hasClose" size="12" :class="`${isDarkMode ? 'text-white' : `text-${textColor}`}`" @click="onClose">$close</v-icon>
     </div>
   </v-system-bar>
 </template>
@@ -40,7 +37,7 @@ export default {
   },
   computed: {
     messageFormatted() {
-      return capitalizeFirstLetter(this.type === 'announcement' ? this.message : this.t(this.message))
+      return capitalizeFirstLetter(this.type === 'announcement' ? this.message : this.$t(this.message))
     },
     barColor() {
       const barColor = []
@@ -49,7 +46,7 @@ export default {
       else if (this.type === 'error') barColor.push('error')
       else barColor.push('infoBanner')
 
-      if (!this.$vuetify.theme.dark && this.type !== 'announcement') barColor.push('lighten-5')
+      if (!this.isDarkMode && this.type !== 'announcement') barColor.push('lighten-5')
       return barColor.join(' ')
     },
     textColor() {
@@ -60,6 +57,9 @@ export default {
     },
     hasClose() {
       return this.type !== 'lrc'
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.name === 'dark'
     },
   },
   methods: {

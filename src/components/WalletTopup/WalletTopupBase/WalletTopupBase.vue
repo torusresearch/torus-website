@@ -26,7 +26,7 @@
               @change="fetchQuote"
             ></v-select>
           </v-col>
-          <v-col v-if="!$vuetify.breakpoint.xsOnly" xs8></v-col>
+          <v-col v-if="!$vuetify.display.xs" xs8></v-col>
 
           <v-layout wrap mx-n2>
             <v-col xs12 sm8 px-2>
@@ -73,7 +73,7 @@
               </div>
             </v-col>
             <v-col xs12 sm4 px-2>
-              <div v-if="!$vuetify.breakpoint.xsOnly" class="mb-2 d-flex align-center" :style="{ height: '20px' }">
+              <div v-if="!$vuetify.display.xs" class="mb-2 d-flex align-center" :style="{ height: '20px' }">
                 <span class="body-2">&nbsp;</span>
               </div>
               <v-autocomplete

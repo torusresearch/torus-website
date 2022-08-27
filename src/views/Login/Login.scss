@@ -35,7 +35,7 @@
     border: 1px solid #f1f2f6 !important;
     height: inherit;
   }
-  &.theme--dark.v-btn:not(.v-btn--text):not(.v-btn--icon) {
+  &.v-theme--dark.v-btn:not(.v-btn--text):not(.v-btn--icon) {
     border: 1px solid #343539;
     background-color: #424242;
   }

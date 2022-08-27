@@ -1,8 +1,8 @@
 <template>
   <div class="d-flex network-chip align-center" :class="[chipClass, minimal ? 'network-chip--minimal' : '']">
-    <v-icon v-if="showIcon">$vuetify.icons.network</v-icon>
-    <span class="network-chip__name text-clamp-one" :class="{ 'network-chip__name--mobile': $vuetify.breakpoint.xsOnly }">
-      {{ $vuetify.breakpoint.xsOnly && !minimal ? shortSelectedNetwork : selectedNetwork }}
+    <v-icon v-if="showIcon">$network</v-icon>
+    <span class="network-chip__name text-clamp-one" :class="{ 'network-chip__name--mobile': $vuetify.display.xs }">
+      {{ $vuetify.display.xs && !minimal ? shortSelectedNetwork : selectedNetwork }}
     </span>
   </div>
 </template>

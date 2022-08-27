@@ -4,14 +4,14 @@
       <v-row wrap fill-height align-center justify-center class="login-panel-left" :class="isDarkMode ? 'torus-dark' : ''">
         <v-col cols="12" sm="8" md="6">
           <v-row v-if="!isLogout" wrap>
-            <v-col v-if="$vuetify.display.xsOnly" class="mobile-login-container" cols="12">
+            <v-col v-if="$vuetify.display.xs" class="mobile-login-container" cols="12">
               <section class="py-10 py-sm-12">
                 <v-row wrap>
-                  <v-col class="mb-8 ml-auto mr-auto" cols="10">
+                  <v-col class="mb-2 ml-auto mr-auto" cols="10">
                     <img height="25" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                   </v-col>
-                  <LoginTitle class="mb-6" />
-                  <v-col col="10" class="mx-auto mt-4">
+                  <LoginTitle class="mb-3" />
+                  <v-col cols="10" class="mx-auto py-0">
                     <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
                   </v-col>
                   <LoginFooter :authenticators="thirdPartyAuthenticators" />
@@ -32,25 +32,25 @@
             <!-- Desktop -->
             <v-col v-else cols="12">
               <v-row wrap>
-                <v-col cols="10" sm="8" class="mt-4 mb-10 mx-auto">
+                <v-col cols="10" sm="8" class="mt-4 mb-4 mx-auto">
                   <img height="25" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                 </v-col>
                 <LoginTitle />
                 <!-- <v-col cols="10" sm="8" class="ml-auto mr-auto" :class="[$vuetify.display.xsOnly ? 'mt-8' : 'mt-10']">
                   <div class="headline font-weight-regular" :class="isDarkMode ? '' : 'text_2--text'">{{ $t('login.signUpIn') }}</div>
                 </v-col> -->
-                <v-col cols="8" class="mx-auto mt-4">
+                <v-col cols="8" class="mx-auto">
                   <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
                 </v-col>
                 <LoginFooter :authenticators="thirdPartyAuthenticators" />
               </v-row>
             </v-col>
           </v-row>
-          <v-row v-else wrap align-center justify-center align-content-center>
-            <v-col cols="12" text-center class="mb-12">
+          <v-row v-else wrap class="align-center justify-center align-content-center">
+            <v-col cols="12" class="mb-12 text-center">
               <img width="180" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
             </v-col>
-            <v-col cols="12" text-center>
+            <v-col cols="12" class="text-center">
               <img width="200px" height="auto" :src="require(`../../assets/images/logout${isDarkMode ? '-dark' : ''}.svg`)" alt="Logout Image" />
             </v-col>
             <v-col cols="12">

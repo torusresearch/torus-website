@@ -1,5 +1,5 @@
 <template>
-  <v-col mb-4 px-4 class="topup-providers" :class="$vuetify.breakpoint.width > 800 ? 'xs5' : 'xs12'">
+  <v-col mb-4 px-4 class="topup-providers" :class="$vuetify.display.width > 800 ? 'xs5' : 'xs12'">
     <v-card
       v-for="targetProvider in activeProviders"
       :key="targetProvider.name"
@@ -16,7 +16,7 @@
             </v-icon>
             <v-icon v-else :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBlack--text'">$vuetify.icons.radioOff</v-icon>
           </v-list-item-icon>
-          <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 100 : 130" height="100%" tile class="align-self-center mr-2">
+          <v-list-item-avatar :width="$vuetify.display.xs ? 100 : 130" height="100%" tile class="align-self-center mr-2">
             <v-img contain :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name"></v-img>
           </v-list-item-avatar>
           <v-list-item-content class="align-self-center text-right text_1--text caption">
@@ -45,7 +45,7 @@
             <v-list-item-icon class="mr-2 align-self-center">
               <v-icon color="grey">$vuetify.icons.radioOff</v-icon>
             </v-list-item-icon>
-            <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
+            <v-list-item-avatar :width="$vuetify.display.xs ? 105 : 138" height="100%" tile class="align-self-center mr-2">
               <img :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
             </v-list-item-avatar>
             <v-list-item-content class="align-self-center text-right text_1--text caption">
@@ -125,7 +125,7 @@ export default {
   },
   methods: {
     scrollToPosition() {
-      if (this.$vuetify.breakpoint.width > 800) return
+      if (this.$vuetify.display.width > 800) return
       const element = document.querySelector('#write-to-us')
       setTimeout(() => {
         if (element) {

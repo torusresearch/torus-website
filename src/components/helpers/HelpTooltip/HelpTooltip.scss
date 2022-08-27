@@ -8,9 +8,9 @@
   max-width: 300px;
   opacity: 1 !important;
 }
-.theme--dark {
+.v-theme--dark {
   .v-tooltip__content {
-    background: var(--v-torusBlack2-base);
+    background: rgb(var(--v-theme-torusBlack2));
     border: 1px solid #404145;
     box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
   }

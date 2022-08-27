@@ -9,11 +9,11 @@
       <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
         <v-card-text class="py-6">
           <v-layout wrap>
-            <v-col xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+            <v-col xs12 :class="$vuetify.display.xs ? '' : 'px-4'">
               <div class="font-weight-bold headline">{{ t('walletTransfer.addContact') }}</div>
               <v-chip small class="caption" light color="#CAF1FE">{{ verifierLabels[verifier] }}</v-chip>
             </v-col>
-            <v-col xs12 mt-6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
+            <v-col xs12 mt-6 :class="$vuetify.display.xs ? '' : 'px-4'">
               <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.contactName') }}</div>
               <v-text-field v-model="newContactName" :placeholder="t('walletTransfer.enterName')" :rules="[rules.required]" outlined></v-text-field>
             </v-col>

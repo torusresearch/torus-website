@@ -2,7 +2,7 @@
   .v-tab {
     text-transform: inherit;
     &.v-tab--active {
-      color: var(--v-torusBrand1-base);
+      color: rgb(var(--v-theme-torusBrand1));
     }
   }
 

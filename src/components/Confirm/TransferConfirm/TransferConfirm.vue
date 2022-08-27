@@ -54,7 +54,7 @@
               <div class="name--address">{{ addressSlicer(fromAddress) }}</div>
             </ShowToolTip>
           </div>
-          <div class="network-container flex-grow-1" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
+          <div class="network-container flex-grow-1" :class="{ isMobile: $vuetify.display.xs }">
             <NetworkDisplay :is-plain="true" :store-network-type="networkType"></NetworkDisplay>
           </div>
           <div class="name name--right">

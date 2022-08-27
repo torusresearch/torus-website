@@ -1,14 +1,14 @@
 <template>
   <div>
     <template v-if="type === TRANSACTION_TYPES.STANDARD_TRANSACTION">
-      <v-layout pa-6 class="confirm-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
-        <v-col text-left xs12>
+      <v-row class="confirm-header pa-6" :class="{ 'theme--dark': isDarkMode }">
+        <v-col class="text-left" cols="12">
           <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
-          <div class="headline text_2--text">{{ t('dappTransfer.confirmation') }}</div>
+          <div class="headline text_2--text">{{ $t('dappTransfer.confirmation') }}</div>
         </v-col>
-      </v-layout>
-      <v-layout wrap align-center mx-6 mb-3 mt-5>
-        <v-col xs12>
+      </v-row>
+      <v-row wrap class="align-center mx-6 mb-3 mt-5">
+        <v-col cols="12">
           <NetworkDisplay :minimal="true" class="mb-4" :store-network-type="network"></NetworkDisplay>
         </v-col>
         <v-col
@@ -16,18 +16,20 @@
             transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM ||
             transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE
           "
-          xs12
+          cols="12"
         >
-          <v-col v-if="transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE" xs12 mb-2>
+          <v-col v-if="transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE" cols="12" class="mb-2">
             <span class="headline text_2--text">
-              {{ `${t('dappPermission.allow')} ${origin.hostname} ${t('dappTransfer.toSpend')} ${selectedToken} ${t('dappTransfer.onYourBehalf')}?` }}
+              {{
+                `${$t('dappPermission.allow')} ${origin.hostname} ${$t('dappTransfer.toSpend')} ${selectedToken} ${$t('dappTransfer.onYourBehalf')}?`
+              }}
             </span>
           </v-col>
           <ShowToolTip :address="amountTo">
-            <div class="caption">{{ t('dappTransfer.to') }}: {{ amountTo }}</div>
+            <div class="caption">{{ $t('dappTransfer.to') }}: {{ amountTo }}</div>
           </ShowToolTip>
         </v-col>
-        <v-col v-else xs12>
+        <v-col v-else cols="12">
           <ShowToolTip
             v-if="
               [TRANSACTION_TYPES.TOKEN_METHOD_APPROVE, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM].indexOf(
@@ -36,35 +38,35 @@
             "
             :address="amountTo"
           >
-            <div class="caption">{{ t('dappTransfer.to') }}: {{ amountTo }}</div>
+            <div class="caption">{{ $t('dappTransfer.to') }}: {{ amountTo }}</div>
           </ShowToolTip>
           <ShowToolTip
             v-else-if="[TRANSACTION_TYPES.SENT_ETHER, TRANSACTION_TYPES.CONTRACT_INTERACTION].indexOf(transactionCategory) >= 0"
             :address="receiver"
           >
-            <div class="caption">{{ t('dappTransfer.to') }}: {{ receiver }}</div>
+            <div class="caption">{{ $t('dappTransfer.to') }}: {{ receiver }}</div>
           </ShowToolTip>
-          <div v-else class="caption">{{ t('dappTransfer.to') }}: {{ displayAmountTo }}</div>
+          <div v-else class="caption">{{ $t('dappTransfer.to') }}: {{ displayAmountTo }}</div>
         </v-col>
-      </v-layout>
+      </v-row>
       <v-divider class="mx-6 my-4"></v-divider>
-      <v-layout mx-6 my-4 wrap>
-        <v-col xs3 class="pt-3">
+      <v-row class="mx-6 my-4" wrap>
+        <v-col cols="3" class="pt-3">
           <div class="caption">
             {{
               ((contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155) &&
                 transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) ||
               (isSpecialContract && transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER)
-                ? t('walletTransfer.collectibleId')
-                : t('walletTransfer.totalCost')
+                ? $t('walletTransfer.collectibleId')
+                : $t('walletTransfer.totalCost')
             }}
           </div>
         </v-col>
-        <v-col xs9>
+        <v-col cols="9">
           <v-text-field v-model="displayAmountValue" :hint="displayAmountConverted" outlined persistent-hint readonly></v-text-field>
         </v-col>
-      </v-layout>
-      <v-layout mx-6 my-4 wrap>
+      </v-row>
+      <v-row class="mx-6 my-4" wrap>
         <TransactionFee
           v-if="isEip1559"
           :gas-fees="gasFees"
@@ -95,95 +97,99 @@
           :network-host="network.host"
           @onSelectSpeed="onSelectSpeed"
         />
-      </v-layout>
+      </v-row>
       <v-divider class="mt-10 my-4"></v-divider>
-      <v-layout mx-6 mt-4 pb-10 wrap>
-        <v-col xs3 class="pt-3">
-          <div class="caption">{{ t('dappTransfer.youSend') }}</div>
+      <v-row class="mx-6 mt-4 pb-10" wrap>
+        <v-col cols="3" class="pt-3">
+          <div class="caption">{{ $t('dappTransfer.youSend') }}</div>
         </v-col>
-        <v-col xs9>
+        <v-col cols="9">
           <v-text-field
             :value="`${costOfTransaction} ${
               isOtherToken && transactionCategory !== TRANSACTION_TYPES.TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + network.ticker : ''
             }`"
             :hint="costOfTransactionConverted"
-            outlined
+            variant="outlined"
             persistent-hint
             readonly
           ></v-text-field>
         </v-col>
-        <v-col xs12 mb-3 mt-3>
+        <v-col cols="12" class="mb-3 mt-3">
           <v-dialog v-model="detailsDialog" width="600px">
             <template #activator="{ on }">
               <div id="more-details-link" class="text-subtitle-2 float-right dialog-launcher primary--text" v-on="on">
-                {{ t('dappTransfer.moreDetails') }}
+                {{ $t('dappTransfer.moreDetails') }}
               </div>
             </template>
             <v-card class="pa-4 more-details-container">
               <v-card-text class="text_1--text">
-                <v-layout wrap>
-                  <v-col xs4 sm2>
-                    {{ t('dappTransfer.rate') }}
+                <v-row wrap>
+                  <v-col cols="4" sm="2">
+                    {{ $t('dappTransfer.rate') }}
                     <span class="float-right mr-4">:</span>
                   </v-col>
-                  <v-col id="currency-rate" xs8 sm10 class="text_2--text">{{ getCurrencyRate }}</v-col>
-                  <v-col xs4 sm2>
-                    {{ t('dappTransfer.network') }}
+                  <v-col id="currency-rate" cols="8" sm="10" class="text_2--text">{{ getCurrencyRate }}</v-col>
+                  <v-col cols="4" sm="2">
+                    {{ $t('dappTransfer.network') }}
                     <span class="float-right mr-4">:</span>
                   </v-col>
-                  <v-col xs8 sm10 class="text_2--text">
+                  <v-col cols="8" sm="10" class="text_2--text">
                     <span id="network" class="text-capitalize">{{ network.networkName || network.host }}</span>
                   </v-col>
-                  <v-col xs4 sm2>
-                    {{ t('dappTransfer.type') }}
+                  <v-col cols="4" sm="2">
+                    {{ $t('dappTransfer.type') }}
                     <span class="float-right mr-4">:</span>
                   </v-col>
-                  <v-col id="type" xs8 sm10 class="text_2--text">{{ header }}</v-col>
-                  <v-col v-if="txData || txDataParams !== ''" xs2>
-                    {{ t('dappTransfer.data') }}
+                  <v-col id="type" cols="8" sm="10" class="text_2--text">{{ header }}</v-col>
+                  <v-col v-if="txData || txDataParams !== ''" cols="2">
+                    {{ $t('dappTransfer.data') }}
                     <span class="float-right mr-4">:</span>
                   </v-col>
-                  <v-col xs12 mt-1>
+                  <v-col cols="12" class="mt-1">
                     <v-card v-if="txDataParams !== ''" flat color="background_3">
                       <v-card-text>
                         <pre>{{ txDataParams }}</pre>
                       </v-card-text>
                     </v-card>
                   </v-col>
-                  <v-col v-if="txData" xs12 mt-4>
-                    <div class="mb-1">Hex {{ t('dappTransfer.data') }}:</div>
+                  <v-col v-if="txData" cols="12" class="mt-4">
+                    <div class="mb-1">Hex {{ $t('dappTransfer.data') }}:</div>
                     <v-card flat color="background_3" :style="{ 'word-break': 'break-all' }">
                       <v-card-text>{{ txData }}</v-card-text>
                     </v-card>
                   </v-col>
-                </v-layout>
+                </v-row>
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn id="less-details-link" color="primary" text @click="detailsDialog = false">
-                  {{ t('dappTransfer.lessDetails') }}
+                  {{ $t('dappTransfer.lessDetails') }}
                 </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
         </v-col>
         <v-col v-if="topUpErrorShow || canShowError" xs12 mb-4 class="text-right">
-          <div class="caption error--text">{{ errorMsg === 'dappTransfer.insufficientFunds' ? t('dappTransfer.insufficientFunds') : errorMsg }}</div>
+          <div class="caption error--text">{{ errorMsg === 'dappTransfer.insufficientFunds' ? $t('dappTransfer.insufficientFunds') : errorMsg }}</div>
           <div v-if="topUpErrorShow" class="caption mt-1">
             {{ t('dappTransfer.pleaseTopup1') }}
-            <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">{{ t('dappTransfer.pleaseTopup2') }}</v-btn>
-            {{ t('dappTransfer.pleaseTopup3') }}
+            <v-btn color="primary" class="mx-1 px-2 caption" size="small" variant="outlined" @click="topUp">
+              {{ $t('dappTransfer.pleaseTopup2') }}
+            </v-btn>
+            {{ $t('dappTransfer.pleaseTopup3') }}
           </div>
         </v-col>
-        <v-col v-if="transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE" xs12 mb-4>
-          <div class="caption error--text">{{ `${t('dappTransfer.byConfirming1')} ${displayAmountValue} ${t('dappTransfer.byConfirming2')}.` }}</div>
+        <v-col v-if="transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE" cols="12" class="mb-4">
+          <div class="caption error--text">
+            {{ `${$t('dappTransfer.byConfirming1')} ${displayAmountValue} ${$t('dappTransfer.byConfirming2')}.` }}
+          </div>
         </v-col>
         <v-col xs12 mt-4>
-          <v-layout mx-n2>
+          <v-row mx-n2>
             <v-col xs6 px-2>
-              <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>
+              <v-btn block variant="text" large class="text_2--text" @click="triggerDeny">{{ $t('dappTransfer.cancel') }}</v-btn>
             </v-col>
-            <v-col xs6 px-2>
+            <v-col cols="6" class="px-2">
               <v-btn
                 id="confirm-btn"
                 :disabled="topUpErrorShow || canShowError"
@@ -194,12 +200,12 @@
                 class="white--text"
                 @click="triggerSign"
               >
-                {{ t('dappTransfer.confirm') }}
+                {{ $t('dappTransfer.confirm') }}
               </v-btn>
             </v-col>
-          </v-layout>
+          </v-row>
         </v-col>
-      </v-layout>
+      </v-row>
     </template>
     <template v-if="type === MESSAGE_TYPE.WATCH_ASSET">
       <AddAssetConfirm
@@ -621,6 +627,9 @@ export default {
     },
     isEip1559() {
       return this.networkDetails.EIPS && this.networkDetails.EIPS['1559']
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.name === 'dark'
     },
   },
   watch: {

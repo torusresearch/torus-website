@@ -1,7 +1,7 @@
 <template>
   <div class="activity-table">
     <v-data-iterator
-      :disable-pagination="$vuetify.breakpoint.xsOnly"
+      :disable-pagination="$vuetify.display.xs"
       :items="filteredTransactions"
       item-key="id"
       :items-per-page.sync="itemsPerPage"
@@ -21,7 +21,7 @@
       </template>
     </v-data-iterator>
 
-    <div v-if="!$vuetify.breakpoint.xsOnly && pageCount > 1" class="text-center pt-6">
+    <div v-if="!$vuetify.display.xs && pageCount > 1" class="text-center pt-6">
       <v-pagination
         v-model="page"
         class="activity-pagination"

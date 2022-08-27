@@ -1,5 +1,5 @@
 <template>
-  <div v-if="torusWallets.length > 0" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
+  <div v-if="torusWallets.length > 0" :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-4'">
     <v-list dense outlined class="pa-0 account-list mb-2">
       <v-list-item v-for="wallet in torusWallets" :key="wallet.key" class="pl-0 pr-1">
         <v-list-item-avatar class="ma-0">
@@ -17,7 +17,7 @@
         </v-list-item-action>
       </v-list-item>
     </v-list>
-    <v-dialog v-model="torusKeyDialog" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly" @click:outside="dialogClose">
+    <v-dialog v-model="torusKeyDialog" max-width="1000" :fullscreen="$vuetify.display.xs" @click:outside="dialogClose">
       <TorusKeyDialog :prev-key="selectedTorusWallet" @dialogClose="dialogClose" @setKey="setKey" @resetKey="resetKey" />
     </v-dialog>
   </div>

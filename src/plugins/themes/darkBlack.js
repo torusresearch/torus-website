@@ -22,7 +22,7 @@ export default {
   text_1: '#D3D3D4',
   text_2: '#D3D3D4',
   text_3: '#B3C0CE',
-  primaryBase: '#0364FF',
+  primary: '#0364FF',
   primaryLighten5: '#3F4147',
   infoBanner: '#47B2FD',
   infoBannerText: '#FFFFFF',

@@ -1,9 +1,9 @@
 <template>
-  <div class="privacy-security-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-5 px-2'">
+  <div class="privacy-security-container" :class="$vuetify.display.xs ? '' : 'py-5 px-2'">
     <v-list>
       <v-list-item id="private-key-btn" class="gmt-private-key-modal" @click="privateKeyDialog = true">
         <v-list-item-action class="mr-4">
-          <v-icon :small="$vuetify.breakpoint.xsOnly" size="20" class="ext_2--text" :style="{ marginRight: '10px' }">$vuetify.icons.key</v-icon>
+          <v-icon :small="$vuetify.display.xs" size="20" class="ext_2--text" :style="{ marginRight: '10px' }">$vuetify.icons.key</v-icon>
         </v-list-item-action>
         <v-list-item-content>
           <v-list-item-title class="body-2 text_1--text">{{ t('walletSettings.accountDetails') }}</v-list-item-title>
@@ -11,7 +11,7 @@
       </v-list-item>
     </v-list>
 
-    <v-dialog v-model="privateKeyDialog" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
+    <v-dialog v-model="privateKeyDialog" max-width="1000" :fullscreen="$vuetify.display.xs">
       <PrivateKeys @onClose="privateKeyDialog = false" />
     </v-dialog>
   </div>

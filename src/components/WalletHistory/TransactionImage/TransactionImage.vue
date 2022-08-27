@@ -77,15 +77,15 @@
       />
       <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
     </div>
-    <div class="caption text_1--text d-flex" :class="{ 'font-weight-medium': !$vuetify.breakpoint.xsOnly }">
+    <div class="caption text_1--text d-flex" :class="{ 'font-weight-medium': !$vuetify.display.xs }">
       <span>{{ transaction.actionText }}</span>
       <v-chip
-        v-if="transaction.isEtherscan && !$vuetify.breakpoint.xsOnly"
+        v-if="transaction.isEtherscan && !$vuetify.display.xs"
         class="etherscan-chip"
         :class="[{ isDark: $vuetify.theme.isDark }, isCancel ? 'ml-0' : 'ml-2']"
         x-small
       >
-        {{ $vuetify.breakpoint.smAndDown ? t('walletActivity.external') : t('walletActivity.externalTransaction') }}
+        {{ $vuetify.display.smAndDown ? t('walletActivity.external') : t('walletActivity.externalTransaction') }}
       </v-chip>
     </div>
     <div class="info text_2--text font-weight-light">
@@ -96,12 +96,7 @@
             : `${t('walletActivity.from')} ${transaction.slicedFromChecksummed}`
         }}
       </span>
-      <v-chip
-        v-if="transaction.isEtherscan && $vuetify.breakpoint.xsOnly"
-        class="etherscan-chip ml-1"
-        :class="{ isDark: $vuetify.theme.isDark }"
-        x-small
-      >
+      <v-chip v-if="transaction.isEtherscan && $vuetify.display.xs" class="etherscan-chip ml-1" :class="{ isDark: $vuetify.theme.isDark }" x-small>
         External
       </v-chip>
     </div>

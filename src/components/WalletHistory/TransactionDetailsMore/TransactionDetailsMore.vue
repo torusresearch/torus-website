@@ -1,6 +1,6 @@
 <template>
   <v-layout class="mt-3" wrap>
-    <v-col xs12 class="activity-details" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
+    <v-col xs12 class="activity-details" :class="{ isMobile: $vuetify.display.xs }">
       <div class="caption">
         <div class="text_1--text d-flex mb-2">
           <div class="details-label d-flex mr-6">
@@ -74,7 +74,7 @@
           </div>
         </v-col>
         <v-col v-if="transaction.etherscanLink || transaction.statusText === ACTIVITY_STATUS_PENDING" xs12 sm6 class="text-right mt-4 mt-sm-0">
-          <v-layout :class="{ 'd-inline-flex': !$vuetify.breakpoint.xsOnly }">
+          <v-layout :class="{ 'd-inline-flex': !$vuetify.display.xs }">
             <v-col>
               <v-tooltip top>
                 <template #activator="{ on }">
@@ -82,8 +82,8 @@
                     <v-btn
                       v-if="transaction.statusText === ACTIVITY_STATUS_PENDING"
                       class="text_2--text"
-                      :class="{ 'mr-2': !$vuetify.breakpoint.xsOnly }"
-                      :block="$vuetify.breakpoint.xsOnly"
+                      :class="{ 'mr-2': !$vuetify.display.xs }"
+                      :block="$vuetify.display.xs"
                       text
                       @click.stop="showCancelTransaction"
                     >
@@ -100,7 +100,7 @@
               <v-btn
                 v-if="transaction.etherscanLink"
                 class="torus-btn1"
-                :block="$vuetify.breakpoint.xsOnly"
+                :block="$vuetify.display.xs"
                 :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
                 :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
                 :href="transaction.etherscanLink"

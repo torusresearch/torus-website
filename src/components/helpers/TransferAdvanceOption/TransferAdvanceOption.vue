@@ -73,7 +73,7 @@
                 </v-col>
                 <v-col xs12 sm6 px-4>
                   <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.transferFee') }}</div>
-                  <template v-if="$vuetify.breakpoint.xsOnly">
+                  <template v-if="$vuetify.display.xs">
                     <span class="float-right">
                       <span id="transaction-fee-mobile">{{ gasAmountDisplay }}</span>
                       {{ networkTicker }}
@@ -91,9 +91,9 @@
                     :hint="gasAmountConverted"
                   ></v-text-field>
                 </v-col>
-                <v-col xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mt-5' : ''">
+                <v-col xs12 sm6 px-4 :class="$vuetify.display.xs ? 'mt-5' : ''">
                   <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.newTotal') }}</div>
-                  <template v-if="$vuetify.breakpoint.xsOnly">
+                  <template v-if="$vuetify.display.xs">
                     <span class="float-right text-subtitle-1 font-weight-bold torusBrand1--text">{{ totalCost }}{{ networkTicker }}</span>
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>

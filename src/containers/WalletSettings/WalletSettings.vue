@@ -1,8 +1,8 @@
 <template>
-  <v-container class="wallet-settings" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
-    <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
+  <v-container class="wallet-settings" :class="$vuetify.display.xs ? 'px-4' : ''">
+    <v-layout wrap align-start :class="$vuetify.display.xs ? 'mt-2' : 'mt-3'">
       <v-col xs6>
-        <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
+        <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.display.width > 390 }">
           {{ t('walletSettings.settings') }}
         </div>
       </v-col>

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="elevation-1 promotion-card" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
+  <v-card class="elevation-1 promotion-card" :class="{ isMobile: $vuetify.display.xs }">
     <v-layout class="d-flex flex-column fill-height py-4 px-6">
       <v-col class="flex-grow-1 d-flex">
         <div class="promotion-text pr-3">
@@ -14,12 +14,12 @@
         <slot name="image">
           <div class="ml-auto mt-1">
             <v-img
-              :src="`${$vuetify.theme.isDark && imageDarkPath ? imageDarkPath : imagePath}`"
+              :src="`${isDarkMode && imageDarkPath ? imageDarkPath : imagePath}`"
               class="mr-1"
               contain
               position="right center"
               max-width="170"
-              :style="$vuetify.breakpoint.smAndDown ? 'height: 42px' : 'height: 50px'"
+              :style="$vuetify.display.smAndDown ? 'height: 42px' : 'height: 50px'"
               :alt="`${title}`"
             />
           </div>
@@ -27,7 +27,7 @@
       </v-col>
       <!-- <v-col class="flex-grow-0">
         <v-layout wrap class="mx-n3 more-details-container">
-          <v-col v-if="!!detailsLinkTwo" xs12 sm6 px-3 :class="$vuetify.breakpoint.xsOnly ? 'mb-2' : ''">
+          <v-col v-if="!!detailsLinkTwo" xs12 sm6 px-3 :class="$vuetify.display.xs ? 'mb-2' : ''">
             <ShowToolTip :address="detailsLinkTwo">
               <div :class="{ 'theme--dark': $vuetify.theme.isDark }" class="d-flex align-center gmt-share-referral copy-link elevation-3 px-4 py-1">
                 <div class="torusFont2--text flex-grow-1 text-clamp-one">{{ detailsLinkTwo }}</div>
@@ -68,6 +68,11 @@ export default {
     detailsLink: { type: String, default: '' },
     detailsLinkTwo: { type: String, default: '' },
     detailsText: { type: String, default: '' },
+  },
+  computed: {
+    isDarkMode() {
+      return this.$vuetify.theme.global.name === 'dark'
+    },
   },
 }
 </script>

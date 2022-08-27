@@ -2,15 +2,15 @@
   <div class="quick-address d-flex align-center">
     <div class="ml-auto">
       <ShowToolTip :address="selectedAddress">
-        <v-btn small class="address-btn" aria-label="Copy Address">
-          <v-icon left size="9">$vuetify.icons.address</v-icon>
+        <v-btn size="small" class="address-btn" aria-label="Copy Address">
+          <v-icon left size="9">$address</v-icon>
           <span>{{ slicedAddress }}</span>
         </v-btn>
       </ShowToolTip>
     </div>
     <div class="ml-2">
       <ExportQrCode>
-        <v-icon x-small>$vuetify.icons.qr</v-icon>
+        <v-icon x-small>$qr</v-icon>
       </ExportQrCode>
     </div>
     <!-- <div v-if="apiStreamSupported">
@@ -37,7 +37,7 @@ export default {
       },
     }),
     slicedAddress() {
-      return this.$vuetify.breakpoint.xsOnly
+      return this.$vuetify.display.xs
         ? `${this.selectedAddress.slice(0, 4)}...${this.selectedAddress.slice(-3)}`
         : `${this.selectedAddress.slice(0, 6)}...${this.selectedAddress.slice(-5)}`
     },

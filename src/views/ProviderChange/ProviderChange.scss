@@ -1,7 +1,7 @@
 .provider-change-header {
   background: var(--v-torusGray4-base);
-  &.theme--dark {
-    background: var(--v-torusBlack2-base);
+  &.v-theme--dark {
+    background: rgb(var(--v-theme-torusBlack2));
   }
 }
 
@@ -46,8 +46,8 @@
   }
 }
 
-.theme--light.v-sheet,
-.theme--dark.v-sheet {
+.v-theme--light.v-sheet,
+.v-theme--dark.v-sheet {
   background: transparent;
 }
 
@@ -56,7 +56,7 @@
   width: 24px;
   min-width: 24px;
   padding: 0;
-  &.theme--dark {
+  &.v-theme--dark {
     box-shadow: 5px 5px 10px #242529, -5px -5px 10px #37383c !important;
   }
 }

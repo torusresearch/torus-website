@@ -1,16 +1,16 @@
-.v-menu__content {
+.v-item-group {
   .v-list-item {
     &.active {
       border-radius: 6px;
-      background-color: var(--v-torusBrand1-base);
-      .v-list-item__title {
+      background-color: rgb(var(--v-theme-torusBrand1));
+      .v-list-item-title {
         font-weight: bold;
         color: #ffffff;
       }
     }
     &:not(.active):hover {
       border-radius: 6px;
-      background-color: var(--v-torusBrand3-base);
+      background-color: rgb(var(--v-theme-torusBrand3-base));
     }
 
     .v-list-item__action.isMobile {
