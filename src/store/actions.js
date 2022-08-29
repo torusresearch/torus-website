@@ -647,23 +647,20 @@ export default {
           // call autoLogin
           log.info('auto-login with openlogin session')
           await dispatch('autoLogin', { calledFromEmbed: !isMain })
+
+          if (store.appState) {
+            const appStateParams = JSON.parse(safeatob(store.appState))
+            if (appStateParams?.whiteLabel) {
+              commit('setWhiteLabel', { ...appStateParams.whiteLabel })
+            }
+            if (appStateParams?.loginConfig && typeof appStateParams.loginConfig === 'object' && Object.keys(appStateParams.loginConfig).length > 0) {
+              commit('setLoginConfig', { ...appStateParams.loginConfig })
+            }
+          }
           if (currentRoute.name !== 'popup' && currentRoute.meta.requiresAuth === false) {
             const noRedirectQuery = Object.fromEntries(new URLSearchParams(window.location.search))
             const { redirect } = noRedirectQuery
             delete noRedirectQuery.redirect
-            if (store.appState) {
-              const appStateParams = JSON.parse(safeatob(store.appState))
-              if (appStateParams?.whiteLabel) {
-                commit('setWhiteLabel', { ...appStateParams.whiteLabel })
-              }
-              if (
-                appStateParams?.loginConfig &&
-                typeof appStateParams.loginConfig === 'object' &&
-                Object.keys(appStateParams.loginConfig).length > 0
-              ) {
-                commit('setLoginConfig', { ...appStateParams.loginConfig })
-              }
-            }
 
             router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})
           }
