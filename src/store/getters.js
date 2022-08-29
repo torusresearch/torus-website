@@ -156,7 +156,7 @@ function calculateBalances(state, y) {
 
 const userDapps = (state) => state.userDapps
 
-const supportedNetworks = (state) => ({ ...state.supportedNetworks, ...SUPPORTED_NETWORK_TYPES })
+const supportedNetworks = (state) => ({ ...state.customNetworks, ...SUPPORTED_NETWORK_TYPES })
 
 export default {
   unApprovedTransactions,

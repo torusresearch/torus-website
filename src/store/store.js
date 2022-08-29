@@ -49,7 +49,7 @@ if (config.localStorageAvailable) {
       announcements: state.announcements,
       contacts: state.contacts,
       // whiteLabel: state.whiteLabel,
-      supportedNetworks: state.supportedNetworks,
+      customNetworks: state.customNetworks,
       pastTransactions: state.pastTransactions,
       paymentTx: state.paymentTx,
       etherscanTx: state.etherscanTx,

@@ -119,6 +119,7 @@ export default {
     commit('logOut', {
       ...initialState,
       networkType: state.networkType,
+      customNetworks: state.customNetworks,
       networkId: state.networkId,
       whiteLabel: state.whiteLabel,
       theme: state.theme,
@@ -376,20 +377,25 @@ export default {
     const activeChainId = networkType.chainId && (isHexStrict(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`)
     const chainIdConfig = CHAIN_ID_TO_TYPE_MAP[activeChainId]
     if (chainIdConfig) {
-      const networkConfig = SUPPORTED_NETWORK_TYPES[chainIdConfig.name]
+      const networkConfig = getters.supportedNetworks[chainIdConfig.name]
       networkType = { ...networkConfig, ...networkType }
     }
-    if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
-      networkType = { ...SUPPORTED_NETWORK_TYPES[networkType.host], ...networkType }
+    if (getters.supportedNetworks[networkType.host]) {
+      networkType = { ...getters.supportedNetworks[networkType.host], ...networkType }
       isSupportedNetwork = true
     }
     const currentTicker = networkType.ticker || 'ETH'
-    commit('setNetworkType', networkType)
-    if ((payload.type && payload.type === RPC) || !isSupportedNetwork) {
-      return torusController.setCustomRpc(networkType.host, networkType.chainId || 1, currentTicker, networkType.networkName || '', {
+    if (payload.type && payload.type === RPC && !isSupportedNetwork) {
+      const networkId = await torusController.setCustomRpc(networkType.host, networkType.chainId || 1, currentTicker, networkType.networkName || '', {
         blockExplorerUrl: networkType.blockExplorer,
       })
+      if (networkId) {
+        networkType.id = networkId
+        commit('setNetworkType', networkType)
+      }
+      return null
     }
+    commit('setNetworkType', networkType)
     await networkController.setProviderType(networkType.host, networkType.rpcUrl || networkType.host, networkType.ticker, networkType.networkName)
     if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency)
       await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home' })
@@ -398,6 +404,21 @@ export default {
     // Set custom currency
     if (getters.supportedCurrencies.includes(networkType.ticker) && networkType.ticker !== state.selectedCurrency)
       await commit('setCustomCurrency', networkType.ticker)
+    return undefined
+  },
+  async deleteCustomNetwork({ _commit }, id) {
+    if (id) {
+      return torusController.deleteCustomRpc(id)
+    }
+    return undefined
+  },
+  async updateCustomNetwork({ state, commit }, network) {
+    if (network) {
+      if (state.networkType.id === network.id) {
+        commit('setNetworkType', network)
+      }
+      return torusController.updateCustomRpc(network)
+    }
     return undefined
   },
   async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint }) {

@@ -11,7 +11,7 @@ import pump from 'pump'
 import { toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
-import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, TRANSACTION_STATUSES } from '../utils/enums'
+import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, RPC, TRANSACTION_STATUSES } from '../utils/enums'
 import createRandomId from '../utils/random-id'
 import { isMain } from '../utils/utils'
 import AccountTracker from './AccountTracker'
@@ -1078,7 +1078,26 @@ export default class TorusController extends SafeEventEmitter {
    * @returns {Promise<String>} - The RPC Target URL confirmed.
    */
   async setCustomRpc(rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {
-    this.networkController.setRpcTarget(rpcUrl, chainId, ticker, nickname, rpcPrefs)
-    return rpcUrl
+    const networkId = await this.prefsController.addCustomNetwork(RPC, {
+      networkName: nickname,
+      host: rpcUrl,
+      chainId,
+      symbol: ticker,
+      blockExplorer: rpcPrefs.blockExplorerUrl || undefined,
+    })
+    if (networkId) {
+      this.networkController.setRpcTarget(networkId, rpcUrl, chainId, ticker, nickname, rpcPrefs)
+      return networkId
+    }
+
+    return null
+  }
+
+  async deleteCustomRpc(id) {
+    this.prefsController.deleteCustomNetwork(id)
+  }
+
+  async updateCustomRpc(network) {
+    this.prefsController.editCustomNetwork(network)
   }
 }
