@@ -2,12 +2,12 @@
   <div class="privacy-security-container" :class="$vuetify.display.xs ? '' : 'py-5 px-2'">
     <v-list>
       <v-list-item id="private-key-btn" class="gmt-private-key-modal" @click="privateKeyDialog = true">
-        <v-list-item-action class="mr-4">
-          <v-icon :small="$vuetify.display.xs" size="20" class="ext_2--text" :style="{ marginRight: '10px' }">$vuetify.icons.key</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title class="body-2 text_1--text">{{ t('walletSettings.accountDetails') }}</v-list-item-title>
-        </v-list-item-content>
+        <template #prepend>
+          <div class="mr-4">
+            <v-icon :size="$vuetify.display.xs ? 'small' : '20'" class="text-text_2" :style="{ marginRight: '10px' }">$key</v-icon>
+          </div>
+        </template>
+        <v-list-item-title class="body-2 text-text_1">{{ $t('walletSettings.accountDetails') }}</v-list-item-title>
       </v-list-item>
     </v-list>
 

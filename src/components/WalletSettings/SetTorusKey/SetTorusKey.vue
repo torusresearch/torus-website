@@ -1,18 +1,26 @@
 <template>
   <div v-if="torusWallets.length > 0" :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-4'">
-    <v-list dense outlined class="pa-0 account-list mb-2">
+    <v-list density="comfortable" variant="outlined" class="pa-0 account-list mb-2">
       <v-list-item v-for="wallet in torusWallets" :key="wallet.key" class="pl-0 pr-1">
-        <v-list-item-avatar class="ma-0">
-          <v-icon size="16" class="torusGray1--text">{{ `$vuetify.icons.${wallet.icon}` }}</v-icon>
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title class="font-weight-regular caption">
-            <span class="text_1--text">{{ wallet.title }}</span>
-          </v-list-item-title>
-        </v-list-item-content>
+        <template #prepend>
+          <div class="ma-0">
+            <v-icon size="16" class="text-torusGray1">{{ `$${wallet.icon}` }}</v-icon>
+          </div>
+        </template>
+        <v-list-item-title class="font-weight-regular caption">
+          <span class="text-text_1">{{ wallet.title }}</span>
+        </v-list-item-title>
         <v-list-item-action class="ma-0">
-          <v-btn :disabled="settingKey" :loading="settingKey" text small color="torusBrand1" class="caption" @click="selectWallet(wallet.key)">
-            {{ !settingKey ? t('walletSettings.customKey.setCustomKey') : t('walletSettings.customKey.settingKey') }}
+          <v-btn
+            :disabled="settingKey"
+            :loading="settingKey"
+            variant="text"
+            size="small"
+            color="torusBrand1"
+            class="caption"
+            @click="selectWallet(wallet.key)"
+          >
+            {{ !settingKey ? $t('walletSettings.customKey.setCustomKey') : $t('walletSettings.customKey.settingKey') }}
           </v-btn>
         </v-list-item-action>
       </v-list-item>

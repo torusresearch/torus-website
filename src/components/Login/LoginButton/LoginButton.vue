@@ -26,7 +26,7 @@
       :alt="`${loginConfigItem.name} Icon`"
       :class="{ 'mr-3': isLong }"
     />
-    <v-icon v-else-if="buttonType !== 'submit'" :class="[{ 'mr-3': isLong }, isExistingLogin ? 'white--text' : 'text_3--text']">
+    <v-icon v-else-if="buttonType !== 'submit'" :class="[{ 'mr-3': isLong }, isExistingLogin ? 'text-white' : 'text-text_3']">
       {{ `$${iconName}` }}
     </v-icon>
 
@@ -101,7 +101,7 @@ export default {
     },
     buttonClass() {
       return [
-        { active: this.active, 'theme--dark': this.isDarkMode, 'is-long': this.isLong, 'is-popup': this.isPopup, 'no-icon': this.noIcon },
+        { active: this.active, 'v-theme--dark': this.isDarkMode, 'is-long': this.isLong, 'is-popup': this.isPopup, 'no-icon': this.noIcon },
         `gmt-login-${this.iconName}`,
         this.isExistingLogin ? 'text-white' : 'text-text_2',
       ]

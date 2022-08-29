@@ -1,19 +1,19 @@
 <template>
   <div class="contact-list-container" :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-0'">
-    <v-layout wrap>
-      <v-col xs12 px-1 mb-1>
+    <v-row wrap>
+      <v-col cols="12" class="px-1 mb-1">
         <div class="d-flex align-center">
-          <div class="body-2">{{ t('walletSettings.listContacts') }}</div>
+          <div class="body-2">{{ $t('walletSettings.listContacts') }}</div>
           <div class="d-flex ml-auto">
             <v-text-field
               v-if="!$vuetify.display.smAndDown"
               id="search-name"
               v-model="searchName"
               class="search-name caption"
-              dense
+              density="comfortable"
               hide-details
-              :placeholder="t('walletSettings.searchByName')"
-              outlined
+              :placeholder="$t('walletSettings.searchByName')"
+              variant="outlined"
               aria-label="Search Name"
             ></v-text-field>
             <v-select
@@ -21,21 +21,21 @@
               v-model="searchVerifier"
               class="search-verifier caption"
               hide-details
-              dense
-              outlined
-              append-icon="$vuetify.icons.select"
+              density="comfortable"
+              variant="outlined"
+              append-icon="$select"
               :items="verifierOptions"
-              item-text="name"
+              item-title="name"
               item-value="value"
               aria-label="Filter Type"
-              :placeholder="t('walletSettings.filterByType')"
+              :placeholder="$t('walletSettings.filterByType')"
             >
               <template #selection="{ item }">
                 <div class="v-select__selection v-select__selection--comma">
-                  {{ item === 'walletSettings.all' ? t(item) : t(item.name) }}
+                  {{ item === 'walletSettings.all' ? $t(item) : $t(item.title) }}
                 </div>
               </template>
-              <template #item="{ item }">{{ t(item.name) }}</template>
+              <template #item="{ item }">{{ $t(item.title) }}</template>
             </v-select>
           </div>
         </div>
@@ -44,127 +44,127 @@
             id="search-name"
             v-model="searchName"
             class="search-name caption mobile"
-            dense
+            density="comfortable"
             hide-details
             placeholder="Search by name"
-            outlined
+            variant="outlined"
             aria-label="Search Name"
           ></v-text-field>
         </div>
         <v-card class="elevation-1 mt-4">
-          <v-list v-for="contact in contacts" :key="`contact-${contact.id}`" dense class="pa-0 contact-list">
+          <v-list v-for="contact in contacts" :key="`contact-${contact.id}`" density="comfortable" class="pa-0 contact-list">
             <v-list-item class="pl-0 pr-1">
-              <v-list-item-avatar class="ma-0">
-                <img
-                  v-if="contact.verifier === 'eth'"
-                  :src="require(`../../../assets/img/icons/eth-grey${$vuetify.theme.dark ? '-black' : '-white'}.svg`)"
-                  style="width: 16px"
-                  class="ma-1"
-                  :alt="`${contact.verifier} Icon`"
-                />
-                <v-icon v-else size="16" class="torusGray1--text">
-                  {{ `$vuetify.icons.${contact.verifier.toLowerCase()}` }}
-                </v-icon>
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title class="font-weight-regular caption">
-                  <span class="text_1--text">{{ contact.name }}</span>
-                  -
-                  <span class="contact-list__id label">{{ contact.contact }}</span>
-                </v-list-item-title>
-              </v-list-item-content>
+              <template #prepend>
+                <div class="ma-0">
+                  <img
+                    v-if="contact.verifier === 'eth'"
+                    :src="require(`../../../assets/img/icons/eth-grey${isDarkMode ? '-black' : '-white'}.svg`)"
+                    style="width: 16px"
+                    class="ma-1"
+                    :alt="`${contact.verifier} Icon`"
+                  />
+                  <v-icon v-else size="16" class="text-torusGray1">
+                    {{ `$${contact.verifier.toLowerCase()}` }}
+                  </v-icon>
+                </div>
+              </template>
+              <v-list-item-title class="font-weight-regular caption">
+                <span class="text-text_1">{{ contact.name }}</span>
+                -
+                <span class="contact-list__id label">{{ contact.contact }}</span>
+              </v-list-item-title>
               <v-list-item-action class="ma-0">
-                <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
-                  <v-icon x-small>$vuetify.icons.trash</v-icon>
+                <v-btn class="delete-btn" color="text_2" icon size="small" :aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
+                  <v-icon size="x-small">$trash</v-icon>
                 </v-btn>
               </v-list-item-action>
             </v-list-item>
           </v-list>
         </v-card>
 
-        <div class="body-2 mt-4">{{ t('walletSettings.addNewContact') }}</div>
+        <div class="body-2 mt-4">{{ $t('walletSettings.addNewContact') }}</div>
 
         <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
-          <v-layout wrap class="mt-2 mx-n1">
-            <v-col xs12 sm7 px-1>
+          <v-row wrap class="mt-2 mx-n1">
+            <v-col cols="12" sm="7" class="px-1">
               <v-text-field
                 id="contact-name"
                 v-model="newContactName"
-                :placeholder="t('walletSettings.enterContact')"
+                :placeholder="$t('walletSettings.enterContact')"
                 :rules="[rules.required]"
-                outlined
+                variant="outlined"
                 aria-label="Contact Name"
               ></v-text-field>
             </v-col>
-            <v-col xs12 sm5 px-1>
+            <v-col cols="12" sm="5" class="px-1">
               <v-select
                 id="select-verifier"
                 v-model="selectedVerifier"
                 class="select-verifier-container"
-                outlined
-                append-icon="$vuetify.icons.select"
+                variant="outlined"
+                append-icon="$select"
                 :items="verifierOptionsNew"
-                item-text="name"
+                item-title="name"
                 item-value="value"
                 aria-label="Select Contact Verifier"
                 @change="validateContactForm"
               >
                 <template #selection="{ item }">
                   <div class="v-select__selection v-select__selection--comma">
-                    {{ t(item.name) }}
+                    {{ $t(item.title) }}
                   </div>
                 </template>
-                <template #item="{ item }">{{ t(item.name) }}</template>
+                <template #item="{ item }">{{ $t(item.title) }}</template>
               </v-select>
             </v-col>
-          </v-layout>
-          <v-layout wrap>
-            <v-col xs12>
+          </v-row>
+          <v-row wrap>
+            <v-col cols="12">
               <v-text-field
                 id="contact-value"
                 v-model="newContact"
                 :placeholder="verifierPlaceholder"
                 :rules="[toAddressRule, rules.required, checkDuplicates]"
-                outlined
+                variant="outlined"
                 aria-label="Contact Value"
               >
                 <template #message="props">
-                  {{ t(props.message) }}
+                  {{ $t(props.message) }}
                 </template>
               </v-text-field>
             </v-col>
 
-            <v-layout wrap>
-              <v-col class="ml-auto xs12 sm6 text-right" :class="$vuetify.display.xs ? 'mt-2' : ''">
+            <v-row wrap>
+              <v-col cols="12" sm="6" class="ml-auto text-right" :class="$vuetify.display.xs ? 'mt-2' : ''">
                 <v-btn
                   id="contact-submit-btn"
-                  large
+                  size="large"
                   class="torus-btn1 py-1 gmt-add-address"
-                  :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
-                  :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
+                  :class="whiteLabel.isActive ? 'text-white' : 'text-torusBrand1'"
+                  :color="whiteLabel.isActive ? 'torusBrand1' : ''"
                   type="submit"
                   :disabled="!contactFormValid"
                 >
-                  {{ t('walletSettings.addContact') }}
+                  {{ $t('walletSettings.addContact') }}
                 </v-btn>
               </v-col>
-            </v-layout>
-          </v-layout>
+            </v-row>
+          </v-row>
         </v-form>
       </v-col>
-    </v-layout>
+    </v-row>
   </div>
 </template>
 
 <script>
 import log from 'loglevel'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import { ALLOWED_VERIFIERS, ETH } from '../../../utils/enums'
 import { getVerifierOptions, validateVerifierId } from '../../../utils/utils'
 
 export default {
-  name: 'NetworkSettings',
+  name: 'ContactList',
   data() {
     return {
       contactFormValid: true,
@@ -172,7 +172,7 @@ export default {
       newContact: '',
       newContactName: '',
       rules: {
-        required: (value) => !!value || this.t('walletSettings.required'),
+        required: (value) => !!value || this.$t('walletSettings.required'),
       },
       ETH,
       searchName: '',
@@ -183,6 +183,7 @@ export default {
     ...mapGetters({
       stateContacts: 'filteredContacts',
     }),
+    ...mapState(['whiteLabel', 'networkId']),
     verifierOptions() {
       return [
         {
@@ -194,7 +195,7 @@ export default {
     },
     verifierPlaceholder() {
       const verifierLocale = ALLOWED_VERIFIERS.find((verifier) => verifier.value === this.selectedVerifier).name
-      return `${this.t('walletSettings.enter')} ${this.t(verifierLocale)}`
+      return `${this.$t('walletSettings.enter')} ${this.$t(verifierLocale)}`
     },
     contacts() {
       return this.stateContacts.filter((contact) => {
@@ -209,6 +210,9 @@ export default {
     },
     verifierOptionsNew() {
       return getVerifierOptions()
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.global.name === 'dark'
     },
   },
   methods: {
@@ -237,7 +241,7 @@ export default {
       this.$store.dispatch('deleteContact', contactId)
     },
     toAddressRule(value) {
-      return validateVerifierId(this.selectedVerifier, value, this.$store.state.networkId)
+      return validateVerifierId(this.selectedVerifier, value, this.networkId)
     },
     validateContactForm() {
       if (this.$refs.addContactForm) this.$refs.addContactForm.validate()

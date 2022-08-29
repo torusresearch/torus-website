@@ -1,81 +1,81 @@
 <template>
   <div :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-4'">
     <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
-      <div class="body-2 mb-2">{{ t('walletSettings.selectNetwork') }}</div>
-      <v-layout wrap>
-        <v-col xs12>
+      <div class="body-2 mb-2">{{ $t('walletSettings.selectNetwork') }}</div>
+      <v-row wrap>
+        <v-col cols="12">
           <v-select
             id="select-network"
             v-model="selectedNetwork"
             class="select-network-container gmt-network-change"
-            outlined
+            variant="outlined"
             :items="networks"
-            item-text="networkName"
+            item-title="networkName"
             item-value="host"
             return-object
-            append-icon="$vuetify.icons.select"
+            append-icon="$select"
             aria-label="Select Network"
             @change="changeNetwork"
           ></v-select>
         </v-col>
-      </v-layout>
+      </v-row>
 
       <template v-if="isRPCSelected">
-        <v-col xs12>
+        <v-col cols="12">
           <v-text-field
             v-model="rpc.networkName"
-            :placeholder="t('walletSettings.enterNetworkName')"
+            :placeholder="$t('walletSettings.enterNetworkName')"
             :rules="[rules.required]"
-            outlined
+            variant="outlined"
           ></v-text-field>
         </v-col>
 
-        <v-col xs12>
-          <v-text-field v-model="rpc.rpcUrl" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
+        <v-col cols="12">
+          <v-text-field v-model="rpc.rpcUrl" :placeholder="$t('walletSettings.enterRpc')" :rules="[rules.required]" variant="outlined"></v-text-field>
         </v-col>
 
-        <v-col xs12>
+        <v-col cols="12">
           <v-text-field
             v-model="rpc.chainId"
             :rules="[rules.required, rules.requiredHex]"
-            :placeholder="t('walletSettings.enterChainId')"
-            outlined
+            :placeholder="$t('walletSettings.enterChainId')"
+            variant="outlined"
           ></v-text-field>
         </v-col>
 
-        <v-col xs12>
-          <v-text-field v-model="rpc.ticker" :placeholder="t('walletSettings.enterSymbol')" outlined></v-text-field>
+        <v-col cols="12">
+          <v-text-field v-model="rpc.ticker" :placeholder="$t('walletSettings.enterSymbol')" variant="outlined"></v-text-field>
         </v-col>
 
-        <v-col xs12>
-          <v-text-field v-model="rpc.blockExplorer" :placeholder="t('walletSettings.enterBlockExplorer')" outlined></v-text-field>
+        <v-col cols="12">
+          <v-text-field v-model="rpc.blockExplorer" :placeholder="$t('walletSettings.enterBlockExplorer')" variant="outlined"></v-text-field>
         </v-col>
 
-        <v-col xs12 :class="!$vuetify.display.xs ? 'pl-2' : ''">
-          <v-layout>
+        <v-col cols="12" :class="!$vuetify.display.xs ? 'pl-2' : ''">
+          <v-row>
             <v-spacer></v-spacer>
-            <v-col xs4>
-              <v-tooltip bottom :disabled="formValid">
+            <v-col cols="4">
+              <v-tooltip location="bottom" :disabled="formValid">
                 <template #activator="{ on }">
                   <span v-on="on">
                     <v-btn
-                      large
+                      size="large"
                       class="torus-btn1 py-1"
-                      :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
-                      :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
+                      :class="whiteLabel.isActive ? 'text-white' : 'text-torusBrand1'"
+                      :color="whiteLabel.isActive ? 'torusBrand1' : ''"
                       block
                       :disabled="!formValid"
                       depressed
                       @click="setRPC"
                     >
-                      {{ t('walletSettings.save') }}
+                      {{ $t('walletSettings.save') }}
                     </v-btn>
                   </span>
                 </template>
-                <span>{{ t('walletSettings.resolveErrors') }}</span>
+                <span>{{ $t('walletSettings.resolveErrors') }}</span>
               </v-tooltip>
             </v-col>
-          </v-layout>
+          </v-row>
         </v-col>
       </template>
     </v-form>
@@ -95,7 +95,7 @@ export default {
   name: 'NetworkSettings',
   data() {
     return {
-      selectedNetwork: {},
+      selectedNetwork: null,
       rpc: { chainId: '', networkName: '', host: '', blockExplorer: '', ticker: '' },
       formValid: true,
       rules: {
@@ -106,7 +106,7 @@ export default {
   },
   computed: {
     ...mapGetters(['supportedNetworks']),
-    ...mapState(['networkType']),
+    ...mapState(['networkType', 'whiteLabel']),
     networks() {
       return [
         ...Object.values(this.supportedNetworks),

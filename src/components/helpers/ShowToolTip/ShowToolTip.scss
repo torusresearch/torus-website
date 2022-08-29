@@ -3,7 +3,7 @@
 
   &.v-btn {
     line-height: 0;
-    background-color: var(--v-torusGray4-base);
+    background-color: rgb(var(--v-theme-torusGray4));
     &.v-theme--dark {
       background-color: rgb(var(--v-theme-torusBlack2));
     }

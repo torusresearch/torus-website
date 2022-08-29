@@ -1,98 +1,98 @@
 <template>
   <v-container class="wallet-settings" :class="$vuetify.display.xs ? 'px-4' : ''">
-    <v-layout wrap align-start :class="$vuetify.display.xs ? 'mt-2' : 'mt-3'">
-      <v-col xs6>
-        <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.display.width > 390 }">
-          {{ t('walletSettings.settings') }}
+    <v-row wrap class="align-start" :class="$vuetify.display.xs ? 'mt-2' : 'mt-3'">
+      <v-col cols="6">
+        <div class="font-weight-bold text-text_2 float-left page-title" :class="{ 'display-1': $vuetify.display.width > 390 }">
+          {{ $t('walletSettings.settings') }}
         </div>
       </v-col>
-      <v-col xs6>
+      <v-col cols="6">
         <QuickAddress />
       </v-col>
-    </v-layout>
-    <v-layout wrap mx-n4 mt-7>
-      <v-col px-4 xs12 md6>
+    </v-row>
+    <v-row wrap class="mx-n4 mt-7">
+      <v-col class="px-4" cols="12" md="6">
         <v-expansion-panels v-model="leftPanel" multiple>
           <v-expansion-panel class="my-2">
-            <v-expansion-panel-header id="privacy-panel-header">
-              <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.lock</v-icon>
-              <div class="grow font-weight-bold title text_1--text">
-                {{ t('walletSettings.privacySecurity') }}
+            <v-expansion-panel-title id="privacy-panel-header">
+              <v-icon size="18" class="d-inline-flex mr-4 text-text_2 shrink">$lock</v-icon>
+              <div class="grow font-weight-bold title text-text_1">
+                {{ $t('walletSettings.privacySecurity') }}
               </div>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
               <PrivacySecurity />
-            </v-expansion-panel-content>
+            </v-expansion-panel-text>
           </v-expansion-panel>
           <v-expansion-panel class="my-2">
-            <v-expansion-panel-header id="contact-list-panel-header">
-              <v-icon size="16" class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.list</v-icon>
-              <div class="grow font-weight-bold title text_1--text">
-                {{ t('walletSettings.addressBook') }}
+            <v-expansion-panel-title id="contact-list-panel-header">
+              <v-icon size="16" class="d-inline-flex mr-4 text-text_2 shrink">$list</v-icon>
+              <div class="grow font-weight-bold title text-text_1">
+                {{ $t('walletSettings.addressBook') }}
               </div>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
               <ContactList />
-            </v-expansion-panel-content>
+            </v-expansion-panel-text>
           </v-expansion-panel>
           <v-expansion-panel class="my-2">
-            <v-expansion-panel-header id="privacy-panel-header">
-              <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.device_detailed</v-icon>
-              <div class="grow font-weight-bold title text_1--text">
-                {{ t('walletSettings.crashReport') }}
+            <v-expansion-panel-title id="privacy-panel-header">
+              <v-icon size="18" class="d-inline-flex mr-4 text-text_2 shrink">$device_detailed</v-icon>
+              <div class="grow font-weight-bold title text-text_1">
+                {{ $t('walletSettings.crashReport') }}
               </div>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
               <CrashReport />
-            </v-expansion-panel-content>
+            </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
       </v-col>
-      <v-col px-4 xs12 md6>
+      <v-col class="px-4" cols="12" md="6">
         <v-expansion-panels v-model="rightPanel" multiple>
           <v-expansion-panel class="my-2">
-            <v-expansion-panel-header id="network-panel-header">
-              <v-icon small class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.globe</v-icon>
-              <div class="grow font-weight-bold title text_1--text">
-                {{ t('walletSettings.network') }}
+            <v-expansion-panel-title id="network-panel-header">
+              <v-icon size="small" class="d-inline-flex mr-4 text-text_2 shrink">$globe</v-icon>
+              <div class="grow font-weight-bold title text-text_1">
+                {{ $t('walletSettings.network') }}
               </div>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
               <Network />
-            </v-expansion-panel-content>
+            </v-expansion-panel-text>
           </v-expansion-panel>
           <v-expansion-panel class="my-2">
-            <v-expansion-panel-header id="display-panel-header">
-              <v-icon small class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.server</v-icon>
-              <div class="grow font-weight-bold title text_1--text">
-                {{ t('walletSettings.display') }}
+            <v-expansion-panel-title id="display-panel-header">
+              <v-icon size="small" class="d-inline-flex mr-4 text-text_2 shrink">$server</v-icon>
+              <div class="grow font-weight-bold title text-text_1">
+                {{ $t('walletSettings.display') }}
               </div>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
               <Display />
-            </v-expansion-panel-content>
+            </v-expansion-panel-text>
           </v-expansion-panel>
           <v-expansion-panel readonly class="my-2">
-            <v-expansion-panel-header id="display-panel-header">
-              <v-icon small class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.person_circle</v-icon>
-              <div class="grow font-weight-bold title text_1--text">{{ t('tkeySettings.accountManagement') }}</div>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
+            <v-expansion-panel-title id="display-panel-header">
+              <v-icon size="small" class="d-inline-flex mr-4 text-text_2 shrink">$person_circle</v-icon>
+              <div class="grow font-weight-bold title text-text_1">{{ $t('tkeySettings.accountManagement') }}</div>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
               <DefaultAccount :has-threshold-logged="hasThresholdLogged" />
-            </v-expansion-panel-content>
+            </v-expansion-panel-text>
           </v-expansion-panel>
           <v-expansion-panel v-show="canShowSetCustomKey" readonly class="my-2">
-            <v-expansion-panel-header id="display-panel-header">
-              <v-icon small class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.person_circle</v-icon>
-              <div class="grow font-weight-bold title text_1--text">{{ 'Set Torus Key' }}</div>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
+            <v-expansion-panel-title id="display-panel-header">
+              <v-icon size="small" class="d-inline-flex mr-4 text-text_2 shrink">$person_circle</v-icon>
+              <div class="grow font-weight-bold title text-text_1">{{ 'Set Torus Key' }}</div>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
               <SetTorusKey />
-            </v-expansion-panel-content>
+            </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
       </v-col>
-    </v-layout>
+    </v-row>
   </v-container>
 </template>
 <script>

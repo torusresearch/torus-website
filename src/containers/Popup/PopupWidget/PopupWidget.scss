@@ -170,12 +170,12 @@
     }
     .details-container {
       &__text {
-        color: var(--v-torusFont2-base);
+        color: rgb(var(--v-theme-torusFont2));
       }
     }
     .torus-widget__amount-details {
       .amount {
-        color: var(--v-torusFont2-base);
+        color: rgb(var(--v-theme-torusFont2));
       }
     }
   }

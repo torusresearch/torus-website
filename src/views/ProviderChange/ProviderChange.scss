@@ -1,5 +1,5 @@
 .provider-change-header {
-  background: var(--v-torusGray4-base);
+  background: rgb(var(--v-theme-torusGray4));
   &.v-theme--dark {
     background: rgb(var(--v-theme-torusBlack2));
   }

@@ -1,10 +1,10 @@
 <template>
   <div v-show="showLoader">
-    <div v-if="useSpinner" class="spinner" :class="{ 'theme--dark': isDark }" :style="spinnerStyle">
+    <div v-if="useSpinner" class="spinner" :class="{ 'v-theme--dark': isDark }" :style="spinnerStyle">
       <div class="head" :style="headStyle" />
       <div class="mask" :style="maskStyle" />
     </div>
-    <div v-else class="ping-container" :class="{ 'theme--dark': isDark }">
+    <div v-else class="ping-container" :class="{ 'v-theme--dark': isDark }">
       <div class="ping-animate" :style="pingAnimateStyle"></div>
       <div class="ping-content" :style="pingContentStyle">
         <img :src="whiteLabelLogo" alt="Dapp Logo" :style="pingImageStyle" />

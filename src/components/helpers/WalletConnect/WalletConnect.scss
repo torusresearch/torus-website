@@ -1,6 +1,6 @@
 .v-btn.v-btn--icon.wallet-connect-btn {
-  background: var(--v-torusGray4-base);
-  color: var(--v-torusFont2-base);
+  background: rgb(var(--v-theme-torusGray4));
+  color: rgb(var(--v-theme-torusFont2));
   &.v-theme--dark {
     background: rgb(var(--v-theme-torusBlack2));
     color: rgb(var(--v-theme-torusFont1));

@@ -10,7 +10,7 @@
   }
 
   .login-header {
-    background: var(--v-torusGray4-base);
+    background: rgb(var(--v-theme-torusGray4));
     border-bottom: 1px solid #f3f3f4;
     box-sizing: border-box;
     border-radius: 6px;
@@ -103,7 +103,7 @@
   .footer-links {
     padding-left: 24px;
     padding-right: 24px;
-    background: var(--v-torusGray4-base);
+    background: rgb(var(--v-theme-torusGray4));
     font-size: 0.75rem;
     line-height: 0.875rem;
     letter-spacing: 0;
@@ -118,7 +118,7 @@
     height: 25px;
     border-radius: 12.5px;
     padding: 3px 12px 3px 20px;
-    background: var(--v-torusGray4-base);
+    background: rgb(var(--v-theme-torusGray4));
     box-shadow: none;
     color: rgb(var(--v-theme-text_2));
     &.has-more {

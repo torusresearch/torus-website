@@ -1,7 +1,7 @@
 <template>
   <div :class="[{ 'background-login': !loggedIn }, 'default']">
     <template v-if="!loginInProgress">
-      <v-row wrap fill-height align-center justify-center class="login-panel-left" :class="isDarkMode ? 'torus-dark' : ''">
+      <v-row wrap class="login-panel-left fill-height align-center justify-center mt-0" :class="isDarkMode ? 'torus-dark' : ''">
         <v-col cols="12" sm="8" md="6">
           <v-row v-if="!isLogout" wrap>
             <v-col v-if="$vuetify.display.xs" class="mobile-login-container" cols="12">
@@ -46,12 +46,12 @@
               </v-row>
             </v-col>
           </v-row>
-          <v-row v-else wrap class="align-center justify-center align-content-center">
+          <v-row v-else wrap class="align-center justify-center align-content-center fill-height">
             <v-col cols="12" class="mb-12 text-center">
               <img width="180" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
             </v-col>
             <v-col cols="12" class="text-center">
-              <img width="200px" height="auto" :src="require(`../../assets/images/logout${isDarkMode ? '-dark' : ''}.svg`)" alt="Logout Image" />
+              <img width="200" :src="require(`../../assets/images/logout${isDarkMode ? '-dark' : ''}.svg`)" alt="Logout Image" />
             </v-col>
             <v-col cols="12">
               <div class="text-center text-subtitle-1 font-weight-bold">{{ $t('login.beenLoggedOut') }}</div>
@@ -62,7 +62,7 @@
                   :color="isDarkMode ? '' : 'white'"
                   :class="isDarkMode ? 'torus-dark' : 'card-shadow-v8'"
                   :depressed="isDarkMode"
-                  class="px-12 pa-3 font-weight-bold text-body-1 text-uppercase torusBrand1--text logout-btn"
+                  class="px-12 pa-3 font-weight-bold text-body-1 text-uppercase text-torusBrand1 logout-btn"
                   type="button"
                   @click="returnHome"
                 >
@@ -72,7 +72,7 @@
             </v-col>
           </v-row>
         </v-col>
-        <v-col v-if="$vuetify.display.smAndUp" sm="4" md="6" fill-height class="login-panel-right" :class="isDarkMode ? 'torus-dark' : ''">
+        <v-col v-if="$vuetify.display.smAndUp" sm="4" md="6" class="login-panel-right fill-height" :class="isDarkMode ? 'torus-dark' : ''">
           <v-row wrap align="center" class="fill-height">
             <v-col cols="12" class="text-center">
               <LoginSlide

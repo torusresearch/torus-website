@@ -1,23 +1,19 @@
 <template>
   <div class="select-theme-container" :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-4'">
-    <div class="body-2 torusFont1--text mb-2 px-1">{{ t('walletSettings.selectTheme') }}</div>
-    <v-layout wrap mx-n3>
-      <v-col v-for="theme in themes" :key="theme.name" px-3 xs12 sm6 @click="saveTheme(theme)">
+    <div class="body-2 text-torusFont1 mb-2 px-1">{{ $t('walletSettings.selectTheme') }}</div>
+    <v-row wrap class="mx-n3">
+      <v-col v-for="theme in themes" :key="theme.name" class="px-3" cols="12" sm="6" @click="saveTheme(theme)">
         <v-btn
           block
-          large
+          size="large"
           class="theme-btn gmt-display-change"
-          :class="[
-            $vuetify.theme.isDark ? 'torusBlack2' : 'white',
-            theme.name === activeTheme ? 'active' : 'elevation-3',
-            { 'mb-2': $vuetify.display.xs },
-          ]"
+          :class="[isDarkMode ? 'torusBlack2' : 'white', theme.name === activeTheme ? 'active' : 'elevation-3', { 'mb-2': $vuetify.display.xs }]"
         >
-          <span>{{ t(theme.label) }}</span>
+          <span>{{ $t(theme.label) }}</span>
           <img :src="require(`../../../assets/images/${theme.icon}`)" alt="Display Settings Icon" />
         </v-btn>
       </v-col>
-    </v-layout>
+    </v-row>
   </div>
 </template>
 
@@ -35,9 +31,14 @@ export default {
       selectedTheme: '',
     }
   },
-  computed: mapState({
-    activeTheme: 'theme',
-  }),
+  computed: {
+    ...mapState({
+      activeTheme: 'theme',
+    }),
+    isDarkMode() {
+      return this.$vuetify.theme.global.name === 'dark'
+    },
+  },
   methods: {
     ...mapActions(['setUserTheme']),
     async saveTheme(theme) {
@@ -52,7 +53,7 @@ export default {
     themeOptionStyle(theme) {
       if (!theme) return {}
       return {
-        color: `${theme.theme.torusBrand1.base} !important`,
+        color: `${theme.theme.torusBrand1} !important`,
         backgroundColor: `${theme.theme.torusLight} !important`,
       }
     },

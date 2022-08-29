@@ -10,7 +10,7 @@
     </div>
     <div class="ml-2">
       <ExportQrCode>
-        <v-icon x-small>$qr</v-icon>
+        <v-icon size="x-small">$qr</v-icon>
       </ExportQrCode>
     </div>
     <!-- <div v-if="apiStreamSupported">

@@ -1,7 +1,7 @@
 .select-theme-container {
   .select-theme {
     display: flex;
-    ::v-deep .v-chip__content {
+    :deep(.v-chip__content) {
       width: 100%;
     }
   }
@@ -14,7 +14,7 @@
     }
     &.v-theme--dark.active {
       background-color: rgb(var(--v-theme-torusBlack2)) !important;
-      color: var(--v-torusFont2-base) !important;
+      color: rgb(var(--v-theme-torusFont2)) !important;
       font-weight: bold;
       cursor: default;
       opacity: 1;

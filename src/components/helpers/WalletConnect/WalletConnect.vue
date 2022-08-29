@@ -11,7 +11,7 @@
         @change="guideOn = !guideOn"
       >
         <template #activator="{ attrs }">
-          <span class="torusBrand1--text caption ml-3 mt-3" v-bind="attrs" @click="guideOn = !guideOn">
+          <span class="text-torusBrand1 caption ml-3 mt-3" v-bind="attrs" @click="guideOn = !guideOn">
             {{ !guideOn ? $t('walletConnect.viewGuide') : $t('walletConnect.hideGuide') }}
           </span>
         </template>
@@ -34,11 +34,11 @@
       <span size="16">{{ $t('walletConnect.gotoApp') }}</span>
     </v-btn> -->
     <!-- <v-container> -->
-    <v-row v-if="!isIframe" justify="space-around">
+    <v-row v-if="!isIframe" class="justify-space-around">
       <v-col cols="12" sm="6">
         <v-text-field
           v-model="wcCopyPasteLink"
-          dense
+          density="comfortable"
           hide-details
           variant="outlined"
           height="44"
