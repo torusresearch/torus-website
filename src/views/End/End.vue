@@ -145,7 +145,7 @@ export default {
       }
 
       // if there are no app accounts to choose, continue
-      if (Object.keys(userDapps).length === 0) {
+      if (Object.keys(userDapps).length === 0 || parsedAppState.origin.hostname === window.location.hostname) {
         await this.continueToApp()
       }
     } catch (error) {

@@ -23,6 +23,7 @@ if (!isMain) {
   // Oauth section
   torus.communicationMux.getStream('oauth').on('data', (chunk) => {
     const { name, data } = chunk
+    log.info(chunk, 'oauth')
     if (name === 'oauth_modal') {
       // show modal route
       VuexStore.commit('setOAuthModalStatus', true)

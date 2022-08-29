@@ -636,7 +636,7 @@ export default {
         const sessionInfo = await openLoginHandler.getActiveSession()
         if (!sessionInfo) {
           commit('setRehydrationStatus', true)
-          await dispatch('logOut')
+          if (isMain) await dispatch('logOut')
           return
         }
         const { store } = sessionInfo
