@@ -34,6 +34,7 @@ if (config.localStorageAvailable) {
       networkType: state.networkType,
       networkId: state.networkId,
       selectedCurrency: state.selectedCurrency,
+      customNetworks: state.customNetworks,
       jwtToken: state.jwtToken,
       theme: state.theme,
       locale: state.locale,
