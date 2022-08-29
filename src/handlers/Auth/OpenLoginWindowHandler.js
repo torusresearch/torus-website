@@ -1,5 +1,4 @@
-import randomId from '@chaitanyapotti/random-id'
-import { safebtoa } from '@toruslabs/openlogin-utils'
+import { randomId, safebtoa } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import config from '../../config'

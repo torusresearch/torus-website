@@ -38,8 +38,7 @@ function onloadTorus(torus) {
   let sessionData
 
   if (config.localStorageAvailable) {
-    const storage =
-      config.isCustomLogin === null ? (config.sessionStorageAvailable ? window.sessionStorage : window.localStorage) : window.localStorage
+    const storage = !isMain ? (config.isCustomLogin === null ? window.sessionStorage : window.localStorage) : window.localStorage
     const storageKey = config.isCustomLogin === true ? `torus_app_${getIFrameOriginObject().hostname}` : 'torus-app'
     sessionData = storage.getItem(storageKey)
   }

@@ -1,4 +1,4 @@
-import randomId from '@chaitanyapotti/random-id'
+import { randomId } from '@toruslabs/openlogin-utils'
 
 import config from '../../config'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'

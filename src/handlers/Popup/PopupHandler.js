@@ -1,4 +1,4 @@
-// import randomId from '@chaitanyapotti/random-id'
+// import { randomId } from '@toruslabs/openlogin-utils'
 import { EventEmitter } from 'events'
 
 import config from '../../config'

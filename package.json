@@ -28,7 +28,6 @@
     "test:e2e:mobile": "env MOBILE_ENV=true mocha --timeout=60000 ./test/e2e"
   },
   "dependencies": {
-    "@chaitanyapotti/random-id": "^1.0.3",
     "@ethereumjs/common": "^2.6.5",
     "@ethereumjs/tx": "^3.5.2",
     "@gtm-support/vue2-gtm": "^1.3.0",

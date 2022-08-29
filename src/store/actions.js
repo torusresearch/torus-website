@@ -4,7 +4,7 @@ import { BN, privateToAddress } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
-import { isHexStrict, toChecksumAddress } from 'web3-utils'
+import { isHexStrict } from 'web3-utils'
 
 import config from '../config'
 import { OpenLoginHandler, OpenLoginWindowHandler } from '../handlers/Auth'
@@ -25,7 +25,7 @@ import {
   SUPPORTED_NETWORK_TYPES,
 } from '../utils/enums'
 import { remove } from '../utils/httpHelpers'
-import { fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
+import { fakeStream, getIFrameOriginObject, isMain, toChecksumAddressByChainId } from '../utils/utils'
 import {
   accountTrackerHandler,
   announcemenstHandler,
@@ -134,7 +134,7 @@ export default {
         await openLoginHandler.invalidateSession()
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
-        window.location.href = '/'
+        if (isMain) window.location.href = '/'
       }
     }
     statusStream.write({ loggedIn: false })
@@ -436,10 +436,21 @@ export default {
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
       })
-      const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, userDapps, error, sessionId, sessionNamespace } = await loginHandler.handleLoginWindow()
       if (error) {
         throw new Error(error)
       }
+      if (config.localStorageAvailable) {
+        const openLoginHandler = OpenLoginHandler.getInstance()
+        await openLoginHandler.openLoginInstance._syncState({
+          store: {
+            sessionId,
+            sessionNamespace,
+          },
+          sessionNamespace,
+        })
+      }
+
       // Get all open login results
       userInfo.verifier = verifier
       commit('setUserInfo', userInfo)
@@ -604,18 +615,18 @@ export default {
         const sessionInfo = await openLoginHandler.getActiveSession()
         if (!sessionInfo) {
           commit('setRehydrationStatus', true)
-          if (isMain) await dispatch('logOut')
+          await dispatch('logOut')
           return
         }
         const { store } = sessionInfo
         // log.info(sessionInfo, 'current session info')
-        if (sessionInfo && (sessionInfo.walletKey || sessionInfo.tKey)) {
+        if (sessionInfo.walletKey || sessionInfo.tKey) {
           walletKey = openLoginHandler.getWalletKey()
           // already logged in
           // call autoLogin
           log.info('auto-login with openlogin session')
           await dispatch('autoLogin', { calledFromEmbed: !isMain })
-          if (currentRoute.name !== 'popup' && !currentRoute.meta.requiresAuth) {
+          if (currentRoute.name !== 'popup' && currentRoute.meta.requiresAuth === false) {
             const noRedirectQuery = Object.fromEntries(new URLSearchParams(window.location.search))
             const { redirect } = noRedirectQuery
             delete noRedirectQuery.redirect
@@ -645,8 +656,8 @@ export default {
       dispatch('subscribeToControllers')
 
       const _finalSelectedAddress = state.selectedAddress || walletKey.ethAddress
-      if (_finalSelectedAddress && state.wallet[toChecksumAddress(_finalSelectedAddress)]) {
-        dispatch('updateSelectedAddress', { selectedAddress: toChecksumAddress(_finalSelectedAddress) }) // synchronous
+      if (_finalSelectedAddress && state.wallet[toChecksumAddressByChainId(_finalSelectedAddress, networkId)]) {
+        dispatch('updateSelectedAddress', { selectedAddress: toChecksumAddressByChainId(_finalSelectedAddress, networkId) }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: state.userInfo.verifier })

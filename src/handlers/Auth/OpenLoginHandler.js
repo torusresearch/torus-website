@@ -92,6 +92,25 @@ class OpenLoginHandler {
         const encData = await encryptData(sessionId, sessionData)
         const signatureBf = await sign(privKey, keccak256(encData))
         const signature = signatureBf.toString('hex')
+        await post(`${config.storageServerUrl}/store/update`, { key: publicKeyHex, data: encData, signature, namespace: sessionNamespace })
+        this.openLoginInstance._syncState(sessionData)
+      }
+    } catch (error) {
+      log.warn(error)
+    }
+  }
+
+  async setSession(sessionData) {
+    try {
+      const { sessionId } = this.openLoginInstance.state.store.getStore()
+      const { sessionNamespace } = this.openLoginInstance.state
+
+      if (sessionId) {
+        const privKey = Buffer.from(sessionId, 'hex')
+        const publicKeyHex = getPublic(privKey).toString('hex')
+        const encData = await encryptData(sessionId, sessionData)
+        const signatureBf = await sign(privKey, keccak256(encData))
+        const signature = signatureBf.toString('hex')
         await post(`${config.storageServerUrl}/store/set`, { key: publicKeyHex, data: encData, signature, namespace: sessionNamespace })
         this.openLoginInstance._syncState(sessionData)
       }
@@ -153,7 +172,7 @@ class OpenLoginHandler {
   }
 
   getSessionNamespace() {
-    const allInfo = this.openLoginInstance.state.store.getStore()
+    const allInfo = this.openLoginInstance.state
     return allInfo.sessionNamespace
   }
 
