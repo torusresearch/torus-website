@@ -64,7 +64,7 @@
     "eth-block-tracker": "^6.0.0",
     "eth-json-rpc-filters": "^5.0.0",
     "eth-json-rpc-infura": "^5.1.0",
-    "eth-json-rpc-middleware": "^8.1.0",
+    "eth-json-rpc-middleware": "^9.0.0",
     "eth-query": "^2.1.2",
     "eth-rpc-errors": "^4.0.3",
     "ethereumjs-util": "^7.1.5",
