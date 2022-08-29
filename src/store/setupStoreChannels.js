@@ -6,7 +6,6 @@ import stream from 'stream'
 import { injectStore as onloadInjection } from '../onload'
 import torus from '../torus'
 import { SUPPORTED_NETWORK_TYPES } from '../utils/enums'
-// import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_NEW, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
 import { broadcastChannelOptions, isMain } from '../utils/utils'
 import { injectStore as controllerInjection } from './controllerSubscriptions'
 import VuexStore from './store'
@@ -146,22 +145,7 @@ if (!isMain) {
     delete payload.verifierParams
     if (chunk.name === 'user_info_access_request') {
       userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
-      // switch (VuexStore.state.userInfoAccess) {
-      //   case USER_INFO_REQUEST_APPROVED:
-      //     userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
-      //     break
-      //   case USER_INFO_REQUEST_REJECTED:
-      //   case USER_INFO_REQUEST_NEW:
-      //   default:
-      //     userInfoAccessStream.write({ name: 'user_info_access_response', data: { newRequest: true } })
-      //     break
-      // }
     }
-  })
-
-  const userInfoStream = torus.communicationMux.getStream('user_info')
-  userInfoStream.on('data', (chunk) => {
-    if (chunk.name === 'user_info_request') VuexStore.dispatch('showUserInfoRequestPopup', chunk.data)
   })
 
   const accountImportChannel = new BroadcastChannel(`account_import_channel_${torus.instanceId}`, broadcastChannelOptions)

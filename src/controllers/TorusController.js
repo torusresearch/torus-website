@@ -111,6 +111,9 @@ export default class TorusController extends SafeEventEmitter {
       storeDispatch: this.opts.storeDispatch,
     })
 
+    this.prefsController.getBillboardContents()
+    this.prefsController.getAnnouncementsContents()
+
     this.watchAssetManager = new WatchAssetManager({
       network: this.networkController,
       provider: this.provider,
