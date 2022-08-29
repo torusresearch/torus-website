@@ -15,14 +15,14 @@ import { generateTorusAuthHeaders, getIFrameOriginObject } from '../../utils/uti
 class OpenLoginHandler {
   static openLoginHandlerInstance = null
 
-  static getInstance(whiteLabel = {}, loginConfig = {}) {
+  static getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
     if (OpenLoginHandler.openLoginHandlerInstance) return OpenLoginHandler.openLoginHandlerInstance
-    OpenLoginHandler.openLoginHandlerInstance = new OpenLoginHandler(whiteLabel, loginConfig)
+    OpenLoginHandler.openLoginHandlerInstance = new OpenLoginHandler(whiteLabel, loginConfig, sessionNamespace)
     return OpenLoginHandler.openLoginHandlerInstance
   }
 
   // This constructor is private. Don't call it
-  constructor(whiteLabel = {}, loginConfig = {}) {
+  constructor(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
     const whiteLabelOpenLogin = {}
     if (whiteLabel.theme) {
       if (whiteLabel.theme.isDark) whiteLabelOpenLogin.dark = true
@@ -52,7 +52,7 @@ class OpenLoginHandler {
       loginConfig,
       network: config.torusNetwork,
       no3PC: true,
-      _sessionNamespace: namespace,
+      _sessionNamespace: sessionNamespace || namespace,
     })
   }
 
