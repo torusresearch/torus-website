@@ -76,13 +76,19 @@ export default {
       const { hash } = this.$route
       const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
       const result = hashUrl.searchParams.get('result')
+
       let whiteLabel = {}
       let loginConfig = {}
 
       let loginError = ''
 
+      let resultParams = {
+        store: {},
+      }
+      const sessionId = hashUrl.searchParams.get('sessionId') || ''
+      const sessionNamespace = hashUrl.searchParams.get('sessionNamespace') || ''
       if (result) {
-        const resultParams = JSON.parse(safeatob(result))
+        resultParams = JSON.parse(safeatob(result))
         loginError = resultParams.error
         const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
         whiteLabel = appStateParams.whiteLabel || {}
@@ -93,7 +99,14 @@ export default {
       this.whiteLabel = whiteLabel
 
       const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
-      await openLoginHandler.getActiveSession()
+      await openLoginHandler.openLoginInstance._syncState({
+        ...resultParams,
+        store: {
+          ...resultParams.store,
+          sessionId,
+          sessionNamespace,
+        },
+      })
       const { state } = openLoginHandler.openLoginInstance
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()
@@ -133,10 +146,11 @@ export default {
         userDapps,
         error: loginError,
         sessionId: openLoginHandler.getSessionId(),
+        sessionNamespace: openLoginHandler.getSessionNamespace(),
       }
 
       // if there are no app accounts to choose, continue
-      if (Object.keys(userDapps).length === 0) {
+      if (Object.keys(userDapps).length === 0 || parsedAppState.origin.hostname === window.location.hostname) {
         await this.continueToApp()
       }
     } catch (error) {

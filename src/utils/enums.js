@@ -138,7 +138,7 @@ export const XDAI_BLOCK_EXPLORER = 'https://blockscout.com/poa/xdai'
 export const BSC_MAINNET_URL = 'https://bsc-dataseed.binance.org'
 export const BSC_MAINNET_BLOCK_EXPLORER = 'https://bscscan.com'
 
-export const BSC_TESTNET_URL = 'https://data-seed-prebsc-2-s3.binance.org:8545'
+export const BSC_TESTNET_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545'
 export const BSC_TESTNET_BLOCK_EXPLORER = 'https://testnet.bscscan.com'
 
 export const OKC_MAINNET_URL = 'https://exchainrpc.okex.org'
@@ -236,10 +236,6 @@ export const SINGLE_CALL_BALANCES_ADDRESS = '0xb1f8e55c7f64d203c1400b9d8555d050f
 
 export const ACTIVE = 'active'
 export const INACTIVE = 'inactive'
-
-export const USER_INFO_REQUEST_APPROVED = 'user_info_request_approved'
-export const USER_INFO_REQUEST_REJECTED = 'user_info_request_rejected'
-export const USER_INFO_REQUEST_NEW = 'user_info_request_new'
 
 export const CONTRACT_TYPE_ETH = 'eth'
 export const CONTRACT_TYPE_ERC20 = 'erc20'

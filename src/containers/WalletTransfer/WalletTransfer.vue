@@ -497,7 +497,7 @@
 </template>
 
 <script>
-import randomId from '@chaitanyapotti/random-id'
+import { randomId } from '@toruslabs/openlogin-utils'
 import Resolution from '@unstoppabledomains/resolution'
 import BigNumber from 'bignumber.js'
 import Das from 'das-sdk'

@@ -212,7 +212,7 @@ export default {
       return getVerifierOptions()
     },
     isDarkMode() {
-      return this.$vuetify.theme.global.name === 'dark'
+      return this.$vuetify.theme.name === 'dark'
     },
   },
   methods: {

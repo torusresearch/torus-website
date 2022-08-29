@@ -1,5 +1,5 @@
-import randomId from '@chaitanyapotti/random-id'
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
+import { randomId } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import config from '../../config'

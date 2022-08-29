@@ -1,0 +1,134 @@
+.network-setting {
+  .subheading {
+    font-size: 12px;
+    color: #8D98A5;
+  }
+  .page-title {
+    font-size: 20px;
+    line-height: 23px;
+  }
+  .currency-rate {
+    margin-bottom: 2px;
+  }
+  .select-coin {
+    background: #ffffff;
+    float: right;
+    box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06) !important;
+    color: rgb(var(--v-theme-torusFont1));
+    font-weight: normal;
+    border-radius: 6px !important;
+    font-size: 16px;
+    display: flex;
+    border: 1px solid rgb(var(--v-theme-torusGray1));
+    width: 100%;
+    height: 54px;
+    margin-bottom: 10px;
+    .v-icon--end {
+      color: #D3D5E2;
+    }
+    &.v-theme--dark {
+      background-color: rgb(var(--v-theme-torusBlack)) !important;
+      box-shadow: none;
+      border: 1px solid rgb(var(--v-theme-torusGray3));
+    }
+    &:focus {
+      border-color: rgb(var(--v-theme-torusFont1));
+    }
+    &::before {
+      background-color: #ffffff;
+    }
+    :deep(.v-btn__content) {
+      width: 100%;
+    }
+  }
+  :deep(.v-messages) {
+    text-align: right;
+    &.error--text {
+      text-align: left;
+    }
+  }
+  .form-container.mobile {
+    background: none;
+  }
+  .send-mode.v-btn {
+    &.v-theme--dark, &.v-theme--light {
+      border: 0 !important;
+    }
+    &.v-theme--dark.active {
+      background-color: rgb(var(--v-theme-torusBlack2)) !important;
+      color: rgb(var(--v-theme-torusFont2)) !important;
+      font-weight: bold;
+      cursor: default;
+      box-shadow: 5px 5px 10px #242529, -5px -5px 10px #37383C !important;
+    }
+    &.v-theme--light.active {
+      background-color: #FFFFFF !important;
+      color: rgb(var(--v-theme-text_2)) !important;
+      font-weight: bold;
+      box-shadow: 5px 5px 10px #DEE5FF, -5px -5px 10px #FAFBFF;;
+      cursor: default;
+    }
+  }
+  &.mobile-view {
+    .select-coin.theme--dark {
+      background: rgb(var(--v-theme-torusBlack2)) !important;
+    }
+    .form-container {
+      &.v-theme--dark {
+        :deep(.v-input.v-text-field--outlined > .v-input__control > .v-input__slot) {
+          background: rgb(var(--v-theme-torusBlack2));
+        }
+      }
+    }    
+  }
+  :deep(.recipient-address.hasQrError .v-text-field__details) {
+    margin-bottom: 2px;
+  }
+}
+  
+.v-btn.share-btn {
+  background: #F5F6FF;
+  border: 1px solid #F1F2F6;
+  box-sizing: border-box;
+  border-radius: 6px;
+  height: 40px;
+  .v-icon {
+    color: #55ACEE;
+  }
+  span {
+    color: rgb(var(--v-theme-text_2));
+  }
+  &.v-theme--dark {
+    background: #242529;
+    border: 1px solid #343539;
+    span {
+      color: #55ACEE;
+    }
+  }
+}
+
+.qr-scan-container {
+  position: relative;
+  .close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
+.address-chip {
+  position: relative;
+  top: -6px;
+  height: 29px;
+}
+.bitAddress {
+  padding: 10px 5px 10px 0;
+}
+.bitLabelChip {
+  font-size: 12px;
+  display: block;
+  width: fit-content;
+  height: 19px;
+  line-height: 19px;
+  padding: 0 6px;
+}
+  

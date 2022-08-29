@@ -1,4 +1,4 @@
-import randomId from '@chaitanyapotti/random-id'
+import { randomId, safeatob, safebtoa } from '@toruslabs/openlogin-utils'
 import deepmerge from 'deepmerge'
 import { BN, privateToAddress } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
@@ -23,11 +23,9 @@ import {
   FEATURES_PROVIDER_CHANGE_WINDOW,
   RPC,
   SUPPORTED_NETWORK_TYPES,
-  USER_INFO_REQUEST_APPROVED,
-  USER_INFO_REQUEST_REJECTED,
 } from '../utils/enums'
 import { remove } from '../utils/httpHelpers'
-import { fakeStream, getIFrameOriginObject, isMain } from '../utils/utils'
+import { fakeStream, getIFrameOriginObject, isMain, toChecksumAddressByChainId } from '../utils/utils'
 import {
   accountTrackerHandler,
   announcemenstHandler,
@@ -77,7 +75,6 @@ const {
 const { communicationMux = { getStream: () => fakeStream } } = torus || {}
 const statusStream = communicationMux.getStream('status')
 const oauthStream = communicationMux.getStream('oauth')
-const userInfoStream = communicationMux.getStream('user_info')
 const providerChangeStream = communicationMux.getStream('provider_change')
 const widgetStream = communicationMux.getStream('widget')
 const windowStream = communicationMux.getStream('window')
@@ -119,6 +116,7 @@ export default {
     commit('logOut', {
       ...initialState,
       networkType: state.networkType,
+      customNetworks: state.customNetworks,
       networkId: state.networkId,
       whiteLabel: state.whiteLabel,
       theme: state.theme,
@@ -127,7 +125,19 @@ export default {
 
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     torusController.lock()
-
+    if (selectedAddress) {
+      const openLoginHandler = OpenLoginHandler.getInstance()
+      if (isMain) {
+        router.push({ path: '/logout' }).catch(() => {})
+      }
+      try {
+        // openLoginHandler.openLoginInstance.state.store.set('sessionId', null)
+        await openLoginHandler.invalidateSession()
+      } catch (error) {
+        log.warn(error, 'unable to logout with openlogin')
+        if (isMain) window.location.href = '/'
+      }
+    }
     statusStream.write({ loggedIn: false })
     resetStore(accountTracker.store, accountTrackerHandler)
     resetStore(txController.store, transactionControllerHandler)
@@ -149,16 +159,6 @@ export default {
     resetStore(watchAssetManager.store, unapprovedAssetMsgsHandler)
     assetDetectionController.stopAssetDetection()
     // torus.updateStaticData({ isUnlocked: false })
-    if (isMain && selectedAddress) {
-      router.push({ path: '/logout' }).catch(() => {})
-      try {
-        const openLoginHandler = OpenLoginHandler.getInstance()
-        await openLoginHandler.invalidateSession()
-      } catch (error) {
-        log.warn(error, 'unable to logout with openlogin')
-        window.location.href = '/'
-      }
-    }
   },
   setSelectedCurrency({ commit }, payload) {
     torusController.setCurrentCurrency(payload, (error, data) => {
@@ -233,49 +233,6 @@ export default {
       handleProviderChangeDeny('user denied provider change request')
     }
   },
-  async showUserInfoRequestPopup({ dispatch, state }, payload) {
-    const { preopenInstanceId } = payload
-    const handleDeny = () => {
-      log.info('User Info Request denied')
-      dispatch('updateUserInfoAccess', { approved: false })
-      userInfoStream.write({ name: 'user_info_response', data: { payload: {}, approved: false } })
-    }
-    const handleSuccess = () => {
-      log.info('User Info Request approved')
-      dispatch('updateUserInfoAccess', { approved: true })
-      const returnObject = JSON.parse(JSON.stringify(state.userInfo))
-      delete returnObject.verifierParams
-      userInfoStream.write({ name: 'user_info_response', data: { payload: returnObject, approved: true } })
-    }
-    try {
-      const windowId = randomId()
-      const channelName = `user_info_request_channel_${windowId}`
-      const finalUrl = `${baseRoute}userinforequest?integrity=true&instanceId=${windowId}`
-      const userInfoRequestWindow = new PopupWithBcHandler({
-        url: finalUrl,
-        preopenInstanceId,
-        target: '_blank',
-        features: FEATURES_PROVIDER_CHANGE_WINDOW,
-        channelName,
-      })
-      const result = await userInfoRequestWindow.handleWithHandshake({
-        payload: {
-          origin: getIFrameOriginObject(),
-          payload: { ...payload, typeOfLogin: state.userInfo.typeOfLogin },
-          whiteLabel: state.whiteLabel,
-        },
-      })
-      const { approve = false } = result
-      if (approve) {
-        handleSuccess()
-      } else {
-        handleDeny()
-      }
-    } catch (error) {
-      log.error(error)
-      handleDeny()
-    }
-  },
   showWalletPopup(context, payload) {
     const url = payload.path.includes('tkey') ? `${baseRoute}${payload.path || ''}` : `${baseRoute}wallet${payload.path || ''}`
     const finalUrl = `${url}?integrity=true&instanceId=${torus.instanceId}`
@@ -295,36 +252,66 @@ export default {
         })
     })
   },
-  async handleLoginWithPrivateKey({ dispatch, commit }, { privateKey, userInfo }) {
+  async handleLoginWithPrivateKey({ dispatch, commit, state }, { privateKey, userInfo }) {
     dispatch('subscribeToControllers')
     commit('setUserInfo', userInfo)
 
-    const defaultAddresses = await dispatch('initTorusKeyring', {
+    const selectedAddress = `0x${privateToAddress(Buffer.from(privateKey, 'hex')).toString('hex')}`
+    await dispatch('initTorusKeyring', {
       keys: [
         {
           privKey: privateKey,
-          ethAddress: `0x${privateToAddress(Buffer.from(privateKey, 'hex')).toString('hex')}`,
+          ethAddress: selectedAddress,
         },
       ],
     })
 
-    const selectedAddress = defaultAddresses[0]
+    dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
 
-    if (!selectedAddress) {
-      loginWithPrivateKeyStream.write({
-        name: 'login_with_private_key_response',
-        data: {
-          success: false,
-          error: 'No Accounts available',
+    const appState = safebtoa(
+      JSON.stringify({
+        instanceId: '',
+        verifier: '',
+        origin: this.origin,
+        whiteLabel: state.whiteLabel || {},
+        loginConfig: {},
+      })
+    )
+
+    const openLoginHandler = OpenLoginHandler.getInstance(state.whiteLabel, {})
+    const activeSession = await openLoginHandler.getActiveSession()
+    if (activeSession && activeSession.walletKey === privateKey) {
+      const _store = activeSession?.store || {}
+      const sessionData = {
+        ...activeSession,
+        store: {
+          ..._store,
+          whiteLabel: state.whiteLabel,
+          appState,
+          ...userInfo,
+        },
+      }
+      await openLoginHandler.updateSession(sessionData)
+    } else {
+      const sessionId = randomId()
+      await openLoginHandler.openLoginInstance._syncState({
+        walletKey: privateKey,
+        store: {
+          sessionId,
         },
       })
-      dispatch('logOut')
-      throw new Error('No Accounts available')
+      const sessionData = {
+        walletKey: privateKey,
+        store: {
+          whiteLabel: state.whiteLabel,
+          appState,
+          sessionId,
+          ...userInfo,
+        },
+      }
+      await openLoginHandler.updateSession(sessionData)
     }
 
-    dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
-    prefsController.getBillboardContents()
-    prefsController.getAnnouncementsContents()
     // TODO: deprecate rehydrate false for the next major version bump
     statusStream.write({ loggedIn: true, rehydrate: false, verifier: userInfo.verifier })
     loginWithPrivateKeyStream.write({
@@ -343,6 +330,25 @@ export default {
       rehydrate: false,
     })
     dispatch('updateSelectedAddress', { selectedAddress: address })
+    const openloginInstance = OpenLoginHandler.getInstance()
+    const existingSessionData = await openloginInstance.getActiveSession()
+    if (!existingSessionData) {
+      dispatch('logOut')
+      return ''
+    }
+    const { accounts: oldAccounts = {} } = existingSessionData
+    const sessionData = {
+      ...existingSessionData,
+      accounts: {
+        ...oldAccounts,
+        [address]: {
+          ethAddress: address,
+          privKey,
+          accountType: ACCOUNT_TYPE.IMPORTED,
+        },
+      },
+    }
+    await openloginInstance.updateSession(sessionData)
     return privKey
   },
   addWallet(context, payload) {
@@ -358,10 +364,6 @@ export default {
       })
     }
   },
-  updateUserInfoAccess({ commit }, payload) {
-    if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
-    else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
-  },
   updateSelectedAddress(_, payload) {
     // torus.updateStaticData({ selectedAddress: payload.selectedAddress })
     torusController.setSelectedAccount(payload.selectedAddress)
@@ -376,20 +378,25 @@ export default {
     const activeChainId = networkType.chainId && (isHexStrict(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`)
     const chainIdConfig = CHAIN_ID_TO_TYPE_MAP[activeChainId]
     if (chainIdConfig) {
-      const networkConfig = SUPPORTED_NETWORK_TYPES[chainIdConfig.name]
+      const networkConfig = getters.supportedNetworks[chainIdConfig.name]
       networkType = { ...networkConfig, ...networkType }
     }
-    if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
-      networkType = { ...SUPPORTED_NETWORK_TYPES[networkType.host], ...networkType }
+    if (getters.supportedNetworks[networkType.host]) {
+      networkType = { ...getters.supportedNetworks[networkType.host], ...networkType }
       isSupportedNetwork = true
     }
     const currentTicker = networkType.ticker || 'ETH'
-    commit('setNetworkType', networkType)
-    if ((payload.type && payload.type === RPC) || !isSupportedNetwork) {
-      return torusController.setCustomRpc(networkType.host, networkType.chainId || 1, currentTicker, networkType.networkName || '', {
+    if (payload.type && payload.type === RPC && !isSupportedNetwork) {
+      const networkId = await torusController.setCustomRpc(networkType.host, networkType.chainId || 1, currentTicker, networkType.networkName || '', {
         blockExplorerUrl: networkType.blockExplorer,
       })
+      if (networkId) {
+        networkType.id = networkId
+        commit('setNetworkType', networkType)
+      }
+      return null
     }
+    commit('setNetworkType', networkType)
     await networkController.setProviderType(networkType.host, networkType.rpcUrl || networkType.host, networkType.ticker, networkType.networkName)
     if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency)
       await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home' })
@@ -398,6 +405,21 @@ export default {
     // Set custom currency
     if (getters.supportedCurrencies.includes(networkType.ticker) && networkType.ticker !== state.selectedCurrency)
       await commit('setCustomCurrency', networkType.ticker)
+    return undefined
+  },
+  async deleteCustomNetwork({ _commit }, id) {
+    if (id) {
+      return torusController.deleteCustomRpc(id)
+    }
+    return undefined
+  },
+  async updateCustomNetwork({ state, commit }, network) {
+    if (network) {
+      if (state.networkType.id === network.id) {
+        commit('setNetworkType', network)
+      }
+      return torusController.updateCustomRpc(network)
+    }
     return undefined
   },
   async triggerLogin({ dispatch, commit, state }, { calledFromEmbed, verifier, preopenInstanceId, login_hint }) {
@@ -435,17 +457,23 @@ export default {
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
       })
-      const { keys, userInfo, postboxKey, userDapps, error, sessionId } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, userDapps, error, sessionId, sessionNamespace } = await loginHandler.handleLoginWindow()
       if (error) {
         throw new Error(error)
       }
+      if (config.localStorageAvailable) {
+        const openLoginHandler = OpenLoginHandler.getInstance()
+        await openLoginHandler.openLoginInstance._syncState({
+          store: {
+            sessionId,
+            sessionNamespace,
+          },
+          sessionNamespace,
+        })
+      }
+
       // Get all open login results
       userInfo.verifier = verifier
-      if (sessionId && config.localStorageAvailable) {
-        const openLoginStore = localStorage.getItem('openlogin_store')
-        const finalStore = { ...(openLoginStore ? JSON.parse(openLoginStore) : {}), sessionId }
-        localStorage.setItem('openlogin_store', JSON.stringify(finalStore))
-      }
       commit('setUserInfo', userInfo)
       commit('setPostboxKey', postboxKey)
       commit('setUserDapps', userDapps)
@@ -571,9 +599,6 @@ export default {
     }
     dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
 
-    prefsController.getBillboardContents()
-    prefsController.getAnnouncementsContents()
-
     // continue enable function
     if (calledFromEmbed) {
       setTimeout(() => {
@@ -602,22 +627,41 @@ export default {
     }
   },
   async rehydrate({ state, dispatch, commit }) {
-    const { networkType, networkId, wcConnectorSession, selectedAddress } = state
+    const { networkType, networkId, wcConnectorSession } = state
+    let walletKey = {}
     try {
       const currentRoute = router.resolve(window.location.pathname)
       if (!currentRoute.meta.skipOpenLoginCheck) {
         const openLoginHandler = OpenLoginHandler.getInstance()
         const sessionInfo = await openLoginHandler.getActiveSession()
+        if (!sessionInfo) {
+          commit('setRehydrationStatus', true)
+          if (isMain) await dispatch('logOut')
+          return
+        }
+        const { store } = sessionInfo
         // log.info(sessionInfo, 'current session info')
-        if (sessionInfo && (sessionInfo.walletKey || sessionInfo.tKey)) {
+        if (sessionInfo.walletKey || sessionInfo.tKey) {
+          walletKey = openLoginHandler.getWalletKey()
           // already logged in
           // call autoLogin
           log.info('auto-login with openlogin session')
           await dispatch('autoLogin', { calledFromEmbed: !isMain })
+
+          if (store.appState) {
+            const appStateParams = JSON.parse(safeatob(store.appState))
+            if (appStateParams?.whiteLabel) {
+              commit('setWhiteLabel', { ...appStateParams.whiteLabel })
+            }
+            if (appStateParams?.loginConfig && typeof appStateParams.loginConfig === 'object' && Object.keys(appStateParams.loginConfig).length > 0) {
+              commit('setLoginConfig', { ...appStateParams.loginConfig })
+            }
+          }
           if (currentRoute.name !== 'popup' && currentRoute.meta.requiresAuth === false) {
             const noRedirectQuery = Object.fromEntries(new URLSearchParams(window.location.search))
             const { redirect } = noRedirectQuery
             delete noRedirectQuery.redirect
+
             router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})
           }
         } else {
@@ -629,8 +673,9 @@ export default {
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       dispatch('subscribeToControllers')
 
-      if (selectedAddress && state.wallet[selectedAddress]) {
-        dispatch('updateSelectedAddress', { selectedAddress }) // synchronous
+      const _finalSelectedAddress = state.selectedAddress || walletKey.ethAddress
+      if (_finalSelectedAddress && state.wallet[toChecksumAddressByChainId(_finalSelectedAddress, networkId)]) {
+        dispatch('updateSelectedAddress', { selectedAddress: toChecksumAddressByChainId(_finalSelectedAddress, networkId) }) // synchronous
         dispatch('updateNetworkId', { networkId })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: state.userInfo.verifier })

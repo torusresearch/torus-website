@@ -198,6 +198,7 @@ class PreferencesController extends SafeEventEmitter {
           default_public_address,
           customTokens,
           customNfts,
+          customNetworks,
         } = user.data || {}
         let whiteLabelLocale
 
@@ -229,6 +230,20 @@ class PreferencesController extends SafeEventEmitter {
           },
           public_address
         )
+
+        // update network controller with all the custom network updates.
+        customNetworks.forEach((i) => {
+          const network = {
+            blockExplorer: i.block_explorer_url,
+            chainId: i.chain_id,
+            host: i.rpc_url,
+            networkName: i.network_name,
+            ticker: i.symbol,
+            id: i.id,
+          }
+
+          this.network.addSupportedNetworks(network)
+        })
         setSentryEnabled(Boolean(enable_crash_reporter))
         return user
       }
@@ -664,6 +679,52 @@ class PreferencesController extends SafeEventEmitter {
         }
         this.handleError('navBar.snackFailCustomNftAdd')
       }
+    }
+  }
+
+  async addCustomNetwork(type, network) {
+    try {
+      const payload = {
+        network_name: network.networkName,
+        rpc_url: network.host,
+        chain_id: network.chainId,
+        symbol: network.symbol,
+        block_explorer_url: network.blockExplorer || undefined,
+      }
+      const res = await this.api.post(`${config.api}/customnetwork/${type}`, payload, this.headers(), { useAPIKey: true })
+      this.network.addSupportedNetworks({ ...network, id: res.data.id })
+      return res.data.id
+    } catch {
+      this.handleError('navBar.snackFailCustomNetworkAdd')
+      return null
+    }
+  }
+
+  async deleteCustomNetwork(id) {
+    try {
+      if (id) {
+        await this.api.remove(`${config.api}/customnetwork/${id}`, {}, this.headers(), { useAPIKey: true })
+        this.network.deleteCustomNetwork(id)
+      }
+    } catch {
+      this.handleError('navBar.snackFailCustomNetworkDelete')
+    }
+  }
+
+  async editCustomNetwork(network) {
+    try {
+      const payload = {
+        network_name: network.networkName,
+        rpc_url: network.host,
+        chain_id: network.chainId,
+        symbol: network.symbol || undefined,
+        block_explorer_url: network.blockExplorer || undefined,
+      }
+      const { id } = network
+      await this.api.patch(`${config.api}/customnetwork/${id}`, payload, this.headers(), { useAPIKey: true })
+      this.network.editSupportedNetworks(network)
+    } catch {
+      this.handleError('navBar.snackFailNetworkUpdate')
     }
   }
 

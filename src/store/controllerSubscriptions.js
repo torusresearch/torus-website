@@ -40,6 +40,9 @@ if (torus) {
   torus.torusController.networkController.networkStore.subscribe((state) => {
     getStore().dispatch('updateNetworkId', { networkId: state })
   })
+  torus.torusController.networkController.customNetworkStore.subscribe((state) => {
+    getStore().commit('setCustomNetworks', state)
+  })
 }
 
 export function accountTrackerHandler({ accounts }) {
