@@ -119,7 +119,7 @@ export default {
     commit('logOut', {
       ...initialState,
       networkType: state.networkType,
-      supportedNetworks: state.supportedNetworks,
+      customNetworks: state.customNetworks,
       networkId: state.networkId,
       whiteLabel: state.whiteLabel,
       theme: state.theme,

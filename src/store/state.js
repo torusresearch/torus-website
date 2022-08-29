@@ -40,7 +40,7 @@ const initialState = {
   // preferences
   defaultPublicAddress: '',
   selectedAddress: '',
-  supportedNetworks: {},
+  customNetworks: {},
   selectedCurrency: 'USD',
   customCurrency: '',
   pastTransactions: [],

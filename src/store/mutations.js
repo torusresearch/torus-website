@@ -45,7 +45,7 @@ export default {
       customNetworks[i.host] = { ...i, networkName: i.networkName || i.host }
     })
 
-    state.supportedNetworks = {
+    state.customNetworks = {
       ...customNetworks,
     }
   },
