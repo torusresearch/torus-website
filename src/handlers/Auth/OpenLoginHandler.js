@@ -3,7 +3,6 @@ import { decryptData, encryptData, keccak256 } from '@toruslabs/metadata-helpers
 import OpenLogin from '@toruslabs/openlogin'
 import { subkey } from '@toruslabs/openlogin-subkey'
 // import { Mutex } from 'await-semaphore'
-import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
 
 import config from '../../config'
@@ -178,7 +177,7 @@ class OpenLoginHandler {
   getWalletKey() {
     const { state } = this.openLoginInstance
     if (!state.walletKey) return null
-    const ethAddress = generateAddressFromPrivateKey(new BN(state.walletKey, 'hex'))
+    const ethAddress = generateAddressFromPrivateKey(state.walletKey)
     return {
       privKey: state.walletKey,
       ethAddress,
@@ -190,7 +189,7 @@ class OpenLoginHandler {
     // keys
     const keys = []
     if (state.walletKey) {
-      const ethAddress = generateAddressFromPrivateKey(new BN(state.walletKey, 'hex'))
+      const ethAddress = generateAddressFromPrivateKey(state.walletKey)
       keys.push({
         privKey: state.walletKey,
         accountType: ACCOUNT_TYPE.NORMAL,
@@ -201,7 +200,7 @@ class OpenLoginHandler {
       keys.push({
         privKey: state.tKey.padStart(64, '0'),
         accountType: ACCOUNT_TYPE.THRESHOLD,
-        ethAddress: generateAddressFromPrivateKey(new BN(state.tKey, 'hex')),
+        ethAddress: generateAddressFromPrivateKey(state.tKey),
       })
     }
     if (state.accounts && typeof state.accounts === 'object') {
@@ -218,7 +217,7 @@ class OpenLoginHandler {
     if (state.oAuthPrivateKey) {
       postboxKey = {
         privKey: state.oAuthPrivateKey.padStart(64, '0'),
-        ethAddress: generateAddressFromPrivateKey(new BN(state.oAuthPrivateKey, 'hex')),
+        ethAddress: generateAddressFromPrivateKey(state.oAuthPrivateKey),
       }
     }
 
@@ -241,7 +240,7 @@ class OpenLoginHandler {
         userProjects.sort((a, b) => (a.last_login < b.last_login ? 1 : -1))
         userProjects.forEach((project) => {
           const subKey = subkey(state.tKey, Buffer.from(project.project_id, 'base64'))
-          const subAddress = generateAddressFromPrivateKey(new BN(subKey, 'hex'))
+          const subAddress = generateAddressFromPrivateKey(subKey)
           userDapps[subAddress] = `${project.name} (${project.hostname})`
           keys.push({ ethAddress: subAddress, privKey: subKey.padStart(64, '0'), accountType: ACCOUNT_TYPE.APP_SCOPED })
         })
