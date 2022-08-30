@@ -42,7 +42,7 @@ module.exports = {
       '#': path.resolve(__dirname, 'src/'),
       'web3-providers-ipc': path.resolve(__dirname, 'node_modules/empty-module'),
       'web3-providers-ws': path.resolve(__dirname, 'node_modules/empty-module'),
-      'web3-eth-ens': path.resolve(__dirname, 'node_modules/empty-module'),
+      // 'web3-eth-ens': path.resolve(__dirname, 'node_modules/empty-module'),
       lodash: path.resolve(__dirname, 'node_modules/lodash-es'),
       wasmcurves: path.resolve(__dirname, 'node_modules/empty-module'),
     }
