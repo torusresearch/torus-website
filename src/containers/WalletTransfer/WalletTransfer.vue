@@ -502,7 +502,6 @@
 
 <script>
 import { randomId } from '@toruslabs/openlogin-utils'
-import Resolution from '@unstoppabledomains/resolution'
 import BigNumber from 'bignumber.js'
 import Das from 'das-sdk'
 import erc721TransferABI from 'human-standard-collectible-abi'
@@ -511,7 +510,7 @@ import { cloneDeep, isEqual } from 'lodash'
 import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { QrcodeStream } from 'vue-qrcode-reader'
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import { toChecksumAddress } from 'web3-utils'
 
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
@@ -845,6 +844,7 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
+    ...mapActions(['getTorusLookupAddress', 'getEnsOrUnstoppableAddress']),
     startQrScanning() {
       this.camera = 'auto'
       this.showQrScanner = true
@@ -1203,12 +1203,10 @@ export default {
       }
     },
     getUnstoppableDomains(domain) {
-      return new Resolution({
-        blockchain: { ens: `https://mainnet.infura.io/v3/${config.infuraKey}`, cns: `https://mainnet.infura.io/v3/${config.infuraKey}` },
-      }).addr(domain, 'ETH')
+      return this.getEnsOrUnstoppableAddress({ address: domain, type: 'unstoppable', network: this.networkType.host })
     },
     getEnsAddress(ens) {
-      return torus.web3.eth.ens.getAddress(ens)
+      return this.getEnsOrUnstoppableAddress({ address: ens, type: 'ens', network: this.networkType.host })
     },
     async calculateEthAddress() {
       let toAddress
@@ -1251,14 +1249,11 @@ export default {
           this.convertedVerifierId = validVerifierId
           const openloginVerifier = WALLET_OPENLOGIN_VERIFIER_MAP[walletVerifier]
           if (walletVerifier && openloginVerifier) {
-            const { torusNodeEndpoints, torusNodePub } = await torus.nodeDetailManager.getNodeDetails({
-              verifier: openloginVerifier,
+            toAddress = await this.getTorusLookupAddress({
               verifierId: validVerifierId,
-            })
-            toAddress = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, {
+              verifier: openloginVerifier,
               walletVerifier,
-              openloginVerifier,
-              verifierId: validVerifierId.startsWith('@') ? validVerifierId.replace('@', '').toLowerCase() : validVerifierId.toLowerCase(),
+              network: config.torusNetwork,
             })
           }
         } catch (error) {

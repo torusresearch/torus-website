@@ -813,6 +813,23 @@ class PreferencesController extends SafeEventEmitter {
     return this.api.get(`${config.api}/covalent?url=${encodeURIComponent(api)}`, this.headers(), { useAPIKey: true })
   }
 
+  async getEnsOrUnstoppableAddress({ address, type, network }) {
+    const url = new URL(`${config.api}/lookup`)
+    url.searchParams.append('key', address)
+    url.searchParams.append('type', type)
+    url.searchParams.append('network', network)
+    return this.api.get(url.href, this.headers(), { useAPIKey: true })
+  }
+
+  async getTorusLookupAddress({ verifier, verifierId, walletVerifier, network }) {
+    const url = new URL(`${config.api}/lookup/torus`)
+    url.searchParams.append('verifier', verifier)
+    url.searchParams.append('verifierId', verifierId)
+    url.searchParams.append('walletVerifier', walletVerifier)
+    url.searchParams.append('network', network)
+    return this.api.get(url.href, this.headers(), { useAPIKey: true })
+  }
+
   /* istanbul ignore next */
   async getTwitterId(payload) {
     const userId = await this.api.get(`${config.api}/twitter?screen_name=${payload.nick}`, this.headers(), { useAPIKey: true })

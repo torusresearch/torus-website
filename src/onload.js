@@ -1,5 +1,5 @@
-import NodeDetailManager from '@toruslabs/fetch-node-details'
 import { BasePostMessageStream } from '@toruslabs/openlogin-jrpc'
+import { randomId } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 import Web3 from 'web3'
 
@@ -34,7 +34,10 @@ function triggerUi(type, payload, request) {
   getStore().dispatch('showPopup', { payload, request })
 }
 
-function onloadTorus(torus) {
+function onloadTorus() {
+  const torus = {
+    instanceId: randomId(),
+  }
   let sessionData
 
   if (config.localStorageAvailable) {
@@ -69,11 +72,6 @@ function onloadTorus(torus) {
 
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
-
-  torus.nodeDetailManager = new NodeDetailManager({
-    network: config.NETWORK_MAP[config.torusNetwork],
-    proxyAddress: NodeDetailManager[`PROXY_ADDRESS_${config.NETWORK_MAP[config.torusNetwork].toUpperCase().split('-')[0]}`],
-  })
   log.info('torus network', process.env.VUE_APP_PROXY_NETWORK)
 
   // we use this to start accounttracker balances

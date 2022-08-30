@@ -149,10 +149,6 @@ export default {
   infuraKey: VUE_APP_INFURA_KEY,
   openLoginClientId: 'BCY9aYsh8iGshQuzNjBbONYE-tKD0JM389l87IiMOVeOU1TBmRaZphKOyphkUpo41fuSMnO6QRlloxCV-3nt8dU',
   torusNetwork: VUE_APP_PROXY_NETWORK || 'mainnet',
-  NETWORK_MAP: {
-    mainnet: 'mainnet',
-    testnet: 'ropsten',
-  },
   openLoginOriginSig: VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
   developerDashboardUrl: VUE_APP_DEVELOPER_DASHBOARD_URL,
   storageServerUrl: 'https://broadcast-server.tor.us',
