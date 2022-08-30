@@ -1013,10 +1013,9 @@ export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
     if (Number(maxPriorityFeePerGas) < Number(high.suggestedMaxPriorityFeePerGas)) {
       const finalTranslateKey = translateKey || 'walletTransfer.transferLessThan'
       // medium
-      return t(finalTranslateKey).replace(
-        /{time}/gi,
-        translateKey ? `< ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}` : toHumanReadableTime(low.maxWaitTimeEstimate, t)
-      )
+      return t(finalTranslateKey, {
+        time: translateKey ? `< ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}` : toHumanReadableTime(low.maxWaitTimeEstimate, t),
+      })
     }
     const finalTranslateKey = translateKey || 'walletTransfer.transferLessThan'
 
@@ -1038,9 +1037,9 @@ const SECOND_CUTOFF = 90
 function toHumanReadableTime(milliseconds, t) {
   const seconds = Math.ceil((milliseconds || 1) / 1000)
   if (seconds <= SECOND_CUTOFF) {
-    return t('walletTransfer.fee-edit-time-sec').replace(/{time}/gi, seconds)
+    return t('walletTransfer.fee-edit-time-sec', { time: seconds })
   }
-  return t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, Math.ceil(seconds / 60))
+  return t('walletTransfer.fee-edit-time-min', { time: Math.ceil(seconds / 60) })
 }
 
 export function bnGreaterThan(a, b) {

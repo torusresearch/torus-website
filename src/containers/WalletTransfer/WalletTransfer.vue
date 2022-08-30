@@ -1,27 +1,27 @@
 <template>
   <v-container class="wallet-transfer pt-6" :class="$vuetify.display.xs ? 'px-4 mobile-view' : ''">
     <div class="d-flex align-center">
-      <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.display.width > 390 }">
-        {{ t('walletTransfer.transferDetails') }}
+      <div class="font-weight-bold text-text_2 float-left page-title" :class="{ 'display-1': $vuetify.display.width > 390 }">
+        {{ $t('walletTransfer.transferDetails') }}
       </div>
       <div class="ml-auto">
         <QuickAddress />
       </div>
     </div>
-    <v-layout
+    <v-row
       wrap
-      mx-n4
+      class="mx-n4"
       :class="[(contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155) && $vuetify.display.xs ? 'mt-0' : 'mt-7']"
     >
       <v-col
         v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && $vuetify.display.smAndDown"
         :class="[{ 'mb-4': $vuetify.display.smOnly }]"
-        px-4
-        xs12
+        class="px-4"
+        cols="12"
       >
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
-            <span class="body-2 text_1--text">{{ t('walletTransfer.accountBalance') }}</span>
+            <span class="body-2 text_1--text">{{ $t('walletTransfer.accountBalance') }}</span>
             <div class="ml-auto">
               <NetworkDisplay :store-network-type="networkType"></NetworkDisplay>
             </div>
@@ -30,29 +30,29 @@
             <div>
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
-                <span id="account-balance" class="display-2 text_2--text mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
-                <span class="caption text_2--text">{{ selectedItem && selectedItem.symbol }}</span>
+                <span id="account-balance" class="display-2 text-text_2 mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
+                <span class="caption text-text_2">{{ selectedItem && selectedItem.symbol }}</span>
               </div>
             </div>
-            <div class="caption text-right currency-rate align-self-end text_2--text ml-auto">
+            <div class="caption text-right currency-rate align-self-end text-text_2 ml-auto">
               {{ selectedItem && selectedItem.currencyRateText }}
             </div>
           </div>
         </v-card>
       </v-col>
-      <v-col xs12 md6 :class="$vuetify.display.xs ? '' : 'px-4'">
+      <v-col cols="12" md="6" :class="$vuetify.display.xs ? '' : 'px-4'">
         <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="none" autocomplete="off" @submit.prevent="sendCoin">
           <v-card :flat="$vuetify.display.xs" class="form-container" :class="$vuetify.display.xs ? 'mobile py-6 px-4' : 'elevation-1 pa-6'">
-            <v-layout wrap>
-              <v-col xs12>
-                <div class="body-2 mb-2">{{ t('walletTransfer.selectItem') }}</div>
+            <v-row wrap>
+              <v-col cols="12">
+                <div class="body-2 mb-2">{{ $t('walletTransfer.selectItem') }}</div>
                 <div v-if="selectedItemDisplay">
-                  <v-menu transition="slide-y-transition" bottom>
-                    <template #activator="{ on }">
-                      <v-btn class="select-coin" label :outlined="$vuetify.theme.dark" v-on="on">
+                  <v-menu transition="slide-y-transition" location="bottom">
+                    <template #activator="{ props }">
+                      <v-btn class="select-coin" label :variant="isDarkMode ? 'outlined' : ''" v-bind="props">
                         <span class="select-coin-name">{{ selectedItemDisplay && selectedItemDisplay.name }}</span>
                         <div class="flex-grow-1 text-right pr-2">
-                          <v-icon right>$vuetify.icons.select</v-icon>
+                          <v-icon end>$select</v-icon>
                         </div>
                       </v-btn>
                     </template>
@@ -63,70 +63,70 @@
                         class="select-coin-eth"
                         @click="selectedItemChanged(token.tokenAddress)"
                       >
-                        <v-list-item-icon class="mr-1">
-                          <img
-                            :src="`${logosUrl}/${token.logo}`"
-                            height="20px"
-                            :onerror="`if (!this.src.includes('images/token-${
-                              $vuetify.theme.dark ? 'dark' : 'light'
-                            }.svg')) this.src = '/images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg';`"
-                            :alt="token.name"
-                          />
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                          <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
-                        </v-list-item-content>
+                        <template #prepend>
+                          <div class="mr-1">
+                            <img
+                              :src="`${logosUrl}/${token.logo}`"
+                              height="20px"
+                              :onerror="`if (!this.src.includes('images/token-${isDarkMode ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+                                isDarkMode ? 'dark' : 'light'
+                              }.svg';`"
+                              :alt="token.name"
+                            />
+                          </div>
+                        </template>
+                        <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
                       </v-list-item>
                       <v-divider class="mx-3"></v-divider>
-                      <v-subheader v-if="finalBalancesArrayEthOnly.length > 0 && finalBalancesArrayTokens.length > 0" class="body-2">
-                        <v-icon small left class="mr-2">$vuetify.icons.token</v-icon>
-                        {{ t('walletTransfer.tokens') }}
-                      </v-subheader>
+                      <v-list-subheader v-if="finalBalancesArrayEthOnly.length > 0 && finalBalancesArrayTokens.length > 0" class="body-2">
+                        <v-icon size="small" left class="mr-2">$token</v-icon>
+                        {{ $t('walletTransfer.tokens') }}
+                      </v-list-subheader>
                       <v-list-item
                         v-for="token in finalBalancesArrayTokens"
                         :key="token.tokenAddress"
                         @click="selectedItemChanged(token.tokenAddress)"
                       >
-                        <v-list-item-icon class="ml-8 mr-1">
-                          <img
-                            :src="`${logosUrl}/${token.logo}`"
-                            height="20px"
-                            :onerror="`if (!this.src.includes('images/token-${
-                              $vuetify.theme.dark ? 'dark' : 'light'
-                            }.svg')) this.src = '/images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg';`"
-                            :alt="token.name"
-                          />
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                          <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
-                        </v-list-item-content>
+                        <template #prepend>
+                          <div class="ml-8 mr-1">
+                            <img
+                              :src="`${logosUrl}/${token.logo}`"
+                              height="20px"
+                              :onerror="`if (!this.src.includes('images/token-${isDarkMode ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+                                isDarkMode ? 'dark' : 'light'
+                              }.svg';`"
+                              :alt="token.name"
+                            />
+                          </div>
+                        </template>
+                        <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
                       </v-list-item>
                       <v-divider class="mx-3"></v-divider>
-                      <v-subheader v-if="collectibles.length > 0" class="body-2">
-                        <v-icon small left class="mr-2">$vuetify.icons.collectibles</v-icon>
-                        {{ t('walletTransfer.collectibles') }}
-                      </v-subheader>
+                      <v-list-subheader v-if="collectibles.length > 0" class="body-2">
+                        <v-icon small left class="mr-2">$collectibles</v-icon>
+                        {{ $t('walletTransfer.collectibles') }}
+                      </v-list-subheader>
                       <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
-                        <v-list-item-icon class="ml-8 mr-1">
-                          <img
-                            :src="collectible.logo"
-                            height="20px"
-                            :alt="collectible.name"
-                            onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
-                          />
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                          <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>
-                        </v-list-item-content>
+                        <template #prepend>
+                          <div class="ml-8 mr-1">
+                            <img
+                              :src="collectible.logo"
+                              height="20px"
+                              :alt="collectible.name"
+                              onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
+                            />
+                          </div>
+                        </template>
+                        <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>
                       </v-list-item>
                     </v-list>
                   </v-menu>
                 </div>
               </v-col>
-              <v-col xs12 mt-6>
-                <div class="body-2 mb-2">{{ t('walletTransfer.transferMode') }}</div>
-                <v-layout wrap class="mx-n2">
-                  <v-col xs12 sm8 class="recipient-address-container px-2">
+              <v-col cols="12" class="mt-6">
+                <div class="body-2 mb-2">{{ $t('walletTransfer.transferMode') }}</div>
+                <v-row wrap class="mx-n2">
+                  <v-col cols="12" sm="8" class="recipient-address-container px-2">
                     <v-combobox
                       id="recipient-address"
                       ref="contactSelected"
@@ -139,7 +139,7 @@
                       required
                       :rules="[contactRule, rules.contactRequired, ensRule, unstoppableDomainsRule, bitRule]"
                       outlined
-                      item-text="name"
+                      item-title="name"
                       item-value="value"
                       aria-label="Recipient Address"
                       :return-object="getReturnObject"
@@ -149,7 +149,7 @@
                     >
                       <template v-if="apiStreamSupported" #append>
                         <v-chip v-if="isBitMode && toAddress && selectedVerifier === bitVerifier" class="address-chip">
-                          <v-avatar class="accent white--text">
+                          <div class="accent text-white">
                             <img
                               class="address-logo"
                               :src="addressLogoUrl"
@@ -157,45 +157,53 @@
                               this.src = '/images/logos/bitIcon.png';"
                               alt=""
                             />
-                          </v-avatar>
+                          </div>
                           {{ bitSelectedAddress }}
                         </v-chip>
-                        <v-btn icon small color="torusBrand1" title="Capture QR" tabindex="-1" aria-label="Capture QR" @click="startQrScanning">
-                          <v-icon small>$vuetify.icons.scan</v-icon>
+                        <v-btn
+                          icon
+                          size="small"
+                          color="torusBrand1"
+                          title="Capture QR"
+                          tabindex="-1"
+                          aria-label="Capture QR"
+                          @click="startQrScanning"
+                        >
+                          <v-icon size="small">$scan</v-icon>
                         </v-btn>
                       </template>
                       <template #message="props">
-                        {{ t(props.message) }}
+                        {{ $t(props.message) }}
                       </template>
                       <template v-if="isBitMode" #item="{ item }">
-                        <v-list-content class="bitAddress">
+                        <div class="bitAddress">
                           {{ item.value }}
                           <v-chip v-if="item.label" label small class="bitLabelChip">{{ item.label }}</v-chip>
-                        </v-list-content>
+                        </div>
                       </template>
                     </v-combobox>
                     <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
                       <div v-if="showQrScanner" class="qr-scan-container">
                         <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
                         <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
-                          <v-icon>$vuetify.icons.close</v-icon>
+                          <v-icon>$close</v-icon>
                         </v-btn>
                       </div>
                     </v-dialog>
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                       <div class="v-messages">
                         <div class="v-messages__wrapper">
-                          <div class="v-messages__message d-flex error--text px-3">{{ qrErrorMsg }}</div>
+                          <div class="v-messages__message d-flex text-error px-3">{{ qrErrorMsg }}</div>
                         </div>
                       </div>
                     </div>
                   </v-col>
-                  <v-col xs12 sm4 class="recipient-verifier-container px-2">
+                  <v-col cols="12" sm="4" class="recipient-verifier-container px-2">
                     <v-select
                       id="recipient-verifier"
                       v-model="selectedVerifier"
-                      outlined
-                      append-icon="$vuetify.icons.select"
+                      variant="outlined"
+                      append-icon="$select"
                       :items="verifierOptions"
                       item-text="name"
                       item-value="value"
@@ -205,23 +213,23 @@
                     >
                       <template #selection="{ item }">
                         <div class="v-select__selection v-select__selection--comma">
-                          {{ t(item.name) }}
+                          {{ $t(item.name) }}
                         </div>
                       </template>
-                      <template #item="{ item }">{{ t(item.name) }}</template>
+                      <template #item="{ item }">{{ $t(item.name) }}</template>
                       <template #message="props">
-                        {{ t(props.message) }}
+                        {{ $t(props.message) }}
                       </template>
                     </v-select>
                   </v-col>
-                  <v-col v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
+                  <v-col v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" cols="12" mb-2>
                     <AddContact :contact="getContactSelected" :verifier="selectedVerifier"></AddContact>
                   </v-col>
-                </v-layout>
+                </v-row>
               </v-col>
-              <v-col xs12 class="you-send-container">
+              <v-col cols="12" class="you-send-container">
                 <div class="mb-2">
-                  <span class="body-2">{{ t('walletTransfer.youSend') }}</span>
+                  <span class="body-2">{{ $t('walletTransfer.youSend') }}</span>
                   <v-btn
                     v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && !isSendAll"
                     id="send-all-btn"
@@ -231,7 +239,7 @@
                     tabindex="0"
                     @click="sendAll"
                   >
-                    {{ t('walletTransfer.sendAll') }}
+                    {{ $t('walletTransfer.sendAll') }}
                   </v-btn>
                   <v-btn
                     v-if="isSendAll"
@@ -241,16 +249,16 @@
                     class="float-right torusBrand1--text body-2 px-0"
                     @click="resetSendAll"
                   >
-                    {{ t('walletTransfer.reset') }}
+                    {{ $t('walletTransfer.reset') }}
                   </v-btn>
                 </div>
                 <v-select
                   v-if="contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155"
                   v-model="assetSelected"
                   :items="collectibleSelected.assets"
-                  outlined
+                  variant="outlined"
                   item-text="name"
-                  append-icon="$vuetify.icons.select"
+                  append-icon="$select"
                   return-object
                   aria-label="Asset selector"
                 >
@@ -275,7 +283,7 @@
                   "
                   persistent-hint
                   type="number"
-                  outlined
+                  variant="outlined"
                   required
                   :value="displayAmount"
                   :readonly="isSendAll"
@@ -287,11 +295,11 @@
                   <template #append>
                     <v-btn
                       id="coin-mode-btn"
-                      small
+                      size="small"
                       class="send-mode mr-2"
                       :class="!!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusGray3--text' : 'torusGray1--text'}` : 'active'"
                       :disabled="!toggle_exclusive"
-                      :outlined="!!toggle_exclusive"
+                      :variant="!toggle_exclusive ? 'outlined' : ''"
                       @click="changeSelectedToCurrency(0)"
                     >
                       {{ selectedItem && selectedItem.symbol }}
@@ -299,11 +307,11 @@
                     <v-btn
                       v-if="selectedCurrency !== (selectedItem && selectedItem.symbol)"
                       id="currency-mode-btn"
-                      small
+                      size="small"
                       class="send-mode"
                       :class="!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusGray3--text' : 'torusGray1--text'}` : 'active'"
                       :disabled="!!toggle_exclusive"
-                      :outlined="!toggle_exclusive"
+                      :variant="!toggle_exclusive ? 'outlined' : ''"
                       @click="changeSelectedToCurrency(1)"
                     >
                       {{ selectedCurrency }}
@@ -318,7 +326,7 @@
                   id="you-send-nft"
                   ref="youSendNft"
                   type="number"
-                  outlined
+                  variant="outlined"
                   required
                   :value="erc1155DisplayAmount"
                   :rules="[rules.required, lesserThan, isWholeNumber, moreThanZero]"
@@ -329,11 +337,11 @@
                   <template #append>
                     <v-btn
                       id="coin-mode-btn"
-                      small
+                      size="small"
                       class="send-mode mr-2"
                       :class="!!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusGray3--text' : 'torusGray1--text'}` : 'active'"
                       :disabled="true"
-                      :outlined="true"
+                      variant="outlined"
                     >
                       {{ assetSelected && assetSelected.name }}
                     </v-btn>
@@ -374,30 +382,30 @@
                 :network-host="networkType.host"
                 @onSelectSpeed="onSelectSpeed"
               />
-              <v-col v-if="contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155" xs12 mb-6 class="text-right">
-                <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
-                <div class="headline text_2--text">{{ getEthAmount(gas, activeGasPrice) }} {{ networkType.ticker }}</div>
-                <div class="caption text_2--text">{{ gasPriceInCurrency }} {{ selectedCurrency }}</div>
+              <v-col v-if="contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155" cols="12" mb-6 class="text-right">
+                <div class="text-subtitle-2">{{ $t('walletTransfer.totalCost') }}</div>
+                <div class="headline text-text_2">{{ getEthAmount(gas, activeGasPrice) }} {{ networkType.ticker }}</div>
+                <div class="caption text-text_2">{{ gasPriceInCurrency }} {{ selectedCurrency }}</div>
               </v-col>
-              <v-col v-else xs12 mb-6 class="text-right">
-                <div class="text-subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
-                <div class="headline text_2--text">{{ totalCost ? totalCostDisplay : `0 ${totalCostSuffix}` }}</div>
-                <div class="caption text_2--text">
+              <v-col v-else cols="12" mb-6 class="text-right">
+                <div class="text-subtitle-2">{{ $t('walletTransfer.totalCost') }}</div>
+                <div class="headline text-text_2">{{ totalCost ? totalCostDisplay : `0 ${totalCostSuffix}` }}</div>
+                <div class="caption text-text_2">
                   {{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}
                 </div>
               </v-col>
-              <v-col v-if="transactionWarning" xs12 mt-3 class="text-right text-caption warning--text">{{ transactionWarning }}</v-col>
-              <v-col xs12 mt-3 class="text-right">
+              <v-col v-if="transactionWarning" cols="12" mt-3 class="text-right text-caption warning--text">{{ transactionWarning }}</v-col>
+              <v-col cols="12" mt-3 class="text-right">
                 <v-btn
                   id="wallet-transfer-submit"
                   large
                   depressed
                   color="torusBrand1"
                   :disabled="onTransferClickDisabled"
-                  class="px-8 white--text gmt-wallet-transfer"
+                  class="px-8 text-white gmt-wallet-transfer"
                   @click="onTransferClick"
                 >
-                  {{ t('walletTransfer.transfer') }}
+                  {{ $t('walletTransfer.transfer') }}
                 </v-btn>
                 <v-dialog v-model="confirmDialog" max-width="375" persistent>
                   <TransferConfirm
@@ -447,14 +455,14 @@
                   ></TransferConfirm>
                 </v-dialog>
               </v-col>
-            </v-layout>
+            </v-row>
           </v-card>
         </v-form>
       </v-col>
       <v-col v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && !$vuetify.display.smAndDown" px-4 xs6>
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
-            <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
+            <span class="body-2">{{ $t('walletTransfer.accountBalance') }}</span>
             <div class="ml-auto">
               <NetworkDisplay :store-network-type="networkType"></NetworkDisplay>
             </div>
@@ -463,17 +471,17 @@
             <div>
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
-                <span id="account-balance" class="display-2 text_2--text mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
-                <span class="caption text_2--text">{{ selectedItem && selectedItem.symbol }}</span>
+                <span id="account-balance" class="display-2 text-text_2 mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
+                <span class="caption text-text_2">{{ selectedItem && selectedItem.symbol }}</span>
               </div>
             </div>
-            <div class="caption text-right currency-rate align-self-end text_2--text ml-auto">
+            <div class="caption text-right currency-rate align-self-end text-text_2 ml-auto">
               {{ selectedItem.currencyRateText }}
             </div>
           </div>
         </v-card>
       </v-col>
-    </v-layout>
+    </v-row>
     <v-dialog v-model="messageModalShow" max-width="375" persistent>
       <MessageModal
         :detail-text="messageModalDetails.replace(/\{time\}/gi, timeTakenDisplay)"
@@ -484,9 +492,9 @@
       >
         <template v-if="selectedVerifier === TWITTER && messageModalType === MESSAGE_MODAL_TYPE_SUCCESS" #link>
           <div class="mb-4">
-            <div class="mb-4 text_2--text body-2">{{ t('walletTransfer.transferShare') }}</div>
+            <div class="mb-4 text-text_2 body-2">{{ $t('walletTransfer.transferShare') }}</div>
             <v-btn text class="share-btn" :href="tweetData" target="_blank">
-              <v-icon size="20" class="mr-1">$vuetify.icons.twitter</v-icon>
+              <v-icon size="20" class="mr-1">$twitter</v-icon>
               <span class="body-2 font-weight-bold">Tweet</span>
             </v-btn>
           </div>
@@ -606,7 +614,7 @@ export default {
       hasCustomGasLimit: false,
       qrErrorMsg: '',
       autoSelectVerifier: true,
-      selectedVerifier: '',
+      selectedVerifier: null,
       rules: {
         required: (value) => !!value || 'walletTransfer.required',
         contactRequired: (value) => !!value || 'walletTransfer.required',
@@ -724,7 +732,7 @@ export default {
     },
     verifierPlaceholder() {
       return this.selectedVerifier
-        ? `${this.t('walletSettings.enter')} ${this.t(this.verifierOptions.find((verifier) => verifier.value === this.selectedVerifier).name)}`
+        ? `${this.$t('walletSettings.enter')} ${this.$t(this.verifierOptions.find((verifier) => verifier.value === this.selectedVerifier).name)}`
         : ''
     },
     contactList() {
@@ -753,9 +761,7 @@ export default {
       const amount = `${this.contractType === CONTRACT_TYPE_ERC721 || this.contractType === CONTRACT_TYPE_ERC1155 ? '' : this.displayAmount} ${
         !this.toggle_exclusive ? selectedAsset : this.selectedCurrency
       }`
-      const message = this.t('walletTransfer.transferTweet')
-        .replace(/{address}/gi, this.toAddress)
-        .replace(/{amount}/gi, amount)
+      const message = this.$t('walletTransfer.transferTweet', { address: this.toAddress, amount })
       share.searchParams.append('text', message)
       return share.href
     },
@@ -784,8 +790,8 @@ export default {
       if (this.isEip1559) {
         return this.londonSpeedTimingModalDisplay
       }
-      const estimatedTime = this.t('walletTransfer.transferApprox').replace(/{time}/gi, this.timeTaken)
-      return this.t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, estimatedTime)
+      const estimatedTime = this.$t('walletTransfer.transferApprox', { time: this.timeTaken })
+      return this.$t('walletTransfer.fee-edit-time-min', { time: estimatedTime })
     },
     getToAddressComboboxItems() {
       return this.isBitMode ? this.multipleAddress : this.contactList
@@ -801,6 +807,9 @@ export default {
     },
     getReturnObject() {
       return this.isBitMode
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.name === 'dark'
     },
   },
   watch: {
@@ -1278,8 +1287,8 @@ export default {
           // Show error body
           this.messageModalShow = true
           this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-          this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-          this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+          this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
+          this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
           log.error('Invalid to Address')
           return
         }
@@ -1312,7 +1321,7 @@ export default {
       const currencyGasPrice = ethGasPrice.times(this.getCurrencyTokenRate)
 
       if (ethBalance.minus(ethGasPrice).lt(new BigNumber(0))) {
-        this.sendAmountError = this.t('walletTransfer.insufficient')
+        this.sendAmountError = this.$t('walletTransfer.insufficient')
         return
       }
 
@@ -1368,8 +1377,8 @@ export default {
             if (!error.message.match(regEx)) {
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-              this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+              this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
+              this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
             }
             log.error(error)
           } else {
@@ -1379,8 +1388,8 @@ export default {
 
             this.messageModalShow = true
             this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-            this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-            this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+            this.messageModalTitle = this.$t('walletTransfer.transferSuccessTitle')
+            this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage')
           }
         })
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
@@ -1401,8 +1410,8 @@ export default {
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+                this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
+                this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
               }
               log.error(error)
             } else {
@@ -1412,8 +1421,8 @@ export default {
 
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+              this.messageModalTitle = this.$t('walletTransfer.transferSuccessTitle')
+              this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage')
             }
           }
         )
@@ -1431,8 +1440,8 @@ export default {
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+                this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
+                this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
               }
               log.error(error)
             } else {
@@ -1441,8 +1450,8 @@ export default {
               this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+              this.messageModalTitle = this.$t('walletTransfer.transferSuccessTitle')
+              this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage')
             }
           }
         )
@@ -1462,8 +1471,8 @@ export default {
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+                this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
+                this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
               }
               log.error(error)
             } else {
@@ -1472,8 +1481,8 @@ export default {
               this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+              this.messageModalTitle = this.$t('walletTransfer.transferSuccessTitle')
+              this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage')
             }
           }
         )
@@ -1498,7 +1507,7 @@ export default {
           // when suggestedMaxPriorityFeePerGas + baseFee is more than user defined limit
           const minFeeReq = new BigNumber(suggestedMaxPriorityFeePerGas).plus(new BigNumber(gasPriceEstimates.estimatedBaseFee))
           if (new BigNumber(this.activeGasPrice).lt(minFeeReq)) {
-            this.transactionWarning = this.t('walletTransfer.fee-error-likely-fail', { 0: this.activeGasPrice.toString(), 1: minFeeReq.toString() })
+            this.transactionWarning = this.$t('walletTransfer.fee-error-likely-fail', { 0: this.activeGasPrice.toString(), 1: minFeeReq.toString() })
           } else {
             this.transactionWarning = ''
           }
@@ -1611,7 +1620,7 @@ export default {
           this.qrErrorMsg = ''
         } else {
           this.toAddress = ''
-          this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
+          this.qrErrorMsg = this.$t('walletTransfer.incorrectQR')
         }
       } catch {
         const parsedResult = result.replace('ethereum:', '')
@@ -1621,7 +1630,7 @@ export default {
           this.qrErrorMsg = ''
         } else {
           this.toAddress = ''
-          this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
+          this.qrErrorMsg = this.$t('walletTransfer.incorrectQR')
         }
       } finally {
         this.camera = 'off'

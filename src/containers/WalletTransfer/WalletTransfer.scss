@@ -14,14 +14,14 @@
     border-radius: 6px !important;
     font-size: 16px;
     display: flex;
-    border: 1px solid var(--v-torusGray1-base);
+    border: 1px solid rgb(var(--v-theme-torusGray1));
     width: 100%;
     height: 54px;
     .v-icon--right {
       color: #D3D5E2;
     }
     &.v-theme--dark {
-      background-color: var(--v-torusBlack-base) !important;
+      background-color: rgb(var(--v-theme-torusBlack)) !important;
       box-shadow: none;
       border: 1px solid rgb(var(--v-theme-torusGray3));
     }
@@ -31,8 +31,11 @@
     &::before {
       background-color: #ffffff;
     }
+    :deep(.v-btn__content) {
+      width: 100%;
+    }
   }
-  ::v-deep .v-messages {
+  :deep(.v-messages) {
     text-align: right;
     &.error--text {
       text-align: left;
@@ -66,13 +69,13 @@
     }
     .form-container {
       &.v-theme--dark {
-        ::v-deep .v-input.v-text-field--outlined > .v-input__control > .v-input__slot {
+        :deep(.v-input.v-text-field--outlined > .v-input__control > .v-input__slot) {
           background: rgb(var(--v-theme-torusBlack2));
         }
       }
     }    
   }
-  ::v-deep .recipient-address.hasQrError .v-text-field__details {
+  :deep(.recipient-address.hasQrError .v-text-field__details) {
     margin-bottom: 2px;
   }
 }

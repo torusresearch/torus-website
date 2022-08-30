@@ -1,18 +1,18 @@
 <template>
-  <v-container px-0 py-0>
+  <v-container class="px-0 py-0">
     <template v-if="type === 'none'">
       <ChangeProviderScreenLoader />
     </template>
     <template v-else>
-      <v-layout pa-6 class="provider-change-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
-        <v-col text-left xs12>
+      <v-row pa-6 class="provider-change-header" :class="{ 'v-theme--dark': isDarkMode }">
+        <v-col class="text-left" cols="12">
           <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
-          <div class="headline text_2--text">{{ t('dappInfo.permission') }}</div>
+          <div class="headline text-text_2">{{ $t('dappInfo.permission') }}</div>
         </v-col>
-      </v-layout>
-      <v-layout wrap align-center mx-6 mb-3 mt-5>
+      </v-row>
+      <v-row wrap class="align-center mx-6 mb-3 mt-5">
         <v-col class="text-center">
-          <span class="headline text_2--text">
+          <span class="headline text-text_2">
             {{ headline }}
           </span>
           <!-- <br />
@@ -20,21 +20,21 @@
             Edit permissions
           </v-btn> -->
         </v-col>
-      </v-layout>
+      </v-row>
       <v-divider class="mx-6"></v-divider>
-      <v-layout wrap align-center ma-6>
-        <v-col xs12 mb-2>
-          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
+      <v-row wrap class="align-center ma-6">
+        <v-col cols="12" class="mb-2">
+          <div class="caption mb-2 text-text_2">{{ $t('dappProvider.requestFrom') }}:</div>
 
-          <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
+          <v-card flat class="lighten-3" :class="isDarkMode ? '' : 'grey'">
             <v-card-text>
               <div class="d-flex request-from align-center">
                 <a :href="origin.href" target="_blank" rel="noreferrer noopener" class="caption font-weight-medium torusBrand1--text">
                   {{ origin.hostname }}
                 </a>
                 <v-btn
-                  x-small
-                  :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'"
+                  size="x-small"
+                  :color="isDarkMode ? 'torusBlack2' : 'white'"
                   class="link-icon ml-auto"
                   :href="origin.href"
                   target="_blank"
@@ -47,30 +47,30 @@
             </v-card-text>
           </v-card>
         </v-col>
-        <v-col xs12 mt-4>
-          <div class="caption mb-2 text_2--text">{{ t('dappPermission.currentNetwork') }}</div>
+        <v-col cols="12" class="mt-4">
+          <div class="caption mb-2 text-text_2">{{ $t('dappPermission.currentNetwork') }}</div>
 
-          <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
+          <v-card flat class="lighten-3" :class="isDarkMode ? '' : 'grey'">
             <v-card-text>
-              <div class="caption text_2--text request-from">
+              <div class="caption text-text_2 request-from">
                 <span>{{ currentNetwork.networkName || currentNetwork.host }}</span>
               </div>
             </v-card-text>
           </v-card>
         </v-col>
-        <v-col xs12 mt-8>
-          <v-layout mx-n2>
-            <v-col xs6 px-2>
-              <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
+        <v-col cols="12" class="mt-8">
+          <v-row class="mx-n2">
+            <v-col cols="6" class="px-2">
+              <v-btn block variant="text" size="large" class="text-text_2" @click="triggerDeny">{{ $t('dappProvider.cancel') }}</v-btn>
             </v-col>
-            <v-col xs6 px-2>
-              <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
-                {{ t('dappProvider.confirm') }}
+            <v-col cols="6" class="px-2">
+              <v-btn block depressed size="large" class="torus-btn1 text-white" color="torusBrand1" @click="triggerSign">
+                {{ $t('dappProvider.confirm') }}
               </v-btn>
             </v-col>
-          </v-layout>
+          </v-row>
         </v-col>
-      </v-layout>
+      </v-row>
     </template>
   </v-container>
 </template>
@@ -100,14 +100,16 @@ export default {
   computed: {
     ...mapGetters(['getLogo']),
     headline() {
-      return this.t('dappPermission.allowNetworkChange')
-        .replace(/{host}/gi, this.origin.hostname)
-        .replace(
-          /{network}/gi,
+      return this.$t('dappPermission.allowNetworkChange', {
+        host: this.origin.hostname,
+        network:
           (SUPPORTED_NETWORK_TYPES[this.network.host] && SUPPORTED_NETWORK_TYPES[this.network.host].networkName) ||
-            this.network.networkName ||
-            this.network.host
-        )
+          this.network.networkName ||
+          this.network.host,
+      })
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.name === 'dark'
     },
   },
   created() {

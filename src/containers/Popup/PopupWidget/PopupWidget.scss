@@ -159,13 +159,13 @@
   }
 
   &.isDark {
-    background: var(--v-torusBlack-base);
+    background: rgb(var(--v-theme-torusBlack));
     border: 0;
     .torus-widget__user-details {
-      background: var(--v-torusBlack-base);
+      background: rgb(var(--v-theme-torusBlack));
       box-shadow: 5px 5px 10px rgba(36, 37, 41, 0.25), -5px -5px 10px #37383c;
       .avatar-container {
-        background-color: var(--v-torusBlack-base);
+        background-color: rgb(var(--v-theme-torusBlack));
       }
     }
     .details-container {

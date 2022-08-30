@@ -1,10 +1,10 @@
 <template>
-  <v-col xs12 mb-3>
-    <v-layout>
+  <v-col cols="12" class="mb-3">
+    <v-row>
       <v-col class="body-2 mb-2">
         <span v-if="!isConfirm">
-          <span>{{ t('walletTransfer.fee-max-transaction') }}*</span>
-          <HelpTooltip :title="t('walletTransfer.fee-max-transaction')" :description="t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
+          <span>{{ $t('walletTransfer.fee-max-transaction') }}*</span>
+          <HelpTooltip :title="$t('walletTransfer.fee-max-transaction')" :description="$t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
         </span>
         <TransactionFeeAdvanced
           :gas="gas"
@@ -19,18 +19,18 @@
           @save="onSave"
         />
       </v-col>
-    </v-layout>
-    <v-layout :class="isConfirm ? 'align-top' : 'align-center'">
-      <v-col v-if="isConfirm" xs3 class="caption mt-2">
-        <span>{{ t('walletTransfer.fee-max-transaction') }}*</span>
-        <HelpTooltip :title="t('walletTransfer.fee-max-transaction')" :description="t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
+    </v-row>
+    <v-row :class="isConfirm ? 'align-top' : 'align-center'">
+      <v-col v-if="isConfirm" cols="3" class="caption mt-2">
+        <span>{{ $t('walletTransfer.fee-max-transaction') }}*</span>
+        <HelpTooltip :title="$t('walletTransfer.fee-max-transaction')" :description="$t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
       </v-col>
-      <v-col mb-1 :class="[isConfirm ? 'xs9' : 'xs12']">
+      <v-col class="mb-1" :cols="isConfirm ? '9' : '12'">
         <v-text-field
-          outlined
-          :value="t('walletTransfer.fee-upto').replace(/{amount}/gi, maxFeeDisplay)"
+          variant="outlined"
+          :value="$t('walletTransfer.fee-upto', { amount: maxFeeDisplay })"
           disabled
-          :hint="`*${t('walletTransfer.fee-max-transaction-hint')}`"
+          :hint="`*${$t('walletTransfer.fee-max-transaction-hint')}`"
           persistent-hint
           :suffix="toggleExclusive ? selectedCurrency : `ETH`"
         >
@@ -45,7 +45,7 @@
           </template>
         </v-text-field>
       </v-col>
-    </v-layout>
+    </v-row>
   </v-col>
 </template>
 
@@ -124,7 +124,7 @@ export default {
         const gasFeeEstimate = newValue.gasFeeEstimates
         if (this.selectedSpeed && gasFeeEstimate[this.selectedSpeed]) {
           const maxPriorityFee = gasFeeEstimate[this.selectedSpeed].suggestedMaxPriorityFeePerGas
-          this.feeTime = gasTiming(maxPriorityFee, newValue, this.t, 'walletTransfer.fee-edit-in')
+          this.feeTime = gasTiming(maxPriorityFee, newValue, this.$t, 'walletTransfer.fee-edit-in')
           this.setMaxTransactionFee(this.gas, maxPriorityFee, gasFeeEstimate.estimatedBaseFee)
         }
       }
@@ -135,7 +135,7 @@ export default {
     // overide initial provided fee selected speed is available
     if (this.selectedSpeed && gasFeeEstimate?.[this.selectedSpeed]) {
       const maxPriorityFee = new BigNumber(gasFeeEstimate[this.selectedSpeed].suggestedMaxPriorityFeePerGas)
-      this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+      this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.$t, 'walletTransfer.fee-edit-in')
       this.setMaxTransactionFee(this.gas, maxPriorityFee, gasFeeEstimate.estimatedBaseFee)
     } else {
       const maxFeePerGas = new BigNumber(this.initialMaxFeePerGas)
@@ -147,7 +147,7 @@ export default {
       const maxPriorityFee = bnGreaterThan(details.customMaxPriorityFee, 0) ? details.customMaxPriorityFee : details.maxPriorityFee
 
       this.setMaxTransactionFee(details.gas, maxPriorityFee, details.baseFee, details.customMaxTransactionFee)
-      this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+      this.feeTime = gasTiming(maxPriorityFee, this.gasFees, this.$t, 'walletTransfer.fee-edit-in')
       this.$emit('save', details)
     },
     setMaxTransactionFee(gas, maxPriorityFee, baseFee, customMaxTxFee = null) {

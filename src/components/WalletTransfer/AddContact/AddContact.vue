@@ -1,33 +1,38 @@
 <template>
   <v-dialog v-model="addContactDialog" width="400">
-    <template #activator="{ on }">
-      <v-btn depressed x-small block class="caption torusBrand1 lighten-5 torusBrand1--text add-contact-alert" v-on="on">
-        {{ t('walletTransfer.clickToAddContact') }}
+    <template #activator="{ props }">
+      <v-btn depressed size="x-small" block class="caption torusBrand1 lighten-5 text-torusBrand1 add-contact-alert" v-bind="props">
+        {{ $t('walletTransfer.clickToAddContact') }}
       </v-btn>
     </template>
     <v-card class="add-contact-container">
       <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
         <v-card-text class="py-6">
-          <v-layout wrap>
-            <v-col xs12 :class="$vuetify.display.xs ? '' : 'px-4'">
-              <div class="font-weight-bold headline">{{ t('walletTransfer.addContact') }}</div>
-              <v-chip small class="caption" light color="#CAF1FE">{{ verifierLabels[verifier] }}</v-chip>
+          <v-row wrap>
+            <v-col cols="12" :class="$vuetify.display.xs ? '' : 'px-4'">
+              <div class="font-weight-bold headline">{{ $t('walletTransfer.addContact') }}</div>
+              <v-chip size="small" class="caption" light color="#CAF1FE">{{ verifierLabels[verifier] }}</v-chip>
             </v-col>
-            <v-col xs12 mt-6 :class="$vuetify.display.xs ? '' : 'px-4'">
-              <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.contactName') }}</div>
-              <v-text-field v-model="newContactName" :placeholder="t('walletTransfer.enterName')" :rules="[rules.required]" outlined></v-text-field>
+            <v-col cols="12" class="mt-6" :class="$vuetify.display.xs ? '' : 'px-4'">
+              <div class="text-subtitle-2 mb-2">{{ $t('walletTransfer.contactName') }}</div>
+              <v-text-field
+                v-model="newContactName"
+                :placeholder="$t('walletTransfer.enterName')"
+                :rules="[rules.required]"
+                variant="outlined"
+              ></v-text-field>
             </v-col>
-          </v-layout>
+          </v-row>
         </v-card-text>
 
         <v-card-actions class="pb-6">
-          <v-col xs6>
-            <v-btn block text color="text_2" @click="addContactDialog = false">{{ t('walletTransfer.cancel') }}</v-btn>
+          <v-col cols="6">
+            <v-btn block variant="text" color="text_2" @click="addContactDialog = false">{{ $t('walletTransfer.cancel') }}</v-btn>
           </v-col>
           <v-divider vertical></v-divider>
-          <v-col xs6>
-            <v-btn type="submit" color="torusBrand1" depressed class="px-12 py-1 white--text" :disabled="!contactFormValid">
-              {{ t('walletTransfer.confirm') }}
+          <v-col cols="6">
+            <v-btn type="submit" color="torusBrand1" depressed class="px-12 py-1 text-white" :disabled="!contactFormValid">
+              {{ $t('walletTransfer.confirm') }}
             </v-btn>
           </v-col>
         </v-card-actions>

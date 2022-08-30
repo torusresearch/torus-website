@@ -10,7 +10,7 @@
       position: absolute;
       top: 5px;
       right: 5px;
-      color: var(--v-text_3-base);
+      color: rgb(var(--v-theme-text_3));
     }
   }
 
@@ -36,8 +36,8 @@
 
   .max-priority-fee:not(.error--text),
   .max-transaction-fee:not(.error--text) {
-    ::v-deep .v-messages__message {
-      color: var(--v-warning-base);
+    :deep(v-messages__message) {
+      color: rgb(var(--v-theme-warning));
     }
   }
 

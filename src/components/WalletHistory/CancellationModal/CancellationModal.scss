@@ -32,8 +32,8 @@
 
   .is-confirmed {
     .v-icon__component {
-      color: var(--v-text_3-base);
-      caret-color: var(--v-text_3-base);
+      color: rgb(var(--v-theme-text_3));
+      caret-color: rgb(var(--v-theme-text_3));
     }
   }
 

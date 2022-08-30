@@ -6,7 +6,7 @@
     display: flex;
   }
 
-  ::v-deep .v-messages {
+  :deep(v-messages) {
     text-align: right;
   }
 }
