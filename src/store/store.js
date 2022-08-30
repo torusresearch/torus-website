@@ -38,7 +38,6 @@ if (config.localStorageAvailable) {
       jwtToken: state.jwtToken,
       theme: state.theme,
       locale: state.locale,
-      supportedNetworks: state.supportedNetworks,
       defaultPublicAddress: state.defaultPublicAddress,
       wcConnectorSession: state.wcConnectorSession,
     }),
