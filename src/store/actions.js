@@ -205,7 +205,7 @@ export default {
     try {
       const windowId = randomId()
       const channelName = `torus_provider_change_channel_${windowId}`
-      const finalUrl = `${baseRoute}providerchange?integrity=true&instanceId=${windowId}`
+      const finalUrl = `${baseRoute}providerchange?instanceId=${windowId}`
       const providerChangeWindow = new PopupWithBcHandler({
         url: finalUrl,
         preopenInstanceId,
@@ -235,7 +235,7 @@ export default {
   },
   showWalletPopup(context, payload) {
     const url = payload.path.includes('tkey') ? `${baseRoute}${payload.path || ''}` : `${baseRoute}wallet${payload.path || ''}`
-    const finalUrl = `${url}?integrity=true&instanceId=${torus.instanceId}`
+    const finalUrl = `${url}?instanceId=${torus.instanceId}`
     const walletWindow = new PopupHandler({ url: finalUrl, features: FEATURES_DEFAULT_WALLET_WINDOW })
     walletWindow.open()
     if (walletWindow.window.blur) walletWindow.window.blur()

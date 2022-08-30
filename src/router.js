@@ -180,7 +180,7 @@ router.beforeResolve((to, from, next) => {
     if (!to.name.includes('Topup') && to.name !== 'walletTransfer') {
       Object.keys(from.query).forEach((key) => key === 'instanceId' || delete from.query[key])
     }
-    return next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
+    return next({ name: to.name, query: from.query, hash: from.hash, params: to.params })
     // next()
   }
   return next()

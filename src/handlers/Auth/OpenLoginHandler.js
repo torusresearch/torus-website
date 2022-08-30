@@ -9,7 +9,7 @@ import log from 'loglevel'
 import config from '../../config'
 import torus from '../../torus'
 import { ACCOUNT_TYPE } from '../../utils/enums'
-import { get, post } from '../../utils/httpHelpers'
+import { get, post, put } from '../../utils/httpHelpers'
 import { generateTorusAuthHeaders, getIFrameOriginObject } from '../../utils/utils'
 
 class OpenLoginHandler {
@@ -92,7 +92,7 @@ class OpenLoginHandler {
         const encData = await encryptData(sessionId, sessionData)
         const signatureBf = await sign(privKey, keccak256(encData))
         const signature = signatureBf.toString('hex')
-        await post(`${config.storageServerUrl}/store/update`, { key: publicKeyHex, data: encData, signature, namespace: sessionNamespace })
+        await put(`${config.storageServerUrl}/store/update`, { key: publicKeyHex, data: encData, signature, namespace: sessionNamespace })
         this.openLoginInstance._syncState(sessionData)
       }
     } catch (error) {
