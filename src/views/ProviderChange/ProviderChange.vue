@@ -110,8 +110,8 @@ export default {
         )
     },
   },
-  mounted() {
-    this.channel = `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`
+  created() {
+    this.channel = `torus_provider_change_channel_${this.$route.query.instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
       const {

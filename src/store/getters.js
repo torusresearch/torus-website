@@ -1,13 +1,11 @@
 import BigNumber from 'bignumber.js'
 
+import fallBackLogoDark from '../assets/images/torus-logo-blue.svg'
+import fallBackLogoLight from '../assets/images/torus-logo-white.svg'
+import fallBackIconDark from '../assets/img/icons/torus-icon-light.svg'
 import config from '../config'
-import { ETH, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { ETH, SUPPORTED_NETWORK_TYPES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { significantDigits } from '../utils/utils'
-
-const fallBackLogoDark = require('#/assets/images/torus-logo-blue.svg')
-const fallBackLogoLight = require('#/assets/images/torus-logo-white.svg')
-
-const fallBackIconDark = require('#/assets/img/icons/torus-icon-light.svg')
 
 const getLogo = (state) => {
   const { whiteLabel, theme } = state
@@ -116,8 +114,9 @@ function calculateBalances(state, y) {
   const tokenData = tokenDataState
   const tokenRates = tokenRatesState
   const formatter = selectedCurrency !== networkType.ticker ? 2 : 3
-  let full = [
-    {
+  let full = []
+  if (!networkType?.isErc20) {
+    full.push({
       balance: weiBalance[y] || '0',
       decimals: 18,
       erc20: false,
@@ -125,12 +124,13 @@ function calculateBalances(state, y) {
       name: networkType.tickerName || '',
       symbol: networkType.ticker,
       tokenAddress: '0x',
-    },
-  ]
+    })
+  }
   if (tokenData && tokenData[y] && Object.keys(tokenData[y]).length > 0) {
     full = [...full, ...tokenData[y].filter((x) => x.network === networkType.host)]
   }
   let totalPortfolioValue = new BigNumber(0)
+
   const finalBalancesArray = full.map((x) => {
     const computedBalance = new BigNumber(x.balance).dividedBy(new BigNumber(10).pow(new BigNumber(x.decimals))) || new BigNumber(0)
     let tokenRateMultiplierNumber = 1
@@ -156,6 +156,8 @@ function calculateBalances(state, y) {
 
 const userDapps = (state) => state.userDapps
 
+const supportedNetworks = (state) => ({ ...state.customNetworks, ...SUPPORTED_NETWORK_TYPES })
+
 export default {
   unApprovedTransactions,
   tokenBalances,
@@ -168,4 +170,5 @@ export default {
   supportedCurrencies,
   filteredContacts,
   userDapps,
+  supportedNetworks,
 }

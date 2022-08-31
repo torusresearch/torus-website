@@ -60,7 +60,7 @@
               </div>
             </div>
             <div class="ml-auto align-self-end text-right">
-              <span class="description text_3--text" :style="{ lineHeight: '0' }">{{ finalBalancesArray[0].currencyRateText }}</span>
+              <span class="description text_3--text" :style="{ lineHeight: '0' }">{{ finalBalancesArray[0]?.currencyRateText || '' }}</span>
             </div>
           </div>
           <v-layout wrap class="mx-n3 mt-2">
@@ -147,12 +147,6 @@
         ></PromotionCard>
       </v-flex>
     </v-layout>
-
-    <!-- <v-layout class="mt-8">
-      <v-flex xs12>
-        <Badges />
-      </v-flex>
-    </v-layout> -->
 
     <v-layout wrap align-center class="mt-7">
       <v-flex xs12 md6 :class="{ 'offset-md-3': $vuetify.breakpoint.mdAndUp }">
@@ -253,7 +247,6 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../../components/helpers/QuickAddress'
-// import Badges from '../../../components/WalletHome/Badges'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 // import Onboarding from '../../../components/WalletHome/Onboarding'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
@@ -347,7 +340,7 @@ export default {
     },
     async onCurrencyChange(value) {
       this.setSelectedCurrency({ selectedCurrency: value, origin: 'home' })
-      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      const urlInstance = this.$route.query.instanceId
       if (urlInstance && urlInstance !== '') {
         const selectedCurrencyChannel = new BroadcastChannel(`selected_currency_channel_${urlInstance}`, broadcastChannelOptions)
         await selectedCurrencyChannel.postMessage({

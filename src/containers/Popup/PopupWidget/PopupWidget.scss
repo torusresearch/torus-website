@@ -23,6 +23,8 @@
   }
 
   &__login-btn {
+    height: 56px;
+    width: 56px;
     border-radius: 28px;
     .torus-widget__login {
       display: block;
@@ -61,9 +63,7 @@
   }
 }
 
-
 .torus-widget__panel {
-  --panelPositionWidth: 35px;
   position: absolute;
   width: 330px;
   max-width: inherit;
@@ -72,23 +72,6 @@
   box-sizing: border-box;
   box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
   border-radius: 12px;
-  &.top-left {
-    top: var(--panelPositionWidth);
-    left: var(--panelPositionWidth);
-  }
-  &.top-right {
-    top: var(--panelPositionWidth);
-    right: var(--panelPositionWidth);
-  }
-  &.bottom-right {
-    bottom: var(--panelPositionWidth);
-    right: var(--panelPositionWidth);
-  }
-  &.bottom-left {
-    bottom: var(--panelPositionWidth);
-    left: var(--panelPositionWidth);
-  }
-
   .network-name {
     font-size: 8px;
   }
@@ -107,13 +90,13 @@
       background-color: #ffffff;
       margin-left: -20px;
     }
-    
+
     .avatar-two-factor {
       background-color: var(--v-torusBrand4-base);
       border-radius: 50%;
       width: 100%;
       height: 100%;
-      color: #5C6C7F;
+      color: #5c6c7f;
       padding: 5px 0;
     }
 
@@ -123,8 +106,8 @@
       width: 100%;
       height: 100%;
       padding: 5px 0;
-      .v-icon{
-        color: #B3C0CE;
+      .v-icon {
+        color: #b3c0ce;
       }
     }
   }
@@ -175,20 +158,19 @@
     }
   }
 
-
   &.isDark {
     background: var(--v-torusBlack-base);
     border: 0;
     .torus-widget__user-details {
       background: var(--v-torusBlack-base);
-      box-shadow: 5px 5px 10px rgba(36, 37, 41, 0.25), -5px -5px 10px #37383C;
+      box-shadow: 5px 5px 10px rgba(36, 37, 41, 0.25), -5px -5px 10px #37383c;
       .avatar-container {
         background-color: var(--v-torusBlack-base);
       }
     }
     .details-container {
       &__text {
-        color: var(--v-torusFont2-base);;
+        color: var(--v-torusFont2-base);
       }
     }
     .torus-widget__amount-details {

@@ -1,7 +1,7 @@
 import { get } from '@toruslabs/http-helpers'
 import log from 'loglevel'
 
-export { get, patch, post, remove } from '@toruslabs/http-helpers'
+export { get, patch, post, put, remove } from '@toruslabs/http-helpers'
 
 export const promiseRace = (url, options, timeout) => {
   log.info('promise race', url)

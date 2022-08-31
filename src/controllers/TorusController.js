@@ -11,7 +11,7 @@ import pump from 'pump'
 import { toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
-import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, TRANSACTION_STATUSES } from '../utils/enums'
+import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, RPC, TRANSACTION_STATUSES } from '../utils/enums'
 import createRandomId from '../utils/random-id'
 import { isMain } from '../utils/utils'
 import AccountTracker from './AccountTracker'
@@ -111,6 +111,9 @@ export default class TorusController extends SafeEventEmitter {
       storeDispatch: this.opts.storeDispatch,
     })
 
+    this.prefsController.getBillboardContents()
+    this.prefsController.getAnnouncementsContents()
+
     this.watchAssetManager = new WatchAssetManager({
       network: this.networkController,
       provider: this.provider,
@@ -192,8 +195,7 @@ export default class TorusController extends SafeEventEmitter {
       provider: this.provider,
       assetController: this.assetController,
       preferencesStore: this.prefsController.store,
-      getCovalentNfts: this.prefsController.getCovalentNfts.bind(this.prefsController),
-      getOpenSeaCollectibles: this.prefsController.getOpenSeaCollectibles.bind(this.prefsController),
+      getNfts: this.prefsController.getNfts.bind(this.prefsController),
     })
 
     this.messageManager = new MessageManager()
@@ -231,13 +233,6 @@ export default class TorusController extends SafeEventEmitter {
     this.memStore.subscribe(this.sendUpdate.bind(this))
 
     this.publicConfigStore = this.initPublicConfigStore()
-
-    if (typeof options.rehydrate === 'function') {
-      setTimeout(() => {
-        options.rehydrate()
-      }, 50)
-    }
-
     this.prefsController.on('addEtherscanTransactions', (txs, network) => {
       this.txController.addEtherscanTransactions(txs, network)
     })
@@ -1086,7 +1081,26 @@ export default class TorusController extends SafeEventEmitter {
    * @returns {Promise<String>} - The RPC Target URL confirmed.
    */
   async setCustomRpc(rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {
-    this.networkController.setRpcTarget(rpcUrl, chainId, ticker, nickname, rpcPrefs)
-    return rpcUrl
+    const networkId = await this.prefsController.addCustomNetwork(RPC, {
+      networkName: nickname,
+      host: rpcUrl,
+      chainId,
+      symbol: ticker,
+      blockExplorer: rpcPrefs.blockExplorerUrl || undefined,
+    })
+    if (networkId) {
+      this.networkController.setRpcTarget(networkId, rpcUrl, chainId, ticker, nickname, rpcPrefs)
+      return networkId
+    }
+
+    return null
+  }
+
+  async deleteCustomRpc(id) {
+    this.prefsController.deleteCustomNetwork(id)
+  }
+
+  async updateCustomRpc(network) {
+    this.prefsController.editCustomNetwork(network)
   }
 }

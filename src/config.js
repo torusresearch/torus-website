@@ -77,10 +77,10 @@ const {
   VUE_APP_HIDE_TOPUP,
   VUE_APP_INFURA_KEY,
   VUE_APP_ETH_TRANSFER_ONLY,
-  VUE_APP_OPENLOGIN_URL,
   VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
   VUE_APP_PASSWORDLESS_DOMAIN,
   VUE_APP_DEVELOPER_DASHBOARD_URL,
+  VUE_APP_PROXY_NETWORK,
 } = process.env
 
 const baseUrl = window.location.origin
@@ -91,13 +91,51 @@ const redirectURI = `${baseUrl}/redirect`
 
 const LOGIN_DOMAIN = VUE_APP_LOGIN_DOMAIN
 
-const { hash } = window.location
-const hashUrl = new URL(`${baseUrl}?${hash.slice(1)}`)
-const dappStorageKey = hashUrl.searchParams.get('dappStorageKey')
-
 const appVersion = process.env.VUE_APP_TORUS_BUILD_VERSION
 
 const rampApiKey = 'dw9fe8drpzmdfuks79ub5hvmqzuyjbme4kwkwkqf'
+
+/**
+ * Checks whether a storage type is available or not
+ * For more info on how this works, please refer to MDN documentation
+ * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
+ *
+ * @method storageAvailable
+ * @param {String} type the type of storage ('localStorage', 'sessionStorage')
+ * @returns {Boolean} a boolean indicating whether the specified storage is available or not
+ */
+export function storageAvailable(type) {
+  let storage
+  try {
+    storage = window[type]
+    const x = '__storage_test__'
+    storage.setItem(x, x)
+    storage.removeItem(x)
+    return true
+  } catch (error) {
+    return (
+      error &&
+      // everything except Firefox
+      (error.code === 22 ||
+        // Firefox
+        error.code === 1014 ||
+        // test name field too, because code might not be present
+        // everything except Firefox
+        error.name === 'QuotaExceededError' ||
+        // Firefox
+        error.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+      // acknowledge QuotaExceededError only if there's something already stored
+      storage &&
+      storage.length > 0
+    )
+  }
+}
+
+const { hash, search } = window.location
+const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search}`)
+
+const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
+const namespace = finalUrl.searchParams.get('namespace')
 
 // no reddit for binance.tor.us
 
@@ -112,13 +150,18 @@ export default {
   // api: 'http://localhost:2020',
   infuraKey: VUE_APP_INFURA_KEY,
   openLoginClientId: 'BCY9aYsh8iGshQuzNjBbONYE-tKD0JM389l87IiMOVeOU1TBmRaZphKOyphkUpo41fuSMnO6QRlloxCV-3nt8dU',
-  openLoginUrl: VUE_APP_OPENLOGIN_URL,
+  torusNetwork: VUE_APP_PROXY_NETWORK || 'mainnet',
+  NETWORK_MAP: {
+    mainnet: 'mainnet',
+    testnet: 'ropsten',
+  },
   openLoginOriginSig: VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
   developerDashboardUrl: VUE_APP_DEVELOPER_DASHBOARD_URL,
+  storageServerUrl: 'https://broadcast-server.tor.us',
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
-
-  dappStorageKey,
+  localStorageAvailable: storageAvailable('localStorage'),
+  sessionStorageAvailable: storageAvailable('sessionStorage'),
 
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
@@ -455,4 +498,6 @@ export default {
     // }),
   },
   loginsWithLightLogo: [APPLE, GITHUB, JWT],
+  isCustomLogin: isCustomLogin === 'true' ? true : isCustomLogin === 'false' ? false : null,
+  namespace,
 }

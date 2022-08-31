@@ -1,4 +1,6 @@
 /* eslint-disable unicorn/prefer-add-event-listener */
+/* eslint-disable unicorn/prefer-top-level-await */
+
 import Bowser, { BROWSER_MAP, OS_MAP } from 'bowser'
 import log from 'loglevel'
 
@@ -116,7 +118,9 @@ function checkValidServiceWorker(swUrl, config) {
         navigator.serviceWorker.ready
           .then((registration) => registration.unregister())
           .then(() => {
-            if (isMain && !window.loginInProgress) window.location.reload()
+            if (isMain && !window.loginInProgress) {
+              log.info('can reload now to update app')
+            }
           })
           .catch(log.error)
       } else {
@@ -175,7 +179,9 @@ function swregister() {
 
           if (waitingServiceWorker) {
             waitingServiceWorker.addEventListener('statechange', (event) => {
-              if (event?.target?.state === 'activated' && isMain) window.location.reload()
+              if (event?.target?.state === 'activated' && isMain) {
+                log.info('can reload now to update app')
+              }
             })
             waitingServiceWorker.postMessage({ type: 'SKIP_WAITING' })
           }

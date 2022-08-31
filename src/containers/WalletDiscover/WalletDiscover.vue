@@ -147,7 +147,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['networkType', 'supportedNetworks']),
+    ...mapState(['networkType']),
     networkList() {
       return [
         ALL_NETWORKS,

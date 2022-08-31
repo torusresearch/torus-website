@@ -149,6 +149,7 @@ class CurrencyController {
       //   apiUrl = `https://api.infura.io/v1/ticker/eth${currentCurrency.toLowerCase()}`
       // } else {
       // ETC
+      if (!nativeCurrency || !currentCurrency) return
       const apiUrl = `${config.api}/currency?fsym=${nativeCurrency.toUpperCase()}&tsyms=${currentCurrency.toUpperCase()}`
       // }
       // attempt request
@@ -163,8 +164,8 @@ class CurrencyController {
       let parsedResponse
       try {
         parsedResponse = await response.json()
-      } catch {
-        log.error(new Error(`CurrencyController - Failed to parse response "${response.status}"`))
+      } catch (error) {
+        log.error(new Error(`CurrencyController - Failed to parse response "${response.status}"`), error)
         return
       }
       // set conversion rate
@@ -204,6 +205,7 @@ class CurrencyController {
     const nativeCurrency = this.getNativeCurrency()
     const { commonDenomination } = this.store.getState()
     try {
+      if (!nativeCurrency || !currentCurrency) return
       if (currentCurrency.toUpperCase() === commonDenomination.toUpperCase()) return
       const apiUrl = `${config.api}/currency?fsym=${nativeCurrency.toUpperCase()}&tsyms=${commonDenomination.toUpperCase()}`
       let response
