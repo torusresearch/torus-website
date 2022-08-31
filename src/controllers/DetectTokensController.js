@@ -32,12 +32,15 @@ const mergeTokenArrays = (oldArray, newArray) => {
   return finalArr
 }
 
-const mergeCustomTokenArrays = (oldArray, newArray) => {
+const mergeCustomTokenArrays = (oldArray, newArray, networkIdentifier) => {
   const oldMap = getObjectFromArrayBasedonKey(oldArray || [], 'tokenAddress')
+
   const finalArr = []
+  const networkConfig = SUPPORTED_NETWORK_TYPES[networkIdentifier]
+  const defaultErc20 = networkConfig.tokenAddress
   // if customtokenid is present and oldarray customtokenid is not present, add it
   Object.keys(oldMap).forEach((x) => {
-    if (!oldMap[x].customTokenId) finalArr.push(oldMap[x])
+    if (oldMap[x].tokenAddress?.toLowerCase() !== defaultErc20?.toLowerCase() && !oldMap[x].customTokenId) finalArr.push(oldMap[x])
   })
   finalArr.push(...newArray)
   return finalArr
@@ -240,7 +243,9 @@ class DetectTokensController {
     )
     nonZeroTokens = nonZeroTokens.filter(Boolean)
     const currentTokens = this.detectedTokensStore.getState()[userAddress] || []
-    this.detectedTokensStore.updateState({ [userAddress]: mergeCustomTokenArrays(currentTokens, nonZeroTokens) })
+    const currentNetworkIdentifier = this.network.getNetworkIdentifier()
+
+    this.detectedTokensStore.updateState({ [userAddress]: mergeCustomTokenArrays(currentTokens, nonZeroTokens, currentNetworkIdentifier) })
   }
 
   /**
