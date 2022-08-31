@@ -13,6 +13,30 @@
                       :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
                       alt="Torus Logo"
                     />
+                    <v-select
+                      id="availableOn"
+                      v-model="selectedWallet"
+                      dense
+                      append-icon="$vuetify.icons.select"
+                      :items="availableOn"
+                      outlined
+                      color="#1976D2"
+                      class="selectMenu"
+                      @click.capture="
+                        (e) => {
+                          e.stopPropagation()
+                        }
+                      "
+                    >
+                      <template #selection="{ item }">
+                        <span class="selectedText">{{ t('login.alsoAvailableOn') }} {{ item }}</span>
+                      </template>
+                      <template #item="{ item }">
+                        <v-row @click="openWallet(item)">
+                          {{ item }}
+                        </v-row>
+                      </template>
+                    </v-select>
                   </v-flex>
                   <LoginTitle class="mb-6" />
                   <v-flex xs10 mx-auto mt-4>
@@ -37,7 +61,41 @@
             <v-flex v-else xs12>
               <v-layout wrap>
                 <v-flex mt-4 mb-10 xs10 sm8 ml-auto mr-auto>
-                  <img height="25" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
+                  <v-row :justify="'space-between'">
+                    <!-- <v-col> -->
+                    <img
+                      height="25"
+                      class="mb-2"
+                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+                      alt="Torus Logo"
+                    />
+                    <!-- </v-col> -->
+                    <!-- <v-col> -->
+                    <v-select
+                      id="availableOn"
+                      v-model="selectedWallet"
+                      dense
+                      append-icon="$vuetify.icons.select"
+                      :items="availableOn"
+                      outlined
+                      color="#1976D2"
+                      class="selectMenu"
+                      @click.capture="
+                        (e) => {
+                          e.stopPropagation()
+                        }
+                      "
+                    >
+                      <template #selection="{ item }">
+                        <span class="selectedText">Also available on {{ item }}</span>
+                      </template>
+                      <template #item="{ item }">
+                        <v-row @click="openWallet(item)">
+                          {{ item }}
+                        </v-row>
+                      </template>
+                    </v-select>
+                  </v-row>
                 </v-flex>
                 <LoginTitle />
                 <!-- <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-10']">
@@ -137,6 +195,8 @@ export default {
       scrollOnTop: true,
       currentCarousel: config.showSpringFestival ? 0 : -1,
       showSpringFestival: config.showSpringFestival,
+      availableOn: ['Solana', 'Polygon', 'Binance'],
+      selectedWallet: 'Solana',
     }
   },
   computed: {
@@ -201,6 +261,12 @@ export default {
       window.addEventListener('scroll', () => {
         this.scrollOnTop = window.pageYOffset < 40
       })
+    },
+    openWallet(wallet) {
+      this.selectedWallet = wallet
+      if (this.selectedWallet === 'Solana') window.open('https://solana.tor.us')
+      else if (this.selectedWallet === 'Polygon') window.open('https://polygon.tor.us')
+      else window.open('https://bnb.tor.us')
     },
   },
 }

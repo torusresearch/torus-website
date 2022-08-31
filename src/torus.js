@@ -1,4 +1,4 @@
-import randomId from '@chaitanyapotti/random-id'
+import { randomId } from '@toruslabs/openlogin-utils'
 import Torus from '@toruslabs/torus.js'
 import { hashPersonalMessage } from 'ethereumjs-util'
 

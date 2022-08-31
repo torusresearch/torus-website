@@ -10,9 +10,12 @@ import MetaMaskController from '../../../src/controllers/TorusController'
 import firstTimeState from '../../localhostState'
 // import createTxMeta from '../lib/createTxMeta'
 import setupMultiplex from '../../../src/controllers/utils/setupMultiplex'
+import config from '../../../src/config'
 
+const TORUS_API = config.api
 const TEST_ADDRESS = '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'
 const CUSTOM_RPC_URL = 'http://localhost:8545'
+const CUSTOM_CHAIN_ID = 1
 
 const testAccount = {
   key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
@@ -82,6 +85,19 @@ describe('MetaMaskController', () => {
     nock('https://api.infura.io').persist().get(/.*/).reply(200)
 
     nock('https://min-api.cryptocompare.com').persist().get(/.*/).reply(200, '{"JPY":12415.9}')
+
+    nock(TORUS_API)
+      .post('/customnetwork/rpc')
+      .reply(201, {
+        data: {
+          network_name: '',
+          chain_id: 1,
+          symbol: 'ETH',
+          rpc_url: 'http://localhost:8545',
+          id: 1,
+        },
+        success: true,
+      })
 
     metamaskController = new MetaMaskController({
       showUnapprovedTx: noop,
@@ -187,12 +203,12 @@ describe('MetaMaskController', () => {
   describe('#setCustomRpc', function () {
     let rpcTarget
 
-    beforeEach(function () {
-      rpcTarget = metamaskController.setCustomRpc(CUSTOM_RPC_URL)
+    beforeEach(async function () {
+      rpcTarget = await metamaskController.setCustomRpc(CUSTOM_RPC_URL, CUSTOM_CHAIN_ID)
     })
 
     it('returns custom RPC that when called', async function () {
-      assert.strictEqual(await rpcTarget, CUSTOM_RPC_URL)
+      assert.strictEqual(rpcTarget, 1)
     })
 
     it('changes the network controller rpc', function () {
