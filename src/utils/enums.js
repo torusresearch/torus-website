@@ -36,6 +36,7 @@ export const OPTIMISM_MAINNET = 'optimism_mainnet'
 export const OPTIMISM_TESTNET = 'optimism_testnet'
 export const AVALANCHE_MAINNET = 'avalanche_mainnet'
 export const AVALANCHE_TESTNET = 'avalanche_testnet'
+export const GXC_TESTNET = 'gxc_testnet'
 
 export const MAINNET_CODE = 1
 export const ROPSTEN_CODE = 3
@@ -59,6 +60,7 @@ export const OPTIMISM_MAINNET_CODE = 10
 export const OPTIMISM_TESTNET_CODE = 69
 export const AVALANCHE_MAINNET_CODE = 43_114
 export const AVALANCHE_TESTNET_CODE = 43_113
+export const GXC_TESTNET_CODE = 1068
 
 export const MAINNET_CHAIN_ID = '0x1'
 export const ROPSTEN_CHAIN_ID = '0x3'
@@ -81,6 +83,7 @@ export const OPTIMISM_MAINNET_CHAIN_ID = '0xa'
 export const OPTIMISM_TESTNET_CHAIN_ID = '0x45'
 export const AVALANCHE_MAINNET_CHAIN_ID = '0xa86a'
 export const AVALANCHE_TESTNET_CHAIN_ID = '0xa869'
+export const GXC_TESTNET_CHAIN_ID = '0x42c'
 
 export const NFT_SUPPORTED_NETWORKS = {
   [MATIC]: MATIC_CODE,
@@ -111,7 +114,7 @@ export const BSC_MAINNET_DISPLAY_NAME = 'Binance Smart Chain Mainnet'
 export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
 export const OKC_MAINNET_DISPLAY_NAME = 'OKXChain Mainnet'
 export const OKC_TESTNET_DISPLAY_NAME = 'OKXChain Testnet'
-export const XDAI_DISPLAY_NAME = 'xDai'
+export const XDAI_DISPLAY_NAME = 'Gnosis Chain'
 export const RSK_MAINNET_DISPLAY_NAME = 'RSK Mainnet'
 export const RSK_TESTNET_DISPLAY_NAME = 'RSK Testnet'
 export const REEF_DISPLAY_NAME = 'Reef Chain'
@@ -121,6 +124,7 @@ export const OPTIMISM_MAINNET_DISPLAY_NAME = 'Optimism'
 export const OPTIMISM_TESTNET_DISPLAY_NAME = 'Optimism Kovan'
 export const AVALANCHE_MAINNET_DISPLAY_NAME = 'Avalanche Mainnet C-Chain'
 export const AVALANCHE_TESTNET_DISPLAY_NAME = 'Avalanche Testnet C-Chain'
+export const GXC_TESTNET_DISPLAY_NAME = 'GXC Testnet'
 
 export const MATIC_URL = `https://polygon-mainnet.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
 export const MATIC_BLOCK_EXPLORER = 'https://polygonscan.com'
@@ -128,13 +132,13 @@ export const MATIC_BLOCK_EXPLORER = 'https://polygonscan.com'
 export const MUMBAI_URL = `https://polygon-mumbai.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
 export const MUMBAI_BLOCK_EXPLORER = 'https://mumbai.polygonscan.com'
 
-export const XDAI_URL = 'https://rpc.xdaichain.com'
+export const XDAI_URL = 'https://rpc.gnosischain.com'
 export const XDAI_BLOCK_EXPLORER = 'https://blockscout.com/poa/xdai'
 
 export const BSC_MAINNET_URL = 'https://bsc-dataseed.binance.org'
 export const BSC_MAINNET_BLOCK_EXPLORER = 'https://bscscan.com'
 
-export const BSC_TESTNET_URL = 'https://data-seed-prebsc-2-s3.binance.org:8545'
+export const BSC_TESTNET_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545'
 export const BSC_TESTNET_BLOCK_EXPLORER = 'https://testnet.bscscan.com'
 
 export const OKC_MAINNET_URL = 'https://exchainrpc.okex.org'
@@ -168,6 +172,8 @@ export const AVALANCHE_MAINNET_BLOCK_EXPLORER = 'https://snowtrace.io'
 
 export const AVALANCHE_TESTNET_URL = 'https://api.avax-test.network/ext/bc/C/rpc'
 export const AVALANCHE_TESTNET_BLOCK_EXPLORER = 'https://testnet.snowtrace.io'
+export const GXC_TESTNET_URL = 'https://node.taisys.dev/rpc'
+export const GXC_TESTNET_BLOCK_EXPLORER = 'https://node.taisys.dev'
 
 export const BIT_HOST_URL = 'https://indexer-v1.did.id'
 
@@ -180,6 +186,7 @@ export const RSK_TESTNET_TICKER = 'RBTC'
 export const ARBITRUM_TICKER = 'ETH'
 export const OPTIMISM_TICKER = 'ETH'
 export const AVALANCHE_TICKER = 'AVAX'
+export const GXC_TICKER = 'VOC'
 
 export const MESSAGE_TYPE = {
   ETH_DECRYPT: 'eth_decrypt',
@@ -230,10 +237,6 @@ export const SINGLE_CALL_BALANCES_ADDRESS = '0xb1f8e55c7f64d203c1400b9d8555d050f
 export const ACTIVE = 'active'
 export const INACTIVE = 'inactive'
 
-export const USER_INFO_REQUEST_APPROVED = 'user_info_request_approved'
-export const USER_INFO_REQUEST_REJECTED = 'user_info_request_rejected'
-export const USER_INFO_REQUEST_NEW = 'user_info_request_new'
-
 export const CONTRACT_TYPE_ETH = 'eth'
 export const CONTRACT_TYPE_ERC20 = 'erc20'
 export const CONTRACT_TYPE_ERC721 = 'erc721'
@@ -255,7 +258,7 @@ export const INFURA_NETWORK_TYPE_TO_ID_MAP = {
 
 export const getIpfsEndpoint = (path) => `https://infura-ipfs.io/ipfs/${path}`
 
-export const createNetwork = (host, networkName, chainId, blockExplorer, ticker, tickerName, logo, rpcUrl) => ({
+export const createNetwork = (host, networkName, chainId, blockExplorer, ticker, tickerName, logo, rpcUrl, isErc20 = false, tokenAddress = '') => ({
   host,
   networkName,
   chainId,
@@ -264,6 +267,8 @@ export const createNetwork = (host, networkName, chainId, blockExplorer, ticker,
   logo,
   tickerName,
   rpcUrl,
+  isErc20,
+  tokenAddress,
 })
 
 export const CHAIN_ID_TO_TYPE_MAP = {
@@ -286,6 +291,7 @@ export const CHAIN_ID_TO_TYPE_MAP = {
   [OPTIMISM_TESTNET_CHAIN_ID]: { networkId: OPTIMISM_TESTNET_CODE, name: OPTIMISM_TESTNET },
   [AVALANCHE_MAINNET_CHAIN_ID]: { networkId: AVALANCHE_MAINNET_CODE, name: AVALANCHE_MAINNET },
   [AVALANCHE_TESTNET_CHAIN_ID]: { networkId: AVALANCHE_TESTNET_CODE, name: AVALANCHE_TESTNET },
+  [GXC_TESTNET_CHAIN_ID]: { networkId: GXC_TESTNET_CODE, name: GXC_TESTNET },
 }
 
 export const SUPPORTED_NETWORK_TYPES = {
@@ -436,6 +442,18 @@ export const SUPPORTED_NETWORK_TYPES = {
     'Avalanche',
     'avax.svg',
     AVALANCHE_TESTNET_URL
+  ),
+  [GXC_TESTNET]: createNetwork(
+    GXC_TESTNET,
+    GXC_TESTNET_DISPLAY_NAME,
+    GXC_TESTNET_CODE,
+    GXC_TESTNET_BLOCK_EXPLORER,
+    GXC_TICKER,
+    'VOC',
+    'voc.svg',
+    GXC_TESTNET_URL,
+    true,
+    '0xfc3b3a06899f8c14ee8e322f1b4e31e96e37fb11'
   ),
 }
 
@@ -735,10 +753,6 @@ export const SAFE_METHODS = [
   'wallet_watchAsset',
 ]
 
-export const BADGES_TOPUP = 'topUp'
-export const BADGES_TRANSACTION = 'transaction'
-export const BADGES_COLLECTIBLE = 'collectible'
-
 export const POPUP_LOADED = 'popup-loaded'
 export const POPUP_RESULT = 'popup_result'
 export const FEATURES_PROVIDER_CHANGE_WINDOW = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375'
@@ -924,39 +938,6 @@ export const COINGECKO_SUPPORTED_CURRENCIES = new Set([
   'bits',
   'sats',
 ])
-
-export const WALLET_CONNECT_CARD_DATA = {
-  [LOCALE_EN]: {
-    title: 'Explore & Connect to dapps via Wallet Connect',
-    ctaText: 'Get Started',
-    ctaDisconnectText: 'Disconnect',
-  },
-  [LOCALE_DE]: {
-    title: 'Entdecken und verbinden Sie sich mit Dapps über Wallet Connect',
-    ctaText: 'Loslegen',
-    ctaDisconnectText: 'Trennen',
-  },
-  [LOCALE_ES]: {
-    title: 'Explore y conéctese a dapps a través de Wallet Connect',
-    ctaText: 'Empezar',
-    ctaDisconnectText: 'Desconectar',
-  },
-  [LOCALE_JA]: {
-    title: 'ウォレット接続を介してdappsを探索して接続します',
-    ctaText: '始めましょう',
-    ctaDisconnectText: '切断',
-  },
-  [LOCALE_KO]: {
-    title: '지갑 연결을 통해 dapp 탐색 및 연결',
-    ctaText: '시작하다',
-    ctaDisconnectText: '연결 해제',
-  },
-  [LOCALE_ZH]: {
-    title: '通过 Wallet Connect 探索并连接到 dapp',
-    ctaText: '开始使用',
-    ctaDisconnectText: '断开连接',
-  },
-}
 
 export const CHAIN_TO_BIT_NAMESPACE = {
   [MAINNET_CODE]: 'address.eth',

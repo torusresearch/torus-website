@@ -149,8 +149,8 @@
 /* eslint-disable import/default */
 /* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable import/extensions */
-import randomId from '@chaitanyapotti/random-id'
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
+import { randomId } from '@toruslabs/openlogin-utils'
 import { bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
@@ -223,7 +223,7 @@ export default {
       }
     },
     informClients(privKey) {
-      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      const urlInstance = this.$route.query.instanceId
       if (urlInstance && urlInstance !== '') {
         const accountImportChannel = new BroadcastChannel(`account_import_channel_${urlInstance}`, broadcastChannelOptions)
         accountImportChannel.postMessage({

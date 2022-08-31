@@ -1,4 +1,4 @@
-// import randomId from '@chaitanyapotti/random-id'
+// import { randomId } from '@toruslabs/openlogin-utils'
 import { EventEmitter } from 'events'
 
 import config from '../../config'
@@ -8,13 +8,9 @@ import StreamWindow from './StreamWindow'
 class PopupHandler extends EventEmitter {
   constructor({ url, target, features, preopenInstanceId }) {
     super()
-    // this.id = randomId()
-    // Add in dapp storage key to all popups as a hash parameter
     const localUrl = url instanceof URL ? url : new URL(url)
-    if (config.dappStorageKey) {
-      if (localUrl.hash) localUrl.hash += `&dappStorageKey=${config.dappStorageKey}`
-      else localUrl.hash = `#dappStorageKey=${config.dappStorageKey}`
-    }
+    if (localUrl.hash) localUrl.hash += `&isCustomLogin=${config.isCustomLogin}`
+    else localUrl.hash = `#isCustomLogin=${config.isCustomLogin}`
     this.url = localUrl.href
     this.target = target || '_blank'
     this.features = features || FEATURES_DEFAULT_POPUP_WINDOW

@@ -10,19 +10,15 @@ import NetworkController from '../../../src/controllers/network/NetworkControlle
 import PreferencesController from '../../../src/controllers/PreferencesController'
 import { BSC_MAINNET, MAINNET, MATIC, MUMBAI } from '../../../src/utils/enums'
 import * as utils from '../../../src/utils/utils'
-import { userBalances } from '../../data/covalent-nft-data'
+import { userBalances } from '../../data/backend-nft-data'
 import { openseaNfts } from '../../data/opensea-nft-data'
 
 const ROPSTEN = 'ropsten'
 const noop = () => {}
 const TEST_ADDRESS = '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'
-const COVALENT_API = config.api
+const TORUS_API = config.api
 const OPEN_SEA_API = config.api
 
-const testAccount = {
-  key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
-  address: '0xa12164FeD66719297D2cF407bb314D07FEb12C02',
-}
 describe('AssetsDetectionController', () => {
   let assetsDetection
   let network
@@ -53,8 +49,8 @@ describe('AssetsDetectionController', () => {
     sandbox.stub(prefsController, 'sync')
     sandbox.stub(prefsController, 'createUser')
     sandbox.stub(prefsController, 'storeUserLogin')
-    await prefsController.init({ address: testAccount.address, rehydrate: true, jwtToken: 'hello', dispatch: noop, commit: noop })
-    prefsController.setSelectedAddress(testAccount.address)
+    prefsController.init({ address: TEST_ADDRESS, rehydrate: true, jwtToken: 'hello', dispatch: noop, commit: noop })
+    prefsController.setSelectedAddress(TEST_ADDRESS)
 
     assetsContract = new AssetsContractController({
       provider: network._providerProxy,
@@ -69,8 +65,7 @@ describe('AssetsDetectionController', () => {
     assetsDetection = new AssetsDetectionController({
       network,
       assetController: assets,
-      getCovalentNfts: prefsController.getCovalentNfts.bind(prefsController),
-      getOpenSeaCollectibles: prefsController.getOpenSeaCollectibles.bind(prefsController),
+      getNfts: prefsController.getNfts.bind(prefsController),
       preferencesStore: prefsController.store,
     })
 
@@ -79,48 +74,32 @@ describe('AssetsDetectionController', () => {
       sandbox.stub(utils, 'validateImageUrl').returns(true)
     }
     // eth mainnet
-    nock(COVALENT_API)
-      .get(
-        `/covalent?url=${encodeURIComponent(
-          'https://api.covalenthq.com/v1/1/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false'
-        )}`
-      )
+    nock(TORUS_API)
+      .get('/nfts?userAddress=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&network=mainnet')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
       .persist(true)
 
     // polygon
-    nock(COVALENT_API)
-      .get(
-        `/covalent?url=${encodeURIComponent(
-          'https://api.covalenthq.com/v1/137/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false'
-        )}`
-      )
+    nock(TORUS_API)
+      .get('/nfts?userAddress=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&network=matic')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
       .persist(true)
 
     // polygon mumbai
-    nock(COVALENT_API)
-      .get(
-        `/covalent?url=${encodeURIComponent(
-          'https://api.covalenthq.com/v1/80001/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false'
-        )}`
-      )
+    nock(TORUS_API)
+      .get('/nfts?userAddress=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&network=mumbai')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
       .persist(true)
 
     // bsc mainnet
-    nock(COVALENT_API)
-      .get(
-        `/covalent?url=${encodeURIComponent(
-          'https://api.covalenthq.com/v1/56/address/0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc/balances_v2/?nft=true&no-nft-fetch=false'
-        )}`
-      )
+    nock(TORUS_API)
+      .get('/nfts?userAddress=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&network=bsc_mainnet')
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -180,33 +159,6 @@ describe('AssetsDetectionController', () => {
     network.setProviderType(ROPSTEN)
     assert(assetsDetection.isMainnet() === false)
   })
-
-  it('should not autodetect while not on covalent supported networks(ie. bsc, matic, mainnet, matic mumbai)', () =>
-    new Promise((resolve) => {
-      const localNetwork = new NetworkController()
-      const networkControllerProviderConfig = {
-        getAccounts: noop,
-      }
-      sandbox.stub(localNetwork, 'getLatestBlock').returns({})
-      localNetwork.initializeProvider(networkControllerProviderConfig)
-      localNetwork.setProviderType(ROPSTEN)
-      const assetController = new AssetsController({
-        selectedAddress: TEST_ADDRESS,
-        assetContractController: assetsContract,
-        network,
-        getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
-      })
-      const assetCtrlr = new AssetsDetectionController({ assetController, network: localNetwork, selectedAddress: TEST_ADDRESS })
-      assetCtrlr.selectedAddress = TEST_ADDRESS
-      const mockOpenseaCollectibles = sandbox.stub(assetCtrlr, 'detectCollectiblesFromOpensea')
-      const mockCovalentCollectibles = sandbox.stub(assetCtrlr, 'detectCollectiblesFromCovalent')
-      clock.tick(60_000)
-      sandbox.assert.notCalled(mockOpenseaCollectibles)
-      sandbox.assert.notCalled(mockCovalentCollectibles)
-      mockOpenseaCollectibles.restore()
-      mockCovalentCollectibles.restore()
-      resolve()
-    }))
 
   it('should start detection when selected address changes', () =>
     new Promise((resolve) => {

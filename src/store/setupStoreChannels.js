@@ -6,7 +6,6 @@ import stream from 'stream'
 import { injectStore as onloadInjection } from '../onload'
 import torus from '../torus'
 import { SUPPORTED_NETWORK_TYPES } from '../utils/enums'
-// import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_NEW, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
 import { broadcastChannelOptions, isMain } from '../utils/utils'
 import { injectStore as controllerInjection } from './controllerSubscriptions'
 import VuexStore from './store'
@@ -24,6 +23,7 @@ if (!isMain) {
   // Oauth section
   torus.communicationMux.getStream('oauth').on('data', (chunk) => {
     const { name, data } = chunk
+    log.info(chunk, 'oauth')
     if (name === 'oauth_modal') {
       // show modal route
       VuexStore.commit('setOAuthModalStatus', true)
@@ -66,14 +66,17 @@ if (!isMain) {
         apiKey = 'torus-default',
         whiteLabel = {},
         buttonPosition = '',
+        buttonSize = 56,
         torusWidgetVisibility = true,
         loginConfig = {},
         skipTKey = false,
+        mfaLevel = 'default',
         network = SUPPORTED_NETWORK_TYPES.mainnet,
       },
     } = chunk
     if (name === 'init_stream') {
       VuexStore.commit('setButtonPosition', buttonPosition)
+      VuexStore.commit('setButtonSize', buttonSize)
       VuexStore.commit('setAPIKey', apiKey)
       if (Object.keys(whiteLabel).length > 0) {
         VuexStore.commit('setWhiteLabel', whiteLabel)
@@ -83,6 +86,7 @@ if (!isMain) {
       VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
       VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
       VuexStore.commit('setSkipTKey', skipTKey)
+      VuexStore.commit('setMfaLevel', mfaLevel)
       VuexStore.dispatch('setProviderType', { network })
       const { isRehydrationComplete } = VuexStore.state
       if (isRehydrationComplete) {
@@ -142,22 +146,7 @@ if (!isMain) {
     delete payload.verifierParams
     if (chunk.name === 'user_info_access_request') {
       userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
-      // switch (VuexStore.state.userInfoAccess) {
-      //   case USER_INFO_REQUEST_APPROVED:
-      //     userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
-      //     break
-      //   case USER_INFO_REQUEST_REJECTED:
-      //   case USER_INFO_REQUEST_NEW:
-      //   default:
-      //     userInfoAccessStream.write({ name: 'user_info_access_response', data: { newRequest: true } })
-      //     break
-      // }
     }
-  })
-
-  const userInfoStream = torus.communicationMux.getStream('user_info')
-  userInfoStream.on('data', (chunk) => {
-    if (chunk.name === 'user_info_request') VuexStore.dispatch('showUserInfoRequestPopup', chunk.data)
   })
 
   const accountImportChannel = new BroadcastChannel(`account_import_channel_${torus.instanceId}`, broadcastChannelOptions)

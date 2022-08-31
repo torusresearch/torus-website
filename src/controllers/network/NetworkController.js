@@ -15,6 +15,7 @@ import log from 'loglevel'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 
 import { ETH, INFURA_PROVIDER_TYPES, LOCALHOST, MAINNET, MAINNET_CHAIN_ID, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
+// import { areProviderConfigsEqual } from '../../utils/utils'
 import { createInfuraClient } from './createInfuraClient'
 import { createJsonRpcClient } from './createJsonRpcClient'
 import createMetamaskMiddleware from './createMetamaskMiddleware'
@@ -33,12 +34,13 @@ export default class NetworkController extends EventEmitter {
     super()
     this.defaultMaxListeners = 100
     const providerConfig = options.provider || defaultProviderConfig
-    log.info(providerConfig)
+    const customNetworkStore = options.customNetworks || {}
     // if (!SUPPORTED_NETWORK_TYPES[providerConfig.rpcTarget]) {
     //   providerConfig.type = RPC
     // }
     this.providerStore = new ObservableStore(providerConfig)
     this.networkStore = new ObservableStore('loading')
+    this.customNetworkStore = new ObservableStore(customNetworkStore)
     this.networkDetails = new ObservableStore(
       options.networkDetails || {
         ...defaultNetworkDetailsState,
@@ -96,11 +98,11 @@ export default class NetworkController extends EventEmitter {
     return new Promise((resolve, reject) => {
       const { provider } = this.getProviderAndBlockTracker()
       const ethQuery = new EthQuery(provider)
-      const initialNetwork = this.getNetworkState()
+      const initialNetwork = this.networkState
       ethQuery.sendAsync({ method: 'eth_getBlockByNumber', params: ['latest', false] }, (err, block) => {
-        const currentNetwork = this.getNetworkState()
+        const currentNetwork = this.networkState
         if (currentNetwork !== initialNetwork) {
-          log.info('network has been changed')
+          log.info('network has been changed', initialNetwork, '->', currentNetwork)
           return resolve({})
         }
         if (err) {
@@ -138,8 +140,65 @@ export default class NetworkController extends EventEmitter {
   /**
    * Get network state
    */
-  getNetworkState() {
+  get networkState() {
     return this.networkStore.getState()
+  }
+
+  /**
+   * Get custom + supported networks
+   */
+  get supportedNetworks() {
+    return {
+      ...this.customNetworks,
+      ...SUPPORTED_NETWORK_TYPES,
+    }
+  }
+
+  /**
+   *  Get custom networks.
+   */
+  get customNetworks() {
+    return this.customNetworkStore.getState()
+  }
+
+  /**
+   * Update supported networks
+   */
+  addSupportedNetworks(network) {
+    const currentHosts = Object.keys(this.supportedNetworks)
+    if (!currentHosts.includes(network.host)) {
+      this.customNetworkStore.updateState({
+        ...this.customNetworks,
+        [network.host]: network,
+      })
+    }
+  }
+
+  /**
+   * Delete a network from custom network store.
+   */
+  deleteCustomNetwork(id) {
+    const networks = Object.values(this.customNetworks).filter((network) => network.id !== id)
+    const obj = {}
+    networks.forEach((i) => {
+      obj[i.host] = i
+    })
+    this.customNetworkStore.putState(obj)
+  }
+
+  /**
+   * Update custom networks in custom network store.
+   */
+  editSupportedNetworks(network) {
+    // network host can also change so we need to iterate over all networks
+    // and update exact values for the edited network
+    const { id } = network
+    const obj = {}
+    Object.values(this.customNetworks).forEach((i) => {
+      if (i.id !== id) obj[i.host] = i
+    })
+    obj[network.host] = network
+    this.customNetworkStore.putState(obj)
   }
 
   /**
@@ -181,7 +240,7 @@ export default class NetworkController extends EventEmitter {
    * Return networking loading status
    */
   isNetworkLoading() {
-    return this.getNetworkState() === 'loading'
+    return this.networkState === 'loading'
   }
 
   /**
@@ -202,10 +261,10 @@ export default class NetworkController extends EventEmitter {
       return
     }
     const ethQuery = new EthQuery(this._provider)
-    const initialNetwork = this.getNetworkState()
+    const initialNetwork = this.networkState
 
     ethQuery.sendAsync({ method: 'net_version' }, (error, network) => {
-      const currentNetwork = this.getNetworkState()
+      const currentNetwork = this.networkState
       if (initialNetwork === currentNetwork) {
         if (error) {
           this.setNetworkState('loading')
@@ -226,7 +285,7 @@ export default class NetworkController extends EventEmitter {
     return SUPPORTED_NETWORK_TYPES[type]?.chainId || configChainId
   }
 
-  setRpcTarget(rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {
+  setRpcTarget(networkId, rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {
     this.setProviderConfig({
       type: RPC,
       rpcUrl,
@@ -234,6 +293,7 @@ export default class NetworkController extends EventEmitter {
       ticker,
       nickname,
       rpcPrefs,
+      id: networkId,
     })
   }
 
@@ -243,9 +303,14 @@ export default class NetworkController extends EventEmitter {
    */
   async setProviderType(type, rpcUrl = '', ticker = 'ETH', nickname = '') {
     assert.notStrictEqual(type, RPC, 'NetworkController - cannot call "setProviderType" with type \'rpc\'. use "setRpcTarget"')
-    assert.ok(SUPPORTED_NETWORK_TYPES[type] !== undefined, `NetworkController - Unknown rpc type "${type}"`)
-    const { chainId, ...rest } = SUPPORTED_NETWORK_TYPES[type]
+    assert.ok(this.supportedNetworks[type] !== undefined, `NetworkController - Unknown rpc type "${type}"`)
+    const { chainId, ...rest } = this.supportedNetworks[type]
     const providerConfig = { type, rpcUrl, ticker, nickname, chainId, ...rest }
+    // get current provider config and check if it is the same as the new one
+    // const currentProviderConfig = this.getProviderConfig()
+    // const areNetworksEqual = areProviderConfigsEqual(currentProviderConfig, providerConfig)
+    // log.info('current provider config', currentProviderConfig, 'new config', providerConfig, 'are networks equal', areNetworksEqual)
+    // if (!areNetworksEqual) this.setProviderConfig(providerConfig)
     this.setProviderConfig(providerConfig)
   }
 
@@ -293,8 +358,8 @@ export default class NetworkController extends EventEmitter {
     } else if (type === LOCALHOST) {
       this._configureLocalhostProvider()
       // url-based rpc endpoints
-    } else if (SUPPORTED_NETWORK_TYPES[type] !== undefined) {
-      const { chainId: localChainId, rpcUrl: localUrl } = SUPPORTED_NETWORK_TYPES[type]
+    } else if (this.supportedNetworks[type] !== undefined) {
+      const { chainId: localChainId, rpcUrl: localUrl } = this.supportedNetworks[type]
       this._configureStandardProvider({
         rpcUrl: rpcUrl || localUrl,
         chainId: chainId || localChainId,

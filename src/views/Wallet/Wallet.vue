@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isLoaded">
     <Navbar :show-language-selector="true" :header-items="headerItems">
       <template #drawer>
         <v-btn v-if="$vuetify.breakpoint.smAndDown" id="menu-dropdown-mobile-btn" icon aria-label="Open Account Menu" @click="drawer = !drawer">
@@ -59,6 +59,7 @@ export default {
   data() {
     return {
       drawer: false,
+      isLoaded: false,
     }
   },
   computed: {
@@ -73,9 +74,6 @@ export default {
       paymentTxStore: 'paymentTx',
       wallet: 'wallet',
       confirmModals: 'confirmModals',
-      isTkeySeedPhraseInputRequired: 'isTkeySeedPhraseInputRequired',
-      shareTransferRequests: (state) => state.tKeyStore.shareTransferRequests,
-      deviceShare: (state) => state.tKeyStore.settingsPageData && state.tKeyStore.settingsPageData.deviceShare,
     }),
     ...mapGetters(['collectibleBalances']),
     localeAnnouncements() {
@@ -123,9 +121,18 @@ export default {
       return this.deviceShare && this.deviceShare.share ? this.deviceShare.share.share.shareIndex.toString('hex') : ''
     },
   },
-  mounted() {
+  created() {
     if (Object.keys(this.wallet).length === 0) {
-      this.$router.push({ name: 'login' }).catch((_) => {})
+      const { currentRoute } = this.$router
+      // eslint-disable-next-line promise/catch-or-return
+      this.$router
+        .push({ name: 'login', query: currentRoute.query, hash: currentRoute.hash, params: currentRoute.params })
+        .catch((_) => {})
+        .finally(() => {
+          this.isLoaded = true
+        })
+    } else {
+      this.isLoaded = true
     }
   },
   methods: {

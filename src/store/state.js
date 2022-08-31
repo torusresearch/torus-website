@@ -1,15 +1,7 @@
 import { cloneDeep } from 'lodash'
 
 import config from '../config'
-import {
-  LOCALE_EN,
-  MAINNET,
-  MAINNET_CODE,
-  MAINNET_DISPLAY_NAME,
-  SUPPORTED_NETWORK_TYPES,
-  THEME_LIGHT_BLUE_NAME,
-  USER_INFO_REQUEST_NEW,
-} from '../utils/enums'
+import { LOCALE_EN, MAINNET, SUPPORTED_NETWORK_TYPES, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -31,7 +23,7 @@ const initialState = {
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
   networkId: 0,
-  networkType: { host: MAINNET, chainId: MAINNET_CODE, networkName: MAINNET_DISPLAY_NAME },
+  networkType: cloneDeep(SUPPORTED_NETWORK_TYPES[MAINNET]),
   networkDetails: {},
   gasFees: {},
   currencyData: {},
@@ -46,10 +38,9 @@ const initialState = {
   unapprovedDecryptMsgs: {},
   unApprovedAssets: {},
   // preferences
-  tKeyOnboardingComplete: true,
   defaultPublicAddress: '',
   selectedAddress: '',
-  supportedNetworks: { ...SUPPORTED_NETWORK_TYPES },
+  customNetworks: {},
   selectedCurrency: 'USD',
   customCurrency: '',
   pastTransactions: [],
@@ -61,7 +52,6 @@ const initialState = {
   announcements: {},
   contacts: [],
   permissions: [],
-  userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
   errorMsg: '',
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },
@@ -69,9 +59,11 @@ const initialState = {
     loginConfig: cloneDeep(config.loginConfig),
     isOAuthModalVisible: false,
     buttonPosition: 'bottom-left',
+    buttonSize: 56,
     torusWidgetVisibility: true,
     apiKey: 'torus-default',
     skipTKey: false,
+    mfaLevel: 'default',
     loginInProgress: false,
     showWalletConnect: false,
   },
@@ -84,12 +76,9 @@ const initialState = {
     featuredBillboardHide: false,
   },
   etherscanTx: [],
-  badgesCompletion: {},
-  tKeyStore: {},
   wcConnectorSession: {},
   confirmModals: [],
   postboxKey: {},
-  isTkeySeedPhraseInputRequired: false,
   ethTransferOnly: config.ethTransferOnly,
   lastLoginInfo: {},
   userDapps: {},

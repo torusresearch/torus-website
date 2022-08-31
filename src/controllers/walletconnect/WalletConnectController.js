@@ -34,20 +34,23 @@ class WalletConnectController {
   }
 
   setStoreSession() {
-    this.store.putState(JSON.parse(JSON.stringify(this.walletConnector.session)))
+    this.store.putState({ ...JSON.parse(JSON.stringify(this.walletConnector.session)), uri: this.walletConnector.uri })
   }
 
   _setupListeners() {
     this.walletConnector.on('session_request', (err, payload) => {
+      if (!this.walletConnector) return
       log.info('SESSION REQUEST', err, payload)
       this.walletConnector.approveSession(this.sessionConfig)
       this.setStoreSession()
     })
     this.walletConnector.on('session_update', (err, payload) => {
+      if (!this.walletConnector) return
       log.info('SESSION UPDATE', err, payload)
       this.setStoreSession()
     })
     this.walletConnector.on('call_request', (err, payload) => {
+      if (!this.walletConnector) return
       log.info('CALL REQUEST', err, payload)
       if (err) {
         log.info(`CALL REQUEST INTERNAL, ERROR ${err.message}`)
@@ -68,6 +71,7 @@ class WalletConnectController {
       })
     })
     this.walletConnector.on('connect', (err, payload) => {
+      if (!this.walletConnector) return
       log.info('SESSION UPDATE', err, payload)
       this.setStoreSession()
     })

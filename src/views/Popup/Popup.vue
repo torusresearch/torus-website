@@ -12,6 +12,7 @@
 </template>
 
 <script>
+// import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
 import WalletConnect from '../../components/helpers/WalletConnect'
@@ -23,12 +24,12 @@ export default {
   name: 'Popup',
   components: { PopupLogin, PopupWidget, WalletConnect },
   computed: mapState({
-    loggedIn: (state) => state.selectedAddress !== '',
+    loggedIn: (state) => state.selectedAddress !== '' && state.wallet[state.selectedAddress] !== undefined,
     loginDialog: (state) => state.embedState.isOAuthModalVisible,
     torusWidgetVisibility: (state) => state.embedState.torusWidgetVisibility,
     loginInProgress: (state) => state.embedState.loginInProgress,
     showWalletConnect: (state) => {
-      const canConnect = state.embedState.showWalletConnect && apiStreamSupported && state.selectedAddress !== ''
+      const canConnect = state.embedState.showWalletConnect && apiStreamSupported && this.loggedIn
       return canConnect
     },
     apiStreamSupported() {

@@ -92,8 +92,6 @@
 </template>
 
 <script>
-import log from 'loglevel'
-
 import { HOSTED_EMAIL_PASSWORDLESS_VERIFIER } from '../../../utils/enums'
 import LoginButton from '../LoginButton'
 
@@ -200,7 +198,6 @@ export default {
     clearInterval(this.activeMobileButtonInterval)
   },
   mounted() {
-    log.info(this.loginButtonsArray)
     this.chooseAndSetActiveButton()
   },
   methods: {

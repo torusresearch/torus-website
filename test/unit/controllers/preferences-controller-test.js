@@ -81,7 +81,6 @@ describe('Preferences Controller', () => {
     assert.strictEqual(defaultAddress, testAccount.address, 'Wrong default address')
     assert.deepStrictEqual(state, {
       theme: THEME_LIGHT_BLUE_NAME,
-      tKeyOnboardingComplete: false,
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount.address,
       customTokens: [],
@@ -90,7 +89,6 @@ describe('Preferences Controller', () => {
       locale: 'en',
       contacts: [],
       permissions: [],
-      badgesCompletion: {},
       jwtToken: 'hello',
       fetchedPastTx: [],
       pastTransactions: [],
@@ -112,7 +110,6 @@ describe('Preferences Controller', () => {
     assert.strictEqual(defaultAddresses[1], testAccount2.address, 'Wrong default address 2')
     assert.deepStrictEqual(state1, {
       theme: THEME_LIGHT_BLUE_NAME,
-      tKeyOnboardingComplete: false,
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount.address,
       customTokens: [],
@@ -121,7 +118,6 @@ describe('Preferences Controller', () => {
       locale: 'en',
       contacts: [],
       permissions: [],
-      badgesCompletion: {},
       jwtToken: 'hello',
       fetchedPastTx: [],
       pastTransactions: [],
@@ -129,7 +125,6 @@ describe('Preferences Controller', () => {
     })
     assert.deepStrictEqual(state2, {
       theme: THEME_LIGHT_BLUE_NAME,
-      tKeyOnboardingComplete: false,
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount2.address,
       customTokens: [],
@@ -138,7 +133,6 @@ describe('Preferences Controller', () => {
       locale: 'en',
       contacts: [],
       permissions: [],
-      badgesCompletion: {},
       jwtToken: 'hello2',
       fetchedPastTx: [],
       pastTransactions: [],
@@ -163,7 +157,6 @@ describe('Preferences Controller', () => {
     assert.strictEqual(defaultAddress, testAccount.address, 'Wrong default address')
     assert.deepStrictEqual(state, {
       theme: THEME_LIGHT_BLUE_NAME,
-      tKeyOnboardingComplete: false,
       accountType: ACCOUNT_TYPE.NORMAL,
       defaultPublicAddress: testAccount.address,
       customTokens: [],
@@ -172,7 +165,6 @@ describe('Preferences Controller', () => {
       locale: 'en',
       contacts: [],
       permissions: [],
-      badgesCompletion: {},
       jwtToken: 'hello3',
       fetchedPastTx: [],
       pastTransactions: [],
@@ -529,16 +521,6 @@ describe('Preferences Controller', () => {
     it('sets default address correctly', async () => {
       await preferencesController.setDefaultPublicAddress(testAccount.address, testAccount2.address)
       assert.strictEqual(preferencesController.state(testAccount.address).defaultPublicAddress, testAccount2.address)
-    })
-
-    it('sets user badge', async () => {
-      await preferencesController.setUserBadge('hello')
-      assert.deepStrictEqual(preferencesController.state().badgesCompletion, { hello: true })
-    })
-
-    it('sets user onboarding status', async () => {
-      await preferencesController.setTKeyOnboardingStatus(true, testAccount.address)
-      assert.deepStrictEqual(preferencesController.state().tKeyOnboardingComplete, true)
     })
 
     it('setSelectedAddress', async () => {

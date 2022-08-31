@@ -2,7 +2,7 @@ import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 
 import config from '../config'
-import { isMain } from '../utils/utils'
+import { idleTimeTracker } from '../utils/utils'
 
 // every ten minutes
 const POLLING_INTERVAL = 600_000
@@ -163,8 +163,8 @@ class CurrencyController {
       let parsedResponse
       try {
         parsedResponse = await response.json()
-      } catch {
-        log.error(new Error(`CurrencyController - Failed to parse response "${response.status}"`))
+      } catch (error) {
+        log.error(new Error(`CurrencyController - Failed to parse response "${response.status}"`), error)
         return
       }
       // set conversion rate
@@ -245,11 +245,13 @@ class CurrencyController {
     if (this.conversionInterval) {
       clearInterval(this.conversionInterval)
     }
-    if (isMain)
-      this.conversionInterval = setInterval(() => {
+    this.conversionInterval = setInterval(() => {
+      // if not idle thn only hit apis
+      if (!idleTimeTracker.checkIfIdle()) {
         this.updateConversionRate()
         this.updateCommonDenominatorPrice()
-      }, POLLING_INTERVAL)
+      }
+    }, POLLING_INTERVAL)
   }
 }
 

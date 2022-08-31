@@ -31,10 +31,10 @@ export default {
       channel: '',
     }
   },
-  mounted() {
-    const queryParameters = new URLSearchParams(window.location.search)
-    const instanceId = queryParameters.get('instanceId')
-    const queryParameterId = queryParameters.get('id')
+  created() {
+    const queryParameters = this.$route.query
+    const { instanceId, id: queryParameterId } = queryParameters
+
     this.channel = `torus_channel_${instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
