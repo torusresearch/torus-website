@@ -46,7 +46,7 @@ export default {
   },
   async created() {
     try {
-      const { loginProvider, state, skipTKey, mfaLevel, ...rest } = this.$route.query
+      const { loginProvider, state, skipTKey, mfaLevel, namespace, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))
       log.info('logging in with', loginProvider, state, skipTKey, rest, mfaLevel)
       const { whiteLabel, loginConfig = {}, origin } = stateParams
@@ -54,7 +54,7 @@ export default {
       this.iframeOrigin = origin
       this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
-      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
+      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig, namespace)
       await openLoginHandler.openLoginInstance.login({
         loginProvider,
         getWalletKey: true,
