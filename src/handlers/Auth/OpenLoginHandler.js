@@ -38,7 +38,7 @@ class OpenLoginHandler {
     if (whiteLabel.url) whiteLabelOpenLogin.url = whiteLabel.url
 
     const iframeObj = getIFrameOriginObject()
-    const namespace = config.isCustomLogin ? iframeObj.hostname : undefined
+    const namespace = config.isCustomLogin ? sessionNamespace || iframeObj.hostname : undefined
     this.openLoginInstance = new OpenLogin({
       clientId: config.openLoginClientId,
       redirectUrl: `${config.baseRoute}end`,
@@ -51,7 +51,7 @@ class OpenLoginHandler {
       loginConfig,
       network: config.torusNetwork,
       no3PC: true,
-      _sessionNamespace: sessionNamespace || namespace,
+      _sessionNamespace: namespace,
     })
   }
 
