@@ -673,7 +673,7 @@ export default {
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       dispatch('subscribeToControllers')
 
-      const _finalSelectedAddress = state.selectedAddress || walletKey.ethAddress
+      const _finalSelectedAddress = state.selectedAddress || walletKey?.ethAddress
       if (_finalSelectedAddress && state.wallet[toChecksumAddressByChainId(_finalSelectedAddress, networkId)]) {
         dispatch('updateSelectedAddress', { selectedAddress: toChecksumAddressByChainId(_finalSelectedAddress, networkId) }) // synchronous
         dispatch('updateNetworkId', { networkId })
