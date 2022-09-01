@@ -626,6 +626,7 @@ export const WYRE = 'wyre'
 export const CRYPTO = 'crypto'
 export const MERCURYO = 'mercuryo'
 export const TRANSAK = 'transak'
+export const BANXA = 'banxa'
 export const PNG = 'png'
 export const SVG = 'svg'
 

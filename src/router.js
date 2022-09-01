@@ -144,6 +144,11 @@ const router = new Router({
               name: 'walletTopupTransak',
               component: () => import(/* webpackChunkName: "walletTopupTransak" */ './containers/WalletTopup/WalletTopupTransak'),
             },
+            {
+              path: 'banxa',
+              name: 'walletTopupBanxa',
+              component: () => import(/* webpackChunkName: "walletTopupBanxa" */ './containers/WalletTopup/WalletTopupBanxa'),
+            },
           ],
         },
         {
