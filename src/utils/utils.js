@@ -1150,6 +1150,8 @@ export const parsePopupUrl = (url) => {
   const localUrl = url instanceof URL ? url : new URL(url)
   const iframeOrigin = getIFrameOriginObject()
   localUrl.searchParams.append('isCustomLogin', config.isCustomLogin)
-  localUrl.searchParams.append('namespace', iframeOrigin.hostname)
+  if (config.isCustomLogin) {
+    localUrl.searchParams.append('namespace', iframeOrigin.hostname)
+  }
   return localUrl
 }
