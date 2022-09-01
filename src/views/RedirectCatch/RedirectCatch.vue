@@ -78,7 +78,7 @@ export default {
             if (url.origin === window.location.origin) {
               const matchedRoute = this.$router.match(url.pathname)
               const query = Object.fromEntries(new URLSearchParams(url.search))
-              this.$router.push({ name: matchedRoute.name, query, hash: url.hash })
+              this.$router.push({ name: matchedRoute.name, query, hash: url.hash, path: matchedRoute.path })
             } else {
               window.location.href = payload.url
             }
