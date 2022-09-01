@@ -57,7 +57,8 @@ class OpenLoginHandler {
 
   async getActiveSession() {
     try {
-      const { sessionId, sessionNamespace } = this.openLoginInstance.state.store.getStore()
+      const { sessionId } = this.openLoginInstance.state.store.getStore()
+      const { sessionNamespace } = this.openLoginInstance.state
       if (sessionId) {
         log.info('found session id')
         const publicKeyHex = getPublic(Buffer.from(sessionId, 'hex')).toString('hex')
