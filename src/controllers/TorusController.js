@@ -1088,12 +1088,9 @@ export default class TorusController extends SafeEventEmitter {
       symbol: ticker,
       blockExplorer: rpcPrefs.blockExplorerUrl || undefined,
     })
-    if (networkId) {
-      this.networkController.setRpcTarget(networkId, rpcUrl, chainId, ticker, nickname, rpcPrefs)
-      return networkId
-    }
-
-    return null
+    // its fine to have networkId as null here.
+    this.networkController.setRpcTarget(networkId, rpcUrl, chainId, ticker, nickname, rpcPrefs)
+    return networkId
   }
 
   async deleteCustomRpc(id) {
