@@ -207,6 +207,10 @@ describe('MetaMaskController', () => {
       rpcTarget = await metamaskController.setCustomRpc(CUSTOM_RPC_URL, CUSTOM_CHAIN_ID)
     })
 
+    it('returns custom RPC that when called', async function () {
+      assert.strictEqual(rpcTarget, 1)
+    })
+
     it('changes the network controller rpc', function () {
       const networkControllerState = metamaskController.networkController.store.getState()
       assert.strictEqual(networkControllerState.provider.rpcUrl, CUSTOM_RPC_URL)
