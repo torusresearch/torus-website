@@ -126,7 +126,7 @@ export default {
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     torusController.lock()
     if (selectedAddress) {
-      const openLoginHandler = OpenLoginHandler.getInstance()
+      const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
       if (isMain) {
         router.push({ path: '/logout' }).catch(() => {})
       }
@@ -278,7 +278,7 @@ export default {
       })
     )
 
-    const openLoginHandler = OpenLoginHandler.getInstance(state.whiteLabel, {})
+    const openLoginHandler = OpenLoginHandler.getInstance(state.whiteLabel, {}, config.namespace)
     const activeSession = await openLoginHandler.getActiveSession()
     if (activeSession && activeSession.walletKey === privateKey) {
       const _store = activeSession?.store || {}
@@ -330,7 +330,7 @@ export default {
       rehydrate: false,
     })
     dispatch('updateSelectedAddress', { selectedAddress: address })
-    const openloginInstance = OpenLoginHandler.getInstance()
+    const openloginInstance = OpenLoginHandler.getInstance({}, {}, config.namespace)
     const existingSessionData = await openloginInstance.getActiveSession()
     if (!existingSessionData) {
       dispatch('logOut')
@@ -462,7 +462,7 @@ export default {
         throw new Error(error)
       }
       if (config.localStorageAvailable) {
-        const openLoginHandler = OpenLoginHandler.getInstance()
+        const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
         await openLoginHandler.openLoginInstance._syncState({
           store: {
             sessionId,
@@ -497,7 +497,7 @@ export default {
     }
   },
   async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
-    const openLoginHandler = OpenLoginHandler.getInstance()
+    const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()
     commit('setUserInfo', userInfo)
@@ -516,7 +516,7 @@ export default {
     })
   },
   async getUserDapps({ commit, dispatch, state }, { postboxKey, calledFromEmbed }) {
-    const openLoginHandler = OpenLoginHandler.getInstance()
+    const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
     const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
     commit('setUserDapps', userDapps)
     await dispatch('initTorusKeyring', {
@@ -632,7 +632,7 @@ export default {
     try {
       const currentRoute = router.match(window.location.pathname)
       if (!currentRoute.meta.skipOpenLoginCheck) {
-        const openLoginHandler = OpenLoginHandler.getInstance()
+        const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
         const sessionInfo = await openLoginHandler.getActiveSession()
         if (!sessionInfo) {
           commit('setRehydrationStatus', true)
