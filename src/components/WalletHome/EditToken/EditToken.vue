@@ -165,7 +165,7 @@ export default {
     duplicateTokenRule() {
       if (!this.tokenData[this.selectedAddress]) return true
       const found = this.tokenData[this.selectedAddress].find(
-        (token) => token.tokenAddress.toLocaleLowerCase() === this.customAddress.toLocaleLowerCase()
+        (token) => token.tokenAddress.toLocaleLowerCase() === this.customAddress?.toLocaleLowerCase()
       )
       return found ? this.t('homeToken.duplicateToken') : true
     },
