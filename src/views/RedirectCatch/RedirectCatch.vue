@@ -73,7 +73,15 @@ export default {
         bc.addEventListener('message', (ev) => {
           const { preopenInstanceId: oldId, payload, message } = ev.data
           if (oldId === queryParameters.preopenInstanceId && payload?.url) {
-            window.location.href = payload.url
+            const url = new URL(payload.url)
+            // if same origin, use router.push
+            if (url.origin === window.location.origin) {
+              const matchedRoute = this.$router.match(url.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
+              const query = Object.fromEntries(new URLSearchParams(url.search))
+              this.$router.push({ query, hash: url.hash, name: matchedRoute.name })
+            } else {
+              window.location.href = payload.url
+            }
           } else if (oldId === queryParameters.preopenInstanceId && message === 'setup_complete') {
             bc.postMessage({
               data: {

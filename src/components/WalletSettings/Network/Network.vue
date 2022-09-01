@@ -38,6 +38,7 @@
                   </v-list-item-content>
                   <v-list-item-icon>
                     <v-btn
+                      v-if="supportedNetworks[host].id"
                       color="text_3"
                       icon
                       small
@@ -49,6 +50,7 @@
                   </v-list-item-icon>
                   <v-list-item-icon>
                     <v-btn
+                      v-if="supportedNetworks[host].id"
                       class="delete-btn"
                       color="text_2"
                       icon

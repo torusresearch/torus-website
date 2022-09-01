@@ -1,3 +1,4 @@
+/* eslint-disable prefer-regex-literals */
 /* eslint-disable import/no-extraneous-dependencies */
 const express = require('express')
 const send = require('send')
@@ -8,20 +9,31 @@ const path = require('path')
 log.enableAll()
 const app = express()
 
-const fileExtensionRegexp = /[^/?]+\\.[^/]+$/
-
 const versionRegex = /^\/v\d+\.\d+\.\d+\//
 
 app.use('*', (req, res) => {
-  let finalPath = req.params[0].replace(versionRegex, '')
-  log.info('path', finalPath, req.params[0])
-  if (!finalPath.match(fileExtensionRegexp)) {
-    finalPath = 'index.html'
+  const olduri = req.params[0] || ''
+  let newuri = ''
+  if (new RegExp(/^\/v\d+\.\d+\.\d+\/.+\.(js|css|png|PNG|svg|html|jpg|JPG|jpeg|JPEG|JSON|json|txt|gif)$/).test(olduri)) {
+    newuri = olduri.replace(versionRegex, '')
+  } else if (new RegExp(/^\/v\d+\.\d+\.\d+\/[^.]*$/).test(olduri)) {
+    const secondIndex = olduri.indexOf('/', 1)
+    newuri = `${olduri.slice(0, secondIndex)}/index.html`
+  } else if (new RegExp(/^\/v\d+\.\d+\.\d+\/?$/).test(olduri)) {
+    const secondIndex = olduri.indexOf('/', 1)
+    const slicedOrignal = secondIndex === -1 ? olduri : olduri.slice(0, secondIndex)
+    newuri = `${slicedOrignal}/index.html`
+  } else if (new RegExp(/^\/.+\.(js|css|png|PNG|svg|html|jpg|JPG|jpeg|JPEG|JSON|json|txt|gif)$/).test(olduri)) {
+    newuri = olduri
+  } else if (new RegExp(/^\/[^.]*$/).test(olduri)) {
+    newuri = '/index.html'
+  } else {
+    newuri = '/index.html'
   }
-  log.info('path2', finalPath, req.params[0])
-  const dirPath = path.resolve(path.join(__dirname, 'dist', finalPath))
-  log.info('dir', dirPath)
-  if (!fs.existsSync(dirPath)) return res.status(404).text('not found')
+
+  const dirPath = path.resolve(path.join(__dirname, 'dist', newuri))
+  log.info('req ->', req.params[0], '->', dirPath)
+  if (!fs.existsSync(dirPath)) return res.status(404).send('not found')
   return send(req, dirPath).pipe(res)
 })
 
