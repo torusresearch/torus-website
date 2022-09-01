@@ -2,7 +2,6 @@ import { getPublic, sign } from '@toruslabs/eccrypto'
 import { decryptData, encryptData, keccak256 } from '@toruslabs/metadata-helpers'
 import OpenLogin from '@toruslabs/openlogin'
 import { subkey } from '@toruslabs/openlogin-subkey'
-// import { Mutex } from 'await-semaphore'
 import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
 
@@ -139,18 +138,6 @@ class OpenLoginHandler {
       log.warn(error)
     }
   }
-
-  // async init() {
-  //   const releaseLock = await mutex.acquire()
-  //   if (this.openLoginInstance.provider.initialized) {
-  //     releaseLock()
-  //     return this.openLoginInstance
-  //   }
-  //   await this.openLoginInstance.init()
-  //   log.info('initialized openlogin instance')
-  //   releaseLock()
-  //   return this.openLoginInstance
-  // }
 
   getUserInfo() {
     const allInfo = this.openLoginInstance.state.store.getStore()
