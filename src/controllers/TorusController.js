@@ -1090,7 +1090,7 @@ export default class TorusController extends SafeEventEmitter {
     })
     // its fine to have networkId as null here.
     this.networkController.setRpcTarget(networkId, rpcUrl, chainId, ticker, nickname, rpcPrefs)
-    return null
+    return networkId
   }
 
   async deleteCustomRpc(id) {
