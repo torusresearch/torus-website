@@ -24,7 +24,7 @@ class OpenLoginHandler {
         updatedConfig.loginConfig = loginConfig
       }
       if (Object.keys(updatedConfig).length > 0) {
-        OpenLoginHandler.openLoginHandlerInstance._syncState({
+        OpenLoginHandler.openLoginHandlerInstance.openLoginInstance._syncState({
           ...updatedConfig,
         })
       }
