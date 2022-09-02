@@ -15,7 +15,22 @@ class OpenLoginHandler {
   static openLoginHandlerInstance = null
 
   static getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
-    if (OpenLoginHandler.openLoginHandlerInstance) return OpenLoginHandler.openLoginHandlerInstance
+    if (OpenLoginHandler.openLoginHandlerInstance) {
+      const updatedConfig = {}
+      if (Object.keys(whiteLabel).length > 0) {
+        updatedConfig.whiteLabel = whiteLabel
+      }
+      if (Object.keys(loginConfig).length > 0) {
+        updatedConfig.loginConfig = loginConfig
+      }
+      if (Object.keys(updatedConfig).length > 0) {
+        OpenLoginHandler.openLoginHandlerInstance._syncState({
+          ...updatedConfig,
+        })
+      }
+
+      return OpenLoginHandler.openLoginHandlerInstance
+    }
     OpenLoginHandler.openLoginHandlerInstance = new OpenLoginHandler(whiteLabel, loginConfig, sessionNamespace)
     return OpenLoginHandler.openLoginHandlerInstance
   }
