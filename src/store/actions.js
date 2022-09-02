@@ -309,7 +309,7 @@ export default {
           ...userInfo,
         },
       }
-      await openLoginHandler.updateSession(sessionData)
+      await openLoginHandler.setSession(sessionData)
     }
 
     // TODO: deprecate rehydrate false for the next major version bump

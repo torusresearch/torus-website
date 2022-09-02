@@ -11,6 +11,23 @@ import { ACCOUNT_TYPE } from '../../utils/enums'
 import { get, post, put } from '../../utils/httpHelpers'
 import { generateTorusAuthHeaders, getIFrameOriginObject } from '../../utils/utils'
 
+const getOpenloginWhitelabel = (whiteLabel = {}) => {
+  const whiteLabelOpenLogin = {}
+  if (whiteLabel.theme) {
+    if (whiteLabel.theme.isDark) whiteLabelOpenLogin.dark = true
+    if (whiteLabel.theme.colors) {
+      whiteLabelOpenLogin.theme = {
+        primary: whiteLabel.theme.colors.torusBrand1,
+      }
+    }
+  }
+  if (whiteLabel.logoDark) whiteLabelOpenLogin.logoDark = whiteLabel.logoDark
+  if (whiteLabel.logoLight) whiteLabelOpenLogin.logoLight = whiteLabel.logoLight
+  if (whiteLabel.defaultLanguage) whiteLabelOpenLogin.defaultLanguage = whiteLabel.defaultLanguage
+  if (whiteLabel.name) whiteLabelOpenLogin.name = whiteLabel.name
+  if (whiteLabel.url) whiteLabelOpenLogin.url = whiteLabel.url
+  return whiteLabelOpenLogin
+}
 class OpenLoginHandler {
   static openLoginHandlerInstance = null
 
@@ -18,7 +35,8 @@ class OpenLoginHandler {
     if (OpenLoginHandler.openLoginHandlerInstance) {
       const updatedConfig = {}
       if (Object.keys(whiteLabel).length > 0) {
-        updatedConfig.whiteLabel = whiteLabel
+        const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
+        updatedConfig.whiteLabel = whiteLabelOpenLogin
       }
       if (Object.keys(loginConfig).length > 0) {
         updatedConfig.loginConfig = loginConfig
@@ -37,20 +55,7 @@ class OpenLoginHandler {
 
   // This constructor is private. Don't call it
   constructor(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
-    const whiteLabelOpenLogin = {}
-    if (whiteLabel.theme) {
-      if (whiteLabel.theme.isDark) whiteLabelOpenLogin.dark = true
-      if (whiteLabel.theme.colors) {
-        whiteLabelOpenLogin.theme = {
-          primary: whiteLabel.theme.colors.torusBrand1,
-        }
-      }
-    }
-    if (whiteLabel.logoDark) whiteLabelOpenLogin.logoDark = whiteLabel.logoDark
-    if (whiteLabel.logoLight) whiteLabelOpenLogin.logoLight = whiteLabel.logoLight
-    if (whiteLabel.defaultLanguage) whiteLabelOpenLogin.defaultLanguage = whiteLabel.defaultLanguage
-    if (whiteLabel.name) whiteLabelOpenLogin.name = whiteLabel.name
-    if (whiteLabel.url) whiteLabelOpenLogin.url = whiteLabel.url
+    const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
 
     const iframeObj = getIFrameOriginObject()
     const namespace = config.isCustomLogin ? iframeObj.hostname : undefined
