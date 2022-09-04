@@ -4,82 +4,78 @@
       class="discover-header d-flex mt-3"
       :class="$vuetify.display.smAndDown ? 'flex-column justify-start align-start' : 'flex-row justify-space-between'"
     >
-      <h3 class="discover-title font-weight-bold" :style="{ color: $vuetify.theme.isDark ? '#EEF2F4' : '#5C6C7F' }">
-        {{ t('navBar.discover') }}
+      <h3 class="discover-title font-weight-bold" :style="{ color: isDarkMode ? '#EEF2F4' : '#5C6C7F' }">
+        {{ $t('navBar.discover') }}
       </h3>
 
-      <v-layout mx-n2 class="dapp-filters mt-5 mt-md-0">
-        <v-col xs6 px-sm-2 class="filter-width">
+      <v-row class="dapp-filters mt-5 mt-md-0 mx-n2">
+        <v-col cols="6" class="filter-width px-sm-2">
           <v-menu offset-y>
-            <template #activator="{ on }">
+            <template #activator="{ props }">
               <v-btn
                 block
-                outlined
+                variant="outlined"
                 height="42"
                 class="d-flex align-center filter-selector pa-2"
-                :class="{ 'theme--dark': $vuetify.theme.isDark }"
-                v-on="on"
+                :class="{ 'theme--dark': isDarkMode }"
+                v-bind="props"
               >
-                <v-icon x-small class="text_2--text">$vuetify.icons.activities</v-icon>
-                <span class="ml-1 text_1--text" :class="$vuetify.display.xs ? 'caption' : 'body-2'">{{ selectedCategory }}</span>
-                <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
+                <v-icon size="x-small" class="text-text_2">$activities</v-icon>
+                <span class="ml-1 text-text_1" :class="$vuetify.display.xs ? 'caption' : 'body-2'">{{ selectedCategory }}</span>
+                <v-icon class="ml-auto text-text_2">$select</v-icon>
               </v-btn>
             </template>
             <v-card class="pa-3">
               <v-list min-width="190" dense>
-                <v-list-item-group color="torusBrand1">
+                <v-list-group color="torusBrand1">
                   <v-list-item
                     v-for="category in categoryList"
                     :key="category"
                     :class="selectedCategory === category ? 'active' : ''"
                     @click="selectedCategory = category"
                   >
-                    <v-list-item-content>
-                      <v-list-item-title>{{ category }}</v-list-item-title>
-                    </v-list-item-content>
+                    <v-list-item-title>{{ category }}</v-list-item-title>
                   </v-list-item>
-                </v-list-item-group>
+                </v-list-group>
               </v-list>
             </v-card>
           </v-menu>
         </v-col>
-        <v-col xs6 px-sm-2 class="filter-width">
+        <v-col cols="6" class="filter-width px-sm-2">
           <v-menu offset-y>
             <template #activator="{ on }">
               <v-btn
                 block
-                outlined
+                variant="outlined"
                 height="42"
                 class="d-flex align-center filter-selector pa-2"
-                :class="{ 'theme--dark': $vuetify.theme.isDark }"
+                :class="{ 'v-theme--dark': isDarkMode }"
                 v-on="on"
               >
-                <v-icon class="text_2--text" small>$vuetify.icons.calendar</v-icon>
-                <span class="ml-1 text_1--text" :class="$vuetify.display.xs ? 'caption' : 'body-2'">
+                <v-icon class="text-text_2" size="small">$calendar</v-icon>
+                <span class="ml-1 text-text_1" :class="$vuetify.display.xs ? 'caption' : 'body-2'">
                   {{ getDisplayName(selectedNetwork) }}
                 </span>
-                <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
+                <v-icon class="ml-auto text-text_2">$select</v-icon>
               </v-btn>
             </template>
             <v-card class="pa-3">
-              <v-list min-width="190" dense>
-                <v-list-item-group color="torusBrand1">
+              <v-list min-width="190" density="comfortable">
+                <v-list-group color="torusBrand1">
                   <v-list-item
                     v-for="network in networkList"
                     :key="network"
                     :class="selectedNetwork === network ? 'active' : ''"
                     @click="selectedNetwork = network"
                   >
-                    <v-list-item-content>
-                      <v-list-item-title>{{ getDisplayName(network) }}</v-list-item-title>
-                    </v-list-item-content>
+                    <v-list-item-title>{{ getDisplayName(network) }}</v-list-item-title>
                   </v-list-item>
-                </v-list-item-group>
+                </v-list-group>
               </v-list>
             </v-card>
           </v-menu>
         </v-col>
-      </v-layout>
+      </v-row>
     </div>
 
     <v-container class="f-width">
@@ -91,18 +87,18 @@
         :page.sync="page"
         hide-default-footer
         :loading="isLoadingDapps || redirectUrl"
-        :no-results-text="t('walletDiscover.noData')"
-        :no-data-text="t('walletDiscover.noData')"
+        :no-results-text="$t('walletDiscover.noData')"
+        :no-data-text="$t('walletDiscover.noData')"
       >
         <template #loading>
           <div>
             <BoxLoader :force-spinner="true" :size="50" class="mt-5 mb-2" />
-            <div>{{ redirectUrl ? t('walletDiscover.redirecting').replace(/\{url\}/gi, redirectUrl.href) : t('walletDiscover.loading') }}</div>
+            <div>{{ redirectUrl ? $t('walletDiscover.redirecting', { url: redirectUrl.href }) : $t('walletDiscover.loading') }}</div>
           </div>
         </template>
         <template #default="props">
           <v-row>
-            <v-col v-for="dapp in props.items" :key="dapp.title + dapp.network" class="col-sm-6 col-md-4 col-lg-3 col-xl-3">
+            <v-col v-for="dapp in props.items" :key="dapp.title + dapp.network" sm="6" md="4" lg="3">
               <Dapp :dapp="dapp" :show-network="selectedNetwork === ALL_NETWORKS" />
             </v-col>
           </v-row>
@@ -111,13 +107,7 @@
     </v-container>
 
     <div v-if="!$vuetify.display.xs && pageCount > 1" class="text-center pt-6">
-      <v-pagination
-        v-model="page"
-        class="activity-pagination"
-        prev-icon="$vuetify.icons.page_prev"
-        next-icon="$vuetify.icons.page_next"
-        :length="pageCount"
-      ></v-pagination>
+      <v-pagination v-model="page" class="activity-pagination" prev-icon="$page_prev" next-icon="$page_next" :length="pageCount"></v-pagination>
     </div>
   </v-container>
 </template>
@@ -191,6 +181,9 @@ export default {
     pageCount() {
       return Math.ceil(this.filteredList.length / this.itemsPerPage)
     },
+    isDarkMode() {
+      return this.$vuetify.theme.name === 'dark'
+    },
   },
   async mounted() {
     this.$vuetify.goTo(0)
@@ -207,7 +200,7 @@ export default {
         const dappRecords = await this.fetchDapps()
         this.dapps = dappRecords?.records || []
         this.isLoadingDapps = false
-        this.selectedNetwork = this.$store?.state?.networkType?.host || ALL_NETWORKS // set default network as user's setting default
+        this.selectedNetwork = this.networkType?.host || ALL_NETWORKS // set default network as user's setting default
       }
     }
   },

@@ -58,8 +58,8 @@
   text-align: center;
 }
 
-::v-deep .v-pagination__item,
-::v-deep .v-pagination__navigation {
+:deep(.v-pagination__item),
+:deep(.v-pagination__navigation) {
   border: 0;
   background: none;
   color: rgb(var(--v-theme-torusFont1));

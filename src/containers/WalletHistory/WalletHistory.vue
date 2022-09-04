@@ -1,84 +1,80 @@
 <template>
   <v-container class="wallet-activity" :class="$vuetify.display.xs ? 'px-4' : ''">
-    <v-layout mt-3 wrap>
-      <v-col xs12 md7>
-        <div class="text_2--text font-weight-bold float-left page-title" :class="{ 'display-1': $vuetify.display.width > 390 }">
-          {{ t('walletActivity.transactionActivities') }}
+    <v-row class="mt-3" wrap>
+      <v-col cols="12" md="7">
+        <div class="text-text_2 font-weight-bold float-left page-title" :class="{ 'display-1': $vuetify.display.width > 390 }">
+          {{ $t('walletActivity.transactionActivities') }}
         </div>
       </v-col>
-      <v-col xs12 md5 :class="$vuetify.display.xs ? 'mt-7' : ''">
-        <v-layout mx-n2>
-          <v-col xs6 px-2>
+      <v-col cols="12" md="5" :class="$vuetify.display.xs ? 'mt-7' : ''">
+        <v-row class="mx-n2">
+          <v-col cols="6" class="px-2">
             <v-menu offset-y>
-              <template #activator="{ on }">
+              <template #activator="{ props }">
                 <v-btn
                   block
-                  outlined
+                  variant="outlined"
                   height="42"
                   class="d-flex align-center filter-selector pa-2"
-                  :class="{ 'theme--dark': $vuetify.theme.isDark }"
-                  v-on="on"
+                  :class="{ 'v-theme--dark': $vuetify.theme.isDark }"
+                  v-bind="props"
                 >
-                  <v-icon x-small class="text_2--text">$vuetify.icons.activities</v-icon>
-                  <span class="ml-1 text_1--text" :class="$vuetify.display.xs ? 'caption' : 'body-2'">{{ t(selectedAction) }}</span>
-                  <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
+                  <v-icon size="x-small" class="text-text_2">$activities</v-icon>
+                  <span class="ml-1 text-text_1" :class="$vuetify.display.xs ? 'caption' : 'body-2'">{{ $t(selectedAction) }}</span>
+                  <v-icon class="ml-auto text-text_2">$select</v-icon>
                 </v-btn>
               </template>
               <v-card class="pa-3">
-                <v-list min-width="190" dense>
-                  <v-list-item-group color="torusBrand1">
+                <v-list min-width="190" density="comfortable">
+                  <v-list-group color="torusBrand1">
                     <v-list-item
                       v-for="actionType in actionTypes"
                       :key="actionType.value"
                       :class="selectedAction === actionType.value ? 'active' : ''"
                       @click="selectedAction = actionType.value"
                     >
-                      <v-list-item-content>
-                        <v-list-item-title>{{ actionType.text }}</v-list-item-title>
-                      </v-list-item-content>
+                      <v-list-item-title>{{ actionType.text }}</v-list-item-title>
                     </v-list-item>
-                  </v-list-item-group>
+                  </v-list-group>
                 </v-list>
               </v-card>
             </v-menu>
           </v-col>
-          <v-col xs6 px-2>
+          <v-col cols="6" class="px-2">
             <v-menu offset-y>
-              <template #activator="{ on }">
+              <template #activator="{ props }">
                 <v-btn
                   block
-                  outlined
+                  variant="outlined"
                   height="42"
                   class="d-flex align-center filter-selector pa-2"
                   :class="{ 'theme--dark': $vuetify.theme.isDark }"
-                  v-on="on"
+                  v-bind="props"
                 >
-                  <v-icon class="text_2--text" small>$vuetify.icons.calendar</v-icon>
-                  <span class="ml-1 text_1--text" :class="$vuetify.display.xs ? 'caption' : 'body-2'">{{ t(selectedPeriod) }}</span>
-                  <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
+                  <v-icon class="text-text_2" small>$calendar</v-icon>
+                  <span class="ml-1 text-text_1" :class="$vuetify.display.xs ? 'caption' : 'body-2'">{{ $t(selectedPeriod) }}</span>
+                  <v-icon class="ml-auto text-text_2">$select</v-icon>
                 </v-btn>
               </template>
               <v-card class="pa-3">
                 <v-list min-width="190" dense>
-                  <v-list-item-group color="torusBrand1">
+                  <v-list-group color="torusBrand1">
                     <v-list-item
                       v-for="period in periods"
                       :key="period.value"
                       :class="selectedPeriod === period.value ? 'active' : ''"
                       @click="selectedPeriod = period.value"
                     >
-                      <v-list-item-content>
-                        <v-list-item-title>{{ period.text }}</v-list-item-title>
-                      </v-list-item-content>
+                      <v-list-item-title>{{ period.text }}</v-list-item-title>
                     </v-list-item>
-                  </v-list-item-group>
+                  </v-list-group>
                 </v-list>
               </v-card>
             </v-menu>
           </v-col>
-        </v-layout>
+        </v-row>
       </v-col>
-      <v-col xs12 :class="$vuetify.display.xs ? 'mt-6' : 'mt-7'">
+      <v-col cols="12" :class="$vuetify.display.xs ? 'mt-6' : 'mt-7'">
         <TxHistoryTable
           :currency-multiplier="currencyMultiplier"
           :selected-action="selectedAction"
@@ -89,7 +85,7 @@
           @cancelTransaction="cancelTransaction"
         />
       </v-col>
-    </v-layout>
+    </v-row>
   </v-container>
 </template>
 
@@ -290,13 +286,13 @@ export default {
           activity.transaction_category
         )
       ) {
-        return '$vuetify.icons.coins_approve'
+        return '$coins_approve'
       }
       if (activity.action === ACTIVITY_ACTION_TOPUP) {
         return `provider-${activity.from.toLowerCase()}.svg`
       }
       const actionSplits = activity.action.split('.')
-      const fallbackIcon = actionSplits.length > 0 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''
+      const fallbackIcon = actionSplits.length > 0 ? `$coins_${activity.action.split('.')[1].toLowerCase()}` : ''
       if (activity.action === ACTIVITY_ACTION_SEND || activity.action === ACTIVITY_ACTION_RECEIVE) {
         if (activity.type === CONTRACT_TYPE_ERC721 || activity.type === CONTRACT_TYPE_ERC1155) {
           return activity.type_image_link || this.networkType.logo // will be an opensea image url

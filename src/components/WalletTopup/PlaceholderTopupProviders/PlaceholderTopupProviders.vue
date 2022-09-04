@@ -1,5 +1,5 @@
 <template>
-  <v-col mb-4 px-4 class="topup-providers" :class="$vuetify.display.width > 800 ? 'xs5' : 'xs12'">
+  <v-col class="topup-providers mb-4 px-4" :cols="$vuetify.display.width > 800 ? '5' : '12'">
     <v-card
       v-for="targetProvider in providers"
       :key="targetProvider.name"
@@ -9,27 +9,27 @@
     >
       <div>
         <v-list-item :id="`${targetProvider.name}-link`" three-line>
-          <v-list-item-icon class="mr-2 align-self-center">
-            <v-icon :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBlack--text'">$vuetify.icons.radioOff</v-icon>
-          </v-list-item-icon>
+          <template #prepend>
+            <div class="mr-2 align-self-center">
+              <v-icon :class="isDarkMode ? 'text-torusLight' : 'text-torusBlack'">$radioOff</v-icon>
+            </div>
+          </template>
           <v-list-item-avatar :width="$vuetify.display.xs ? 100 : 130" height="100%" tile class="align-self-center mr-2">
             <v-img contain :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name"></v-img>
           </v-list-item-avatar>
-          <v-list-item-content class="align-self-center text-right text_1--text caption">
-            <div v-html="`${t('walletTopUp.paywith')} ${targetProvider.line1}`" />
-            <div>
-              <span class="font-weight-medium">{{ t('walletTopUp.fees') }}</span>
-              : {{ targetProvider.line2 }}
-            </div>
-            <div>
-              <span class="font-weight-medium">{{ t('walletTopUp.limits') }}</span>
-              : {{ targetProvider.line3 }}
-            </div>
-            <div>
-              <span class="font-weight-medium">{{ t('walletTopUp.currencies') }}</span>
-              : {{ supportedNetworkCryptosForProvider(targetProvider).join(', ') }}
-            </div>
-          </v-list-item-content>
+          <div v-html="`${$t('walletTopUp.paywith')} ${targetProvider.line1}`" />
+          <div>
+            <span class="font-weight-medium">{{ $t('walletTopUp.fees') }}</span>
+            : {{ targetProvider.line2 }}
+          </div>
+          <div>
+            <span class="font-weight-medium">{{ $t('walletTopUp.limits') }}</span>
+            : {{ targetProvider.line3 }}
+          </div>
+          <div>
+            <span class="font-weight-medium">{{ $t('walletTopUp.currencies') }}</span>
+            : {{ supportedNetworkCryptosForProvider(targetProvider).join(', ') }}
+          </div>
         </v-list-item>
       </div>
     </v-card>
@@ -49,6 +49,11 @@ export default {
     return {
       providers: getPaymentProviders(MAINNET_CODE),
     }
+  },
+  computed: {
+    isDarkMode() {
+      return this.$vuetify.theme.name === 'dark'
+    },
   },
   methods: {
     supportedNetworkCryptosForProvider(targetProvider) {

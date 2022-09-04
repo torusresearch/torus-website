@@ -17,13 +17,13 @@
               />
             </div>
           </template>
-          <v-list-item-title class="caption text_1--text font-weight-bold" :class="{ 'mb-2': !$vuetify.display.xs }">
+          <v-list-item-title class="caption text-text_1 font-weight-bold" :class="{ 'mb-2': !$vuetify.display.xs }">
             {{ collectible.name }}
           </v-list-item-title>
-          <v-list-item-subtitle v-if="!$vuetify.display.xs" class="text_3--text caption">
+          <v-list-item-subtitle v-if="!$vuetify.display.xs" class="text-text_3 caption">
             {{ collectible.assets.length }} {{ collectible.assets.length > 1 ? t('walletHome.assets') : t('walletHome.asset') }}
           </v-list-item-subtitle>
-          <div v-if="$vuetify.display.xs" class="text-right text_3--text asset-note">
+          <div v-if="$vuetify.display.xs" class="text-right text-text_3 asset-note">
             {{ collectible.assets.length }} {{ collectible.assets.length > 1 ? t('walletHome.assets') : t('walletHome.asset') }}
           </div>
         </v-list-item>
@@ -34,7 +34,7 @@
         <v-card-text class="pa-0">
           <div class="d-flex align-center py-3 px-4 card-header elevation-1">
             <div class="flex-grow-1 text-clamp-one text-center" :style="{ height: '25px' }">
-              <span class="caption text_1--text font-weight-bold">{{ $t('homeAssets.didNotSee') }}</span>
+              <span class="caption text-text_1 font-weight-bold">{{ $t('homeAssets.didNotSee') }}</span>
             </div>
           </div>
           <div class="text-center py-3 px-4" :style="{ lineHeight: '0' }">

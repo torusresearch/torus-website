@@ -1,12 +1,12 @@
 <template>
   <v-card class="elevation-1 promotion-card" :class="{ isMobile: $vuetify.display.xs }">
-    <v-layout class="d-flex flex-column fill-height py-4 px-6">
+    <v-row class="d-flex flex-column fill-height py-4 px-6">
       <v-col class="flex-grow-1 d-flex">
         <div class="promotion-text pr-3">
-          <div class="text-body-1 font-weight-bold text_1--text text-clamp-two">{{ title }}</div>
-          <div class="caption text_1--text" :title="subtitle">
+          <div class="text-body-1 font-weight-bold text-text_1 text-clamp-two">{{ title }}</div>
+          <div class="caption text-text_1" :title="subtitle">
             {{ subtitle }}
-            <a class="text-decoration-none torusBrand1--text font-weight-bold" :href="detailsLink" target="_blank" rel="noreferrer noopener">
+            <a class="text-decoration-none text-torusBrand1 font-weight-bold" :href="detailsLink" target="_blank" rel="noreferrer noopener">
               {{ detailsText }}
             </a>
           </div>
@@ -26,7 +26,7 @@
         </slot>
       </v-col>
       <!-- <v-col class="flex-grow-0">
-        <v-layout wrap class="mx-n3 more-details-container">
+        <v-row wrap class="mx-n3 more-details-container">
           <v-col v-if="!!detailsLinkTwo" xs12 sm6 px-3 :class="$vuetify.display.xs ? 'mb-2' : ''">
             <ShowToolTip :address="detailsLinkTwo">
               <div :class="{ 'theme--dark': $vuetify.theme.isDark }" class="d-flex align-center gmt-share-referral copy-link elevation-3 px-4 py-1">
@@ -40,7 +40,7 @@
               depressed
               large
               block
-              class="torus-btn1 torusBrand1--text gmt-billboard-cta"
+              class="torus-btn1 text-torusBrand1 gmt-billboard-cta"
               :class="$store.state.whiteLabel.isActive ? 'torus-btn1--whitelabel' : ''"
               :href="detailsLink"
               target="_blank"
@@ -49,9 +49,9 @@
               {{ detailsText }}
             </v-btn>
           </v-col>
-        </v-layout>
+        </v-row>
       </v-col> -->
-    </v-layout>
+    </v-row>
   </v-card>
 </template>
 

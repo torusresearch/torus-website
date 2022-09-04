@@ -28,11 +28,13 @@
                   :class="{ 'is-selected': speed.isSelected }"
                   @click="selectSpeed(speed.value)"
                 >
-                  <v-list-item-icon class="align-self-center mr-3">
-                    <v-icon :class="speed.isSelected ? 'text-torusBrand1' : isDarkMode ? 'text-torusLight' : 'text-torusBlack'">
-                      ${{ speed.isSelected ? 'radioOn' : 'radioOff' }}
-                    </v-icon>
-                  </v-list-item-icon>
+                  <template #prepend>
+                    <div class="align-self-center mr-3">
+                      <v-icon :class="speed.isSelected ? 'text-torusBrand1' : isDarkMode ? 'text-torusLight' : 'text-torusBlack'">
+                        ${{ speed.isSelected ? 'radioOn' : 'radioOff' }}
+                      </v-icon>
+                    </div>
+                  </template>
                   <div class="d-flex align-center">
                     <div class="body-2 font-weight-bold text-text_1 speed-list_label">{{ speed.label }}</div>
                     <div class="ml-4">

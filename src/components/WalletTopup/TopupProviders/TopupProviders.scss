@@ -9,3 +9,15 @@
 .v-card a {
   text-decoration: none;
 }
+
+.topup-provider {
+  .v-list-item {
+    :deep(.v-icon) {
+      color: rgb(var(--v-theme-torusBlack));
+  
+      &.v-theme--dark {
+        color: rgb(var(--v-theme-torusLight));
+      }
+    }
+  }
+}

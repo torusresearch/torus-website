@@ -26,7 +26,7 @@
     }
     & .dapp-title {
       font-size: 14px;
-      color: var(--v-text_1-base);
+      color: rgb(var(--v-theme-text_1));
       margin: 0px;
       text-overflow: ellipsis;
       overflow: hidden;
@@ -93,7 +93,7 @@
   border-radius: 0;
   padding: 3px 0;
   height: auto;
-  ::v-deep .network-chip__name.network-chip__name--mobile {
+  :deep(.network-chip__name.network-chip__name--mobile) {
     font-size: 12px;
   }
 }

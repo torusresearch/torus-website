@@ -2,9 +2,9 @@
   <v-container class="wallet-topup-view pt-6" :class="$vuetify.display.xs ? 'px-4' : ''">
     <slot></slot>
 
-    <v-layout mt-7 mx-n4 wrap>
+    <v-row class="mt-7 mx-n4" wrap>
       <PlaceholderTopupProviders />
-    </v-layout>
+    </v-row>
   </v-container>
 </template>
 

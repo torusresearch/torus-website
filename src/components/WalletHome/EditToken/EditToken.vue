@@ -26,7 +26,7 @@
                 <v-text-field
                   :value="customAddress"
                   :rules="[rules.required, duplicateTokenRule, addressValidityRule]"
-                  outlined
+                  variant="outlined"
                   @input="onCustomAddressChange"
                 ></v-text-field>
               </v-col>
@@ -49,7 +49,7 @@
                     <v-btn block size="large" variant="text" @click="closeForm">{{ $t('homeToken.cancel') }}</v-btn>
                   </v-col>
                   <v-col cols="6" class="px-2">
-                    <v-btn block large color="torusBrand1" class="text-white" type="submit" :disabled="!addTokenFormValid">
+                    <v-btn block size="large" color="torusBrand1" class="text-white" type="submit" :disabled="!addTokenFormValid">
                       {{ $t('homeToken.next') }}
                     </v-btn>
                   </v-col>
@@ -99,14 +99,14 @@
             <v-col cols="12">
               <v-row class="mx-n2">
                 <v-col cols="6" class="px-2">
-                  <v-btn v-if="isHideMode" block large variant="text" @click="closeForm">{{ $t('homeToken.cancel') }}</v-btn>
-                  <v-btn v-else block large variant="text" @click="tab = 0">{{ $t('homeToken.back') }}</v-btn>
+                  <v-btn v-if="isHideMode" block size="large" variant="text" @click="closeForm">{{ $t('homeToken.cancel') }}</v-btn>
+                  <v-btn v-else block size="large" variant="text" @click="tab = 0">{{ $t('homeToken.back') }}</v-btn>
                 </v-col>
                 <v-col cols="6" class="px-2">
-                  <v-btn v-if="isHideMode" block large color="torusBrand1" class="text-white" type="button" @click="callDeleteToken">
+                  <v-btn v-if="isHideMode" block size="large" color="torusBrand1" class="text-white" type="button" @click="callDeleteToken">
                     {{ $t('homeToken.hideToken') }}
                   </v-btn>
-                  <v-btn v-else block large color="torusBrand1" class="text-white" type="button" @click="addToken">
+                  <v-btn v-else block size="large" color="torusBrand1" class="text-white" type="button" @click="addToken">
                     {{ $t('homeToken.addToken') }}
                   </v-btn>
                 </v-col>

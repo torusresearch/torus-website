@@ -1,5 +1,5 @@
 <template>
-  <v-col mb-4 px-4 class="topup-providers" :class="$vuetify.display.width > 800 ? 'xs5' : 'xs12'">
+  <v-col class="topup-providers mb-4 px-4" :cols="$vuetify.display.width > 800 ? '5' : '12'">
     <v-card
       v-for="targetProvider in activeProviders"
       :key="targetProvider.name"
@@ -9,60 +9,63 @@
       @click="innerProvider = targetProvider.name"
     >
       <router-link :to="targetProvider.link">
-        <v-list-item :id="`${targetProvider.name}-link`" three-line @click="scrollToPosition">
-          <v-list-item-icon class="mr-2 align-self-center">
-            <v-icon v-if="innerProvider === targetProvider.name" :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBrand1--text'">
-              $vuetify.icons.radioOn
-            </v-icon>
-            <v-icon v-else :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBlack--text'">$vuetify.icons.radioOff</v-icon>
-          </v-list-item-icon>
-          <v-list-item-avatar :width="$vuetify.display.xs ? 100 : 130" height="100%" tile class="align-self-center mr-2">
-            <v-img contain :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name"></v-img>
-          </v-list-item-avatar>
-          <v-list-item-content class="align-self-center text-right text_1--text caption">
-            <div v-html="`${t('walletTopUp.paywith')} ${targetProvider.line1}`" />
+        <v-list-item
+          :id="`${targetProvider.name}-link`"
+          :prepend-icon="innerProvider === targetProvider.name ? '$radioOn' : '$radioOff'"
+          three-line
+          @click="scrollToPosition"
+        >
+          <template #prepend>
+            <div :style="{ width: $vuetify.display.xs ? '100px' : '130px', height: '100%' }" class="align-self-center mr-2">
+              <v-img contain :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name"></v-img>
+            </div>
+          </template>
+          <div class="align-self-center text-right text-text_1 caption">
+            <div v-html="`${$t('walletTopUp.paywith')} ${targetProvider.line1}`" />
             <div>
-              <span class="font-weight-medium">{{ t('walletTopUp.fees') }}</span>
+              <span class="font-weight-medium">{{ $t('walletTopUp.fees') }}</span>
               : {{ targetProvider.line2 }}
             </div>
             <div>
-              <span class="font-weight-medium">{{ t('walletTopUp.limits') }}</span>
+              <span class="font-weight-medium">{{ $t('walletTopUp.limits') }}</span>
               : {{ targetProvider.line3 }}
             </div>
             <div>
-              <span class="font-weight-medium">{{ t('walletTopUp.currencies') }}</span>
+              <span class="font-weight-medium">{{ $t('walletTopUp.currencies') }}</span>
               : {{ supportedNetworkCryptosForProvider(targetProvider).join(', ') }}
             </div>
-          </v-list-item-content>
+          </div>
         </v-list-item>
       </router-link>
     </v-card>
 
-    <v-tooltip v-for="targetProvider in inactiveProviders" :key="targetProvider.name" right>
+    <v-tooltip v-for="targetProvider in inactiveProviders" :key="targetProvider.name" location="right">
       <template #activator="{ on }">
         <v-card class="topup-provider mb-4 coming-soon" :data-provider="targetProvider.name" v-on="on">
           <v-list-item three-line>
-            <v-list-item-icon class="mr-2 align-self-center">
-              <v-icon color="grey">$vuetify.icons.radioOff</v-icon>
-            </v-list-item-icon>
+            <template #prepend>
+              <div class="mr-2 align-self-center">
+                <v-icon color="grey">$radioOff</v-icon>
+              </div>
+            </template>
             <v-list-item-avatar :width="$vuetify.display.xs ? 105 : 138" height="100%" tile class="align-self-center mr-2">
               <img :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
             </v-list-item-avatar>
-            <v-list-item-content class="align-self-center text-right text_1--text caption">
+            <div class="align-self-center text-right text-text_1 caption">
               <div>{{ targetProvider.line1 }}</div>
               <div>
-                <span class="font-weight-medium">{{ t('walletTopUp.fees') }}</span>
+                <span class="font-weight-medium">{{ $t('walletTopUp.fees') }}</span>
                 : {{ targetProvider.line2 }}
               </div>
               <div>
-                <span class="font-weight-medium">{{ t('walletTopUp.limits') }}</span>
+                <span class="font-weight-medium">{{ $t('walletTopUp.limits') }}</span>
                 : {{ targetProvider.line3 }}
               </div>
               <div>
-                <span class="font-weight-medium">{{ t('walletTopUp.currencies') }}</span>
+                <span class="font-weight-medium">{{ $t('walletTopUp.currencies') }}</span>
                 : {{ supportedNetworkCryptosForProvider(targetProvider).join(', ') }}
               </div>
-            </v-list-item-content>
+            </div>
           </v-list-item>
         </v-card>
       </template>
@@ -110,6 +113,9 @@ export default {
     },
     providersFiltered() {
       return this.providers.filter((provider) => this.innerProvider === '' || (this.innerProvider && this.innerProvider === provider.name))
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.name === 'dark'
     },
   },
   watch: {

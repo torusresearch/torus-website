@@ -27,7 +27,7 @@
                 <v-text-field
                   :value="contractAddress"
                   :rules="[rules.required, addressValidityRule]"
-                  outlined
+                  variant="outlined"
                   @change="setContractAddress"
                 ></v-text-field>
               </v-col>
@@ -50,10 +50,10 @@
               <v-col cols="12" class="mt-15">
                 <v-row class="mx-n2">
                   <v-col cols="6" class="px-2">
-                    <v-btn block large text @click="closeForm">{{ $t('homeToken.cancel') }}</v-btn>
+                    <v-btn block size="large" text @click="closeForm">{{ $t('homeToken.cancel') }}</v-btn>
                   </v-col>
                   <v-col cols="6" class="px-2">
-                    <v-btn block large color="torusBrand1" class="text-white" type="submit" :disabled="!addAssetFormValid">
+                    <v-btn block size="large" color="torusBrand1" class="text-white" type="submit" :disabled="!addAssetFormValid">
                       {{ $t('homeToken.next') }}
                     </v-btn>
                   </v-col>
@@ -109,10 +109,10 @@
             <v-col cols="12" class="mt-10">
               <v-row class="mx-n2">
                 <v-col cols="6" class="px-2">
-                  <v-btn block large variant="text" @click="tab = 0">{{ $t('homeToken.back') }}</v-btn>
+                  <v-btn block size="large" variant="text" @click="tab = 0">{{ $t('homeToken.back') }}</v-btn>
                 </v-col>
                 <v-col cols="6" class="px-2">
-                  <v-btn block large color="torusBrand1" class="text-white" @click="addCollectible">{{ $t('homeAssets.add') }}</v-btn>
+                  <v-btn block size="large" color="torusBrand1" class="text-white" @click="addCollectible">{{ $t('homeAssets.add') }}</v-btn>
                 </v-col>
               </v-row>
             </v-col>

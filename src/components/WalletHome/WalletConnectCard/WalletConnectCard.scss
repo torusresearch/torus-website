@@ -23,6 +23,6 @@
   font-size: 12px;
   font-weight: 500;
   &.v-theme--dark {
-    border: 1px solid var(--v-theme-text_3);
+    border: 1px solid rgb(var(--v-theme-text_3));
   }
 }

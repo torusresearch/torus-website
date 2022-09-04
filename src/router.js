@@ -150,6 +150,9 @@ const router = createRouter({
         },
       ],
     },
+    // TODO: remove the not found route.
+    // This is only for testing the vue components
+    // Please fix this before merging to the master.
     { path: '/:pathMatch(.*)*', component: () => import(/* webpackChunkName: "login" */ './views/NotFound.vue') },
   ],
 })

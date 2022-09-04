@@ -1,7 +1,7 @@
 <template>
   <v-card
     class="dapp-card align-center"
-    :class="{ 'theme--dark': $vuetify.theme.isDark, 'has-network': showNetwork }"
+    :class="{ 'v-theme--dark': isDarkMode, 'has-network': showNetwork }"
     @click="navigateToDapp"
     @keydown.enter="navigateToDapp"
   >
@@ -11,8 +11,8 @@
         height="48"
         :src="`${getSrc}`"
         alt="Dapp Logo"
-        :onerror="`if (!this.src.includes('images/dapp-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/dapp-${
-          $vuetify.theme.dark ? 'dark' : 'light'
+        :onerror="`if (!this.src.includes('images/dapp-${isDarkMode ? 'dark' : 'light'}.svg')) this.src = '/images/dapp-${
+          isDarkMode ? 'dark' : 'light'
         }.svg';`"
       />
       <div class="d-flex align-start dapp-info flex-column">
@@ -57,6 +57,9 @@ export default {
     },
     isSupportedNetwork() {
       return !!SUPPORTED_NETWORK_TYPES[this.dapp.network]?.host
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.name === 'dark'
     },
   },
   methods: {

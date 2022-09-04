@@ -17,7 +17,7 @@
   .v-chip.status-chip {
     color: #0f1222;
     width: 100px;
-    ::v-deep .v-chip__content {
+    :deep(.v-chip__content) {
       text-align: center;
       display: block;
       height: auto;

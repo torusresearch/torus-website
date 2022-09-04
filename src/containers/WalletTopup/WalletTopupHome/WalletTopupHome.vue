@@ -6,13 +6,13 @@
       :class="{ 'is-mobile': $vuetify.display.smAndDown }"
     >
       <div class="d-flex justify-md-center mb-2 mb-md-0">
-        <v-icon size="22" class="black--text mr-2">$vuetify.icons.alert</v-icon>
-        <div class="text-caption text-sm-body-2">{{ t('walletTopUp.topUpNotSupported', [networkType.networkName]) }}</div>
+        <v-icon size="22" class="text-black mr-2">$alert</v-icon>
+        <div class="text-caption text-sm-body-2">{{ $t('walletTopUp.topUpNotSupported', [networkType.networkName]) }}</div>
       </div>
 
       <div class="text-right" style="margin-top: -4px">
         <router-link class="text-uppercase text-decoration-none text-body-2 ml-1" :to="{ name: 'walletSettings' }" :style="{ lineHeight: 0 }">
-          {{ t('walletTopUp.changeNetwork') }}
+          {{ $t('walletTopUp.changeNetwork') }}
         </router-link>
       </div>
     </div>
@@ -26,7 +26,7 @@
       <!-- Normal Topup Header -->
       <WalletTopupHeader :selected-provider="selectedProvider" />
 
-      <v-layout mt-7 mx-n4 wrap>
+      <v-row class="mt-7 mx-n4" wrap>
         <TopupProviders
           :selected-provider="selectedProvider"
           :providers="providers"
@@ -37,19 +37,19 @@
           "
         />
 
-        <v-col v-if="selectedProvider && $vuetify.display.xs" xs12 mb-2>
-          <div class="font-weight-bold headline px-4 mb-4 text_2--text">
+        <v-col v-if="selectedProvider && $vuetify.display.xs" cols="12" class="mb-2">
+          <div class="font-weight-bold headline px-4 mb-4 text-text_2">
             <span>
-              {{ t('walletTopUp.purchaseVia') }}
+              {{ $t('walletTopUp.purchaseVia') }}
               <span class="text-capitalize">{{ selectedProvider }}</span>
             </span>
           </div>
         </v-col>
 
-        <v-col id="providerForm" mb-4 px-4 :class="$vuetify.display.width > 800 ? 'xs7' : 'xs12'">
+        <v-col id="providerForm" class="mb-4 px-4" :cols="$vuetify.display.width > 800 ? '7' : '12'">
           <router-view></router-view>
         </v-col>
-      </v-layout>
+      </v-row>
     </v-container>
   </div>
 </template>

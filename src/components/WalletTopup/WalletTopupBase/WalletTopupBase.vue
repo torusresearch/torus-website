@@ -2,16 +2,16 @@
   <div>
     <v-card class="elevation-1 pa-6">
       <v-form ref="paymentForm" v-model="formValid" lazy-validation @submit.prevent="">
-        <v-layout wrap class="wallet-topup">
-          <v-col xs12>
-            <p class="body-2 text_1--text">
+        <v-row wrap class="wallet-topup">
+          <v-col cols="12">
+            <p class="body-2 text-text_1">
               <span class="text-capitalize selected-provider">{{ selectedProvider }}</span>
-              {{ t('walletTopUp.description') }}
+              {{ $t('walletTopUp.description') }}
             </p>
           </v-col>
 
-          <v-col xs12 sm4>
-            <div class="body-2 mb-2">{{ t('walletTopUp.wannaBuy') }}</div>
+          <v-col cols="12" sm="4">
+            <div class="body-2 mb-2">{{ $t('walletTopUp.wannaBuy') }}</div>
             <v-select
               id="cryptocurrency"
               v-model="selectedCryptoCurrency"
@@ -28,12 +28,12 @@
           </v-col>
           <v-col v-if="!$vuetify.display.xs" xs8></v-col>
 
-          <v-layout wrap mx-n2>
-            <v-col xs12 sm8 px-2>
+          <v-row wrap class="mx-n2">
+            <v-col cols="12" sm="8" class="px-2">
               <div class="mb-2 d-flex align-center">
-                <span class="body-2">{{ t('walletTopUp.youSend') }}</span>
+                <span class="body-2">{{ $t('walletTopUp.youSend') }}</span>
                 <span class="caption ml-auto">
-                  {{ t('walletTopUp.min') }} {{ selectedProvider === XANPOOL ? '0.1 ETH' : minOrderValue }}, {{ t('walletTopUp.max') }}
+                  {{ $t('walletTopUp.min') }} {{ selectedProvider === XANPOOL ? '0.1 ETH' : minOrderValue }}, {{ $t('walletTopUp.max') }}
                   {{ maxOrderValue }} USD*
                 </span>
               </div>
@@ -41,15 +41,15 @@
                 id="you-send"
                 class="unique-hint"
                 :placeholder="sendPlaceholder"
-                outlined
+                variant="outlined"
                 :value="fiatValue"
                 :rules="amountRules"
                 aria-label="Amount to Buy"
                 @input="setFiatValue"
               >
                 <template #append>
-                  <v-btn outlined small color="torusBrand1" @click="setFiatValue(100)">100</v-btn>
-                  <v-btn outlined small color="torusBrand1" class="ml-2" @click="setFiatValue(200)">200</v-btn>
+                  <v-btn variant="outlined" size="small" color="torusBrand1" @click="setFiatValue(100)">100</v-btn>
+                  <v-btn variant="outlined" size="small" color="torusBrand1" class="ml-2" @click="setFiatValue(200)">200</v-btn>
                   <!-- <div class="torusBrand1--text font-weight-medium body-2 pt-1 ml-2">{{ selectedCurrency }}*</div> -->
                 </template>
               </v-text-field>
@@ -58,13 +58,13 @@
                 <div class="v-messages">
                   <div class="v-messages__wrapper">
                     <div class="v-messages__message d-flex">
-                      <v-col class="description text_2--text">
-                        <span v-if="selectedProviderObj.includeFees">{{ t('walletTopUp.includes') }} &nbsp;&nbsp;</span>
-                        <span v-else>{{ t('walletTopUp.doesntInclude') }} &nbsp;&nbsp;</span>
+                      <v-col class="description text-text_2">
+                        <span v-if="selectedProviderObj.includeFees">{{ $t('walletTopUp.includes') }} &nbsp;&nbsp;</span>
+                        <span v-else>{{ $t('walletTopUp.doesntInclude') }} &nbsp;&nbsp;</span>
                         <span v-html="selectedProviderObj.line2 || ''"></span>
                         <HelpTooltip
-                          :title="t('walletTopUp.serviceFee')"
-                          :description="`${t('walletTopUp.serviceFeeDesc1')} ${selectedProvider} ${t('walletTopUp.serviceFeeDesc2')}`"
+                          :title="$t('walletTopUp.serviceFee')"
+                          :description="`${$t('walletTopUp.serviceFeeDesc1')} ${selectedProvider} ${$t('walletTopUp.serviceFeeDesc2')}`"
                         ></HelpTooltip>
                       </v-col>
                     </div>
@@ -72,68 +72,68 @@
                 </div>
               </div>
             </v-col>
-            <v-col xs12 sm4 px-2>
+            <v-col cols="12" sm="4" class="px-2">
               <div v-if="!$vuetify.display.xs" class="mb-2 d-flex align-center" :style="{ height: '20px' }">
                 <span class="body-2">&nbsp;</span>
               </div>
               <v-autocomplete
                 id="currency-selector"
                 v-model="selectedCurrency"
-                outlined
+                variant="outlined"
                 :items="supportedCurrencies"
                 append-icon="$vuetify.icons.select"
                 aria-label="Currency Selector"
                 @change="onCurrencyChange"
               />
             </v-col>
-          </v-layout>
+          </v-row>
 
-          <v-col xs12 class="text-right">
-            <div class="body-2">{{ t('walletTopUp.receive') }}</div>
+          <v-col cols="12" class="text-right">
+            <div class="body-2">{{ $t('walletTopUp.receive') }}</div>
             <ComponentLoader v-if="fetchingQuote" class="mt-1" />
             <div v-else class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrency.display }}</div>
             <div v-if="!fetchQuoteError" class="description">
-              {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency.display }} = {{ displayRateString }} {{ selectedCurrency }}
+              {{ $t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency.display }} = {{ displayRateString }} {{ selectedCurrency }}
             </div>
 
-            <div class="description mt-6">{{ t('walletTopUp.theProcess') }} 10 - 15 {{ t('walletTopUp.minSmall') }}.</div>
+            <div class="description mt-6">{{ $t('walletTopUp.theProcess') }} 10 - 15 {{ $t('walletTopUp.minSmall') }}.</div>
             <div class="description mt-1">
-              {{ selectedProviderObj.receiveHint ? t(selectedProviderObj.receiveHint) : t('walletTopUp.receiveHint') }}
+              {{ selectedProviderObj.receiveHint ? $t(selectedProviderObj.receiveHint) : $t('walletTopUp.receiveHint') }}
             </div>
           </v-col>
-        </v-layout>
+        </v-row>
       </v-form>
-      <v-layout wrap>
-        <v-col xs12 class="mt-10">
+      <v-row wrap>
+        <v-col cols="12" class="mt-10">
           <div class="text-right">
-            <v-tooltip bottom :disabled="formValid">
+            <v-tooltip location="bottom" :disabled="formValid">
               <template #activator="{ on }">
                 <span v-on="on">
                   <v-btn
-                    class="px-8 white--text gmt-topup"
+                    class="px-8 text-white gmt-topup"
                     :disabled="!formValid || !isQuoteFetched || !!fetchQuoteError || fetchingQuote"
-                    large
+                    size="large"
                     depressed
                     :loading="fetchingQuote"
                     color="torusBrand1"
                     type="submit"
                     @click.prevent="sendOrder"
                   >
-                    {{ t('walletTopUp.continue') }}
+                    {{ $t('walletTopUp.continue') }}
                   </v-btn>
                 </span>
               </template>
-              <span>{{ t('walletTopUp.resolveErrors') }}</span>
+              <span>{{ $t('walletTopUp.resolveErrors') }}</span>
             </v-tooltip>
-            <div class="description mt-1">{{ t('walletTopUp.redirectMessage') }}</div>
+            <div class="description mt-1">{{ $t('walletTopUp.redirectMessage') }}</div>
           </div>
         </v-col>
-      </v-layout>
+      </v-row>
     </v-card>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
       <template #action>
-        <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
+        <v-btn theme="dark" variant="text" @click="snackbar = false">{{ $t('walletTopUp.close') }}</v-btn>
       </template>
     </v-snackbar>
   </div>
