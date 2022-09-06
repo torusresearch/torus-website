@@ -10,10 +10,10 @@
                   <v-flex class="mb-8" xs10 ml-auto mr-auto>
                     <img
                       height="25"
-                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white-new' : 'blue'}.svg`)"
                       alt="Torus Logo"
                     />
-                    <v-select
+                    <!-- <v-select
                       id="availableOn"
                       v-model="selectedWallet"
                       dense
@@ -36,65 +36,43 @@
                           {{ item }}
                         </v-row>
                       </template>
-                    </v-select>
+                    </v-select> -->
                   </v-flex>
                   <LoginTitle class="mb-6" />
                   <v-flex xs10 mx-auto mt-4>
                     <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
                   </v-flex>
-                  <LoginFooter :authenticators="thirdPartyAuthenticators" />
+                  <!-- <LoginFooter :authenticators="thirdPartyAuthenticators" /> -->
                 </v-layout>
+                <section>
+                  <LoginSlide
+                    :show-spring-festival="showSpringFestival"
+                    @change="
+                      (current) => {
+                        currentCarousel = current
+                      }
+                    "
+                  />
+                  <LoginFooter :authenticators="thirdPartyAuthenticators" />
+                </section>
               </section>
-              <section>
-                <LoginSlide
-                  :show-spring-festival="showSpringFestival"
-                  @change="
-                    (current) => {
-                      currentCarousel = current
-                    }
-                  "
-                />
-              </section>
+
               <v-icon v-if="scrollOnTop" class="more-icon" aria-label="Scroll for more information" role="image">$vuetify.icons.login_more</v-icon>
             </v-flex>
             <!-- Desktop -->
             <v-flex v-else xs12>
-              <v-layout wrap>
+              <v-layout wrap class="inner-left-panel">
                 <v-flex mt-4 mb-10 xs10 sm8 ml-auto mr-auto>
                   <v-row :justify="'space-between'">
                     <!-- <v-col> -->
                     <img
                       height="25"
                       class="mb-2"
-                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white-new' : 'blue'}.svg`)"
                       alt="Torus Logo"
                     />
                     <!-- </v-col> -->
                     <!-- <v-col> -->
-                    <v-select
-                      id="availableOn"
-                      v-model="selectedWallet"
-                      dense
-                      append-icon="$vuetify.icons.select"
-                      :items="availableOn"
-                      outlined
-                      color="#1976D2"
-                      class="selectMenu"
-                      @click.capture="
-                        (e) => {
-                          e.stopPropagation()
-                        }
-                      "
-                    >
-                      <template #selection="{ item }">
-                        <span class="selectedText">Also available on {{ item }}</span>
-                      </template>
-                      <template #item="{ item }">
-                        <v-row @click="openWallet(item)">
-                          {{ item }}
-                        </v-row>
-                      </template>
-                    </v-select>
                   </v-row>
                 </v-flex>
                 <LoginTitle />
@@ -110,7 +88,7 @@
           </v-layout>
           <v-layout v-else wrap align-center justify-center align-content-center>
             <v-flex xs12 text-center mb-12>
-              <img width="180" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
+              <img width="180" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white-new' : 'blue'}.svg`)" alt="Torus Logo" />
             </v-flex>
             <v-flex xs12 text-center>
               <img
@@ -180,7 +158,8 @@ import LoginFooter from '../../components/Login/LoginFooter'
 import LoginSlide from '../../components/Login/LoginSlide'
 import LoginTitle from '../../components/Login/LoginTitle'
 import config from '../../config'
-import { thirdPartyAuthenticators } from '../../utils/utils'
+import { OpenLoginHandler } from '../../handlers/Auth'
+import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/utils'
 
 export default {
   name: 'Login',
@@ -195,17 +174,17 @@ export default {
       scrollOnTop: true,
       currentCarousel: config.showSpringFestival ? 0 : -1,
       showSpringFestival: config.showSpringFestival,
-      availableOn: ['Solana', 'Polygon', 'Binance'],
-      selectedWallet: 'Solana',
+      availableOn: ['Ethereum', 'Solana', 'Polygon', 'Binance'],
+      selectedWallet: 'Ethereum',
     }
   },
   computed: {
     ...mapState({
       selectedAddress: 'selectedAddress',
+      tKeyOnboardingComplete: 'tKeyOnboardingComplete',
       loginConfig: (state) => state.embedState.loginConfig,
       userInfo: 'userInfo',
       lastLoginInfo: 'lastLoginInfo',
-      wallet: 'wallet',
     }),
     ...mapGetters(['loginButtonsArray']),
     loggedIn() {
@@ -223,20 +202,61 @@ export default {
       if (newAddress !== oldAddress && newAddress !== '') {
         let redirectPath = this.$route.query.redirect
         if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
+
         this.$router.push(redirectPath).catch((_) => {})
       }
     },
   },
   async mounted() {
-    if (this.selectedAddress !== '' && Object.keys(this.wallet) > 0) this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
+    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
 
     this.isLogout = this.$route.name !== 'login'
 
     this.scroll()
+
+    try {
+      const hash = this.$router.currentRoute.hash.slice(1)
+      const queryParameters = this.$router.currentRoute.query
+      const { error, instanceParameters, hashParameters } = handleRedirectParameters(hash, queryParameters)
+      if (error) throw new Error(error)
+      const { verifier: returnedVerifier } = instanceParameters
+      if (returnedVerifier) this.loginInProgress = true
+      else return
+      const { access_token: accessToken, id_token: idToken } = hashParameters
+      const currentVeriferConfig = this.loginConfig[returnedVerifier]
+      const { jwtParameters } = currentVeriferConfig
+      const loginHandler = new OpenLoginHandler({
+        verifier: returnedVerifier,
+        loginConfigItem: currentVeriferConfig,
+        redirect_uri: '',
+        preopenInstanceId: '',
+        jwtParameters: jwtParameters || {},
+      })
+      const userInfo = await loginHandler.getUserInfo({ accessToken, idToken })
+      const { profileImage, name, email, verifierId, typeOfLogin: returnTypeOfLogin } = userInfo
+      this.setUserInfo({
+        profileImage,
+        name,
+        email,
+        verifierId,
+        verifier: returnedVerifier,
+        verifierParams: { verifier_id: verifierId },
+        typeOfLogin: returnTypeOfLogin,
+      })
+      await this.handleLogin({ calledFromEmbed: false, oAuthToken: idToken || accessToken })
+    } catch (error) {
+      log.error(error)
+      this.snackbar = true
+      this.snackbarColor = 'error'
+      this.snackbarText = error.message?.includes('email_verified') ? this.t('login.errorVerifyEmail') : this.t('login.loginError')
+    } finally {
+      this.loginInProgress = false
+    }
   },
   methods: {
     ...mapActions({
       triggerLogin: 'triggerLogin',
+      handleLogin: 'handleLogin',
     }),
     ...mapMutations(['setUserInfo']),
     async startLogin(verifier, email) {

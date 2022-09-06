@@ -1,0 +1,30 @@
+.btn-select {
+    width: 190px;
+    height: 32px;
+    background: #F3F4F6;
+    border-radius: 10px!important;
+    margin: 0px;
+    text-align: left;
+    padding: 0 8px!important;
+    &.theme--dark {
+        background: #111928;
+        color: var(--v-text_2-base);
+    }
+
+}
+.chain-name {
+font-weight: 500;
+font-size: 24px;
+line-height: 32px;
+size: 24px;
+padding-left: 5px;
+
+}
+.chain-list {
+    background: #FFFFFF;
+    border-radius: 10px;
+    &.theme--dark {
+        background: #111928!important;
+        color: var(--v-text_2-base);
+    }
+}
