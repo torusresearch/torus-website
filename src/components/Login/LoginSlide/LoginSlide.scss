@@ -3,10 +3,13 @@
   bottom: -15px;
   .v-btn.v-btn--icon {
     width: 14px;
-    height: 14px;
+    height: 6px;
+    margin: 0 5px;
+    border-radius: 3px;
     background-color: #A4CAFE;
     &.v-btn--active {
       background-color: #0364FF;
+      width: 28px;
     }
   }
 }
