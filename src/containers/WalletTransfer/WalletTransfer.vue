@@ -460,7 +460,7 @@
           <div class="d-flex">
             <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
             <div class="ml-auto">
-              <NetworkDisplay :store-network-type="networkType"></NetworkDisplay>
+              <NetworkDisplay :is-network-pill="true" :store-network-type="networkType"></NetworkDisplay>
             </div>
           </div>
           <div class="d-flex mt-3">
@@ -1337,6 +1337,7 @@ export default {
       this.changeSelectedToCurrency(0)
     },
     async sendCoin() {
+      debugger
       log.info('sending with gas price', this.activeGasPrice.toString())
       const toAddress = this.toEthAddress
       const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
@@ -1394,6 +1395,7 @@ export default {
           .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
           .dp(0, BigNumber.ROUND_DOWN)
           .toString(16)}`
+        log.info('amount', this.amount)
         this.getTransferMethod(this.contractType, toAddress, value).send(
           {
             from: this.selectedAddress.toLowerCase(),

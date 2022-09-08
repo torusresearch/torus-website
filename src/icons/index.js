@@ -64,6 +64,7 @@ import ScanIcon from './ScanIcon.vue'
 import SearchIcon from './SearchIcon.vue'
 import SeedPhraseIcon from './SeedPhraseIcon.vue'
 import SelectIcon from './SelectIcon.vue'
+import SelectNewIcon from './SelectNewIcon.vue'
 import SendIcon from './SendIcon.vue'
 import ServerIcon from './ServerIcon.vue'
 import SettingsIcon from './SettingsIcon.vue'
@@ -103,6 +104,9 @@ import WalletIcon from './WalletIcon.vue'
 export default {
   select: {
     component: SelectIcon,
+  },
+  selectNew: {
+    component: SelectNewIcon,
   },
   send: {
     component: SendIcon,
