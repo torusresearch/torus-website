@@ -47,6 +47,7 @@ describe('Transaction Controller', function () {
       getGasPrice: function () {
         return '0xee6b2800'
       },
+      getUserTokens: () => [],
       networkStore: new ObservableStore(currentNetworkId),
       getCurrentNetworkEIP1559Compatibility: () => Promise.resolve(false),
       getCurrentAccountEIP1559Compatibility: () => false,
@@ -1280,11 +1281,13 @@ describe('Transaction Controller', function () {
       const _blockTrackerStub = new EventEmitter()
       _blockTrackerStub.getCurrentBlock = noop
       _blockTrackerStub.getLatestBlock = noop
+
       const _txController = new TransactionController({
         provider: _provider,
         getGasPrice: function () {
           return '0xee6b2800'
         },
+        getUserTokens: () => [],
         networkStore: new ObservableStore(currentNetworkId),
         getCurrentNetworkEIP1559Compatibility: () => Promise.resolve(false),
         getCurrentAccountEIP1559Compatibility: () => false,
@@ -1330,6 +1333,7 @@ describe('Transaction Controller', function () {
         getGasPrice: function () {
           return '0xee6b2800'
         },
+        getUserTokens: () => [],
         networkStore: new ObservableStore(currentNetworkId),
         getCurrentNetworkEIP1559Compatibility: () => Promise.resolve(false),
         getCurrentAccountEIP1559Compatibility: () => false,
