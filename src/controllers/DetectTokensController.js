@@ -69,6 +69,12 @@ class DetectTokensController {
     this.selectedCustomTokens = []
   }
 
+  getUserTokens() {
+    const userAddress = this.selectedAddress
+    if (!userAddress) return []
+    return this.detectedTokensStore.getState()[userAddress] || []
+  }
+
   /**
    * For each token in @metamask/contract-metadata, find check selectedAddress balance.
    *
@@ -228,7 +234,7 @@ class DetectTokensController {
           return {
             decimals: tokenInstance.decimals,
             erc20: true,
-            logo: 'eth.svg',
+            logo: x.logo || 'eth.svg',
             name: tokenInstance.name,
             symbol: tokenInstance.symbol,
             tokenAddress: toChecksumAddressByChainId(tokenInstance.address, chainId),
