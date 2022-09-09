@@ -1337,7 +1337,6 @@ export default {
       this.changeSelectedToCurrency(0)
     },
     async sendCoin() {
-      debugger
       log.info('sending with gas price', this.activeGasPrice.toString())
       const toAddress = this.toEthAddress
       const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`

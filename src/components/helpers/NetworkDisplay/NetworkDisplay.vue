@@ -10,18 +10,23 @@
       <template #activator="{ on }">
         <div class="d-flex network-chip align-center" :class="[chipClass, minimal ? 'network-chip--minimal' : '']" v-on="on">
           <v-icon v-if="showIcon" left>$vuetify.icons.network</v-icon>
-          <span class="network-chip__name text-clamp-one" :class="{ 'network-chip__name--mobile': $vuetify.breakpoint.xsOnly }">
+          <span class="network-chip__name text-clamp-one row-pointer" :class="{ 'network-chip__name--mobile': $vuetify.breakpoint.xsOnly }">
             {{ $vuetify.breakpoint.xsOnly && !minimal ? shortSelectedNetwork : selectedNetwork }}
           </span>
           <v-icon right>$vuetify.icons.selectNew</v-icon>
         </div>
       </template>
       <v-list class="select-item-list overflow-y-auto" style="max-height: 240px">
-        <v-list-item v-for="host in supportedNetworks" :key="host.networkName" class="select-coin-eth" @click="changeNetwork(host)">
+        <v-list-item
+          v-for="networkInfo in supportedNetworks"
+          :key="networkInfo.networkName"
+          class="select-coin-eth"
+          @click="changeNetwork(networkInfo)"
+        >
           <v-list-item-content>
             <v-list-item-title class="body-2">
               <v-icon>$vuetify.icons.network</v-icon>
-              {{ host.networkName }}
+              {{ networkInfo.networkName }}
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
