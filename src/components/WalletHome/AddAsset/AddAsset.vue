@@ -4,42 +4,42 @@
       <a class="text-torusBrand1 caption font-weight-medium gtm-add-asset-cta" tabindex="0" v-bind="props">{{ $t('homeAssets.add') }}</a>
     </template>
     <v-card class="add-asset">
-      <v-tabs v-model="tab" touchless>
-        <v-tab>
-          <v-row class="card-header" wrap>
+      <v-window v-model="tab">
+        <v-window-item>
+          <v-row class="card-header bg-torusBlack2" wrap no-gutters>
             <v-col class="text-center py-10 px-6" cols="12">
-              <div class="display-1">{{ $t('homeAssets.add') }}</div>
-              <v-btn class="close-btn" icon aria-label="Close Add Asset" title="Close Add Asset" @click="closeForm">
+              <div class="text-h5 font-weight-bold">{{ $t('homeAssets.add') }}</div>
+              <v-btn class="close-btn" variant="plain" icon aria-label="Close Add Asset" title="Close Add Asset" @click="closeForm">
                 <v-icon>$close</v-icon>
               </v-btn>
             </v-col>
           </v-row>
           <v-form ref="addAssetForm" v-model="addAssetFormValid" class="fill-height" lazy-validation @submit.prevent="nextTab">
-            <v-row class="mx-7 pt-6 pb-4" wrap>
+            <v-row class="mx-7 pt-6 pb-4" wrap no-gutters>
               <v-col cols="12" class="text-center">
-                <div class="title">{{ $t('homeAssets.formTitle') }}</div>
+                <div class="text-body-1 font-weight-bold">{{ $t('homeAssets.formTitle') }}</div>
               </v-col>
             </v-row>
             <v-divider></v-divider>
-            <v-row class="mx-7 pt-6 pb-10" wrap>
+            <v-row class="mx-7 pt-6 pb-10" wrap no-gutters>
               <v-col cols="12">
                 <div class="body-2 mb-2">{{ $t('homeAssets.contractAddress') }}</div>
                 <v-text-field
-                  :value="contractAddress"
+                  :model-value="contractAddress"
                   :rules="[rules.required, addressValidityRule]"
                   variant="outlined"
-                  @change="setContractAddress"
+                  @update:modelValue="setContractAddress"
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <div class="body-2 mb-2">{{ $t('homeAssets.tokenId') }}</div>
                 <v-text-field
-                  v-model="tokenId"
+                  :model-value="tokenId"
                   :rules="[rules.required, ownerShipRule, duplicateNftRule]"
                   variant="outlined"
                   :error-messages="displayError"
                   :error="!!displayError"
-                  @change="setTokenId"
+                  @update:modelValue="setTokenId"
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
@@ -50,10 +50,10 @@
               <v-col cols="12" class="mt-15">
                 <v-row class="mx-n2">
                   <v-col cols="6" class="px-2">
-                    <v-btn block size="large" text @click="closeForm">{{ $t('homeToken.cancel') }}</v-btn>
+                    <v-btn block size="large" variant="text" class="text-body-2" @click="closeForm">{{ $t('homeToken.cancel') }}</v-btn>
                   </v-col>
                   <v-col cols="6" class="px-2">
-                    <v-btn block size="large" color="torusBrand1" class="text-white" type="submit" :disabled="!addAssetFormValid">
+                    <v-btn block size="large" color="torusBrand1" class="text-body-2 text-white" type="submit" :disabled="!addAssetFormValid">
                       {{ $t('homeToken.next') }}
                     </v-btn>
                   </v-col>
@@ -61,11 +61,11 @@
               </v-col>
             </v-row>
           </v-form>
-        </v-tab>
-        <v-tab>
-          <v-row class="card-header" wrap>
+        </v-window-item>
+        <v-window-item>
+          <v-row class="card-header" wrap no-gutters>
             <v-col cols="12" class="py-10 px-6 text-center">
-              <div class="display-1">{{ $t('homeAssets.add') }}</div>
+              <div class="text-h5 font-weight-bold">{{ $t('homeAssets.add') }}</div>
               <v-btn class="close-btn" icon aria-label="Close Add Token" title="Close Add Token" @click="closeForm">
                 <v-icon>$close</v-icon>
               </v-btn>
@@ -73,7 +73,7 @@
           </v-row>
           <v-row class="mx-7 pt-6 pb-4" wrap>
             <v-col cols="12" class="text-center">
-              <div class="title">{{ $t('homeAssets.infoTitle') }}</div>
+              <div class="text-body-1 font-weight-bold">{{ $t('homeAssets.infoTitle') }}</div>
             </v-col>
           </v-row>
           <v-divider></v-divider>
@@ -109,16 +109,18 @@
             <v-col cols="12" class="mt-10">
               <v-row class="mx-n2">
                 <v-col cols="6" class="px-2">
-                  <v-btn block size="large" variant="text" @click="tab = 0">{{ $t('homeToken.back') }}</v-btn>
+                  <v-btn block size="large" variant="text" class="text-body-2" @click="tab = 0">{{ $t('homeToken.back') }}</v-btn>
                 </v-col>
                 <v-col cols="6" class="px-2">
-                  <v-btn block size="large" color="torusBrand1" class="text-white" @click="addCollectible">{{ $t('homeAssets.add') }}</v-btn>
+                  <v-btn block size="large" color="torusBrand1" class="text-body-2 text-white" @click="addCollectible">
+                    {{ $t('homeAssets.add') }}
+                  </v-btn>
                 </v-col>
               </v-row>
             </v-col>
           </v-row>
-        </v-tab>
-      </v-tabs>
+        </v-window-item>
+      </v-window>
     </v-card>
   </v-dialog>
 </template>

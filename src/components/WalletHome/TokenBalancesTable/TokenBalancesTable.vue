@@ -47,7 +47,7 @@
         <v-card-text class="pa-0">
           <div class="d-flex align-center py-3 px-4 card-header elevation-1">
             <div class="flex-grow-1 text-clamp-one text-center" :style="{ height: '25px' }">
-              <span class="caption text-text_1 font-weight-bold">{{ $t('homeToken.didNotSee') }}</span>
+              <span class="text-caption text-text_1 font-weight-bold">{{ $t('homeToken.didNotSee') }}</span>
             </div>
           </div>
           <div class="text-center py-3 px-4" :style="{ lineHeight: '0' }">

@@ -262,11 +262,11 @@
     &.v-sheet {
       background: rgb(var(--v-theme-torusBlack2));
     }
-    .v-app-bar.v-toolbar.v-sheet {
+    .v-app-bar.v-toolbar {
       background: rgb(var(--v-theme-torusBlack2));
     }
     .v-card {
-      background-color: rgb(var(--v-theme-torusBlack2));
+      background: rgb(var(--v-theme-torusBlack2));
     }
     .v-list {
       background-color: rgb(var(--v-theme-torusBlack2));
@@ -315,6 +315,12 @@
       }
       background-color: rgb(var(--v-theme-torusBlack2));
     }
+
+    .v-theme--dark.v-btn {
+      &--disabled {
+        background-color: rgba(255, 255, 255, 0.12) !important;
+      }
+    }
   }
 }
 
@@ -333,5 +339,19 @@
     position: absolute;
     bottom: 3rem;
     padding: 0 1rem;
+  }
+}
+
+// TODO: figure out a better way to solve this.
+.v-tooltip.v-overlay {
+  .v-overlay__content {
+    background: rgb(var(--v-theme-torusBlack2)) !important;
+    color: rgb(var(--v-theme-text_1)) !important;
+  }
+}
+
+.v-dialog.v-overlay {
+  .v-overlay__content {
+    width: 100%;
   }
 }

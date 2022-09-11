@@ -80,7 +80,7 @@
       color: rgb(var(--v-theme-text_3)) !important;
     }
 
-    ::v-deep .v-btn__content {
+    :deep(.v-btn__content) {
       justify-content: left;
     }
 

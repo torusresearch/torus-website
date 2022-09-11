@@ -13,10 +13,10 @@
             <div class="mr-2 align-self-center">
               <v-icon :class="isDarkMode ? 'text-torusLight' : 'text-torusBlack'">$radioOff</v-icon>
             </div>
+            <div style="{ width: $vuetify.display.xs ? '100px' : '130px', height: '100%' }" class="align-self-center mr-2">
+              <v-img contain :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name"></v-img>
+            </div>
           </template>
-          <v-list-item-avatar :width="$vuetify.display.xs ? 100 : 130" height="100%" tile class="align-self-center mr-2">
-            <v-img contain :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name"></v-img>
-          </v-list-item-avatar>
           <div v-html="`${$t('walletTopUp.paywith')} ${targetProvider.line1}`" />
           <div>
             <span class="font-weight-medium">{{ $t('walletTopUp.fees') }}</span>

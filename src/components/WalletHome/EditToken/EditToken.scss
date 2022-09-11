@@ -17,7 +17,11 @@
     color: #d3d3d4;
   }
 }
-
+.add-token-form {
+  &:deep(.v-input__details) {
+    padding-left: 0;
+  }
+}
 .v-divider {
   border-color: #f5f5f5;
 }
@@ -31,5 +35,9 @@
   }
   .v-divider {
     border-color: #6f717a;
+  }
+
+  .v-form {
+    background: #1e1e1e;
   }
 }

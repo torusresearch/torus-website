@@ -40,17 +40,14 @@
     </v-card>
 
     <v-tooltip v-for="targetProvider in inactiveProviders" :key="targetProvider.name" location="right">
-      <template #activator="{ on }">
-        <v-card class="topup-provider mb-4 coming-soon" :data-provider="targetProvider.name" v-on="on">
-          <v-list-item three-line>
+      <template #activator="{ props }">
+        <v-card class="topup-provider mb-4 coming-soon" :data-provider="targetProvider.name" v-bind="props">
+          <v-list-item three-line prepend-icon="$radioOff">
             <template #prepend>
-              <div class="mr-2 align-self-center">
-                <v-icon color="grey">$radioOff</v-icon>
+              <div :style="{ width: $vuetify.display.xs ? '100px' : '130px', height: '100%' }" class="align-self-center mr-2">
+                <img :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
               </div>
             </template>
-            <v-list-item-avatar :width="$vuetify.display.xs ? 105 : 138" height="100%" tile class="align-self-center mr-2">
-              <img :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
-            </v-list-item-avatar>
             <div class="align-self-center text-right text-text_1 caption">
               <div>{{ targetProvider.line1 }}</div>
               <div>

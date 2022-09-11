@@ -1,7 +1,7 @@
 .header-container {
   .v-tab {
     text-transform: inherit;
-    &.v-tab--active {
+    &.v-tab--selected {
       color: rgb(var(--v-theme-torusBrand1));
     }
   }

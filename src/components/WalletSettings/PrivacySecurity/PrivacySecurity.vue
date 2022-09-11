@@ -11,7 +11,7 @@
       </v-list-item>
     </v-list>
 
-    <v-dialog v-model="privateKeyDialog" max-width="1000" :fullscreen="$vuetify.display.xs">
+    <v-dialog v-model="privateKeyDialog" max-width="1000" :fullscreen="$vuetify.display.xs" class="privacy-key-dialog">
       <PrivateKeys @onClose="privateKeyDialog = false" />
     </v-dialog>
   </div>

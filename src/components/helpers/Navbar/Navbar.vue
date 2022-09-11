@@ -29,9 +29,9 @@
     <LanguageSelector v-if="!$vuetify.display.smAndDown && showLanguageSelector"></LanguageSelector>
     <v-menu v-if="!$vuetify.display.smAndDown" offset-y bottom left z-index="20" :close-on-content-click="false">
       <template #activator="{ props }">
-        <v-btn id="menu-dropdown-btn" small text aria-label="View Account Menu" v-bind="props">
-          <span class="text-subtitle-2">{{ userInfo.name || `${t('login.your')} ${t('accountMenu.account')}` }}</span>
-          <v-icon class="ml-2 mt-0" small>$select</v-icon>
+        <v-btn id="menu-dropdown-btn" size="small" variant="text" aria-label="View Account Menu" v-bind="props">
+          <span class="text-subtitle-2">{{ userInfo.name || `${$t('login.your')} ${$t('accountMenu.account')}` }}</span>
+          <v-icon class="ml-2 mt-0" size="small">$select</v-icon>
         </v-btn>
       </template>
 

@@ -3,7 +3,7 @@
     <div class="ml-auto">
       <ShowToolTip :address="selectedAddress">
         <v-btn size="small" class="address-btn" aria-label="Copy Address">
-          <v-icon left size="9">$address</v-icon>
+          <v-icon start size="9" class="mr-2">$address</v-icon>
           <span>{{ slicedAddress }}</span>
         </v-btn>
       </ShowToolTip>

@@ -75,6 +75,13 @@
       }
     }    
   }
+  .recipient-address {
+    :deep(.v-field__append-inner) {
+      align-items: center;
+      padding-top: 0px;
+    }
+  }
+
   :deep(.recipient-address.hasQrError .v-text-field__details) {
     margin-bottom: 2px;
   }

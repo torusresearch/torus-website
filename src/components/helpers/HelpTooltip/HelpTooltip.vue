@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip top>
+  <v-tooltip location="top">
     <template #activator="{ props }">
       <v-icon size="14" class="ml-1 text-text_3" :style="{ marginTop: '-2px' }" v-bind="props">$question</v-icon>
     </template>

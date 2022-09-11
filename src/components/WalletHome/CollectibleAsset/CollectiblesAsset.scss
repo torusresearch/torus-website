@@ -41,7 +41,7 @@
 
   &.asset--new {
     position: relative;
-    ::v-deep .v-image__image,
+    :deep(.v-image__image),
     .v-card__actions {
       opacity: 0.3;
     }

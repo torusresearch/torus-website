@@ -1,3 +1,11 @@
-.privacy-security-container .v-sheet {
-  background: transparent;
+.privacy-security-container {
+  .v-sheet {
+    background: transparent;
+  }
+}
+
+.privacy-key-dialog {
+  :deep(.v-overlay__content) {
+    width: 100%;
+  }
 }

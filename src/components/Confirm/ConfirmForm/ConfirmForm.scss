@@ -5,7 +5,7 @@
   }
 }
 
-.v-card__text {
+.v-card-text {
   padding: 12px;
 }
 
@@ -13,12 +13,12 @@
   text-decoration: none;
 }
 
-::v-deep .v-text-field__details {
+:deep(.v-text-field__details) {
   padding-top: 6px !important;
   padding-right: 0 !important;
 }
 
-::v-deep .v-input {
+:deep(.v-input) {
   font-size: 14px;
 }
 

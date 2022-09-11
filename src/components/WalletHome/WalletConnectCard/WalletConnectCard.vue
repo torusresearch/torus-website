@@ -1,7 +1,7 @@
 <template>
-  <v-card class="elevation-1 promotion-card" :class="{ isMobile: $vuetify.display.xs }">
-    <v-row class="d-flex flex-column fill-height py-4 px-6">
-      <v-col class="flex-grow-1 d-flex mb-4 mb-md-2">
+  <v-card class="elevation-1 promotion-card fill-height" :class="{ isMobile: $vuetify.display.xs }">
+    <v-row class="d-flex flex-column flex-nowrap fill-height py-4 px-6" no-gutters>
+      <v-col class="flex-grow-1 d-flex mb-4 mb-md-2 py-2">
         <div class="promotion-text pr-3">
           <div
             class="text-body-2 text-sm-body-1 font-weight-bold text-text_1"

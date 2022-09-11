@@ -67,7 +67,8 @@
                           <div class="mr-1">
                             <img
                               :src="`${logosUrl}/${token.logo}`"
-                              height="20px"
+                              height="20"
+                              style="min-width: 24px; display: inherit"
                               :onerror="`if (!this.src.includes('images/token-${isDarkMode ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
                                 isDarkMode ? 'dark' : 'light'
                               }.svg';`"
@@ -103,7 +104,7 @@
                       </v-list-item>
                       <v-divider class="mx-3"></v-divider>
                       <v-list-subheader v-if="collectibles.length > 0" class="body-2">
-                        <v-icon small left class="mr-2">$collectibles</v-icon>
+                        <v-icon size="small" left class="mr-2">$collectibles</v-icon>
                         {{ $t('walletTransfer.collectibles') }}
                       </v-list-subheader>
                       <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
@@ -138,7 +139,7 @@
                       :placeholder="verifierPlaceholder"
                       required
                       :rules="[contactRule, rules.contactRequired, ensRule, unstoppableDomainsRule, bitRule]"
-                      outlined
+                      variant="outlined"
                       item-title="name"
                       item-value="value"
                       aria-label="Recipient Address"
@@ -147,7 +148,7 @@
                       @blur="checkContact"
                       @update:search-input="listenInput"
                     >
-                      <template v-if="apiStreamSupported" #append>
+                      <template v-if="apiStreamSupported" #append-inner>
                         <v-chip v-if="isBitMode && toAddress && selectedVerifier === bitVerifier" class="address-chip">
                           <div class="accent text-white">
                             <img
@@ -163,6 +164,7 @@
                         <v-btn
                           icon
                           size="small"
+                          variant="text"
                           color="torusBrand1"
                           title="Capture QR"
                           tabindex="-1"
@@ -178,7 +180,7 @@
                       <template v-if="isBitMode" #item="{ item }">
                         <div class="bitAddress">
                           {{ item.value }}
-                          <v-chip v-if="item.label" label small class="bitLabelChip">{{ item.label }}</v-chip>
+                          <v-chip v-if="item.label" label size="small" class="bitLabelChip">{{ item.label }}</v-chip>
                         </div>
                       </template>
                     </v-combobox>
@@ -203,9 +205,9 @@
                       id="recipient-verifier"
                       v-model="selectedVerifier"
                       variant="outlined"
-                      append-icon="$select"
+                      append-inner-icon="$select"
                       :items="verifierOptions"
-                      item-text="name"
+                      item-title="name"
                       item-value="value"
                       :rules="[rules.contactRequired]"
                       aria-label="Recipient Selector"
@@ -213,10 +215,10 @@
                     >
                       <template #selection="{ item }">
                         <div class="v-select__selection v-select__selection--comma">
-                          {{ $t(item.name) }}
+                          {{ $t(item.title) }}
                         </div>
                       </template>
-                      <template #item="{ item }">{{ $t(item.name) }}</template>
+                      <template #item="{ item }">{{ $t(item.title) }}</template>
                       <template #message="props">
                         {{ $t(props.message) }}
                       </template>
@@ -233,9 +235,9 @@
                   <v-btn
                     v-if="contractType !== CONTRACT_TYPE_ERC721 && contractType !== CONTRACT_TYPE_ERC1155 && !isSendAll"
                     id="send-all-btn"
-                    text
+                    variant="text"
                     height="24"
-                    class="float-right torusBrand1--text body-2 px-0"
+                    class="float-right text-torusBrand1 body-2 px-0"
                     tabindex="0"
                     @click="sendAll"
                   >
@@ -244,9 +246,9 @@
                   <v-btn
                     v-if="isSendAll"
                     id="send-all-reset-btn"
-                    text
+                    variant="text"
                     height="24"
-                    class="float-right torusBrand1--text body-2 px-0"
+                    class="float-right text-torusBrand1 body-2 px-0"
                     @click="resetSendAll"
                   >
                     {{ $t('walletTransfer.reset') }}
@@ -257,8 +259,8 @@
                   v-model="assetSelected"
                   :items="collectibleSelected.assets"
                   variant="outlined"
-                  item-text="name"
-                  append-icon="$select"
+                  item-title="name"
+                  append-inner-icon="$select"
                   return-object
                   aria-label="Asset selector"
                 >
@@ -266,8 +268,8 @@
                     <img :src="assetSelected.image" height="24px" :alt="assetSelected.name" />
                   </template>
                   <template #item="{ item }">
-                    <img class="mr-2" :src="item.image" height="24px" :alt="item.name" />
-                    {{ item.name }}
+                    <img class="mr-2" :src="item.image" height="24px" :alt="item.title" />
+                    {{ item.title }}
                   </template>
                 </v-select>
                 <v-text-field
@@ -285,19 +287,19 @@
                   type="number"
                   variant="outlined"
                   required
-                  :value="displayAmount"
+                  :model-value="displayAmount"
                   :readonly="isSendAll"
                   :rules="[rules.required, lesserThan, moreThanZero]"
                   aria-label="Amount you send"
                   :error-messages="sendAmountError"
-                  @change="onChangeDisplayAmount"
+                  @update:modelValue="onChangeDisplayAmount"
                 >
-                  <template #append>
+                  <template #append-inner>
                     <v-btn
                       id="coin-mode-btn"
                       size="small"
                       class="send-mode mr-2"
-                      :class="!!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusGray3--text' : 'torusGray1--text'}` : 'active'"
+                      :class="!!toggle_exclusive ? `torus-btn1 ${isDarkMode ? 'torusGray3--text' : 'text-torusGray1'}` : 'active'"
                       :disabled="!toggle_exclusive"
                       :variant="!toggle_exclusive ? 'outlined' : ''"
                       @click="changeSelectedToCurrency(0)"
@@ -309,7 +311,7 @@
                       id="currency-mode-btn"
                       size="small"
                       class="send-mode"
-                      :class="!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusGray3--text' : 'torusGray1--text'}` : 'active'"
+                      :class="!toggle_exclusive ? `torus-btn1 ${isDarkMode ? 'text-torusGray3' : 'text-torusGray1'}` : 'active'"
                       :disabled="!!toggle_exclusive"
                       :variant="!toggle_exclusive ? 'outlined' : ''"
                       @click="changeSelectedToCurrency(1)"
@@ -318,7 +320,7 @@
                     </v-btn>
                   </template>
                   <template #message="props">
-                    {{ $refs.youSend && $refs.youSend.errorBucket.length === 0 ? props.message : t(props.message) }}
+                    {{ $refs.youSend && $refs.youSend.errorBucket.length === 0 ? props.message : $t(props.message) }}
                   </template>
                 </v-text-field>
                 <v-text-field
@@ -334,12 +336,12 @@
                   :error-messages="sendAmountError"
                   @change="onChangeErc1155DisplayAmount"
                 >
-                  <template #append>
+                  <template #append-inner>
                     <v-btn
                       id="coin-mode-btn"
                       size="small"
                       class="send-mode mr-2"
-                      :class="!!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusGray3--text' : 'torusGray1--text'}` : 'active'"
+                      :class="!!toggle_exclusive ? `torus-btn1 ${isDarkMode ? 'text-torusGray3' : 'text-torusGray1'}` : 'active'"
                       :disabled="true"
                       variant="outlined"
                     >
@@ -347,7 +349,7 @@
                     </v-btn>
                   </template>
                   <template #message="props">
-                    {{ $refs.youSendNft && $refs.youSendNft.errorBucket.length === 0 ? props.message : t(props.message) }}
+                    {{ $refs.youSendNft && $refs.youSendNft.errorBucket.length === 0 ? props.message : $t(props.message) }}
                   </template>
                 </v-text-field>
               </v-col>
@@ -382,23 +384,23 @@
                 :network-host="networkType.host"
                 @onSelectSpeed="onSelectSpeed"
               />
-              <v-col v-if="contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155" cols="12" mb-6 class="text-right">
+              <v-col v-if="contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155" cols="12" class="text-right mb-6">
                 <div class="text-subtitle-2">{{ $t('walletTransfer.totalCost') }}</div>
                 <div class="headline text-text_2">{{ getEthAmount(gas, activeGasPrice) }} {{ networkType.ticker }}</div>
                 <div class="caption text-text_2">{{ gasPriceInCurrency }} {{ selectedCurrency }}</div>
               </v-col>
-              <v-col v-else cols="12" mb-6 class="text-right">
+              <v-col v-else cols="12" class="text-right mb-6">
                 <div class="text-subtitle-2">{{ $t('walletTransfer.totalCost') }}</div>
                 <div class="headline text-text_2">{{ totalCost ? totalCostDisplay : `0 ${totalCostSuffix}` }}</div>
                 <div class="caption text-text_2">
                   {{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}
                 </div>
               </v-col>
-              <v-col v-if="transactionWarning" cols="12" mt-3 class="text-right text-caption warning--text">{{ transactionWarning }}</v-col>
-              <v-col cols="12" mt-3 class="text-right">
+              <v-col v-if="transactionWarning" cols="12" class="text-right text-caption text-warning mt-3">{{ transactionWarning }}</v-col>
+              <v-col cols="12" class="text-right mt-3">
                 <v-btn
                   id="wallet-transfer-submit"
-                  large
+                  size="large"
                   depressed
                   color="torusBrand1"
                   :disabled="onTransferClickDisabled"

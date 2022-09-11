@@ -16,17 +16,18 @@
               id="cryptocurrency"
               v-model="selectedCryptoCurrency"
               class="cryptocurrency-selector"
-              outlined
-              append-icon="$vuetify.icons.select"
+              variant="outlined"
+              append-inner-icon="$select"
               :items="validCryptoCurrencies"
               item-value="value"
-              item-text="display"
+              item-title="display"
               aria-label="Cryptocurrency Selector"
               return-object
+              location="bottom"
               @change="fetchQuote"
             ></v-select>
           </v-col>
-          <v-col v-if="!$vuetify.display.xs" xs8></v-col>
+          <v-col v-if="!$vuetify.display.xs" cols="8"></v-col>
 
           <v-row wrap class="mx-n2">
             <v-col cols="12" sm="8" class="px-2">
@@ -42,12 +43,12 @@
                 class="unique-hint"
                 :placeholder="sendPlaceholder"
                 variant="outlined"
-                :value="fiatValue"
+                :model-value="fiatValue"
                 :rules="amountRules"
                 aria-label="Amount to Buy"
-                @input="setFiatValue"
+                @update:modalValue="setFiatValue"
               >
-                <template #append>
+                <template #append-inner>
                   <v-btn variant="outlined" size="small" color="torusBrand1" @click="setFiatValue(100)">100</v-btn>
                   <v-btn variant="outlined" size="small" color="torusBrand1" class="ml-2" @click="setFiatValue(200)">200</v-btn>
                   <!-- <div class="torusBrand1--text font-weight-medium body-2 pt-1 ml-2">{{ selectedCurrency }}*</div> -->
@@ -81,7 +82,7 @@
                 v-model="selectedCurrency"
                 variant="outlined"
                 :items="supportedCurrencies"
-                append-icon="$vuetify.icons.select"
+                append-inner-icon="$select"
                 aria-label="Currency Selector"
                 @change="onCurrencyChange"
               />
@@ -107,8 +108,8 @@
         <v-col cols="12" class="mt-10">
           <div class="text-right">
             <v-tooltip location="bottom" :disabled="formValid">
-              <template #activator="{ on }">
-                <span v-on="on">
+              <template #activator="{ props }">
+                <span v-bind="props">
                   <v-btn
                     class="px-8 text-white gmt-topup"
                     :disabled="!formValid || !isQuoteFetched || !!fetchQuoteError || fetchingQuote"

@@ -9,7 +9,7 @@
   max-width: 600px;
 }
 
-.v-card__text {
+.v-card-text {
   padding: 12px;
 }
 
@@ -51,7 +51,7 @@
   background: transparent;
 }
 
-::v-deep .v-btn.link-icon {
+:deep(.v-btn.link-icon) {
   height: 24px;
   width: 24px;
   min-width: 24px;

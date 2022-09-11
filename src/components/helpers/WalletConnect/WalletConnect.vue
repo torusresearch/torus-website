@@ -10,8 +10,8 @@
         :nudge-top="$vuetify.display.xs ? 10 : -10"
         @change="guideOn = !guideOn"
       >
-        <template #activator="{ attrs }">
-          <span class="text-torusBrand1 caption ml-3 mt-3" v-bind="attrs" @click="guideOn = !guideOn">
+        <template #activator="{ props }">
+          <span class="text-torusBrand1 caption ml-3 my-3" v-bind="props" @click="guideOn = !guideOn">
             {{ !guideOn ? $t('walletConnect.viewGuide') : $t('walletConnect.hideGuide') }}
           </span>
         </template>

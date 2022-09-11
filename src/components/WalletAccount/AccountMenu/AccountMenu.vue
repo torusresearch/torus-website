@@ -33,16 +33,16 @@
       >
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
-            <v-icon :class="isDarkMode ? 'torusGray1--text' : 'torusFont2--text'" size="16">
+            <v-icon :class="isDarkMode ? 'text-torusGray1' : 'text-torusFont2'" size="16">
               {{ `$${userIcon(acc.accountType)}` }}
             </v-icon>
           </div>
-          <div class="caption text_1--text font-weight-bold account-list__user-email" :style="{ paddingLeft: '2px' }">
+          <div class="caption text-text_1 font-weight-bold account-list__user-email" :style="{ paddingLeft: '2px' }">
             <span>
               {{ userEmail(acc) }}
             </span>
           </div>
-          <div class="caption ml-auto text_2--text text-right">
+          <div class="caption ml-auto text-text_2 text-right">
             <span>{{ acc.totalPortfolioValue }} {{ selectedCurrency }}</span>
           </div>
         </div>
@@ -54,12 +54,12 @@
           <div class="ml-auto">
             <span class="mr-2">
               <ShowToolTip :is-btn="true" :address="acc.address">
-                <v-icon size="x-small" class="torusFont2--text">$copy</v-icon>
+                <v-icon size="x-small" class="text-torusFont2">$copy</v-icon>
               </ShowToolTip>
             </span>
             <span class="mr-2">
               <ExportQrCode :custom-address="acc.address">
-                <v-icon class="torusFont2--text" size="x-small">$qr</v-icon>
+                <v-icon class="text-torusFont2" size="x-small">$qr</v-icon>
               </ExportQrCode>
             </span>
             <span>
@@ -72,7 +72,7 @@
                 target="_blank"
                 rel="noreferrer noopener"
               >
-                <v-icon class="torusFont2--text" size="x-small">$link</v-icon>
+                <v-icon class="text-torusFont2" size="x-small">$link</v-icon>
               </v-btn>
             </span>
           </div>
@@ -84,10 +84,10 @@
       <v-list-item id="import-account-btn" @click="accountImportDialog = true">
         <template #prepend>
           <div class="mr-2">
-            <v-icon size="24" class="text_2--text">$add</v-icon>
+            <v-icon size="24" class="text-text_2">$add</v-icon>
           </div>
         </template>
-        <div class="caption font-weight-bold text_1--text">{{ $t('accountMenu.importAccount') }}</div>
+        <div class="caption font-weight-bold text-text_1">{{ $t('accountMenu.importAccount') }}</div>
       </v-list-item>
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
         <AccountImport @onClose="accountImportDialog = false" />
@@ -107,10 +107,10 @@
       >
         <template #prepend>
           <div class="mr-1" :style="{ marginLeft: '3px' }">
-            <v-icon :size="headerItem.icon === 'transaction' ? 13 : 15" class="text_2--text">{{ `$${headerItem.icon}` }}</v-icon>
+            <v-icon :size="headerItem.icon === 'transaction' ? 13 : 15" class="text-text_2">{{ `$${headerItem.icon}` }}</v-icon>
           </div>
         </template>
-        <v-list-item-title class="caption font-weight-bold text_1--text">{{ headerItem.display }}</v-list-item-title>
+        <v-list-item-title class="caption font-weight-bold text-text_1">{{ headerItem.display }}</v-list-item-title>
       </v-list-item>
     </v-list>
     <v-divider v-if="$vuetify.display.smAndDown"></v-divider>
@@ -118,7 +118,7 @@
       <v-list-item href="https://docs.tor.us/#users" target="_blank" rel="noreferrer noopener">
         <template #prepend>
           <div class="mr-2 justify-center">
-            <v-icon size="20" class="text_2--text">$info</v-icon>
+            <v-icon size="20" class="text-text_2">$info</v-icon>
           </div>
         </template>
         <v-list-item-title class="caption font-weight-bold">{{ $t('accountMenu.infoSupport') }}</v-list-item-title>
@@ -128,7 +128,7 @@
 
     <v-divider></v-divider>
     <div class="text-right py-4 px-3">
-      <v-btn text class="caption text_2--text font-weight-bold" @click="logout">{{ $t('accountMenu.logOut') }}</v-btn>
+      <v-btn text class="caption text-text_2 font-weight-bold" @click="logout">{{ $t('accountMenu.logOut') }}</v-btn>
     </div>
   </v-card>
 </template>

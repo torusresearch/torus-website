@@ -66,7 +66,7 @@
               <v-btn
                 v-show="canShowLrc && !whiteLabel.topupHide"
                 block
-                large
+                size="large"
                 class="torus-btn1 gtm-topup-cta"
                 :class="whiteLabel.isActive ? 'text-white' : 'text-torusBrand1'"
                 :color="whiteLabel.isActive ? 'torusBrand1' : ''"
@@ -79,7 +79,7 @@
             <v-col cols="6" class="px-3">
               <v-btn
                 block
-                large
+                size="large"
                 class="torus-btn1 gtm-transfer-cta"
                 :class="whiteLabel.isActive ? 'text-white' : 'text-torusBrand1'"
                 :color="whiteLabel.isActive ? 'torusBrand1' : ''"
@@ -156,11 +156,11 @@
       <v-col cols="12" md="6" :class="{ 'offset-md-3': $vuetify.display.mdAndUp }">
         <v-tabs v-model="activeTab" class="home-tab" centered hide-slider :class="isDarkMode ? 'v-theme--dark' : 'v-theme--light'">
           <v-tab :key="$t('walletHome.tokens')" class="home-tab-token gmt-tokens-tab font-weight-bold">
-            <v-icon class="mr-1" size="small" left>$token</v-icon>
+            <v-icon class="mr-1" size="small" start>$token</v-icon>
             {{ $t('walletHome.tokens') }}
           </v-tab>
           <v-tab :key="$t('walletHome.collectibles')" class="home-tab-collectibles gmt-collectibles-tab font-weight-bold">
-            <v-icon class="mr-1" size="small" left>$collectibles</v-icon>
+            <v-icon class="mr-1" size="small" start>$collectibles</v-icon>
             {{ $t('walletHome.collectibles') }}
           </v-tab>
         </v-tabs>
@@ -174,13 +174,13 @@
             aria-label="Refresh Balances"
             @click="refreshBalances"
           >
-            <v-icon left color="torusFont2" size="8">$refresh</v-icon>
-            <span class="caption text_2--text">{{ $t('walletHome.showAllTokens') }}</span>
+            <v-icon start color="torusFont2" class="mr-1" size="8">$refresh</v-icon>
+            <span class="text-caption text-text_2">{{ $t('walletHome.showAllTokens') }}</span>
           </v-btn>
         </div>
-        <div class="text-text_3 refresh-text" small>{{ $t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
+        <div class="text-text_3 refresh-text" size="small">{{ $t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
       </v-col>
-      <v-col v-if="showSearch" xs12 mt-4>
+      <v-col v-if="showSearch" cols="12" class="mt-4">
         <v-text-field
           v-model="search"
           class="search-tokens text-text_2 body-2"
@@ -204,7 +204,7 @@
             @click="hideTokenMode = !hideTokenMode"
           >
             <v-icon left class="text-text_2" size="14">$pencil_edit</v-icon>
-            <span class="caption text-text_2">{{ $t('homeToken.editTokens') }}</span>
+            <span class="text-caption text-text_2">{{ $t('homeToken.editTokens') }}</span>
           </v-btn>
         </div>
       </v-window-item>
@@ -223,8 +223,8 @@
             aria-label="Refresh Balances"
             @click="refreshBalances"
           >
-            <v-icon left color="torusFont2" size="8">$refresh</v-icon>
-            <span class="caption text-text_2">{{ $t('walletHome.showAllTokens') }}</span>
+            <v-icon start color="torusFont2" class="mr-1" size="8">$refresh</v-icon>
+            <span class="text-caption text-text_2">{{ $t('walletHome.showAllTokens') }}</span>
           </v-btn>
           <v-btn
             v-if="hasCustomToken"
@@ -234,8 +234,8 @@
             :aria-label="$t('homeToken.editTokens')"
             @click="hideTokenMode = !hideTokenMode"
           >
-            <v-icon left class="text-text_2" size="14">$pencil_edit</v-icon>
-            <span class="caption text-text_2">{{ $t('homeToken.editTokens') }}</span>
+            <v-icon start class="text-text_2" size="14">$pencil_edit</v-icon>
+            <span class="text-caption text-text_2">{{ $t('homeToken.editTokens') }}</span>
           </v-btn>
         </div>
         <div class="text-text_3 refresh-text">{{ $t('walletHome.lastUpdate') }}: {{ lastUpdated }}</div>
