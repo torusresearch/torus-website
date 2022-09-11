@@ -160,6 +160,7 @@ export default class TorusController extends SafeEventEmitter {
       getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController),
       preferencesStore: this.prefsController.store,
       txHistoryLimit: 40,
+      getUserTokens: this.detectTokensController.getUserTokens.bind(this.detectTokensController),
       // signs ethTx
       signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
       provider: this.provider,
