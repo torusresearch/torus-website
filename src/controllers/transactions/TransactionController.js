@@ -1058,7 +1058,7 @@ class TransactionController extends SafeEventEmitter {
         methodParameters = ck20.params
       }
     } else if (checkSummedTo && decodedERC20) {
-      const userTokens = await this.getUserTokens()
+      const userTokens = this.getUserTokens()
       const currentToken = userTokens.find((token) => {
         if (token?.tokenAddress.toLowerCase() === checkSummedTo.toLowerCase()) return true
         return false
