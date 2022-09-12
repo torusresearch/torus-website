@@ -24,7 +24,6 @@
 
 <script>
 import BigNumber from 'bignumber.js'
-import log from 'loglevel'
 
 import { ACTIVITY_ACTION_ALL, ACTIVITY_PERIOD_ALL, ACTIVITY_PERIOD_MONTH_ONE, ACTIVITY_PERIOD_WEEK_ONE } from '../../../utils/enums'
 import TransactionDetails from '../TransactionDetails'
@@ -122,7 +121,6 @@ export default {
     pagedTransactions() {
       const transactions = this.filteredTransactions.slice((this.page - 1) * this.itemsPerPage, this.page * this.itemsPerPage)
 
-      log.info('transactions', transactions)
       return transactions
     },
   },

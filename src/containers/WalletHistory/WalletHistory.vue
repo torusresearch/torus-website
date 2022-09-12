@@ -9,69 +9,28 @@
       <v-col cols="12" md="5" :class="$vuetify.display.xs ? 'mt-7' : ''">
         <v-row class="mx-n2">
           <v-col cols="6" class="px-2">
-            <v-menu offset-y>
-              <template #activator="{ props }">
-                <v-btn
-                  block
-                  variant="outlined"
-                  height="42"
-                  class="d-flex align-center filter-selector pa-2"
-                  :class="{ 'v-theme--dark': isDarkMode }"
-                  v-bind="props"
-                >
-                  <v-icon size="x-small" class="text-text_2">$activities</v-icon>
-                  <span class="ml-1 text-text_1" :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'">{{ $t(selectedAction) }}</span>
-                  <v-icon class="ml-auto text-text_2">$select</v-icon>
-                </v-btn>
-              </template>
-              <v-card class="pa-3">
-                <v-list min-width="190" density="comfortable">
-                  <v-list-group color="torusBrand1">
-                    <v-list-item
-                      v-for="actionType in actionTypes"
-                      :key="actionType.value"
-                      style="display: block"
-                      :class="selectedAction === actionType.value ? 'active' : ''"
-                      @click="selectedAction = actionType.value"
-                    >
-                      <v-list-item-title>{{ actionType.text }}</v-list-item-title>
-                    </v-list-item>
-                  </v-list-group>
-                </v-list>
-              </v-card>
-            </v-menu>
+            <v-select
+              v-model="selectedAction"
+              prepend-inner-icon="$activities"
+              append-inner-icon="$select"
+              :items="actionTypes"
+              item-title="text"
+              item-value="value"
+              variant="outlined"
+              density="compact"
+            ></v-select>
           </v-col>
           <v-col cols="6" class="px-2">
-            <v-menu offset-y>
-              <template #activator="{ props }">
-                <v-btn
-                  block
-                  variant="outlined"
-                  height="42"
-                  class="d-flex align-center filter-selector pa-2"
-                  :class="{ 'v-theme--dark': isDarkMode }"
-                  v-bind="props"
-                >
-                  <v-icon class="text-text_2" size="small">$calendar</v-icon>
-                  <span class="ml-1 text-text_1" :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'">{{ $t(selectedPeriod) }}</span>
-                  <v-icon class="ml-auto text-text_2">$select</v-icon>
-                </v-btn>
-              </template>
-              <v-card class="pa-3">
-                <v-list min-width="190" density="comfortable">
-                  <v-list-group color="torusBrand1">
-                    <v-list-item
-                      v-for="period in periods"
-                      :key="period.value"
-                      :class="selectedPeriod === period.value ? 'active' : ''"
-                      @click="selectedPeriod = period.value"
-                    >
-                      <v-list-item-title>{{ period.text }}</v-list-item-title>
-                    </v-list-item>
-                  </v-list-group>
-                </v-list>
-              </v-card>
-            </v-menu>
+            <v-select
+              v-model="selectedPeriod"
+              prepend-inner-icon="$calendar"
+              append-inner-icon="$select"
+              :items="periods"
+              item-title="text"
+              item-value="value"
+              variant="outlined"
+              density="compact"
+            ></v-select>
           </v-col>
         </v-row>
       </v-col>
@@ -207,7 +166,7 @@ export default {
     },
   },
   async mounted() {
-    this.$vuetify.goTo(0)
+    // this.$vuetify.goTo(0)
     let gasPrice = this.cancelGasPrice
     try {
       if (this.networkType.host === MAINNET) {
