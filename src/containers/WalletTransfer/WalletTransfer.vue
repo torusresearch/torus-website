@@ -10,6 +10,7 @@
     </div>
     <v-row
       wrap
+      no-gutters
       class="mx-n4"
       :class="[(contractType === CONTRACT_TYPE_ERC721 || contractType === CONTRACT_TYPE_ERC1155) && $vuetify.display.xs ? 'mt-0' : 'mt-7']"
     >
@@ -43,7 +44,7 @@
       <v-col cols="12" md="6" :class="$vuetify.display.xs ? '' : 'px-4'">
         <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="none" autocomplete="off" @submit.prevent="sendCoin">
           <v-card :flat="$vuetify.display.xs" class="form-container" :class="$vuetify.display.xs ? 'mobile py-6 px-4' : 'elevation-1 pa-6'">
-            <v-row wrap>
+            <v-row wrap no-gutters>
               <v-col cols="12">
                 <div class="body-2 mb-2">{{ $t('walletTransfer.selectItem') }}</div>
                 <div v-if="selectedItemDisplay">
@@ -474,10 +475,10 @@
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
                 <span id="account-balance" class="display-2 text-text_2 mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
-                <span class="caption text-text_2">{{ selectedItem && selectedItem.symbol }}</span>
+                <span class="text-caption text-text_2">{{ selectedItem && selectedItem.symbol }}</span>
               </div>
             </div>
-            <div class="caption text-right currency-rate align-self-end text-text_2 ml-auto">
+            <div class="text-caption text-right currency-rate align-self-end text-text_2 ml-auto">
               {{ selectedItem.currencyRateText }}
             </div>
           </div>
@@ -494,10 +495,10 @@
       >
         <template v-if="selectedVerifier === TWITTER && messageModalType === MESSAGE_MODAL_TYPE_SUCCESS" #link>
           <div class="mb-4">
-            <div class="mb-4 text-text_2 body-2">{{ $t('walletTransfer.transferShare') }}</div>
-            <v-btn text class="share-btn" :href="tweetData" target="_blank">
+            <div class="mb-4 text-text_2 text-body-2">{{ $t('walletTransfer.transferShare') }}</div>
+            <v-btn variant="text" class="share-btn" :href="tweetData" target="_blank">
               <v-icon size="20" class="mr-1">$twitter</v-icon>
-              <span class="body-2 font-weight-bold">Tweet</span>
+              <span class="text-body-2 font-weight-bold">Tweet</span>
             </v-btn>
           </div>
         </template>
@@ -1290,7 +1291,7 @@ export default {
           this.messageModalShow = true
           this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
           this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
-          this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
+          this.messageModalDetails = this.$t('walletTransfer.transferFailMessage', { time: this.timeTakenDisplay })
           log.error('Invalid to Address')
           return
         }
@@ -1380,7 +1381,7 @@ export default {
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
               this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
-              this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
+              this.messageModalDetails = this.$t('walletTransfer.transferFailMessage', { time: this.timeTakenDisplay })
             }
             log.error(error)
           } else {
@@ -1391,7 +1392,7 @@ export default {
             this.messageModalShow = true
             this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
             this.messageModalTitle = this.$t('walletTransfer.transferSuccessTitle')
-            this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage')
+            this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage', { time: this.timeTakenDisplay })
           }
         })
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
@@ -1413,7 +1414,7 @@ export default {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
                 this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
+                this.messageModalDetails = this.$t('walletTransfer.transferFailMessage', { time: this.timeTakenDisplay })
               }
               log.error(error)
             } else {
@@ -1424,7 +1425,7 @@ export default {
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
               this.messageModalTitle = this.$t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage')
+              this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage', { time: this.timeTakenDisplay })
             }
           }
         )
@@ -1443,7 +1444,7 @@ export default {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
                 this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
+                this.messageModalDetails = this.$t('walletTransfer.transferFailMessage', { time: this.timeTakenDisplay })
               }
               log.error(error)
             } else {
@@ -1453,7 +1454,7 @@ export default {
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
               this.messageModalTitle = this.$t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage')
+              this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage', { time: this.timeTakenDisplay })
             }
           }
         )
@@ -1474,7 +1475,7 @@ export default {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
                 this.messageModalTitle = this.$t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.$t('walletTransfer.transferFailMessage')
+                this.messageModalDetails = this.$t('walletTransfer.transferFailMessage', { time: this.timeTakenDisplay })
               }
               log.error(error)
             } else {
@@ -1484,7 +1485,7 @@ export default {
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
               this.messageModalTitle = this.$t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage')
+              this.messageModalDetails = this.$t('walletTransfer.transferSuccessMessage', { time: this.timeTakenDisplay })
             }
           }
         )

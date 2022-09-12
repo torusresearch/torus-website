@@ -290,19 +290,33 @@
     }
 
     .v-input {
-      &.v-text-field--outlined > .v-input__control {
-        & > .v-input__slot {
+      .v-input__control {
+        .v-field--variant-outlined {
           background: rgb(var(--v-theme-torusBlack));
           box-shadow: inherit;
-        }
-        fieldset {
-          border: 1px solid rgb(var(--v-theme-torusGray3));
-        }
-        .v-icon {
-          color: rgb(var(--v-theme-text_2));
-        }
-        input {
-          color: rgb(var(--v-theme-text_2));
+          .v-field__outline {
+            border: 1px solid rgb(var(--v-theme-torusGray3));
+
+            .v-field__outline__start, .v-field__outline__end {
+              border: none;
+            }
+          }
+          .v-icon {
+            color: rgb(var(--v-theme-text_2));
+          }
+          input {
+            color: rgb(var(--v-theme-text_2));
+          }
+
+          &.v-field--error {
+            .v-field__outline {
+              border: 1px solid rgb(var(--v-theme-error));
+
+              .v-field__outline__start, .v-field__outline__end {
+                border: none;
+              }
+            }
+          }
         }
       }
     }

@@ -1,6 +1,6 @@
 <template>
   <v-container class="wallet-activity" :class="$vuetify.display.xs ? 'px-4' : ''">
-    <v-row class="mt-3" wrap>
+    <v-row class="mt-3" wrap no-gutters>
       <v-col cols="12" md="7">
         <div class="text-text_2 font-weight-bold float-left page-title" :class="{ 'display-1': $vuetify.display.width > 390 }">
           {{ $t('walletActivity.transactionActivities') }}
@@ -16,11 +16,11 @@
                   variant="outlined"
                   height="42"
                   class="d-flex align-center filter-selector pa-2"
-                  :class="{ 'v-theme--dark': $vuetify.theme.isDark }"
+                  :class="{ 'v-theme--dark': isDarkMode }"
                   v-bind="props"
                 >
                   <v-icon size="x-small" class="text-text_2">$activities</v-icon>
-                  <span class="ml-1 text-text_1" :class="$vuetify.display.xs ? 'caption' : 'body-2'">{{ $t(selectedAction) }}</span>
+                  <span class="ml-1 text-text_1" :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'">{{ $t(selectedAction) }}</span>
                   <v-icon class="ml-auto text-text_2">$select</v-icon>
                 </v-btn>
               </template>
@@ -30,6 +30,7 @@
                     <v-list-item
                       v-for="actionType in actionTypes"
                       :key="actionType.value"
+                      style="display: block"
                       :class="selectedAction === actionType.value ? 'active' : ''"
                       @click="selectedAction = actionType.value"
                     >
@@ -48,16 +49,16 @@
                   variant="outlined"
                   height="42"
                   class="d-flex align-center filter-selector pa-2"
-                  :class="{ 'theme--dark': $vuetify.theme.isDark }"
+                  :class="{ 'v-theme--dark': isDarkMode }"
                   v-bind="props"
                 >
-                  <v-icon class="text-text_2" small>$calendar</v-icon>
-                  <span class="ml-1 text-text_1" :class="$vuetify.display.xs ? 'caption' : 'body-2'">{{ $t(selectedPeriod) }}</span>
+                  <v-icon class="text-text_2" size="small">$calendar</v-icon>
+                  <span class="ml-1 text-text_1" :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'">{{ $t(selectedPeriod) }}</span>
                   <v-icon class="ml-auto text-text_2">$select</v-icon>
                 </v-btn>
               </template>
               <v-card class="pa-3">
-                <v-list min-width="190" dense>
+                <v-list min-width="190" density="comfortable">
                   <v-list-group color="torusBrand1">
                     <v-list-item
                       v-for="period in periods"
@@ -142,19 +143,19 @@ export default {
     actionTypes() {
       return [
         {
-          text: this.t(ACTIVITY_ACTION_ALL),
+          text: this.$t(ACTIVITY_ACTION_ALL),
           value: ACTIVITY_ACTION_ALL,
         },
         {
-          text: this.t(ACTIVITY_ACTION_SEND),
+          text: this.$t(ACTIVITY_ACTION_SEND),
           value: ACTIVITY_ACTION_SEND,
         },
         {
-          text: this.t(ACTIVITY_ACTION_RECEIVE),
+          text: this.$t(ACTIVITY_ACTION_RECEIVE),
           value: ACTIVITY_ACTION_RECEIVE,
         },
         {
-          text: this.t(ACTIVITY_ACTION_TOPUP),
+          text: this.$t(ACTIVITY_ACTION_TOPUP),
           value: ACTIVITY_ACTION_TOPUP,
         },
       ]
@@ -162,19 +163,19 @@ export default {
     periods() {
       return [
         {
-          text: this.t(ACTIVITY_PERIOD_ALL),
+          text: this.$t(ACTIVITY_PERIOD_ALL),
           value: ACTIVITY_PERIOD_ALL,
         },
         {
-          text: this.t(ACTIVITY_PERIOD_WEEK_ONE),
+          text: this.$t(ACTIVITY_PERIOD_WEEK_ONE),
           value: ACTIVITY_PERIOD_WEEK_ONE,
         },
         {
-          text: this.t(ACTIVITY_PERIOD_MONTH_ONE),
+          text: this.$t(ACTIVITY_PERIOD_MONTH_ONE),
           value: ACTIVITY_PERIOD_MONTH_ONE,
         },
         {
-          text: this.t(ACTIVITY_PERIOD_MONTH_SIX),
+          text: this.$t(ACTIVITY_PERIOD_MONTH_SIX),
           value: ACTIVITY_PERIOD_MONTH_SIX,
         },
       ]
@@ -200,6 +201,9 @@ export default {
     currencyMultiplier() {
       const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
       return new BigNumber(currencyMultiplierNumber)
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.name === 'dark'
     },
   },
   async mounted() {
@@ -260,25 +264,27 @@ export default {
     },
     getActionText(activity) {
       if (activity.transaction_category === TRANSACTION_TYPES.CONTRACT_INTERACTION) {
-        return this.t('walletActivity.contractInteraction')
+        return this.$t('walletActivity.contractInteraction')
       }
       if (activity.transaction_category === TRANSACTION_TYPES.DEPLOY_CONTRACT) {
-        return this.t('walletActivity.contractDeployment')
+        return this.$t('walletActivity.contractDeployment')
       }
       if (activity.transaction_category === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE) {
-        return `${this.t('walletActivity.approved')} ${activity.type_name !== 'n/a' ? activity.type_name.toUpperCase() : activity.type.toUpperCase()}`
+        return `${this.$t('walletActivity.approved')} ${
+          activity.type_name !== 'n/a' ? activity.type_name.toUpperCase() : activity.type.toUpperCase()
+        }`
       }
       if (activity.type_name === 'n/a' || activity.type === 'n/a') {
-        return `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+        return `${activity.action === ACTIVITY_ACTION_SEND ? this.$t('walletActivity.sent') : this.$t('walletActivity.received')} ${
           activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
         }`
       }
       if (activity.type_name || activity.type) {
-        return `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+        return `${activity.action === ACTIVITY_ACTION_SEND ? this.$t('walletActivity.sent') : this.$t('walletActivity.received')} ${
           activity.type === 'eth' ? activity.type_name.toUpperCase() : activity.type_name
         }`
       }
-      return `${`${this.t(activity.action)} ${activity.from}`} `
+      return `${`${this.$t(activity.action)} ${activity.from}`} `
     },
     getIcon(activity) {
       if (

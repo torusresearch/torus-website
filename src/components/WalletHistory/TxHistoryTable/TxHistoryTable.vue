@@ -22,13 +22,7 @@
     </v-data-iterator>
 
     <div v-if="!$vuetify.display.xs && pageCount > 1" class="text-center pt-6">
-      <v-pagination
-        v-model="page"
-        class="activity-pagination"
-        prev-icon="$vuetify.icons.page_prev"
-        next-icon="$vuetify.icons.page_next"
-        :length="pageCount"
-      ></v-pagination>
+      <v-pagination v-model="page" class="activity-pagination" prev-icon="$page_prev" next-icon="$page_next" :length="pageCount"></v-pagination>
     </div>
   </div>
 </template>

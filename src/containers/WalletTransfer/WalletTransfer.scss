@@ -35,10 +35,14 @@
       width: 100%;
     }
   }
-  :deep(.v-messages) {
-    text-align: right;
-    &.error--text {
-      text-align: left;
+  :deep(.v-input__details) {
+    padding-left: 0px;
+    padding-right: 0px;
+    .v-messages {
+      text-align: right;
+      &.error--text {
+        text-align: left;
+      }
     }
   }
   .form-container.mobile {

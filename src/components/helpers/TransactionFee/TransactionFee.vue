@@ -1,6 +1,6 @@
 <template>
   <v-col cols="12" class="mb-3">
-    <v-row>
+    <v-row no-gutters>
       <v-col class="body-2 mb-2">
         <span v-if="!isConfirm">
           <span>{{ $t('walletTransfer.fee-max-transaction') }}*</span>
@@ -20,7 +20,7 @@
         />
       </v-col>
     </v-row>
-    <v-row :class="isConfirm ? 'align-top' : 'align-center'">
+    <v-row :class="isConfirm ? 'align-top' : 'align-center'" no-gutters>
       <v-col v-if="isConfirm" cols="3" class="caption mt-2">
         <span>{{ $t('walletTransfer.fee-max-transaction') }}*</span>
         <HelpTooltip :title="$t('walletTransfer.fee-max-transaction')" :description="$t('walletTransfer.fee-max-transaction-desc')"></HelpTooltip>
@@ -30,7 +30,7 @@
           variant="outlined"
           :value="$t('walletTransfer.fee-upto', { amount: maxFeeDisplay })"
           disabled
-          :hint="`*${$t('walletTransfer.fee-max-transaction-hint')}`"
+          :hint="`* ${$t('walletTransfer.fee-max-transaction-hint')}`"
           persistent-hint
           :suffix="toggleExclusive ? selectedCurrency : `ETH`"
         >
