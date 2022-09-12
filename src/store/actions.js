@@ -28,7 +28,7 @@ import { remove } from '../utils/httpHelpers'
 import { fakeStream, generateAddressFromPrivateKey, getIFrameOriginObject, isMain, toChecksumAddressByChainId } from '../utils/utils'
 import {
   accountTrackerHandler,
-  announcemenstHandler,
+  announcementsHandler,
   assetControllerHandler,
   billboardHandler,
   detectTokensControllerHandler,
@@ -148,7 +148,7 @@ export default {
     resetStore(prefsController.billboardStore, billboardHandler)
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
-    resetStore(prefsController.announcementsStore, announcemenstHandler)
+    resetStore(prefsController.announcementsStore, announcementsHandler)
     await walletConnectController.disconnect()
     resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
@@ -527,7 +527,7 @@ export default {
     prefsController.errorStore.subscribe(errorMessageHandler)
     prefsController.billboardStore.subscribe(billboardHandler)
     prefsController.store.subscribe(prefsControllerHandler)
-    prefsController.announcementsStore.subscribe(announcemenstHandler)
+    prefsController.announcementsStore.subscribe(announcementsHandler)
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
     walletConnectController.store.subscribe(walletConnectHandler)
     encryptionPublicKeyManager.store.subscribe(encryptionPublicKeyHandler)
