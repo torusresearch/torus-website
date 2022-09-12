@@ -76,7 +76,7 @@ export default {
             const url = new URL(payload.url)
             // if same origin, use router.push
             if (url.origin === window.location.origin) {
-              const matchedRoute = this.$router.match(url.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
+              const matchedRoute = this.$router.resolve(url.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
               const query = Object.fromEntries(new URLSearchParams(url.search))
               this.$router.push({ query, hash: url.hash, name: matchedRoute.name })
             } else {
