@@ -98,7 +98,7 @@ export default {
 
       this.whiteLabel = whiteLabel
 
-      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig)
+      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig, sessionNamespace)
       await openLoginHandler.openLoginInstance._syncState({
         ...resultParams,
         store: {

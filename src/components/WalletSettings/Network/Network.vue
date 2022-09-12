@@ -33,6 +33,7 @@
                 >
                   <v-list-item-title class="body-2">{{ supportedNetworks[host].networkName }}</v-list-item-title>
                   <v-btn
+                    v-if="supportedNetworks[host].id"
                     color="text_3"
                     icon
                     size="small"
@@ -42,6 +43,7 @@
                     {{ $t('walletSettings.editNetwork') }}
                   </v-btn>
                   <v-btn
+                    v-if="supportedNetworks[host].id"
                     class="delete-btn"
                     color="text_2"
                     icon

@@ -693,10 +693,11 @@ export default {
     },
     selectedItem() {
       if (this.finalBalancesArrayEthOnly.length === 0 && this.finalBalancesArrayTokens.length > 0) {
-        if (this.tokenAddress !== this.finalBalancesArrayTokens[0].tokenAddress) {
+        const selectedToken = this.finalBalancesArrayTokens.find((x) => x.tokenAddress === this.selectedTokenAddress)
+        if (!selectedToken) {
           this.selectedItemChanged(this.finalBalancesArrayTokens[0].tokenAddress)
         }
-        return this.finalBalancesArrayTokens[0] || {}
+        return selectedToken || this.finalBalancesArrayTokens[0] || {}
       }
       return this.finalBalancesArray.find((x) => x.tokenAddress === this.selectedTokenAddress) || {}
     },
@@ -1189,6 +1190,7 @@ export default {
       const foundInBalances = this.finalBalancesArray.find((token) => token.tokenAddress.toLowerCase() === address.toLowerCase())
       const foundInCollectibles = this.finalCollectibles.find((token) => token.address.toLowerCase() === address.toLowerCase())
       if (foundInBalances) {
+        if (this.tokenAddress?.toLowerCase() === address?.toLowerCase()) return
         this.tokenAddress = foundInBalances.tokenAddress
         this.contractType = foundInBalances.erc20 ? CONTRACT_TYPE_ERC20 : CONTRACT_TYPE_ETH
         this.collectibleSelected = {}
