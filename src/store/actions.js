@@ -124,7 +124,7 @@ export default {
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     torusController.lock()
     if (selectedAddress) {
-      const openLoginHandler = OpenLoginHandler.getInstance()
+      const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
       if (isMain) {
         router.push({ path: '/logout' }).catch(() => {})
       }
@@ -188,7 +188,7 @@ export default {
     try {
       const windowId = randomId()
       const channelName = `torus_provider_change_channel_${windowId}`
-      const finalUrl = `${baseRoute}providerchange?integrity=true&instanceId=${windowId}`
+      const finalUrl = `${baseRoute}providerchange?instanceId=${windowId}`
       const providerChangeWindow = new PopupWithBcHandler({
         url: finalUrl,
         preopenInstanceId,
@@ -218,7 +218,7 @@ export default {
   },
   showWalletPopup(context, payload) {
     const url = payload.path.includes('tkey') ? `${baseRoute}${payload.path || ''}` : `${baseRoute}wallet${payload.path || ''}`
-    const finalUrl = `${url}?integrity=true&instanceId=${torus.instanceId}`
+    const finalUrl = `${url}?instanceId=${torus.instanceId}`
     const walletWindow = new PopupHandler({ url: finalUrl, features: FEATURES_DEFAULT_WALLET_WINDOW })
     walletWindow.open()
     if (walletWindow.window.blur) walletWindow.window.blur()
@@ -261,7 +261,7 @@ export default {
       })
     )
 
-    const openLoginHandler = OpenLoginHandler.getInstance(state.whiteLabel, {})
+    const openLoginHandler = OpenLoginHandler.getInstance(state.whiteLabel, {}, config.namespace)
     const activeSession = await openLoginHandler.getActiveSession()
     if (activeSession && activeSession.walletKey === privateKey) {
       const _store = activeSession?.store || {}
@@ -292,7 +292,7 @@ export default {
           ...userInfo,
         },
       }
-      await openLoginHandler.updateSession(sessionData)
+      await openLoginHandler.setSession(sessionData)
     }
 
     // TODO: deprecate rehydrate false for the next major version bump
@@ -313,7 +313,7 @@ export default {
       rehydrate: false,
     })
     dispatch('updateSelectedAddress', { selectedAddress: address })
-    const openloginInstance = OpenLoginHandler.getInstance()
+    const openloginInstance = OpenLoginHandler.getInstance({}, {}, config.namespace)
     const existingSessionData = await openloginInstance.getActiveSession()
     if (!existingSessionData) {
       dispatch('logOut')
@@ -369,14 +369,14 @@ export default {
       isSupportedNetwork = true
     }
     const currentTicker = networkType.ticker || 'ETH'
-    if (payload.type && payload.type === RPC && !isSupportedNetwork) {
+    if ((payload.type && payload.type === RPC) || !isSupportedNetwork) {
       const networkId = await torusController.setCustomRpc(networkType.host, networkType.chainId || 1, currentTicker, networkType.networkName || '', {
         blockExplorerUrl: networkType.blockExplorer,
       })
       if (networkId) {
         networkType.id = networkId
-        commit('setNetworkType', networkType)
       }
+      commit('setNetworkType', networkType)
       return null
     }
     commit('setNetworkType', networkType)
@@ -445,7 +445,7 @@ export default {
         throw new Error(error)
       }
       if (config.localStorageAvailable) {
-        const openLoginHandler = OpenLoginHandler.getInstance()
+        const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
         await openLoginHandler.openLoginInstance._syncState({
           store: {
             sessionId,
@@ -480,7 +480,7 @@ export default {
     }
   },
   async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
-    const openLoginHandler = OpenLoginHandler.getInstance()
+    const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()
     commit('setUserInfo', userInfo)
@@ -499,7 +499,7 @@ export default {
     })
   },
   async getUserDapps({ commit, dispatch, state }, { postboxKey, calledFromEmbed }) {
-    const openLoginHandler = OpenLoginHandler.getInstance()
+    const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
     const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
     commit('setUserDapps', userDapps)
     await dispatch('initTorusKeyring', {
@@ -613,13 +613,15 @@ export default {
     const { networkType, networkId, wcConnectorSession } = state
     let walletKey = {}
     try {
-      const currentRoute = router.match(window.location.pathname)
+      const currentRoute = router.match(window.location.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
       if (!currentRoute.meta.skipOpenLoginCheck) {
-        const openLoginHandler = OpenLoginHandler.getInstance()
+        const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
         const sessionInfo = await openLoginHandler.getActiveSession()
         if (!sessionInfo) {
           commit('setRehydrationStatus', true)
+
           if (isMain) await dispatch('logOut')
+          else commit('setSelectedAddress', '')
           return
         }
         const { store } = sessionInfo
@@ -656,7 +658,7 @@ export default {
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       dispatch('subscribeToControllers')
 
-      const _finalSelectedAddress = state.selectedAddress || walletKey.ethAddress
+      const _finalSelectedAddress = state.selectedAddress || walletKey?.ethAddress
       if (_finalSelectedAddress && state.wallet[toChecksumAddressByChainId(_finalSelectedAddress, networkId)]) {
         dispatch('updateSelectedAddress', { selectedAddress: toChecksumAddressByChainId(_finalSelectedAddress, networkId) }) // synchronous
         dispatch('updateNetworkId', { networkId })

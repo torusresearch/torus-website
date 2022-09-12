@@ -2,39 +2,58 @@ import { getPublic, sign } from '@toruslabs/eccrypto'
 import { decryptData, encryptData, keccak256 } from '@toruslabs/metadata-helpers'
 import OpenLogin from '@toruslabs/openlogin'
 import { subkey } from '@toruslabs/openlogin-subkey'
-// import { Mutex } from 'await-semaphore'
 import log from 'loglevel'
 
 import config from '../../config'
 import { ACCOUNT_TYPE } from '../../utils/enums'
-import { get, post } from '../../utils/httpHelpers'
+import { get, post, put } from '../../utils/httpHelpers'
 import { generateAddressFromPrivateKey, generateTorusAuthHeaders, getIFrameOriginObject } from '../../utils/utils'
 
+const getOpenloginWhitelabel = (whiteLabel = {}) => {
+  const whiteLabelOpenLogin = {}
+  if (whiteLabel.theme) {
+    if (whiteLabel.theme.isDark) whiteLabelOpenLogin.dark = true
+    if (whiteLabel.theme.colors) {
+      whiteLabelOpenLogin.theme = {
+        primary: whiteLabel.theme.colors.torusBrand1,
+      }
+    }
+  }
+  if (whiteLabel.logoDark) whiteLabelOpenLogin.logoDark = whiteLabel.logoDark
+  if (whiteLabel.logoLight) whiteLabelOpenLogin.logoLight = whiteLabel.logoLight
+  if (whiteLabel.defaultLanguage) whiteLabelOpenLogin.defaultLanguage = whiteLabel.defaultLanguage
+  if (whiteLabel.name) whiteLabelOpenLogin.name = whiteLabel.name
+  if (whiteLabel.url) whiteLabelOpenLogin.url = whiteLabel.url
+  return whiteLabelOpenLogin
+}
 class OpenLoginHandler {
   static openLoginHandlerInstance = null
 
   static getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
-    if (OpenLoginHandler.openLoginHandlerInstance) return OpenLoginHandler.openLoginHandlerInstance
+    if (OpenLoginHandler.openLoginHandlerInstance) {
+      const updatedConfig = {}
+      if (Object.keys(whiteLabel).length > 0) {
+        const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
+        updatedConfig.whiteLabel = whiteLabelOpenLogin
+      }
+      if (Object.keys(loginConfig).length > 0) {
+        updatedConfig.loginConfig = loginConfig
+      }
+      if (Object.keys(updatedConfig).length > 0) {
+        OpenLoginHandler.openLoginHandlerInstance.openLoginInstance._syncState({
+          ...updatedConfig,
+        })
+      }
+
+      return OpenLoginHandler.openLoginHandlerInstance
+    }
     OpenLoginHandler.openLoginHandlerInstance = new OpenLoginHandler(whiteLabel, loginConfig, sessionNamespace)
     return OpenLoginHandler.openLoginHandlerInstance
   }
 
   // This constructor is private. Don't call it
   constructor(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
-    const whiteLabelOpenLogin = {}
-    if (whiteLabel.theme) {
-      if (whiteLabel.theme.isDark) whiteLabelOpenLogin.dark = true
-      if (whiteLabel.theme.colors) {
-        whiteLabelOpenLogin.theme = {
-          primary: whiteLabel.theme.colors.torusBrand1,
-        }
-      }
-    }
-    if (whiteLabel.logoDark) whiteLabelOpenLogin.logoDark = whiteLabel.logoDark
-    if (whiteLabel.logoLight) whiteLabelOpenLogin.logoLight = whiteLabel.logoLight
-    if (whiteLabel.defaultLanguage) whiteLabelOpenLogin.defaultLanguage = whiteLabel.defaultLanguage
-    if (whiteLabel.name) whiteLabelOpenLogin.name = whiteLabel.name
-    if (whiteLabel.url) whiteLabelOpenLogin.url = whiteLabel.url
+    const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
 
     const iframeObj = getIFrameOriginObject()
     const namespace = config.isCustomLogin ? iframeObj.hostname : undefined
@@ -56,7 +75,8 @@ class OpenLoginHandler {
 
   async getActiveSession() {
     try {
-      const { sessionId, sessionNamespace } = this.openLoginInstance.state.store.getStore()
+      const { sessionId } = this.openLoginInstance.state.store.getStore()
+      const { sessionNamespace } = this.openLoginInstance.state
       if (sessionId) {
         log.info('found session id')
         const publicKeyHex = getPublic(Buffer.from(sessionId, 'hex')).toString('hex')
@@ -90,7 +110,7 @@ class OpenLoginHandler {
         const encData = await encryptData(sessionId, sessionData)
         const signatureBf = await sign(privKey, keccak256(encData))
         const signature = signatureBf.toString('hex')
-        await post(`${config.storageServerUrl}/store/update`, { key: publicKeyHex, data: encData, signature, namespace: sessionNamespace })
+        await put(`${config.storageServerUrl}/store/update`, { key: publicKeyHex, data: encData, signature, namespace: sessionNamespace })
         this.openLoginInstance._syncState(sessionData)
       }
     } catch (error) {
@@ -137,18 +157,6 @@ class OpenLoginHandler {
       log.warn(error)
     }
   }
-
-  // async init() {
-  //   const releaseLock = await mutex.acquire()
-  //   if (this.openLoginInstance.provider.initialized) {
-  //     releaseLock()
-  //     return this.openLoginInstance
-  //   }
-  //   await this.openLoginInstance.init()
-  //   log.info('initialized openlogin instance')
-  //   releaseLock()
-  //   return this.openLoginInstance
-  // }
 
   getUserInfo() {
     const allInfo = this.openLoginInstance.state.store.getStore()

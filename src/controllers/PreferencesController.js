@@ -684,16 +684,23 @@ class PreferencesController extends SafeEventEmitter {
 
   async addCustomNetwork(type, network) {
     try {
-      const payload = {
-        network_name: network.networkName,
-        rpc_url: network.host,
-        chain_id: network.chainId,
-        symbol: network.symbol,
-        block_explorer_url: network.blockExplorer || undefined,
+      const { selectedAddress } = this.store.getState()
+      if (this.state(selectedAddress)?.jwtToken) {
+        const payload = {
+          network_name: network.networkName,
+          rpc_url: network.host,
+          chain_id: network.chainId,
+          symbol: network.symbol,
+          block_explorer_url: network.blockExplorer || undefined,
+        }
+        const res = await this.api.post(`${config.api}/customnetwork/${type}`, payload, this.headers(), { useAPIKey: true })
+        this.network.addSupportedNetworks({ ...network, id: res.data.id })
+        return res.data.id
       }
-      const res = await this.api.post(`${config.api}/customnetwork/${type}`, payload, this.headers(), { useAPIKey: true })
-      this.network.addSupportedNetworks({ ...network, id: res.data.id })
-      return res.data.id
+
+      // for dapps to add network via embed when user is not logged in.
+      this.network.addSupportedNetworks({ ...network })
+      return null
     } catch {
       this.handleError('navBar.snackFailCustomNetworkAdd')
       return null

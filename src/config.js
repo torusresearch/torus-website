@@ -131,9 +131,11 @@ export function storageAvailable(type) {
   }
 }
 
-const { hash } = window.location
-const hashUrl = new URL(`${baseUrl}?${hash.slice(1)}`)
-const isCustomLogin = hashUrl.searchParams.get('isCustomLogin')
+const { hash, search } = window.location
+const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search}`)
+
+const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
+const namespace = finalUrl.searchParams.get('namespace')
 
 // no reddit for binance.tor.us
 
@@ -493,4 +495,5 @@ export default {
   },
   loginsWithLightLogo: [APPLE, GITHUB, JWT],
   isCustomLogin: isCustomLogin === 'true' ? true : isCustomLogin === 'false' ? false : null,
+  namespace,
 }
