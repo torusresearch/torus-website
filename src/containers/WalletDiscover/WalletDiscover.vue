@@ -79,7 +79,12 @@
     </div>
 
     <v-container class="f-width">
-      <v-data-iterator
+      <v-row>
+        <v-col v-for="dapp in pagedList" :key="dapp.title + dapp.network" sm="6" md="4" lg="3">
+          <Dapp :dapp="dapp" :show-network="selectedNetwork === ALL_NETWORKS" />
+        </v-col>
+      </v-row>
+      <!-- <v-data-iterator
         :disable-pagination="$vuetify.display.xs"
         :items="filteredList"
         item-key="url"
@@ -103,9 +108,8 @@
             </v-col>
           </v-row>
         </template>
-      </v-data-iterator>
+      </v-data-iterator> -->
     </v-container>
-
     <div v-if="!$vuetify.display.xs && pageCount > 1" class="text-center pt-6">
       <v-pagination v-model="page" class="activity-pagination" prev-icon="$page_prev" next-icon="$page_next" :length="pageCount"></v-pagination>
     </div>
@@ -115,7 +119,7 @@
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
-import BoxLoader from '../../components/helpers/BoxLoader'
+// import BoxLoader from '../../components/helpers/BoxLoader'
 import Dapp from '../../components/WalletDiscover/Dapp'
 import torus from '../../torus'
 import { SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
@@ -124,7 +128,8 @@ const ALL_CATEGORIES = 'All DApps'
 const ALL_NETWORKS = 'All networks'
 export default {
   name: 'WalletDiscover',
-  components: { BoxLoader, Dapp },
+  components: { Dapp },
+  // components: { BoxLoader, Dapp },
   data() {
     return {
       isLoadingDapps: true,
@@ -175,8 +180,15 @@ export default {
             (this.selectedCategory === ALL_CATEGORIES || this.selectedCategory === dapp.category) &&
             (this.selectedNetwork === ALL_NETWORKS || this.selectedNetwork === dapp.network)
         ) || []
-
+      // eslint-disable-next-line no-console
+      console.log('filtered', this.dapps)
       return filtered
+    },
+    pagedList() {
+      const dapps = this.filteredList.slice((this.page - 1) * this.itemsPerPage, this.page * this.itemsPerPage)
+
+      log.info('pagedList', dapps)
+      return dapps
     },
     pageCount() {
       return Math.ceil(this.filteredList.length / this.itemsPerPage)
@@ -186,7 +198,6 @@ export default {
     },
   },
   async mounted() {
-    this.$vuetify.goTo(0)
     try {
       if (this.$route.query.url) {
         this.redirectUrl = new URL(this.$route.query.url)

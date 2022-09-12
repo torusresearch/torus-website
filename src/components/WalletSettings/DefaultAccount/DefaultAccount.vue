@@ -77,7 +77,7 @@ export default {
       }, [])
     },
     userEmail() {
-      return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
+      return getUserEmail(this.userInfo, this.loginConfig, this.$t('accountMenu.wallet'))
     },
     hasSeedPhraseAccount() {
       return Object.keys(this.wallets).some((address) => this.wallets[address].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
@@ -86,12 +86,12 @@ export default {
   methods: {
     ...mapActions(['setDefaultPublicAddress', 'updateSelectedAddress']),
     accountTitle(accountType, address) {
-      if (accountType === ACCOUNT_TYPE.THRESHOLD) return `OpenLogin ${this.t('tkeySettings.account')}`
+      if (accountType === ACCOUNT_TYPE.THRESHOLD) return `OpenLogin ${this.$t('tkeySettings.account')}`
       if (accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE) {
         const index = Object.keys(this.wallets)
           .filter((x) => this.wallets[x].accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE)
           .indexOf(address)
-        return `${this.t('tkeySettings.tkeySeedPhrase.seedPhraseAccount')} ${index + 1}`
+        return `${this.$t('tkeySettings.tkeySeedPhrase.seedPhraseAccount')} ${index + 1}`
       }
       return this.userInfo.verifierId
     },
