@@ -820,11 +820,10 @@ class PreferencesController extends SafeEventEmitter {
     return this.api.get(`${config.api}/covalent?url=${encodeURIComponent(api)}`, this.headers(), { useAPIKey: true })
   }
 
-  async getEnsOrUnstoppableAddress({ address, type, network }) {
+  async getEnsOrUnstoppableAddress({ address, type }) {
     const url = new URL(`${config.api}/lookup`)
     url.searchParams.append('key', address)
     url.searchParams.append('type', type)
-    url.searchParams.append('network', network)
     return this.api.get(url.href, this.headers(), { useAPIKey: true })
   }
 

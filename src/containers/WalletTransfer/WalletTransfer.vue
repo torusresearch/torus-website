@@ -141,7 +141,7 @@
                       :items="getToAddressComboboxItems"
                       :placeholder="verifierPlaceholder"
                       required
-                      :rules="[contactRule, rules.contactRequired, ensRule, unstoppableDomainsRule, bitRule]"
+                      :rules="[contactRule, rules.contactRequired, ensRule, unstoppableDomainsRule, bitRule, torusRule]"
                       outlined
                       item-text="name"
                       item-value="value"
@@ -531,6 +531,7 @@ import {
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
+  DISCORD,
   DOT_STRING,
   ENS,
   ETH,
@@ -542,6 +543,7 @@ import {
   MESSAGE_MODAL_TYPE_FAIL,
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
+  REDDIT,
   TRANSACTION_SPEED,
   TWITTER,
   UNSTOPPABLE_DOMAINS,
@@ -593,6 +595,7 @@ export default {
       formValid: false,
       ensError: '',
       bitError: '',
+      torusError: '',
       unstoppableDomainsError: '',
       toggle_exclusive: 0,
       gas: new BigNumber('21000'),
@@ -971,7 +974,9 @@ export default {
     bitRule() {
       return this.selectedVerifier === BIT && this.bitError ? this.bitError : true
     },
-
+    torusRule() {
+      return [GOOGLE, TWITTER, REDDIT, DISCORD, GITHUB].includes(this.selectedVerifier) && this.torusError ? this.torusError : true
+    },
     unstoppableDomainsRule() {
       return this.selectedVerifier === UNSTOPPABLE_DOMAINS && this.unstoppableDomainsError ? this.unstoppableDomainsError : true
     },
@@ -979,6 +984,7 @@ export default {
       this.setRandomId()
       this.autoSelectVerifier = false
       this.$refs.form.validate()
+      this.toEthAddress = ''
       if (this.selectedVerifier && this.toAddress) {
         this.toEthAddress = await this.calculateEthAddress()
       }
@@ -1053,6 +1059,7 @@ export default {
       this.toEthAddress = await this.calculateEthAddress()
     },
     async contactChanged(contact) {
+      this.toEthAddress = ''
       if (this.isBitMode) {
         // .bit address is different from wallet rule, so set a new branch
         if (contact.value) this.toAddress = contact.value
@@ -1079,6 +1086,7 @@ export default {
       }
       this.ensError = ''
       this.unstoppableDomainsError = ''
+      this.torusError = ''
 
       if (this.selectedVerifier && this.toAddress) {
         this.toEthAddress = await this.calculateEthAddress()
@@ -1205,10 +1213,10 @@ export default {
       }
     },
     getUnstoppableDomains(domain) {
-      return this.getEnsOrUnstoppableAddress({ address: domain, type: 'unstoppable', network: this.networkType.host })
+      return this.getEnsOrUnstoppableAddress({ address: domain, type: 'unstoppable' })
     },
     getEnsAddress(ens) {
-      return this.getEnsOrUnstoppableAddress({ address: ens, type: 'ens', network: this.networkType.host })
+      return this.getEnsOrUnstoppableAddress({ address: ens, type: 'ens' })
     },
     async calculateEthAddress() {
       let toAddress
@@ -1217,9 +1225,9 @@ export default {
         toAddress = toChecksumAddressByChainId(this.toAddress, this.$store.state.networkId)
       } else if (this.selectedVerifier === ENS) {
         try {
-          const ethAddr = await this.getEnsAddress(this.toAddress)
-          log.info(ethAddr)
-          toAddress = ethAddr
+          const res = await this.getEnsAddress(this.toAddress)
+          log.info(res)
+          toAddress = res.data
         } catch (error) {
           log.error(error)
           this.ensError = 'walletSettings.invalidEns'
@@ -1227,9 +1235,9 @@ export default {
         }
       } else if (this.selectedVerifier === UNSTOPPABLE_DOMAINS) {
         try {
-          const ethAddr = await this.getUnstoppableDomains(this.toAddress)
-          log.info(ethAddr)
-          toAddress = toChecksumAddress(ethAddr)
+          const res = await this.getUnstoppableDomains(this.toAddress)
+          log.info(res)
+          toAddress = toChecksumAddress(res.data)
         } catch (error) {
           log.error(error)
           this.unstoppableDomainsError = 'walletTransfer.invalidUnstoppable'
@@ -1251,15 +1259,18 @@ export default {
           this.convertedVerifierId = validVerifierId
           const openloginVerifier = WALLET_OPENLOGIN_VERIFIER_MAP[walletVerifier]
           if (walletVerifier && openloginVerifier) {
-            toAddress = await this.getTorusLookupAddress({
+            const res = await this.getTorusLookupAddress({
               verifierId: validVerifierId,
               verifier: openloginVerifier,
               walletVerifier,
               network: config.torusNetwork,
             })
+            toAddress = res.data
           }
         } catch (error) {
-          log.error(error)
+          log.error(error, this.toAddress, 'invalid torus lookup error')
+          this.torusError = 'walletTransfer.someTorusError'
+          this.$refs.form.validate()
         }
       }
       if (
