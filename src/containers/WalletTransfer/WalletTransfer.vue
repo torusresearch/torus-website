@@ -851,7 +851,7 @@ export default {
 
     this.updateFieldsBasedOnRoute()
 
-    this.$vuetify.goTo(0)
+    // this.$vuetify.goTo(0)
   },
   methods: {
     startQrScanning() {

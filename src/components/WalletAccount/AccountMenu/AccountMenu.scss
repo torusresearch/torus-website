@@ -1,4 +1,9 @@
-.account-menu {
+.v-card.account-menu {
+  background: #fff;
+  border: 1px solid #f5f5f5;
+  box-shadow: 0 14px 28px rgb(46 91 255 / 6%);
+  border-radius: 9px;
+
   .user-profile-image {
     display: inline-flex;
     height: 40px;
@@ -32,12 +37,12 @@
         box-shadow: 5px 5px 10px #212121, -5px -5px 10px rgba(55, 56, 60, 0.25);
       }
     }
-    .v-btn.v-btn--icon.etherscan-lnk {
+    .v-btn.v-btn--variant-icon.etherscan-lnk {
       background-color: rbg(var(--v-theme-torusGray4));
       color: rgb(var(--v-theme-torusFont2));
       &.v-theme--dark {
         background-color: rgb(var(--v-theme-torusBlack2));
-        color: #5C6C7F;
+        color: #5c6c7f;
       }
     }
   }

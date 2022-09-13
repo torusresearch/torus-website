@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app flat class="header-container" :color="isDarkMode ? '' : 'white'">
+  <v-app-bar app flat class="header-container px-4" :color="isDarkMode ? '' : 'white'">
     <div class="d-flex align-end">
       <router-link v-if="!$vuetify.display.xs || $store.state.whiteLabel.isActive" :to="{ name: 'walletHome' }" :style="{ lineHeight: 0 }">
         <v-img class="home-link mr-1" contain position="left center" alt="Torus Logo" :max-height="30" width="193" :src="getLogo.logo" />

@@ -332,7 +332,7 @@ export default {
 
     this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
 
-    this.$vuetify.goTo(0)
+    // this.$vuetify.goTo(0)
   },
   methods: {
     ...mapActions(['forceFetchTokens', 'setSelectedCurrency']),

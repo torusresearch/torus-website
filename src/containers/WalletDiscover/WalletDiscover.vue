@@ -115,14 +115,11 @@ export default {
             (this.selectedCategory === ALL_CATEGORIES || this.selectedCategory === dapp.category) &&
             (this.selectedNetwork === ALL_NETWORKS || this.selectedNetwork === dapp.network)
         ) || []
-      // eslint-disable-next-line no-console
-      console.log('filtered', this.dapps)
       return filtered
     },
     pagedList() {
       const dapps = this.filteredList.slice((this.page - 1) * this.itemsPerPage, this.page * this.itemsPerPage)
 
-      log.info('pagedList', dapps)
       return dapps
     },
     pageCount() {

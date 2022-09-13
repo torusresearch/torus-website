@@ -1,14 +1,14 @@
 .quick-address {
-  .v-btn.address-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+  .v-btn.address-btn:not(.v-btn--flat):not(.v-btn--variant-text):not(.v-btn--outlined) {
     background-color: rgb(var(--v-theme-torusGray4));
-    color: #7F8FA4;
+    color: #7f8fa4;
     border-radius: 12px;
     letter-spacing: 0.1px;
     font-size: 12px;
     font-weight: bold;
     &.v-theme--dark {
       background-color: rgb(var(--v-theme-torusBlack2));
-      color: #5C6C7F;
+      color: #5c6c7f;
     }
   }
 }

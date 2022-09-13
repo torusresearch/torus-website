@@ -95,7 +95,7 @@ export default {
     const foundPath = this.providers.find((x) => x.link === routerPath)
     this.selectedProvider = foundPath ? foundPath.name : ''
 
-    this.$vuetify.goTo(0)
+    // this.$vuetify.goTo(0)
   },
 }
 </script>
