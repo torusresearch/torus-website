@@ -1,6 +1,6 @@
 <template>
-  <v-card color="elevation-1 activity mb-4 pa-5" :ripple="false" @click="showDetails = !showDetails" @keydown.enter="showDetails = !showDetails">
-    <v-row wrap class="mx-n4 mb-5 mb-sm-0">
+  <v-card class="elevation-1 activity mb-4 pa-5" :ripple="false" @click="showDetails = !showDetails" @keydown.enter="showDetails = !showDetails">
+    <v-row wrap no-gutters>
       <v-col
         px-4
         :class="$vuetify.display.xs ? 'order-2 pt-2' : 'order-0'"
@@ -32,7 +32,7 @@
         :class="$vuetify.display.xs ? 'ml-auto text-right mt-3 order-3' : 'ml-auto text-right order-4'"
         class="px-4"
       >
-        <v-chip class="status-chip text-black" :color="getChipColor(transaction.statusText)" size="small">
+        <v-chip class="status-chip justify-center" :color="getChipColor(transaction.statusText)" size="small">
           {{ $t(transaction.statusText) }}
         </v-chip>
       </v-col>
@@ -149,9 +149,9 @@ export default {
   },
   methods: {
     getChipColor(status) {
-      if (status === ACTIVITY_STATUS_SUCCESSFUL) return '#9BE8C7'
-      if (status === ACTIVITY_STATUS_UNSUCCESSFUL || status === ACTIVITY_STATUS_CANCELLED) return '#FEA29F'
-      return '#E0E0E0'
+      if (status === ACTIVITY_STATUS_SUCCESSFUL) return 'successBase'
+      if (status === ACTIVITY_STATUS_UNSUCCESSFUL || status === ACTIVITY_STATUS_CANCELLED) return 'errorBase'
+      return ''
     },
     cancelTransaction() {
       this.$emit('cancelTransaction', this.transaction)

@@ -1,5 +1,5 @@
 <template>
-  <v-layout class="mt-3" wrap>
+  <v-row no-gutters class="mt-3" wrap>
     <v-col xs12 class="activity-details" :class="{ isMobile: $vuetify.display.xs }">
       <div class="caption">
         <div class="text_1--text d-flex mb-2">
@@ -54,7 +54,7 @@
           </div>
         </div>
       </div>
-      <v-layout wrap class="mt-8">
+      <v-row wrap no-gutters class="mt-8">
         <v-col xs12 sm6>
           <div v-if="transaction.hasCancel" class="caption">
             <div class="text_1--text d-flex mb-2">
@@ -74,7 +74,7 @@
           </div>
         </v-col>
         <v-col v-if="transaction.etherscanLink || transaction.statusText === ACTIVITY_STATUS_PENDING" xs12 sm6 class="text-right mt-4 mt-sm-0">
-          <v-layout :class="{ 'd-inline-flex': !$vuetify.display.xs }">
+          <v-row no-gutters :class="{ 'd-inline-flex': !$vuetify.display.xs }">
             <v-col>
               <v-tooltip top>
                 <template #activator="{ on }">
@@ -111,11 +111,11 @@
                 {{ $t('walletActivity.viewOnEtherscan') }}
               </v-btn>
             </v-col>
-          </v-layout>
+          </v-row>
         </v-col>
-      </v-layout>
+      </v-row>
     </v-col>
-  </v-layout>
+  </v-row>
 </template>
 
 <script>

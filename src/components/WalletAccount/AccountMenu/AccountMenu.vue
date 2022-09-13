@@ -87,7 +87,7 @@
             <v-icon size="24" class="text-text_2">$add</v-icon>
           </div>
         </template>
-        <div class="caption font-weight-bold text-text_1">{{ $t('accountMenu.importAccount') }} {{ accountImportDialog }}</div>
+        <div class="caption font-weight-bold text-text_1">{{ $t('accountMenu.importAccount') }}</div>
       </v-list-item>
       <v-dialog v-model="accountImportDialog" persistent width="600" class="import-dialog">
         <AccountImport @onClose="accountImportDialog = false" />
