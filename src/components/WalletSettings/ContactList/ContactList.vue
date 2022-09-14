@@ -1,7 +1,7 @@
 <template>
   <div class="contact-list-container" :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-0'">
-    <v-row wrap>
-      <v-col cols="12" class="px-1 mb-1">
+    <div>
+      <div class="px-1 mb-1">
         <div class="d-flex align-center">
           <div class="body-2">{{ $t('walletSettings.listContacts') }}</div>
           <div class="d-flex ml-auto">
@@ -10,7 +10,7 @@
               id="search-name"
               v-model="searchName"
               class="search-name caption"
-              density="comfortable"
+              density="compact"
               hide-details
               :placeholder="$t('walletSettings.searchByName')"
               variant="outlined"
@@ -21,9 +21,9 @@
               v-model="searchVerifier"
               class="search-verifier caption"
               hide-details
-              density="comfortable"
+              density="compact"
               variant="outlined"
-              append-icon="$select"
+              append-inner-icon="$select"
               :items="verifierOptions"
               item-title="name"
               item-value="value"
@@ -32,10 +32,14 @@
             >
               <template #selection="{ item }">
                 <div class="v-select__selection v-select__selection--comma">
-                  {{ item === 'walletSettings.all' ? $t(item) : $t(item.title) }}
+                  {{ item.value === '' ? $t('walletSettings.all') : $t(item.title) }}
                 </div>
               </template>
-              <template #item="{ item }">{{ $t(item.title) }}</template>
+              <template #item="{ item }">
+                <v-list-item :class="searchVerifier === item.value ? 'active' : ''" @click="searchVerifier = item.value">
+                  <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+                </v-list-item>
+              </template>
             </v-select>
           </div>
         </div>
@@ -55,29 +59,33 @@
           <v-list v-for="contact in contacts" :key="`contact-${contact.id}`" density="comfortable" class="pa-0 contact-list">
             <v-list-item class="pl-0 pr-1">
               <template #prepend>
-                <div class="ma-0">
-                  <img
-                    v-if="contact.verifier === 'eth'"
-                    :src="require(`../../../assets/img/icons/eth-grey${isDarkMode ? '-black' : '-white'}.svg`)"
-                    style="width: 16px"
-                    class="ma-1"
-                    :alt="`${contact.verifier} Icon`"
-                  />
-                  <v-icon v-else size="16" class="text-torusGray1">
-                    {{ `$${contact.verifier.toLowerCase()}` }}
-                  </v-icon>
-                </div>
+                <img
+                  v-if="contact.verifier === 'eth'"
+                  :src="require(`../../../assets/img/icons/eth-grey${isDarkMode ? '-black' : '-white'}.svg`)"
+                  style="width: 16px"
+                  class="ma-1 ml-2"
+                  :alt="`${contact.verifier} Icon`"
+                />
+                <v-icon v-else size="16" class="text-torusGray1 ml-2">
+                  {{ `$${contact.verifier.toLowerCase()}` }}
+                </v-icon>
               </template>
-              <v-list-item-title class="font-weight-regular caption">
+              <template #append>
+                <v-btn
+                  class="delete-btn"
+                  color="text_2"
+                  icon="$trash"
+                  size="small"
+                  variant="plain"
+                  :aria-label="`Delete ${contact.name}`"
+                  @click="deleteContact(contact.id)"
+                ></v-btn>
+              </template>
+              <v-list-item-title class="font-weight-regular caption pl-2">
                 <span class="text-text_1">{{ contact.name }}</span>
                 -
                 <span class="contact-list__id label">{{ contact.contact }}</span>
               </v-list-item-title>
-              <v-list-item-action class="ma-0">
-                <v-btn class="delete-btn" color="text_2" icon size="small" :aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
-                  <v-icon size="x-small">$trash</v-icon>
-                </v-btn>
-              </v-list-item-action>
             </v-list-item>
           </v-list>
         </v-card>
@@ -85,24 +93,26 @@
         <div class="body-2 mt-4">{{ $t('walletSettings.addNewContact') }}</div>
 
         <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
-          <v-row wrap class="mt-2 mx-n1">
-            <v-col cols="12" sm="7" class="px-1">
+          <v-row wrap no-gutters class="mt-1 mx-n1">
+            <v-col sm="7" class="px-1">
               <v-text-field
                 id="contact-name"
                 v-model="newContactName"
                 :placeholder="$t('walletSettings.enterContact')"
                 :rules="[rules.required]"
                 variant="outlined"
+                density="compact"
                 aria-label="Contact Name"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" sm="5" class="px-1">
+            <v-col sm="5" class="px-1">
               <v-select
                 id="select-verifier"
                 v-model="selectedVerifier"
                 class="select-verifier-container"
                 variant="outlined"
-                append-icon="$select"
+                density="compact"
+                append-inner-icon="$select"
                 :items="verifierOptionsNew"
                 item-title="name"
                 item-value="value"
@@ -111,21 +121,24 @@
               >
                 <template #selection="{ item }">
                   <div class="v-select__selection v-select__selection--comma">
-                    {{ $t(item.title) }}
+                    {{ item.value === '' ? $t('walletSettings.all') : $t(item.title) }}
                   </div>
                 </template>
-                <template #item="{ item }">{{ $t(item.title) }}</template>
+                <template #item="{ item }">
+                  <v-list-item :class="selectedVerifier === item.value ? 'active' : ''" @click="selectedVerifier = item.value">
+                    <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+                  </v-list-item>
+                </template>
               </v-select>
             </v-col>
-          </v-row>
-          <v-row wrap>
-            <v-col cols="12">
+            <v-col cols="12" class="px-1">
               <v-text-field
                 id="contact-value"
                 v-model="newContact"
                 :placeholder="verifierPlaceholder"
                 :rules="[toAddressRule, rules.required, checkDuplicates]"
                 variant="outlined"
+                density="compact"
                 aria-label="Contact Value"
               >
                 <template #message="props">
@@ -133,26 +146,24 @@
                 </template>
               </v-text-field>
             </v-col>
-
-            <v-row wrap>
-              <v-col cols="12" sm="6" class="ml-auto text-right" :class="$vuetify.display.xs ? 'mt-2' : ''">
-                <v-btn
-                  id="contact-submit-btn"
-                  size="large"
-                  class="torus-btn1 py-1 gmt-add-address"
-                  :class="whiteLabel.isActive ? 'text-white' : 'text-torusBrand1'"
-                  :color="whiteLabel.isActive ? 'torusBrand1' : ''"
-                  type="submit"
-                  :disabled="!contactFormValid"
-                >
-                  {{ $t('walletSettings.addContact') }}
-                </v-btn>
-              </v-col>
-            </v-row>
+            <v-col cols="12" class="text-right">
+              <v-btn
+                id="contact-submit-btn"
+                size="large"
+                variant="flat"
+                class="torus-btn1 py-1 gmt-add-address"
+                :class="whiteLabel.isActive ? 'text-white' : 'text-torusBrand1'"
+                :color="whiteLabel.isActive ? 'torusBrand1' : ''"
+                type="submit"
+                :disabled="!contactFormValid"
+              >
+                {{ $t('walletSettings.addContact') }}
+              </v-btn>
+            </v-col>
           </v-row>
         </v-form>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -176,7 +187,7 @@ export default {
       },
       ETH,
       searchName: '',
-      searchVerifier: null,
+      searchVerifier: '',
     }
   },
   computed: {
@@ -190,7 +201,7 @@ export default {
           name: 'walletSettings.all',
           value: '',
         },
-        ...this.verifierOptionsNew,
+        ...getVerifierOptions(),
       ]
     },
     verifierPlaceholder() {

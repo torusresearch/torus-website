@@ -1,8 +1,3 @@
-.private-key-container {
-  .keys.v-list-item {
-    .v-list-item__prepend,
-    .v-list-item__append {
-      align-self: self-start;
-    }
-  }
+.v-input__append .v-btn {
+  margin-top: -6px;
 }

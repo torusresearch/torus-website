@@ -1,13 +1,139 @@
 <template>
-  <v-card class="private-key-container">
+  <v-card class="private-key-container py-6 px-10">
+    <div class="font-weight-bold headline">{{ $t('walletSettings.privateKey') }}</div>
+    <div class="mt-8">
+      <!-- Download JSON -->
+      <div class="d-flex align-start">
+        <div class="mr-9">
+          <v-icon size="26" class="text-text_3">$json</v-icon>
+        </div>
+        <div class="text-subtitle-1 flex-grow-1 font-weight-bold">
+          <div>{{ $t('walletSettings.downloadSoftCopy') }} (JSON)</div>
+
+          <v-expand-transition>
+            <div v-if="isShowGetPassword" class="mt-2">
+              <v-form ref="downloadForm" v-model="downloadFormValid" lazy-validation @submit.prevent="downloadWallet">
+                <v-text-field
+                  id="json-file-password"
+                  v-model="keyStorePassword"
+                  :rules="[rules.required, rules.password]"
+                  autocomplete="new-password"
+                  :type="showJsonPassword ? 'text' : 'password'"
+                  :placeholder="$t('walletSettings.enterPassword')"
+                  variant="outlined"
+                  density="compact"
+                  :append-inner-icon="showJsonPassword ? '$visibility_off' : '$visibility_on'"
+                  @click:append-inner="showJsonPassword = !showJsonPassword"
+                >
+                  <template v-if="!$vuetify.display.xs" #append>
+                    <v-btn
+                      v-if="!walletJson"
+                      id="json-file-confirm-btn"
+                      class="text-white"
+                      color="torusBrand1"
+                      :disabled="!downloadFormValid || isLoadingDownloadWallet"
+                      :loading="isLoadingDownloadWallet"
+                      variant="flat"
+                      @click="downloadWallet"
+                    >
+                      {{ $t('walletSettings.confirm') }}
+                      <template #loader>
+                        <span>
+                          {{ $t('tkeySettings.encrypting') }}
+                          <v-progress-circular :indeterminate="true" size="24" value="0" width="4" color="text_2" />
+                        </span>
+                      </template>
+                    </v-btn>
+                    <v-btn
+                      v-if="walletJson"
+                      id="json-file-download-btn"
+                      class="text-white"
+                      depressed
+                      color="torusBrand1"
+                      :href="walletJson"
+                      :download="name"
+                    >
+                      {{ $t('walletSettings.downloadWallet') }}
+                    </v-btn>
+                  </template>
+                </v-text-field>
+              </v-form>
+            </div>
+          </v-expand-transition>
+        </div>
+        <div class="text-right">
+          <v-btn
+            id="show-download-form-btn"
+            icon="$download"
+            aria-label="Show/Hide Download JSON form"
+            size="small"
+            class="text-torusBrand1"
+            variant="text"
+            @click="isShowGetPassword = true"
+          ></v-btn>
+        </div>
+      </div>
+
+      <v-divider class="my-2"></v-divider>
+      <!-- Show Private Key -->
+      <div class="d-flex">
+        <div class="mr-9">
+          <v-icon size="26" class="text-text_3">
+            {{ isSeedPhrase ? '$tkey_seed_phrase' : '$key' }}
+          </v-icon>
+        </div>
+        <div class="text-subtitle-1 flex-grow-1 font-weight-bold">
+          <div>
+            {{ isSeedPhrase ? $t('tkeySettings.tkeySeedPhrase.showSeedPhrase') : $t('walletSettings.showPrivateKey') }}
+          </div>
+
+          <v-expand-transition>
+            <div v-if="isShowPrivateKey" class="mt-2 d-flex align-center">
+              <div class="text-text_2 flex-grow-1" :class="$vuetify.display.xs ? 'caption' : 'text-body-2'" style="word-break: break-all">
+                {{ selectedKey }}
+              </div>
+              <div>
+                <ShowToolTip :address="selectedKey">
+                  <v-btn
+                    id="click-to-copy-btn"
+                    variant="text"
+                    size="small"
+                    class="text-torusBrand1"
+                    :class="$vuetify.display.xs ? 'mt-2' : 'caption'"
+                  >
+                    <v-icon size="small" class="mr-1">$copy</v-icon>
+                    <span>{{ $t('walletSettings.clickCopy') }}</span>
+                  </v-btn>
+                </ShowToolTip>
+              </div>
+            </div>
+          </v-expand-transition>
+        </div>
+        <div class="text-right">
+          <v-btn
+            id="show-private-key-btn gmt-private-key-show"
+            :icon="isShowPrivateKey ? '$visibility_off' : '$visibility_on'"
+            aria-label="Show/Hide Private Key"
+            size="small"
+            class="text-torusBrand1"
+            variant="text"
+            @click="isShowPrivateKey = !isShowPrivateKey"
+          ></v-btn>
+        </div>
+      </div>
+      <div class="mt-4 text-right">
+        <v-btn id="close-btn" variant="text" @click="onClose">{{ $t('walletSettings.close') }}</v-btn>
+      </div>
+    </div>
+    <!--
     <v-card-text class="py-6">
-      <v-row wrap>
-        <v-col cols="12" :class="$vuetify.display.xs ? '' : 'px-4'">
+      <v-row no-gutters wrap>
+        <v-col cols="12">
           <div class="font-weight-bold headline">{{ $t('walletSettings.privateKey') }}</div>
         </v-col>
-        <v-col cols="12" class="mt-4" :class="$vuetify.display.xs ? '' : 'px-4'">
+        <v-col cols="12" class="mt-4">
           <v-list class="keys">
-            <!-- Download JSON -->
+            Download JSON
             <v-list-item :class="$vuetify.display.xs ? 'px-0' : ''">
               <template #prepend>
                 <div :class="$vuetify.display.xs ? 'mr-1' : ''">
@@ -104,15 +230,21 @@
               </v-expand-transition>
               <template #append>
                 <div :class="$vuetify.display.xs ? 'my-3 mx-1' : ''">
-                  <v-btn id="show-download-form-btn" aria-label="Show/Hide Download JSON form" icon size="small" @click="isShowGetPassword = true">
-                    <v-icon size="18" class="text-torusBrand1">$download</v-icon>
-                  </v-btn>
+                  <v-btn
+                    id="show-download-form-btn"
+                    icon="$download"
+                    aria-label="Show/Hide Download JSON form"
+                    size="small"
+                    class="text-torusBrand1"
+                    variant="text"
+                    @click="isShowGetPassword = true"
+                  ></v-btn>
                 </div>
               </template>
             </v-list-item>
 
             <v-divider></v-divider>
-            <!-- Show Private Key -->
+            Show Private Key
             <v-list-item :class="$vuetify.display.xs ? 'px-0' : ''">
               <template #prepend>
                 <div :class="$vuetify.display.xs ? 'mr-1' : ''">
@@ -139,7 +271,7 @@
                       class="text-torusBrand1"
                       :class="$vuetify.display.xs ? 'mt-2' : 'caption'"
                     >
-                      <v-icon size="small" class="mr-1">$vuetify.icons.copy</v-icon>
+                      <v-icon size="small" class="mr-1">$copy</v-icon>
                       <span>{{ $t('walletSettings.clickCopy') }}</span>
                     </v-btn>
                   </ShowToolTip>
@@ -149,14 +281,13 @@
                 <div :class="$vuetify.display.xs ? 'my-3 mx-1' : ''">
                   <v-btn
                     id="show-private-key-btn gmt-private-key-show"
-                    class="text-torusBrand1"
-                    icon
-                    size="small"
+                    :icon="isShowPrivateKey ? '$visibility_off' : '$visibility_on'"
                     aria-label="Show/Hide Private Key"
+                    size="small"
+                    class="text-torusBrand1"
+                    variant="text"
                     @click="isShowPrivateKey = !isShowPrivateKey"
-                  >
-                    <v-icon>{{ `$${isShowPrivateKey ? 'visibility_off' : 'visibility_on'}` }}</v-icon>
-                  </v-btn>
+                  ></v-btn>
                 </div>
               </template>
             </v-list-item>
@@ -167,7 +298,7 @@
         <v-spacer></v-spacer>
         <v-btn id="close-btn" size="large" variant="text" @click="onClose">{{ $t('walletSettings.close') }}</v-btn>
       </v-row>
-    </v-card-text>
+    </v-card-text> -->
   </v-card>
 </template>
 

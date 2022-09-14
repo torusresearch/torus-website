@@ -1,20 +1,17 @@
 <template>
-  <div class="default-account-container" :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-4'">
+  <div class="default-account-container" :class="$vuetify.display.xs ? 'pt-5' : 'py-5'">
     <div class="body-2 text-torusFont1 text-capitalize mb-2 px-1">
       {{ computedWallets.length > 1 ? $t('tkeySettings.accounts') : $t('tkeySettings.account') }}
     </div>
 
-    <v-list density="comfortable" variant="outlined" class="pa-0 account-list mb-2">
-      <v-list-item v-for="wallet in computedWallets" :key="wallet.key" class="pl-0 pr-1">
+    <v-list density="comfortable" class="pa-0 account-list mb-2">
+      <v-list-item v-for="wallet in computedWallets" :key="wallet.key">
         <template #prepend>
-          <div class="ma-0">
+          <div class="mr-4">
             <v-icon size="16" class="text-torusGray1">{{ `$${wallet.icon}` }}</v-icon>
           </div>
         </template>
-        <v-list-item-title class="font-weight-regular caption">
-          <span class="text-text_1">{{ wallet.title }}</span>
-        </v-list-item-title>
-        <v-list-item-action class="ma-0">
+        <template #append>
           <div v-if="wallet.isDefault" class="caption text-torus_1" :style="{ marginRight: '15px' }">
             {{ $t('tkeySettings.default') }}
           </div>
@@ -28,7 +25,10 @@
           >
             {{ $t('tkeySettings.switchDefault') }}
           </v-btn>
-        </v-list-item-action>
+        </template>
+        <v-list-item-title class="font-weight-regular caption">
+          <span class="text-text_1">{{ wallet.title }}</span>
+        </v-list-item-title>
       </v-list-item>
     </v-list>
 
