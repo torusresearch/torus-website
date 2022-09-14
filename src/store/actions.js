@@ -1,6 +1,6 @@
 import { randomId, safeatob, safebtoa } from '@toruslabs/openlogin-utils'
 import deepmerge from 'deepmerge'
-import { BN, privateToAddress } from 'ethereumjs-util'
+import { privateToAddress } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
@@ -25,10 +25,10 @@ import {
   SUPPORTED_NETWORK_TYPES,
 } from '../utils/enums'
 import { remove } from '../utils/httpHelpers'
-import { fakeStream, getIFrameOriginObject, isMain, toChecksumAddressByChainId } from '../utils/utils'
+import { fakeStream, generateAddressFromPrivateKey, getIFrameOriginObject, isMain, toChecksumAddressByChainId } from '../utils/utils'
 import {
   accountTrackerHandler,
-  announcemenstHandler,
+  announcementsHandler,
   assetControllerHandler,
   billboardHandler,
   detectTokensControllerHandler,
@@ -48,8 +48,6 @@ import {
   walletConnectHandler,
 } from './controllerSubscriptions'
 import initialState from './state'
-
-const { ec } = torus
 
 const { baseRoute } = config
 const { torusController } = torus || {}
@@ -150,7 +148,7 @@ export default {
     resetStore(prefsController.billboardStore, billboardHandler)
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
-    resetStore(prefsController.announcementsStore, announcemenstHandler)
+    resetStore(prefsController.announcementsStore, announcementsHandler)
     await walletConnectController.disconnect()
     resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
@@ -165,21 +163,6 @@ export default {
       if (error) log.error('currency fetch failed')
       else commit('setCurrencyData', data)
     })
-  },
-  async setTorusKey({ state }, { prevAddress, newKey }) {
-    const prevWallet = state.wallet[`0x${prevAddress}`]
-    if (!prevWallet) {
-      throw new Error(`could not find Torus wallet with address 0x${prevAddress}`)
-    }
-    const prevKey = prevWallet.privateKey
-    let oldDiff = new BN(0)
-    // if metadataNonce was previously set
-    if (prevWallet.metadataNonceHex) {
-      oldDiff = new BN(prevWallet.metadataNonceHex, 16)
-    }
-    const originalKey = new BN(prevKey, 16).sub(oldDiff).umod(ec.curve.n)
-    const newDiff = new BN(newKey, 16).sub(new BN(originalKey, 16)).umod(ec.curve.n)
-    return torus.setMetadata(torus.generateMetadataParams(newDiff.toString(16), originalKey))
   },
   async forceFetchTokens({ state }) {
     detectTokensController.refreshTokenBalances()
@@ -323,7 +306,7 @@ export default {
   },
   async finishImportAccount({ dispatch }, payload) {
     const { privKey } = payload
-    const address = torus.generateAddressFromPrivKey(privKey)
+    const address = generateAddressFromPrivateKey(privKey)
     await dispatch('initTorusKeyring', {
       keys: [{ ethAddress: address, privKey, accountType: ACCOUNT_TYPE.IMPORTED }],
       calledFromEmbed: false,
@@ -544,7 +527,7 @@ export default {
     prefsController.errorStore.subscribe(errorMessageHandler)
     prefsController.billboardStore.subscribe(billboardHandler)
     prefsController.store.subscribe(prefsControllerHandler)
-    prefsController.announcementsStore.subscribe(announcemenstHandler)
+    prefsController.announcementsStore.subscribe(announcementsHandler)
     txController.etherscanTxStore.subscribe(etherscanTxHandler)
     walletConnectController.store.subscribe(walletConnectHandler)
     encryptionPublicKeyManager.store.subscribe(encryptionPublicKeyHandler)

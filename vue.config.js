@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const { IgnorePlugin, ProvidePlugin } = require('webpack')
+const { IgnorePlugin, ProvidePlugin, DefinePlugin } = require('webpack')
 // const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
@@ -42,7 +42,9 @@ module.exports = {
       '#': path.resolve(__dirname, 'src/'),
       'web3-providers-ipc': path.resolve(__dirname, 'node_modules/empty-module'),
       'web3-providers-ws': path.resolve(__dirname, 'node_modules/empty-module'),
+      // 'web3-eth-ens': path.resolve(__dirname, 'node_modules/empty-module'),
       lodash: path.resolve(__dirname, 'node_modules/lodash-es'),
+      wasmcurves: path.resolve(__dirname, 'node_modules/empty-module'),
     }
     config.plugins.push(new IgnorePlugin({ resourceRegExp: /^\.\/wordlists\/(?!english)/, contextRegExp: /bip39\/src$/ }))
     config.plugins.push(
@@ -59,6 +61,11 @@ module.exports = {
       new IgnorePlugin({
         resourceRegExp: /genesisStates\/[a-z]*\.json$/,
         contextRegExp: /@ethereumjs\/common/,
+      })
+    )
+    config.plugins.push(
+      new DefinePlugin({
+        __SENTRY_DEBUG__: false,
       })
     )
     config.resolve.fallback = {
