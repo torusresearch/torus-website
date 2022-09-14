@@ -1,137 +1,114 @@
 <template>
   <v-card class="account-import">
-    <v-container>
-      <v-row wrap my-4>
-        <v-col cols="12" :class="$vuetify.display.xs ? 'px-1' : 'px-4'">
-          <div class="font-weight-bold headline">{{ $t('accountMenu.importAccount') }}</div>
-        </v-col>
-        <v-col cols="12" :class="$vuetify.display.xs ? 'px-1' : 'px-4'">
-          <v-col cols="12" mt-4>
-            <div class="text-subtitle-2 mb-2">{{ $t('accountMenu.selectImportType') }}</div>
-            <v-select v-model="selectedType" outlined :items="options" item-title="name" item-value="value"></v-select>
-          </v-col>
-        </v-col>
+    <v-container class="pa-7">
+      <div>
+        <div class="font-weight-bold headline">{{ $t('accountMenu.importAccount') }}</div>
+        <div class="mt-4">
+          <div class="text-subtitle-2 mb-2">{{ $t('accountMenu.selectImportType') }}</div>
+          <v-select v-model="selectedType" variant="outlined" :items="options" item-title="name" item-value="value"></v-select>
+        </div>
         <template v-if="selectedType === 'private'">
-          <v-col cols="12">
-            <v-form
-              ref="privateKeyForm"
-              v-model="privateKeyFormValid"
-              lazy-validation
-              aria-autocomplete="off"
-              autocomplete="off"
-              @submit.prevent="importViaPrivateKey"
-            >
-              <v-row wrap>
-                <v-col cols="12" :class="$vuetify.display.xs ? 'px-1' : 'px-4'">
-                  <div class="text-subtitle-2 mb-2">{{ $t('accountMenu.inputPrivateKey') }}:</div>
-                  <v-text-field
-                    v-model="privateKey"
-                    class="private-key"
-                    outlined
-                    :type="showPrivateKey ? 'text' : 'password'"
-                    :rules="[rules.required]"
-                    :name="randomName"
-                    :label="$t('accountMenu.privateKey')"
-                    single-line
-                  >
-                    <template #append-inner>
-                      <v-btn icon aria-label="Show/Hide Private Key" @click="togglePrivShow">
-                        <v-icon class="text_3--text">{{ showPrivateKey ? '$visibility_off' : '$visibility_on' }}</v-icon>
-                      </v-btn>
-                    </template>
-                  </v-text-field>
-                </v-col>
-                <v-col v-show="canShowError" cols="12" :class="$vuetify.display.xs ? 'px-1' : 'px-4'">
-                  <span class="red--text">{{ error }}</span>
-                </v-col>
-                <v-col cols="12" class="text-right" :class="$vuetify.display.xs ? 'px-1' : 'px-4'">
-                  <v-spacer></v-spacer>
-                  <v-btn text @click="onClose">
-                    {{ $t('accountMenu.back') }}
-                  </v-btn>
-                  <v-btn
-                    id="import-account-private"
-                    depressed
-                    color="torusBrand1 ml-2 gmt-import-account"
-                    :loading="isLoadingPrivate"
-                    :disabled="!privateKeyFormValid || isLoadingPrivate"
-                    class="px-8 white--text"
-                    type="submit"
-                  >
-                    {{ $t('accountMenu.import') }}
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-form>
-          </v-col>
+          <v-form
+            ref="privateKeyForm"
+            v-model="privateKeyFormValid"
+            lazy-validation
+            aria-autocomplete="off"
+            autocomplete="off"
+            @submit.prevent="importViaPrivateKey"
+          >
+            <div>
+              <div class="text-subtitle-2 mb-2">{{ $t('accountMenu.inputPrivateKey') }}:</div>
+              <v-text-field
+                v-model="privateKey"
+                class="private-key"
+                variant="outlined"
+                :type="showPrivateKey ? 'text' : 'password'"
+                :rules="[rules.required]"
+                :name="randomName"
+                :label="$t('accountMenu.privateKey')"
+                single-line
+                :append-inner-icon="showPrivateKey ? '$visibility_off' : '$visibility_on'"
+                @click:append-inner="togglePrivShow"
+              ></v-text-field>
+            </div>
+            <div v-show="canShowError">
+              <span class="text-error">{{ error }}</span>
+            </div>
+            <div class="text-right">
+              <v-spacer></v-spacer>
+              <v-btn variant="text" @click="onClose">
+                {{ $t('accountMenu.back') }}
+              </v-btn>
+              <v-btn
+                id="import-account-private"
+                variant="flat"
+                color="torusBrand1 ml-2 gmt-import-account"
+                :loading="isLoadingPrivate"
+                :disabled="!privateKeyFormValid || isLoadingPrivate"
+                class="px-8 white--text"
+                type="submit"
+              >
+                {{ $t('accountMenu.import') }}
+              </v-btn>
+            </div>
+          </v-form>
         </template>
-        <!-- <template v-if="selectedType === 'keystore'">
-          <v-col xs12>
-            <v-form ref="jsonFileForm" v-model="jsonFileFormValid" lazy-validation @submit.prevent="importViaKeyStoreFile">
-              <v-layout wrap>
-                <v-col xs12 mb-2 :class="$vuetify.display.xs ? 'px-1' : 'px-4'">
-                  <v-layout wrap align-center justify-space-between>
-                    <v-col grow>
-                      <span class="mr-1">{{ $t('accountMenu.uploadJsonLabel') }}</span>
-                      <HelpTooltip :title="$t('accountMenu.uploadJsonTitle')" :description="$t('accountMenu.uploadJsonDesc')"></HelpTooltip>
-                    </v-col>
-                    <v-col shrink>
-                      <v-btn outlined class="upload-button" color="torusBrand1" @click.prevent="openFilePicker">
-                        <v-icon left>$vuetify.icons.question</v-icon>
-                        {{ $t('accountMenu.upload') }}
-                      </v-btn>
-                      <input v-show="false" ref="keystoreUpload" multiple="false" type="file" @change="processFile" />
-                    </v-col>
-                  </v-layout>
-                  <div v-show="selectedFileName !== ''" class="text-right">{{ $t('accountMenu.selectedFile') }}: {{ selectedFileName }}</div>
-                </v-col>
-                <v-col xs12 :class="$vuetify.display.xs ? 'px-1' : 'px-4'">
-                  <div class="text-subtitle-2 mb-2">{{ $t('accountMenu.enterPassword') }}:</div>
-                  <v-text-field
-                    v-model="jsonPassword"
-                    class="password-input"
-                    outlined
-                    name="password"
-                    :rules="[rules.required]"
-                    :type="showJsonPassword ? 'text' : 'password'"
-                    :placeholder="$t('accountMenu.password')"
-                    autocomplete="current-password"
-                    @click:append="toggleJsonPasswordShow"
-                  >
-                    <template #append>
-                      <v-btn icon aria-label="Show/Hide JSON Password" @click="toggleJsonPasswordShow">
-                        <v-icon class="text_3--text">
-                          {{ showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                  </v-text-field>
-                </v-col>
-                <v-col v-show="canShowError" xs12 :class="$vuetify.display.xs ? 'px-1' : 'px-4'">
-                  <span class="red--text">{{ error }}</span>
-                </v-col>
-                <v-col xs12 class="text-right" :class="$vuetify.display.xs ? 'px-1' : 'px-4'">
-                  <v-spacer></v-spacer>
-                  <v-btn text @click="onClose">
-                    {{ $t('accountMenu.back') }}
+        <template v-if="selectedType === 'keystore'">
+          <v-form ref="jsonFileForm" v-model="jsonFileFormValid" lazy-validation @submit.prevent="importViaKeyStoreFile">
+            <div class="mb-2">
+              <div class="d-flex align-center justify-space-between">
+                <div>
+                  <span class="mr-1">{{ $t('accountMenu.uploadJsonLabel') }}</span>
+                  <HelpTooltip :title="$t('accountMenu.uploadJsonTitle')" :description="$t('accountMenu.uploadJsonDesc')"></HelpTooltip>
+                </div>
+                <div>
+                  <v-btn variant="outlined" class="upload-button" color="torusBrand1" @click.prevent="openFilePicker">
+                    <v-icon left>$question</v-icon>
+                    {{ $t('accountMenu.upload') }}
                   </v-btn>
-                  <v-btn
-                    id="import-account-keystore"
-                    depressed
-                    color="torusBrand1 ml-2"
-                    :loading="isLoadingKeystore"
-                    :disabled="!jsonFileFormValid || isLoadingKeystore"
-                    class="px-8 white--text gmt-import-account"
-                    type="submit"
-                  >
-                    {{ $t('accountMenu.import') }}
-                  </v-btn>
-                </v-col>
-              </v-layout>
-            </v-form>
-          </v-col>
-        </template> -->
-      </v-row>
+                  <input v-show="false" ref="keystoreUpload" multiple="false" type="file" @change="processFile" />
+                </div>
+              </div>
+              <div v-show="selectedFileName !== ''" class="text-right">{{ $t('accountMenu.selectedFile') }}: {{ selectedFileName }}</div>
+            </div>
+            <div>
+              <div class="text-subtitle-2 mb-2">{{ $t('accountMenu.enterPassword') }}:</div>
+              <v-text-field
+                v-model="jsonPassword"
+                class="password-input"
+                variant="outlined"
+                name="password"
+                :rules="[rules.required]"
+                :type="showJsonPassword ? 'text' : 'password'"
+                :placeholder="$t('accountMenu.password')"
+                autocomplete="current-password"
+                :append-inner-icon="showJsonPassword ? '$visibility_off' : '$visibility_on'"
+                @click:append-inner="toggleJsonPasswordShow"
+              ></v-text-field>
+            </div>
+            <div v-show="canShowError">
+              <span class="text-error">{{ error }}</span>
+            </div>
+            <div class="text-right">
+              <v-spacer></v-spacer>
+              <v-btn variant="text" @click="onClose">
+                {{ $t('accountMenu.back') }}
+              </v-btn>
+              <v-btn
+                id="import-account-keystore"
+                variant="flat"
+                color="torusBrand1 ml-2"
+                :loading="isLoadingKeystore"
+                :disabled="!jsonFileFormValid || isLoadingKeystore"
+                class="px-8 text-white gmt-import-account"
+                type="submit"
+              >
+                {{ $t('accountMenu.import') }}
+              </v-btn>
+            </div>
+          </v-form>
+        </template>
+      </div>
     </v-container>
   </v-card>
 </template>
@@ -147,11 +124,11 @@ import log from 'loglevel'
 import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
 
 import { broadcastChannelOptions } from '../../../utils/utils'
-// import HelpTooltip from '../../helpers/HelpTooltip'
+import HelpTooltip from '../../helpers/HelpTooltip'
 
 export default {
   components: {
-    // HelpTooltip,
+    HelpTooltip,
   },
   data() {
     return {
@@ -315,7 +292,7 @@ export default {
       this.showJsonPassword = !this.showJsonPassword
     },
     onClose() {
-      this.$emi$t('onClose')
+      this.$emit('onClose')
     },
   },
 }

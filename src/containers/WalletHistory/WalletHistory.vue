@@ -11,25 +11,29 @@
           <v-col cols="6" class="px-2">
             <v-select
               v-model="selectedAction"
+              hide-details
               prepend-inner-icon="$activities"
               append-inner-icon="$select"
               :items="actionTypes"
               item-title="text"
               item-value="value"
-              variant="outlined"
-              density="compact"
+              variant="plain"
+              density="comfortable"
+              class="filter-selector"
             ></v-select>
           </v-col>
           <v-col cols="6" class="px-2">
             <v-select
               v-model="selectedPeriod"
+              hide-details
               prepend-inner-icon="$calendar"
               append-inner-icon="$select"
               :items="periods"
               item-title="text"
               item-value="value"
-              variant="outlined"
-              density="compact"
+              variant="plain"
+              density="comfortable"
+              class="filter-selector"
             ></v-select>
           </v-col>
         </v-row>

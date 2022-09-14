@@ -11,21 +11,25 @@
         <v-col cols="6" class="filter-width px-sm-2">
           <v-select
             v-model="selectedCategory"
+            hide-details
             prepend-inner-icon="$activities"
             append-inner-icon="$select"
             :items="categoryList"
-            variant="outlined"
-            density="compact"
+            variant="plain"
+            density="comfortable"
+            class="filter-selector"
           ></v-select>
         </v-col>
         <v-col cols="6" class="filter-width px-sm-2">
           <v-select
             v-model="selectedNetwork"
+            hide-details
             prepend-inner-icon="$calendar"
             append-inner-icon="$select"
             :items="networkList"
-            variant="outlined"
-            density="compact"
+            variant="plain"
+            density="comfortable"
+            class="filter-selector"
           >
             <template #selection="{ item }">{{ getDisplayName(item.value) }}</template>
             <template #item="{ item }">
