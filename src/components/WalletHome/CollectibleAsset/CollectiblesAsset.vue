@@ -16,7 +16,7 @@
             autoplay=""
             crossorigin="anonymous"
             loop=""
-            :poster="asset.logo"
+            :poster="asset.image"
             alt="1"
             controls=""
             controlslist="nodownload"
