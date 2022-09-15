@@ -21,6 +21,7 @@
             controls=""
             controlslist="nodownload"
             style="width: auto; height: 140px"
+            muted
           >
             <source :src="asset.video" type="video/mp4" />
           </video>

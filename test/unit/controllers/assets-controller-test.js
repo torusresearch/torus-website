@@ -468,10 +468,10 @@ describe('AssetsController', () => {
 
   it('should not add collectible contract if collectible contract already exists', async () => {
     await assetsController.addCollectibles([
-      { contractAddress: 'foo', tokenID: '1', options: { name: 'name', image: 'image', description: 'description' } },
+      { contractAddress: 'foo', tokenID: '1', options: { name: 'name', image: 'image', description: 'description', video: 'video' } },
     ])
     await assetsController.addCollectibles([
-      { contractAddress: 'foo', tokenID: '2', options: { name: 'name', image: 'image', description: 'description' } },
+      { contractAddress: 'foo', tokenID: '2', options: { name: 'name', image: 'image', description: 'description', video: 'video' } },
     ])
     assert(assetsController.state.collectibles.length === 2)
     assert(assetsController.state.collectibleContracts.length === 1)
@@ -489,6 +489,7 @@ describe('AssetsController', () => {
       standard: 'erc721',
       tokenBalance: 1,
       collectibleIndex: 'foo_1',
+      video: 'url',
     })
 
     assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
@@ -528,7 +529,9 @@ describe('AssetsController', () => {
   it('should add collectible by selected address', async () => {
     const firstAddress = TEST_ADDRESS_2
     const secondAddress = TEST_ADDRESS_3
-    sandbox.stub(assetsController, 'getCollectibleInfo').returns({ name: 'name', image: 'url', description: 'description', standard: 'erc721' })
+    sandbox
+      .stub(assetsController, 'getCollectibleInfo')
+      .returns({ name: 'name', image: 'url', description: 'description', standard: 'erc721', video: 'video' })
     assetsController.setSelectedAddress(firstAddress)
     await assetsController.addCollectibles([{ contractAddress: 'foo', tokenID: '1234' }])
     assetsController.setSelectedAddress(secondAddress)
