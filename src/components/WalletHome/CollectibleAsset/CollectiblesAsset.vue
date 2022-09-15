@@ -11,7 +11,21 @@
         @click="toggleAsset(!assetActive)"
       >
         <div class="text-center pt-3">
+          <video
+            v-if="asset.video"
+            autoplay=""
+            crossorigin="anonymous"
+            loop=""
+            :poster="asset.logo"
+            alt="1"
+            controls=""
+            controlslist="nodownload"
+            style="width: auto; height: 140px"
+          >
+            <source :src="asset.video" type="video/mp4" />
+          </video>
           <img
+            v-else
             :src="asset.image"
             style="width: auto; height: 140px"
             :alt="asset.name || `${selectedContract.name} #${asset.tokenId}`"
