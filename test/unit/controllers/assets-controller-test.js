@@ -430,7 +430,7 @@ describe('AssetsController', () => {
       {
         contractAddress: 'foo',
         tokenID: '1',
-        options: { name: 'name', image: 'image', description: 'description', contractDescription: 'Description', standard: 'erc721' },
+        options: { name: 'name', image: 'image', description: 'description', contractDescription: 'Description', standard: 'erc721', video: 'video' },
       },
     ])
     assert.deepStrictEqual(assetsController.state.collectibles[0], {
@@ -442,6 +442,7 @@ describe('AssetsController', () => {
       tokenId: '1',
       standard: 'erc721',
       tokenBalance: 1,
+      video: 'video',
     })
 
     assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
