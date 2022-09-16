@@ -5,7 +5,7 @@
         <div class="card-header text-center xs12 py-6 px-6">
           <div class="text-body2 text_1--text font-weight-bold">{{ t('walletActivity.cancelModalTitle') }}</div>
           <v-btn class="close-btn" icon aria-label="Close cancel status" title="Close cancel status" @click="close">
-            <v-icon>$vuetify.icons.close</v-icon>
+            <v-icon>close</v-icon>
           </v-btn>
         </div>
         <div class="px-4 pt-5 pb-8">

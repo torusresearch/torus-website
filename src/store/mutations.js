@@ -199,7 +199,7 @@ export default {
 
       if (payload.customTranslations) {
         Object.keys(payload.customTranslations).forEach((key) => {
-          i18n.mergeLocaleMessage(key, payload.customTranslations[key])
+          i18n.global.mergeLocaleMessage(key, payload.customTranslations[key])
         })
       }
 

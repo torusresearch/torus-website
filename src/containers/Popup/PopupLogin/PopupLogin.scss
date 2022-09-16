@@ -2,12 +2,6 @@
 
 .login-dialog-container.v-card {
   background: #f9f9fb;
-  .close-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    color: #dfdfdf;
-  }
 
   .login-header {
     background: rgb(var(--v-theme-torusGray4));
@@ -20,8 +14,8 @@
 
     .close-btn {
       position: absolute;
-      top: 0;
-      right: 0;
+      top: 10px;
+      right: 10px;
       color: #dfdfdf;
     }
     .verifier-title1 {

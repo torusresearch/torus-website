@@ -2,7 +2,7 @@
   <v-container>
     <v-breadcrumbs class="px-2 text-subtitle-1 font-weight-bold" :items="breadcrumb">
       <template #divider>
-        <v-icon small>$vuetify.icons.page_next_double</v-icon>
+        <v-icon small>page_next_double</v-icon>
       </template>
     </v-breadcrumbs>
     <v-layout wrap align-end>
@@ -14,7 +14,7 @@
           item-value="address"
           outlined
           hide-details
-          append-icon="$vuetify.icons.select"
+          append-icon="select"
           return-object
           aria-label="Selected contract"
           @change="changeContract"

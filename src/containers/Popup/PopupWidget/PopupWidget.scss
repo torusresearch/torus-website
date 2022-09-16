@@ -63,6 +63,37 @@
   }
 }
 
+.v-dialog.v-overlay {
+  :deep(.v-overlay__content) {
+    position: absolute;
+    margin: 0;
+  }
+  &.top-left {
+    :deep(.v-overlay__content) {
+      top: 0;
+      left: 0;
+    }
+  }
+  &.top-right {
+    :deep(.v-overlay__content) {
+      top: 0;
+      right: 0;
+    }
+  }
+  &.bottom-right {
+    :deep(.v-overlay__content) {
+      bottom: 0;
+      right: 0;
+    }
+  }
+  &.bottom-left {
+    :deep(.v-overlay__content) {
+      bottom: 0;
+      left: 0;
+    }
+  }
+}
+
 .torus-widget__panel {
   position: absolute;
   width: 330px;

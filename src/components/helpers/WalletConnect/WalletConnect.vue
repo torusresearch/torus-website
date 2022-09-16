@@ -55,7 +55,7 @@
               tabindex="-3"
               @click="toggleWC"
             >
-              <!-- <v-icon small>$vuetify.icons.goto</v-icon> -->
+              <!-- <v-icon small>goto</v-icon> -->
               <span class="caption mr-1">{{ $t('walletConnect.gotoApp') }}</span>
               <v-img :src="require(`../../../assets/images/goto-link.svg`)"></v-img>
             </v-btn>

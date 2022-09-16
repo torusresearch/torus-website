@@ -20,12 +20,12 @@ export const languageMap = {
 }
 
 function setI18nLanguage(lang) {
-  i18n.locale = lang
+  i18n.global.locale = lang
   return lang
 }
 
 export function loadLanguageAsync(lang) {
-  if (i18n.locale === lang) {
+  if (i18n.global.locale === lang) {
     return Promise.resolve(setI18nLanguage(lang))
   }
 
@@ -36,7 +36,7 @@ export function loadLanguageAsync(lang) {
 
   // If the language hasn't been loaded yet
   return import(/* webpackChunkName: "lang-[request]" */ `./i18n/${languageMap[lang]}.json`).then((messages) => {
-    i18n.setLocaleMessage(lang, messages.default)
+    i18n.global.setLocaleMessage(lang, messages.default)
     loadedLanguages.add(lang)
     return setI18nLanguage(lang)
   })
