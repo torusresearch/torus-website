@@ -489,7 +489,7 @@ describe('AssetsController', () => {
       standard: 'erc721',
       tokenBalance: 1,
       collectibleIndex: 'foo_1',
-      video: 'video',
+      video: undefined,
     })
 
     assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
