@@ -489,7 +489,7 @@ describe('AssetsController', () => {
       standard: 'erc721',
       tokenBalance: 1,
       collectibleIndex: 'foo_1',
-      video: 'url',
+      video: 'video',
     })
 
     assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
@@ -531,7 +531,7 @@ describe('AssetsController', () => {
     const secondAddress = TEST_ADDRESS_3
     sandbox
       .stub(assetsController, 'getCollectibleInfo')
-      .returns({ name: 'name', image: 'url', description: 'description', standard: 'erc721', video: 'video' })
+      .returns({ name: 'name', image: 'url', description: 'description', standard: 'erc721', video: 'video url' })
     assetsController.setSelectedAddress(firstAddress)
     await assetsController.addCollectibles([{ contractAddress: 'foo', tokenID: '1234' }])
     assetsController.setSelectedAddress(secondAddress)
@@ -546,14 +546,17 @@ describe('AssetsController', () => {
       standard: 'erc721',
       tokenBalance: 1,
       collectibleIndex: 'foo_1234',
+      video: 'vidoe url',
     })
   })
 
   it('should add collectible by provider type', async () => {
     const firstNetworkType = 'rinkeby'
     const secondNetworkType = 'ropsten'
-    sandbox.stub(assetsController, 'getCollectibleContractInformation').returns({ name: 'name', image_url: 'url', symbol: 'FOO' })
-    sandbox.stub(assetsController, 'getCollectibleInfo').returns({ name: 'name', image: 'url', description: 'description', standard: 'erc721' })
+    sandbox.stub(assetsController, 'getCollectibleContractInformation').returns({ name: 'name', image_url: 'url', symbol: 'FOO', video: 'video url' })
+    sandbox
+      .stub(assetsController, 'getCollectibleInfo')
+      .returns({ name: 'name', image: 'url', description: 'description', standard: 'erc721', video: ' video url' })
     network.setProviderType(firstNetworkType)
     await assetsController.addCollectibles([{ contractAddress: 'foo', tokenID: '1234' }])
     network.setProviderType(secondNetworkType)
@@ -568,6 +571,7 @@ describe('AssetsController', () => {
       standard: 'erc721',
       tokenBalance: 1,
       collectibleIndex: 'foo_1234',
+      video: 'video url',
     })
   })
 
@@ -591,6 +595,7 @@ describe('AssetsController', () => {
         standard: 'erc721',
         tokenBalance: 1,
         collectibleIndex: checkSummedAddress + '_1203',
+        video: undefined,
       },
     ])
     assert.deepStrictEqual(assetsController.state.collectibleContracts, [
@@ -621,6 +626,7 @@ describe('AssetsController', () => {
           description: 'description',
           contractDescription: 'Description',
           standard: 'erc721',
+          video: 'valid video url',
         },
       },
     ])
@@ -634,6 +640,7 @@ describe('AssetsController', () => {
       tokenId: '1',
       standard: 'erc721',
       tokenBalance: 1,
+      video: 'valid video url',
     })
     assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
       address: 'foo',
@@ -665,6 +672,7 @@ describe('AssetsController', () => {
       tokenId: '100',
       standard: 'erc721',
       tokenBalance: 1,
+      video: undefined,
     })
     assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
       address: 'foo',
