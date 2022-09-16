@@ -199,7 +199,7 @@ export default class AssetController {
         const tokenBalance =
           standard === CONTRACT_TYPE_ERC721 ? 1 : await this.assetContractController.getErc1155Balance(contractAddress, this.selectedAddress, tokenId)
         const { name, image, description, animation_url } = nftData[0].external_data
-        collectibleInfo = { name, image, description, tokenBalance, standard, animation_url }
+        collectibleInfo = { name, image, description, tokenBalance, standard, video: animation_url }
         return collectibleInfo
       }
     }

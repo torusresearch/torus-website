@@ -546,7 +546,7 @@ describe('AssetsController', () => {
       standard: 'erc721',
       tokenBalance: 1,
       collectibleIndex: 'foo_1234',
-      video: 'vidoe url',
+      video: 'video url',
     })
   })
 
@@ -556,7 +556,7 @@ describe('AssetsController', () => {
     sandbox.stub(assetsController, 'getCollectibleContractInformation').returns({ name: 'name', image_url: 'url', symbol: 'FOO', video: 'video url' })
     sandbox
       .stub(assetsController, 'getCollectibleInfo')
-      .returns({ name: 'name', image: 'url', description: 'description', standard: 'erc721', video: ' video url' })
+      .returns({ name: 'name', image: 'url', description: 'description', standard: 'erc721', video: 'video url' })
     network.setProviderType(firstNetworkType)
     await assetsController.addCollectibles([{ contractAddress: 'foo', tokenID: '1234' }])
     network.setProviderType(secondNetworkType)
