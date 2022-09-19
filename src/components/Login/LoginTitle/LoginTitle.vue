@@ -17,7 +17,7 @@
           </v-btn>
         </template>
         <v-list class="chain-list">
-          <v-list-item v-for="(item, index) in availableOn" :key="item" @click="openWallet(item)">
+          <v-list-item v-for="(item, index) in getTickerNames()" :key="item" @click="openWallet(item)">
             <v-list-item-title>{{ item }}</v-list-item-title>
             <v-divider v-if="index < availableOn.length - 1" :key="`${index}-divider`" />
           </v-list-item>
@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import { getDefaultNetwork } from '../../../utils/utils'
+
 export default {
   props: {
     isDapp: {
@@ -44,13 +46,22 @@ export default {
   },
   data() {
     return {
-      availableOn: ['Ethereum', 'Solana', 'Polygon', 'Binance'],
-      selectedWallet: 'Ethereum',
+      availableOn: {
+        Ethereum: 'https://app.tor.us',
+        Solana: 'https://solana.tor.us',
+        Polygon: 'https://polygon.tor.us',
+        Binance: 'https://bnb.tor.us',
+      },
+      selectedWallet: getDefaultNetwork().tickerName,
     }
   },
   methods: {
     openWallet(wallet) {
       this.selectedWallet = wallet
+      window.location.href = this.availableOn[this.selectedWallet]
+    },
+    getTickerNames() {
+      return Object.keys(this.availableOn)
     },
   },
 }

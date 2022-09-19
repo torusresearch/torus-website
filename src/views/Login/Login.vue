@@ -158,8 +158,7 @@ import LoginFooter from '../../components/Login/LoginFooter'
 import LoginSlide from '../../components/Login/LoginSlide'
 import LoginTitle from '../../components/Login/LoginTitle'
 import config from '../../config'
-import { OpenLoginHandler } from '../../handlers/Auth'
-import { handleRedirectParameters, thirdPartyAuthenticators } from '../../utils/utils'
+import { thirdPartyAuthenticators } from '../../utils/utils'
 
 export default {
   name: 'Login',
@@ -174,8 +173,6 @@ export default {
       scrollOnTop: true,
       currentCarousel: config.showSpringFestival ? 0 : -1,
       showSpringFestival: config.showSpringFestival,
-      availableOn: ['Ethereum', 'Solana', 'Polygon', 'Binance'],
-      selectedWallet: 'Ethereum',
     }
   },
   computed: {
@@ -213,45 +210,6 @@ export default {
     this.isLogout = this.$route.name !== 'login'
 
     this.scroll()
-
-    try {
-      const hash = this.$router.currentRoute.hash.slice(1)
-      const queryParameters = this.$router.currentRoute.query
-      const { error, instanceParameters, hashParameters } = handleRedirectParameters(hash, queryParameters)
-      if (error) throw new Error(error)
-      const { verifier: returnedVerifier } = instanceParameters
-      if (returnedVerifier) this.loginInProgress = true
-      else return
-      const { access_token: accessToken, id_token: idToken } = hashParameters
-      const currentVeriferConfig = this.loginConfig[returnedVerifier]
-      const { jwtParameters } = currentVeriferConfig
-      const loginHandler = new OpenLoginHandler({
-        verifier: returnedVerifier,
-        loginConfigItem: currentVeriferConfig,
-        redirect_uri: '',
-        preopenInstanceId: '',
-        jwtParameters: jwtParameters || {},
-      })
-      const userInfo = await loginHandler.getUserInfo({ accessToken, idToken })
-      const { profileImage, name, email, verifierId, typeOfLogin: returnTypeOfLogin } = userInfo
-      this.setUserInfo({
-        profileImage,
-        name,
-        email,
-        verifierId,
-        verifier: returnedVerifier,
-        verifierParams: { verifier_id: verifierId },
-        typeOfLogin: returnTypeOfLogin,
-      })
-      await this.handleLogin({ calledFromEmbed: false, oAuthToken: idToken || accessToken })
-    } catch (error) {
-      log.error(error)
-      this.snackbar = true
-      this.snackbarColor = 'error'
-      this.snackbarText = error.message?.includes('email_verified') ? this.t('login.errorVerifyEmail') : this.t('login.loginError')
-    } finally {
-      this.loginInProgress = false
-    }
   },
   methods: {
     ...mapActions({
@@ -281,12 +239,6 @@ export default {
       window.addEventListener('scroll', () => {
         this.scrollOnTop = window.pageYOffset < 40
       })
-    },
-    openWallet(wallet) {
-      this.selectedWallet = wallet
-      if (this.selectedWallet === 'Solana') window.open('https://solana.tor.us')
-      else if (this.selectedWallet === 'Polygon') window.open('https://polygon.tor.us')
-      else window.open('https://bnb.tor.us')
     },
   },
 }
