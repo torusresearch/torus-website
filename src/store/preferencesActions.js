@@ -50,6 +50,12 @@ export default {
   addCustomNft(_, payload) {
     return prefsController.addCustomNft(payload)
   },
+  getEnsOrUnstoppableAddress(_, payload) {
+    return prefsController.getEnsOrUnstoppableAddress(payload)
+  },
+  getTorusLookupAddress(_, payload) {
+    return prefsController.getTorusLookupAddress(payload)
+  },
   async setDefaultPublicAddress({ state, dispatch }, payload) {
     const { wallet } = state
     await Promise.all(Object.keys(wallet).map((x) => prefsController.setDefaultPublicAddress(x, payload)))
