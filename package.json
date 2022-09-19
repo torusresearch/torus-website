@@ -12,6 +12,8 @@
     "build:dev": "cross-env VUE_APP_TORUS_BUILD_ENV=development npm run pre-build && vue-cli-service build --mode development",
     "build:lrc": "cross-env VUE_APP_TORUS_BUILD_ENV=lrc npm run pre-build && vue-cli-service build --mode lrc",
     "build:testing": "cross-env VUE_APP_TORUS_BUILD_ENV=testing npm run pre-build && vue-cli-service build --mode testing",
+    "build:bnb": "cross-env VUE_APP_TORUS_BUILD_ENV=bnb npm run pre-build && vue-cli-service build --mode bnb",
+    "build:polygon": "cross-env VUE_APP_TORUS_BUILD_ENV=polygon npm run pre-build && vue-cli-service build --mode polygon",
     "clean": "rimraf node_modules package-lock.json",
     "dev": "cross-env NODE_ENV=development VUE_APP_TORUS_BUILD_ENV=development node server.js",
     "lint:js": "eslint --fix 'src/**/*.js'",
