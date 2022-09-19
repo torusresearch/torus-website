@@ -169,7 +169,7 @@
         <div class="mb-1">
           <v-btn
             class="gmt-refresh-tokens refresh-btn"
-            :color="isDarkMode ? 'torusBlack2' : 'torusGray4'"
+            :color="isDarkMode ? 'torusBlack2' : 'torusGray5'"
             height="24"
             aria-label="Refresh Balances"
             @click="refreshBalances"
@@ -198,7 +198,7 @@
         <div v-if="hasCustomToken && $vuetify.display.mdAndUp" class="text-right">
           <v-btn
             class="gmt-edit-tokens refresh-btn"
-            :color="isDarkMode ? 'torusBlack2' : 'torusGray4'"
+            :color="isDarkMode ? 'torusBlack2' : 'torusGray5'"
             height="24"
             :aria-label="$t('homeToken.editTokens')"
             @click="hideTokenMode = !hideTokenMode"
@@ -218,7 +218,7 @@
         <div class="mb-1">
           <v-btn
             class="gmt-refresh-tokens refresh-btn"
-            :color="isDarkMode ? 'torusBlack2' : 'torusGray4'"
+            :color="isDarkMode ? 'torusBlack2' : 'torusGray5'"
             height="24"
             aria-label="Refresh Balances"
             @click="refreshBalances"
@@ -229,7 +229,7 @@
           <v-btn
             v-if="hasCustomToken"
             class="gmt-edit-tokens refresh-btn ml-2"
-            :color="isDarkMode ? 'torusBlack2' : 'torusGray4'"
+            :color="isDarkMode ? 'torusBlack2' : 'torusGray5'"
             height="24"
             :aria-label="$t('homeToken.editTokens')"
             @click="hideTokenMode = !hideTokenMode"

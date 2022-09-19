@@ -1,35 +1,32 @@
 <template>
   <div>
     <template v-if="type === TRANSACTION_TYPES.STANDARD_TRANSACTION">
-      <v-row class="confirm-header pa-6" :class="{ 'v-theme--dark': isDarkMode }">
-        <v-col class="text-left" cols="12">
-          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
-          <div class="headline text-text_2">{{ $t('dappTransfer.confirmation') }}</div>
-        </v-col>
-      </v-row>
-      <v-row wrap class="align-center mx-6 mb-3 mt-5">
-        <v-col cols="12">
+      <div class="confirm-header text-left pa-6" :class="{ 'v-theme--dark': isDarkMode }">
+        <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
+        <div class="headline text-text_2">{{ $t('dappTransfer.confirmation') }}</div>
+      </div>
+      <div wrap class="align-center mx-6 mb-3 mt-5">
+        <div>
           <NetworkDisplay :minimal="true" class="mb-4" :store-network-type="network"></NetworkDisplay>
-        </v-col>
-        <v-col
+        </div>
+        <div
           v-if="
             transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM ||
             transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE
           "
-          cols="12"
         >
-          <v-col v-if="transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE" cols="12" class="mb-2">
+          <div v-if="transactionCategory === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE" cols="12" class="mb-2">
             <span class="headline text-text_2">
               {{
                 `${$t('dappPermission.allow')} ${origin.hostname} ${$t('dappTransfer.toSpend')} ${selectedToken} ${$t('dappTransfer.onYourBehalf')}?`
               }}
             </span>
-          </v-col>
+          </div>
           <ShowToolTip :address="amountTo">
             <div class="caption">{{ $t('dappTransfer.to') }}: {{ amountTo }}</div>
           </ShowToolTip>
-        </v-col>
-        <v-col v-else cols="12">
+        </div>
+        <div v-else cols="12">
           <ShowToolTip
             v-if="
               [TRANSACTION_TYPES.TOKEN_METHOD_APPROVE, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER, TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER_FROM].indexOf(
@@ -47,8 +44,8 @@
             <div class="caption">{{ $t('dappTransfer.to') }}: {{ receiver }}</div>
           </ShowToolTip>
           <div v-else class="caption">{{ $t('dappTransfer.to') }}: {{ displayAmountTo }}</div>
-        </v-col>
-      </v-row>
+        </div>
+      </div>
       <v-divider class="mx-6 my-4"></v-divider>
       <v-row class="mx-6 my-4" wrap>
         <v-col cols="3" class="pt-3">
@@ -238,85 +235,71 @@
         type === MESSAGE_TYPE.ETH_DECRYPT
       "
     >
-      <v-row class="confirm-header pa-6" :class="{ 'v-theme--dark': isDarkMode }">
-        <v-col cols="12" class="text-left">
-          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
-          <div class="headline text-text_2">
-            {{
-              type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY
-                ? $t('dappProvider.encryptionRequest')
-                : type === MESSAGE_TYPE.ETH_DECRYPT
-                ? $t('dappProvider.decryptionRequest')
-                : $t('dappTransfer.permission')
-            }}
-          </div>
-        </v-col>
-      </v-row>
-      <v-row v-if="type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY" wrap class="my-10">
-        <v-col cols="12" class="mx-6">
-          <div class="text-text_2 headline">{{ $t('dappProvider.allowCompose', { dappname: origin.hostname }) }}</div>
-        </v-col>
-      </v-row>
-      <v-row v-if="type === MESSAGE_TYPE.ETH_DECRYPT" wrap class="my-10">
-        <v-col cols="12" class="mx-6">
-          <div class="text-text_2 headline">{{ $t('dappProvider.allowRead', { dappname: origin.hostname }) }}</div>
-        </v-col>
-      </v-row>
-      <v-row wrap class="align-center mx-6 my-6">
-        <v-col cols="12" class="mb-2">
-          <div class="caption mb-2 text-text_2">{{ $t('dappProvider.requestFrom') }}:</div>
+      <div class="confirm-header text-left pa-6" :class="{ 'v-theme--dark': isDarkMode }">
+        <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
+        <div class="headline text-text_2">
+          {{
+            type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY
+              ? $t('dappProvider.encryptionRequest')
+              : type === MESSAGE_TYPE.ETH_DECRYPT
+              ? $t('dappProvider.decryptionRequest')
+              : $t('dappTransfer.permission')
+          }}
+        </div>
+      </div>
+      <div v-if="type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY" wrap class="pa-6">
+        <div class="text-text_2 headline">{{ $t('dappProvider.allowCompose', { dappname: origin.hostname }) }}</div>
+      </div>
+      <div v-if="type === MESSAGE_TYPE.ETH_DECRYPT" wrap class="pa-6">
+        <div class="text-text_2 headline">{{ $t('dappProvider.allowRead', { dappname: origin.hostname }) }}</div>
+      </div>
+      <div wrap class="align-center mx-6 my-6">
+        <div class="caption mb-2 text-text_2">{{ $t('dappProvider.requestFrom') }}:</div>
 
-          <v-card flat class="lighten-3" :class="isDarkMode ? '' : 'grey'">
-            <v-card-text>
-              <div class="d-flex request-from align-center">
-                <a :href="origin.href" target="_blank" rel="noreferrer noopener" class="caption font-weight-medium text-torusBrand1">
-                  {{ origin.hostname }}
-                </a>
-                <v-btn
-                  size="x-small"
-                  :color="isDarkMode ? 'torusBlack2' : 'white'"
-                  class="link-icon ml-auto"
-                  :href="origin.href"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  :aria-label="`Open ${origin.hostname} Link`"
-                >
-                  <img src="../../../assets/img/icons/open-in-new-grey.svg" class="card-upper-icon" alt="Origin Link Icon" />
-                </v-btn>
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row v-if="type === MESSAGE_TYPE.ETH_DECRYPT" class="mx-6 my-6" wrap>
-        <v-col cols="12" class="mb-2">
-          <v-card v-if="showEncrypted" flat class="lighten-3" :class="isDarkMode ? '' : 'grey'">
-            <v-card-text>
-              <div class="caption text-text_2" :style="{ height: '100px' }">{{ encryptedMessage }}</div>
-            </v-card-text>
-          </v-card>
-          <v-card v-else flat class="lighten-3" :class="isDarkMode ? '' : 'grey'">
+        <div class="d-flex request-from pa-3 align-center">
+          <a :href="origin.href" target="_blank" rel="noreferrer noopener" class="caption font-weight-medium text-torusBrand1 text-decoration-none">
+            {{ origin.hostname }}
+          </a>
+          <v-btn
+            size="x-small"
+            :color="isDarkMode ? 'torusBlack2' : 'white'"
+            class="link-icon ml-auto"
+            :href="origin.href"
+            target="_blank"
+            rel="noreferrer noopener"
+            :aria-label="`Open ${origin.hostname} Link`"
+          >
+            <img :src="require('../../../assets/img/icons/open-in-new-grey.svg')" class="card-upper-icon" alt="Origin Link Icon" />
+          </v-btn>
+        </div>
+      </div>
+      <div v-if="type === MESSAGE_TYPE.ETH_DECRYPT" class="mx-6 my-6">
+        <div class="mb-2">
+          <div v-if="showEncrypted" class="d-flex request-from pa-3 align-center">
+            <div class="caption text-text_2" :style="{ height: '100px' }">{{ encryptedMessage }}</div>
+          </div>
+          <div v-else class="d-flex request-from request-from--relative word-break pa-3 align-center">
             <div class="message_cover" :class="isDarkMode ? 'is-dark' : ''"></div>
             <div class="message_cover-lock" :class="isDarkMode ? 'is-dark' : ''" @click="decryptInline">
               <v-icon size="16" class="text-text_2 mr-1">$lock_filled</v-icon>
               <div class="message-lock-text">{{ $t('dappProvider.decryptMessage') }}</div>
             </div>
-            <v-card-text>
+            <div>
               <div class="caption text-text_2" :style="{ height: '100px' }">{{ message }}</div>
-            </v-card-text>
-          </v-card>
-        </v-col>
-        <v-col v-if="showEncrypted" cols="12" class="text-right mb-2">
+            </div>
+          </div>
+        </div>
+        <div v-if="showEncrypted" class="text-right mb-2">
           <ShowToolTip :address="encryptedMessage">
             <v-btn size="small" class="copy-encrypted-btn" aria-label="Copy encrypted message">
               <v-icon class="caption text-text_2" start size="12">$copy</v-icon>
               <span class="caption text-text_2">{{ $t('dappProvider.copyEncrypted') }}</span>
             </v-btn>
           </ShowToolTip>
-        </v-col>
-      </v-row>
-      <v-row v-if="type !== MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY && type !== MESSAGE_TYPE.ETH_DECRYPT" wrap>
-        <v-col cols="12" class="mt-0 mb-2 mx-6">
+        </div>
+      </div>
+      <div v-if="type !== MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY && type !== MESSAGE_TYPE.ETH_DECRYPT">
+        <div class="mt-0 mb-2 mx-6">
           <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
               <v-icon v-if="$store.state.whiteLabel.isActive" size="small" class="text-torusBrand1">$check_circle</v-icon>
@@ -324,63 +307,64 @@
             </div>
             <div class="caption text-text_2 text-capitalize">{{ $t('dappTransfer.data') }}</div>
           </div>
-        </v-col>
-        <v-col cols="12" class="mb-4 mx-6">
-          <v-list class="note-list lighten-3" :class="isDarkMode ? '' : 'grey'">
-            <v-list-item class="pa-0">
-              <div flat class="pa-1" :class="[isDarkMode ? 'lighten-4' : 'background lighten-3']">
-                <v-card flat class="caption text-left pa-2 word-break typedMessageBox">
-                  <v-expansion-panels v-if="type === MESSAGE_TYPE.PERSONAL_SIGN || type === MESSAGE_TYPE.ETH_SIGN">
-                    <p :class="isDarkMode ? '' : 'text-text_2'" :style="{ 'text-align': 'left' }">{{ message }}</p>
-                  </v-expansion-panels>
+        </div>
+        <div class="mb-4 mx-6 note-list">
+          <v-list>
+            <v-list-item class="py-2 px-3">
+              <div class="caption text-left typedMessageBox">
+                <div
+                  v-if="type === MESSAGE_TYPE.PERSONAL_SIGN || type === MESSAGE_TYPE.ETH_SIGN"
+                  class="word-break"
+                  :class="isDarkMode ? '' : 'text-text_2'"
+                  :style="{ 'text-align': 'left' }"
+                >
+                  {{ message }}
+                </div>
 
-                  <v-expansion-panels v-else-if="type === MESSAGE_TYPE.ETH_SIGN_TYPED_DATA && !Array.isArray(typedMessages)">
-                    <v-expansion-panel v-for="(typedMessage, index) in typedMessages" :key="index" :class="isDarkMode ? 'dark--theme' : ''">
-                      <v-expansion-panel-header>{{ index }}</v-expansion-panel-header>
-                      <v-expansion-panel-content>
-                        <VueJsonPretty :path="'res'" :data="typedMessage" :showline="true" :deep="5"></VueJsonPretty>
-                      </v-expansion-panel-content>
-                    </v-expansion-panel>
-                  </v-expansion-panels>
+                <v-expansion-panels v-else-if="type === MESSAGE_TYPE.ETH_SIGN_TYPED_DATA && !Array.isArray(typedMessages)">
+                  <v-expansion-panel v-for="(typedMessage, index) in typedMessages" :key="index" :class="isDarkMode ? 'dark--theme' : ''">
+                    <v-expansion-panel-title>{{ index }}</v-expansion-panel-title>
+                    <v-expansion-panel-text>
+                      <VueJsonPretty :path="'res'" :data="typedMessage" :showline="true" :deep="5"></VueJsonPretty>
+                    </v-expansion-panel-text>
+                  </v-expansion-panel>
+                </v-expansion-panels>
 
-                  <v-expansion-panels v-else-if="type === MESSAGE_TYPE.ETH_SIGN_TYPED_DATA && Array.isArray(typedMessages)">
-                    <v-expansion-panel :class="isDarkMode ? 'dark--theme' : ''">
-                      <v-expansion-panel-header>{{ $t('dappTransfer.dataSmall') }}</v-expansion-panel-header>
-                      <v-expansion-panel-content v-for="(typedMessage, index) in typedMessages" :key="index">
-                        <VueJsonPretty :path="'res'" :data="typedMessage" :showline="true" :deep="5"></VueJsonPretty>
-                      </v-expansion-panel-content>
-                    </v-expansion-panel>
-                  </v-expansion-panels>
-                </v-card>
+                <v-expansion-panels v-else-if="type === MESSAGE_TYPE.ETH_SIGN_TYPED_DATA && Array.isArray(typedMessages)">
+                  <v-expansion-panel :class="isDarkMode ? 'dark--theme' : ''">
+                    <v-expansion-panel-title>{{ $t('dappTransfer.dataSmall') }}</v-expansion-panel-title>
+                    <v-expansion-panel-text v-for="(typedMessage, index) in typedMessages" :key="index">
+                      <VueJsonPretty :path="'res'" :data="typedMessage" :showline="true" :deep="5"></VueJsonPretty>
+                    </v-expansion-panel-text>
+                  </v-expansion-panel>
+                </v-expansion-panels>
               </div>
             </v-list-item>
           </v-list>
-        </v-col>
-      </v-row>
-      <v-row wrap>
-        <v-col cols="12" class="mt-8 mx-6">
-          <v-row class="mx-n2">
-            <v-col cols="6" class="px-2">
-              <v-btn block variant="text" size="large" class="text-text_2" @click="triggerDeny">
-                {{
-                  type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY || type === MESSAGE_TYPE.ETH_DECRYPT
-                    ? $t('dappProvider.deny')
-                    : $t('dappProvider.cancel')
-                }}
-              </v-btn>
-            </v-col>
-            <v-col cols="6" class="px-2">
-              <v-btn block depressed size="large" class="torus-btn1 text-white" color="torusBrand1" @click="triggerSign">
-                {{
-                  type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY || type === MESSAGE_TYPE.ETH_DECRYPT
-                    ? $t('dappProvider.allow')
-                    : $t('dappProvider.confirm')
-                }}
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
+        </div>
+      </div>
+      <div class="mt-8 mx-6">
+        <v-row class="mx-n2">
+          <v-col cols="6" class="px-2">
+            <v-btn block variant="text" size="large" class="text-text_2" @click="triggerDeny">
+              {{
+                type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY || type === MESSAGE_TYPE.ETH_DECRYPT
+                  ? $t('dappProvider.deny')
+                  : $t('dappProvider.cancel')
+              }}
+            </v-btn>
+          </v-col>
+          <v-col cols="6" class="px-2">
+            <v-btn block depressed size="large" class="torus-btn1 text-white" color="torusBrand1" @click="triggerSign">
+              {{
+                type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY || type === MESSAGE_TYPE.ETH_DECRYPT
+                  ? $t('dappProvider.allow')
+                  : $t('dappProvider.confirm')
+              }}
+            </v-btn>
+          </v-col>
+        </v-row>
+      </div>
     </template>
   </div>
 </template>

@@ -1,6 +1,7 @@
 @import "./scss/elevation-one.mixin";
 
 .torus-app.v-application {
+  background: none;
   @media (min-width: 1904px) {
     .container:not(.container--fluid) {
       max-width: 1400px;
