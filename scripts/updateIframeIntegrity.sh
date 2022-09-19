@@ -13,12 +13,12 @@ git commit -am "Updating embed with new hash"
 cd ..
 if ! (git diff --quiet && git diff --staged --quiet && git diff origin/master HEAD --quiet); then
     if [[ "$GITHUB_REF" = 'refs/heads/master' ]]; then 
-        npm version patch -m 'Updating iframe integrity and publish %s'
+        npm version minor -m 'Updating iframe integrity and publish %s'
         git push origin master
         git push --tags 
     fi
     if [[ "$GITHUB_REF" = 'refs/heads/binance' ]]; then 
-        npm version patch -m 'Updating iframe integrity and publish %s'
+        npm version minor -m 'Updating iframe integrity and publish %s'
         git push origin binance
     fi
 fi
