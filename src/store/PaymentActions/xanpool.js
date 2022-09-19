@@ -26,6 +26,7 @@ export default {
       currency: currentOrder.selectedCurrency || undefined,
       partnerData: selectedAddress || state.selectedAddress,
       redirectUrl: `${config.redirect_uri}?state=${instanceState}`,
+      transactionType: 'buy',
     }
 
     return dispatch('postXanpoolOrder', { params: parameters, path: config.xanpoolHost, preopenInstanceId, orderInstanceId })
