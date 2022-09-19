@@ -17,7 +17,7 @@
                   <v-flex class="mb-8" xs10 ml-auto mr-auto>
                     <img
                       height="25"
-                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white-new' : 'blue'}.svg`)"
+                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
                       alt="Torus Logo"
                     />
                   </v-flex>
@@ -50,7 +50,7 @@
                     <img
                       height="25"
                       class="mb-2"
-                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white-new' : 'blue'}.svg`)"
+                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
                       alt="Torus Logo"
                     />
                     <!-- </v-col> -->
