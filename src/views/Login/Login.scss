@@ -3,7 +3,7 @@
   .inner-left-panel {
     background: #FFFFFF;
     border-radius: 30px;
-    margin: 30px 56px;
+    margin: 30px 0px 30px 56px;
     padding: 56px 0px;
   }
   &.torus-dark {
@@ -45,16 +45,18 @@
 
 .background-login {
   position: relative;
-  @extend .default;
+  height: 100%;
+  background: #F3F4F6;
+  &.torus-dark {
+    background: #111928;
+  }
 
   @media only screen and (min-width: 1264px) {
     background-size: 100%;
   }
 }
 
-.default {
-  height: 100%;
-}
+
 
 body,
 html {
