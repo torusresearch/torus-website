@@ -13,9 +13,8 @@
 
   .v-icon {
     color: #5c6c7f;
-    height: 8px;
-    width: 8px;
-    margin-right: 8px;
+    height: 10px;
+    width: 10px;
   }
 
   &__name {
@@ -101,3 +100,18 @@
     }
   }
 }
+.select-item-list {
+.v-icon {
+  color: #5c6c7f;
+  margin-right: 4px;
+  margin-bottom: 2px;
+  width: 13px;
+  &.theme--dark{
+    color: #d3d5e2;
+  }
+}
+}
+.row-pointer:hover {
+  cursor: pointer;
+}
+

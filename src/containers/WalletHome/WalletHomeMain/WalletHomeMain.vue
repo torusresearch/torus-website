@@ -16,7 +16,7 @@
               <span class="title text_1--text" :style="{ lineHeight: '1em' }">{{ t('walletHome.totalValue') }}</span>
             </div>
             <div class="ml-auto">
-              <NetworkDisplay :network="networkType.networkName" :store-network-type="networkType"></NetworkDisplay>
+              <NetworkDisplay :network="networkType.networkName" :is-network-pill="true" :store-network-type="networkType"></NetworkDisplay>
             </div>
           </div>
           <div class="d-flex align-center">
