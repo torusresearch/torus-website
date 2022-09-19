@@ -32,12 +32,17 @@ const mergeTokenArrays = (oldArray, newArray) => {
   return finalArr
 }
 
-const mergeCustomTokenArrays = (oldArray, newArray) => {
+const mergeCustomTokenArrays = (oldArray, newArray, networkIdentifier) => {
   const oldMap = getObjectFromArrayBasedonKey(oldArray || [], 'tokenAddress')
+  const newMap = getObjectFromArrayBasedonKey(newArray || [], 'tokenAddress')
+
   const finalArr = []
+  const networkConfig = SUPPORTED_NETWORK_TYPES[networkIdentifier]
+  const defaultErc20 = networkConfig?.tokenAddress
   // if customtokenid is present and oldarray customtokenid is not present, add it
   Object.keys(oldMap).forEach((x) => {
     if (!oldMap[x].customTokenId) finalArr.push(oldMap[x])
+    if (defaultErc20 && oldMap[x].tokenAddress?.toLowerCase() !== defaultErc20?.toLowerCase() && !newMap[x]) finalArr.push(oldMap[x])
   })
   finalArr.push(...newArray)
   return finalArr
@@ -62,6 +67,12 @@ class DetectTokensController {
     this.selectedAddress = ''
     this.preferencesStore = preferencesStore
     this.selectedCustomTokens = []
+  }
+
+  getUserTokens() {
+    const userAddress = this.selectedAddress
+    if (!userAddress) return []
+    return this.detectedTokensStore.getState()[userAddress] || []
   }
 
   /**
@@ -174,7 +185,6 @@ class DetectTokensController {
     const userAddress = this.selectedAddress
     if (userAddress === '') return
     if (this.network.getNetworkIdentifier() !== MAINNET) {
-      this.detectedTokensStore.updateState({ [userAddress]: [] })
       return
     }
     const oldTokens = this.detectedTokensStore.getState()[userAddress] || []
@@ -224,7 +234,7 @@ class DetectTokensController {
           return {
             decimals: tokenInstance.decimals,
             erc20: true,
-            logo: 'eth.svg',
+            logo: x.logo || 'eth.svg',
             name: tokenInstance.name,
             symbol: tokenInstance.symbol,
             tokenAddress: toChecksumAddressByChainId(tokenInstance.address, chainId),
@@ -240,7 +250,9 @@ class DetectTokensController {
     )
     nonZeroTokens = nonZeroTokens.filter(Boolean)
     const currentTokens = this.detectedTokensStore.getState()[userAddress] || []
-    this.detectedTokensStore.updateState({ [userAddress]: mergeCustomTokenArrays(currentTokens, nonZeroTokens) })
+    const currentNetworkIdentifier = this.network.getNetworkIdentifier()
+
+    this.detectedTokensStore.updateState({ [userAddress]: mergeCustomTokenArrays(currentTokens, nonZeroTokens, currentNetworkIdentifier) })
   }
 
   /**

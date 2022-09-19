@@ -91,6 +91,7 @@ class TransactionController extends SafeEventEmitter {
     this._getCurrentNetworkEIP1559Compatibility = options.getCurrentNetworkEIP1559Compatibility
     this._getCurrentAccountEIP1559Compatibility = options.getCurrentAccountEIP1559Compatibility
 
+    this.getUserTokens = options.getUserTokens
     this.preferencesStore = options.preferencesStore || new ObservableStore({})
     this.provider = options.provider
     this.blockTracker = options.blockTracker
@@ -1057,6 +1058,11 @@ class TransactionController extends SafeEventEmitter {
         methodParameters = ck20.params
       }
     } else if (checkSummedTo && decodedERC20) {
+      const userTokens = this.getUserTokens()
+      const currentToken = userTokens.find((token) => {
+        if (token?.tokenAddress.toLowerCase() === checkSummedTo.toLowerCase()) return true
+        return false
+      })
       // fallback to erc20
       const { name = '', params } = decodedERC20
       tokenMethodName = [
@@ -1067,6 +1073,12 @@ class TransactionController extends SafeEventEmitter {
       methodParameters = params
       contractParameters.erc20 = true
       contractParameters.symbol = 'ERC20'
+      if (currentToken?.logo) {
+        contractParameters.logo = currentToken.logo
+      }
+      if (currentToken?.decimals) {
+        contractParameters.decimals = currentToken.decimals
+      }
     } else if (checkSummedTo && decodedERC721) {
       // Next give preference to erc721
       const { name = '', params } = decodedERC721

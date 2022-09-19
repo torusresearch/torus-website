@@ -160,6 +160,7 @@ export default class TorusController extends SafeEventEmitter {
       getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController),
       preferencesStore: this.prefsController.store,
       txHistoryLimit: 40,
+      getUserTokens: this.detectTokensController.getUserTokens.bind(this.detectTokensController),
       // signs ethTx
       signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
       provider: this.provider,
@@ -1088,12 +1089,9 @@ export default class TorusController extends SafeEventEmitter {
       symbol: ticker,
       blockExplorer: rpcPrefs.blockExplorerUrl || undefined,
     })
-    if (networkId) {
-      this.networkController.setRpcTarget(networkId, rpcUrl, chainId, ticker, nickname, rpcPrefs)
-      return networkId
-    }
-
-    return null
+    // its fine to have networkId as null here.
+    this.networkController.setRpcTarget(networkId, rpcUrl, chainId, ticker, nickname, rpcPrefs)
+    return networkId
   }
 
   async deleteCustomRpc(id) {

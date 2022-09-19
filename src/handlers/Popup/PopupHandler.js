@@ -1,16 +1,14 @@
 // import { randomId } from '@toruslabs/openlogin-utils'
 import { EventEmitter } from 'events'
 
-import config from '../../config'
 import { FEATURES_DEFAULT_POPUP_WINDOW } from '../../utils/enums'
+import { parsePopupUrl } from '../../utils/utils'
 import StreamWindow from './StreamWindow'
 
 class PopupHandler extends EventEmitter {
   constructor({ url, target, features, preopenInstanceId }) {
     super()
-    const localUrl = url instanceof URL ? url : new URL(url)
-    if (localUrl.hash) localUrl.hash += `&isCustomLogin=${config.isCustomLogin}`
-    else localUrl.hash = `#isCustomLogin=${config.isCustomLogin}`
+    const localUrl = parsePopupUrl(url)
     this.url = localUrl.href
     this.target = target || '_blank'
     this.features = features || FEATURES_DEFAULT_POPUP_WINDOW
