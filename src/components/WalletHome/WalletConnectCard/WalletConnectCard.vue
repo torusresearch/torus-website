@@ -22,6 +22,7 @@
               contain
               position="right center"
               max-width="170"
+              max-height="30"
               :style="$vuetify.breakpoint.smAndDown ? 'width: 100px' : 'width: 170px'"
               :alt="t('walletConnect.title')"
             />
