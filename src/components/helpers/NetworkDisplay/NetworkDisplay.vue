@@ -25,7 +25,7 @@
         >
           <v-list-item-content>
             <v-list-item-title class="body-2">
-              <v-icon>$vuetify.icons.network</v-icon>
+              <!-- <v-icon>$vuetify.icons.network</v-icon> -->
               {{ networkInfo.networkName }}
             </v-list-item-title>
           </v-list-item-content>
