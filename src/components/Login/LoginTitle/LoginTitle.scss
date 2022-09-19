@@ -28,3 +28,9 @@ padding-left: 5px;
         color: var(--v-text_2-base);
     }
 }
+
+.v-menu__content {
+    &.theme--dark {
+        box-shadow: 7px 9px 22px -12px rgba(0,0,0,0.75) !important;
+    }
+}
