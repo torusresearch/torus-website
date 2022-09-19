@@ -17,7 +17,7 @@
           </v-btn>
         </template>
         <v-list class="chain-list">
-          <v-list-item v-for="(item, index) in getTickerNames()" :key="item" @click="openWallet(item)">
+          <v-list-item v-for="(item, index) in tickerNames" :key="item" @click="openWallet(item)">
             <v-list-item-title>{{ item }}</v-list-item-title>
             <v-divider v-if="index < availableOn.length - 1" :key="`${index}-divider`" />
           </v-list-item>
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { getDefaultNetwork } from '../../../utils/utils'
+import { AVAILABLE_WEBSITES } from '../../../utils/enums'
 
 export default {
   props: {
@@ -46,22 +46,19 @@ export default {
   },
   data() {
     return {
-      availableOn: {
-        Ethereum: 'https://app.tor.us',
-        Solana: 'https://solana.tor.us',
-        Polygon: 'https://polygon.tor.us',
-        Binance: 'https://bnb.tor.us',
-      },
-      selectedWallet: getDefaultNetwork().tickerName,
+      availableOn: AVAILABLE_WEBSITES,
+      selectedWallet: Object.keys(AVAILABLE_WEBSITES).find((x) => AVAILABLE_WEBSITES[x] === window.location.origin) || 'Ethereum',
     }
+  },
+  computed: {
+    tickerNames() {
+      return Object.keys(this.availableOn)
+    },
   },
   methods: {
     openWallet(wallet) {
       this.selectedWallet = wallet
       window.location.href = this.availableOn[this.selectedWallet]
-    },
-    getTickerNames() {
-      return Object.keys(this.availableOn)
     },
   },
 }

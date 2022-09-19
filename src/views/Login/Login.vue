@@ -178,7 +178,6 @@ export default {
   computed: {
     ...mapState({
       selectedAddress: 'selectedAddress',
-      tKeyOnboardingComplete: 'tKeyOnboardingComplete',
       loginConfig: (state) => state.embedState.loginConfig,
       userInfo: 'userInfo',
       lastLoginInfo: 'lastLoginInfo',
@@ -214,7 +213,6 @@ export default {
   methods: {
     ...mapActions({
       triggerLogin: 'triggerLogin',
-      handleLogin: 'handleLogin',
     }),
     ...mapMutations(['setUserInfo']),
     async startLogin(verifier, email) {
