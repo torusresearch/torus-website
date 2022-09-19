@@ -1155,3 +1155,9 @@ export const parsePopupUrl = (url) => {
   }
   return localUrl
 }
+
+export const getDefaultNetwork = () => {
+  if (window.location.hostname === 'polygon.tor.us') return SUPPORTED_NETWORK_TYPES[MATIC]
+  if (window.location.hostname === 'bnb.tor.us') return SUPPORTED_NETWORK_TYPES[BSC_MAINNET]
+  return SUPPORTED_NETWORK_TYPES[MAINNET]
+}

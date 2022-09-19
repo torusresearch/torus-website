@@ -6,8 +6,7 @@ import Web3 from 'web3'
 import config from './config'
 import TorusController from './controllers/TorusController'
 import setupMultiplex from './controllers/utils/setupMultiplex'
-import { MAINNET, SUPPORTED_NETWORK_TYPES } from './utils/enums'
-import { getIFrameOrigin, getIFrameOriginObject, isMain } from './utils/utils'
+import { getDefaultNetwork, getIFrameOrigin, getIFrameOriginObject, isMain } from './utils/utils'
 // import store from './store'
 let storeReference
 let deferredDispatch = []
@@ -45,7 +44,7 @@ if (config.localStorageAvailable) {
   sessionData = storage.getItem(storageKey)
 }
 
-const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || SUPPORTED_NETWORK_TYPES[MAINNET]
+const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || getDefaultNetwork()
 const customNetworks = (sessionData && JSON.parse(sessionData).customNetworks) || {}
 
 const torusController = new TorusController({

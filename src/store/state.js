@@ -1,7 +1,8 @@
 import { cloneDeep } from 'lodash'
 
 import config from '../config'
-import { LOCALE_EN, MAINNET, SUPPORTED_NETWORK_TYPES, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { LOCALE_EN, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { getDefaultNetwork } from '../utils/utils'
 
 const initialState = {
   userInfo: {
@@ -23,7 +24,7 @@ const initialState = {
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
   networkId: 0,
-  networkType: cloneDeep(SUPPORTED_NETWORK_TYPES[MAINNET]),
+  networkType: cloneDeep(getDefaultNetwork()),
   networkDetails: {},
   gasFees: {},
   currencyData: {},

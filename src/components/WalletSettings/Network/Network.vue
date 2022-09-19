@@ -164,8 +164,8 @@ import log from 'loglevel'
 import { mapGetters, mapState } from 'vuex'
 import { isHexStrict } from 'web3-utils'
 
-import { MAINNET, RPC, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
-import { broadcastChannelOptions } from '../../../utils/utils'
+import { RPC, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
+import { broadcastChannelOptions, getDefaultNetwork } from '../../../utils/utils'
 
 export default {
   name: 'NetworkSettings',
@@ -284,7 +284,7 @@ export default {
           .dispatch('deleteCustomNetwork', network.id)
           .then(() => {
             if (network.id === this.selectedNetwork.id) {
-              this.changeNetwork(SUPPORTED_NETWORK_TYPES[MAINNET])
+              this.changeNetwork(getDefaultNetwork())
             }
             this.showNotification(true)
           })
