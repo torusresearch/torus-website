@@ -2,41 +2,58 @@ import { getPublic, sign } from '@toruslabs/eccrypto'
 import { decryptData, encryptData, keccak256 } from '@toruslabs/metadata-helpers'
 import OpenLogin from '@toruslabs/openlogin'
 import { subkey } from '@toruslabs/openlogin-subkey'
-// import { Mutex } from 'await-semaphore'
-import { BN } from 'ethereumjs-util'
 import log from 'loglevel'
 
 import config from '../../config'
-import torus from '../../torus'
 import { ACCOUNT_TYPE } from '../../utils/enums'
-import { get, post } from '../../utils/httpHelpers'
-import { generateTorusAuthHeaders, getIFrameOriginObject } from '../../utils/utils'
+import { get, post, put } from '../../utils/httpHelpers'
+import { generateAddressFromPrivateKey, generateTorusAuthHeaders, getIFrameOriginObject } from '../../utils/utils'
 
+const getOpenloginWhitelabel = (whiteLabel = {}) => {
+  const whiteLabelOpenLogin = {}
+  if (whiteLabel.theme) {
+    if (whiteLabel.theme.isDark) whiteLabelOpenLogin.dark = true
+    if (whiteLabel.theme.colors) {
+      whiteLabelOpenLogin.theme = {
+        primary: whiteLabel.theme.colors.torusBrand1,
+      }
+    }
+  }
+  if (whiteLabel.logoDark) whiteLabelOpenLogin.logoDark = whiteLabel.logoDark
+  if (whiteLabel.logoLight) whiteLabelOpenLogin.logoLight = whiteLabel.logoLight
+  if (whiteLabel.defaultLanguage) whiteLabelOpenLogin.defaultLanguage = whiteLabel.defaultLanguage
+  if (whiteLabel.name) whiteLabelOpenLogin.name = whiteLabel.name
+  if (whiteLabel.url) whiteLabelOpenLogin.url = whiteLabel.url
+  return whiteLabelOpenLogin
+}
 class OpenLoginHandler {
   static openLoginHandlerInstance = null
 
   static getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
-    if (OpenLoginHandler.openLoginHandlerInstance) return OpenLoginHandler.openLoginHandlerInstance
+    if (OpenLoginHandler.openLoginHandlerInstance) {
+      const updatedConfig = {}
+      if (Object.keys(whiteLabel).length > 0) {
+        const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
+        updatedConfig.whiteLabel = whiteLabelOpenLogin
+      }
+      if (Object.keys(loginConfig).length > 0) {
+        updatedConfig.loginConfig = loginConfig
+      }
+      if (Object.keys(updatedConfig).length > 0) {
+        OpenLoginHandler.openLoginHandlerInstance.openLoginInstance._syncState({
+          ...updatedConfig,
+        })
+      }
+
+      return OpenLoginHandler.openLoginHandlerInstance
+    }
     OpenLoginHandler.openLoginHandlerInstance = new OpenLoginHandler(whiteLabel, loginConfig, sessionNamespace)
     return OpenLoginHandler.openLoginHandlerInstance
   }
 
   // This constructor is private. Don't call it
   constructor(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
-    const whiteLabelOpenLogin = {}
-    if (whiteLabel.theme) {
-      if (whiteLabel.theme.isDark) whiteLabelOpenLogin.dark = true
-      if (whiteLabel.theme.colors) {
-        whiteLabelOpenLogin.theme = {
-          primary: whiteLabel.theme.colors.torusBrand1,
-        }
-      }
-    }
-    if (whiteLabel.logoDark) whiteLabelOpenLogin.logoDark = whiteLabel.logoDark
-    if (whiteLabel.logoLight) whiteLabelOpenLogin.logoLight = whiteLabel.logoLight
-    if (whiteLabel.defaultLanguage) whiteLabelOpenLogin.defaultLanguage = whiteLabel.defaultLanguage
-    if (whiteLabel.name) whiteLabelOpenLogin.name = whiteLabel.name
-    if (whiteLabel.url) whiteLabelOpenLogin.url = whiteLabel.url
+    const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
 
     const iframeObj = getIFrameOriginObject()
     const namespace = config.isCustomLogin ? iframeObj.hostname : undefined
@@ -58,7 +75,8 @@ class OpenLoginHandler {
 
   async getActiveSession() {
     try {
-      const { sessionId, sessionNamespace } = this.openLoginInstance.state.store.getStore()
+      const { sessionId } = this.openLoginInstance.state.store.getStore()
+      const { sessionNamespace } = this.openLoginInstance.state
       if (sessionId) {
         log.info('found session id')
         const publicKeyHex = getPublic(Buffer.from(sessionId, 'hex')).toString('hex')
@@ -92,7 +110,7 @@ class OpenLoginHandler {
         const encData = await encryptData(sessionId, sessionData)
         const signatureBf = await sign(privKey, keccak256(encData))
         const signature = signatureBf.toString('hex')
-        await post(`${config.storageServerUrl}/store/update`, { key: publicKeyHex, data: encData, signature, namespace: sessionNamespace })
+        await put(`${config.storageServerUrl}/store/update`, { key: publicKeyHex, data: encData, signature, namespace: sessionNamespace })
         this.openLoginInstance._syncState(sessionData)
       }
     } catch (error) {
@@ -140,18 +158,6 @@ class OpenLoginHandler {
     }
   }
 
-  // async init() {
-  //   const releaseLock = await mutex.acquire()
-  //   if (this.openLoginInstance.provider.initialized) {
-  //     releaseLock()
-  //     return this.openLoginInstance
-  //   }
-  //   await this.openLoginInstance.init()
-  //   log.info('initialized openlogin instance')
-  //   releaseLock()
-  //   return this.openLoginInstance
-  // }
-
   getUserInfo() {
     const allInfo = this.openLoginInstance.state.store.getStore()
     const userInfo = {
@@ -179,7 +185,7 @@ class OpenLoginHandler {
   getWalletKey() {
     const { state } = this.openLoginInstance
     if (!state.walletKey) return null
-    const ethAddress = torus.generateAddressFromPrivKey(new BN(state.walletKey, 'hex'))
+    const ethAddress = generateAddressFromPrivateKey(state.walletKey)
     return {
       privKey: state.walletKey,
       ethAddress,
@@ -191,7 +197,7 @@ class OpenLoginHandler {
     // keys
     const keys = []
     if (state.walletKey) {
-      const ethAddress = torus.generateAddressFromPrivKey(new BN(state.walletKey, 'hex'))
+      const ethAddress = generateAddressFromPrivateKey(state.walletKey)
       keys.push({
         privKey: state.walletKey,
         accountType: ACCOUNT_TYPE.NORMAL,
@@ -202,7 +208,7 @@ class OpenLoginHandler {
       keys.push({
         privKey: state.tKey.padStart(64, '0'),
         accountType: ACCOUNT_TYPE.THRESHOLD,
-        ethAddress: torus.generateAddressFromPrivKey(new BN(state.tKey, 'hex')),
+        ethAddress: generateAddressFromPrivateKey(state.tKey),
       })
     }
     if (state.accounts && typeof state.accounts === 'object') {
@@ -219,7 +225,7 @@ class OpenLoginHandler {
     if (state.oAuthPrivateKey) {
       postboxKey = {
         privKey: state.oAuthPrivateKey.padStart(64, '0'),
-        ethAddress: torus.generateAddressFromPrivKey(new BN(state.oAuthPrivateKey, 'hex')),
+        ethAddress: generateAddressFromPrivateKey(state.oAuthPrivateKey),
       }
     }
 
@@ -242,7 +248,7 @@ class OpenLoginHandler {
         userProjects.sort((a, b) => (a.last_login < b.last_login ? 1 : -1))
         userProjects.forEach((project) => {
           const subKey = subkey(state.tKey, Buffer.from(project.project_id, 'base64'))
-          const subAddress = torus.generateAddressFromPrivKey(new BN(subKey, 'hex'))
+          const subAddress = generateAddressFromPrivateKey(subKey)
           userDapps[subAddress] = `${project.name} (${project.hostname})`
           keys.push({ ethAddress: subAddress, privKey: subKey.padStart(64, '0'), accountType: ACCOUNT_TYPE.APP_SCOPED })
         })

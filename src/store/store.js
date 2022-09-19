@@ -27,7 +27,7 @@ let vuexPersist
 
 if (config.localStorageAvailable) {
   vuexPersist = new VuexPersistence({
-    key: config.isCustomLogin === true ? `torus_app_${getIFrameOriginObject().hostname}` : 'torus-app',
+    key: config.isCustomLogin === true ? `torus_app_${config.namespace || getIFrameOriginObject().hostname}` : 'torus-app',
     storage: !isMain ? (config.isCustomLogin === null ? window.sessionStorage : window.localStorage) : window.localStorage,
     reducer: (state) => ({
       selectedAddress: state.selectedAddress,
@@ -82,7 +82,7 @@ const VuexStore = new Vuex.Store({
       const isTx = payload && typeof payload === 'object'
       const windowId = isTx ? payload.id : payload
       const channelName = `torus_channel_${windowId}`
-      const finalUrl = `${baseRoute}confirm?instanceId=${windowId}&integrity=true&id=${windowId}`
+      const finalUrl = `${baseRoute}confirm?instanceId=${windowId}&id=${windowId}`
       const popupPayload = {
         id: windowId,
         origin: getIFrameOriginObject(),

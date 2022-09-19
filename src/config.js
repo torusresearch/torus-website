@@ -131,9 +131,11 @@ export function storageAvailable(type) {
   }
 }
 
-const { hash } = window.location
-const hashUrl = new URL(`${baseUrl}?${hash.slice(1)}`)
-const isCustomLogin = hashUrl.searchParams.get('isCustomLogin')
+const { hash, search } = window.location
+const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search}`)
+
+const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
+const namespace = finalUrl.searchParams.get('namespace')
 
 // no reddit for binance.tor.us
 
@@ -149,10 +151,6 @@ export default {
   infuraKey: VUE_APP_INFURA_KEY,
   openLoginClientId: 'BCY9aYsh8iGshQuzNjBbONYE-tKD0JM389l87IiMOVeOU1TBmRaZphKOyphkUpo41fuSMnO6QRlloxCV-3nt8dU',
   torusNetwork: VUE_APP_PROXY_NETWORK || 'mainnet',
-  NETWORK_MAP: {
-    mainnet: 'mainnet',
-    testnet: 'ropsten',
-  },
   openLoginOriginSig: VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
   developerDashboardUrl: VUE_APP_DEVELOPER_DASHBOARD_URL,
   storageServerUrl: 'https://broadcast-server.tor.us',
@@ -497,4 +495,5 @@ export default {
   },
   loginsWithLightLogo: [APPLE, GITHUB, JWT],
   isCustomLogin: isCustomLogin === 'true' ? true : isCustomLogin === 'false' ? false : null,
+  namespace,
 }

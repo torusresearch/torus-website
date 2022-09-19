@@ -1145,3 +1145,19 @@ export const idleTimeTracker = ((activityThresholdTime) => {
     checkIfIdle,
   }
 })(600)
+
+export const parsePopupUrl = (url) => {
+  const localUrl = url instanceof URL ? url : new URL(url)
+  const iframeOrigin = getIFrameOriginObject()
+  localUrl.searchParams.append('isCustomLogin', config.isCustomLogin)
+  if (config.isCustomLogin) {
+    localUrl.searchParams.append('namespace', iframeOrigin.hostname)
+  }
+  return localUrl
+}
+
+export const getDefaultNetwork = () => {
+  if (window.location.hostname === 'polygon.tor.us') return SUPPORTED_NETWORK_TYPES[MATIC]
+  if (window.location.hostname === 'bnb.tor.us') return SUPPORTED_NETWORK_TYPES[BSC_MAINNET]
+  return SUPPORTED_NETWORK_TYPES[MAINNET]
+}
