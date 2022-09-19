@@ -958,3 +958,10 @@ export const TRANSAK_NETWORK_MAP = {
   [MATIC]: 'polygon',
   [AVALANCHE_MAINNET]: 'avaxcchain',
 }
+
+export const AVAILABLE_WEBSITES = {
+  Ethereum: 'https://app.tor.us',
+  Solana: 'https://solana.tor.us',
+  Polygon: 'https://polygon.tor.us',
+  Binance: 'https://bnb.tor.us',
+}

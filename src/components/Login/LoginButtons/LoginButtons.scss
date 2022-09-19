@@ -18,18 +18,26 @@
       }
     }
     &.theme--dark {
-      background: var(--v-torusBlack2-base);
+      background: #111928;
       color: var(--v-text_2-base);
     }
   }
 
-  .v-input.passwordless-email {
+  .v-input.passwordless-email.v-text-field--outlined {
     margin-bottom: 8px;
     ::v-deep .v-input__control {
       .v-text-field__details {
         display: none;
       }
     }
+    &.theme--dark {
+      ::v-deep .v-input__control {
+        .v-input__slot {
+          background: #1f2a37;
+        }
+      }
+    }
+
     &.error--text {
       ::v-deep .v-input__control {
         .v-text-field__details {

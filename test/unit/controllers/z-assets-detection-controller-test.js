@@ -227,6 +227,7 @@ describe('AssetsDetectionController', () => {
         tokenBalance: '1',
         description: 'Description 2577',
         collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04gg_2577',
+        video: undefined,
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04ii',
@@ -237,6 +238,7 @@ describe('AssetsDetectionController', () => {
         tokenBalance: '1',
         description: 'Description 2578',
         collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04ii_2578',
+        video: undefined,
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04hh',
@@ -247,6 +249,7 @@ describe('AssetsDetectionController', () => {
         tokenBalance: '1',
         description: 'Description 2574',
         collectibleIndex: '0x1d963688FE2209A98db35c67A041524822CF04hh_2574',
+        video: undefined,
       },
     ]
 
