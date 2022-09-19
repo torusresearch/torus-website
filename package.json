@@ -145,7 +145,7 @@
     "jsdom-global": "^3.0.2",
     "lint-staged": "^13.0.3",
     "lodash-es": "^4.17.21",
-    "luxon": "^3.0.2",
+    "luxon": "^3.0.3",
     "mocha": "^10.0.0",
     "nock": "13.2.9",
     "node-fetch": "^3.2.10",
