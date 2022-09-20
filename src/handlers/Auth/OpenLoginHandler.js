@@ -79,7 +79,7 @@ class OpenLoginHandler {
       const { sessionNamespace } = this.openLoginInstance.state
       if (sessionId) {
         log.info('found session id')
-        const publicKeyHex = getPublic(Buffer.from(sessionId, 'hex')).toString('hex')
+        const publicKeyHex = getPublic(Buffer.from(sessionId.padStart(64, '0'), 'hex')).toString('hex')
         const url = new URL(`${config.storageServerUrl}/store/get`)
         url.searchParams.append('key', publicKeyHex)
         if (sessionNamespace) url.searchParams.append('namespace', sessionNamespace)
@@ -105,7 +105,7 @@ class OpenLoginHandler {
       const { sessionNamespace } = this.openLoginInstance.state
 
       if (sessionId) {
-        const privKey = Buffer.from(sessionId, 'hex')
+        const privKey = Buffer.from(sessionId.padStart(64, '0'), 'hex')
         const publicKeyHex = getPublic(privKey).toString('hex')
         const encData = await encryptData(sessionId, sessionData)
         const signatureBf = await sign(privKey, keccak256(encData))
@@ -124,7 +124,7 @@ class OpenLoginHandler {
       const { sessionNamespace } = this.openLoginInstance.state
 
       if (sessionId) {
-        const privKey = Buffer.from(sessionId, 'hex')
+        const privKey = Buffer.from(sessionId.padStart(64, '0'), 'hex')
         const publicKeyHex = getPublic(privKey).toString('hex')
         const encData = await encryptData(sessionId, sessionData)
         const signatureBf = await sign(privKey, keccak256(encData))
@@ -142,7 +142,7 @@ class OpenLoginHandler {
       const { sessionId } = this.openLoginInstance.state.store.getStore()
       const { sessionNamespace } = this.openLoginInstance.state
       if (sessionId) {
-        const privKey = Buffer.from(sessionId, 'hex')
+        const privKey = Buffer.from(sessionId.padStart(64, '0'), 'hex')
         const publicKeyHex = getPublic(privKey).toString('hex')
         const encData = await encryptData(sessionId, {})
         const signatureBf = await sign(privKey, keccak256(encData))

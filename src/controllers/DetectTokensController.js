@@ -41,7 +41,7 @@ const mergeCustomTokenArrays = (oldArray, newArray, networkIdentifier) => {
   const defaultErc20 = networkConfig?.tokenAddress
   // if customtokenid is present and oldarray customtokenid is not present, add it
   Object.keys(oldMap).forEach((x) => {
-    if (!oldMap[x].customTokenId) finalArr.push(oldMap[x])
+    if (!oldMap[x].customTokenId && !newMap[x]) finalArr.push(oldMap[x])
     if (defaultErc20 && oldMap[x].tokenAddress?.toLowerCase() !== defaultErc20?.toLowerCase() && !newMap[x]) finalArr.push(oldMap[x])
   })
   finalArr.push(...newArray)

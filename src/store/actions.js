@@ -239,7 +239,7 @@ export default {
     dispatch('subscribeToControllers')
     commit('setUserInfo', userInfo)
 
-    const selectedAddress = `0x${privateToAddress(Buffer.from(privateKey, 'hex')).toString('hex')}`
+    const selectedAddress = `0x${privateToAddress(Buffer.from(privateKey.padStart(64, '0'), 'hex')).toString('hex')}`
     await dispatch('initTorusKeyring', {
       keys: [
         {
