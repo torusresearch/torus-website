@@ -831,7 +831,7 @@ export function generateAddressFromPubKey(point) {
 }
 
 export function generateAddressFromPrivateKey(privKey) {
-  return toChecksumAddress(privateToAddress(Buffer.from(privKey, 'hex')).toString('hex'))
+  return toChecksumAddress(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex'))
 }
 
 export function toChecksumAddressByChainId(address, chainId) {
@@ -1111,7 +1111,7 @@ export function generateTorusAuthHeaders(privateKey, publicAddress) {
   challenge = ((challenge - (challenge % 1000)) / 1000).toString()
   const message = getTorusMessage(Buffer.from(challenge, 'utf8'))
   const hash = keccak(message)
-  const messageSig = ecsign(hash, Buffer.from(privateKey, 'hex'))
+  const messageSig = ecsign(hash, Buffer.from(privateKey.padStart(64, '0'), 'hex'))
   const signature = concatSig(messageSig.v, messageSig.r, messageSig.s)
   const authHeaders = {
     'Auth-Challenge': challenge,
