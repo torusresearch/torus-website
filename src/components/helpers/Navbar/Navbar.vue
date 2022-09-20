@@ -5,7 +5,7 @@
         <v-img class="home-link mr-1" contain position="left center" alt="Torus Logo" :max-height="30" width="193" :src="getLogo.logo" />
       </router-link>
       <router-link v-else id="logo-home-lnk" :to="{ name: 'walletHome' }" :style="{ lineHeight: 0 }">
-        <img src="../../../assets/img/icons/t-fill.svg" width="35" height="30" alt="Torus Logo" />
+        <img :src="require('../../../assets/img/icons/t-fill.svg')" width="35" height="30" alt="Torus Logo" />
       </router-link>
     </div>
     <v-spacer></v-spacer>

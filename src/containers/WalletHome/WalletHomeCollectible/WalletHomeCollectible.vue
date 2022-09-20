@@ -1,8 +1,8 @@
 <template>
   <v-container>
-    <v-breadcrumbs class="px-2 text-subtitle-1 font-weight-bold" :items="breadcrumb">
+    <v-breadcrumbs class="px-2 text-body-2 font-weight-bold" :items="breadcrumb">
       <template #divider>
-        <v-icon small>page_next_double</v-icon>
+        <v-icon size="16">$breadcrumb</v-icon>
       </template>
     </v-breadcrumbs>
     <v-layout wrap align-end>
@@ -10,11 +10,12 @@
         <v-select
           v-model="selectedContract"
           :items="collectibles"
-          item-text="name"
+          item-title="name"
           item-value="address"
-          outlined
+          variant="outlined"
+          density="comfortable"
           hide-details
-          append-icon="select"
+          append-inner-icon="$select"
           return-object
           aria-label="Selected contract"
           @change="changeContract"
@@ -26,7 +27,7 @@
               :src="selectedContract.logo"
               :alt="selectedContract.name"
               onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
-              height="24px"
+              height="24"
             />
           </template>
         </v-select>
@@ -50,13 +51,13 @@ export default {
     return {
       breadcrumb: [
         {
-          text: this.t('walletHome.home'),
+          text: this.$t('walletHome.home'),
           disabled: false,
           exact: true,
           to: '/wallet/home',
         },
         {
-          text: this.t('walletHome.collectibles'),
+          text: this.$t('walletHome.collectibles'),
           disabled: false,
           exact: true,
           to: '/wallet/home#collectibles',

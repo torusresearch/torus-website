@@ -7,7 +7,7 @@
       <h3 class="discover-title font-weight-bold" :style="{ color: isDarkMode ? '#EEF2F4' : '#5C6C7F' }">
         {{ $t('navBar.discover') }}
       </h3>
-      <v-row class="dapp-filters mt-5 mt-md-0 mx-n2">
+      <v-row no-gutters class="dapp-filters mt-5 mt-md-0 mx-n2">
         <v-col cols="6" class="filter-width px-sm-2">
           <v-select
             v-model="selectedCategory"
@@ -18,6 +18,7 @@
             variant="plain"
             density="comfortable"
             class="filter-selector"
+            :class="{ 'v-theme--dark': isDarkMode }"
           ></v-select>
         </v-col>
         <v-col cols="6" class="filter-width px-sm-2">
@@ -30,6 +31,7 @@
             variant="plain"
             density="comfortable"
             class="filter-selector"
+            :class="{ 'v-theme--dark': isDarkMode }"
           >
             <template #selection="{ item }">{{ getDisplayName(item.value) }}</template>
             <template #item="{ item }">

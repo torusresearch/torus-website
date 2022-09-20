@@ -1,5 +1,5 @@
 <template>
-  <v-col xs12 sm4 md3 lg2 px-3 pb-4>
+  <v-col cols="12" sm="4" md="3" lg="2" class="px-3 pb-4">
     <!-- Asset Desktop View -->
     <v-expand-transition>
       <v-card
@@ -11,7 +11,7 @@
         @click="toggleAsset(!assetActive)"
       >
         <div class="text-center pt-3">
-          <img
+          <v-img
             :src="asset.image"
             style="width: auto; height: 140px"
             :alt="asset.name || `${selectedContract.name} #${asset.tokenId}`"
@@ -19,7 +19,7 @@
           />
         </div>
         <v-card-text class="asset-text py-1 px-3">
-          <div class="body-2" :class="assetActive ? '' : 'text-clamp-two'" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
+          <div class="text-caption" :class="assetActive ? '' : 'text-clamp-one'" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
             {{ asset.name || `${selectedContract.name} #${asset.tokenId}` }}
           </div>
           <div class="text-right asset-details mt-1">
@@ -30,14 +30,14 @@
         <v-card-text class="asset-more pt-1 py-3 px-3">
           <div class="font-weight-medium">ID</div>
           <div class="font-weight-light text_2--text mb-2">#{{ asset.tokenId }}</div>
-          <div class="font-weight-medium">{{ t('walletHome.description') }}</div>
+          <div class="font-weight-medium">{{ $t('walletHome.description') }}</div>
           <div class="font-weight-light text_2--text" :class="{ 'text-clamp-two': !viewMore }">{{ asset.description }}</div>
           <a class="caption text_3--text" @click.stop="viewMore = !viewMore">
-            {{ viewMore ? t('walletHome.viewLess') : t('walletHome.viewMore') }}
+            {{ viewMore ? $t('walletHome.viewLess') : $t('walletHome.viewMore') }}
           </a>
           <div class="mt-4">
             <v-btn block depressed :outlined="$vuetify.theme.dark" color="torusBrand1" class="white--text mb-2" @click="transferAsset(asset)">
-              {{ t('walletHome.transfer') }}
+              {{ $t('walletHome.transfer') }}
             </v-btn>
             <v-btn
               block
@@ -46,7 +46,7 @@
               :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
               @click.stop="toggleAsset(false)"
             >
-              {{ t('walletHome.close') }}
+              {{ $t('walletHome.close') }}
             </v-btn>
           </div>
         </v-card-text>
@@ -70,7 +70,7 @@
             >
               {{ asset.name || `${selectedContract.name} #${asset.tokenId}` }}
             </div>
-            <div v-if="!assetActive" class="font-weight-medium caption">{{ t('walletHome.description') }}</div>
+            <div v-if="!assetActive" class="font-weight-medium caption">{{ $t('walletHome.description') }}</div>
             <div v-if="!assetActive" class="font-weight-light caption text_2--text text-clamp-one">{{ asset.description }}</div>
           </v-list-item-content>
 
@@ -86,7 +86,7 @@
         <v-card-text class="asset-more py-2 px-4">
           <div class="font-weight-medium mt-2">ID</div>
           <div class="font-weight-light mb-2 text_2--text">#{{ asset.tokenId }}</div>
-          <div class="font-weight-medium">{{ t('walletHome.description') }}</div>
+          <div class="font-weight-medium">{{ $t('walletHome.description') }}</div>
           <div class="font-weight-light text_2--text">{{ asset.description }}</div>
         </v-card-text>
 
@@ -99,12 +99,12 @@
               :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
               @click.stop="toggleAsset(!assetActive)"
             >
-              {{ assetActive ? t('walletHome.lessInfo') : t('walletHome.moreInfo') }}
+              {{ assetActive ? $t('walletHome.lessInfo') : $t('walletHome.moreInfo') }}
             </v-btn>
           </v-col>
           <v-col xs6 class="px-2">
             <v-btn block depressed :outlined="$vuetify.theme.dark" color="torusBrand1" class="white--text" @click.stop="transferAsset(asset)">
-              {{ t('walletHome.transfer') }}
+              {{ $t('walletHome.transfer') }}
             </v-btn>
           </v-col>
         </v-card-actions>

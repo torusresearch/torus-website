@@ -6,6 +6,7 @@ import AddressIcon from './AddressIcon.vue'
 import AlertCircleFilledIcon from './AlertCircleFilledIcon.vue'
 import AlertIcon from './AlertIcon.vue'
 import BalanceIcon from './BalanceIcon.vue'
+import BreadcrumbIcon from './BreadcrumbIcon.vue'
 import BrowserIcon from './BrowserIcon.vue'
 import CalendarIcon from './CalendarIcon.vue'
 import CheckboxBlankIcon from './CheckboxBlankIcon.vue'
@@ -202,4 +203,5 @@ export default {
   add_circle: AddCircleIcon,
   json: JsonIcon,
   discover: DiscoverIcon,
+  breadcrumb: BreadcrumbIcon,
 }

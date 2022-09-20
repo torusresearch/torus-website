@@ -23,4 +23,9 @@
   ::v-deep .v-field__append-inner {
     padding: 0;
   }
+  &.v-theme--dark {
+    background: #2f3136;
+    border: 1px solid #343539;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+  }
 }

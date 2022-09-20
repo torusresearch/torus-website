@@ -874,7 +874,7 @@ export default {
       this.activePriorityFee = maxPriorityFee
       this.selectedLondonSpeed = data.selectedSpeed
       this.gasEstimate = data.gas
-      this.londonSpeedTiming = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
+      this.londonSpeedTiming = gasTiming(maxPriorityFee, this.gasFees, this.$t, 'walletTransfer.fee-edit-in')
       this.hasCustomGasLimit = true
       this.calculateTransaction()
     },

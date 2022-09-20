@@ -3,28 +3,27 @@
     <v-col v-for="(collectible, i) in collectibleBalances" :key="i" cols="12" sm="6" md="4" lg="3" class="px-4 mb-4">
       <v-card class="elevation-1">
         <v-list-item
-          :class="$vuetify.display.xs ? 'pt-3 pb-8 px-4' : 'py-2 px-5'"
+          :class="$vuetify.display.xs ? 'pt-3 pb-8 px-4' : 'py-4 px-5'"
           router-link
           :to="{ name: 'walletHomeCollectible', params: { address: collectible.address } }"
-          title="View Assets"
         >
           <template #prepend>
-            <div :size="$vuetify.display.xs ? 36 : 50" :class="$vuetify.display.xs ? 'my-0' : ''">
-              <img
+            <v-avatar :size="$vuetify.display.xs ? 36 : 50" :class="$vuetify.display.xs ? 'my-0' : ''">
+              <v-img
                 :src="collectible.logo"
                 :alt="collectible.name"
                 onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
               />
-            </div>
+            </v-avatar>
           </template>
           <v-list-item-title class="caption text-text_1 font-weight-bold" :class="{ 'mb-2': !$vuetify.display.xs }">
             {{ collectible.name }}
           </v-list-item-title>
           <v-list-item-subtitle v-if="!$vuetify.display.xs" class="text-text_3 caption">
-            {{ collectible.assets.length }} {{ collectible.assets.length > 1 ? t('walletHome.assets') : t('walletHome.asset') }}
+            {{ collectible.assets.length }} {{ collectible.assets.length > 1 ? $t('walletHome.assets') : $t('walletHome.asset') }}
           </v-list-item-subtitle>
           <div v-if="$vuetify.display.xs" class="text-right text-text_3 asset-note">
-            {{ collectible.assets.length }} {{ collectible.assets.length > 1 ? t('walletHome.assets') : t('walletHome.asset') }}
+            {{ collectible.assets.length }} {{ collectible.assets.length > 1 ? $t('walletHome.assets') : $t('walletHome.asset') }}
           </div>
         </v-list-item>
       </v-card>

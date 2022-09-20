@@ -6,7 +6,7 @@
         id="locale-dropdown-btn"
         class="locale-selector"
         size="small"
-        variant="icon"
+        variant="text"
         aria-label="Select Language"
         v-bind="props"
       >
