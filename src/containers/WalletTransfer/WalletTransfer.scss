@@ -18,7 +18,7 @@
     width: 100%;
     height: 54px;
     .v-icon--right {
-      color: #D3D5E2;
+      color: #d3d5e2;
     }
     &.v-theme--dark {
       background-color: rgb(var(--v-theme-torusBlack)) !important;
@@ -49,7 +49,8 @@
     background: none;
   }
   .send-mode.v-btn {
-    &.v-theme--dark, &.v-theme--light {
+    &.v-theme--dark,
+    &.v-theme--light {
       border: 0 !important;
     }
     &.v-theme--dark.active {
@@ -57,13 +58,13 @@
       color: rgb(var(--v-theme-torusFont2)) !important;
       font-weight: bold;
       cursor: default;
-      box-shadow: 5px 5px 10px #242529, -5px -5px 10px #37383C !important;
+      box-shadow: 5px 5px 10px #242529, -5px -5px 10px #37383c !important;
     }
     &.v-theme--light.active {
-      background-color: #FFFFFF !important;
+      background-color: #ffffff !important;
       color: rgb(var(--v-theme-text_2)) !important;
       font-weight: bold;
-      box-shadow: 5px 5px 10px #DEE5FF, -5px -5px 10px #FAFBFF;;
+      box-shadow: 5px 5px 10px #dee5ff, -5px -5px 10px #fafbff;
       cursor: default;
     }
   }
@@ -77,12 +78,16 @@
           background: rgb(var(--v-theme-torusBlack2));
         }
       }
-    }    
+    }
   }
   .recipient-address {
     :deep(.v-field__append-inner) {
       align-items: center;
       padding-top: 0px;
+    }
+    :deep(.v-combobox__selection) {
+      overflow: hidden;
+      white-space: nowrap;
     }
   }
 
@@ -92,13 +97,13 @@
 }
 
 .v-btn.share-btn {
-  background: #F5F6FF;
-  border: 1px solid #F1F2F6;
+  background: #f5f6ff;
+  border: 1px solid #f1f2f6;
   box-sizing: border-box;
   border-radius: 6px;
   height: 40px;
   .v-icon {
-    color: #55ACEE;
+    color: #55acee;
   }
   span {
     color: rgb(var(--v-theme-text_2));
@@ -107,7 +112,7 @@
     background: #242529;
     border: 1px solid #343539;
     span {
-      color: #55ACEE;
+      color: #55acee;
     }
   }
 }

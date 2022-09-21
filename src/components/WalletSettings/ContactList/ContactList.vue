@@ -108,7 +108,7 @@
             <v-col sm="5" class="px-1">
               <v-select
                 id="select-verifier"
-                v-model="selectedVerifier"
+                :model-value="selectedVerifier"
                 class="select-verifier-container"
                 variant="outlined"
                 density="compact"
@@ -117,7 +117,6 @@
                 item-title="name"
                 item-value="value"
                 aria-label="Select Contact Verifier"
-                @change="validateContactForm"
               >
                 <template #selection="{ item }">
                   <div class="v-select__selection v-select__selection--comma">
@@ -125,7 +124,7 @@
                   </div>
                 </template>
                 <template #item="{ item }">
-                  <v-list-item :class="selectedVerifier === item.value ? 'active' : ''" @click="selectedVerifier = item.value">
+                  <v-list-item :class="selectedVerifier === item.value ? 'active' : ''" @click="changeSelectedVerifier(item.value)">
                     <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
                   </v-list-item>
                 </template>
@@ -232,9 +231,11 @@ export default {
       return this.contacts.findIndex((x) => x.contact.toLowerCase() === value.toLowerCase()) < 0 || 'walletSettings.duplicateContact'
     },
     async addContact() {
-      if (!this.$refs.addContactForm.validate()) return
+      const formValid = await this.$refs.addContactForm.validate()
+      if (!formValid) return
       const contact = this.newContact
       const name = this.newContactName
+      const verifier = this.selectedVerifier
       this.newContact = ''
       this.newContactName = ''
       this.$refs.addContactForm.resetValidation()
@@ -242,7 +243,7 @@ export default {
         await this.$store.dispatch('addContact', {
           contact,
           name,
-          verifier: this.selectedVerifier,
+          verifier,
         })
       } catch (error) {
         log.error(error)
@@ -254,7 +255,8 @@ export default {
     toAddressRule(value) {
       return validateVerifierId(this.selectedVerifier, value, this.networkId)
     },
-    validateContactForm() {
+    changeSelectedVerifier(verifier) {
+      this.selectedVerifier = verifier
       if (this.$refs.addContactForm) this.$refs.addContactForm.validate()
     },
   },

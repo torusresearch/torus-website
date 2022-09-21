@@ -50,7 +50,7 @@
                 <div v-if="selectedItemDisplay">
                   <v-menu transition="slide-y-transition" location="bottom">
                     <template #activator="{ props }">
-                      <v-btn class="select-coin" label :variant="isDarkMode ? 'outlined' : ''" v-bind="props">
+                      <v-btn class="select-coin" label :variant="isDarkMode ? 'outlined' : null" v-bind="props">
                         <span class="select-coin-name">{{ selectedItemDisplay && selectedItemDisplay.name }}</span>
                         <div class="flex-grow-1 text-right pr-2">
                           <v-icon end>$select</v-icon>
@@ -127,15 +127,27 @@
               </v-col>
               <v-col cols="12" class="mt-6">
                 <div class="body-2 mb-2">{{ $t('walletTransfer.transferMode') }}</div>
+                <!-- <div>
+                  <pre>{{ getToAddressComboboxItems }}</pre>
+                  <pre>{{ tempContact }}</pre>
+                  <v-combobox
+                    v-model="tempContact"
+                    :items="getToAddressComboboxItems"
+                    item-title="name"
+                    item-value="value"
+                    return-object
+                    :rules="[contactRule]"
+                  ></v-combobox>
+                </div> -->
                 <v-row wrap class="mx-n2">
                   <v-col cols="12" sm="8" class="recipient-address-container px-2">
                     <v-combobox
                       id="recipient-address"
                       ref="contactSelected"
+                      v-model="contactSelected"
                       :name="randomName"
                       class="recipient-address"
                       :class="{ hasQrError: qrErrorMsg !== '' }"
-                      :value="contactSelected"
                       :items="getToAddressComboboxItems"
                       :placeholder="verifierPlaceholder"
                       required
@@ -144,6 +156,62 @@
                       item-title="name"
                       item-value="value"
                       aria-label="Recipient Address"
+                      menu-icon=""
+                      :return-object="getReturnObject"
+                      @change="contactChanged"
+                      @blur="checkContact"
+                      @update:search-input="listenInput"
+                    >
+                      <template v-if="apiStreamSupported" #append-inner>
+                        <v-chip v-if="isBitMode && toAddress && selectedVerifier === bitVerifier" class="address-chip">
+                          <div class="accent text-white">
+                            <img
+                              class="address-logo"
+                              :src="addressLogoUrl"
+                              onerror="if (!this.src.includes('/images/logos/bitIcon.png'))
+                              this.src = '/images/logos/bitIcon.png';"
+                              alt=""
+                            />
+                          </div>
+                          {{ bitSelectedAddress }}
+                        </v-chip>
+                        <v-btn
+                          icon="$scan"
+                          size="small"
+                          variant="text"
+                          color="torusBrand1"
+                          title="Capture QR"
+                          tabindex="-1"
+                          aria-label="Capture QR"
+                          @click="startQrScanning"
+                        ></v-btn>
+                      </template>
+                      <template #message="props">
+                        {{ $t(props.message) }}
+                      </template>
+                      <template v-if="isBitMode" #item="{ item }">
+                        <div class="bitAddress">
+                          {{ item.value }}
+                          <v-chip v-if="item.label" label size="small" class="bitLabelChip">{{ item.label }}</v-chip>
+                        </div>
+                      </template>
+                    </v-combobox>
+                    <!-- <v-combobox
+                      id="recipient-address"
+                      ref="contactSelected"
+                      :name="randomName"
+                      class="recipient-address"
+                      :class="{ hasQrError: qrErrorMsg !== '' }"
+                      :value-model="contactSelected"
+                      :items="getToAddressComboboxItems"
+                      :placeholder="verifierPlaceholder"
+                      required
+                      :rules="[contactRule, rules.contactRequired, ensRule, unstoppableDomainsRule, bitRule]"
+                      variant="outlined"
+                      item-title="name"
+                      item-value="value"
+                      aria-label="Recipient Address"
+                      menu-icon=""
                       :return-object="getReturnObject"
                       @input="contactChanged"
                       @blur="checkContact"
@@ -163,7 +231,7 @@
                           {{ bitSelectedAddress }}
                         </v-chip>
                         <v-btn
-                          icon
+                          icon="$scan"
                           size="small"
                           variant="text"
                           color="torusBrand1"
@@ -171,9 +239,7 @@
                           tabindex="-1"
                           aria-label="Capture QR"
                           @click="startQrScanning"
-                        >
-                          <v-icon size="small">$scan</v-icon>
-                        </v-btn>
+                        ></v-btn>
                       </template>
                       <template #message="props">
                         {{ $t(props.message) }}
@@ -184,7 +250,7 @@
                           <v-chip v-if="item.label" label size="small" class="bitLabelChip">{{ item.label }}</v-chip>
                         </div>
                       </template>
-                    </v-combobox>
+                    </v-combobox> -->
                     <v-dialog v-model="showQrScanner" width="600" @click:outside="closeQRScanner">
                       <div v-if="showQrScanner" class="qr-scan-container">
                         <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
@@ -219,7 +285,11 @@
                           {{ $t(item.title) }}
                         </div>
                       </template>
-                      <template #item="{ item }">{{ $t(item.title) }}</template>
+                      <template #item="{ item }">
+                        <v-list-item :class="selectedVerifier === item.value ? 'active' : ''" @click="selectedVerifier = item.value">
+                          <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+                        </v-list-item>
+                      </template>
                       <template #message="props">
                         {{ $t(props.message) }}
                       </template>
@@ -584,6 +654,8 @@ export default {
   },
   data() {
     return {
+      // test
+      tempContact: '',
       sendEthToContractError: false,
       contractType: CONTRACT_TYPE_ETH,
       isContract: false,
@@ -741,7 +813,7 @@ export default {
     },
     contactList() {
       return this.contacts.reduce((mappedObject, contact) => {
-        if (contact.verifier === this.selectedVerifier || this.selectedVerifier === '') {
+        if (contact.verifier === this.selectedVerifier || this.selectedVerifier === null) {
           mappedObject.push({
             name: `${contact.name} (${contact.contact})`,
             value: contact.contact,
@@ -968,6 +1040,7 @@ export default {
       return ''
     },
     contactRule(contact) {
+      log.info('contact', contact)
       let value = ''
       if (contact && typeof contact === 'string') value = contact
       else if (contact && contact.value) value = contact.value
@@ -1060,7 +1133,11 @@ export default {
     async checkContact() {
       this.toEthAddress = await this.calculateEthAddress()
     },
-    async contactChanged(contact) {
+    async contactChanged() {
+      log.info(this.contactSelected, 'contactSelected')
+      const contact = this.contactSelected
+      this.toEthAddress = ''
+
       if (this.isBitMode) {
         // .bit address is different from wallet rule, so set a new branch
         if (contact.value) this.toAddress = contact.value
@@ -1522,8 +1599,8 @@ export default {
           const { suggestedMaxPriorityFeePerGas } = gasPriceEstimates[this.selectedLondonSpeed]
           this.activeGasPrice = new BigNumber(suggestedMaxPriorityFeePerGas).plus(new BigNumber(gasPriceEstimates.estimatedBaseFee))
           this.activePriorityFee = new BigNumber(suggestedMaxPriorityFeePerGas)
-          this.londonSpeedTiming = gasTiming(suggestedMaxPriorityFeePerGas, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
-          this.londonSpeedTimingModalDisplay = gasTiming(suggestedMaxPriorityFeePerGas, this.gasFees, this.t)
+          this.londonSpeedTiming = gasTiming(suggestedMaxPriorityFeePerGas, this.gasFees, this.$t, 'walletTransfer.fee-edit-in')
+          this.londonSpeedTimingModalDisplay = gasTiming(suggestedMaxPriorityFeePerGas, this.gasFees, this.$t)
           if (this.displayAmount.isZero()) {
             this.totalCost = '0'
             this.convertedTotalCost = '0'
@@ -1606,8 +1683,8 @@ export default {
       this.selectedLondonSpeed = data.selectedSpeed
       this.activeGasPrice = maxTxFee
       this.activePriorityFee = maxPriorityFee
-      this.londonSpeedTiming = gasTiming(maxPriorityFee, this.gasFees, this.t, 'walletTransfer.fee-edit-in')
-      this.londonSpeedTimingModalDisplay = gasTiming(maxPriorityFee, this.gasFees, this.t)
+      this.londonSpeedTiming = gasTiming(maxPriorityFee, this.gasFees, this.$t, 'walletTransfer.fee-edit-in')
+      this.londonSpeedTimingModalDisplay = gasTiming(maxPriorityFee, this.gasFees, this.$t)
       this.gas = data.gas
       this.hasCustomGasLimit = true
       this.updateTotalCost()
