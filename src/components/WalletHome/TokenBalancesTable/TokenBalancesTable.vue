@@ -6,12 +6,10 @@
           <EditToken :is-hide-mode="true" :delete-token="balance" />
         </template>
         <v-card
-          color="elevation-1"
           router-link
           :to="{ name: 'walletTransfer', query: { contract: balance.tokenAddress } }"
-          :title="`Transfer ${balance.symbol}`"
           :aria-label="`Transfer ${balance.symbol}`"
-          class="w-100"
+          class="w-100 elevation-1"
         >
           <v-card-text class="pa-0">
             <div class="d-flex align-center py-3 px-4 card-header elevation-1">
@@ -43,7 +41,7 @@
       </v-badge>
     </v-col>
     <v-col cols="12" sm="6" md="4" lg="3" class="mb-4 px-4">
-      <v-card color="elevation-1">
+      <v-card class="elevation-1">
         <v-card-text class="pa-0">
           <div class="d-flex align-center py-3 px-4 card-header elevation-1">
             <div class="flex-grow-1 text-clamp-one text-center" :style="{ height: '25px' }">

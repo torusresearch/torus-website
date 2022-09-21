@@ -39,21 +39,16 @@
   }
   .v-input.search-verifier {
     margin-left: 8px;
-    width: 130px;
-    :deep(.v-input__slot) {
-      margin-bottom: 0;
-      padding: 2px 12px;
+    width: 140px;
+    :deep(.v-select__selection:not(.v-select__selection--comma)) {
+      display: flex;
+      align-items: center;
     }
-    :deep(.v-select__selections) {
-      .v-select__selection--comma {
-        margin: 0;
-      }
-      input {
-        padding: 0;
-      }
-    }
-    :deep(.v-input__append-inner) {
-      margin-top: 2px !important;
+    :deep(.v-select__selection--comma) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
     }
   }
 }

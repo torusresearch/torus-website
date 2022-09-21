@@ -1,5 +1,5 @@
 <template>
-  <div class="select-theme-container" :class="$vuetify.display.xs ? 'pt-5' : 'py-5 px-4'">
+  <div class="select-theme-container" :class="$vuetify.display.xs ? 'pt-5' : 'py-5'">
     <div class="body-2 text-torusFont1 mb-2 px-1">{{ $t('walletSettings.selectTheme') }}</div>
     <v-row wrap class="mx-n3">
       <v-col v-for="theme in themes" :key="theme.name" class="px-3" cols="12" sm="6" @click="saveTheme(theme)">
@@ -9,8 +9,10 @@
           class="theme-btn gmt-display-change"
           :class="[isDarkMode ? 'torusBlack2' : 'white', theme.name === activeTheme ? 'active' : 'elevation-3', { 'mb-2': $vuetify.display.xs }]"
         >
-          <span>{{ $t(theme.label) }}</span>
-          <img :src="require(`../../../assets/images/${theme.icon}`)" alt="Display Settings Icon" />
+          <div>{{ $t(theme.label) }}</div>
+          <template #append>
+            <img :src="require(`../../../assets/images/${theme.icon}`)" alt="Display Settings Icon" />
+          </template>
         </v-btn>
       </v-col>
     </v-row>

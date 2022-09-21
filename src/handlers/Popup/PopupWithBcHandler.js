@@ -54,7 +54,7 @@ class PopupWithBcHandler extends PopupHandler {
           const { type = '' } = data || {}
           if (type === POPUP_LOADED) {
             await this.bc.postMessage({
-              data: payload,
+              data: JSON.parse(JSON.stringify(payload)),
             })
           } else if (type === POPUP_RESULT) {
             if (successExtraFn) await successExtraFn.call(this, data)

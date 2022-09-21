@@ -1,5 +1,5 @@
 <template>
-  <v-container px-0 py-0 class="confirm-container">
+  <v-container class="confirm-container pa-0">
     <template v-if="type === 'none'">
       <PopupScreenLoader />
     </template>
@@ -34,7 +34,6 @@ export default {
   created() {
     const queryParameters = this.$route.query
     const { instanceId, id: queryParameterId } = queryParameters
-
     this.channel = `torus_channel_${instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {

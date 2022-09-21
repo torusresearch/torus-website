@@ -89,7 +89,7 @@
         </template>
         <div class="caption font-weight-bold text-text_1">{{ $t('accountMenu.importAccount') }}</div>
       </v-list-item>
-      <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
+      <v-dialog v-model="accountImportDialog" persistent width="600" class="import-dialog">
         <AccountImport @onClose="accountImportDialog = false" />
       </v-dialog>
     </v-list>

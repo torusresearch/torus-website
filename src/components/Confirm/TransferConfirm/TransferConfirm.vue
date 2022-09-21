@@ -94,7 +94,7 @@
           </div>
         </div>
         <div v-if="gasEstimateFailed" class="caption text-right mt-1">
-          <v-icon size="x-small" class="text-error mr-1">$vuetify.icons.alert</v-icon>
+          <v-icon size="x-small" class="text-error mr-1">alert</v-icon>
           <span class="text-error">{{ $t('walletTransfer.gasEstimateFail') }}</span>
         </div>
       </v-col>

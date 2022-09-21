@@ -1,6 +1,6 @@
 <template>
   <v-container class="wallet-settings" :class="$vuetify.display.xs ? 'px-4' : ''">
-    <v-row wrap class="align-start" :class="$vuetify.display.xs ? 'mt-2' : 'mt-3'">
+    <v-row no-gutters wrap class="align-start" :class="$vuetify.display.xs ? 'mt-2' : 'mt-3'">
       <v-col cols="6">
         <div class="font-weight-bold text-text_2 float-left page-title" :class="{ 'display-1': $vuetify.display.width > 390 }">
           {{ $t('walletSettings.settings') }}
@@ -10,10 +10,10 @@
         <QuickAddress />
       </v-col>
     </v-row>
-    <v-row wrap class="mx-n4 mt-7">
-      <v-col class="px-4" cols="12" md="6">
+    <v-row wrap class="mt-7">
+      <v-col cols="12" md="6">
         <v-expansion-panels v-model="leftPanel" multiple>
-          <v-expansion-panel class="my-2">
+          <v-expansion-panel>
             <v-expansion-panel-title id="privacy-panel-header">
               <v-icon size="18" class="d-inline-flex mr-4 text-text_2 shrink">$lock</v-icon>
               <div class="grow font-weight-bold title text-text_1">
@@ -24,7 +24,7 @@
               <PrivacySecurity />
             </v-expansion-panel-text>
           </v-expansion-panel>
-          <v-expansion-panel class="my-2">
+          <v-expansion-panel>
             <v-expansion-panel-title id="contact-list-panel-header">
               <v-icon size="16" class="d-inline-flex mr-4 text-text_2 shrink">$list</v-icon>
               <div class="grow font-weight-bold title text-text_1">
@@ -35,7 +35,7 @@
               <ContactList />
             </v-expansion-panel-text>
           </v-expansion-panel>
-          <v-expansion-panel class="my-2">
+          <v-expansion-panel>
             <v-expansion-panel-title id="privacy-panel-header">
               <v-icon size="18" class="d-inline-flex mr-4 text-text_2 shrink">$device_detailed</v-icon>
               <div class="grow font-weight-bold title text-text_1">
@@ -48,9 +48,9 @@
           </v-expansion-panel>
         </v-expansion-panels>
       </v-col>
-      <v-col class="px-4" cols="12" md="6">
+      <v-col cols="12" md="6">
         <v-expansion-panels v-model="rightPanel" multiple>
-          <v-expansion-panel class="my-2">
+          <v-expansion-panel>
             <v-expansion-panel-title id="network-panel-header">
               <v-icon size="small" class="d-inline-flex mr-4 text-text_2 shrink">$globe</v-icon>
               <div class="grow font-weight-bold title text-text_1">
@@ -61,7 +61,7 @@
               <Network />
             </v-expansion-panel-text>
           </v-expansion-panel>
-          <v-expansion-panel class="my-2">
+          <v-expansion-panel>
             <v-expansion-panel-title id="display-panel-header">
               <v-icon size="small" class="d-inline-flex mr-4 text-text_2 shrink">$server</v-icon>
               <div class="grow font-weight-bold title text-text_1">
@@ -72,7 +72,7 @@
               <Display />
             </v-expansion-panel-text>
           </v-expansion-panel>
-          <v-expansion-panel readonly class="my-2">
+          <v-expansion-panel readonly>
             <v-expansion-panel-title id="display-panel-header">
               <v-icon size="small" class="d-inline-flex mr-4 text-text_2 shrink">$person_circle</v-icon>
               <div class="grow font-weight-bold title text-text_1">{{ $t('tkeySettings.accountManagement') }}</div>
@@ -81,7 +81,7 @@
               <DefaultAccount :has-threshold-logged="hasThresholdLogged" />
             </v-expansion-panel-text>
           </v-expansion-panel>
-          <v-expansion-panel v-show="canShowSetCustomKey" readonly class="my-2">
+          <v-expansion-panel v-show="canShowSetCustomKey" readonly>
             <v-expansion-panel-title id="display-panel-header">
               <v-icon size="small" class="d-inline-flex mr-4 text-text_2 shrink">$person_circle</v-icon>
               <div class="grow font-weight-bold title text-text_1">{{ 'Set Torus Key' }}</div>
@@ -141,7 +141,7 @@ export default {
     },
   },
   mounted() {
-    this.$vuetify.goTo(0)
+    // this.$vuetify.goTo(0)
   },
 }
 </script>

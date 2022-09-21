@@ -1,16 +1,18 @@
 .account-list {
   border-radius: 6px;
+  border: thin solid rgba(0, 0, 0, 0.12);
   .v-avatar {
     border-radius: 0;
     align-self: start;
-    & > svg, & > .v-icon {
+    & > svg,
+    & > .v-icon {
       margin: auto;
     }
   }
   .v-list-item {
-    border-bottom: 1px solid #D3D5E2;
+    border-bottom: thin solid #d3d5e2;
     &.v-theme--dark {
-      border-bottom: 1px solid #202125;
+      border-bottom: thin solid #202125;
     }
   }
   .v-list-item:last-child {
@@ -22,11 +24,11 @@
   &.v-theme--dark {
     border: 1px solid #202125;
     .v-list-item {
-      background: #28292E;
+      background: #28292e;
     }
   }
-  
+
   .tkey-features {
-    padding-left: 16px
+    padding-left: 16px;
   }
 }

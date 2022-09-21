@@ -1,5 +1,5 @@
-.v-btn.v-btn--icon.wallet-connect-btn {
-  background: rgb(var(--v-theme-torusGray4));
+.v-btn.v-btn--variant-icon.wallet-connect-btn {
+  background: rgb(var(--v-theme-torusGray5));
   color: rgb(var(--v-theme-torusFont2));
   &.v-theme--dark {
     background: rgb(var(--v-theme-torusBlack2));
@@ -16,11 +16,9 @@
   }
 }
 
-
-.custom-placeholer{
+.custom-placeholer {
   font-size: 10px;
 }
-
 
 .close-btn {
   position: absolute;
@@ -29,15 +27,15 @@
   color: #d3d3d4;
 }
 
-.hidden-btn{
+.hidden-btn {
   visibility: hidden;
 }
 
-.guide-menu.v-theme--dark{
+.guide-menu.v-theme--dark {
   border: 1px white solid;
   border-radius: 9px;
 }
 
-.goto-button{
+.goto-button {
   margin-left: -10px;
 }

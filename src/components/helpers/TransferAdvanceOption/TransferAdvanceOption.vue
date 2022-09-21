@@ -24,7 +24,7 @@
                 <v-col cols="12" sm="6" class="px-4">
                   <div class="text-subtitle-2 mb-2">
                     {{ $t('walletTransfer.gasPrice') }} (GWEI)
-                    <HelpTooltip :title="t('walletTransfer.gasPrice')">
+                    <HelpTooltip :title="$t('walletTransfer.gasPrice')">
                       <template #description>
                         <div class="body-2 text-text_3 text-justify">
                           <span class="font-weight-medium">{{ $t('walletTransfer.gasPriceDesc1') }}</span>
@@ -55,7 +55,7 @@
                 <v-col cols="12" sm="6" clas="px-4">
                   <div class="text-subtitle-2 mb-2">
                     {{ $t('walletTransfer.gasLimit') }}
-                    <HelpTooltip :title="t('walletTransfer.gasLimit')" :description="t('walletTransfer.gasLimitDesc')"></HelpTooltip>
+                    <HelpTooltip :title="$t('walletTransfer.gasLimit')" :description="$t('walletTransfer.gasLimitDesc')"></HelpTooltip>
                   </div>
                   <v-text-field
                     id="advanced-gas"
@@ -73,7 +73,7 @@
                       {{ $t(props.item.text) }}
                     </template>
                     <template #selection="{ item }">
-                      {{ item.text ? t(item.text) : item }}
+                      {{ item.text ? $t(item.text) : item }}
                     </template>
                   </v-combobox>
                 </v-col>

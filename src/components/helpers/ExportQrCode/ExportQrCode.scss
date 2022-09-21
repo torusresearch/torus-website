@@ -1,14 +1,14 @@
-.v-btn.v-btn--icon.qr-btn {
-  background-color: rgb(var(--v-theme-torusGray4));
+.v-btn.v-btn--variant-icon.qr-btn {
+  background-color: rgb(var(--v-theme-torusGray5));
   color: rgb(var(--v-theme-torusFont2));
   &.v-theme--dark {
     background-color: rgb(var(--v-theme-torusBlack2));
-    color: #5C6C7F;
+    color: #5c6c7f;
   }
 }
 
 .card-header {
-  background: #FFFFFF;
+  background: #ffffff;
   box-sizing: border-box;
   border-radius: 6px;
   line-height: 0;

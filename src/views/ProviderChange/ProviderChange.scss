@@ -1,5 +1,5 @@
 .provider-change-header {
-  background: rgb(var(--v-theme-torusGray4));
+  background: rgb(var(--v-theme-torusGray5));
   &.v-theme--dark {
     background: rgb(var(--v-theme-torusBlack2));
   }
@@ -13,8 +13,9 @@
   padding: 12px;
 }
 
-.request-from a {
-  text-decoration: none;
+.request-from {
+  background: rgb(var(--v-theme-torusGray4));
+  border-radius: 4px;
 }
 
 .card-upper-icon {

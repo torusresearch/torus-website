@@ -1,9 +1,9 @@
 .login-buttons {
-  .v-btn.view-option-selector:not(.v-btn--text):not(.v-btn--icon):not(.v-btn--round) {
+  .v-btn.view-option-selector:not(.v-btn--variant-text):not(.v-btn--variant-icon):not(.v-btn--rounded) {
     height: 25px;
     border-radius: 12.5px;
     padding: 3px 12px 3px 20px;
-    background: rgb(var(--v-theme-torusGray4));
+    background: rgb(var(--v-theme-torusGray5));
     box-shadow: none;
     color: rgb(var(--v-theme-text_2));
     .selector-text {
@@ -74,7 +74,7 @@
         }
       }
     }
-    .v-btn.view-option-selector:not(.v-btn--text):not(.v-btn--icon):not(.v-btn--round) {
+    .v-btn.view-option-selector:not(.v-btn--variant-text):not(.v-btn--variant-icon):not(.v-btn--rounded) {
       height: 2.7vh;
       border-radius: 1.35vh;
       padding-left: 1.35vh;
@@ -110,7 +110,7 @@
         padding-right: 2.5vh;
       }
     }
-    .v-btn.view-option-selector:not(.v-btn--text):not(.v-btn--icon):not(.v-btn--round) {
+    .v-btn.view-option-selector:not(.v-btn--variant-text):not(.v-btn--variant-icon):not(.v-btn--rounded) {
       height: 2.5vh;
       border-radius: 1.25vh;
       padding-left: 1.25vh;

@@ -1,5 +1,5 @@
 <template>
-  <div class="privacy-security-container" :class="$vuetify.display.xs ? '' : 'py-5 px-2'">
+  <div class="privacy-security-container" :class="$vuetify.display.xs ? '' : 'py-5'">
     <v-list>
       <v-list-item id="private-key-btn" class="gmt-private-key-modal" @click="privateKeyDialog = true">
         <template #prepend>
