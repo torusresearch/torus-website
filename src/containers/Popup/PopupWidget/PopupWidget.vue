@@ -97,8 +97,8 @@
                 v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC20 && recentTransaction.actionIcon !== 'n/a'"
                 :src="`${logosUrl}/${recentTransaction.actionIcon}`"
                 :alt="`${recentTransaction.type_name} Icon`"
-                :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
-                  $vuetify.theme.dark ? 'dark' : 'light'
+                :onerror="`if (!this.src.includes('images/token-${isDarkMode ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+                  isDarkMode ? 'dark' : 'light'
                 }.svg';`"
               />
               <v-icon v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC20" class="float-left" size="24" color="torusBrand1">$token</v-icon>
@@ -116,8 +116,8 @@
                 height="30"
                 large
                 :alt="`${recentTransaction.type_name} Icon`"
-                :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
-                  $vuetify.theme.dark ? 'dark' : 'light'
+                :onerror="`if (!this.src.includes('images/token-${isDarkMode ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+                  isDarkMode ? 'dark' : 'light'
                 }.svg';`"
               />
               <v-icon v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC721" class="float-left" size="24" color="torusBrand1">
@@ -317,6 +317,9 @@ export default {
       if (this.embedState.buttonSize <= 40) return '6px'
       if (this.embedState.buttonSize <= 50) return '8px'
       return '10px'
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
     },
   },
   methods: {

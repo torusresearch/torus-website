@@ -109,7 +109,7 @@ export default {
       return this.providers.filter((provider) => this.innerProvider === '' || (this.innerProvider && this.innerProvider === provider.name))
     },
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   watch: {

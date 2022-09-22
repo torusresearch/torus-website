@@ -23,7 +23,7 @@
               position="right center"
               max-width="170"
               max-height="30"
-              :style="$vuetify.breakpoint.smAndDown ? 'width: 100px' : 'width: 170px'"
+              :style="$vuetify.display.smAndDown ? 'width: 100px' : 'width: 170px'"
               :alt="t('walletConnect.title')"
             />
           </div>
@@ -47,7 +47,7 @@ export default {
   },
   computed: {
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
 }

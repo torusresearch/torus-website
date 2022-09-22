@@ -194,7 +194,7 @@ export default {
       wallet: 'wallet',
       loginConfig: (state) => state.embedState.loginConfig,
       isDarkMode() {
-        return this.$vuetify.theme.name === 'dark'
+        return this.$vuetify.theme.current.dark
       },
     }),
     ...mapGetters({

@@ -1,7 +1,7 @@
 <template>
   <v-app class="torus-app">
     <template v-if="loginInProgress">
-      <v-container class="spinner" fluid :class="$vuetify.theme.dark ? 'torus-dark' : ''">
+      <v-container class="spinner" fluid :class="isDarkMode ? 'torus-dark' : ''">
         <BoxLoader :force-spinner="true" />
         <p class="bottom-text text-body-1 text-center font-weight-medium">
           {{ $t('login.loader') }}
@@ -33,7 +33,12 @@ export default {
       loginInProgress: false,
     }
   },
-  computed: mapState(['theme', 'whitelabel']),
+  computed: {
+    ...mapState(['theme', 'whitelabel']),
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
+    },
+  },
   watch: {
     async $route(to) {
       this.updateBackgrounds(to.name)

@@ -97,14 +97,14 @@
           <v-card-text class="pt-0" :class="$vuetify.display.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
             <v-row>
               <v-col class="pt-4" :class="$vuetify.display.xs ? 'xs12 text-center' : $vuetify.display.lgAndUp ? 'xs8' : 'xs9'">
-                <div class="text-body-1 font-weight-bold">{{ t('walletHome.welcome') }} Torus.</div>
+                <div class="text-body-1 font-weight-bold">{{ $t('walletHome.welcome') }} Torus.</div>
                 <v-dialog v-model="dialogOnboarding" persistent max-width="600">
                   <template #activator="{ on }">
                     <div class="body-2'">
                       <a id="learn-more-btn" class="torusBrand1--text font-weight-bold" v-on="on">
-                        {{ t('walletHome.learnMore') }}
+                        {{ $t('walletHome.learnMore') }}
                       </a>
-                      {{ t('walletHome.aboutWallet') }}.
+                      {{ $t('walletHome.aboutWallet') }}.
                     </div>
                   </template>
                   <Onboarding @onClose="dialogOnboarding = false" />
@@ -324,7 +324,7 @@ export default {
       return apiStreamSupported()
     },
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   mounted() {

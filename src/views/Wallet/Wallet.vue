@@ -121,7 +121,7 @@ export default {
       return this.deviceShare && this.deviceShare.share ? this.deviceShare.share.share.shareIndex.toString('hex') : ''
     },
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   created() {

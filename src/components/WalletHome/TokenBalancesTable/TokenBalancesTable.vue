@@ -93,7 +93,7 @@ export default {
       return this.tokenBalances.length > 5
     },
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   methods: {

@@ -78,7 +78,7 @@
               </div>
               <!-- <div>
                 <div class="text-subtitle-2 mb-2">
-                  {{ t('walletTransfer.fee-edit-base-fee') }}
+                  {{ $t('walletTransfer.fee-edit-base-fee') }}
                   <HelpTooltip :title="t('walletTransfer.fee-edit-base-fee')" :description="t('walletTransfer.fee-edit-base-fee-desc')" />
                 </div>
                 <v-text-field :value="baseFee" outlined type="number" :hint="` `" persistent-hint suffix="GWEI" disabled>
@@ -315,7 +315,7 @@ export default {
       return this.convertEth(this.maxTransactionFee)
     },
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   watch: {

@@ -1,19 +1,19 @@
 <template>
   <div v-if="!isNetworkPill" class="d-flex network-chip align-center" :class="[chipClass, minimal ? 'network-chip--minimal' : '']">
-    <v-icon v-if="showIcon" left>$vuetify.icons.network</v-icon>
-    <span class="network-chip__name text-clamp-one" :class="{ 'network-chip__name--mobile': $vuetify.breakpoint.xsOnly }">
-      {{ $vuetify.breakpoint.xsOnly && !minimal ? shortSelectedNetwork : selectedNetwork }}
+    <v-icon v-if="showIcon" left>$network</v-icon>
+    <span class="network-chip__name text-clamp-one" :class="{ 'network-chip__name--mobile': $vuetify.display.xsOnly }">
+      {{ $vuetify.display.xsOnly && !minimal ? shortSelectedNetwork : selectedNetwork }}
     </span>
   </div>
   <div v-else>
     <v-menu transition="slide-y-transition" class="select-menu" offset-y rounded="lg">
       <template #activator="{ on }">
         <div class="d-flex network-chip align-center" :class="[chipClass, minimal ? 'network-chip--minimal' : '']" v-on="on">
-          <v-icon v-if="showIcon" left>$vuetify.icons.network</v-icon>
-          <span class="network-chip__name text-clamp-one row-pointer" :class="{ 'network-chip__name--mobile': $vuetify.breakpoint.xsOnly }">
-            {{ $vuetify.breakpoint.xsOnly && !minimal ? shortSelectedNetwork : selectedNetwork }}
+          <v-icon v-if="showIcon" left>$network</v-icon>
+          <span class="network-chip__name text-clamp-one row-pointer" :class="{ 'network-chip__name--mobile': $vuetify.display.xsOnly }">
+            {{ $vuetify.display.xsOnly && !minimal ? shortSelectedNetwork : selectedNetwork }}
           </span>
-          <v-icon right>$vuetify.icons.select_new</v-icon>
+          <v-icon right>$select_new</v-icon>
         </div>
       </template>
       <v-list class="select-item-list overflow-y-auto" style="max-height: 240px">
@@ -25,7 +25,7 @@
         >
           <v-list-item-content>
             <v-list-item-title class="body-2">
-              <!-- <v-icon>$vuetify.icons.network</v-icon> -->
+              <!-- <v-icon>$network</v-icon> -->
               {{ networkInfo.networkName }}
             </v-list-item-title>
           </v-list-item-content>

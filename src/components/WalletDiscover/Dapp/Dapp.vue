@@ -59,7 +59,7 @@ export default {
       return !!SUPPORTED_NETWORK_TYPES[this.dapp.network]?.host
     },
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   methods: {

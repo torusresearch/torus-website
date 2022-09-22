@@ -132,7 +132,7 @@ export default {
       return Math.ceil(this.filteredList.length / this.itemsPerPage)
     },
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   async mounted() {

@@ -168,7 +168,7 @@ export default {
       return new BigNumber(currencyMultiplierNumber)
     },
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   async mounted() {

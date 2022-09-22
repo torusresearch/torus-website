@@ -49,7 +49,7 @@ export default {
       return config.appVersion.replace('v', '')
     },
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
 }

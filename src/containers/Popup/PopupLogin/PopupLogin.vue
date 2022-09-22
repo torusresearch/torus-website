@@ -31,7 +31,7 @@
           <div>
             <div class="caption text-right text-text_2">{{ $t('dappLogin.selfCustodial') }}</div>
             <div class="text-right">
-              <img height="15" :src="require(`../../../assets/images/web3auth${$vuetify.theme.dark ? '' : '-dark'}.svg`)" alt="web3auth logo" />
+              <img height="15" :src="require(`../../../assets/images/web3auth${isDarkMode ? '' : '-dark'}.svg`)" alt="web3auth logo" />
             </div>
           </div>
         </div>
@@ -124,6 +124,9 @@ export default {
     },
     appVersion() {
       return config.appVersion.replace('v', '')
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
     },
   },
   methods: {

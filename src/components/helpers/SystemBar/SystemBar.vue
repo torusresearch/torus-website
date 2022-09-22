@@ -59,7 +59,7 @@ export default {
       return this.type !== 'lrc'
     },
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   methods: {

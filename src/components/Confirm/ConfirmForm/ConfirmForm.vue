@@ -609,7 +609,7 @@ export default {
       return this.networkDetails.EIPS && this.networkDetails.EIPS['1559']
     },
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   watch: {

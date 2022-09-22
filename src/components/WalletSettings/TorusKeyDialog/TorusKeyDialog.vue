@@ -121,20 +121,20 @@ export default {
     privateKeyValidation(v) {
       try {
         if (v.length !== 64) {
-          return this.t('walletSettings.customKey.invalidPrivateKeyLength') // 'Invalid private key length'
+          return this.$t('walletSettings.customKey.invalidPrivateKeyLength') // 'Invalid private key length'
         }
         const customPrivBN = new BN(v, 16)
         if (customPrivBN.cmp(new BN(0)) === 0) {
-          return this.t('walletSettings.customKey.privateKeyCannotBeZero') // 'Private key cannot be 0'
+          return this.$t('walletSettings.customKey.privateKeyCannotBeZero') // 'Private key cannot be 0'
         }
         const prefixed = addHexPrefix(v)
         const buffer = toBuffer(prefixed)
         if (!isValidPrivate(buffer)) {
-          return this.t('walletSettings.customKey.invalidPrivateKey') // 'Invalid private key'
+          return this.$t('walletSettings.customKey.invalidPrivateKey') // 'Invalid private key'
         }
       } catch (error) {
         log.error(error)
-        return this.t('walletSettings.customKey.unableToValidatePrivateKey') // 'Unable to validate private key'
+        return this.$t('walletSettings.customKey.unableToValidatePrivateKey') // 'Unable to validate private key'
       }
       return true
     },

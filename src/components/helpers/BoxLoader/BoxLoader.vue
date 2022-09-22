@@ -81,7 +81,7 @@ export default {
       if (this.whiteLabel.isActive) {
         return this.whiteLabel.theme?.isDark
       }
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
     useSpinner() {
       return this.forceSpinner || !this.isCustomVerifier || (this.isCustomVerifier && !this.whiteLabelLogo)

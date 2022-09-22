@@ -130,7 +130,7 @@ export default {
       supportedNetworks: 'supportedNetworks',
     }),
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   methods: {

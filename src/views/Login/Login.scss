@@ -40,19 +40,6 @@
   }
 }
 
-.background-login {
-  position: relative;
-  height: 100%;
-  background: #f3f4f6;
-  &.torus-dark {
-    background: #111928;
-  }
-
-  @media only screen and (min-width: 1264px) {
-    background-size: 100%;
-  }
-}
-
 body,
 html {
   height: 100%;

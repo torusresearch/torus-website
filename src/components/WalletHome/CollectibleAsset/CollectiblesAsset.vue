@@ -51,7 +51,7 @@
             {{ viewMore ? $t('walletHome.viewLess') : $t('walletHome.viewMore') }}
           </a>
           <div class="mt-4">
-            <v-btn block depressed :outlined="$vuetify.theme.dark" color="torusBrand1" class="white--text mb-2" @click="transferAsset(asset)">
+            <v-btn block depressed :outlined="isDarkMode" color="torusBrand1" class="white--text mb-2" @click="transferAsset(asset)">
               {{ $t('walletHome.transfer') }}
             </v-btn>
             <v-btn
@@ -118,7 +118,7 @@
             </v-btn>
           </v-col>
           <v-col xs6 class="px-2">
-            <v-btn block depressed :outlined="$vuetify.theme.dark" color="torusBrand1" class="white--text" @click.stop="transferAsset(asset)">
+            <v-btn block depressed :outlined="isDarkMode" color="torusBrand1" class="white--text" @click.stop="transferAsset(asset)">
               {{ $t('walletHome.transfer') }}
             </v-btn>
           </v-col>
@@ -143,6 +143,11 @@ export default {
       assetActive: false,
       viewMore: false,
     }
+  },
+  computed: {
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
+    },
   },
   methods: {
     transferAsset(asset) {

@@ -100,7 +100,7 @@ export default {
       return `${this.selectedAddress.slice(0, 11)}...${this.selectedAddress.slice(-13)}`
     },
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   methods: {

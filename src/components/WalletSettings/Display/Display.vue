@@ -38,7 +38,7 @@ export default {
       activeTheme: 'theme',
     }),
     isDarkMode() {
-      return this.$vuetify.theme.name === 'dark'
+      return this.$vuetify.theme.current.dark
     },
   },
   methods: {

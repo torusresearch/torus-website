@@ -93,7 +93,7 @@ export default {
       contactFormValid: true,
       newContactName: '',
       rules: {
-        required: (value) => !!value || this.t('walletSettings.required'),
+        required: (value) => !!value || this.$t('walletSettings.required'),
       },
     }
   },
