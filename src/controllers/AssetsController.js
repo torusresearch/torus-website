@@ -183,7 +183,7 @@ export default class AssetController {
    */
   async getCollectibleInfoFromApi(contractAddress, tokenId) {
     const collectibleApi = this.getCollectibleApi(contractAddress, tokenId)
-    let collectibleInfo = { name: null, image: null, description: null, tokenBalance: null, standard: null }
+    let collectibleInfo = { name: null, image: null, description: null, tokenBalance: null, standard: null, video: null }
     if (!collectibleApi) {
       return collectibleInfo
     }
@@ -198,8 +198,8 @@ export default class AssetController {
         }
         const tokenBalance =
           standard === CONTRACT_TYPE_ERC721 ? 1 : await this.assetContractController.getErc1155Balance(contractAddress, this.selectedAddress, tokenId)
-        const { name, image, description } = nftData[0].external_data
-        collectibleInfo = { name, image, description, tokenBalance, standard }
+        const { name, image, description, animation_url } = nftData[0].external_data
+        collectibleInfo = { name, image, description, tokenBalance, standard, video: animation_url }
         return collectibleInfo
       }
     }
@@ -343,7 +343,7 @@ export default class AssetController {
   }
 
   async _normalizeCollectibleDetails(collectibleDetails = {}, detectFromApi) {
-    const { name, image, description, standard, tokenBalance, address, tokenID } = collectibleDetails
+    const { name, image, description, standard, tokenBalance, address, tokenID, video } = collectibleDetails
     let _contractAddress
     if (isAddressByChainId(address, this.currentChainId)) _contractAddress = toChecksumAddressByChainId(address, this.currentChainId)
     else _contractAddress = address
@@ -357,6 +357,7 @@ export default class AssetController {
       standard,
       tokenBalance,
       collectibleIndex,
+      video,
     }
     normalizedCollectibleInfo.standard = standard
     if (!standard) {
@@ -420,6 +421,7 @@ export default class AssetController {
           name,
           tokenBalance,
           standard,
+          video,
         } = options
 
         const { tokenID, contractAddress } = collectibleInfo
@@ -453,6 +455,7 @@ export default class AssetController {
                   standard,
                   tokenBalance,
                   tokenID,
+                  video,
                 },
                 detectFromApi
               )

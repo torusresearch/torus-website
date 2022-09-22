@@ -1,28 +1,27 @@
 .login-panel-left {
-  background: #f9f9fb;
+  background: #f3f4f6;
+  .inner-left-panel {
+    background: #ffffff;
+    border-radius: 30px;
+    margin: 30px 0px 30px 56px;
+    padding: 56px 0px;
+  }
   &.torus-dark {
-    background: linear-gradient(
-      43.08deg,
-      #26272c 0.89%,
-      rgba(43, 44, 49, 0.975926) 19.43%,
-      rgba(42, 43, 48, 0.980053) 37.98%,
-      rgba(42, 43, 48, 0.97911) 60.77%,
-      rgba(42, 43, 48, 0.979198) 70.3%
-    );
+    background: #111928;
+    .inner-left-panel {
+      background: #1f2a37;
+    }
+    .mobile-login-container {
+      background: #1f2a37;
+    }
   }
 }
 
 .login-panel-right {
-  background: linear-gradient(36.97deg, #f1f4fb 39.12%, rgba(241, 244, 251, 0) 83.1%);
+  background: #f3f4f6;
 
   &.torus-dark {
-    background: linear-gradient(
-      222.08deg,
-      #26272c 1.73%,
-      rgba(40, 41, 46, 0.988961) 42.88%,
-      rgba(40, 41, 46, 0.989349) 61.68%,
-      rgba(46, 47, 52, 0.960249) 86.96%
-    );
+    background: #111928;
   }
 
   &.login-panel-right--mobile {
@@ -43,15 +42,15 @@
 
 .background-login {
   position: relative;
-  @extend .default;
+  height: 100%;
+  background: #f3f4f6;
+  &.torus-dark {
+    background: #111928;
+  }
 
   @media only screen and (min-width: 1264px) {
     background-size: 100%;
   }
-}
-
-.default {
-  height: 100%;
 }
 
 body,
@@ -61,6 +60,7 @@ html {
 }
 
 .mobile-login-container {
+  background: #ffffff;
   section {
     min-height: 100vh;
   }
@@ -89,4 +89,16 @@ html {
     bottom: 3rem;
     padding: 0 1rem;
   }
+}
+
+.selectedText {
+  color: var(--v-torusBrand1-base);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 18px;
+  text-overflow: ellipsis;
+}
+.selectMenu {
+  max-width: 230px;
+  min-width: 100px;
 }

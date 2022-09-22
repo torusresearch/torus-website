@@ -3,19 +3,21 @@
   bottom: -15px;
   .v-btn.v-btn--variant-icon {
     width: 14px;
-    height: 14px;
-    background-color: rgb(var(--v-theme-torusGray1));
-    margin: 0px 8px;
-    &.v-btn--selected {
-      background-color: rgb(var(--v-theme-torusGray3));
+    height: 6px;
+    margin: 0 5px;
+    border-radius: 3px;
+    background-color: #a4cafe;
+    &.v-btn--active {
+      background-color: #0364ff;
+      width: 28px;
     }
   }
 }
 
 .slide-image {
-  width: 85%;
+  width: 50%;
   height: auto;
-  max-width: 550px;
+  max-width: 400px;
 }
 
 .caption {

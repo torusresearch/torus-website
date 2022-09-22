@@ -17,19 +17,27 @@
         transform: rotate(-180deg);
       }
     }
-    &.v-theme--dark {
-      background: rgb(var(--v-theme-torusBlack2));
-      color: rgb(var(--v-theme-text_2));
+    &.theme--dark {
+      background: #111928;
+      color: var(--v-text_2-base);
     }
   }
 
-  .v-input.passwordless-email {
+  .v-input.passwordless-email.v-text-field--outlined {
     margin-bottom: 8px;
     :deep(.v-input__control) {
       .v-text-field__details {
         display: none;
       }
     }
+    &.theme--dark {
+      ::v-deep .v-input__control {
+        .v-input__slot {
+          background: #1f2a37;
+        }
+      }
+    }
+
     &.error--text {
       :deep(.v-input__control) {
         .v-text-field__details {

@@ -81,15 +81,6 @@
               <DefaultAccount :has-threshold-logged="hasThresholdLogged" />
             </v-expansion-panel-text>
           </v-expansion-panel>
-          <v-expansion-panel v-show="canShowSetCustomKey" readonly>
-            <v-expansion-panel-title id="display-panel-header">
-              <v-icon size="small" class="d-inline-flex mr-4 text-text_2 shrink">$person_circle</v-icon>
-              <div class="grow font-weight-bold title text-text_1">{{ 'Set Torus Key' }}</div>
-            </v-expansion-panel-title>
-            <v-expansion-panel-text>
-              <SetTorusKey />
-            </v-expansion-panel-text>
-          </v-expansion-panel>
         </v-expansion-panels>
       </v-col>
     </v-row>
@@ -105,7 +96,6 @@ import DefaultAccount from '../../components/WalletSettings/DefaultAccount'
 import Display from '../../components/WalletSettings/Display'
 import Network from '../../components/WalletSettings/Network'
 import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
-import SetTorusKey from '../../components/WalletSettings/SetTorusKey'
 import { ACCOUNT_TYPE } from '../../utils/enums'
 
 export default {
@@ -118,7 +108,6 @@ export default {
     QuickAddress,
     Display,
     DefaultAccount,
-    SetTorusKey,
   },
   data() {
     return {
@@ -131,10 +120,6 @@ export default {
     isThreshold() {
       const accountType = this.wallet[this.selectedAddress]?.accountType
       return accountType === ACCOUNT_TYPE.THRESHOLD || accountType === ACCOUNT_TYPE.TKEY_SEED_PHRASE
-    },
-    canShowSetCustomKey() {
-      const normalAccount = Object.values(this.wallet).find((x) => x.accountType === ACCOUNT_TYPE.NORMAL) || {}
-      return !!normalAccount.metadataNonceHex
     },
     hasThresholdLogged() {
       return Object.values(this.wallet).some((x) => x.accountType === ACCOUNT_TYPE.THRESHOLD)

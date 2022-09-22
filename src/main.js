@@ -24,26 +24,23 @@ const buildEnvironment = process.env.VUE_APP_TORUS_BUILD_ENV
 log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 let logLevel
 switch (buildEnvironment) {
-  case 'binance':
-    logLevel = 'error'
-    log.setDefaultLevel(logLevel)
-    break
   case 'testing':
   case 'development':
   case 'lrc':
     logLevel = 'debug'
-    log.setDefaultLevel(logLevel)
     break
   case 'production':
+  case 'binance':
+  case 'bnb':
+  case 'polygon':
     logLevel = 'error'
-    log.setDefaultLevel(logLevel)
     break
   default:
-    logLevel = 'error'
-    log.setDefaultLevel(logLevel)
+    logLevel = 'info'
     break
 }
 
+log.setDefaultLevel(logLevel)
 log.setLevel(logLevel)
 
 const app = createApp(App)

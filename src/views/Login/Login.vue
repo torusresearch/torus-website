@@ -1,10 +1,17 @@
 <template>
-  <div :class="[{ 'background-login': !loggedIn }, 'default']">
+  <div :class="[{ 'background-login': !loggedIn }, 'default', $vuetify.theme.dark ? 'torus-dark' : '']">
     <template v-if="!loginInProgress">
-      <v-row wrap class="login-panel-left fill-height align-center justify-center mt-0" :class="isDarkMode ? 'torus-dark' : ''">
-        <v-col cols="12" sm="8" md="6">
-          <v-row v-if="!isLogout" wrap>
-            <v-col v-if="$vuetify.display.xs" class="mobile-login-container" cols="12">
+      <v-container
+        fill-height
+        align-center
+        justify-center
+        :fluid="$vuetify.breakpoint.lgAndDown"
+        class="login-panel-left pa-0 d-flex flex-nowrap"
+        :class="$vuetify.theme.dark ? 'torus-dark' : ''"
+      >
+        <div xs12 sm8 md6 style="max-width: 600px">
+          <v-layout v-if="!isLogout" wrap>
+            <v-flex v-if="$vuetify.breakpoint.xsOnly" class="mobile-login-container" xs12>
               <section class="py-10 py-sm-12">
                 <v-row wrap>
                   <v-col class="mb-2 ml-auto mr-auto" cols="10">
@@ -14,27 +21,38 @@
                   <v-col cols="10" class="mx-auto py-0">
                     <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
                   </v-col>
-                  <LoginFooter :authenticators="thirdPartyAuthenticators" />
                 </v-row>
+                <section>
+                  <LoginSlide
+                    :show-spring-festival="showSpringFestival"
+                    @change="
+                      (current) => {
+                        currentCarousel = current
+                      }
+                    "
+                  />
+                  <LoginFooter :authenticators="thirdPartyAuthenticators" />
+                </section>
               </section>
-              <section>
-                <LoginSlide
-                  :show-spring-festival="showSpringFestival"
-                  @change="
-                    (current) => {
-                      currentCarousel = current
-                    }
-                  "
-                />
-              </section>
-              <v-icon v-if="scrollOnTop" class="more-icon" aria-label="Scroll for more information" role="image">$login_more</v-icon>
-            </v-col>
+
+              <v-icon v-if="scrollOnTop" class="more-icon" aria-label="Scroll for more information" role="image">$vuetify.icons.login_more</v-icon>
+            </v-flex>
             <!-- Desktop -->
-            <v-col v-else cols="12">
-              <v-row wrap>
-                <v-col cols="10" sm="8" class="mt-4 mb-4 mx-auto">
-                  <img height="25" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
-                </v-col>
+            <v-flex v-else xs12>
+              <v-layout wrap class="inner-left-panel">
+                <v-flex mt-4 mb-10 xs10 sm8 ml-auto mr-auto>
+                  <v-row :justify="'space-between'">
+                    <!-- <v-col> -->
+                    <img
+                      height="25"
+                      class="mb-2"
+                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+                      alt="Torus Logo"
+                    />
+                    <!-- </v-col> -->
+                    <!-- <v-col> -->
+                  </v-row>
+                </v-flex>
                 <LoginTitle />
                 <!-- <v-col cols="10" sm="8" class="ml-auto mr-auto" :class="[$vuetify.display.xsOnly ? 'mt-8' : 'mt-10']">
                   <div class="headline font-weight-regular" :class="isDarkMode ? '' : 'text_2--text'">{{ $t('login.signUpIn') }}</div>
@@ -43,20 +61,25 @@
                   <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
                 </v-col>
                 <LoginFooter :authenticators="thirdPartyAuthenticators" />
-              </v-row>
-            </v-col>
-          </v-row>
-          <v-row v-else wrap class="align-center justify-center align-content-center fill-height">
-            <v-col cols="12" class="mb-12 text-center">
-              <img width="180" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
-            </v-col>
-            <v-col cols="12" class="text-center">
-              <img width="200" :src="require(`../../assets/images/logout${isDarkMode ? '-dark' : ''}.svg`)" alt="Logout Image" />
-            </v-col>
-            <v-col cols="12">
-              <div class="text-center text-subtitle-1 font-weight-bold">{{ $t('login.beenLoggedOut') }}</div>
-            </v-col>
-            <v-col cols="12" class="mt-4">
+              </v-layout>
+            </v-flex>
+          </v-layout>
+          <v-layout v-else wrap align-center justify-center align-content-center>
+            <v-flex xs12 text-center mb-12>
+              <img width="180" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white-new' : 'blue'}.svg`)" alt="Torus Logo" />
+            </v-flex>
+            <v-flex xs12 text-center>
+              <img
+                width="200px"
+                height="auto"
+                :src="require(`../../assets/images/logout${$vuetify.theme.dark ? '-dark' : ''}.svg`)"
+                alt="Logout Image"
+              />
+            </v-flex>
+            <v-flex xs12>
+              <div class="text-center text-subtitle-1 font-weight-bold">{{ t('login.beenLoggedOut') }}</div>
+            </v-flex>
+            <v-flex xs12 mt-4>
               <div class="text-center">
                 <v-btn
                   :color="isDarkMode ? '' : 'white'"
@@ -69,12 +92,19 @@
                   {{ $t('login.returnHome') }}
                 </v-btn>
               </div>
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-col v-if="$vuetify.display.smAndUp" sm="4" md="6" class="login-panel-right fill-height" :class="isDarkMode ? 'torus-dark' : ''">
-          <v-row wrap align="center" class="fill-height">
-            <v-col cols="12" class="text-center">
+            </v-flex>
+          </v-layout>
+        </div>
+        <div
+          v-if="$vuetify.breakpoint.smAndUp"
+          sm4
+          md6
+          fill-height
+          class="login-panel-right flex-grow-1"
+          :class="$vuetify.theme.dark ? 'torus-dark' : ''"
+        >
+          <v-layout wrap fill-height align-center>
+            <v-flex xs12 text-center>
               <LoginSlide
                 :show-spring-festival="showSpringFestival"
                 @change="
@@ -83,10 +113,10 @@
                   }
                 "
               />
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
+            </v-flex>
+          </v-layout>
+        </div>
+      </v-container>
     </template>
     <template v-else>
       <v-container class="spinner" fluid :class="isDarkMode ? 'torus-dark' : ''">
@@ -136,7 +166,6 @@ export default {
       loginConfig: (state) => state.embedState.loginConfig,
       userInfo: 'userInfo',
       lastLoginInfo: 'lastLoginInfo',
-      wallet: 'wallet',
     }),
     ...mapGetters(['loginButtonsArray']),
     loggedIn() {
@@ -157,12 +186,13 @@ export default {
       if (newAddress !== oldAddress && newAddress !== '') {
         let redirectPath = this.$route.query.redirect
         if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet/home'
+
         this.$router.push(redirectPath).catch((_) => {})
       }
     },
   },
   async mounted() {
-    if (this.selectedAddress !== '' && Object.keys(this.wallet) > 0) this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
+    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
 
     this.isLogout = this.$route.name !== 'login'
 

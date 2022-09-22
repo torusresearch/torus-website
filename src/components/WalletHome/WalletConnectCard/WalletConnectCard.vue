@@ -22,8 +22,9 @@
               contain
               position="right center"
               max-width="170"
-              :style="$vuetify.display.smAndDown ? 'width: 100px' : 'width: 170px'"
-              :alt="$t('walletConnect.title')"
+              max-height="30"
+              :style="$vuetify.breakpoint.smAndDown ? 'width: 100px' : 'width: 170px'"
+              :alt="t('walletConnect.title')"
             />
           </div>
         </slot>

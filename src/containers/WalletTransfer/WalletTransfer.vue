@@ -151,9 +151,9 @@
                       :items="getToAddressComboboxItems"
                       :placeholder="verifierPlaceholder"
                       required
-                      :rules="[contactRule, rules.contactRequired, ensRule, unstoppableDomainsRule, bitRule]"
-                      variant="outlined"
-                      item-title="name"
+                      :rules="[contactRule, rules.contactRequired, ensRule, unstoppableDomainsRule, bitRule, torusRule]"
+                      outlined
+                      item-text="name"
                       item-value="value"
                       aria-label="Recipient Address"
                       menu-icon=""
@@ -537,7 +537,7 @@
           <div class="d-flex">
             <span class="body-2">{{ $t('walletTransfer.accountBalance') }}</span>
             <div class="ml-auto">
-              <NetworkDisplay :store-network-type="networkType"></NetworkDisplay>
+              <NetworkDisplay :is-network-pill="true" :store-network-type="networkType"></NetworkDisplay>
             </div>
           </div>
           <div class="d-flex mt-3">
@@ -579,7 +579,6 @@
 
 <script>
 import { randomId } from '@toruslabs/openlogin-utils'
-import Resolution from '@unstoppabledomains/resolution'
 import BigNumber from 'bignumber.js'
 import Das from 'das-sdk'
 import erc721TransferABI from 'human-standard-collectible-abi'
@@ -588,7 +587,7 @@ import { cloneDeep, isEqual } from 'lodash'
 import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { QrcodeStream } from 'vue-qrcode-reader'
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import { toChecksumAddress } from 'web3-utils'
 
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
@@ -609,6 +608,7 @@ import {
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
+  DISCORD,
   DOT_STRING,
   ENS,
   ETH,
@@ -620,6 +620,7 @@ import {
   MESSAGE_MODAL_TYPE_FAIL,
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
+  REDDIT,
   TRANSACTION_SPEED,
   TWITTER,
   UNSTOPPABLE_DOMAINS,
@@ -673,6 +674,7 @@ export default {
       formValid: false,
       ensError: '',
       bitError: '',
+      torusError: '',
       unstoppableDomainsError: '',
       toggle_exclusive: 0,
       gas: new BigNumber('21000'),
@@ -926,6 +928,7 @@ export default {
     // this.$vuetify.goTo(0)
   },
   methods: {
+    ...mapActions(['getTorusLookupAddress', 'getEnsOrUnstoppableAddress']),
     startQrScanning() {
       this.camera = 'auto'
       this.showQrScanner = true
@@ -1052,7 +1055,9 @@ export default {
     bitRule() {
       return this.selectedVerifier === BIT && this.bitError ? this.bitError : true
     },
-
+    torusRule() {
+      return [GOOGLE, TWITTER, REDDIT, DISCORD, GITHUB].includes(this.selectedVerifier) && this.torusError ? this.torusError : true
+    },
     unstoppableDomainsRule() {
       return this.selectedVerifier === UNSTOPPABLE_DOMAINS && this.unstoppableDomainsError ? this.unstoppableDomainsError : true
     },
@@ -1060,6 +1065,7 @@ export default {
       this.setRandomId()
       this.autoSelectVerifier = false
       this.$refs.form.validate()
+      this.toEthAddress = ''
       if (this.selectedVerifier && this.toAddress) {
         this.toEthAddress = await this.calculateEthAddress()
       }
@@ -1133,11 +1139,8 @@ export default {
     async checkContact() {
       this.toEthAddress = await this.calculateEthAddress()
     },
-    async contactChanged() {
-      log.info(this.contactSelected, 'contactSelected')
-      const contact = this.contactSelected
+    async contactChanged(contact) {
       this.toEthAddress = ''
-
       if (this.isBitMode) {
         // .bit address is different from wallet rule, so set a new branch
         if (contact.value) this.toAddress = contact.value
@@ -1164,6 +1167,7 @@ export default {
       }
       this.ensError = ''
       this.unstoppableDomainsError = ''
+      this.torusError = ''
 
       if (this.selectedVerifier && this.toAddress) {
         this.toEthAddress = await this.calculateEthAddress()
@@ -1290,12 +1294,10 @@ export default {
       }
     },
     getUnstoppableDomains(domain) {
-      return new Resolution({
-        blockchain: { ens: `https://mainnet.infura.io/v3/${config.infuraKey}`, cns: `https://mainnet.infura.io/v3/${config.infuraKey}` },
-      }).addr(domain, 'ETH')
+      return this.getEnsOrUnstoppableAddress({ address: domain, type: 'unstoppable' })
     },
     getEnsAddress(ens) {
-      return torus.web3.eth.ens.getAddress(ens)
+      return this.getEnsOrUnstoppableAddress({ address: ens, type: 'ens' })
     },
     async calculateEthAddress() {
       let toAddress
@@ -1304,9 +1306,9 @@ export default {
         toAddress = toChecksumAddressByChainId(this.toAddress, this.$store.state.networkId)
       } else if (this.selectedVerifier === ENS) {
         try {
-          const ethAddr = await this.getEnsAddress(this.toAddress)
-          log.info(ethAddr)
-          toAddress = ethAddr
+          const res = await this.getEnsAddress(this.toAddress)
+          log.info(res)
+          toAddress = res.data
         } catch (error) {
           log.error(error)
           this.ensError = 'walletSettings.invalidEns'
@@ -1314,9 +1316,9 @@ export default {
         }
       } else if (this.selectedVerifier === UNSTOPPABLE_DOMAINS) {
         try {
-          const ethAddr = await this.getUnstoppableDomains(this.toAddress)
-          log.info(ethAddr)
-          toAddress = toChecksumAddress(ethAddr)
+          const res = await this.getUnstoppableDomains(this.toAddress)
+          log.info(res)
+          toAddress = toChecksumAddress(res.data)
         } catch (error) {
           log.error(error)
           this.unstoppableDomainsError = 'walletTransfer.invalidUnstoppable'
@@ -1338,18 +1340,18 @@ export default {
           this.convertedVerifierId = validVerifierId
           const openloginVerifier = WALLET_OPENLOGIN_VERIFIER_MAP[walletVerifier]
           if (walletVerifier && openloginVerifier) {
-            const { torusNodeEndpoints, torusNodePub } = await torus.nodeDetailManager.getNodeDetails({
-              verifier: openloginVerifier,
+            const res = await this.getTorusLookupAddress({
               verifierId: validVerifierId,
-            })
-            toAddress = await torus.getPublicAddress(torusNodeEndpoints, torusNodePub, {
+              verifier: openloginVerifier,
               walletVerifier,
-              openloginVerifier,
-              verifierId: validVerifierId.startsWith('@') ? validVerifierId.replace('@', '').toLowerCase() : validVerifierId.toLowerCase(),
+              network: config.torusNetwork,
             })
+            toAddress = res.data
           }
         } catch (error) {
-          log.error(error)
+          log.error(error, this.toAddress, 'invalid torus lookup error')
+          this.torusError = 'walletTransfer.someTorusError'
+          this.$refs.form.validate()
         }
       }
       if (
@@ -1479,6 +1481,7 @@ export default {
           .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
           .dp(0, BigNumber.ROUND_DOWN)
           .toString(16)}`
+        log.info('amount', this.amount)
         this.getTransferMethod(this.contractType, toAddress, value).send(
           {
             from: this.selectedAddress.toLowerCase(),
