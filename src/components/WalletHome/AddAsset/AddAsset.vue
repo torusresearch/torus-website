@@ -224,19 +224,19 @@ export default {
         await this.populateNftDetails(this.contractAddress, value)
       }
     },
-    nextTab() {
-      if (this.$refs.addAssetForm.validate()) {
-        // fetch details
-        this.assetInfo = {
-          id: `#${this.tokenId}`,
-          address: this.contractAddress,
-          name: this.nftName,
-          image: this.nftImageLink,
-          explorerLink: getEtherScanAddressLink(this.contractAddress, this.networkType.host),
-          description: this.description,
-        }
-        this.tab = 1
+    async nextTab() {
+      const formValid = await this.$refs.addAssetForm.validate()
+      if (!formValid.valid) return
+      // fetch details
+      this.assetInfo = {
+        id: `#${this.tokenId}`,
+        address: this.contractAddress,
+        name: this.nftName,
+        image: this.nftImageLink,
+        explorerLink: getEtherScanAddressLink(this.contractAddress, this.networkType.host),
+        description: this.description,
       }
+      this.tab = 1
     },
     addCollectible() {
       log.info(this.assetInfo)

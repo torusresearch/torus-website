@@ -44,7 +44,7 @@
                 variant="flat"
                 color="torusBrand1 ml-2 gmt-import-account"
                 :loading="isLoadingPrivate"
-                :disabled="!privateKeyFormValid || isLoadingPrivate"
+                :disabled="privateKeyFormValid === false || isLoadingPrivate"
                 class="px-8 white--text"
                 type="submit"
               >
@@ -99,7 +99,7 @@
                 variant="flat"
                 color="torusBrand1 ml-2"
                 :loading="isLoadingKeystore"
-                :disabled="!jsonFileFormValid || isLoadingKeystore"
+                :disabled="jsonFileFormValid === false || isLoadingKeystore"
                 class="px-8 text-white gmt-import-account"
                 type="submit"
               >
@@ -171,24 +171,24 @@ export default {
     openFilePicker() {
       this.$refs.keystoreUpload.click()
     },
-    importViaPrivateKey() {
-      if (this.$refs.privateKeyForm.validate()) {
-        this.isLoadingPrivate = true
+    async importViaPrivateKey() {
+      const formValid = await this.$refs.privateKeyForm.validate()
+      if (!formValid.valid) return
+      this.isLoadingPrivate = true
 
-        this.$store
-          .dispatch('importAccount', { keyData: [this.privateKey], strategy: 'Private Key' })
-          .then((privKey) => {
-            this.onClose()
-            this.privateKey = ''
-            this.showPrivateKey = false
-            this.isLoadingPrivate = false
-            this.informClients(privKey)
-            this.$refs.privateKeyForm.resetValidation()
-          })
-          .catch((error) => {
-            this.setErrorState(error)
-          })
-      }
+      this.$store
+        .dispatch('importAccount', { keyData: [this.privateKey], strategy: 'Private Key' })
+        .then((privKey) => {
+          this.onClose()
+          this.privateKey = ''
+          this.showPrivateKey = false
+          this.isLoadingPrivate = false
+          this.informClients(privKey)
+          this.$refs.privateKeyForm.resetValidation()
+        })
+        .catch((error) => {
+          this.setErrorState(error)
+        })
     },
     informClients(privKey) {
       const urlInstance = this.$route.query.instanceId
@@ -202,59 +202,59 @@ export default {
         })
       }
     },
-    importViaKeyStoreFile() {
-      if (this.$refs.jsonFileForm.validate()) {
-        this.isLoadingKeystore = true
-        let keyData
-        try {
-          keyData = JSON.parse(this.keyStoreFileContents)
-        } catch (error) {
-          log.error(error)
-          this.setErrorState(new Error('Unable to parse keystore file'))
-          return
-        }
-        if (!window.Worker) {
+    async importViaKeyStoreFile() {
+      const formValid = await this.$refs.jsonFileForm.validate()
+      if (!formValid.valid) return
+      this.isLoadingKeystore = true
+      let keyData
+      try {
+        keyData = JSON.parse(this.keyStoreFileContents)
+      } catch (error) {
+        log.error(error)
+        this.setErrorState(new Error('Unable to parse keystore file'))
+        return
+      }
+      if (!window.Worker) {
+        this.$store
+          .dispatch('importAccount', { keyData: [keyData, this.jsonPassword], strategy: 'JSON File' })
+          .then((privKey) => {
+            this.onClose()
+            this.keyStoreFileContents = ''
+            this.jsonPassword = ''
+            this.showJsonPassword = false
+            this.isLoadingKeystore = false
+            this.informClients(privKey)
+            this.$refs.jsonFileForm.resetValidation()
+          })
+          .catch((error) => {
+            this.setErrorState(error)
+          })
+      } else {
+        const worker = new WalletWorker()
+        worker.addEventListener('message', (event) => {
+          const { privateKey: bufferPrivateKey } = event.data
+          const privKey = stripHexPrefix(bufferToHex(bufferPrivateKey))
           this.$store
-            .dispatch('importAccount', { keyData: [keyData, this.jsonPassword], strategy: 'JSON File' })
-            .then((privKey) => {
+            .dispatch('finishImportAccount', { privKey })
+            .then((privateKey) => {
               this.onClose()
               this.keyStoreFileContents = ''
               this.jsonPassword = ''
               this.showJsonPassword = false
               this.isLoadingKeystore = false
-              this.informClients(privKey)
+              this.informClients(privateKey)
               this.$refs.jsonFileForm.resetValidation()
             })
             .catch((error) => {
               this.setErrorState(error)
+              this.isLoadingKeystore = false
             })
-        } else {
-          const worker = new WalletWorker()
-          worker.addEventListener('message', (event) => {
-            const { privateKey: bufferPrivateKey } = event.data
-            const privKey = stripHexPrefix(bufferToHex(bufferPrivateKey))
-            this.$store
-              .dispatch('finishImportAccount', { privKey })
-              .then((privateKey) => {
-                this.onClose()
-                this.keyStoreFileContents = ''
-                this.jsonPassword = ''
-                this.showJsonPassword = false
-                this.isLoadingKeystore = false
-                this.informClients(privateKey)
-                this.$refs.jsonFileForm.resetValidation()
-              })
-              .catch((error) => {
-                this.setErrorState(error)
-                this.isLoadingKeystore = false
-              })
-          })
-          worker.addEventListener('error', (error) => {
-            this.setErrorState(error)
-            this.isLoadingKeystore = false
-          })
-          worker.postMessage({ type: 'unlockWallet', data: [keyData, this.jsonPassword] })
-        }
+        })
+        worker.addEventListener('error', (error) => {
+          this.setErrorState(error)
+          this.isLoadingKeystore = false
+        })
+        worker.postMessage({ type: 'unlockWallet', data: [keyData, this.jsonPassword] })
       }
     },
     setErrorState(error) {

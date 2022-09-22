@@ -234,10 +234,10 @@ export default {
       })
       this.closeForm()
     },
-    nextTab() {
-      if (this.$refs.addTokenForm.validate()) {
-        this.tab = 1
-      }
+    async nextTab() {
+      const formValid = await this.$refs.addTokenForm.validate()
+      if (!formValid.valid) return
+      this.tab = 1
     },
     closeForm() {
       if (!this.isHideMode) {

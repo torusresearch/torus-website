@@ -236,7 +236,7 @@
   }
 
   .v-btn {
-    text-transform: inherit;
+    text-transform: none;
     letter-spacing: normal;
   }
 
@@ -252,10 +252,6 @@
       background: #ffffff;
       border: 1px solid rgba(206, 208, 214, 0.3);
     }
-  }
-
-  .v-btn {
-    text-transform: inherit;
   }
 
   &.v-theme--dark {
@@ -367,7 +363,7 @@
       color: rgb(var(--v-theme-text_1)) !important;
     }
   }
-  
+
   .v-dialog.v-overlay {
     .v-overlay__content {
       width: 100%;
@@ -375,6 +371,9 @@
   }
 
   .v-overlay {
+    .v-btn {
+      text-transform: none;
+    }
     &.v-theme--dark {
       .v-input {
         .v-input__control {
@@ -383,8 +382,9 @@
             box-shadow: inherit;
             .v-field__outline {
               border: 1px solid rgb(var(--v-theme-torusGray3));
-  
-              .v-field__outline__start, .v-field__outline__end {
+
+              .v-field__outline__start,
+              .v-field__outline__end {
                 border: none;
               }
             }
@@ -394,12 +394,13 @@
             input {
               color: rgb(var(--v-theme-text_2));
             }
-  
+
             &.v-field--error {
               .v-field__outline {
                 border: 1px solid rgb(var(--v-theme-error));
-  
-                .v-field__outline__start, .v-field__outline__end {
+
+                .v-field__outline__start,
+                .v-field__outline__end {
                   border: none;
                 }
               }

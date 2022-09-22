@@ -141,12 +141,12 @@ export default {
     warningCheck(text) {
       return text === 'I agree to deleting my current private key' || 'Incorrect text'
     },
-    setKey() {
-      if (this.$refs.customPrivateKeyForm.validate()) {
-        this.nextParams[0] = this.customPrivateKey
-        this.nextAction = 'setKey'
-        this.confirm = true
-      }
+    async setKey() {
+      const formValid = await this.$refs.customPrivateKeyForm.validate()
+      if (!formValid.valid) return
+      this.nextParams[0] = this.customPrivateKey
+      this.nextAction = 'setKey'
+      this.confirm = true
     },
     resetKey() {
       this.nextAction = 'resetKey'

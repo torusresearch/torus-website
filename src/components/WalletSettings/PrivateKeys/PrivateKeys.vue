@@ -29,25 +29,19 @@
                     <v-btn
                       v-if="!walletJson"
                       id="json-file-confirm-btn"
-                      class="text-white"
+                      class="torus-btn1 text-white"
                       color="torusBrand1"
-                      :disabled="!downloadFormValid || isLoadingDownloadWallet"
+                      :disabled="downloadFormValid === false || isLoadingDownloadWallet"
                       :loading="isLoadingDownloadWallet"
                       variant="flat"
                       @click="downloadWallet"
                     >
                       {{ $t('walletSettings.confirm') }}
-                      <template #loader>
-                        <span>
-                          {{ $t('tkeySettings.encrypting') }}
-                          <v-progress-circular :indeterminate="true" size="24" value="0" width="4" color="text_2" />
-                        </span>
-                      </template>
                     </v-btn>
                     <v-btn
                       v-if="walletJson"
                       id="json-file-download-btn"
-                      class="text-white"
+                      class="torus-btn1 text-white"
                       depressed
                       color="torusBrand1"
                       :href="walletJson"
@@ -328,8 +322,8 @@ export default {
       isLoadingDownloadWallet: false,
       downloadFormValid: true,
       rules: {
-        required: (value) => !!value || this.t('walletSettings.required'),
-        password: (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,}$/.test(value) || this.t('walletSettings.errors-invalid-password'),
+        required: (value) => !!value || this.$t('walletSettings.required'),
+        password: (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,}$/.test(value) || this.$t('walletSettings.errors-invalid-password'),
       },
     }
   },
@@ -354,27 +348,27 @@ export default {
       this.$emit('onClose')
     },
     async downloadWallet() {
-      if (this.$refs.downloadForm.validate()) {
-        this.isLoadingDownloadWallet = true
+      const formValid = await this.$refs.downloadForm.validate()
+      if (!formValid.valid) return
+      this.isLoadingDownloadWallet = true
 
-        if (!window.Worker) {
-          const finishedWallet = await this.createWallet(this.keyStorePassword)
+      if (!window.Worker) {
+        const finishedWallet = await this.createWallet(this.keyStorePassword)
+        this.exportKeyStoreFile(finishedWallet)
+        this.isLoadingDownloadWallet = false
+      } else {
+        const worker = new WalletWorker()
+        worker.addEventListener('message', (ev) => {
+          const finishedWallet = ev.data
           this.exportKeyStoreFile(finishedWallet)
           this.isLoadingDownloadWallet = false
-        } else {
-          const worker = new WalletWorker()
-          worker.addEventListener('message', (ev) => {
-            const finishedWallet = ev.data
-            this.exportKeyStoreFile(finishedWallet)
-            this.isLoadingDownloadWallet = false
-          })
-          worker.addEventListener('error', (error) => {
-            log.error(error)
-            this.isLoadingDownloadWallet = false
-          })
-          // log.info(this.keyStorePassword, this.selectedKey)
-          worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
-        }
+        })
+        worker.addEventListener('error', (error) => {
+          log.error(error)
+          this.isLoadingDownloadWallet = false
+        })
+        // log.info(this.keyStorePassword, this.selectedKey)
+        worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
       }
     },
     exportKeyStoreFile(_wallet) {
