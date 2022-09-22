@@ -9,16 +9,12 @@
       @click="innerProvider = targetProvider.name"
     >
       <router-link :to="targetProvider.link">
-        <v-list-item
-          :id="`${targetProvider.name}-link`"
-          :prepend-icon="innerProvider === targetProvider.name ? '$radioOn' : '$radioOff'"
-          three-line
-          class="py-3"
-          @click="scrollToPosition"
-        >
+        <v-list-item :id="`${targetProvider.name}-link`" three-line class="py-3" @click="scrollToPosition">
           <template #prepend>
-            <div :style="{ width: $vuetify.display.xs ? '100px' : '130px', height: '100%' }" class="align-self-center mr-2">
-              <v-img contain :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name"></v-img>
+            <div :style="{ width: $vuetify.display.xs ? '100px' : '160px', height: '100%' }" class="align-center d-flex mr-2">
+              <v-icon v-if="innerProvider === targetProvider.name" color="torusBrand1">$radioOn</v-icon>
+              <v-icon v-else>$radioOff</v-icon>
+              <v-img class="ml-3" contain :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name"></v-img>
             </div>
           </template>
           <div class="align-self-center text-right text-text_1 caption">

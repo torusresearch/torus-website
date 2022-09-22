@@ -91,8 +91,8 @@ export default {
       this.$router.push({ name: 'walletHome' }).catch((_) => {})
       return
     }
-    const routerPath = this.$router.currentRoute.path
-    const foundPath = this.providers.find((x) => x.link === routerPath)
+    const routePath = this.$route.path
+    const foundPath = this.providers.find((x) => x.link === routePath)
     this.selectedProvider = foundPath ? foundPath.name : ''
 
     // this.$vuetify.goTo(0)
