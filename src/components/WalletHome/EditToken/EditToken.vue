@@ -25,21 +25,23 @@
                 <div class="body-2 mb-2">{{ $t('homeToken.contract') }}</div>
                 <v-text-field
                   :model-value="customAddress"
-                  :rules="[rules.required, duplicateTokenRule, addressValidityRule]"
+                  :rules="[rules.required, duplicateTokenRule]"
                   variant="outlined"
+                  :error-messages="errorMessages"
+                  :error="errorMessages.length > 0"
                   @update:modelValue="onCustomAddressChange"
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
-                <div class="body-2 mb-2">{{ $t('homeToken.symbol') }}</div>
+                <div class="text-body-2 mb-2">{{ $t('homeToken.symbol') }}</div>
                 <v-text-field v-model="customSymbol" :rules="[rules.required]" variant="outlined"></v-text-field>
               </v-col>
               <v-col cols="12">
-                <div class="body-2 mb-2">{{ $t('homeToken.name') }}</div>
+                <div class="text-body-2 mb-2">{{ $t('homeToken.name') }}</div>
                 <v-text-field v-model="customName" :rules="[rules.required]" variant="outlined"></v-text-field>
               </v-col>
               <v-col cols="12">
-                <div class="body-2 mb-2">{{ $t('homeToken.decimal') }}</div>
+                <div class="text-body-2 mb-2">{{ $t('homeToken.decimal') }}</div>
                 <v-text-field v-model="customDecimals" :rules="[rules.required]" type="number" variant="outlined"></v-text-field>
               </v-col>
 
@@ -61,7 +63,7 @@
         <v-window-item>
           <v-row class="card-header" wrap no-gutters>
             <v-col class="text-center py-10 px-6>" cols="12">
-              <div class="display-1">{{ isHideMode ? $t('homeToken.hideTokens') : $t('homeToken.addTokens') }}</div>
+              <div class="text-h5 font-weight-bold">{{ isHideMode ? $t('homeToken.hideTokens') : $t('homeToken.addTokens') }}</div>
               <v-btn variant="plain" class="close-btn" icon aria-label="Close Add Token" title="Close Add Token" @click="closeForm">
                 <v-icon>$close</v-icon>
               </v-btn>
@@ -75,38 +77,48 @@
           <v-divider></v-divider>
           <v-row wrap class="align-center mb-8 mx-6 pt-6">
             <v-col cols="8" class="mb-3">
-              <div class="body-2 font-weight-bold">{{ $t('homeToken.token') }}</div>
+              <div class="text-body-2 font-weight-bold">{{ $t('homeToken.token') }}</div>
             </v-col>
             <v-col cols="4" class="text-right mb-3">
-              <div class="body-2 font-weight-bold">{{ $t('homeToken.balance') }}</div>
+              <div class="text-body-2 font-weight-bold">{{ $t('homeToken.balance') }}</div>
             </v-col>
             <v-col cols="8">
               <div class="d-flex align-center">
                 <img :src="`${logosUrl}/eth.svg`" class="inline-small d-inline-flex" height="36" />
-                <div class="ml-2 body-1">{{ customName }}</div>
+                <div class="ml-2 text-body-1">{{ customName }}</div>
               </div>
             </v-col>
             <v-col cols="4" class="text-right">
-              <div class="body-2">{{ customBalance }}</div>
+              <div class="text-body-2">{{ customBalance }}</div>
             </v-col>
           </v-row>
           <v-row v-if="isHideMode" class="mb-15 mx-6" wrap>
             <v-col cols="12">
-              <div class="body-2 text-text_2">{{ $t('homeToken.hideTokenDesc') }}</div>
+              <div class="text-body-2 text-text_2">{{ $t('homeToken.hideTokenDesc') }}</div>
             </v-col>
           </v-row>
           <v-row class="mx-6 pt-6 pb-10" wrap :class="isHideMode ? '' : 'pt-15'">
             <v-col cols="12">
               <v-row class="mx-n2">
                 <v-col cols="6" class="px-2">
-                  <v-btn v-if="isHideMode" block size="large" variant="text" @click="closeForm">{{ $t('homeToken.cancel') }}</v-btn>
-                  <v-btn v-else block size="large" variant="text" @click="tab = 0">{{ $t('homeToken.back') }}</v-btn>
+                  <v-btn v-if="isHideMode" block size="large" variant="text" class="text-body-2" @click="closeForm">
+                    {{ $t('homeToken.cancel') }}
+                  </v-btn>
+                  <v-btn v-else block size="large" variant="text" class="text-body-2" @click="tab = 0">{{ $t('homeToken.back') }}</v-btn>
                 </v-col>
                 <v-col cols="6" class="px-2">
-                  <v-btn v-if="isHideMode" block size="large" color="torusBrand1" class="text-white" type="button" @click="callDeleteToken">
+                  <v-btn
+                    v-if="isHideMode"
+                    block
+                    size="large"
+                    color="torusBrand1"
+                    class="text-white text-body-2"
+                    type="button"
+                    @click="callDeleteToken"
+                  >
                     {{ $t('homeToken.hideToken') }}
                   </v-btn>
-                  <v-btn v-else block size="large" color="torusBrand1" class="text-white" type="button" @click="addToken">
+                  <v-btn v-else block size="large" color="torusBrand1" class="text-white text-body-2" type="button" @click="addToken">
                     {{ $t('homeToken.addToken') }}
                   </v-btn>
                 </v-col>
@@ -147,13 +159,14 @@ export default {
       tab: 0,
       addTokenDialog: false,
       addTokenFormValid: false,
-      customAddress: '',
-      customSymbol: '',
-      customDecimals: 0,
-      customName: '',
-      customBalance: '',
+      customAddress: null,
+      customSymbol: null,
+      customDecimals: null,
+      customName: null,
+      customBalance: null,
       currentToken: undefined,
       isValidAddress: true,
+      errorMessages: [],
       rules: {
         required: (value) => !!value || this.$t('walletSettings.required'),
       },
@@ -169,9 +182,11 @@ export default {
       )
       return found ? this.$t('homeToken.duplicateToken') : true
     },
-    addressValidityRule() {
-      if (this.isValidAddress) return true
-      return this.$t('homeToken.invalidContractAddress')
+  },
+  watch: {
+    isValidAddress(value) {
+      if (value) this.errorMessages = []
+      else this.errorMessages = this.$t('homeToken.invalidContractAddress')
     },
   },
   mounted() {
@@ -229,6 +244,7 @@ export default {
         this.$refs.addTokenForm.reset()
         this.tab = 0
       }
+      this.errorMessages = []
       this.addTokenDialog = false
     },
     callDeleteToken() {

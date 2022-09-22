@@ -14,7 +14,7 @@
               </v-btn>
             </v-col>
           </v-row>
-          <v-form ref="addAssetForm" v-model="addAssetFormValid" class="fill-height" lazy-validation @submit.prevent="nextTab">
+          <v-form ref="addAssetForm" v-model="addAssetFormValid" class="fill-height" lazy-validation @submit="nextTab">
             <v-row class="mx-7 pt-6 pb-4" wrap no-gutters>
               <v-col cols="12" class="text-center">
                 <div class="text-body-1 font-weight-bold">{{ $t('homeAssets.formTitle') }}</div>
@@ -26,7 +26,9 @@
                 <div class="body-2 mb-2">{{ $t('homeAssets.contractAddress') }}</div>
                 <v-text-field
                   :model-value="contractAddress"
-                  :rules="[rules.required, addressValidityRule]"
+                  :rules="[rules.required]"
+                  :error-messages="errorMessages"
+                  :error="errorMessages.length > 0"
                   variant="outlined"
                   @update:modelValue="setContractAddress"
                 ></v-text-field>
@@ -90,18 +92,18 @@
                 </div>
                 <div class="ml-auto flex-shrink-1" style="width: 136px">
                   <div class="body-2 text-text_1 mb-3">{{ assetInfo.name }}</div>
-                  <div class="caption text-text_1 mb-1">{{ $t('homeAssets.infoId') }}</div>
-                  <div class="caption text-text_3 mb-2">{{ assetInfo.id }}</div>
-                  <div class="caption text-text_1 mb-1">{{ $t('homeAssets.infoContractAdd') }}</div>
-                  <div class="caption text-text_3">{{ assetInfo.address }}</div>
+                  <div class="text-caption text-text_1 mb-1">{{ $t('homeAssets.infoId') }}</div>
+                  <div class="text-caption text-text_3 mb-2">{{ assetInfo.id }}</div>
+                  <div class="text-caption text-text_1 mb-1">{{ $t('homeAssets.infoContractAdd') }}</div>
+                  <div class="text-caption text-text_3">{{ assetInfo.address }}</div>
                 </div>
               </div>
-              <div class="caption text-text_1 mb-3">{{ $t('homeAssets.infoExplorer') }}</div>
-              <div class="caption text-text_3 mb-4">{{ assetInfo.explorerLink }}</div>
-              <div class="caption text-text_1 mb-3">{{ $t('homeAssets.infoDesc') }}</div>
-              <div class="caption text-text_3 mb-1" :class="{ 'text-clamp-one': !viewMore }">{{ assetInfo.description }}</div>
+              <div class="text-caption text-text_1 mb-3">{{ $t('homeAssets.infoExplorer') }}</div>
+              <div class="text-caption text-text_3 mb-4">{{ assetInfo.explorerLink }}</div>
+              <div class="text-caption text-text_1 mb-3">{{ $t('homeAssets.infoDesc') }}</div>
+              <div class="text-caption text-text_3 mb-1" :class="{ 'text-clamp-one': !viewMore }">{{ assetInfo.description }}</div>
               <div class="text-right">
-                <a class="caption text-torusBrand1" @click="viewMore = !viewMore">
+                <a class="text-caption text-torusBrand1" @click="viewMore = !viewMore">
                   {{ viewMore ? $t('homeAssets.viewLess') : $t('homeAssets.viewMore') }}
                 </a>
               </div>
@@ -144,15 +146,16 @@ export default {
       tab: 0,
       viewMore: false,
       addAssetFormValid: false,
-      contractAddress: '',
-      tokenId: '',
-      nftName: '',
-      description: '',
+      contractAddress: null,
+      tokenId: null,
+      nftName: null,
+      description: null,
       nftStandard: CONTRACT_TYPE_ERC721,
-      nftImageLink: '',
+      nftImageLink: null,
       nftBalance: 1,
+      errorMessages: [],
       rules: {
-        required: (value) => !!value || this.t('walletSettings.required'),
+        required: (value) => !!value || this.$t('walletSettings.required'),
       },
       assetInfo: {},
       displayError: '',
@@ -167,15 +170,17 @@ export default {
           nft.address.toLocaleLowerCase() === this.contractAddress?.toLocaleLowerCase() &&
           nft.assets.find((asset) => asset.tokenId.toString() === this.tokenId?.toString())
       )
-      return found ? this.t('homeAssets.duplicateNft') : true
-    },
-    addressValidityRule() {
-      if (this.isValidAddress) return true
-      return this.t('homeAssets.invalidContractAddress')
+      return found ? this.$t('homeAssets.duplicateNft') : true
     },
     ownerShipRule() {
       if (this.isOwner) return true
-      return this.t('homeAssets.invalidOwnership')
+      return this.$t('homeAssets.invalidOwnership')
+    },
+  },
+  watch: {
+    isValidAddress(value) {
+      if (value) this.errorMessages = []
+      else this.errorMessages = this.$t('homeAssets.invalidContractAddress')
     },
   },
   methods: {
@@ -201,7 +206,7 @@ export default {
         } else {
           log.debug('error', displayError)
         }
-        this.displayError = this.t(displayError)
+        this.displayError = this.$t(displayError)
       }
     },
     async setContractAddress(value) {
@@ -253,6 +258,7 @@ export default {
       this.tab = 0
       this.addAssetDialog = false
       this.displayError = ''
+      this.errorMessages = []
     },
   },
 }

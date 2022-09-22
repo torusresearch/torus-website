@@ -203,7 +203,7 @@
             :aria-label="$t('homeToken.editTokens')"
             @click="hideTokenMode = !hideTokenMode"
           >
-            <v-icon left class="text-text_2" size="14">$pencil_edit</v-icon>
+            <v-icon left class="text-text_2 mr-1" size="14">$pencil_edit</v-icon>
             <span class="text-caption text-text_2">{{ $t('homeToken.editTokens') }}</span>
           </v-btn>
         </div>
