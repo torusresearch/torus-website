@@ -1148,7 +1148,7 @@ export const idleTimeTracker = ((activityThresholdTime) => {
 export const parsePopupUrl = (url) => {
   const localUrl = url instanceof URL ? url : new URL(url)
   const iframeOrigin = getIFrameOriginObject()
-  localUrl.searchParams.append('isCustomLogin', config.isCustomLogin)
+  if (config.isCustomLogin !== null) localUrl.searchParams.append('isCustomLogin', config.isCustomLogin)
   if (config.isCustomLogin) {
     localUrl.searchParams.append('namespace', iframeOrigin.hostname)
   }

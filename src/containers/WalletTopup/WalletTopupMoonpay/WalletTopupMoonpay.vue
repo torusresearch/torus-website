@@ -62,11 +62,16 @@ export default {
     sendOrder(callback) {
       const { selectedAddress } = this.$route.query
       callback(
-        this.$store.dispatch('fetchMoonpayOrder', {
-          currentOrder: this.currentOrder,
-          colorCode: this.$vuetify.theme.current.colors.torusBrand1.torusBrand1,
-          selectedAddress: selectedAddress || this.selectedAddress,
-        })
+        this.$store.dispatch(
+          'fetchMoonpayOrder',
+          JSON.parse(
+            JSON.stringify({
+              currentOrder: this.currentOrder,
+              colorCode: this.$vuetify.theme.current.colors.torusBrand1,
+              selectedAddress: selectedAddress || this.selectedAddress,
+            })
+          )
+        )
       )
     },
     clearQuote(payload) {

@@ -66,7 +66,7 @@ export default {
       callback(
         this.$store.dispatch('fetchTransakOrder', {
           currentOrder: this.currentOrder,
-          colorCode: this.$vuetify.theme.current.colors.torusBrand1.torusBrand1,
+          colorCode: this.$vuetify.theme.current.colors.torusBrand1,
           selectedAddress: selectedAddress || this.selectedAddress,
           network: TRANSAK_NETWORK_MAP[this.networkType.host],
         })
