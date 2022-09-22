@@ -282,47 +282,47 @@ export default {
         selectedCryptoCurrency: this.selectedCryptoCurrency.value,
       })
     },
-    sendOrder() {
-      if (this.$refs.paymentForm.validate()) {
-        const { instanceId } = this.$route.query
-        let bc
-        if (instanceId) bc = new BroadcastChannel(`redirect_channel_${instanceId}`, broadcastChannelOptions)
-        const callback = (p) => {
-          p.then(async ({ success }) => {
-            if (success) {
-              // eslint-disable-next-line
-              this.$router.push({ name: 'walletHistory' }).catch((_) => {})
-            } else {
-              this.snackbar = true
-              this.snackbarColor = 'error'
-              this.snackbarText = 'Something went wrong'
-            }
-            if (bc) {
-              await bc.postMessage({
-                data: { instanceParams: { provider: this.selectedProvider }, queryParams: { transactionStatus: success ? 'success' : 'failed' } },
-              })
-              bc.close()
-            }
-          }).catch(async (error) => {
+    async sendOrder() {
+      const formValid = await this.$refs.paymentForm.validate()
+      if (!formValid.valid) return
+      const { instanceId } = this.$route.query
+      let bc
+      if (instanceId) bc = new BroadcastChannel(`redirect_channel_${instanceId}`, broadcastChannelOptions)
+      const callback = (p) => {
+        p.then(async ({ success }) => {
+          if (success) {
+            // eslint-disable-next-line
+            this.$router.push({ name: 'walletHistory' }).catch((_) => {})
+          } else {
             this.snackbar = true
             this.snackbarColor = 'error'
-            this.snackbarText = error
-            this.isQuoteFetched = false
-            this.$emit('clearQuote', {
-              selectedCurrency: this.selectedCurrency,
-              fiatValue: this.fiatValue,
-              selectedCryptoCurrency: this.selectedCryptoCurrency.value,
+            this.snackbarText = 'Something went wrong'
+          }
+          if (bc) {
+            await bc.postMessage({
+              data: { instanceParams: { provider: this.selectedProvider }, queryParams: { transactionStatus: success ? 'success' : 'failed' } },
             })
-            if (bc) {
-              await bc.postMessage({
-                data: { instanceParams: { provider: this.selectedProvider }, queryParams: { transactionStatus: 'failed' } },
-              })
-              bc.close()
-            }
+            bc.close()
+          }
+        }).catch(async (error) => {
+          this.snackbar = true
+          this.snackbarColor = 'error'
+          this.snackbarText = error
+          this.isQuoteFetched = false
+          this.$emit('clearQuote', {
+            selectedCurrency: this.selectedCurrency,
+            fiatValue: this.fiatValue,
+            selectedCryptoCurrency: this.selectedCryptoCurrency.value,
           })
-        }
-        this.$emit('sendOrder', callback)
+          if (bc) {
+            await bc.postMessage({
+              data: { instanceParams: { provider: this.selectedProvider }, queryParams: { transactionStatus: 'failed' } },
+            })
+            bc.close()
+          }
+        })
       }
+      this.$emit('sendOrder', callback)
     },
     onCurrencyChange() {
       this.fetchQuote()

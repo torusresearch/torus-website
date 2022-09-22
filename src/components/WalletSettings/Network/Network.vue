@@ -1,6 +1,6 @@
 <template>
   <div :class="$vuetify.display.xsOnly ? 'pt-5' : 'py-5'">
-    <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
+    <v-form ref="networkForm" v-model="formValid" lazy-validation>
       <template v-if="!addCustomNetwork">
         <div class="body-2 mb-2">{{ $t('walletSettings.selectNetwork') }}</div>
         <v-row wrap class="network-setting">
@@ -58,12 +58,12 @@
             </v-menu>
           </v-col>
         </v-row>
-        <v-col class="ml-auto text-right">
-          <v-spacer></v-spacer>
+        <div class="text-right">
           <v-btn
             id="add-custom-network"
-            large
             class="torus-btn1"
+            size="large"
+            variant="flat"
             :class="whiteLabel.isActive ? 'text-white' : 'text-torusBrand1'"
             :color="whiteLabel.isActive ? 'torusBrand1' : ''"
             type="button"
@@ -71,10 +71,10 @@
           >
             {{ $t('walletSettings.addCustomNetwork') }}
           </v-btn>
-        </v-col>
+        </div>
       </template>
       <template v-else>
-        <v-col cols="12">
+        <div>
           <v-btn variant="text" class="caption text-text_3 mb-2 plain" size="x-small" @click="toggleNetworkView">
             {{ $t('walletSettings.back') }}
           </v-btn>
@@ -84,69 +84,62 @@
             :rules="[rules.required]"
             variant="outlined"
           ></v-text-field>
-        </v-col>
+        </div>
 
-        <v-col cols="12">
+        <div>
           <v-text-field v-model="rpc.host" :placeholder="$t('walletSettings.enterRpc')" :rules="[rules.required]" variant="outlined"></v-text-field>
-        </v-col>
+        </div>
 
-        <v-col cols="12">
+        <div>
           <v-text-field
             v-model="rpc.chainId"
             :rules="[rules.required, rules.requiredHex]"
             :placeholder="$t('walletSettings.enterChainId')"
             variant="outlined"
           ></v-text-field>
-        </v-col>
+        </div>
 
-        <v-col cols="12">
+        <div>
           <v-text-field v-model="rpc.ticker" :placeholder="$t('walletSettings.enterSymbol')" variant="outlined"></v-text-field>
-        </v-col>
+        </div>
 
-        <v-col cols="12">
+        <div>
           <v-text-field v-model="rpc.blockExplorer" :placeholder="$t('walletSettings.enterBlockExplorer')" variant="outlined"></v-text-field>
-        </v-col>
+        </div>
 
-        <v-col cols="12" :class="!$vuetify.display.xsOnly ? 'pl-2' : ''">
-          <v-row>
-            <v-spacer></v-spacer>
-            <v-col cols="4">
-              <v-tooltip location="bottom" :disabled="formValid">
-                <template #activator="{ props }">
-                  <span v-bind="props">
-                    <v-btn
-                      v-if="isEdit"
-                      size="large"
-                      class="torus-btn1 py-1"
-                      :class="whiteLabel.isActive ? 'text-white' : 'text-torusBrand1'"
-                      :color="whiteLabel.isActive ? 'torusBrand1' : ''"
-                      block
-                      :disabled="!formValid"
-                      depressed
-                      @click="updateRPC"
-                    >
-                      {{ $t('walletSettings.save') }}
-                    </v-btn>
-                    <v-btn
-                      v-else
-                      size="large"
-                      class="torus-btn1 py-1"
-                      :class="whiteLabel.isActive ? 'text-white' : 'text-torusBrand1'"
-                      :color="whiteLabel.isActive ? 'torusBrand1' : ''"
-                      block
-                      :disabled="!formValid"
-                      depressed
-                      @click="setRPC"
-                    >
-                      {{ $t('walletSettings.save') }}
-                    </v-btn>
-                  </span>
-                </template>
-                <span>{{ $t('walletSettings.resolveErrors') }}</span>
-              </v-tooltip>
-            </v-col>
-          </v-row>
-        </v-col>
+        <div class="text-right" :class="!$vuetify.display.xsOnly ? 'pl-2' : ''">
+          <v-tooltip location="bottom" :disabled="formValid">
+            <template #activator="{ props }">
+              <span v-bind="props">
+                <v-btn
+                  v-if="isEdit"
+                  size="large"
+                  variant="flat"
+                  class="torus-btn1 py-1"
+                  :class="whiteLabel.isActive ? 'text-white' : !(formValid === false) && 'text-torusBrand1'"
+                  :color="whiteLabel.isActive ? 'torusBrand1' : ''"
+                  :disabled="formValid === false"
+                  @click="updateRPC"
+                >
+                  {{ $t('walletSettings.save') }}
+                </v-btn>
+                <v-btn
+                  v-else
+                  size="large"
+                  variant="flat"
+                  class="torus-btn1 py-1 px-10"
+                  :class="whiteLabel.isActive ? 'text-white' : !(formValid === false) && 'text-torusBrand1'"
+                  :color="whiteLabel.isActive ? 'torusBrand1' : ''"
+                  :disabled="formValid === false"
+                  @click="setRPC"
+                >
+                  {{ $t('walletSettings.save') }}
+                </v-btn>
+              </span>
+            </template>
+            <span>{{ $t('walletSettings.resolveErrors') }}</span>
+          </v-tooltip>
+        </div>
       </template>
     </v-form>
   </div>
@@ -218,38 +211,38 @@ export default {
           })
       }
     },
-    setRPC() {
-      if (this.$refs.networkForm.validate()) {
-        const payload = { network: this.rpc, type: RPC }
-        this.$store
-          .dispatch('setProviderType', payload)
-          .then(() => {
-            this.toggleNetworkView()
-            this.showNotification(true)
-            this.sendToIframe(payload)
-          })
-          .catch((error) => {
-            this.showNotification(false)
-            log.error(error)
-          })
-      }
+    async setRPC() {
+      const formValid = await this.$refs.networkForm.validate()
+      if (!formValid.valid) return
+      const payload = { network: this.rpc, type: RPC }
+      this.$store
+        .dispatch('setProviderType', payload)
+        .then(() => {
+          this.toggleNetworkView()
+          this.showNotification(true)
+          this.sendToIframe(payload)
+        })
+        .catch((error) => {
+          this.showNotification(false)
+          log.error(error)
+        })
     },
-    updateRPC() {
-      if (this.$refs.networkForm.validate()) {
-        const payload = { network: this.rpc, type: RPC }
-        this.$store
-          .dispatch('updateCustomNetwork', this.rpc)
-          .then(() => {
-            this.isEdit = false
-            this.toggleNetworkView()
-            this.showNotification(true)
-            this.sendToIframe(payload)
-          })
-          .catch((error) => {
-            this.showNotification(false)
-            log.error(error)
-          })
-      }
+    async updateRPC() {
+      const formValid = await this.$refs.networkForm.validate()
+      if (!formValid.valid) return
+      const payload = { network: this.rpc, type: RPC }
+      this.$store
+        .dispatch('updateCustomNetwork', this.rpc)
+        .then(() => {
+          this.isEdit = false
+          this.toggleNetworkView()
+          this.showNotification(true)
+          this.sendToIframe(payload)
+        })
+        .catch((error) => {
+          this.showNotification(false)
+          log.error(error)
+        })
     },
     async sendToIframe(payload) {
       const urlInstance = this.$route.query.instanceId

@@ -66,7 +66,7 @@
                   class="ma-1 ml-2"
                   :alt="`${contact.verifier} Icon`"
                 />
-                <v-icon v-else size="16" class="text-torusGray1 ml-2">
+                <v-icon v-else size="16" class="text-torusGray1 ma-1 ml-2">
                   {{ `$${contact.verifier.toLowerCase()}` }}
                 </v-icon>
               </template>
@@ -91,8 +91,7 @@
         </v-card>
 
         <div class="body-2 mt-4">{{ $t('walletSettings.addNewContact') }}</div>
-
-        <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
+        <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation>
           <v-row wrap no-gutters class="mt-1 mx-n1">
             <v-col sm="7" class="px-1">
               <v-text-field
@@ -101,7 +100,6 @@
                 :placeholder="$t('walletSettings.enterContact')"
                 :rules="[rules.required]"
                 variant="outlined"
-                density="compact"
                 aria-label="Contact Name"
               ></v-text-field>
             </v-col>
@@ -111,7 +109,6 @@
                 :model-value="selectedVerifier"
                 class="select-verifier-container"
                 variant="outlined"
-                density="compact"
                 append-inner-icon="$select"
                 :items="verifierOptionsNew"
                 item-title="name"
@@ -137,7 +134,6 @@
                 :placeholder="verifierPlaceholder"
                 :rules="[toAddressRule, rules.required, checkDuplicates]"
                 variant="outlined"
-                density="compact"
                 aria-label="Contact Value"
               >
                 <template #message="props">
@@ -151,10 +147,11 @@
                 size="large"
                 variant="flat"
                 class="torus-btn1 py-1 gmt-add-address"
-                :class="whiteLabel.isActive ? 'text-white' : 'text-torusBrand1'"
+                :class="whiteLabel.isActive ? 'text-white' : !(contactFormValid === false) && 'text-torusBrand1'"
                 :color="whiteLabel.isActive ? 'torusBrand1' : ''"
-                type="submit"
-                :disabled="!contactFormValid"
+                type="button"
+                :disabled="contactFormValid === false"
+                @click="addContact"
               >
                 {{ $t('walletSettings.addContact') }}
               </v-btn>
@@ -179,8 +176,8 @@ export default {
     return {
       contactFormValid: true,
       selectedVerifier: ETH,
-      newContact: '',
-      newContactName: '',
+      newContact: null,
+      newContactName: null,
       rules: {
         required: (value) => !!value || this.$t('walletSettings.required'),
       },
@@ -232,13 +229,14 @@ export default {
     },
     async addContact() {
       const formValid = await this.$refs.addContactForm.validate()
-      if (!formValid) return
+      if (!formValid.valid) return
       const contact = this.newContact
       const name = this.newContactName
       const verifier = this.selectedVerifier
-      this.newContact = ''
-      this.newContactName = ''
+      this.newContact = null
+      this.newContactName = null
       this.$refs.addContactForm.resetValidation()
+
       try {
         await this.$store.dispatch('addContact', {
           contact,
