@@ -93,7 +93,7 @@
         </v-flex>
 
         <v-flex xs12>
-          <v-text-field v-model="rpc.host" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
+          <v-text-field v-model="rpc.rpcUrl" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
         </v-flex>
 
         <v-flex xs12>
@@ -171,7 +171,7 @@ export default {
   name: 'NetworkSettings',
   data() {
     return {
-      rpc: { chainId: '', networkName: '', host: '', blockExplorer: '', ticker: '' },
+      rpc: { chainId: '', networkName: '', blockExplorer: '', ticker: '', rpcUrl: '' },
       formValid: true,
       rules: {
         required: (value) => !!value || 'Required',
