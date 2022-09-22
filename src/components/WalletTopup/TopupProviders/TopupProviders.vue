@@ -13,6 +13,7 @@
           :id="`${targetProvider.name}-link`"
           :prepend-icon="innerProvider === targetProvider.name ? '$radioOn' : '$radioOff'"
           three-line
+          class="py-3"
           @click="scrollToPosition"
         >
           <template #prepend>

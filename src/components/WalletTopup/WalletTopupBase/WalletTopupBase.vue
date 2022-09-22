@@ -1,43 +1,41 @@
 <template>
-  <div>
-    <v-card class="elevation-1 pa-6">
-      <v-form ref="paymentForm" v-model="formValid" lazy-validation @submit.prevent="">
-        <v-row wrap class="wallet-topup">
-          <v-col cols="12">
-            <p class="body-2 text-text_1">
-              <span class="text-capitalize selected-provider">{{ selectedProvider }}</span>
-              {{ $t('walletTopUp.description') }}
-            </p>
-          </v-col>
-
-          <v-col cols="12" sm="4">
-            <div class="body-2 mb-2">{{ $t('walletTopUp.wannaBuy') }}</div>
-            <v-select
-              id="cryptocurrency"
-              v-model="selectedCryptoCurrency"
-              class="cryptocurrency-selector"
-              variant="outlined"
-              append-inner-icon="$select"
-              :items="validCryptoCurrencies"
-              item-value="value"
-              item-title="display"
-              aria-label="Cryptocurrency Selector"
-              return-object
-              location="bottom"
-              @change="fetchQuote"
-            ></v-select>
-          </v-col>
-          <v-col v-if="!$vuetify.display.xs" cols="8"></v-col>
-
-          <v-row wrap class="mx-n2">
-            <v-col cols="12" sm="8" class="px-2">
-              <div class="mb-2 d-flex align-center">
-                <span class="body-2">{{ $t('walletTopUp.youSend') }}</span>
-                <span class="caption ml-auto">
-                  {{ $t('walletTopUp.min') }} {{ selectedProvider === XANPOOL ? '0.1 ETH' : minOrderValue }}, {{ $t('walletTopUp.max') }}
-                  {{ maxOrderValue }} USD*
-                </span>
-              </div>
+  <v-card class="elevation-1 pa-6">
+    <v-form ref="paymentForm" v-model="formValid" lazy-validation @submit.prevent="">
+      <v-row wrap no-gutters class="wallet-topup">
+        <v-col cols="12" class="mb-4">
+          <p class="body-2 text-text_1">
+            <span class="text-capitalize selected-provider">{{ selectedProvider }}</span>
+            {{ $t('walletTopUp.description') }}
+          </p>
+        </v-col>
+        <v-col cols="12" sm="4">
+          <div class="body-2 mb-2">{{ $t('walletTopUp.wannaBuy') }}</div>
+          <v-select
+            id="cryptocurrency"
+            v-model="selectedCryptoCurrency"
+            class="cryptocurrency-selector"
+            variant="outlined"
+            append-inner-icon="$select"
+            :items="validCryptoCurrencies"
+            item-value="value"
+            item-title="display"
+            aria-label="Cryptocurrency Selector"
+            return-object
+            @change="fetchQuote"
+          ></v-select>
+        </v-col>
+        <v-col v-if="!$vuetify.display.xs" cols="8"></v-col>
+        <v-col cols="12">
+          <v-row no-gutters>
+            <v-col cols="12" sm="8" class="d-flex align-center">
+              <span class="body-2">{{ $t('walletTopUp.youSend') }}</span>
+              <span class="caption ml-auto">
+                {{ $t('walletTopUp.min') }} {{ selectedProvider === XANPOOL ? '0.1 ETH' : minOrderValue }}, {{ $t('walletTopUp.max') }}
+                {{ maxOrderValue }} USD*
+              </span>
+            </v-col>
+            <v-col cols="12" sm="4"></v-col>
+            <v-col cols="12" sm="8">
               <v-text-field
                 id="you-send"
                 class="unique-hint"
@@ -46,7 +44,7 @@
                 :model-value="fiatValue"
                 :rules="amountRules"
                 aria-label="Amount to Buy"
-                @update:modalValue="setFiatValue"
+                @update:modelValue="setFiatValue"
               >
                 <template #append-inner>
                   <v-btn variant="outlined" size="small" color="torusBrand1" @click="setFiatValue(100)">100</v-btn>
@@ -55,7 +53,7 @@
                 </template>
               </v-text-field>
 
-              <div class="v-text-field__details mb-6">
+              <div class="v-text-field__details">
                 <div class="v-messages">
                   <div class="v-messages__wrapper">
                     <div class="v-messages__message d-flex">
@@ -73,10 +71,7 @@
                 </div>
               </div>
             </v-col>
-            <v-col cols="12" sm="4" class="px-2">
-              <div v-if="!$vuetify.display.xs" class="mb-2 d-flex align-center" :style="{ height: '20px' }">
-                <span class="body-2">&nbsp;</span>
-              </div>
+            <v-col cols="12" sm="4" class="pl-4">
               <v-autocomplete
                 id="currency-selector"
                 v-model="selectedCurrency"
@@ -88,60 +83,62 @@
               />
             </v-col>
           </v-row>
+        </v-col>
 
-          <v-col cols="12" class="text-right">
-            <div class="body-2">{{ $t('walletTopUp.receive') }}</div>
-            <ComponentLoader v-if="fetchingQuote" class="mt-1" />
-            <div v-else class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrency.display }}</div>
-            <div v-if="!fetchQuoteError" class="description">
-              {{ $t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency.display }} = {{ displayRateString }} {{ selectedCurrency }}
-            </div>
+        <v-col cols="12" class="text-right">
+          <div class="body-2">{{ $t('walletTopUp.receive') }}</div>
+          <ComponentLoader v-if="fetchingQuote" class="mt-1" />
+          <div v-else class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrency && selectedCryptoCurrency.display }}</div>
+          <div v-if="!fetchQuoteError" class="description">
+            {{ $t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency && selectedCryptoCurrency.display }} = {{ displayRateString }}
+            {{ selectedCurrency }}
+          </div>
 
-            <div class="description mt-6">{{ $t('walletTopUp.theProcess') }} 10 - 15 {{ $t('walletTopUp.minSmall') }}.</div>
-            <div class="description mt-1">
-              {{ selectedProviderObj.receiveHint ? $t(selectedProviderObj.receiveHint) : $t('walletTopUp.receiveHint') }}
-            </div>
-          </v-col>
-        </v-row>
-      </v-form>
-      <v-row wrap>
-        <v-col cols="12" class="mt-10">
-          <div class="text-right">
-            <v-tooltip location="bottom" :disabled="formValid">
-              <template #activator="{ props }">
-                <span v-bind="props">
-                  <v-btn
-                    class="px-8 text-white gmt-topup"
-                    :disabled="!formValid || !isQuoteFetched || !!fetchQuoteError || fetchingQuote"
-                    size="large"
-                    depressed
-                    :loading="fetchingQuote"
-                    color="torusBrand1"
-                    type="submit"
-                    @click.prevent="sendOrder"
-                  >
-                    {{ $t('walletTopUp.continue') }}
-                  </v-btn>
-                </span>
-              </template>
-              <span>{{ $t('walletTopUp.resolveErrors') }}</span>
-            </v-tooltip>
-            <div class="description mt-1">{{ $t('walletTopUp.redirectMessage') }}</div>
+          <div class="description mt-6">{{ $t('walletTopUp.theProcess') }} 10 - 15 {{ $t('walletTopUp.minSmall') }}.</div>
+          <div class="description mt-1">
+            {{ selectedProviderObj.receiveHint ? $t(selectedProviderObj.receiveHint) : $t('walletTopUp.receiveHint') }}
           </div>
         </v-col>
       </v-row>
-    </v-card>
+    </v-form>
+    <v-row wrap>
+      <v-col cols="12" class="mt-10">
+        <div class="text-right">
+          <v-tooltip location="bottom" :disabled="formValid">
+            <template #activator="{ props }">
+              <span v-bind="props">
+                <v-btn
+                  class="px-8 text-white gmt-topup"
+                  :disabled="!formValid || !isQuoteFetched || !!fetchQuoteError || fetchingQuote"
+                  size="large"
+                  depressed
+                  :loading="fetchingQuote"
+                  color="torusBrand1"
+                  type="submit"
+                  @click.prevent="sendOrder"
+                >
+                  {{ $t('walletTopUp.continue') }}
+                </v-btn>
+              </span>
+            </template>
+            <span>{{ $t('walletTopUp.resolveErrors') }}</span>
+          </v-tooltip>
+          <div class="description mt-1">{{ $t('walletTopUp.redirectMessage') }}</div>
+        </div>
+      </v-col>
+    </v-row>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
       <template #action>
         <v-btn theme="dark" variant="text" @click="snackbar = false">{{ $t('walletTopUp.close') }}</v-btn>
       </template>
     </v-snackbar>
-  </div>
+  </v-card>
 </template>
 
 <script>
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
+import log from 'loglevel'
 import { mapState } from 'vuex'
 
 import { XANPOOL } from '../../../utils/enums'
@@ -181,7 +178,7 @@ export default {
       isQuoteFetched: false,
       formValid: true,
       fiatValue: '',
-      selectedCryptoCurrency: {},
+      selectedCryptoCurrency: null,
       paymentProviders,
       rules: {
         required: (value) => !!value || 'Required',
@@ -228,6 +225,7 @@ export default {
     },
     validCryptoCurrencies() {
       const network = this.networkType.host
+      // return this.selectedProviderObj.validCryptoCurrenciesByChain[network].map((x) => x.value)
       return this.selectedProviderObj.validCryptoCurrenciesByChain[network]
     },
   },
@@ -274,6 +272,10 @@ export default {
       ) {
         this.fetchQuote()
       }
+    },
+    setSelectedCryptoCurrency(newValue) {
+      log.info('setSelectedCryptoCurrency', newValue)
+      this.selectedCryptoCurrency = newValue
     },
     fetchQuote() {
       this.$emit('fetchQuote', {
