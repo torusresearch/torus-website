@@ -269,6 +269,7 @@ export const createNetwork = (host, networkName, chainId, blockExplorer, ticker,
   rpcUrl,
   isErc20,
   tokenAddress,
+  type: host,
 })
 
 export const CHAIN_ID_TO_TYPE_MAP = {
