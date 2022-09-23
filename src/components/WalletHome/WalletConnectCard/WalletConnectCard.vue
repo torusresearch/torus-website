@@ -24,7 +24,7 @@
               max-width="170"
               max-height="30"
               :style="$vuetify.display.smAndDown ? 'width: 100px' : 'width: 170px'"
-              :alt="t('walletConnect.title')"
+              :alt="$t('walletConnect.title')"
             />
           </div>
         </slot>

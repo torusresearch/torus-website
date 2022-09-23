@@ -48,7 +48,7 @@
               <!-- <v-col cols="10" sm="8" class="ml-auto mr-auto" :class="[$vuetify.display.xsOnly ? 'mt-8' : 'mt-10']">
                   <div class="headline font-weight-regular" :class="isDarkMode ? '' : 'text_2--text'">{{ $t('login.signUpIn') }}</div>
                 </v-col> -->
-              <v-col cols="2" sm="4" class="mx-auto">
+              <v-col cols="2" sm="8" class="mx-auto">
                 <LoginButtons :login-buttons-array="loginButtonsArray" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
               </v-col>
               <LoginFooter :authenticators="thirdPartyAuthenticators" />
@@ -56,11 +56,22 @@
           </v-col>
         </v-row>
         <v-row v-else wrap class="align-center justify-center align-content-center">
-          <v-col cols="12" class="text-center mb-12">
-            <img width="180" :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white-new' : 'blue'}.svg`)" alt="Torus Logo" />
+          <v-col cols="12" class="mb-12">
+            <v-img
+              width="180"
+              class="mx-auto"
+              :src="require(`../../assets/images/torus-logo-${isDarkMode ? 'white-new' : 'blue'}.svg`)"
+              alt="Torus Logo"
+            />
           </v-col>
           <v-col cols="12" class="text-center">
-            <img width="200px" height="auto" :src="require(`../../assets/images/logout${isDarkMode ? '-dark' : ''}.svg`)" alt="Logout Image" />
+            <v-img
+              width="200"
+              height="auto"
+              class="mx-auto"
+              :src="require(`../../assets/images/logout${isDarkMode ? '-dark' : ''}.svg`)"
+              alt="Logout Image"
+            />
           </v-col>
           <v-col cols="12">
             <div class="text-center text-subtitle-1 font-weight-bold">{{ $t('login.beenLoggedOut') }}</div>

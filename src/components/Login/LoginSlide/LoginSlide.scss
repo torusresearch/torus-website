@@ -1,7 +1,7 @@
-::v-deep .v-carousel__controls {
+:deep(.v-carousel__controls) {
   background: none;
   bottom: -15px;
-  .v-btn.v-btn--variant-icon {
+  .v-btn.v-btn--icon {
     width: 14px;
     height: 6px;
     margin: 0 5px;

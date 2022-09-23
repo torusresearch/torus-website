@@ -15,14 +15,14 @@
       delimiter-icon="$minus"
       :show-arrows="false"
     >
-      <v-layout align-center fill-height px-10>
-        <v-flex class="text-center">
+      <v-row class="align-center fill-height px-10">
+        <v-col cols="12" class="text-center">
           <img class="mb-6 slide-image" :src="require(`../../../assets/images/${slide.image}`)" alt="Login Carousel" />
           <div class="text-h6 text-sm-h5 font-weight-medium mb-3 text_2--text px-2">{{ $t(slide.title) }}</div>
           <div class="text-caption text-sm-body-1 text_2--text">{{ $t(slide.subtitle1) }}</div>
           <div v-if="slide.subtitle2" class="text-caption text-sm-body-1 text_2--text">{{ $t(slide.subtitle2) }}</div>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
     </v-carousel-item>
   </v-carousel>
 </template>
