@@ -391,7 +391,7 @@
                     </v-btn>
                   </template>
                   <template #message="props">
-                    {{ $refs.youSend && $refs.youSend.errorBucket.length === 0 ? props.message : $t(props.message) }}
+                    {{ $t(props.message) }}
                   </template>
                 </v-text-field>
                 <v-text-field
@@ -420,7 +420,7 @@
                     </v-btn>
                   </template>
                   <template #message="props">
-                    {{ $refs.youSendNft && $refs.youSendNft.errorBucket.length === 0 ? props.message : $t(props.message) }}
+                    {{ $t(props.message) }}
                   </template>
                 </v-text-field>
               </v-col>
@@ -557,7 +557,7 @@
     </v-row>
     <v-dialog v-model="messageModalShow" max-width="375" persistent>
       <MessageModal
-        :detail-text="messageModalDetails.replace(/\{time\}/gi, timeTakenDisplay)"
+        :detail-text="messageModalDetails"
         go-to="walletHistory"
         :modal-type="messageModalType"
         :title="messageModalTitle"
@@ -837,7 +837,7 @@ export default {
       const amount = `${this.contractType === CONTRACT_TYPE_ERC721 || this.contractType === CONTRACT_TYPE_ERC1155 ? '' : this.displayAmount} ${
         !this.toggle_exclusive ? selectedAsset : this.selectedCurrency
       }`
-      const message = this.$t('walletTransfer.transferTweet', { address: this.toAddress, amount })
+      const message = this.$t('walletTransfer.transferTweet2', { address: this.toAddress, amount })
       share.searchParams.append('text', message)
       return share.href
     },
