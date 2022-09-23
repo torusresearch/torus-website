@@ -1,23 +1,23 @@
 <template>
   <v-dialog ref="advanceOption" v-model="dialog" persistent width="375" eager>
-    <template #activator="{ on }">
-      <a id="advance-option-link" class="float-right torusBrand1--text" text height="24" v-on="on">
-        {{ t('walletTransfer.fee-edit') }}
+    <template #activator="{ props }">
+      <a id="advance-option-link" class="float-right text-torusBrand1" text height="24" v-on="props">
+        {{ $t('walletTransfer.fee-edit') }}
       </a>
     </template>
     <v-card class="advance-option">
       <v-form ref="advanceOptionForm" v-model="advanceOptionFormValid" lazy-validation @submit.prevent="save">
         <v-card-text class="pa-0">
           <div class="card-header text-center py-10 px-5">
-            <div class="display-1 text_1--text font-weight-bold">{{ t('walletTransfer.fee-max-transaction') }}</div>
+            <div class="display-1 text-text_1 font-weight-bold">{{ $t('walletTransfer.fee-max-transaction') }}</div>
             <v-btn class="close-btn" icon aria-label="Close Edit Transfer" title="Close Edit Transfer" @click="cancel">
-              <v-icon>$vuetify.icons.close</v-icon>
+              <v-icon>$close</v-icon>
             </v-btn>
           </div>
           <div class="px-6 py-4">
             <div class="text-center">
-              <div class="title text_1--text mb-1">{{ t('walletTransfer.fee-edit-subtitle1') }}</div>
-              <div class="body-2 text_2--text">{{ t('walletTransfer.fee-edit-subtitle2') }}</div>
+              <div class="title text-text_1 mb-1">{{ $t('walletTransfer.fee-edit-subtitle1') }}</div>
+              <div class="body-2 text-text_2">{{ $t('walletTransfer.fee-edit-subtitle2') }}</div>
             </div>
             <v-divider class="my-4" />
             <div>
@@ -28,59 +28,57 @@
                   :class="{ 'is-selected': speed.isSelected }"
                   @click="selectSpeed(speed.value)"
                 >
-                  <v-list-item-icon class="align-self-center mr-3">
-                    <v-icon :class="speed.isSelected ? 'torusBrand1--text' : $vuetify.theme.isDark ? 'torusLight--text' : 'torusBlack--text'">
-                      $vuetify.icons.{{ speed.isSelected ? 'radioOn' : 'radioOff' }}
-                    </v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content class="py-2">
-                    <div class="d-flex align-center">
-                      <div class="body-2 font-weight-bold text_1--text speed-list_label">{{ speed.label }}</div>
-                      <div class="ml-4">
-                        <div class="body-2 font-weight-bold text_1--text">
-                          {{ t('walletTransfer.fee-upto').replace(/{amount}/gi, speed.amount) }}
-                        </div>
-                        <div class="body-2 text_2--text">{{ speed.time }}</div>
-                      </div>
+                  <template #prepend>
+                    <div class="align-self-center mr-3">
+                      <v-icon :class="speed.isSelected ? 'text-torusBrand1' : isDarkMode ? 'text-torusLight' : 'text-torusBlack'">
+                        ${{ speed.isSelected ? 'radioOn' : 'radioOff' }}
+                      </v-icon>
                     </div>
-                  </v-list-item-content>
+                  </template>
+                  <div class="d-flex align-center">
+                    <div class="body-2 font-weight-bold text-text_1 speed-list_label">{{ speed.label }}</div>
+                    <div class="ml-4">
+                      <div class="body-2 font-weight-bold text-text_1">{{ $t('walletTransfer.fee-upto', { amount: speed.amount }) }}</div>
+                      <div class="body-2 text-text_2">{{ speed.time }}</div>
+                    </div>
+                  </div>
                 </v-list-item>
               </v-list>
             </div>
             <v-divider class="mt-4 mb-2" />
             <div class="text-center mb-6">
-              <div class="body-2 text_2--text mb-3">{{ t('walletTransfer.fee-edit-or') }}</div>
+              <div class="body-2 text-text_2 mb-3">{{ $t('walletTransfer.fee-edit-or') }}</div>
               <div>
-                <a class="body-2 torusBrand1--text text-decoration-none" @click="showAdvance = !showAdvance">
-                  {{ showAdvance ? t('walletTransfer.fee-edit-adv-hide') : t('walletTransfer.fee-edit-adv-show') }}
+                <a class="body-2 text-torusBrand1 text-decoration-none" @click="showAdvance = !showAdvance">
+                  {{ showAdvance ? $t('walletTransfer.fee-edit-adv-hide') : $t('walletTransfer.fee-edit-adv-show') }}
                 </a>
               </div>
             </div>
             <div v-if="showAdvance">
               <div>
                 <div class="text-subtitle-2 mb-2">
-                  {{ t('walletTransfer.fee-edit-gas-limit') }}
-                  <HelpTooltip :title="t('walletTransfer.fee-edit-gas-limit')" :description="t('walletTransfer.fee-edit-gas-limit-desc')" />
+                  {{ $t('walletTransfer.fee-edit-gas-limit') }}
+                  <HelpTooltip :title="$t('walletTransfer.fee-edit-gas-limit')" :description="$t('walletTransfer.fee-edit-gas-limit-desc')" />
                 </div>
-                <v-text-field outlined :value="newGas" type="number" :rules="[rules.valid, rules.validMinimumGas]" @change="setGasLimit" />
+                <v-text-field variant="outlined" :value="newGas" type="number" :rules="[rules.valid, rules.validMinimumGas]" @change="setGasLimit" />
               </div>
               <div>
                 <div class="text-subtitle-2 mb-2">
                   Nonce
-                  <HelpTooltip title="Nonce" :description="t('walletTransfer.fee-edit-nonce-desc')" />
+                  <HelpTooltip title="Nonce" :description="$t('walletTransfer.fee-edit-nonce-desc')" />
                 </div>
-                <v-combobox id="nonce" v-model="newNonce" outlined :items="nonceItems" :rules="[rules.validNonce]">
+                <v-combobox id="nonce" v-model="newNonce" variant="outlined" :items="nonceItems" :rules="[rules.validNonce]">
                   <template #item="props">
-                    {{ t(props.item.text) }}
+                    {{ $t(props.item.text) }}
                   </template>
                   <template #selection="{ item }">
-                    {{ item.text ? t(item.text) : item }}
+                    {{ item.text ? $t(item.text) : item }}
                   </template>
                 </v-combobox>
               </div>
               <!-- <div>
                 <div class="text-subtitle-2 mb-2">
-                  {{ t('walletTransfer.fee-edit-base-fee') }}
+                  {{ $t('walletTransfer.fee-edit-base-fee') }}
                   <HelpTooltip :title="t('walletTransfer.fee-edit-base-fee')" :description="t('walletTransfer.fee-edit-base-fee-desc')" />
                 </div>
                 <v-text-field :value="baseFee" outlined type="number" :hint="` `" persistent-hint suffix="GWEI" disabled>
@@ -88,7 +86,7 @@
                     <div class="d-flex caption">
                       <div class="text-left mr-2">{{ message }}</div>
                       <div class="ml-auto text-right" :style="{ minWidth: '100px' }">
-                        <div class="text_2--text">{{ baseFeeConverted }}</div>
+                        <div class="text-text_2">{{ baseFeeConverted }}</div>
                       </div>
                     </div>
                   </template>
@@ -96,12 +94,12 @@
               </div> -->
               <div>
                 <div class="text-subtitle-2 mb-2">
-                  {{ t('walletTransfer.fee-edit-max') }}
-                  <HelpTooltip :title="t('walletTransfer.fee-edit-max')" :description="t('walletTransfer.fee-edit-max-desc')" />
+                  {{ $t('walletTransfer.fee-edit-max') }}
+                  <HelpTooltip :title="$t('walletTransfer.fee-edit-max')" :description="$t('walletTransfer.fee-edit-max-desc')" />
                 </div>
                 <v-text-field
                   :value="maxPriorityFee"
-                  outlined
+                  variant="outlined"
                   type="number"
                   :rules="[validateMaxPriorityFee]"
                   :hint="maxPriorityFeeHint"
@@ -114,7 +112,7 @@
                     <div class="d-flex caption">
                       <div class="text-left mr-2">{{ message }}</div>
                       <div class="ml-auto text-right" :style="{ minWidth: '100px' }">
-                        <div class="text_2--text">{{ maxPriorityFeeConverted }}</div>
+                        <div class="text-text_2">{{ maxPriorityFeeConverted }}</div>
                       </div>
                     </div>
                   </template>
@@ -122,12 +120,12 @@
               </div>
               <div>
                 <div class="text-subtitle-2 mb-2">
-                  <span class="text_1--text font-weight-bold">{{ t('walletTransfer.fee-max-transaction') }}</span>
-                  <HelpTooltip :title="t('walletTransfer.fee-max-transaction')" :description="t('walletTransfer.fee-max-transaction-desc')" />
+                  <span class="text-text_1 font-weight-bold">{{ $t('walletTransfer.fee-max-transaction') }}</span>
+                  <HelpTooltip :title="$t('walletTransfer.fee-max-transaction')" :description="$t('walletTransfer.fee-max-transaction-desc')" />
                 </div>
                 <v-text-field
                   :value="maxTransactionFee"
-                  outlined
+                  variant="outlined"
                   type="number"
                   :hint="maxTransactionFeeHint"
                   :rules="[validateMaxTransactionFee]"
@@ -140,7 +138,7 @@
                     <div class="d-flex caption">
                       <div class="text-left mr-2">{{ message }}</div>
                       <div class="ml-auto text-right" :style="{ minWidth: '100px' }">
-                        <div class="text_2--text">{{ maxTransactionFeeConverted }}</div>
+                        <div class="text-text_2">{{ maxTransactionFeeConverted }}</div>
                       </div>
                     </div>
                   </template>
@@ -150,18 +148,18 @@
           </div>
         </v-card-text>
         <v-card-actions ref="actions" class="pb-7 px-5">
-          <v-layout>
-            <v-flex xs-6>
-              <v-btn large block text color="text_2" @click="cancel">
-                {{ t('walletTransfer.cancel') }}
+          <v-row>
+            <v-col cols="6">
+              <v-btn size="large" block variant="text" color="text_2" @click="cancel">
+                {{ $t('walletTransfer.cancel') }}
               </v-btn>
-            </v-flex>
-            <v-flex xs-6>
-              <v-btn :disabled="!advanceOptionFormValid" large color="torusBrand1" depressed block class="py-1 white--text" type="submit">
-                {{ t('walletTransfer.save') }}
+            </v-col>
+            <v-col cols="6">
+              <v-btn :disabled="!advanceOptionFormValid" size="large" color="torusBrand1" depressed block class="py-1 text-white" type="submit">
+                {{ $t('walletTransfer.save') }}
               </v-btn>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
         </v-card-actions>
       </v-form>
     </v-card>
@@ -250,16 +248,16 @@ export default {
         },
       ],
       rules: {
-        moreThanZero: (value) => new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount'),
-        validMinimumGas: (value) => new BigNumber(value || '0').gte(new BigNumber('21000')) || this.t('walletTransfer.invalidAmount'),
-        valid: (value) => !!value || this.t('walletTransfer.required'),
+        moreThanZero: (value) => new BigNumber(value || '0').gt(new BigNumber('0')) || this.$t('walletTransfer.invalidAmount'),
+        validMinimumGas: (value) => new BigNumber(value || '0').gte(new BigNumber('21000')) || this.$t('walletTransfer.invalidAmount'),
+        valid: (value) => !!value || this.$t('walletTransfer.required'),
         validNonce: (value) => {
-          if (value === null) return this.t('walletTransfer.invalidInput')
+          if (value === null) return this.$t('walletTransfer.invalidInput')
           const newValue = Number(value.value || value)
           if (Number.isNaN(newValue)) {
-            return value.value === 'default' || this.t('walletTransfer.invalidInput')
+            return value.value === 'default' || this.$t('walletTransfer.invalidInput')
           }
-          return newValue >= 0 || this.t('walletTransfer.invalidInput')
+          return newValue >= 0 || this.$t('walletTransfer.invalidInput')
         },
       },
     }
@@ -269,21 +267,21 @@ export default {
       return [
         {
           value: TRANSACTION_SPEED.HIGH,
-          label: this.t('walletTransfer.fee-edit-speed-high'),
+          label: this.$t('walletTransfer.fee-edit-speed-high'),
           amount: this.getFeeAmount(TRANSACTION_SPEED.HIGH),
           time: this.getFeeTime(TRANSACTION_SPEED.HIGH),
           isSelected: this.newSelectedSpeed === TRANSACTION_SPEED.HIGH,
         },
         {
           value: TRANSACTION_SPEED.MEDIUM,
-          label: this.t('walletTransfer.fee-edit-speed-average'),
+          label: this.$t('walletTransfer.fee-edit-speed-average'),
           amount: this.getFeeAmount(TRANSACTION_SPEED.MEDIUM),
           time: this.getFeeTime(TRANSACTION_SPEED.MEDIUM),
           isSelected: this.newSelectedSpeed === TRANSACTION_SPEED.MEDIUM,
         },
         {
           value: TRANSACTION_SPEED.LOW,
-          label: this.t('walletTransfer.fee-edit-speed-low'),
+          label: this.$t('walletTransfer.fee-edit-speed-low'),
           amount: this.getFeeAmount(TRANSACTION_SPEED.LOW),
           time: this.getFeeTime(TRANSACTION_SPEED.LOW),
           isSelected: this.newSelectedSpeed === TRANSACTION_SPEED.LOW,
@@ -296,14 +294,14 @@ export default {
         gasFeeEstimates?.high &&
         bnGreaterThan(this.maxPriorityFee, gasFeeEstimates.high.suggestedMaxPriorityFeePerGas * HIGH_FEE_WARNING_MULTIPLIER)
       ) {
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_HIGH_WARNING, this.t)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_HIGH_WARNING, this.$t)
       }
       return ' '
     },
     maxTransactionFeeHint() {
       const { gasFeeEstimates } = this.gasFees
       if (gasFeeEstimates?.high && bnGreaterThan(this.maxTransactionFee, gasFeeEstimates.high.suggestedMaxFeePerGas * HIGH_FEE_WARNING_MULTIPLIER)) {
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_HIGH_WARNING, this.t)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_HIGH_WARNING, this.$t)
       }
       return ' '
     },
@@ -315,6 +313,9 @@ export default {
     },
     maxTransactionFeeConverted() {
       return this.convertEth(this.maxTransactionFee)
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
     },
   },
   watch: {
@@ -421,7 +422,7 @@ export default {
     getFeeTime(speed) {
       if (!(this.gasFees.gasFeeEstimates && this.gasFees.gasFeeEstimates[speed])) return ''
 
-      return gasTiming(this.gasFees.gasFeeEstimates[speed].suggestedMaxPriorityFeePerGas, this.gasFees, this.t, 'walletTransfer.fee-edit-process-in')
+      return gasTiming(this.gasFees.gasFeeEstimates[speed].suggestedMaxPriorityFeePerGas, this.gasFees, this.$t, 'walletTransfer.fee-edit-process-in')
     },
     selectSpeed(speed) {
       // reset custom values if user is changing tx speed
@@ -463,26 +464,26 @@ export default {
     validateMaxPriorityFee(value) {
       const { gasFeeEstimates } = this.gasFees
       if (!value || !value.toString()) {
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM, this.t)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM, this.$t)
       }
       if (bnLessThanEqualTo(value, 0)) {
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM, this.t)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_BELOW_MINIMUM, this.$t)
       }
       if (bnLessThan(value, gasFeeEstimates?.low?.suggestedMaxPriorityFeePerGas)) {
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_TOO_LOW, this.t)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_PRIORITY_FEE_TOO_LOW, this.$t)
       }
       if (bnGreaterThan(value, this.maxTransactionFee)) {
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE, this.t)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE, this.$t)
       }
 
       return true
     },
     validateMaxTransactionFee(value) {
       if (bnGreaterThan(this.maxPriorityFee, value)) {
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE, this.t)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_IMBALANCE, this.$t)
       }
       if (bnLessThan(value, new BigNumber(this.maxPriorityFee).plus(new BigNumber(this.baseFee)))) {
-        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_TOO_LOW, this.t)
+        return getGasFormErrorText(GAS_FORM_ERRORS.MAX_FEE_TOO_LOW, this.$t)
       }
 
       return true

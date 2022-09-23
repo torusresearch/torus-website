@@ -9,27 +9,25 @@
     @click="onClick"
   >
     <img
-      v-if="(active || $vuetify.breakpoint.xsOnly) && buttonType !== 'submit' && !isExistingLogin"
-      :src="
-        loginConfigItem.logoHover || require(`../../../assets/img/icons/login-${iconName}${hasLightLogo && $vuetify.theme.dark ? '-light' : ''}.svg`)
-      "
+      v-if="(active || $vuetify.display.xs) && buttonType !== 'submit' && !isExistingLogin"
+      :src="loginConfigItem.logoHover || require(`../../../assets/img/icons/login-${iconName}${hasLightLogo && isDarkMode ? '-light' : ''}.svg`)"
       :alt="`${loginConfigItem.name} Icon`"
       :class="{ 'mr-3': isLong }"
     />
     <img
-      v-else-if="($vuetify.theme.isDark || isExistingLogin) && loginConfigItem.logoLight && buttonType !== 'submit'"
+      v-else-if="(isDarkMode || isExistingLogin) && loginConfigItem.logoLight && buttonType !== 'submit'"
       :src="loginConfigItem.logoLight"
       :alt="`${loginConfigItem.name} Icon`"
       :class="{ 'mr-3': isLong }"
     />
     <img
-      v-else-if="!$vuetify.theme.isDark && loginConfigItem.logoDark && buttonType !== 'submit'"
+      v-else-if="!isDarkMode && loginConfigItem.logoDark && buttonType !== 'submit'"
       :src="loginConfigItem.logoDark"
       :alt="`${loginConfigItem.name} Icon`"
       :class="{ 'mr-3': isLong }"
     />
-    <v-icon v-else-if="buttonType !== 'submit'" :class="[{ 'mr-3': isLong }, isExistingLogin ? 'white--text' : 'text_3--text']">
-      {{ `$vuetify.icons.${iconName}` }}
+    <v-icon v-else-if="buttonType !== 'submit'" :class="[{ 'mr-3': isLong }, isExistingLogin ? 'text-white' : 'text-text_3']">
+      {{ `$${iconName}` }}
     </v-icon>
 
     <div v-if="isLong" class="login-btn__text" :class="{ 'login-btn__text--existing': isExistingLogin }">
@@ -88,10 +86,10 @@ export default {
   },
   computed: {
     formatDescription() {
-      if (this.isExistingLogin) return this.t('dappLogin.continueWith').replace(/{verifier}/gi, capitalizeFirstLetter(this.loginConfigItem.name))
-
-      const finalDesc = this.loginConfigItem.description ? this.t(this.loginConfigItem.description) : this.t('dappLogin.continue')
-      return finalDesc.replace(/{verifier}/gi, this.loginConfigItem.name.charAt(0).toUpperCase() + this.loginConfigItem.name.slice(1))
+      if (this.isExistingLogin) return this.$t('dappLogin.continueWith', { verifier: capitalizeFirstLetter(this.loginConfigItem.name) })
+      const name = this.loginConfigItem.name.charAt(0).toUpperCase() + this.loginConfigItem.name.slice(1)
+      const params = { verifier: name }
+      return this.loginConfigItem.description ? this.$t(this.loginConfigItem.description, params) : this.$t('dappLogin.continue', params)
     },
     iconName() {
       const normalVerifier = config.loginConfig[this.loginConfigItem.verifier]
@@ -103,15 +101,18 @@ export default {
     },
     buttonClass() {
       return [
-        { active: this.active, 'theme--dark': this.$vuetify.theme.dark, 'is-long': this.isLong, 'is-popup': this.isPopup, 'no-icon': this.noIcon },
+        { active: this.active, 'v-theme--dark': this.isDarkMode, 'is-long': this.isLong, 'is-popup': this.isPopup, 'no-icon': this.noIcon },
         `gmt-login-${this.iconName}`,
-        this.isExistingLogin ? 'white--text' : 'text_2--text',
+        this.isExistingLogin ? 'text-white' : 'text-text_2',
       ]
     },
     buttonStyles() {
       return {
-        background: this.isExistingLogin ? 'var(--v-torusBrand1-base)' : undefined,
+        background: this.isExistingLogin ? 'rgb(var(--v-theme-torusBrand1))' : undefined,
       }
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
     },
   },
   methods: {

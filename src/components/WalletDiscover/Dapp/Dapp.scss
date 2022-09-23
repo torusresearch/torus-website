@@ -26,7 +26,7 @@
     }
     & .dapp-title {
       font-size: 14px;
-      color: var(--v-text_1-base);
+      color: rgb(var(--v-theme-text_1));
       margin: 0px;
       text-overflow: ellipsis;
       overflow: hidden;
@@ -36,7 +36,7 @@
     & .dapp-category {
       font-size: 12px;
       line-height: 14px;
-      color: var(--v-torusGray3-base);
+      color: rgb(var(--v-theme-torusGray3));
       margin: 0px;
       text-overflow: ellipsis;
       overflow: hidden;
@@ -74,7 +74,7 @@
     }
   }
 }
-.dapp-card.theme--dark {
+.dapp-card.v-theme--dark {
   border: none;
   box-shadow: 0px 14px 28px rgba(0, 0, 0, 0.16) !important;
   .dapp-category {
@@ -93,7 +93,7 @@
   border-radius: 0;
   padding: 3px 0;
   height: auto;
-  ::v-deep .network-chip__name.network-chip__name--mobile {
+  :deep(.network-chip__name.network-chip__name--mobile) {
     font-size: 12px;
   }
 }

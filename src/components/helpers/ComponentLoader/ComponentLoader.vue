@@ -1,6 +1,6 @@
 <template>
   <div>
-    <BeatLoader :color="$vuetify.theme.currentTheme.torusBrand1" />
+    <BeatLoader :color="$vuetify.theme.current.colors.torusBrand1" />
   </div>
 </template>
 

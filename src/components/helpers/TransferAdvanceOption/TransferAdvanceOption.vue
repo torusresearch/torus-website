@@ -1,36 +1,42 @@
 <template>
   <v-dialog v-model="dialog" persistent>
-    <template #activator="{ on }">
-      <a v-show="displayAmount" id="advance-option-link" class="float-right torusBrand1--text" :class="isConfirm ? 'caption' : 'body-2'" v-on="on">
-        {{ isConfirm ? 'Edit' : t('walletTransfer.advancedOptions') }}
+    <template #activator="{ props }">
+      <a
+        v-show="displayAmount"
+        id="advance-option-link"
+        class="float-right text-torusBrand1"
+        :class="isConfirm ? 'caption' : 'body-2'"
+        v-bind="props"
+      >
+        {{ isConfirm ? 'Edit' : $t('walletTransfer.advancedOptions') }}
       </a>
     </template>
     <v-card class="advance-option py-4">
       <v-container>
         <v-form ref="advanceOptionForm" v-model="advanceOptionFormValid" lazy-validation @submit.prevent="saveOptions">
-          <v-layout wrap>
-            <v-flex xs12 px-4>
-              <div class="font-weight-bold headline">{{ t('walletTransfer.transferDetails') }}</div>
-              <div class="font-weight-bold text-subtitle-2">{{ t('walletTransfer.customizeGas') }}</div>
-            </v-flex>
-            <v-flex xs12 mt-4>
-              <v-layout wrap>
-                <v-flex xs12 sm6 px-4>
+          <v-row wrap>
+            <v-col cols="12" class="px-4">
+              <div class="font-weight-bold headline">{{ $t('walletTransfer.transferDetails') }}</div>
+              <div class="font-weight-bold text-subtitle-2">{{ $t('walletTransfer.customizeGas') }}</div>
+            </v-col>
+            <v-col cols="12" class="mt-4">
+              <v-row wrap>
+                <v-col cols="12" sm="6" class="px-4">
                   <div class="text-subtitle-2 mb-2">
-                    {{ t('walletTransfer.gasPrice') }} (GWEI)
-                    <HelpTooltip :title="t('walletTransfer.gasPrice')">
+                    {{ $t('walletTransfer.gasPrice') }} (GWEI)
+                    <HelpTooltip :title="$t('walletTransfer.gasPrice')">
                       <template #description>
-                        <div class="body-2 text_3--text text-justify">
-                          <span class="font-weight-medium">{{ t('walletTransfer.gasPriceDesc1') }}</span>
-                          {{ t('walletTransfer.gasPriceDesc2') }}
-                          <span class="font-weight-medium">{{ t('walletTransfer.gasPriceDesc3') }}</span>
-                          {{ t('walletTransfer.gasPriceDesc4') }}
+                        <div class="body-2 text-text_3 text-justify">
+                          <span class="font-weight-medium">{{ $t('walletTransfer.gasPriceDesc1') }}</span>
+                          {{ $t('walletTransfer.gasPriceDesc2') }}
+                          <span class="font-weight-medium">{{ $t('walletTransfer.gasPriceDesc3') }}</span>
+                          {{ $t('walletTransfer.gasPriceDesc4') }}
                         </div>
-                        <div class="caption mt-1 text_3--text">
+                        <div class="caption mt-1 text-text_3">
                           1 Gwei=10
                           <sup>-9</sup>
                           {{ networkTicker }}
-                          <small>({{ t('walletTransfer.gasPriceDesc5') }})</small>
+                          <small>({{ $t('walletTransfer.gasPriceDesc5') }})</small>
                         </div>
                       </template>
                     </HelpTooltip>
@@ -38,42 +44,42 @@
                   <v-text-field
                     id="gas-price"
                     :disabled="activeGasPrice.eq('0')"
-                    :placeholder="t('walletTransfer.enterValue')"
-                    outlined
+                    :placeholder="$t('walletTransfer.enterValue')"
+                    variant="outlined"
                     :value="advancedActiveGasPrice"
                     :rules="[rules.valid, rules.moreThanZero]"
                     type="number"
                     @change="onChangeActiveGasPrice"
                   ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 px-4>
+                </v-col>
+                <v-col cols="12" sm="6" clas="px-4">
                   <div class="text-subtitle-2 mb-2">
-                    {{ t('walletTransfer.gasLimit') }}
-                    <HelpTooltip :title="t('walletTransfer.gasLimit')" :description="t('walletTransfer.gasLimitDesc')"></HelpTooltip>
+                    {{ $t('walletTransfer.gasLimit') }}
+                    <HelpTooltip :title="$t('walletTransfer.gasLimit')" :description="$t('walletTransfer.gasLimitDesc')"></HelpTooltip>
                   </div>
                   <v-text-field
                     id="advanced-gas"
                     :value="advancedGas"
-                    outlined
+                    variant="outlined"
                     :rules="[rules.valid, rules.moreThanZero]"
                     type="number"
                     @change="onChangeGasLimit"
                   ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 px-4>
+                </v-col>
+                <v-col cols="12" sm="6" clas="px-4">
                   <div class="text-subtitle-2 mb-2">Nonce</div>
                   <v-combobox id="nonce" v-model="newNonce" outlined :items="nonceItems" :rules="[rules.validNonce]">
                     <template #item="props">
-                      {{ t(props.item.text) }}
+                      {{ $t(props.item.text) }}
                     </template>
                     <template #selection="{ item }">
-                      {{ item.text ? t(item.text) : item }}
+                      {{ item.text ? $t(item.text) : item }}
                     </template>
                   </v-combobox>
-                </v-flex>
-                <v-flex xs12 sm6 px-4>
-                  <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.transferFee') }}</div>
-                  <template v-if="$vuetify.breakpoint.xsOnly">
+                </v-col>
+                <v-col cols="12" sm="6" clas="px-4">
+                  <div class="text-subtitle-2 mb-2">{{ $t('walletTransfer.transferFee') }}</div>
+                  <template v-if="$vuetify.display.xs">
                     <span class="float-right">
                       <span id="transaction-fee-mobile">{{ gasAmountDisplay }}</span>
                       {{ networkTicker }}
@@ -84,46 +90,46 @@
                     v-else
                     id="transaction-fee"
                     :suffix="networkTicker"
-                    outlined
+                    variant="outlined"
                     readonly
                     :value="gasAmountDisplay"
                     persistent-hint
                     :hint="gasAmountConverted"
                   ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mt-5' : ''">
-                  <div class="text-subtitle-2 mb-2">{{ t('walletTransfer.newTotal') }}</div>
-                  <template v-if="$vuetify.breakpoint.xsOnly">
-                    <span class="float-right text-subtitle-1 font-weight-bold torusBrand1--text">{{ totalCost }}{{ networkTicker }}</span>
+                </v-col>
+                <v-col cols="12" sm="6" clas="px-4" :class="$vuetify.display.xs ? 'mt-5' : ''">
+                  <div class="text-subtitle-2 mb-2">{{ $t('walletTransfer.newTotal') }}</div>
+                  <template v-if="$vuetify.display.xs">
+                    <span class="float-right text-subtitle-1 font-weight-bold text-torusBrand1">{{ totalCost }}{{ networkTicker }}</span>
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>
                   <v-text-field
                     v-else
                     :suffix="networkTicker"
-                    outlined
+                    variant="outlined"
                     readonly
                     :value="totalCost"
                     persistent-hint
                     :hint="totalCostConverted"
                   ></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-flex>
-          </v-layout>
-          <v-layout mt-4 pr-4>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-row class="mt-4 pr-4">
             <v-spacer></v-spacer>
-            <v-btn large text @click="onCancel">{{ t('walletTransfer.cancel') }}</v-btn>
+            <v-btn size="large" variant="text" @click="onCancel">{{ $t('walletTransfer.cancel') }}</v-btn>
             <v-btn
               id="adv-opt-submit-btn"
-              large
+              size="large"
               color="torusBrand1"
-              class="white--text ml-4 gmt-advance-option"
+              class="text-white ml-4 gmt-advance-option"
               type="submit"
               :disabled="!advanceOptionFormValid"
             >
-              {{ t('walletTransfer.save') }}
+              {{ $t('walletTransfer.save') }}
             </v-btn>
-          </v-layout>
+          </v-row>
         </v-form>
       </v-container>
     </v-card>
@@ -185,18 +191,18 @@ export default {
       rules: {
         moreThanZero: (value) => {
           if (this.activeGasPrice.eq(0)) {
-            return new BigNumber(value || '0').gte(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
+            return new BigNumber(value || '0').gte(new BigNumber('0')) || this.$t('walletTransfer.invalidAmount')
           }
-          return new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
+          return new BigNumber(value || '0').gt(new BigNumber('0')) || this.$t('walletTransfer.invalidAmount')
         },
-        valid: (value) => !!value || this.t('walletTransfer.required'),
+        valid: (value) => !!value || this.$t('walletTransfer.required'),
         validNonce: (value) => {
-          if (value === null) return this.t('walletTransfer.invalidInput')
+          if (value === null) return this.$t('walletTransfer.invalidInput')
           const newValue = Number(value.value || value)
           if (Number.isNaN(newValue)) {
-            return value.value === 'default' || this.t('walletTransfer.invalidInput')
+            return value.value === 'default' || this.$t('walletTransfer.invalidInput')
           }
-          return newValue >= 0 || this.t('walletTransfer.invalidInput')
+          return newValue >= 0 || this.$t('walletTransfer.invalidInput')
         },
       },
       newNonce: 0,

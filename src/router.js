@@ -1,11 +1,7 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
-Vue.use(Router)
-
-const router = new Router({
-  mode: 'history',
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -154,7 +150,10 @@ const router = new Router({
         },
       ],
     },
-    { path: '*', component: () => import(/* webpackChunkName: "login" */ './views/Login') },
+    // TODO: remove the not found route.
+    // This is only for testing the vue components
+    // Please fix this before merging to the master.
+    { path: '/:pathMatch(.*)*', component: () => import(/* webpackChunkName: "login" */ './views/NotFound.vue') },
   ],
 })
 

@@ -20,36 +20,36 @@
   }
 
   .v-data-table {
-    ::v-deep tr > td {
+    :deep(tr > td) {
       cursor: pointer;
     }
 
-    ::v-deep tr.v-data-table__expanded__content {
+    :deep(tr.v-data-table__expanded__content) {
       box-shadow: none;
     }
 
-    ::v-deep .address-col {
+    :deep(.address-col) {
       min-width: 150px;
     }
   }
 
-  ::v-deep .v-pagination__item,
-  ::v-deep .v-pagination__navigation {
+  :deep(.v-pagination__item),
+  :deep(.v-pagination__navigation) {
     border: 0;
     background: none;
-    color: var(--v-torusFont1-base);
+    color: rgb(var(--v-theme-torusFont1));
     font-weight: 500;
     box-shadow: none;
     opacity: 0.7;
     &.torusBrand1 {
       background: none;
       background-color: transparent !important;
-      color: var(--v-torusBrand1-base);
+      color: rgb(var(--v-theme-torusBrand1));
       opacity: 1;
     }
   }
 
-  ::v-deep .v-data-iterator > div:not(.v-card) {
+  :deep(.v-data-iterator > div:not(.v-card)) {
     text-align: center;
     padding-top: 20px;
   }

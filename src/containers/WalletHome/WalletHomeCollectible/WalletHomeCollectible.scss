@@ -1,9 +1,9 @@
 ::v-deep .v-breadcrumbs {
   a {
-    color: var(--v-text_2-base);
+    color: rgb(var(--v-theme-text_2));
   }
   a.v-breadcrumbs__item.v-breadcrumbs__item--disabled {
-    color: var(--v-torusFont1-base);
+    color: rgb(var(--v-theme-torusFont1));
   }
 }
 

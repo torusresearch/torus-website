@@ -1,7 +1,7 @@
 .contact-list-container {
   .contact-list {
     .contact-list__id {
-      color: var(--v-text_2-base);
+      color: rgb(var(--v-theme-text_2));
     }
     .v-avatar {
       border-radius: 0;
@@ -12,7 +12,7 @@
         margin: auto !important;
       }
     }
-    &.theme--dark {
+    &.v-theme--dark {
       border: 1px solid #202125;
       .contact-list__id {
         color: #8d98a5;
@@ -23,11 +23,11 @@
     border-bottom: 1px solid #f5f5f5;
     &:last-child {
       border-bottom: 0;
-      &.theme--dark {
+      &.v-theme--dark {
         border-bottom: 0;
       }
     }
-    &.theme--dark {
+    &.v-theme--dark {
       border-bottom: 1px solid #202125;
     }
   }
@@ -39,21 +39,16 @@
   }
   .v-input.search-verifier {
     margin-left: 8px;
-    width: 130px;
-    ::v-deep .v-input__slot {
-      margin-bottom: 0;
-      padding: 2px 12px;
+    width: 140px;
+    :deep(.v-select__selection:not(.v-select__selection--comma)) {
+      display: flex;
+      align-items: center;
     }
-    ::v-deep .v-select__selections {
-      .v-select__selection--comma {
-        margin: 0;
-      }
-      input {
-        padding: 0;
-      }
-    }
-    ::v-deep .v-input__append-inner {
-      margin-top: 2px !important;
+    :deep(.v-select__selection--comma) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
     }
   }
 }

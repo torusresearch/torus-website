@@ -10,7 +10,7 @@
       position: absolute;
       top: 5px;
       right: 5px;
-      color: var(--v-text_3-base);
+      color: rgb(var(--v-theme-text_3));
     }
   }
 
@@ -22,7 +22,7 @@
         border: 1px solid #0364ff;
         box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
       }
-      &.is-selected.theme--light {
+      &.is-selected.v-theme--light {
         background: #daf0ff;
       }
       &.v-list-item--link:before {
@@ -36,12 +36,12 @@
 
   .max-priority-fee:not(.error--text),
   .max-transaction-fee:not(.error--text) {
-    ::v-deep .v-messages__message {
-      color: var(--v-warning-base);
+    :deep(v-messages__message) {
+      color: rgb(var(--v-theme-warning));
     }
   }
 
-  &.theme--dark {
+  &.v-theme--dark {
     .card-header {
       border: 0;
       background: #2f3136;

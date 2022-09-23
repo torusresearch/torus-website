@@ -1,8 +1,7 @@
 import { setAPIKey } from '@toruslabs/http-helpers'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createStore } from 'vuex'
 import VuexPersistence from 'vuex-persist'
 import { fromWei, hexToUtf8 } from 'web3-utils'
 
@@ -20,8 +19,6 @@ import preferencesActions from './preferencesActions'
 import defaultState from './state'
 
 const { baseRoute } = config
-
-Vue.use(Vuex)
 
 let vuexPersist
 
@@ -69,7 +66,7 @@ const fetchGasFeeEstimates = async (state) => {
   }
 }
 
-const VuexStore = new Vuex.Store({
+const VuexStore = createStore({
   plugins: vuexPersist ? [vuexPersist.plugin] : [],
   state: cloneDeep(defaultState),
   getters: defaultGetters,

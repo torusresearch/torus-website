@@ -1,10 +1,10 @@
 <template>
   <div v-show="showLoader">
-    <div v-if="useSpinner" class="spinner" :class="{ 'theme--dark': isDark }" :style="spinnerStyle">
+    <div v-if="useSpinner" class="spinner" :class="{ 'v-theme--dark': isDark }" :style="spinnerStyle">
       <div class="head" :style="headStyle" />
       <div class="mask" :style="maskStyle" />
     </div>
-    <div v-else class="ping-container" :class="{ 'theme--dark': isDark }">
+    <div v-else class="ping-container" :class="{ 'v-theme--dark': isDark }">
       <div class="ping-animate" :style="pingAnimateStyle"></div>
       <div class="ping-content" :style="pingContentStyle">
         <img :src="whiteLabelLogo" alt="Dapp Logo" :style="pingImageStyle" />
@@ -74,14 +74,14 @@ export default {
       return this.isDark ? this.whiteLabel.logoDark : this.whiteLabel.logoLight
     },
     primaryColor() {
-      if (!this.whiteLabel.isActive) return 'var(--v-torusBrand1-base)'
-      return this.whiteLabel?.theme?.colors?.torusBrand1 || 'var(--v-torusBrand1-base)'
+      if (!this.whiteLabel.isActive) return 'rgb(var(--v-theme-torusBrand1))'
+      return this.whiteLabel?.theme?.colors?.torusBrand1 || 'rgb(var(--v-theme-torusBrand1))'
     },
     isDark() {
       if (this.whiteLabel.isActive) {
         return this.whiteLabel.theme?.isDark
       }
-      return this.$vuetify.theme.dark
+      return this.$vuetify.theme.current.dark
     },
     useSpinner() {
       return this.forceSpinner || !this.isCustomVerifier || (this.isCustomVerifier && !this.whiteLabelLogo)

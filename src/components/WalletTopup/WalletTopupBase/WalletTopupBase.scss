@@ -5,12 +5,12 @@
   }
 
   .unique-hint {
-    ::v-deep .v-text-field__details {
+    :deep(.v-text-field__details) {
       display: none;
     }
 
     &.error--text {
-      ::v-deep .v-text-field__details {
+      :deep(.v-text-field__details) {
         display: inherit;
       }
     }
@@ -20,7 +20,7 @@
     }
   }
 
-  ::v-deep .v-text-field__details {
+  :deep(.v-text-field__details) {
     padding: 0;
   }
 }

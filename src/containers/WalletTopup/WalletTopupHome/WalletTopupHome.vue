@@ -3,16 +3,16 @@
     <div
       v-if="noSupportedProvidersForNetwork"
       class="error-box d-md-flex align-center justify-center error lighten-4 py-3 py-sm-5 px-5"
-      :class="{ 'is-mobile': $vuetify.breakpoint.smAndDown }"
+      :class="{ 'is-mobile': $vuetify.display.smAndDown }"
     >
       <div class="d-flex justify-md-center mb-2 mb-md-0">
-        <v-icon size="22" class="black--text mr-2">$vuetify.icons.alert</v-icon>
-        <div class="text-caption text-sm-body-2">{{ t('walletTopUp.topUpNotSupported', [networkType.networkName]) }}</div>
+        <v-icon size="22" class="text-black mr-2">$alert</v-icon>
+        <div class="text-caption text-sm-body-2">{{ $t('walletTopUp.topUpNotSupported', [networkType.networkName]) }}</div>
       </div>
 
       <div class="text-right" style="margin-top: -4px">
         <router-link class="text-uppercase text-decoration-none text-body-2 ml-1" :to="{ name: 'walletSettings' }" :style="{ lineHeight: 0 }">
-          {{ t('walletTopUp.changeNetwork') }}
+          {{ $t('walletTopUp.changeNetwork') }}
         </router-link>
       </div>
     </div>
@@ -22,11 +22,11 @@
       <WalletTopupHeader :placeholder="true" :selected-provider="selectedProvider" />
     </NoSupportedProvidersForNetworkPlaceholder>
 
-    <v-container v-else class="wallet-topup-view pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+    <v-container v-else class="wallet-topup-view pt-6" :class="$vuetify.display.xs ? 'px-4' : ''">
       <!-- Normal Topup Header -->
       <WalletTopupHeader :selected-provider="selectedProvider" />
 
-      <v-layout mt-7 mx-n4 wrap>
+      <v-row class="mt-7 mx-n4" wrap>
         <TopupProviders
           :selected-provider="selectedProvider"
           :providers="providers"
@@ -37,19 +37,19 @@
           "
         />
 
-        <v-flex v-if="selectedProvider && $vuetify.breakpoint.xsOnly" xs12 mb-2>
-          <div class="font-weight-bold headline px-4 mb-4 text_2--text">
+        <v-col v-if="selectedProvider && $vuetify.display.xs" cols="12" class="mb-2">
+          <div class="font-weight-bold headline px-4 mb-4 text-text_2">
             <span>
-              {{ t('walletTopUp.purchaseVia') }}
+              {{ $t('walletTopUp.purchaseVia') }}
               <span class="text-capitalize">{{ selectedProvider }}</span>
             </span>
           </div>
-        </v-flex>
+        </v-col>
 
-        <v-flex id="providerForm" mb-4 px-4 :class="$vuetify.breakpoint.width > 800 ? 'xs7' : 'xs12'">
+        <v-col id="providerForm" class="mb-4 px-4" :cols="$vuetify.display.width > 800 ? '7' : '12'">
           <router-view></router-view>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -91,11 +91,11 @@ export default {
       this.$router.push({ name: 'walletHome' }).catch((_) => {})
       return
     }
-    const routerPath = this.$router.currentRoute.path
-    const foundPath = this.providers.find((x) => x.link === routerPath)
+    const routePath = this.$route.path
+    const foundPath = this.providers.find((x) => x.link === routePath)
     this.selectedProvider = foundPath ? foundPath.name : ''
 
-    this.$vuetify.goTo(0)
+    // this.$vuetify.goTo(0)
   },
 }
 </script>

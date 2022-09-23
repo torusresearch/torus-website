@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const { IgnorePlugin, ProvidePlugin, DefinePlugin } = require('webpack')
+const { VuetifyPlugin } = require('webpack-plugin-vuetify')
 // const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
@@ -47,6 +48,7 @@ module.exports = {
       wasmcurves: path.resolve(__dirname, 'node_modules/empty-module'),
     }
     config.plugins.push(new IgnorePlugin({ resourceRegExp: /^\.\/wordlists\/(?!english)/, contextRegExp: /bip39\/src$/ }))
+    config.plugins.push(new VuetifyPlugin({ autoImport: true }))
     config.plugins.push(
       new ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],

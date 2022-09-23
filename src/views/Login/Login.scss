@@ -1,7 +1,7 @@
 .login-panel-left {
-  background: #F3F4F6;
+  background: #f3f4f6;
   .inner-left-panel {
-    background: #FFFFFF;
+    background: #ffffff;
     border-radius: 30px;
     margin: 30px 0px 30px 56px;
     padding: 56px 0px;
@@ -9,19 +9,16 @@
   &.torus-dark {
     background: #111928;
     .inner-left-panel {
-      background: #1F2A37;
+      background: #1f2a37;
     }
     .mobile-login-container {
-      background: #1F2A37;
+      background: #1f2a37;
     }
   }
-  
 }
 
-
-
 .login-panel-right {
-  background: #F3F4F6;
+  background: #f3f4f6;
 
   &.torus-dark {
     background: #111928;
@@ -37,26 +34,11 @@
     border: 1px solid #f1f2f6 !important;
     height: inherit;
   }
-  &.theme--dark.v-btn:not(.v-btn--text):not(.v-btn--icon) {
+  &.v-theme--dark.v-btn:not(.v-btn--variant-text):not(.v-btn--variant-icon) {
     border: 1px solid #343539;
     background-color: #424242;
   }
 }
-
-.background-login {
-  position: relative;
-  height: 100%;
-  background: #F3F4F6;
-  &.torus-dark {
-    background: #111928;
-  }
-
-  @media only screen and (min-width: 1264px) {
-    background-size: 100%;
-  }
-}
-
-
 
 body,
 html {

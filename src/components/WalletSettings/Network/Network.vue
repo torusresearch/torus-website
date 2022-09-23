@@ -1,158 +1,145 @@
 <template>
-  <div :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
-    <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
+  <div :class="$vuetify.display.xsOnly ? 'pt-5' : 'py-5'">
+    <v-form ref="networkForm" v-model="formValid" lazy-validation>
       <template v-if="!addCustomNetwork">
-        <div class="body-2 mb-2">{{ t('walletSettings.selectNetwork') }}</div>
-        <v-layout wrap class="network-setting">
-          <v-flex xs12>
-            <v-menu transition="slide-y-transition" offset-y>
-              <template #activator="{ on }">
-                <v-btn class="select-coin" label :outlined="$vuetify.theme.dark" v-on="on">
+        <div class="body-2 mb-2">{{ $t('walletSettings.selectNetwork') }}</div>
+        <v-row wrap class="network-setting">
+          <v-col cols="12">
+            <v-menu location="bottom">
+              <template #activator="{ props }">
+                <v-btn class="select-coin" label :variant="isDarkMode ? 'outlined' : 'elevated'" v-bind="props">
                   <span class="select-coin-name">{{ selectedNetwork.networkName }}</span>
                   <div class="flex-grow-1 text-right pr-2">
-                    <v-icon right>$vuetify.icons.select</v-icon>
+                    <v-icon end>$select</v-icon>
                   </div>
                 </v-btn>
               </template>
-              <v-list class="select-item-list overflow-y-auto" style="max-height: 240px">
+              <v-list class="select-item-list overflow-y-auto" :style="{ maxHeight: '240px' }">
                 <v-list-item
                   v-for="host in defaultNetworks"
                   :key="supportedNetworks[host].networkName"
                   class="select-coin-eth"
                   @click="selectedItemChanged(supportedNetworks[host])"
                 >
-                  <v-list-item-content>
-                    <v-list-item-title class="body-2">{{ supportedNetworks[host].networkName }}</v-list-item-title>
-                  </v-list-item-content>
+                  <v-list-item-title class="body-2">{{ supportedNetworks[host].networkName }}</v-list-item-title>
                 </v-list-item>
-                <v-subheader v-if="customNetworks.length > 0" class="subheading">
-                  {{ t('walletSettings.customNetwork') }}
-                </v-subheader>
+                <v-list-subheader v-if="customNetworks.length > 0" class="subheading">
+                  {{ $t('walletSettings.customNetwork') }}
+                </v-list-subheader>
                 <v-list-item
                   v-for="host in customNetworks"
                   :key="supportedNetworks[host].networkName"
                   @click="selectedItemChanged(supportedNetworks[host])"
                 >
-                  <v-list-item-content>
-                    <v-list-item-title class="body-2">{{ supportedNetworks[host].networkName }}</v-list-item-title>
-                  </v-list-item-content>
-                  <v-list-item-icon>
-                    <v-btn
-                      v-if="supportedNetworks[host].id"
-                      color="text_3"
-                      icon
-                      small
-                      :aria-label="`Edit ${supportedNetworks[host].networkName}`"
-                      @click.stop="editNetwork(supportedNetworks[host])"
-                    >
-                      {{ t('walletSettings.editNetwork') }}
-                    </v-btn>
-                  </v-list-item-icon>
-                  <v-list-item-icon>
-                    <v-btn
-                      v-if="supportedNetworks[host].id"
-                      class="delete-btn"
-                      color="text_2"
-                      icon
-                      small
-                      :aria-label="`Delete ${supportedNetworks[host].networkName}`"
-                      @click.stop="deleteNetwork(supportedNetworks[host])"
-                    >
-                      <v-icon x-small>$vuetify.icons.trash</v-icon>
-                    </v-btn>
-                  </v-list-item-icon>
+                  <v-list-item-title class="body-2">{{ supportedNetworks[host].networkName }}</v-list-item-title>
+                  <v-btn
+                    v-if="supportedNetworks[host].id"
+                    color="text_3"
+                    icon
+                    size="small"
+                    :aria-label="`Edit ${supportedNetworks[host].networkName}`"
+                    @click.stop="editNetwork(supportedNetworks[host])"
+                  >
+                    {{ $t('walletSettings.editNetwork') }}
+                  </v-btn>
+                  <v-btn
+                    v-if="supportedNetworks[host].id"
+                    class="delete-btn"
+                    color="text_2"
+                    icon
+                    size="small"
+                    :aria-label="`Delete ${supportedNetworks[host].networkName}`"
+                    @click.stop="deleteNetwork(supportedNetworks[host])"
+                  >
+                    <v-icon size="x-small">$trash</v-icon>
+                  </v-btn>
                 </v-list-item>
               </v-list>
             </v-menu>
-          </v-flex>
-        </v-layout>
-        <v-flex class="ml-auto text-right">
-          <v-spacer></v-spacer>
+          </v-col>
+        </v-row>
+        <div class="text-right">
           <v-btn
             id="add-custom-network"
-            large
             class="torus-btn1"
-            :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
-            :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
+            size="large"
+            variant="flat"
+            :class="whiteLabel.isActive ? 'text-white' : 'text-torusBrand1'"
+            :color="whiteLabel.isActive ? 'torusBrand1' : ''"
             type="button"
             @click="toggleNetworkView"
           >
-            {{ t('walletSettings.addCustomNetwork') }}
+            {{ $t('walletSettings.addCustomNetwork') }}
           </v-btn>
-        </v-flex>
+        </div>
       </template>
       <template v-else>
-        <v-flex xs12>
-          <v-btn text class="caption text_3--text mb-2 plain" x-small @click="toggleNetworkView">{{ t('walletSettings.back') }}</v-btn>
+        <div>
+          <v-btn variant="text" class="caption text-text_3 mb-2 plain" size="x-small" @click="toggleNetworkView">
+            {{ $t('walletSettings.back') }}
+          </v-btn>
           <v-text-field
             v-model="rpc.networkName"
-            :placeholder="t('walletSettings.enterNetworkName')"
+            :placeholder="$t('walletSettings.enterNetworkName')"
             :rules="[rules.required]"
-            outlined
+            variant="outlined"
           ></v-text-field>
-        </v-flex>
+        </div>
 
-        <v-flex xs12>
-          <v-text-field v-model="rpc.host" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
-        </v-flex>
+        <div>
+          <v-text-field v-model="rpc.host" :placeholder="$t('walletSettings.enterRpc')" :rules="[rules.required]" variant="outlined"></v-text-field>
+        </div>
 
-        <v-flex xs12>
+        <div>
           <v-text-field
             v-model="rpc.chainId"
             :rules="[rules.required, rules.requiredHex]"
-            :placeholder="t('walletSettings.enterChainId')"
-            outlined
+            :placeholder="$t('walletSettings.enterChainId')"
+            variant="outlined"
           ></v-text-field>
-        </v-flex>
+        </div>
 
-        <v-flex xs12>
-          <v-text-field v-model="rpc.ticker" :placeholder="t('walletSettings.enterSymbol')" outlined></v-text-field>
-        </v-flex>
+        <div>
+          <v-text-field v-model="rpc.ticker" :placeholder="$t('walletSettings.enterSymbol')" variant="outlined"></v-text-field>
+        </div>
 
-        <v-flex xs12>
-          <v-text-field v-model="rpc.blockExplorer" :placeholder="t('walletSettings.enterBlockExplorer')" outlined></v-text-field>
-        </v-flex>
+        <div>
+          <v-text-field v-model="rpc.blockExplorer" :placeholder="$t('walletSettings.enterBlockExplorer')" variant="outlined"></v-text-field>
+        </div>
 
-        <v-flex xs12 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
-          <v-layout>
-            <v-spacer></v-spacer>
-            <v-flex xs4>
-              <v-tooltip bottom :disabled="formValid">
-                <template #activator="{ on }">
-                  <span v-on="on">
-                    <v-btn
-                      v-if="isEdit"
-                      large
-                      class="torus-btn1 py-1"
-                      :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
-                      :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
-                      block
-                      :disabled="!formValid"
-                      depressed
-                      @click="updateRPC"
-                    >
-                      {{ t('walletSettings.save') }}
-                    </v-btn>
-                    <v-btn
-                      v-else
-                      large
-                      class="torus-btn1 py-1"
-                      :class="$store.state.whiteLabel.isActive ? 'white--text' : 'torusBrand1--text'"
-                      :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
-                      block
-                      :disabled="!formValid"
-                      depressed
-                      @click="setRPC"
-                    >
-                      {{ t('walletSettings.save') }}
-                    </v-btn>
-                  </span>
-                </template>
-                <span>{{ t('walletSettings.resolveErrors') }}</span>
-              </v-tooltip>
-            </v-flex>
-          </v-layout>
-        </v-flex>
+        <div class="text-right" :class="!$vuetify.display.xsOnly ? 'pl-2' : ''">
+          <v-tooltip location="bottom" :disabled="formValid">
+            <template #activator="{ props }">
+              <span v-bind="props">
+                <v-btn
+                  v-if="isEdit"
+                  size="large"
+                  variant="flat"
+                  class="torus-btn1 py-1"
+                  :class="whiteLabel.isActive ? 'text-white' : !(formValid === false) && 'text-torusBrand1'"
+                  :color="whiteLabel.isActive ? 'torusBrand1' : ''"
+                  :disabled="formValid === false"
+                  @click="updateRPC"
+                >
+                  {{ $t('walletSettings.save') }}
+                </v-btn>
+                <v-btn
+                  v-else
+                  size="large"
+                  variant="flat"
+                  class="torus-btn1 py-1 px-10"
+                  :class="whiteLabel.isActive ? 'text-white' : !(formValid === false) && 'text-torusBrand1'"
+                  :color="whiteLabel.isActive ? 'torusBrand1' : ''"
+                  :disabled="formValid === false"
+                  @click="setRPC"
+                >
+                  {{ $t('walletSettings.save') }}
+                </v-btn>
+              </span>
+            </template>
+            <span>{{ $t('walletSettings.resolveErrors') }}</span>
+          </v-tooltip>
+        </div>
       </template>
     </v-form>
   </div>
@@ -184,7 +171,7 @@ export default {
   },
   computed: {
     ...mapGetters(['supportedNetworks']),
-    ...mapState(['networkType']),
+    ...mapState(['networkType', 'whiteLabel']),
     networks() {
       return [...Object.values(this.supportedNetworks)]
     },
@@ -196,6 +183,9 @@ export default {
     },
     selectedNetwork() {
       return this.networkType
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
     },
   },
   methods: {
@@ -221,38 +211,38 @@ export default {
           })
       }
     },
-    setRPC() {
-      if (this.$refs.networkForm.validate()) {
-        const payload = { network: this.rpc, type: RPC }
-        this.$store
-          .dispatch('setProviderType', payload)
-          .then(() => {
-            this.toggleNetworkView()
-            this.showNotification(true)
-            this.sendToIframe(payload)
-          })
-          .catch((error) => {
-            this.showNotification(false)
-            log.error(error)
-          })
-      }
+    async setRPC() {
+      const formValid = await this.$refs.networkForm.validate()
+      if (!formValid.valid) return
+      const payload = { network: this.rpc, type: RPC }
+      this.$store
+        .dispatch('setProviderType', payload)
+        .then(() => {
+          this.toggleNetworkView()
+          this.showNotification(true)
+          this.sendToIframe(payload)
+        })
+        .catch((error) => {
+          this.showNotification(false)
+          log.error(error)
+        })
     },
-    updateRPC() {
-      if (this.$refs.networkForm.validate()) {
-        const payload = { network: this.rpc, type: RPC }
-        this.$store
-          .dispatch('updateCustomNetwork', this.rpc)
-          .then(() => {
-            this.isEdit = false
-            this.toggleNetworkView()
-            this.showNotification(true)
-            this.sendToIframe(payload)
-          })
-          .catch((error) => {
-            this.showNotification(false)
-            log.error(error)
-          })
-      }
+    async updateRPC() {
+      const formValid = await this.$refs.networkForm.validate()
+      if (!formValid.valid) return
+      const payload = { network: this.rpc, type: RPC }
+      this.$store
+        .dispatch('updateCustomNetwork', this.rpc)
+        .then(() => {
+          this.isEdit = false
+          this.toggleNetworkView()
+          this.showNotification(true)
+          this.sendToIframe(payload)
+        })
+        .catch((error) => {
+          this.showNotification(false)
+          log.error(error)
+        })
     },
     async sendToIframe(payload) {
       const urlInstance = this.$route.query.instanceId

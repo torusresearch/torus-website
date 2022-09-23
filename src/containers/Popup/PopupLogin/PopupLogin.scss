@@ -1,16 +1,10 @@
-@import '../../../scss/login-types.mixin';
+@import "../../../scss/login-types.mixin";
 
 .login-dialog-container.v-card {
   background: #f9f9fb;
-  .close-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    color: #dfdfdf;
-  }
 
   .login-header {
-    background: var(--v-torusGray4-base);
+    background: rgb(var(--v-theme-torusGray5));
     border-bottom: 1px solid #f3f3f4;
     box-sizing: border-box;
     border-radius: 6px;
@@ -20,8 +14,8 @@
 
     .close-btn {
       position: absolute;
-      top: 0;
-      right: 0;
+      top: 10px;
+      right: 10px;
       color: #dfdfdf;
     }
     .verifier-title1 {
@@ -49,7 +43,7 @@
     margin-right: 24px;
   }
 
-  .login-btn.v-btn:not(.v-btn--text):not(.v-btn--icon) {
+  .login-btn.v-btn:not(.v-btn--variant-text):not(.v-btn--variant-icon) {
     background: #ffffff;
     border: 1px solid #f1f2f6;
     box-sizing: border-box;
@@ -63,7 +57,7 @@
     }
   }
 
-  .login-btn-long.v-btn.v-btn:not(.v-btn--text):not(.v-btn--icon) {
+  .login-btn-long.v-btn.v-btn:not(.v-btn--variant-text):not(.v-btn--variant-icon) {
     background: #ffffff !important;
     border: 1px solid #f1f2f6 !important;
     box-sizing: border-box;
@@ -77,10 +71,10 @@
       background: #2f3136 !important;
       border: 1px solid #404145 !important;
       box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
-      color: var(--v-text_3-base) !important;
+      color: rgb(var(--v-theme-text_3)) !important;
     }
 
-    ::v-deep .v-btn__content {
+    :deep(.v-btn__content) {
       justify-content: left;
     }
 
@@ -103,36 +97,36 @@
   .footer-links {
     padding-left: 24px;
     padding-right: 24px;
-    background: var(--v-torusGray4-base);
+    background: rgb(var(--v-theme-torusGray5));
     font-size: 0.75rem;
     line-height: 0.875rem;
     letter-spacing: 0;
     font-weight: normal;
     margin: 0 -24px;
-    .theme--light.v-divider {
-      border-color: var(--v-text_2-base);
+    .v-theme--light.v-divider {
+      border-color: rgb(var(--v-theme-text_2));
     }
   }
 
-  .v-btn.view-option-selector:not(.v-btn--text):not(.v-btn--icon):not(.v-btn--round) {
+  .v-btn.view-option-selector:not(.v-btn--variant-text):not(.v-btn--variant-icon):not(.v-btn--rounded) {
     height: 25px;
     border-radius: 12.5px;
     padding: 3px 12px 3px 20px;
-    background: var(--v-torusGray4-base);
+    background: rgb(var(--v-theme-torusGray5));
     box-shadow: none;
-    color: var(--v-text_2-base);
+    color: rgb(var(--v-theme-text_2));
     &.has-more {
       .v-icon {
         transform: rotate(-180deg);
       }
     }
-    &.theme--dark {
-      background: var(--v-torusBlack2-base);
-      color: var(--v-text_2-base);
+    &.v-theme--dark {
+      background: rgb(var(--v-theme-torusBlack2));
+      color: rgb(var(--v-theme-text_2));
     }
   }
 
-  &.theme--dark {
+  &.v-theme--dark {
     background: #242529;
     .login-header {
       background: #242529;
@@ -140,14 +134,14 @@
       border: 0;
     }
 
-    .login-btn.v-btn:not(.v-btn--text):not(.v-btn--icon) {
+    .login-btn.v-btn:not(.v-btn--variant-text):not(.v-btn--variant-icon) {
       background: #2f3136;
       border: 1px solid #404145;
       box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
     }
 
     .footer-links {
-      background: var(--v-torusBlack2-base);
+      background: rgb(var(--v-theme-torusBlack2));
     }
   }
 

@@ -1,18 +1,18 @@
 <template>
-  <v-container fluid fill-height text-center>
-    <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
-      <v-flex text-center>
+  <v-container fluid class="fill-height text-center">
+    <v-row wrap align="center" class="fill-height redirect-container" :class="$vuetify.display.xs ? 'redirect-container--mobile' : ''">
+      <v-col class="text-center">
         <div v-if="isCustomVerifier" class="text_2--text font-weight-bold text-body-2 mb-10">
-          {{ t('login.constructYourKey') }}
+          {{ $t('login.constructYourKey') }}
           <a :href="dappUrl" class="torusBrand1--text" target="_blank" rel="noreferrer noopener">{{ dappName }}</a>
         </div>
         <BoxLoader :white-label="whiteLabel" :is-custom-verifier="isCustomVerifier" />
-      </v-flex>
+      </v-col>
       <div class="footer">
-        <div class="powered-by">{{ t('login.selfCustodial') }}</div>
+        <div class="powered-by">{{ $t('login.selfCustodial') }}</div>
         <img height="26" :src="require(`@/assets/images/web3auth.svg`)" alt="Web3Auth" />
       </div>
-    </v-layout>
+    </v-row>
   </v-container>
 </template>
 

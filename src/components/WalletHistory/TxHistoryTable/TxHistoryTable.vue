@@ -1,33 +1,22 @@
 <template>
   <div class="activity-table">
-    <v-data-iterator
-      :disable-pagination="$vuetify.breakpoint.xsOnly"
-      :items="filteredTransactions"
-      item-key="id"
-      :items-per-page.sync="itemsPerPage"
-      :page.sync="page"
-      hide-default-footer
-    >
-      <template #default="props">
-        <TransactionDetails
-          v-for="transaction in props.items"
-          :key="transaction.transaction_hash || transaction.id"
-          :transaction="transaction"
-          :currency-multiplier="currencyMultiplier"
-          :selected-currency="selectedCurrency"
-          :cancel-gas-price="cancelGasPrice"
-          @cancelTransaction="cancelTransaction"
-        />
-      </template>
-    </v-data-iterator>
-
-    <div v-if="!$vuetify.breakpoint.xsOnly && pageCount > 1" class="text-center pt-6">
+    <TransactionDetails
+      v-for="transaction in pagedTransactions"
+      :key="transaction.transaction_hash || transaction.id"
+      :transaction="transaction"
+      :currency-multiplier="currencyMultiplier"
+      :selected-currency="selectedCurrency"
+      :cancel-gas-price="cancelGasPrice"
+      @cancelTransaction="cancelTransaction"
+    />
+    <div v-if="!$vuetify.display.xs && pageCount > 1" class="text-center pt-6">
       <v-pagination
         v-model="page"
         class="activity-pagination"
-        prev-icon="$vuetify.icons.page_prev"
-        next-icon="$vuetify.icons.page_next"
+        prev-icon="$page_prev"
+        next-icon="$page_next"
         :length="pageCount"
+        :total-visible="7"
       ></v-pagination>
     </div>
   </div>
@@ -35,7 +24,6 @@
 
 <script>
 import BigNumber from 'bignumber.js'
-import log from 'loglevel'
 
 import { ACTIVITY_ACTION_ALL, ACTIVITY_PERIOD_ALL, ACTIVITY_PERIOD_MONTH_ONE, ACTIVITY_PERIOD_WEEK_ONE } from '../../../utils/enums'
 import TransactionDetails from '../TransactionDetails'
@@ -128,7 +116,10 @@ export default {
         return isScoped
       })
 
-      log.info('transactions', transactions)
+      return transactions
+    },
+    pagedTransactions() {
+      const transactions = this.filteredTransactions.slice((this.page - 1) * this.itemsPerPage, this.page * this.itemsPerPage)
 
       return transactions
     },

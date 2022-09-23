@@ -1,9 +1,9 @@
 <template>
-  <v-flex xs12 sm4 md3 lg2 px-3 pb-4>
+  <v-col cols="12" sm="4" md="3" lg="2" class="px-3 pb-4">
     <!-- Asset Desktop View -->
     <v-expand-transition>
       <v-card
-        v-if="!$vuetify.breakpoint.xsOnly"
+        v-if="!$vuetify.display.xs"
         class="mx-auto asset elevation-1"
         :class="assetActive ? 'asset--active' : ''"
         max-width="344"
@@ -34,7 +34,7 @@
           />
         </div>
         <v-card-text class="asset-text py-1 px-3">
-          <div class="body-2" :class="assetActive ? '' : 'text-clamp-two'" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
+          <div class="text-caption" :class="assetActive ? '' : 'text-clamp-one'" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
             {{ asset.name || `${selectedContract.name} #${asset.tokenId}` }}
           </div>
           <div class="text-right asset-details mt-1">
@@ -45,14 +45,14 @@
         <v-card-text class="asset-more pt-1 py-3 px-3">
           <div class="font-weight-medium">ID</div>
           <div class="font-weight-light text_2--text mb-2">#{{ asset.tokenId }}</div>
-          <div class="font-weight-medium">{{ t('walletHome.description') }}</div>
+          <div class="font-weight-medium">{{ $t('walletHome.description') }}</div>
           <div class="font-weight-light text_2--text" :class="{ 'text-clamp-two': !viewMore }">{{ asset.description }}</div>
           <a class="caption text_3--text" @click.stop="viewMore = !viewMore">
-            {{ viewMore ? t('walletHome.viewLess') : t('walletHome.viewMore') }}
+            {{ viewMore ? $t('walletHome.viewLess') : $t('walletHome.viewMore') }}
           </a>
           <div class="mt-4">
-            <v-btn block depressed :outlined="$vuetify.theme.dark" color="torusBrand1" class="white--text mb-2" @click="transferAsset(asset)">
-              {{ t('walletHome.transfer') }}
+            <v-btn block depressed :outlined="isDarkMode" color="torusBrand1" class="white--text mb-2" @click="transferAsset(asset)">
+              {{ $t('walletHome.transfer') }}
             </v-btn>
             <v-btn
               block
@@ -61,7 +61,7 @@
               :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
               @click.stop="toggleAsset(false)"
             >
-              {{ t('walletHome.close') }}
+              {{ $t('walletHome.close') }}
             </v-btn>
           </div>
         </v-card-text>
@@ -71,7 +71,7 @@
     <!-- Asset Mobile View -->
     <v-expand-transition>
       <v-card
-        v-if="$vuetify.breakpoint.xsOnly"
+        v-if="$vuetify.display.xs"
         class="asset elevation-1 asset--mobile"
         :class="assetActive ? 'asset--active' : ''"
         :ripple="false"
@@ -85,7 +85,7 @@
             >
               {{ asset.name || `${selectedContract.name} #${asset.tokenId}` }}
             </div>
-            <div v-if="!assetActive" class="font-weight-medium caption">{{ t('walletHome.description') }}</div>
+            <div v-if="!assetActive" class="font-weight-medium caption">{{ $t('walletHome.description') }}</div>
             <div v-if="!assetActive" class="font-weight-light caption text_2--text text-clamp-one">{{ asset.description }}</div>
           </v-list-item-content>
 
@@ -101,12 +101,12 @@
         <v-card-text class="asset-more py-2 px-4">
           <div class="font-weight-medium mt-2">ID</div>
           <div class="font-weight-light mb-2 text_2--text">#{{ asset.tokenId }}</div>
-          <div class="font-weight-medium">{{ t('walletHome.description') }}</div>
+          <div class="font-weight-medium">{{ $t('walletHome.description') }}</div>
           <div class="font-weight-light text_2--text">{{ asset.description }}</div>
         </v-card-text>
 
         <v-card-actions class="px-2 pt-0 pb-3">
-          <v-flex xs6 class="px-2">
+          <v-col xs6 class="px-2">
             <v-btn
               block
               class="torus-btn1"
@@ -114,18 +114,18 @@
               :color="$store.state.whiteLabel.isActive ? 'torusBrand1' : ''"
               @click.stop="toggleAsset(!assetActive)"
             >
-              {{ assetActive ? t('walletHome.lessInfo') : t('walletHome.moreInfo') }}
+              {{ assetActive ? $t('walletHome.lessInfo') : $t('walletHome.moreInfo') }}
             </v-btn>
-          </v-flex>
-          <v-flex xs6 class="px-2">
-            <v-btn block depressed :outlined="$vuetify.theme.dark" color="torusBrand1" class="white--text" @click.stop="transferAsset(asset)">
-              {{ t('walletHome.transfer') }}
+          </v-col>
+          <v-col xs6 class="px-2">
+            <v-btn block depressed :outlined="isDarkMode" color="torusBrand1" class="white--text" @click.stop="transferAsset(asset)">
+              {{ $t('walletHome.transfer') }}
             </v-btn>
-          </v-flex>
+          </v-col>
         </v-card-actions>
       </v-card>
     </v-expand-transition>
-  </v-flex>
+  </v-col>
 </template>
 
 <script>
@@ -143,6 +143,11 @@ export default {
       assetActive: false,
       viewMore: false,
     }
+  },
+  computed: {
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
+    },
   },
   methods: {
     transferAsset(asset) {

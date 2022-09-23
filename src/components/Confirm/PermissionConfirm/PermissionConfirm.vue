@@ -1,32 +1,32 @@
 <template>
-  <v-container px-0 py-6 class="permission-container">
-    <v-layout wrap>
-      <v-flex class="card-shadow text-center" py-6 mb-4 xs12>
+  <v-container class="permission-container px-0 py-6">
+    <v-row wrap>
+      <v-col class="card-shadow text-center py-6 mb-4" cols="12">
         <img src="../../../assets/images/security.svg" alt="Security Icon" />
-        <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="headline font-weight-bold">
-          {{ t('dappPermission.permission') }}
+        <div :class="isDarkMode ? 'text-text_3' : 'text-text_2'" class="headline font-weight-bold">
+          {{ $t('dappPermission.permission') }}
         </div>
-      </v-flex>
-      <v-flex mx-6 mb-4 xs12>
-        <v-layout align="top" no-gutters>
-          <v-flex xs3 style="position: relative">
+      </v-col>
+      <v-col class="mx-6 mb-4" cols="12">
+        <v-row align="top" no-gutters>
+          <v-col cols="3" style="position: relative">
             <div class="logo-container d-flex align-center justify-center float-right">
               <!-- Update with proper logo -->
               <img class="logo-from" :src="`${logosUrl}/augur_logo.png`" :alt="`${origin} Logo`" />
             </div>
             <br />
             <br />
-            <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="float-right caption text-center logo-label" :title="origin">
+            <div :class="isDarkMode ? 'text-text_3' : 'text-text_2'" class="float-right caption text-center logo-label" :title="origin">
               {{ origin }}
             </div>
-          </v-flex>
-          <v-flex xs6>
-            <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="pt-2 network-container">
-              <v-icon size="12">$vuetify.icons.network</v-icon>
+          </v-col>
+          <v-col cols="6">
+            <div :class="isDarkMode ? 'text-text_3' : 'text-text_2'" class="pt-2 network-container">
+              <v-icon size="12">$network</v-icon>
               <span class="">{{ selectedNetwork }}</span>
             </div>
-          </v-flex>
-          <v-flex xs3>
+          </v-col>
+          <v-col cols="3">
             <!-- Update with proper target -->
             <div class="logo-container d-flex align-center justify-center float-left">
               <img src="../../../assets/images/oval-google.svg" alt="Target Logo" />
@@ -34,66 +34,68 @@
             <br />
             <br />
             <div
-              :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'"
+              :class="isDarkMode ? 'text-text_3' : 'text-text_2'"
               class="float-left caption text-center logo-label logo-label--right"
               title="AugurAugurAugurAugurAugur.com"
             >
               AugurAugurAugurAugurAugur.com
             </div>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex mb-4 mx-6 xs12>
-        <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="caption mb-2">{{ t('dappPermission.toAllow') }}:</div>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col class="mb-4 mx-6" cols="12">
+        <div :class="isDarkMode ? 'text-text_3' : 'text-text_2'" class="caption mb-2">{{ $t('dappPermission.toAllow') }}:</div>
 
         <v-card class="permission-list card-shadow px-3 py-4 mb-4">
           <div class="mb-4">
-            <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--title">
-              <v-icon size="12">$vuetify.icons.person</v-icon>
-              {{ t('dappPermission.accessUserInfo') }}
+            <div :class="isDarkMode ? 'text-text_3' : 'text-text_2'" class="permission-list--title">
+              <v-icon size="12">$person</v-icon>
+              {{ $t('dappPermission.accessUserInfo') }}
             </div>
-            <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--subtitle">
-              {{ t('dappPermission.displayUserInfo') }}
+            <div :class="isDarkMode ? 'text-text_3' : 'text-text_2'" class="permission-list--subtitle">
+              {{ $t('dappPermission.displayUserInfo') }}
             </div>
           </div>
           <div class="mb-4">
-            <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--title">
-              <v-icon size="12">$vuetify.icons.time</v-icon>
-              {{ t('dappPermission.transactHours').replace(/\{num\}/gi, 6) }}
+            <div :class="isDarkMode ? 'text-text_3' : 'text-text_2'" class="permission-list--title">
+              <v-icon size="12">$time</v-icon>
+              {{ $t('dappPermission.transactHours').replace(/\{num\}/gi, 6) }}
             </div>
-            <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--subtitle"></div>
+            <div :class="isDarkMode ? 'text-text_3' : 'text-text_2'" class="permission-list--subtitle"></div>
           </div>
           <div class="mb-4">
-            <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--title">
-              <v-icon size="12">$vuetify.icons.network</v-icon>
-              {{ t('dappPermission.changeNetwork').replace(/\{network\}/gi, 'Rinkeby Network') }}
+            <div :class="isDarkMode ? 'text-text_3' : 'text-text_2'" class="permission-list--title">
+              <v-icon size="12">$network</v-icon>
+              {{ $t('dappPermission.changeNetwork').replace(/\{network\}/gi, 'Rinkeby Network') }}
             </div>
-            <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--subtitle"></div>
+            <div :class="isDarkMode ? 'text-text_3' : 'text-text_2'" class="permission-list--subtitle"></div>
           </div>
         </v-card>
 
         <v-card class="card-shadow px-3 py-4 mb-8">
-          <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="caption permission-note">
+          <div :class="isDarkMode ? 'text-text_3' : 'text-text_2'" class="caption permission-note">
             <img src="../../../assets/images/exclamation-triangle.png" alt="Alert Icon" />
-            {{ t('dappPermission.note').replace(/\{num\}/gi, 6) }}.
-            <a class="font-italic" rel="noreferrer noopener" :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'">
-              {{ t('dappPermission.learnMore') }}
+            {{ $t('dappPermission.note').replace(/\{num\}/gi, 6) }}.
+            <a class="font-italic" rel="noreferrer noopener" :class="isDarkMode ? 'text-text_3' : 'text-text_2'">
+              {{ $t('dappPermission.learnMore') }}
             </a>
           </div>
         </v-card>
 
-        <v-layout px-2>
-          <v-flex xs6>
-            <v-btn block text large :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" @click="triggerDeny">
-              {{ t('dappPermission.cancel') }}
+        <v-row class="px-2">
+          <v-col cols="6">
+            <v-btn block variant="text" size="large" :class="isDarkMode ? 'text-text_3' : 'text-text_2'" @click="triggerDeny">
+              {{ $t('dappPermission.cancel') }}
             </v-btn>
-          </v-flex>
-          <v-flex xs6>
-            <v-btn block depressed large color="torusBrand1" class="ml-2 white--text" @click="triggerSign">{{ t('dappPermission.allow') }}</v-btn>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-    </v-layout>
+          </v-col>
+          <v-col cols="6">
+            <v-btn block depressed size="large" color="torusBrand1" class="ml-2 text-white" @click="triggerSign">
+              {{ $t('dappPermission.allow') }}
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -127,6 +129,9 @@ export default {
     ...mapGetters({
       supportedNetworks: 'supportedNetworks',
     }),
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
+    },
   },
   methods: {
     triggerSign() {

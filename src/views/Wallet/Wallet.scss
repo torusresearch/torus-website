@@ -8,14 +8,14 @@
   }
 }
 
-.theme--dark.v-input.v-input--is-readonly {
+.v-theme--dark.v-input.v-input--is-readonly {
   fieldset {
     border-color: var(--v-disabled-base);
   }
 }
 
 .v-text-field__suffix {
-  color: var(--v-text_2-base);
+  color: rgb(var(--v-theme-text_2));
   font-size: 16px;
 }
 

@@ -1,78 +1,71 @@
 <template>
-  <v-container px-0 py-0>
+  <div>
     <template v-if="type === 'none'">
       <ChangeProviderScreenLoader />
     </template>
     <template v-else>
-      <v-layout pa-6 class="provider-change-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
-        <v-flex text-left xs12>
-          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
-          <div class="headline text_2--text">{{ t('dappInfo.permission') }}</div>
-        </v-flex>
-      </v-layout>
-      <v-layout wrap align-center mx-6 mb-3 mt-5>
-        <v-flex class="text-center">
-          <span class="headline text_2--text">
-            {{ headline }}
-          </span>
-          <!-- <br />
-          <v-btn small text class="caption torusBrand1--text" @click="editPermissions">
+      <div class="provider-change-header text-left pa-6" :class="{ 'v-theme--dark': isDarkMode }">
+        <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
+        <div class="headline text-text_2">{{ $t('dappInfo.permission') }}</div>
+      </div>
+      <div class="text-center mx-6 mb-3 mt-5">
+        <span class="headline text-text_2">
+          {{ headline }}
+        </span>
+        <!-- <br />
+          <v-btn small text class="caption text-torusBrand1" @click="editPermissions">
             Edit permissions
           </v-btn> -->
-        </v-flex>
-      </v-layout>
+      </div>
       <v-divider class="mx-6"></v-divider>
-      <v-layout wrap align-center ma-6>
-        <v-flex xs12 mb-2>
-          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
+      <div wrap class="align-center ma-6">
+        <div class="mb-2">
+          <div class="caption mb-2 text-text_2">{{ $t('dappProvider.requestFrom') }}:</div>
 
-          <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
-            <v-card-text>
-              <div class="d-flex request-from align-center">
-                <a :href="origin.href" target="_blank" rel="noreferrer noopener" class="caption font-weight-medium torusBrand1--text">
-                  {{ origin.hostname }}
-                </a>
-                <v-btn
-                  x-small
-                  :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'"
-                  class="link-icon ml-auto"
-                  :href="origin.href"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  :aria-label="`Open ${origin.hostname} Link`"
-                >
-                  <img src="../../assets/img/icons/open-in-new-grey.svg" class="card-upper-icon" alt="Open Link Icon" />
-                </v-btn>
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-flex>
-        <v-flex xs12 mt-4>
-          <div class="caption mb-2 text_2--text">{{ t('dappPermission.currentNetwork') }}</div>
+          <div class="d-flex request-from pa-3 align-center">
+            <a
+              :href="origin.href"
+              target="_blank"
+              rel="noreferrer noopener"
+              class="text-caption text-decoration-none font-weight-medium text-torusBrand1"
+            >
+              {{ origin.hostname }}
+            </a>
+            <v-btn
+              size="x-small"
+              :color="isDarkMode ? 'torusBlack2' : 'white'"
+              class="link-icon ml-auto"
+              :href="origin.href"
+              target="_blank"
+              rel="noreferrer noopener"
+              :aria-label="`Open ${origin.hostname} Link`"
+            >
+              <img :src="require('../../assets/img/icons/open-in-new-grey.svg')" class="card-upper-icon" alt="Open Link Icon" />
+            </v-btn>
+          </div>
+        </div>
+        <div class="mt-4">
+          <div class="caption mb-2 text-text_2">{{ $t('dappPermission.currentNetwork') }}</div>
 
-          <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
-            <v-card-text>
-              <div class="caption text_2--text request-from">
-                <span>{{ currentNetwork.networkName || currentNetwork.host }}</span>
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-flex>
-        <v-flex xs12 mt-8>
-          <v-layout mx-n2>
-            <v-flex xs6 px-2>
-              <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
-            </v-flex>
-            <v-flex xs6 px-2>
-              <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
-                {{ t('dappProvider.confirm') }}
+          <div class="caption text-text_2 request-from pa-3">
+            <span>{{ currentNetwork.networkName || currentNetwork.host }}</span>
+          </div>
+        </div>
+        <div class="mt-8">
+          <v-row class="mx-n2">
+            <v-col cols="6" class="px-2">
+              <v-btn block variant="text" size="large" class="text-text_2" @click="triggerDeny">{{ $t('dappProvider.cancel') }}</v-btn>
+            </v-col>
+            <v-col cols="6" class="px-2">
+              <v-btn block depressed size="large" class="torus-btn1 text-white" color="torusBrand1" @click="triggerSign">
+                {{ $t('dappProvider.confirm') }}
               </v-btn>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-      </v-layout>
+            </v-col>
+          </v-row>
+        </div>
+      </div>
     </template>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -100,14 +93,16 @@ export default {
   computed: {
     ...mapGetters(['getLogo']),
     headline() {
-      return this.t('dappPermission.allowNetworkChange')
-        .replace(/{host}/gi, this.origin.hostname)
-        .replace(
-          /{network}/gi,
+      return this.$t('dappPermission.allowNetworkChange', {
+        host: this.origin.hostname,
+        network:
           (SUPPORTED_NETWORK_TYPES[this.network.host] && SUPPORTED_NETWORK_TYPES[this.network.host].networkName) ||
-            this.network.networkName ||
-            this.network.host
-        )
+          this.network.networkName ||
+          this.network.host,
+      })
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
     },
   },
   created() {

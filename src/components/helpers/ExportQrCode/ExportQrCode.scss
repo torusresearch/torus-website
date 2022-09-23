@@ -1,14 +1,14 @@
-.v-btn.v-btn--icon.qr-btn {
-  background-color: var(--v-torusGray4-base);
-  color: var(--v-torusFont2-base);
-  &.theme--dark {
-    background-color: var(--v-torusBlack2-base);
-    color: #5C6C7F;
+.v-btn.v-btn--variant-icon.qr-btn {
+  background-color: rgb(var(--v-theme-torusGray5));
+  color: rgb(var(--v-theme-torusFont2));
+  &.v-theme--dark {
+    background-color: rgb(var(--v-theme-torusBlack2));
+    color: #5c6c7f;
   }
 }
 
 .card-header {
-  background: #FFFFFF;
+  background: #ffffff;
   box-sizing: border-box;
   border-radius: 6px;
   line-height: 0;
@@ -17,7 +17,7 @@
     position: absolute;
     top: 5px;
     right: 5px;
-    color: var(--v-text_1-base);
+    color: rgb(var(--v-theme-text_1));
   }
 }
 
@@ -33,8 +33,8 @@
   font-size: 12px;
 }
 
-.theme--dark {
+.v-theme--dark {
   .card-header {
-    background: var(--v-torusBlack2-base);
+    background: rgb(var(--v-theme-torusBlack2));
   }
 }

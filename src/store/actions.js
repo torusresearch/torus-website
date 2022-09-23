@@ -613,7 +613,7 @@ export default {
     const { networkType, networkId, wcConnectorSession } = state
     let walletKey = {}
     try {
-      const currentRoute = router.match(window.location.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
+      const currentRoute = router.resolve(window.location.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
       if (!currentRoute.meta.skipOpenLoginCheck) {
         const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
         const sessionInfo = await openLoginHandler.getActiveSession()

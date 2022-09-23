@@ -1,12 +1,12 @@
 <template>
   <div class="torus-widget" :class="embedState.buttonPosition">
-    <v-dialog v-if="loggedIn" v-model="activeWidget" max-width="375" @click:outside="showWidget">
+    <v-dialog v-if="loggedIn" v-model="activeWidget" :class="embedState.buttonPosition" @click:outside="showWidget">
       <div class="torus-widget__panel pa-4" :class="$vuetify.theme.isDark ? 'isDark' : ''" :style="panelStyle">
         <div class="d-flex torus-widget__user-details">
           <div class="avatar-container">
             <v-avatar size="32">
               <div v-if="accountType === ACCOUNT_TYPE.IMPORTED" class="avatar-import">
-                <v-icon>$vuetify.icons.person</v-icon>
+                <v-icon>$person</v-icon>
               </div>
               <img
                 v-else
@@ -18,18 +18,18 @@
           </div>
           <div class="details-container d-flex flex-column pr-2 ml-2">
             <div class="d-flex align-center">
-              <v-icon size="12" class="details-container__icon text_2--text">{{ `$vuetify.icons.${userIcon}` }}</v-icon>
-              <div class="details-container__text ml-2 font-weight-bold text_2--text" :title="userEmail">{{ userEmail }}</div>
+              <v-icon size="12" class="details-container__icon text-text_2">{{ `$${userIcon}` }}</v-icon>
+              <div class="details-container__text ml-2 font-weight-bold text-text_2" :title="userEmail">{{ userEmail }}</div>
               <!-- Will add when dropdown available -->
-              <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->
+              <!-- <v-icon size="16" class="ml-auto text-text_2">select</v-icon> -->
             </div>
             <div class="d-flex align-center">
-              <v-icon size="12" class="details-container__icon text_2--text">{{ `$vuetify.icons.address` }}</v-icon>
+              <v-icon size="12" class="details-container__icon text-text_2">$address</v-icon>
               <div class="details-container__text caption ml-2">
                 <ShowToolTip :address="fullAddress">
                   <div class="d-flex align-center">
-                    <span class="text_2--text">{{ address }}</span>
-                    <v-icon size="12" class="ml-4 text_2--text">$vuetify.icons.copy_outline</v-icon>
+                    <span class="text-text_2">{{ address }}</span>
+                    <v-icon size="12" class="ml-4 text-text_2">$copy_outline</v-icon>
                   </div>
                 </ShowToolTip>
               </div>
@@ -39,47 +39,43 @@
         <div class="d-flex torus-widget__amount-details mt-5">
           <div>
             <div>
-              <span class="caption text_2--text">{{ t('dappPopup.totalValue') }}</span>
+              <span class="caption text-text_2">{{ $t('dappPopup.totalValue') }}</span>
             </div>
             <div class="mt-1">
-              <span class="amount text_2--text">{{ totalPortfolioValue }} {{ selectedCurrency }}</span>
+              <span class="amount text-text_2">{{ totalPortfolioValue }} {{ selectedCurrency }}</span>
             </div>
           </div>
           <div class="ml-auto">
             <v-btn
-              class="torus-btn1 torusBrand1--text"
-              small
-              fab
+              class="torus-btn1 text-torusBrand1"
+              size="x-small"
+              icon="$send"
               title="Open Transfer Page"
               aria-label="Open Transfer Page"
               @click="showWalletPopup({ path: '/transfer' })"
-            >
-              <v-icon size="20">$vuetify.icons.send</v-icon>
-            </v-btn>
+            ></v-btn>
 
             <v-btn
               v-if="!whiteLabel.topupHide"
-              fab
+              icon="$add"
               depressed
-              small
-              class="ml-2 torus-btn1 torusBrand1--text"
+              size="x-small"
+              class="ml-2 torus-btn1 text-torusBrand1"
               title="Open Topup Page"
               aria-label="Open Topupu Page"
               @click="showWalletPopup({ path: '/topup' })"
-            >
-              <v-icon>$vuetify.icons.add</v-icon>
-            </v-btn>
+            ></v-btn>
           </div>
         </div>
-        <div class="d-flex align-center text_2--text" :style="{ marginTop: '2px' }">
-          <v-icon size="8">$vuetify.icons.network</v-icon>
+        <div class="d-flex align-center text-text_2" :style="{ marginTop: '2px' }">
+          <v-icon size="8">$network</v-icon>
           <span class="network-name ml-1">{{ networkType.networkName || networkType.host }}</span>
         </div>
         <div class="torus-widget__transaction-details mt-5">
           <div class="d-flex">
-            <span class="caption text_2--text">{{ t('dappPopup.recentActivity') }}</span>
-            <span class="caption primary--text ml-auto wallet-open" @click="showWalletPopup({ path: '/home' })">
-              {{ t('dappPopup.openWallet') }}
+            <span class="caption text-text_2">{{ $t('dappPopup.recentActivity') }}</span>
+            <span class="caption text-primary ml-auto wallet-open" @click="showWalletPopup({ path: '/home' })">
+              {{ $t('dappPopup.openWallet') }}
             </span>
           </div>
           <v-divider class="my-1"></v-divider>
@@ -101,13 +97,11 @@
                 v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC20 && recentTransaction.actionIcon !== 'n/a'"
                 :src="`${logosUrl}/${recentTransaction.actionIcon}`"
                 :alt="`${recentTransaction.type_name} Icon`"
-                :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
-                  $vuetify.theme.dark ? 'dark' : 'light'
+                :onerror="`if (!this.src.includes('images/token-${isDarkMode ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+                  isDarkMode ? 'dark' : 'light'
                 }.svg';`"
               />
-              <v-icon v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC20" class="float-left" size="24" color="torusBrand1">
-                $vuetify.icons.token
-              </v-icon>
+              <v-icon v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC20" class="float-left" size="24" color="torusBrand1">$token</v-icon>
               <img
                 v-else-if="recentTransaction.action === ACTIVITY_ACTION_TOPUP"
                 :src="require(`../../../assets/images/${recentTransaction.actionIcon}`)"
@@ -122,17 +116,17 @@
                 height="30"
                 large
                 :alt="`${recentTransaction.type_name} Icon`"
-                :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
-                  $vuetify.theme.dark ? 'dark' : 'light'
+                :onerror="`if (!this.src.includes('images/token-${isDarkMode ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+                  isDarkMode ? 'dark' : 'light'
                 }.svg';`"
               />
               <v-icon v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC721" class="float-left" size="24" color="torusBrand1">
-                $vuetify.icons.collectibles
+                $collectibles
               </v-icon>
               <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ recentTransaction.actionIcon }}</v-icon>
             </div>
             <div class="ml-4 pt-1">
-              <div class="caption text_2--text text-clamp-one">{{ recentTransaction.actionText }}</div>
+              <div class="caption text-text_2 text-clamp-one">{{ recentTransaction.actionText }}</div>
               <div class="caption text-clamp-one">
                 {{
                   recentTransaction.action === ACTIVITY_ACTION_SEND
@@ -142,16 +136,24 @@
               </div>
             </div>
             <div class="ml-auto pt-1" :style="{ lineHeight: '0px' }">
-              <span class="caption text_2--text">{{ recentTransaction.totalAmountString }}</span>
+              <span class="caption text-text_2">{{ recentTransaction.totalAmountString }}</span>
             </div>
           </div>
           <div v-else class="text-center">
-            <span class="caption text_2--text">{{ t('walletActivity.noTransaction') }}</span>
+            <span class="caption text-text_2">{{ $t('walletActivity.noTransaction') }}</span>
           </div>
         </div>
       </div>
     </v-dialog>
-    <v-btn v-if="loggedIn" class="torus-widget__btn" color="primary" fab aria-label="Show/Hide Widget Panel" :style="buttonStyle" @click="showWidget">
+    <v-btn
+      v-if="loggedIn"
+      class="torus-widget__btn"
+      color="primary"
+      icon
+      aria-label="Show/Hide Widget Panel"
+      :style="buttonStyle"
+      @click="showWidget"
+    >
       <img
         class="torus-widget__logo"
         :class="getWhitelabelIcon.isExternal ? '' : 'torus-logo'"
@@ -160,13 +162,13 @@
         :style="{ width: `${embedState.buttonSize - 14}px`, height: `${embedState.buttonSize - 14}px` }"
       />
     </v-btn>
-    <v-btn v-else-if="loginDialog" color="primary" :style="buttonStyle" fab>
+    <v-btn v-else-if="loginDialog" color="primary" :style="buttonStyle" icon>
       <BeatLoader :size="loaderSize" color="white" />
     </v-btn>
-    <v-btn v-else class="torus-widget__login-btn" color="primary" fab :style="buttonStyle" @click="login">
+    <v-btn v-else class="torus-widget__login-btn" color="primary" icon :style="buttonStyle" @click="login">
       <img
         class="torus-widget__login"
-        src="../../../assets/images/login.png"
+        :src="require('../../../assets/images/login.png')"
         alt="Login Icon"
         :style="{ width: `${embedState.buttonSize - 16}px`, height: `${embedState.buttonSize - 16}px` }"
       />
@@ -259,15 +261,15 @@ export default {
     },
     userEmail() {
       if (this.accountType === ACCOUNT_TYPE.THRESHOLD) {
-        return `OpenLogin ${this.t('accountMenu.wallet')}`
+        return `OpenLogin ${this.$t('accountMenu.wallet')}`
       }
       if (this.accountType === ACCOUNT_TYPE.IMPORTED) {
         const index = Object.keys(this.wallet)
           .filter((x) => this.wallet[x].accountType === ACCOUNT_TYPE.IMPORTED)
           .indexOf(this.fullAddress)
-        return `${this.t('accountMenu.importedAccount')} ${index + 1}`
+        return `${this.$t('accountMenu.importedAccount')} ${index + 1}`
       }
-      return getUserEmail(this.userInfo, this.embedState.loginConfig, this.t('accountMenu.wallet'))
+      return getUserEmail(this.userInfo, this.embedState.loginConfig, this.$t('accountMenu.wallet'))
     },
     userIcon() {
       return getUserIcon(this.accountType, this.userInfo.typeOfLogin)
@@ -316,6 +318,9 @@ export default {
       if (this.embedState.buttonSize <= 50) return '8px'
       return '10px'
     },
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
+    },
   },
   methods: {
     ...mapActions({
@@ -331,7 +336,7 @@ export default {
           transaction.transaction_category
         )
       ) {
-        return '$vuetify.icons.coins_approve'
+        return 'coins_approve'
       }
       if (transaction.action === ACTIVITY_ACTION_TOPUP) {
         return `provider-${transaction.from.toLowerCase()}.svg`
@@ -344,18 +349,18 @@ export default {
           return transaction.type_image_link
         }
         const action = transaction.action.split('.')
-        return action.length > 0 ? `$vuetify.icons.coins_${transaction.action.split('.')[1]?.toLowerCase()}` || '' : ''
+        return action.length > 0 ? `coins_${transaction.action.split('.')[1]?.toLowerCase()}` || '' : ''
       }
       return ''
     },
     getActionText(transaction) {
       if (transaction.type_name === 'n/a' || transaction.type === 'n/a') {
-        return `${transaction.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+        return `${transaction.action === ACTIVITY_ACTION_SEND ? this.$t('walletActivity.sent') : this.$t('walletActivity.received')} ${
           transaction.type_name !== 'n/a' ? transaction.type_name : transaction.type?.toUpperCase() || ''
         }`
       }
       if (transaction.type_name || transaction.type) {
-        return `${transaction.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+        return `${transaction.action === ACTIVITY_ACTION_SEND ? this.$t('walletActivity.sent') : this.$t('walletActivity.received')} ${
           transaction.type === 'eth' ? transaction.type_name?.toUpperCase() || '' : transaction.type_name
         }`
       }

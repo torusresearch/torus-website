@@ -1,19 +1,19 @@
 <template>
-  <v-flex v-if="!isDapp" class="mb-2 mb-sm-0" :class="isDapp ? '' : 'ml-auto mr-auto xs10 sm8'">
+  <v-col v-if="!isDapp" cols="10" sm="8" class="mb-2 mb-sm-0" :class="isDapp ? '' : 'mx-auto'">
     <div
       class="text_2--text"
       :class="isDapp ? 'headline font-weight-medium' : 'display-1 font-weight-bold'"
       :style="{ maxWidth: isDapp ? 'inherit' : '260px' }"
     >
-      {{ t('login.your') }}
+      {{ $t('login.your') }}
       <v-menu offset-y>
-        <template #activator="{ on, attrs }">
-          <v-btn v-bind="attrs" class="btn-select justify-space-between m-0 p-0" v-on="on">
-            <div>
+        <template #activator="{ props }">
+          <v-btn v-bind="props" class="btn-select justify-space-between m-0 p-0">
+            <div class="d-flex items-center">
               <img :src="require(`../../../assets/img/icons/icon-${selectedWallet.toLowerCase()}.svg`)" />
               <span class="chain-name">{{ selectedWallet }}</span>
             </div>
-            <v-icon class="ma-0 float-right justify-end">$vuetify.icons.select</v-icon>
+            <v-icon class="ma-0 float-right justify-end">$select</v-icon>
           </v-btn>
         </template>
         <v-list class="chain-list">
@@ -29,16 +29,16 @@
       :class="isDapp ? 'headline font-weight-medium' : 'display-1 font-weight-bold'"
       :style="{ maxWidth: isDapp ? 'inherit' : '260px' }"
     >
-      {{ t('login.titleNew') }}
+      {{ $t('login.titleNew') }}
     </div>
-  </v-flex>
+  </v-col>
   <flex v-else class="mb-2 mb-sm-0">
     <div
       class="text_2--text"
       :class="isDapp ? 'headline font-weight-medium' : 'display-1 font-weight-bold'"
       :style="{ maxWidth: isDapp ? 'inherit' : '260px' }"
     >
-      {{ t('login.title') }}
+      {{ $t('login.title') }}
     </div>
   </flex>
 </template>

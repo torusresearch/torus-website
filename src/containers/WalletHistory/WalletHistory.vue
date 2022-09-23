@@ -1,84 +1,46 @@
 <template>
-  <v-container class="wallet-activity" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
-    <v-layout mt-3 wrap>
-      <v-flex xs12 md7>
-        <div class="text_2--text font-weight-bold float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
-          {{ t('walletActivity.transactionActivities') }}
+  <v-container class="wallet-activity" :class="$vuetify.display.xs ? 'px-4' : ''">
+    <v-row class="mt-3" wrap no-gutters>
+      <v-col cols="12" md="6">
+        <div class="text-text_2 font-weight-bold float-left page-title" :class="{ 'display-1': $vuetify.display.width > 390 }">
+          {{ $t('walletActivity.transactionActivities') }}
         </div>
-      </v-flex>
-      <v-flex xs12 md5 :class="$vuetify.breakpoint.xsOnly ? 'mt-7' : ''">
-        <v-layout mx-n2>
-          <v-flex xs6 px-2>
-            <v-menu offset-y>
-              <template #activator="{ on }">
-                <v-btn
-                  block
-                  outlined
-                  height="42"
-                  class="d-flex align-center filter-selector pa-2"
-                  :class="{ 'theme--dark': $vuetify.theme.isDark }"
-                  v-on="on"
-                >
-                  <v-icon x-small class="text_2--text">$vuetify.icons.activities</v-icon>
-                  <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedAction) }}</span>
-                  <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
-                </v-btn>
-              </template>
-              <v-card class="pa-3">
-                <v-list min-width="190" dense>
-                  <v-list-item-group color="torusBrand1">
-                    <v-list-item
-                      v-for="actionType in actionTypes"
-                      :key="actionType.value"
-                      :class="selectedAction === actionType.value ? 'active' : ''"
-                      @click="selectedAction = actionType.value"
-                    >
-                      <v-list-item-content>
-                        <v-list-item-title>{{ actionType.text }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list-item-group>
-                </v-list>
-              </v-card>
-            </v-menu>
-          </v-flex>
-          <v-flex xs6 px-2>
-            <v-menu offset-y>
-              <template #activator="{ on }">
-                <v-btn
-                  block
-                  outlined
-                  height="42"
-                  class="d-flex align-center filter-selector pa-2"
-                  :class="{ 'theme--dark': $vuetify.theme.isDark }"
-                  v-on="on"
-                >
-                  <v-icon class="text_2--text" small>$vuetify.icons.calendar</v-icon>
-                  <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedPeriod) }}</span>
-                  <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
-                </v-btn>
-              </template>
-              <v-card class="pa-3">
-                <v-list min-width="190" dense>
-                  <v-list-item-group color="torusBrand1">
-                    <v-list-item
-                      v-for="period in periods"
-                      :key="period.value"
-                      :class="selectedPeriod === period.value ? 'active' : ''"
-                      @click="selectedPeriod = period.value"
-                    >
-                      <v-list-item-content>
-                        <v-list-item-title>{{ period.text }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list-item-group>
-                </v-list>
-              </v-card>
-            </v-menu>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'mt-6' : 'mt-7'">
+      </v-col>
+      <v-col cols="12" md="6" :class="$vuetify.display.xs ? 'mt-7' : ''">
+        <v-row class="mx-n2">
+          <v-col cols="6" class="px-2">
+            <v-select
+              v-model="selectedAction"
+              hide-details
+              prepend-inner-icon="$activities"
+              append-inner-icon="$select"
+              :items="actionTypes"
+              item-title="text"
+              item-value="value"
+              variant="plain"
+              density="comfortable"
+              class="filter-selector"
+              :class="{ 'v-theme--dark': isDarkMode }"
+            ></v-select>
+          </v-col>
+          <v-col cols="6" class="px-2">
+            <v-select
+              v-model="selectedPeriod"
+              hide-details
+              prepend-inner-icon="$calendar"
+              append-inner-icon="$select"
+              :items="periods"
+              item-title="text"
+              item-value="value"
+              variant="plain"
+              density="comfortable"
+              class="filter-selector"
+              :class="{ 'v-theme--dark': isDarkMode }"
+            ></v-select>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col cols="12" :class="$vuetify.display.xs ? 'mt-6' : 'mt-7'">
         <TxHistoryTable
           :currency-multiplier="currencyMultiplier"
           :selected-action="selectedAction"
@@ -88,8 +50,8 @@
           :cancel-gas-price="cancelGasPrice"
           @cancelTransaction="cancelTransaction"
         />
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -146,19 +108,19 @@ export default {
     actionTypes() {
       return [
         {
-          text: this.t(ACTIVITY_ACTION_ALL),
+          text: this.$t(ACTIVITY_ACTION_ALL),
           value: ACTIVITY_ACTION_ALL,
         },
         {
-          text: this.t(ACTIVITY_ACTION_SEND),
+          text: this.$t(ACTIVITY_ACTION_SEND),
           value: ACTIVITY_ACTION_SEND,
         },
         {
-          text: this.t(ACTIVITY_ACTION_RECEIVE),
+          text: this.$t(ACTIVITY_ACTION_RECEIVE),
           value: ACTIVITY_ACTION_RECEIVE,
         },
         {
-          text: this.t(ACTIVITY_ACTION_TOPUP),
+          text: this.$t(ACTIVITY_ACTION_TOPUP),
           value: ACTIVITY_ACTION_TOPUP,
         },
       ]
@@ -166,19 +128,19 @@ export default {
     periods() {
       return [
         {
-          text: this.t(ACTIVITY_PERIOD_ALL),
+          text: this.$t(ACTIVITY_PERIOD_ALL),
           value: ACTIVITY_PERIOD_ALL,
         },
         {
-          text: this.t(ACTIVITY_PERIOD_WEEK_ONE),
+          text: this.$t(ACTIVITY_PERIOD_WEEK_ONE),
           value: ACTIVITY_PERIOD_WEEK_ONE,
         },
         {
-          text: this.t(ACTIVITY_PERIOD_MONTH_ONE),
+          text: this.$t(ACTIVITY_PERIOD_MONTH_ONE),
           value: ACTIVITY_PERIOD_MONTH_ONE,
         },
         {
-          text: this.t(ACTIVITY_PERIOD_MONTH_SIX),
+          text: this.$t(ACTIVITY_PERIOD_MONTH_SIX),
           value: ACTIVITY_PERIOD_MONTH_SIX,
         },
       ]
@@ -205,9 +167,12 @@ export default {
       const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
       return new BigNumber(currencyMultiplierNumber)
     },
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
+    },
   },
   async mounted() {
-    this.$vuetify.goTo(0)
+    // this.$vuetify.goTo(0)
     let gasPrice = this.cancelGasPrice
     try {
       if (this.networkType.host === MAINNET) {
@@ -264,25 +229,27 @@ export default {
     },
     getActionText(activity) {
       if (activity.transaction_category === TRANSACTION_TYPES.CONTRACT_INTERACTION) {
-        return this.t('walletActivity.contractInteraction')
+        return this.$t('walletActivity.contractInteraction')
       }
       if (activity.transaction_category === TRANSACTION_TYPES.DEPLOY_CONTRACT) {
-        return this.t('walletActivity.contractDeployment')
+        return this.$t('walletActivity.contractDeployment')
       }
       if (activity.transaction_category === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE) {
-        return `${this.t('walletActivity.approved')} ${activity.type_name !== 'n/a' ? activity.type_name.toUpperCase() : activity.type.toUpperCase()}`
+        return `${this.$t('walletActivity.approved')} ${
+          activity.type_name !== 'n/a' ? activity.type_name.toUpperCase() : activity.type.toUpperCase()
+        }`
       }
       if (activity.type_name === 'n/a' || activity.type === 'n/a') {
-        return `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+        return `${activity.action === ACTIVITY_ACTION_SEND ? this.$t('walletActivity.sent') : this.$t('walletActivity.received')} ${
           activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
         }`
       }
       if (activity.type_name || activity.type) {
-        return `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+        return `${activity.action === ACTIVITY_ACTION_SEND ? this.$t('walletActivity.sent') : this.$t('walletActivity.received')} ${
           activity.type === 'eth' ? activity.type_name.toUpperCase() : activity.type_name
         }`
       }
-      return `${`${this.t(activity.action)} ${activity.from}`} `
+      return `${`${this.$t(activity.action)} ${activity.from}`} `
     },
     getIcon(activity) {
       if (
@@ -290,13 +257,13 @@ export default {
           activity.transaction_category
         )
       ) {
-        return '$vuetify.icons.coins_approve'
+        return '$coins_approve'
       }
       if (activity.action === ACTIVITY_ACTION_TOPUP) {
         return `provider-${activity.from.toLowerCase()}.svg`
       }
       const actionSplits = activity.action.split('.')
-      const fallbackIcon = actionSplits.length > 0 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''
+      const fallbackIcon = actionSplits.length > 0 ? `$coins_${activity.action.split('.')[1].toLowerCase()}` : ''
       if (activity.action === ACTIVITY_ACTION_SEND || activity.action === ACTIVITY_ACTION_RECEIVE) {
         if (activity.type === CONTRACT_TYPE_ERC721 || activity.type === CONTRACT_TYPE_ERC1155) {
           return activity.type_image_link || this.networkType.logo // will be an opensea image url

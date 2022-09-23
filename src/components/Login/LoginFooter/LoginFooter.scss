@@ -13,12 +13,12 @@
 
 .self-custodial-footer {
   &__title {
-    color: var(--v-text_2-base);
+    color: rgb(var(--v-theme-text_2));
   }
   &__how {
     color: #979797;
   }
-  &.theme--dark {
+  &.v-theme--dark {
     .self-custodial-footer__title {
       color: #b7b8bd;
     }

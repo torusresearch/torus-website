@@ -5,10 +5,25 @@
 .filter-selector {
   background: #ffffff;
   border: 1px solid #f5f5f5;
-  box-sizing: border-box;
   box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
   border-radius: 3px;
-  &.theme--dark {
+  ::v-deep .v-field {
+    align-items: center;
+    padding: 0px 8px;
+  }
+  ::v-deep .v-field__input {
+    font-size: 0.875rem;
+    padding: 0;
+    align-items: center;
+    padding: 0 4px;
+  }
+  ::v-deep .v-field__prepend-inner {
+    padding: 0;
+  }
+  ::v-deep .v-field__append-inner {
+    padding: 0;
+  }
+  &.v-theme--dark {
     background: #2f3136;
     border: 1px solid #343539;
     box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);

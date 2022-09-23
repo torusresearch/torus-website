@@ -2,16 +2,16 @@
   <div v-if="isLoaded">
     <Navbar :show-language-selector="true" :header-items="headerItems">
       <template #drawer>
-        <v-btn v-if="$vuetify.breakpoint.smAndDown" id="menu-dropdown-mobile-btn" icon aria-label="Open Account Menu" @click="drawer = !drawer">
-          <v-icon class="torusBrand1--text">$vuetify.icons.menu</v-icon>
+        <v-btn v-if="$vuetify.display.smAndDown" id="menu-dropdown-mobile-btn" icon aria-label="Open Account Menu" @click="drawer = !drawer">
+          <v-icon class="torusBrand1--text">$menu</v-icon>
         </v-btn>
       </template>
     </Navbar>
-    <v-navigation-drawer v-model="drawer" disable-resize-watcher app right :width="$vuetify.breakpoint.xsOnly ? '80%' : ''">
+    <v-navigation-drawer v-model="drawer" disable-resize-watcher app location="right" :width="$vuetify.display.xs ? '80%' : ''">
       <AccountMenu :show-nav="true" :show-language-selector="true" :header-items="headerItems"></AccountMenu>
     </v-navigation-drawer>
-    <v-main>
-      <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
+    <v-main class="pt-16">
+      <hr v-if="!isDarkMode" class="navbar-line" />
       <div class="toast-container">
         <SystemBar type="lrc" icon="info" :message="lrcMsg" />
         <SystemBar
@@ -97,14 +97,14 @@ export default {
     },
     headerItems() {
       const items = [
-        { name: 'home', display: this.t('navBar.home'), route: '/wallet/home', icon: 'settings' },
-        { name: 'transfer', display: this.t('navBar.transfer'), route: '/wallet/transfer', icon: 'transaction' },
-        { name: 'activity', display: this.t('navBar.activity'), route: '/wallet/history', icon: 'activities' },
-        { name: 'settings', display: this.t('navBar.settings'), route: '/wallet/settings', icon: 'settings' },
-        { name: 'discover', display: this.t('navBar.discover'), route: '/wallet/discover', icon: 'discover' },
+        { name: 'home', display: this.$t('navBar.home'), route: '/wallet/home', icon: 'settings' },
+        { name: 'transfer', display: this.$t('navBar.transfer'), route: '/wallet/transfer', icon: 'transaction' },
+        { name: 'activity', display: this.$t('navBar.activity'), route: '/wallet/history', icon: 'activities' },
+        { name: 'settings', display: this.$t('navBar.settings'), route: '/wallet/settings', icon: 'settings' },
+        { name: 'discover', display: this.$t('navBar.discover'), route: '/wallet/discover', icon: 'discover' },
       ]
       if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc' && !this.whiteLabel.topupHide) {
-        items.splice(2, 0, { name: 'top-up', display: this.t('navBar.topUp'), route: '/wallet/topup', icon: 'topup' })
+        items.splice(2, 0, { name: 'top-up', display: this.$t('navBar.topUp'), route: '/wallet/topup', icon: 'topup' })
       }
       return items
     },
@@ -119,6 +119,9 @@ export default {
     },
     deviceShareIndex() {
       return this.deviceShare && this.deviceShare.share ? this.deviceShare.share.share.shareIndex.toString('hex') : ''
+    },
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
     },
   },
   created() {

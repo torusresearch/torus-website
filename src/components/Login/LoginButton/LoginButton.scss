@@ -1,6 +1,6 @@
 .login-btn {
   background: #f3f4f6;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
   box-sizing: border-box;
   box-shadow: 2px 2px 12px rgba(3, 100, 255, 0.05);
   border-radius: 10px;
@@ -26,15 +26,15 @@
   }
 
   img,
-  ::v-deep .v-icon .v-icon__component {
+  :deep(.v-icon svg) {
     width: 26px;
     height: 26px;
   }
 
   &.theme--dark {
     background: #111928;
-    border: 1px solid #4B5563;
-    border-radius: 10px
+    border: 1px solid #4b5563;
+    border-radius: 10px;
     // box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
   }
 
@@ -42,7 +42,7 @@
     background-color: currentColor;
     border-radius: inherit;
     color: inherit;
-    content: '';
+    content: "";
     bottom: 0;
     left: 0;
     right: 0;
@@ -137,7 +137,7 @@
     font-size: 1.7vh;
     line-height: 1.2em;
     img,
-    ::v-deep .v-icon .v-icon__component {
+    :deep(.v-icon svg) {
       width: 3.3vh;
       height: 3.3vh;
     }
@@ -151,7 +151,7 @@
     font-size: 2vh;
     line-height: 1.2em;
     img,
-    ::v-deep .v-icon .v-icon__component {
+    :deep(.v-icon svg) {
       width: 3vh;
       height: 3vh;
     }

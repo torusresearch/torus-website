@@ -1,10 +1,10 @@
 <template>
   <v-app class="torus-app">
     <template v-if="loginInProgress">
-      <v-container class="spinner" fluid :class="$vuetify.theme.dark ? 'torus-dark' : ''">
+      <v-container class="spinner" fluid :class="isDarkMode ? 'torus-dark' : ''">
         <BoxLoader :force-spinner="true" />
         <p class="bottom-text text-body-1 text-center font-weight-medium">
-          {{ t('login.loader') }}
+          {{ $t('login.loader') }}
         </p>
       </v-container>
     </template>
@@ -16,24 +16,45 @@
 
 <script>
 import log from 'loglevel'
-import { mapActions } from 'vuex'
+import { useTheme } from 'vuetify'
+import { mapActions, mapState } from 'vuex'
 
 import BoxLoader from './components/helpers/BoxLoader'
+import { THEME_DARK_BLACK_NAME } from './utils/enums'
 /* eslint-disable vue-scoped-css/enforce-style-type */
 export default {
   components: { BoxLoader },
+  setup() {
+    const theme = useTheme()
+    return { vuetifyTheme: theme }
+  },
   data() {
     return {
       loginInProgress: false,
     }
   },
+  computed: {
+    ...mapState(['theme', 'whitelabel']),
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
+    },
+  },
   watch: {
     async $route(to) {
       this.updateBackgrounds(to.name)
     },
+    theme() {
+      log.info('theme property has changed')
+      this.updateTheme()
+    },
+    whitelabel() {
+      log.info('whitelabel property has changed')
+      this.updateTheme()
+    },
   },
   async created() {
     this.updateBackgrounds(this.$route.name)
+    this.updateTheme()
     try {
       this.loginInProgress = true
       await this.rehydrate()
@@ -59,6 +80,10 @@ export default {
         pageBody.style.background = ''
         pageApplication.style.background = ''
       }
+    },
+    updateTheme() {
+      const isDarkMode = this.theme === THEME_DARK_BLACK_NAME
+      this.vuetifyTheme.global.name.value = isDarkMode ? 'dark' : 'light'
     },
   },
 }

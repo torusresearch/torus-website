@@ -4,7 +4,7 @@
   box-sizing: border-box;
   box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
   border-radius: 6px;
-  &.theme--dark {
+  &.v-theme--dark {
     border: 0;
   }
 
@@ -14,7 +14,7 @@
     box-shadow: 5px 5px 10px rgba(222, 229, 255, 0.5), -5px -5px 10px #FAFBFF;
   }
 
-  .return-btn.v-btn.torus-btn1.theme--dark {
+  .return-btn.v-btn.torus-btn1.v-theme--dark {
     box-shadow: none !important;
   }
 

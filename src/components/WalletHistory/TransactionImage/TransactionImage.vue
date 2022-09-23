@@ -34,11 +34,11 @@
         class="mr-2"
         :class="isCancel ? 'ml-0' : 'ml-2'"
         width="36"
-        :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
-          $vuetify.theme.dark ? 'dark' : 'light'
+        :onerror="`if (!this.src.includes('images/token-${isDarkMode ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+          isDarkMode ? 'dark' : 'light'
         }.svg';`"
       />
-      <v-icon v-else-if="transaction.type === CONTRACT_TYPE_ERC20" class="float-left" size="24" color="torusBrand1">$vuetify.icons.token</v-icon>
+      <v-icon v-else-if="transaction.type === CONTRACT_TYPE_ERC20" class="float-left" size="24" color="torusBrand1">$token</v-icon>
       <img
         v-else-if="transaction.action === ACTIVITY_ACTION_TOPUP"
         :src="require(`../../../assets/images/${transaction.actionIcon}`)"
@@ -62,7 +62,7 @@
         size="24"
         color="torusBrand1"
       >
-        $vuetify.icons.collectibles
+        $collectibles
       </v-icon>
       <img
         v-else-if="transaction.type === CONTRACT_TYPE_ETH"
@@ -70,38 +70,33 @@
         height="36"
         large
         :alt="`${transaction.type_name} Icon`"
-        :onerror="`if (!this.src.includes('images/token-${$vuetify.theme.dark ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
-          $vuetify.theme.dark ? 'dark' : 'light'
+        :onerror="`if (!this.src.includes('images/token-${isDarkMode ? 'dark' : 'light'}.svg')) this.src = '/images/token-${
+          isDarkMode ? 'dark' : 'light'
         }.svg';`"
         :style="{ marginRight: '16px', marginLeft: isCancel ? '0px' : '13px' }"
       />
       <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
     </div>
-    <div class="caption text_1--text d-flex" :class="{ 'font-weight-medium': !$vuetify.breakpoint.xsOnly }">
+    <div class="caption text_1--text d-flex" :class="{ 'font-weight-medium': !$vuetify.display.xs }">
       <span>{{ transaction.actionText }}</span>
       <v-chip
-        v-if="transaction.isEtherscan && !$vuetify.breakpoint.xsOnly"
+        v-if="transaction.isEtherscan && !$vuetify.display.xs"
         class="etherscan-chip"
-        :class="[{ isDark: $vuetify.theme.isDark }, isCancel ? 'ml-0' : 'ml-2']"
-        x-small
+        :class="[{ isDark: isDarkMode }, isCancel ? 'ml-0' : 'ml-2']"
+        size="x-small"
       >
-        {{ $vuetify.breakpoint.smAndDown ? t('walletActivity.external') : t('walletActivity.externalTransaction') }}
+        {{ $vuetify.display.smAndDown ? $t('walletActivity.external') : $t('walletActivity.externalTransaction') }}
       </v-chip>
     </div>
-    <div class="info text_2--text font-weight-light">
+    <div class="info text-text_2 font-weight-light">
       <span>
         {{
           transaction.action === ACTIVITY_ACTION_SEND
-            ? `${t('walletActivity.to')} ${transaction.slicedToChecksummed}`
-            : `${t('walletActivity.from')} ${transaction.slicedFromChecksummed}`
+            ? `${$t('walletActivity.to')} ${transaction.slicedToChecksummed}`
+            : `${$t('walletActivity.from')} ${transaction.slicedFromChecksummed}`
         }}
       </span>
-      <v-chip
-        v-if="transaction.isEtherscan && $vuetify.breakpoint.xsOnly"
-        class="etherscan-chip ml-1"
-        :class="{ isDark: $vuetify.theme.isDark }"
-        x-small
-      >
+      <v-chip v-if="transaction.isEtherscan && $vuetify.display.xs" class="etherscan-chip ml-1" :class="{ isDark: isDarkMode }" size="x-small">
         External
       </v-chip>
     </div>
@@ -144,6 +139,11 @@ export default {
       TRANSACTION_TYPES,
       logosUrl: config.logosUrl,
     }
+  },
+  computed: {
+    isDarkMode() {
+      return this.$vuetify.theme.current.dark
+    },
   },
 }
 </script>

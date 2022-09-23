@@ -1,85 +1,87 @@
 <template>
   <v-dialog v-model="addAssetDialog" max-width="375" persistent>
-    <template #activator="{ on }">
-      <a class="torusBrand1--text caption font-weight-medium gtm-add-asset-cta" tabindex="0" v-on="on">{{ t('homeAssets.add') }}</a>
+    <template #activator="{ props }">
+      <a class="text-torusBrand1 caption font-weight-medium gtm-add-asset-cta" tabindex="0" v-bind="props">{{ $t('homeAssets.add') }}</a>
     </template>
     <v-card class="add-asset">
-      <v-tabs-items v-model="tab" touchless>
-        <v-tab-item>
-          <v-layout class="card-header" wrap>
-            <v-flex text-center xs12 py-10 px-6>
-              <div class="display-1">{{ t('homeAssets.add') }}</div>
-              <v-btn class="close-btn" icon aria-label="Close Add Asset" title="Close Add Asset" @click="closeForm">
-                <v-icon>$vuetify.icons.close</v-icon>
+      <v-window v-model="tab">
+        <v-window-item>
+          <v-row class="card-header bg-torusBlack2" wrap no-gutters>
+            <v-col class="text-center py-10 px-6" cols="12">
+              <div class="text-h5 font-weight-bold">{{ $t('homeAssets.add') }}</div>
+              <v-btn class="close-btn" variant="plain" icon aria-label="Close Add Asset" title="Close Add Asset" @click="closeForm">
+                <v-icon>$close</v-icon>
               </v-btn>
-            </v-flex>
-          </v-layout>
-          <v-form ref="addAssetForm" v-model="addAssetFormValid" class="fill-height" lazy-validation @submit.prevent="nextTab">
-            <v-layout mx-7 pt-6 pb-4 wrap>
-              <v-flex xs12 class="text-center">
-                <div class="title">{{ t('homeAssets.formTitle') }}</div>
-              </v-flex>
-            </v-layout>
+            </v-col>
+          </v-row>
+          <v-form ref="addAssetForm" v-model="addAssetFormValid" class="fill-height" lazy-validation @submit="nextTab">
+            <v-row class="mx-7 pt-6 pb-4" wrap no-gutters>
+              <v-col cols="12" class="text-center">
+                <div class="text-body-1 font-weight-bold">{{ $t('homeAssets.formTitle') }}</div>
+              </v-col>
+            </v-row>
             <v-divider></v-divider>
-            <v-layout mx-7 pt-6 pb-10 wrap>
-              <v-flex xs12>
-                <div class="body-2 mb-2">{{ t('homeAssets.contractAddress') }}</div>
+            <v-row class="mx-7 pt-6 pb-10" wrap no-gutters>
+              <v-col cols="12">
+                <div class="body-2 mb-2">{{ $t('homeAssets.contractAddress') }}</div>
                 <v-text-field
-                  :value="contractAddress"
-                  :rules="[rules.required, addressValidityRule]"
-                  outlined
-                  @change="setContractAddress"
+                  :model-value="contractAddress"
+                  :rules="[rules.required]"
+                  :error-messages="errorMessages"
+                  :error="errorMessages.length > 0"
+                  variant="outlined"
+                  @update:modelValue="setContractAddress"
                 ></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <div class="body-2 mb-2">{{ t('homeAssets.tokenId') }}</div>
+              </v-col>
+              <v-col cols="12">
+                <div class="body-2 mb-2">{{ $t('homeAssets.tokenId') }}</div>
                 <v-text-field
-                  v-model="tokenId"
+                  :model-value="tokenId"
                   :rules="[rules.required, ownerShipRule, duplicateNftRule]"
-                  outlined
+                  variant="outlined"
                   :error-messages="displayError"
                   :error="!!displayError"
-                  @change="setTokenId"
+                  @update:modelValue="setTokenId"
                 ></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <div class="body-2 mb-2">{{ t('homeAssets.tokenName') }}</div>
-                <v-text-field v-model="nftName" :rules="[rules.required]" outlined></v-text-field>
-              </v-flex>
+              </v-col>
+              <v-col cols="12">
+                <div class="body-2 mb-2">{{ $t('homeAssets.tokenName') }}</div>
+                <v-text-field v-model="nftName" :rules="[rules.required]" variant="outlined"></v-text-field>
+              </v-col>
 
-              <v-flex xs12 mt-15>
-                <v-layout mx-n2>
-                  <v-flex xs6 px-2>
-                    <v-btn block large text @click="closeForm">{{ t('homeToken.cancel') }}</v-btn>
-                  </v-flex>
-                  <v-flex xs6 px-2>
-                    <v-btn block large color="torusBrand1" class="white--text" type="submit" :disabled="!addAssetFormValid">
-                      {{ t('homeToken.next') }}
+              <v-col cols="12" class="mt-15">
+                <v-row class="mx-n2">
+                  <v-col cols="6" class="px-2">
+                    <v-btn block size="large" variant="text" class="text-body-2" @click="closeForm">{{ $t('homeToken.cancel') }}</v-btn>
+                  </v-col>
+                  <v-col cols="6" class="px-2">
+                    <v-btn block size="large" color="torusBrand1" class="text-body-2 text-white" type="submit" :disabled="!addAssetFormValid">
+                      {{ $t('homeToken.next') }}
                     </v-btn>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-layout>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
           </v-form>
-        </v-tab-item>
-        <v-tab-item>
-          <v-layout class="card-header" wrap>
-            <v-flex text-center xs12 py-10 px-6>
-              <div class="display-1">{{ t('homeAssets.add') }}</div>
+        </v-window-item>
+        <v-window-item>
+          <v-row class="card-header" wrap no-gutters>
+            <v-col cols="12" class="py-10 px-6 text-center">
+              <div class="text-h5 font-weight-bold">{{ $t('homeAssets.add') }}</div>
               <v-btn class="close-btn" icon aria-label="Close Add Token" title="Close Add Token" @click="closeForm">
-                <v-icon>$vuetify.icons.close</v-icon>
+                <v-icon>$close</v-icon>
               </v-btn>
-            </v-flex>
-          </v-layout>
-          <v-layout mx-7 pt-6 pb-4 wrap>
-            <v-flex xs12 class="text-center">
-              <div class="title">{{ t('homeAssets.infoTitle') }}</div>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
+          <v-row class="mx-7 pt-6 pb-4" wrap>
+            <v-col cols="12" class="text-center">
+              <div class="text-body-1 font-weight-bold">{{ $t('homeAssets.infoTitle') }}</div>
+            </v-col>
+          </v-row>
           <v-divider></v-divider>
-          <v-layout mb-8 mx-7 pt-6 wrap class="align-center">
-            <v-flex xs12>
-              <div class="body-2 font-weight-bold">{{ t('homeAssets.infoCollectible') }}</div>
+          <v-row wrap class="align-center mb-8 mx-7 pt-6">
+            <v-col cols="12">
+              <div class="body-2 font-weight-bold">{{ $t('homeAssets.infoCollectible') }}</div>
               <div class="d-flex mb-5">
                 <div>
                   <img
@@ -89,36 +91,38 @@
                   />
                 </div>
                 <div class="ml-auto flex-shrink-1" style="width: 136px">
-                  <div class="body-2 text_1--text mb-3">{{ assetInfo.name }}</div>
-                  <div class="caption text_1--text mb-1">{{ t('homeAssets.infoId') }}</div>
-                  <div class="caption text_3--text mb-2">{{ assetInfo.id }}</div>
-                  <div class="caption text_1--text mb-1">{{ t('homeAssets.infoContractAdd') }}</div>
-                  <div class="caption text_3--text">{{ assetInfo.address }}</div>
+                  <div class="body-2 text-text_1 mb-3">{{ assetInfo.name }}</div>
+                  <div class="text-caption text-text_1 mb-1">{{ $t('homeAssets.infoId') }}</div>
+                  <div class="text-caption text-text_3 mb-2">{{ assetInfo.id }}</div>
+                  <div class="text-caption text-text_1 mb-1">{{ $t('homeAssets.infoContractAdd') }}</div>
+                  <div class="text-caption text-text_3">{{ assetInfo.address }}</div>
                 </div>
               </div>
-              <div class="caption text_1--text mb-3">{{ t('homeAssets.infoExplorer') }}</div>
-              <div class="caption text_3--text mb-4">{{ assetInfo.explorerLink }}</div>
-              <div class="caption text_1--text mb-3">{{ t('homeAssets.infoDesc') }}</div>
-              <div class="caption text_3--text mb-1" :class="{ 'text-clamp-one': !viewMore }">{{ assetInfo.description }}</div>
+              <div class="text-caption text-text_1 mb-3">{{ $t('homeAssets.infoExplorer') }}</div>
+              <div class="text-caption text-text_3 mb-4">{{ assetInfo.explorerLink }}</div>
+              <div class="text-caption text-text_1 mb-3">{{ $t('homeAssets.infoDesc') }}</div>
+              <div class="text-caption text-text_3 mb-1" :class="{ 'text-clamp-one': !viewMore }">{{ assetInfo.description }}</div>
               <div class="text-right">
-                <a class="caption torusBrand1--text" @click="viewMore = !viewMore">
-                  {{ viewMore ? t('homeAssets.viewLess') : t('homeAssets.viewMore') }}
+                <a class="text-caption text-torusBrand1" @click="viewMore = !viewMore">
+                  {{ viewMore ? $t('homeAssets.viewLess') : $t('homeAssets.viewMore') }}
                 </a>
               </div>
-            </v-flex>
-            <v-flex xs12 mt-10>
-              <v-layout mx-n2>
-                <v-flex xs6 px-2>
-                  <v-btn block large text @click="tab = 0">{{ t('homeToken.back') }}</v-btn>
-                </v-flex>
-                <v-flex xs6 px-2>
-                  <v-btn block large color="torusBrand1" class="white--text" @click="addCollectible">{{ t('homeAssets.add') }}</v-btn>
-                </v-flex>
-              </v-layout>
-            </v-flex>
-          </v-layout>
-        </v-tab-item>
-      </v-tabs-items>
+            </v-col>
+            <v-col cols="12" class="mt-10">
+              <v-row class="mx-n2">
+                <v-col cols="6" class="px-2">
+                  <v-btn block size="large" variant="text" class="text-body-2" @click="tab = 0">{{ $t('homeToken.back') }}</v-btn>
+                </v-col>
+                <v-col cols="6" class="px-2">
+                  <v-btn block size="large" color="torusBrand1" class="text-body-2 text-white" @click="addCollectible">
+                    {{ $t('homeAssets.add') }}
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </v-window-item>
+      </v-window>
     </v-card>
   </v-dialog>
 </template>
@@ -142,15 +146,16 @@ export default {
       tab: 0,
       viewMore: false,
       addAssetFormValid: false,
-      contractAddress: '',
-      tokenId: '',
-      nftName: '',
-      description: '',
+      contractAddress: null,
+      tokenId: null,
+      nftName: null,
+      description: null,
       nftStandard: CONTRACT_TYPE_ERC721,
-      nftImageLink: '',
+      nftImageLink: null,
       nftBalance: 1,
+      errorMessages: [],
       rules: {
-        required: (value) => !!value || this.t('walletSettings.required'),
+        required: (value) => !!value || this.$t('walletSettings.required'),
       },
       assetInfo: {},
       displayError: '',
@@ -165,15 +170,17 @@ export default {
           nft.address.toLocaleLowerCase() === this.contractAddress?.toLocaleLowerCase() &&
           nft.assets.find((asset) => asset.tokenId.toString() === this.tokenId?.toString())
       )
-      return found ? this.t('homeAssets.duplicateNft') : true
-    },
-    addressValidityRule() {
-      if (this.isValidAddress) return true
-      return this.t('homeAssets.invalidContractAddress')
+      return found ? this.$t('homeAssets.duplicateNft') : true
     },
     ownerShipRule() {
       if (this.isOwner) return true
-      return this.t('homeAssets.invalidOwnership')
+      return this.$t('homeAssets.invalidOwnership')
+    },
+  },
+  watch: {
+    isValidAddress(value) {
+      if (value) this.errorMessages = []
+      else this.errorMessages = this.$t('homeAssets.invalidContractAddress')
     },
   },
   methods: {
@@ -199,7 +206,7 @@ export default {
         } else {
           log.debug('error', displayError)
         }
-        this.displayError = this.t(displayError)
+        this.displayError = this.$t(displayError)
       }
     },
     async setContractAddress(value) {
@@ -217,19 +224,19 @@ export default {
         await this.populateNftDetails(this.contractAddress, value)
       }
     },
-    nextTab() {
-      if (this.$refs.addAssetForm.validate()) {
-        // fetch details
-        this.assetInfo = {
-          id: `#${this.tokenId}`,
-          address: this.contractAddress,
-          name: this.nftName,
-          image: this.nftImageLink,
-          explorerLink: getEtherScanAddressLink(this.contractAddress, this.networkType.host),
-          description: this.description,
-        }
-        this.tab = 1
+    async nextTab() {
+      const formValid = await this.$refs.addAssetForm.validate()
+      if (!formValid.valid) return
+      // fetch details
+      this.assetInfo = {
+        id: `#${this.tokenId}`,
+        address: this.contractAddress,
+        name: this.nftName,
+        image: this.nftImageLink,
+        explorerLink: getEtherScanAddressLink(this.contractAddress, this.networkType.host),
+        description: this.description,
       }
+      this.tab = 1
     },
     addCollectible() {
       log.info(this.assetInfo)
@@ -251,6 +258,7 @@ export default {
       this.tab = 0
       this.addAssetDialog = false
       this.displayError = ''
+      this.errorMessages = []
     },
   },
 }

@@ -1,21 +1,23 @@
 <template>
-  <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu" :class="{ 'is-mobile': $vuetify.breakpoint.smAndDown }">
+  <v-card :flat="$vuetify.display.smAndDown" width="400" class="account-menu" :class="{ 'is-mobile': $vuetify.display.smAndDown }">
     <v-list class="pb-0 mb-2">
       <v-list-item>
-        <v-list-item-avatar class="ml-2 mr-3">
-          <img
-            :src="userInfo.profileImage"
-            class="align-start"
-            :alt="userName"
-            onerror="if (!this.src.includes('/images/person.jpeg')) this.src = '/images/person.jpeg';"
-          />
-        </v-list-item-avatar>
+        <template #prepend>
+          <div class="ml-2 mr-3">
+            <img
+              :src="userInfo.profileImage"
+              class="align-start user-profile-image"
+              :alt="userName"
+              onerror="if (!this.src.includes('/images/person.jpeg')) this.src = '/images/person.jpeg';"
+            />
+          </div>
+        </template>
         <v-list-item-title>
           <div class="font-weight-bold title d-flex">
             <div id="account-name" class="torus-account--name mr-1">
               <span>{{ userName }}</span>
             </div>
-            <div>{{ t('accountMenu.account') }}</div>
+            <div>{{ $t('accountMenu.account') }}</div>
           </div>
         </v-list-item-title>
       </v-list-item>
@@ -26,43 +28,51 @@
         v-for="(acc, index) in wallets"
         :key="acc.address"
         class="d-flex flex-column account-list__item mb-2 py-2 px-3"
-        :class="{ active: acc.address === selectedAddress, 'theme--dark': $vuetify.theme.dark }"
+        :class="{ active: acc.address === selectedAddress, 'theme--dark': isDarkMode }"
         @click="changeAccount(acc.address)"
       >
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
-            <v-icon :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
-              $vuetify.icons.{{ userIcon(acc.accountType) }}
+            <v-icon :class="isDarkMode ? 'text-torusGray1' : 'text-torusFont2'" size="16">
+              {{ `$${userIcon(acc.accountType)}` }}
             </v-icon>
           </div>
-          <div class="caption text_1--text font-weight-bold account-list__user-email" :style="{ paddingLeft: '2px' }">
+          <div class="caption text-text_1 font-weight-bold account-list__user-email" :style="{ paddingLeft: '2px' }">
             <span>
               {{ userEmail(acc) }}
             </span>
           </div>
-          <div class="caption ml-auto text_2--text text-right">
+          <div class="caption ml-auto text-text_2 text-right">
             <span>{{ acc.totalPortfolioValue }} {{ selectedCurrency }}</span>
           </div>
         </div>
         <div class="d-flex align-start mt-1">
-          <div class="account-list__address-container pt-1" :style="{ maxWidth: $vuetify.breakpoint.xsOnly ? '140px' : '180px' }">
+          <div class="account-list__address-container pt-1" :style="{ maxWidth: $vuetify.display.xs ? '140px' : '180px' }">
             <div v-if="userId && index === 0" class="account-list__address">{{ userId }}</div>
             <div class="account-list__address mt-1">{{ checksummedAccount(acc.address) }}</div>
           </div>
           <div class="ml-auto">
-            <span class="mr-1">
+            <span class="mr-2">
               <ShowToolTip :is-btn="true" :address="acc.address">
-                <v-icon size="12" class="torusFont2--text">$vuetify.icons.copy</v-icon>
+                <v-icon size="x-small" class="text-torusFont2">$copy</v-icon>
               </ShowToolTip>
             </span>
-            <span class="mr-1">
+            <span class="mr-2">
               <ExportQrCode :custom-address="acc.address">
-                <v-icon class="torusFont2--text" x-small>$vuetify.icons.qr</v-icon>
+                <v-icon class="text-torusFont2" size="x-small">$qr</v-icon>
               </ExportQrCode>
             </span>
             <span>
-              <v-btn icon small class="etherscan-lnk" :href="etherscanAddressLink(acc.address)" target="_blank" rel="noreferrer noopener">
-                <v-icon class="torusFont2--text" x-small>$vuetify.icons.link</v-icon>
+              <v-btn
+                icon
+                density="comfortable"
+                size="small"
+                class="etherscan-lnk"
+                :href="etherscanAddressLink(acc.address)"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <v-icon class="text-torusFont2" size="x-small">$link</v-icon>
               </v-btn>
             </span>
           </div>
@@ -72,19 +82,21 @@
     <v-divider></v-divider>
     <v-list class="ml-1 py-1">
       <v-list-item id="import-account-btn" @click="accountImportDialog = true">
-        <v-list-item-action class="mr-2">
-          <v-icon size="24" class="text_2--text">$vuetify.icons.add</v-icon>
-        </v-list-item-action>
-        <v-list-item-content class="caption font-weight-bold text_1--text">{{ t('accountMenu.importAccount') }}</v-list-item-content>
+        <template #prepend>
+          <div class="mr-2">
+            <v-icon size="24" class="text-text_2">$add</v-icon>
+          </div>
+        </template>
+        <div class="caption font-weight-bold text-text_1">{{ $t('accountMenu.importAccount') }}</div>
       </v-list-item>
-      <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
+      <v-dialog v-model="accountImportDialog" persistent width="600" class="import-dialog">
         <AccountImport @onClose="accountImportDialog = false" />
       </v-dialog>
     </v-list>
 
     <v-divider></v-divider>
 
-    <v-list v-if="$vuetify.breakpoint.smAndDown && showNav" class="py-1" :style="{ marginLeft: '6px' }">
+    <v-list v-if="$vuetify.display.smAndDown && showNav" class="py-1" :style="{ marginLeft: '6px' }">
       <v-list-item
         v-for="headerItem in filteredMenu"
         :id="`${headerItem.name}-link-mobile`"
@@ -93,28 +105,30 @@
         router
         :to="headerItem.route"
       >
-        <v-list-item-action class="mr-1" :style="{ marginLeft: '3px' }">
-          <v-icon :size="headerItem.icon === 'transaction' ? 13 : 15" class="text_2--text">{{ `$vuetify.icons.${headerItem.icon}` }}</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title class="caption font-weight-bold text_1--text">{{ headerItem.display }}</v-list-item-title>
-        </v-list-item-content>
+        <template #prepend>
+          <div class="mr-1" :style="{ marginLeft: '3px' }">
+            <v-icon :size="headerItem.icon === 'transaction' ? 13 : 15" class="text-text_2">{{ `$${headerItem.icon}` }}</v-icon>
+          </div>
+        </template>
+        <v-list-item-title class="caption font-weight-bold text-text_1">{{ headerItem.display }}</v-list-item-title>
       </v-list-item>
     </v-list>
-    <v-divider v-if="$vuetify.breakpoint.smAndDown"></v-divider>
+    <v-divider v-if="$vuetify.display.smAndDown"></v-divider>
     <v-list class="ml-1">
       <v-list-item href="https://docs.tor.us/#users" target="_blank" rel="noreferrer noopener">
-        <v-list-item-action class="mr-2 justify-center">
-          <v-icon size="20" class="text_2--text">$vuetify.icons.info</v-icon>
-        </v-list-item-action>
-        <v-list-item-content class="caption font-weight-bold">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
+        <template #prepend>
+          <div class="mr-2 justify-center">
+            <v-icon size="20" class="text-text_2">$info</v-icon>
+          </div>
+        </template>
+        <v-list-item-title class="caption font-weight-bold">{{ $t('accountMenu.infoSupport') }}</v-list-item-title>
       </v-list-item>
-      <LanguageSelector v-if="$vuetify.breakpoint.smAndDown && showLanguageSelector"></LanguageSelector>
+      <LanguageSelector v-if="$vuetify.display.smAndDown && showLanguageSelector"></LanguageSelector>
     </v-list>
 
     <v-divider></v-divider>
     <div class="text-right py-4 px-3">
-      <v-btn text class="caption text_2--text font-weight-bold" @click="logout">{{ t('accountMenu.logOut') }}</v-btn>
+      <v-btn text class="caption text-text_2 font-weight-bold" @click="logout">{{ $t('accountMenu.logOut') }}</v-btn>
     </div>
   </v-card>
 </template>
@@ -179,6 +193,9 @@ export default {
       networkType: 'networkType',
       wallet: 'wallet',
       loginConfig: (state) => state.embedState.loginConfig,
+      isDarkMode() {
+        return this.$vuetify.theme.current.dark
+      },
     }),
     ...mapGetters({
       wallets: 'walletBalances',
@@ -197,7 +214,7 @@ export default {
       return ''
     },
     userName() {
-      if (!this.userInfo.name) return this.t('login.your')
+      if (!this.userInfo.name) return this.$t('login.your')
       let userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
       userName = userName.length > 20 ? userName.split(' ')[0] : userName
       return `${userName}'s`
@@ -248,7 +265,7 @@ export default {
     },
     userEmail(account) {
       if (account.accountType === ACCOUNT_TYPE.THRESHOLD) {
-        return `OpenLogin ${this.t('accountMenu.wallet')}`
+        return `OpenLogin ${this.$t('accountMenu.wallet')}`
       }
       if (account.accountType === ACCOUNT_TYPE.APP_SCOPED) {
         return this.userDapps[account.address]
@@ -257,9 +274,9 @@ export default {
         const index = Object.keys(this.wallet)
           .filter((x) => this.wallet[x].accountType === ACCOUNT_TYPE.IMPORTED)
           .indexOf(account.address)
-        return `${this.t('accountMenu.importedAccount')} ${index + 1}`
+        return `${this.$t('accountMenu.importedAccount')} ${index + 1}`
       }
-      return getUserEmail(this.userInfo, this.loginConfig, this.t('accountMenu.wallet'))
+      return getUserEmail(this.userInfo, this.loginConfig, this.$t('accountMenu.wallet'))
     },
     checksummedAccount(address) {
       return toChecksumAddressByChainId(address, this.$store.state.networkId)

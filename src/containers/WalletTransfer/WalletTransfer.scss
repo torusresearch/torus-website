@@ -9,91 +9,110 @@
   .select-coin {
     background: #ffffff;
     box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06) !important;
-    color: var(--v-torusFont1-base);
+    color: rgb(var(--v-theme-torusFont1));
     font-weight: normal;
     border-radius: 6px !important;
     font-size: 16px;
     display: flex;
-    border: 1px solid var(--v-torusGray1-base);
+    border: 1px solid rgb(var(--v-theme-torusGray1));
     width: 100%;
     height: 54px;
     .v-icon--right {
-      color: #D3D5E2;
+      color: #d3d5e2;
     }
-    &.theme--dark {
-      background-color: var(--v-torusBlack-base) !important;
+    &.v-theme--dark {
+      background-color: rgb(var(--v-theme-torusBlack)) !important;
       box-shadow: none;
-      border: 1px solid var(--v-torusGray3-base);
+      border: 1px solid rgb(var(--v-theme-torusGray3));
     }
     &:focus {
-      border-color: var(--v-torusFont1-base);
+      border-color: rgb(var(--v-theme-torusFont1));
     }
     &::before {
       background-color: #ffffff;
     }
+    :deep(.v-btn__content) {
+      width: 100%;
+    }
   }
-  ::v-deep .v-messages {
-    text-align: right;
-    &.error--text {
+  :deep(.v-input__details) {
+    padding-left: 0px;
+    padding-right: 0px;
+    .v-messages {
       text-align: left;
+      &.error--text {
+        text-align: left;
+      }
     }
   }
   .form-container.mobile {
     background: none;
   }
   .send-mode.v-btn {
-    &.theme--dark, &.theme--light {
+    &.v-theme--dark,
+    &.v-theme--light {
       border: 0 !important;
     }
-    &.theme--dark.active {
-      background-color: var(--v-torusBlack2-base) !important;
-      color: var(--v-torusFont2-base) !important;
+    &.v-theme--dark.active {
+      background-color: rgb(var(--v-theme-torusBlack2)) !important;
+      color: rgb(var(--v-theme-torusFont2)) !important;
       font-weight: bold;
       cursor: default;
-      box-shadow: 5px 5px 10px #242529, -5px -5px 10px #37383C !important;
+      box-shadow: 5px 5px 10px #242529, -5px -5px 10px #37383c !important;
     }
-    &.theme--light.active {
-      background-color: #FFFFFF !important;
-      color: var(--v-text_2-base) !important;
+    &.v-theme--light.active {
+      background-color: #ffffff !important;
+      color: rgb(var(--v-theme-text_2)) !important;
       font-weight: bold;
-      box-shadow: 5px 5px 10px #DEE5FF, -5px -5px 10px #FAFBFF;;
+      box-shadow: 5px 5px 10px #dee5ff, -5px -5px 10px #fafbff;
       cursor: default;
     }
   }
   &.mobile-view {
-    .select-coin.theme--dark {
-      background: var(--v-torusBlack2-base) !important;
+    .select-coin.v-theme--dark {
+      background: rgb(var(--v-theme-torusBlack2)) !important;
     }
     .form-container {
-      &.theme--dark {
-        ::v-deep .v-input.v-text-field--outlined > .v-input__control > .v-input__slot {
-          background: var(--v-torusBlack2-base);
+      &.v-theme--dark {
+        :deep(.v-input.v-text-field--outlined > .v-input__control > .v-input__slot) {
+          background: rgb(var(--v-theme-torusBlack2));
         }
       }
-    }    
+    }
   }
-  ::v-deep .recipient-address.hasQrError .v-text-field__details {
+  .recipient-address {
+    :deep(.v-field__append-inner) {
+      align-items: center;
+      padding-top: 0px;
+    }
+    :deep(.v-combobox__selection) {
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
+
+  :deep(.recipient-address.hasQrError .v-text-field__details) {
     margin-bottom: 2px;
   }
 }
 
 .v-btn.share-btn {
-  background: #F5F6FF;
-  border: 1px solid #F1F2F6;
+  background: #f5f6ff;
+  border: 1px solid #f1f2f6;
   box-sizing: border-box;
   border-radius: 6px;
   height: 40px;
   .v-icon {
-    color: #55ACEE;
+    color: #55acee;
   }
   span {
-    color: var(--v-text_2-base);
+    color: rgb(var(--v-theme-text_2));
   }
-  &.theme--dark {
+  &.v-theme--dark {
     background: #242529;
     border: 1px solid #343539;
     span {
-      color: #55ACEE;
+      color: #55acee;
     }
   }
 }

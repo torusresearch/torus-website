@@ -15,7 +15,7 @@
       position: absolute;
       top: 5px;
       right: 5px;
-      color: var(--v-text_1-base);
+      color: rgb(var(--v-theme-text_1));
     }
   }
   .transaction-details {
@@ -32,8 +32,8 @@
 
   .is-confirmed {
     .v-icon__component {
-      color: var(--v-text_3-base);
-      caret-color: var(--v-text_3-base);
+      color: rgb(var(--v-theme-text_3));
+      caret-color: rgb(var(--v-theme-text_3));
     }
   }
 
@@ -46,7 +46,7 @@
     margin-top: 2px;
   }
 
-  &.theme--dark {
+  &.v-theme--dark {
     .card-header {
       border: 0;
       background: #2f3136;

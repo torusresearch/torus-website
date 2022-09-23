@@ -13,7 +13,7 @@
   margin-bottom: -10px;
 }
 
-::v-deep .search-tokens.v-input.v-text-field--outlined {
+:deep(.search-tokens.v-input.v-text-field--outlined) {
   & > .v-input__control {
     & > .v-input__slot {
       height: 40px;
@@ -32,9 +32,9 @@
       }
     }
   }
-  &.theme--dark {
+  &.v-theme--dark {
     & > .v-input__control > .v-input__slot {
-      background: var(--v-torusBlack2-base);
+      background: rgb(var(--v-theme-torusBlack2));
     }
   }
 }
@@ -44,22 +44,22 @@
 }
 
 .home-tab {
-  ::v-deep .v-tabs-slider-wrapper {
+  :deep(.v-tabs-slider-wrapper) {
     display: none;
   }
   .v-tab {
     text-transform: none;
-    width: 100%;
-    border: 1px solid #D5D5D5;
+    width: 50%;
+    border: 1px solid #d5d5d5;
     border-radius: 6px;
-    background-color: var(--v-torusLight-base);
-    color: var(--v-text_2--text-base);
+    background-color: rgb(var(--v-theme-torusLight));
+    color: rgb(var(--v-theme-text_2));
     &.home-tab-token {
       border-right: 0;
     }
-    &--active {
-      color: var(--v-torusBrand1-base);
-      background-color: var(--v-torusGray2-base);
+    &--selected {
+      color: rgb(var(--v-theme-torusBrand1));
+      background-color: rgb(var(--v-theme-torusGray2));
     }
     @media screen and (min-width: 960px) {
       width: 180px;
@@ -69,29 +69,29 @@
     }
   }
   &-token.v-tab {
-    border-radius: 6px 0px 0px 6px;
+    border-radius: 6px 0px 0px 6px !important;
   }
   &-collectibles.v-tab {
-    border-radius: 0px 6px 6px 0px;
+    border-radius: 0px 6px 6px 0px !important;
   }
-  &.theme--dark {
+  &.v-theme--dark {
     &.v-tabs {
-      ::v-deep & > .v-tabs-bar {
+      :deep(.v-tabs-bar) {
         background-color: transparent;
       }
     }
     .v-tab {
       border: 1px solid #343539;
       background-color: inherit;
-      &--active {
-        background-color: var(--v-torusBlack2-base);
+      &--selected {
+        background-color: rgb(var(--v-theme-torusBlack2));
       }
     }
   }
 }
 
-.token-tab-content.theme--dark {
-  background-color: transparent; 
+.token-tab-content.v-theme--dark {
+  background-color: transparent;
 }
 
 .refresh-text {
@@ -99,6 +99,6 @@
   line-height: 12px;
 }
 
-.v-btn:not(.v-btn--text):not(.v-btn--icon):not(.v-btn--round).refresh-btn {
+.v-btn:not(.v-btn--variant-text):not(.v-btn--variant-icon):not(.v-btn--rounded).refresh-btn {
   border-radius: 12px;
 }

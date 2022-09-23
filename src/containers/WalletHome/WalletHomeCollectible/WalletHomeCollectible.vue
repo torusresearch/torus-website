@@ -1,20 +1,21 @@
 <template>
   <v-container>
-    <v-breadcrumbs class="px-2 text-subtitle-1 font-weight-bold" :items="breadcrumb">
+    <v-breadcrumbs class="px-2 text-body-2 font-weight-bold" :items="breadcrumb">
       <template #divider>
-        <v-icon small>$vuetify.icons.page_next_double</v-icon>
+        <v-icon size="16">$breadcrumb</v-icon>
       </template>
     </v-breadcrumbs>
     <v-layout wrap align-end>
-      <v-flex xs12 sm6 px-2>
+      <v-col xs12 sm6 px-2>
         <v-select
           v-model="selectedContract"
           :items="collectibles"
-          item-text="name"
+          item-title="name"
           item-value="address"
-          outlined
+          variant="outlined"
+          density="comfortable"
           hide-details
-          append-icon="$vuetify.icons.select"
+          append-inner-icon="$select"
           return-object
           aria-label="Selected contract"
           @change="changeContract"
@@ -26,12 +27,12 @@
               :src="selectedContract.logo"
               :alt="selectedContract.name"
               onerror="if (!this.src.includes('/images/nft-placeholder.svg')) this.src = '/images/nft-placeholder.svg';"
-              height="24px"
+              height="24"
             />
           </template>
         </v-select>
-      </v-flex>
-      <v-flex xs12 sm6 px-4 class="body-2 text_2--text text-capitalize" :class="$vuetify.breakpoint.xsOnly ? 'text-right mt-1' : 'pb-1'"></v-flex>
+      </v-col>
+      <v-col xs12 sm6 px-4 class="body-2 text_2--text text-capitalize" :class="$vuetify.display.xs ? 'text-right mt-1' : 'pb-1'"></v-col>
     </v-layout>
     <v-layout v-if="selectedContract" wrap align-top mt-10 mx-n2>
       <CollectibleAsset v-for="asset in selectedContract.assets" :key="asset.tokenId" :asset="asset" @onTransfer="transferAsset" />
@@ -50,13 +51,13 @@ export default {
     return {
       breadcrumb: [
         {
-          text: this.t('walletHome.home'),
+          text: this.$t('walletHome.home'),
           disabled: false,
           exact: true,
           to: '/wallet/home',
         },
         {
-          text: this.t('walletHome.collectibles'),
+          text: this.$t('walletHome.collectibles'),
           disabled: false,
           exact: true,
           to: '/wallet/home#collectibles',
