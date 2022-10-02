@@ -1346,7 +1346,7 @@ export default {
               walletVerifier,
               network: config.torusNetwork,
             })
-            toAddress = res.data
+            toAddress = res.data.address
           }
         } catch (error) {
           log.error(error, this.toAddress, 'invalid torus lookup error')
@@ -1367,6 +1367,7 @@ export default {
     async onTransferClick() {
       if (this.$refs.form.validate()) {
         const toAddress = await this.calculateEthAddress()
+        log.info('toAddress', toAddress)
         if (!isAddressByChainId(toAddress, this.$store.state.networkId)) {
           // Show error body
           this.messageModalShow = true
