@@ -10,3 +10,13 @@ export default {
     decimals: 18,
   },
 }
+
+export const GNOSIS_CONTRACTS = {
+  '0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb': {
+    name: 'Gnosis Token on xDai',
+    logo: 'https://docs.gnosischain.com/img/tokens/gno.png',
+    erc20: true,
+    symbol: 'GNO',
+    decimals: 18,
+  },
+}
