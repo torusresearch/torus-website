@@ -1,10 +1,10 @@
 /* eslint-disable require-atomic-updates */
-import Common from '@ethereumjs/common'
+import { Common } from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
+import { addHexPrefix, bufferToHex, stripHexPrefix } from '@ethereumjs/util'
 import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import { ethErrors } from 'eth-rpc-errors'
-import { addHexPrefix, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import EthQuery from 'ethjs-query'
 import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'

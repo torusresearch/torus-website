@@ -1,4 +1,4 @@
-import { addHexPrefix } from 'ethereumjs-util'
+import { addHexPrefix } from '@ethereumjs/util'
 import EthQuery from 'ethjs-query'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'

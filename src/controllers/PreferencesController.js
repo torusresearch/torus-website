@@ -1,7 +1,7 @@
+import { hashPersonalMessage } from '@ethereumjs/util'
 import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import deepmerge from 'deepmerge'
-import { hashPersonalMessage } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import Web3 from 'web3'
