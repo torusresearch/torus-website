@@ -12,8 +12,8 @@ export default {
 }
 
 export const GNOSIS_CONTRACTS = {
-  '0x6810e776880c02933d47db1b9fc05908e5386b96': {
-    name: 'Gnosis',
+  '0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb': {
+    name: 'Gnosis Token on xDai',
     logo: 'https://docs.gnosischain.com/img/tokens/gno.png',
     erc20: true,
     symbol: 'GNO',
