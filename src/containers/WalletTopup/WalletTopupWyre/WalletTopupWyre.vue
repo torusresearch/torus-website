@@ -18,6 +18,7 @@ import { mapState } from 'vuex'
 
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 import cleanTopupQuoteError from '../../../utils/cleanTopupQuoteError'
+import { WYRE_NETWORK_MAP } from '../../../utils/enums'
 
 export default {
   components: {
@@ -32,12 +33,13 @@ export default {
       fetchingQuote: false,
     }
   },
-  computed: mapState(['selectedAddress']),
+  computed: mapState(['selectedAddress', 'networkType']),
   methods: {
     fetchQuote(payload) {
       const self = this
       this.fetchQuoteError = ''
       this.fetchingQuote = true
+      payload.network = WYRE_NETWORK_MAP[this.networkType.host]
       throttle(() => {
         self.$store
           .dispatch('fetchWyreQuote', payload)
@@ -61,7 +63,10 @@ export default {
     },
     sendOrder(callback) {
       const { selectedAddress } = this.$route.query
-      callback(this.$store.dispatch('fetchWyreOrder', { currentOrder: this.currentOrder, selectedAddress: selectedAddress || this.selectedAddress }))
+      const network = WYRE_NETWORK_MAP[this.networkType.host]
+      callback(
+        this.$store.dispatch('fetchWyreOrder', { currentOrder: this.currentOrder, selectedAddress: selectedAddress || this.selectedAddress, network })
+      )
     },
     clearQuote(payload) {
       this.cryptoCurrencyValue = 0

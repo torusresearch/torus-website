@@ -960,6 +960,12 @@ export const TRANSAK_NETWORK_MAP = {
   [AVALANCHE_MAINNET]: 'avaxcchain',
 }
 
+export const WYRE_NETWORK_MAP = {
+  [MAINNET]: 'ethereum',
+  [MATIC]: 'matic',
+  [AVALANCHE_MAINNET]: 'avalanche',
+}
+
 export const AVAILABLE_WEBSITES = {
   Ethereum: 'https://app.tor.us',
   Solana: 'https://solana.tor.us',

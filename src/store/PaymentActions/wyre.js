@@ -14,11 +14,12 @@ export default {
         dest_currency: payload.selectedCryptoCurrency,
         source_amount: +Number.parseFloat(payload.fiatValue),
         source_currency: payload.selectedCurrency,
+        network: payload.network,
       },
       { Authorization: `Bearer ${state.jwtToken[state.selectedAddress]}` }
     )
   },
-  fetchWyreOrder({ state, dispatch }, { currentOrder, preopenInstanceId: preopenInstanceIdPayload, selectedAddress }) {
+  fetchWyreOrder({ state, dispatch }, { currentOrder, preopenInstanceId: preopenInstanceIdPayload, selectedAddress, network }) {
     return new Promise((resolve, reject) => {
       const orderInstanceId = randomId()
       let preopenInstanceId = preopenInstanceIdPayload
@@ -44,7 +45,7 @@ export default {
         amount: currentOrder.sourceAmount,
         sourceCurrency: currentOrder.sourceCurrency,
         destCurrency: currentOrder.destCurrency,
-        dest: `ethereum:${selectedAddress}`,
+        dest: `${network}:${selectedAddress}`,
         email: state.userInfo.email,
         redirectUrl: `${config.redirect_uri}?state=${instanceState}`,
         failureRedirectUrl: `${config.redirect_uri}?state=${instanceState}`,
