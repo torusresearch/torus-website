@@ -102,7 +102,7 @@ export const COVALENT_SUPPORTED_CHAIN_IDS = {
   [MAINNET_CODE]: MAINNET,
 }
 export const ETHERSCAN_SUPPORTED_NETWORKS = new Set([MATIC, BSC_MAINNET, MAINNET])
-export const INFURA_PROVIDER_TYPES = new Set([ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI])
+export const INFURA_PROVIDER_TYPES = new Set([RINKEBY, KOVAN, MAINNET, GOERLI])
 
 export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
 export const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
@@ -182,6 +182,8 @@ export const VOC_TESTNET_URL = 'https://testnet-rpc.vegas.one'
 export const VOC_TESTNET_BLOCK_EXPLORER = 'https://testnet-explorer.vegas.one'
 
 export const BIT_HOST_URL = 'https://indexer-v1.did.id'
+
+export const ROPSTEN_URL = 'https://small-long-brook.ropsten.quiknode.pro/e2fd2eb01412e80623787d1c40094465aa67624a'
 
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
@@ -307,7 +309,16 @@ export const SUPPORTED_NETWORK_TYPES = {
   [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, getInfuraBlockExplorerUrl(MAINNET), 'ETH', 'Ethereum', 'eth.svg', undefined),
   [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE, getInfuraBlockExplorerUrl(RINKEBY), 'ETH', 'Ethereum', 'eth.svg', undefined),
   [KOVAN]: createNetwork(KOVAN, KOVAN_DISPLAY_NAME, KOVAN_CODE, getInfuraBlockExplorerUrl(KOVAN), 'ETH', 'Ethereum', 'eth.svg', undefined),
-  [ROPSTEN]: createNetwork(ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE, getInfuraBlockExplorerUrl(ROPSTEN), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [ROPSTEN]: createNetwork(
+    ROPSTEN,
+    ROPSTEN_DISPLAY_NAME,
+    ROPSTEN_CODE,
+    getInfuraBlockExplorerUrl(ROPSTEN),
+    'ETH',
+    'Ethereum',
+    'eth.svg',
+    ROPSTEN_URL
+  ),
   [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE, getInfuraBlockExplorerUrl(GOERLI), 'ETH', 'Ethereum', 'eth.svg', undefined),
   [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE, '', 'ETH', 'Ethereum', 'eth.svg', undefined),
   [MATIC]: createNetwork(
