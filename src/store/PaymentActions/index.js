@@ -5,7 +5,7 @@ import config from '../../config'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MERCURYO, MOONPAY, RAMPNETWORK, TRANSAK, TRANSAK_NETWORK_MAP, WYRE, XANPOOL } from '../../utils/enums'
+import { MERCURYO, MOONPAY, RAMPNETWORK, TRANSAK, TRANSAK_NETWORK_MAP, WYRE, WYRE_NETWORK_MAP, XANPOOL } from '../../utils/enums'
 import { fakeStream, paymentProviders } from '../../utils/utils'
 import mercuryo from './mercuryo'
 import moonpay from './moonpay'
@@ -112,6 +112,7 @@ export default {
           handleSuccess(success)
         } else if (provider === WYRE) {
           // wyre
+          const network = WYRE_NETWORK_MAP[selectedParameters.chainNetwork]
           const { success } = await dispatch('fetchWyreOrder', {
             currentOrder: {
               destCurrency: selectedParameters.selectedCryptoCurrency || undefined,
@@ -120,6 +121,7 @@ export default {
             },
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
+            network,
           })
           handleSuccess(success)
         } else if (provider === XANPOOL) {
