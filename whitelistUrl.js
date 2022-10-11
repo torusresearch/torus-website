@@ -1,6 +1,6 @@
 const { whitelistUrl } = require('@toruslabs/openlogin')
 
-const clientId = 'BCY9aYsh8iGshQuzNjBbONYE-tKD0JM389l87IiMOVeOU1TBmRaZphKOyphkUpo41fuSMnO6QRlloxCV-3nt8dU'
+const clientId = 'BPmpXn0tNGVz4CzW3SJCYAkrfEa7a4YJ3lkSfyLd-R_QDWRX7SLw7xDy9erezDKpoINZRy9BZ8pIsqj8rNmjYko'
 const appKey = ''
 const origin = 'https://bnb.tor.us'
 
