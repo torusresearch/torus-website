@@ -140,7 +140,7 @@
 </template>
 
 <script>
-import { BroadcastChannel } from '@toruslabs/broadcast-channel'
+import { BroadcastChannel } from '@tainguyentt/broadcast-channel'
 import { mapState } from 'vuex'
 
 import { XANPOOL } from '../../../utils/enums'

@@ -1,4 +1,4 @@
-import { BroadcastChannel } from '@toruslabs/broadcast-channel'
+import { BroadcastChannel } from '@tainguyentt/broadcast-channel'
 import log from 'loglevel'
 
 import { POPUP_LOADED, POPUP_RESULT } from '../../utils/enums'

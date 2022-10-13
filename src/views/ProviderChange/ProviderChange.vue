@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { BroadcastChannel } from '@toruslabs/broadcast-channel'
+import { BroadcastChannel } from '@tainguyentt/broadcast-channel'
 import { mapGetters } from 'vuex'
 
 import { ChangeProviderScreenLoader } from '../../content-loader'

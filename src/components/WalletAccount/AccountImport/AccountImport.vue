@@ -149,7 +149,7 @@
 /* eslint-disable import/default */
 /* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable import/extensions */
-import { BroadcastChannel } from '@toruslabs/broadcast-channel'
+import { BroadcastChannel } from '@tainguyentt/broadcast-channel'
 import { randomId } from '@toruslabs/openlogin-utils'
 import { bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'

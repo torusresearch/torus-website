@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { BroadcastChannel } from '@toruslabs/broadcast-channel'
+import { BroadcastChannel } from '@tainguyentt/broadcast-channel'
 
 import ConfirmForm from '../../components/Confirm/ConfirmForm'
 // import DappCreateTkey from '../../components/helpers/DappCreateTkey'

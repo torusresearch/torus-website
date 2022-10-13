@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import { BroadcastChannel } from '@toruslabs/broadcast-channel'
+import { BroadcastChannel } from '@tainguyentt/broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { ACCOUNT_TYPE, DISCORD, GITHUB, TWITTER } from '../../../utils/enums'
