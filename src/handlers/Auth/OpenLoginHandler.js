@@ -249,7 +249,7 @@ class OpenLoginHandler {
         userProjects.forEach((project) => {
           const subKey = subkey(state.tKey, Buffer.from(project.project_id, 'base64'))
           const subAddress = generateAddressFromPrivateKey(subKey)
-          userDapps[subAddress] = `${project.name} (${project.hostname})`
+          userDapps[subAddress] = project.hostname ? `${project.name} (${project.hostname})` : project.name
           keys.push({ ethAddress: subAddress, privKey: subKey.padStart(64, '0'), accountType: ACCOUNT_TYPE.APP_SCOPED })
         })
       } catch (error) {

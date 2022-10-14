@@ -46,7 +46,7 @@ export default {
         sourceCurrency: currentOrder.sourceCurrency,
         destCurrency: currentOrder.destCurrency,
         dest: `${network}:${selectedAddress}`,
-        email: state.userInfo.email,
+        email: state.userInfo.email || undefined,
         redirectUrl: `${config.redirect_uri}?state=${instanceState}`,
         failureRedirectUrl: `${config.redirect_uri}?state=${instanceState}`,
         referrerAccountId: config.wyreAccountId,
