@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { BroadcastChannel } from '@tainguyentt/broadcast-channel'
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { safeatob } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 

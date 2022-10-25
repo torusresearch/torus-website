@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { BroadcastChannel } from '@tainguyentt/broadcast-channel'
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
 
 import BoxLoader from '../../components/helpers/BoxLoader'

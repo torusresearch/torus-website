@@ -241,7 +241,7 @@
 </template>
 
 <script>
-import { BroadcastChannel } from '@tainguyentt/broadcast-channel'
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ComponentLoader from '../../../components/helpers/ComponentLoader'

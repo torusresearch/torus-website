@@ -159,7 +159,7 @@
 </template>
 
 <script>
-import { BroadcastChannel } from '@tainguyentt/broadcast-channel'
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
 import { mapGetters, mapState } from 'vuex'
 import { isHexStrict } from 'web3-utils'
