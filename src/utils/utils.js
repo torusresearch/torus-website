@@ -505,7 +505,7 @@ export const paymentProviders = {
       ],
       [MATIC]: [{ value: 'MUSDC', display: 'USDC' }],
       // AVAXC? or AVAX?
-      [AVALANCHE_MAINNET]: [{ value: 'AVAXC', display: 'AVAXC' }],
+      [AVALANCHE_MAINNET]: [{ value: 'AVAX', display: 'AVAX' }],
     },
     includeFees: false,
     api: true,
@@ -855,7 +855,7 @@ export function generateAddressFromPubKey(point) {
 }
 
 export function generateAddressFromPrivateKey(privKey) {
-  return toChecksumAddress(privateToAddress(Buffer.from(privKey, 'hex')).toString('hex'))
+  return toChecksumAddress(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex'))
 }
 
 export function toChecksumAddressByChainId(address, chainId) {
@@ -1135,7 +1135,7 @@ export function generateTorusAuthHeaders(privateKey, publicAddress) {
   challenge = ((challenge - (challenge % 1000)) / 1000).toString()
   const message = getTorusMessage(Buffer.from(challenge, 'utf8'))
   const hash = keccak(message)
-  const messageSig = ecsign(hash, Buffer.from(privateKey, 'hex'))
+  const messageSig = ecsign(hash, Buffer.from(privateKey.padStart(64, '0'), 'hex'))
   const signature = concatSig(messageSig.v, messageSig.r, messageSig.s)
   const authHeaders = {
     'Auth-Challenge': challenge,
@@ -1173,9 +1173,16 @@ export const idleTimeTracker = ((activityThresholdTime) => {
 export const parsePopupUrl = (url) => {
   const localUrl = url instanceof URL ? url : new URL(url)
   const iframeOrigin = getIFrameOriginObject()
+  if (localUrl.hostname !== window.location.hostname) return localUrl
   localUrl.searchParams.append('isCustomLogin', config.isCustomLogin)
   if (config.isCustomLogin) {
     localUrl.searchParams.append('namespace', iframeOrigin.hostname)
   }
   return localUrl
+}
+
+export const getDefaultNetwork = () => {
+  if (window.location.hostname === 'polygon.tor.us') return SUPPORTED_NETWORK_TYPES[MATIC]
+  if (window.location.hostname === 'bnb.tor.us') return SUPPORTED_NETWORK_TYPES[BSC_MAINNET]
+  return SUPPORTED_NETWORK_TYPES[MAINNET]
 }

@@ -684,16 +684,23 @@ class PreferencesController extends SafeEventEmitter {
 
   async addCustomNetwork(type, network) {
     try {
-      const payload = {
-        network_name: network.networkName,
-        rpc_url: network.host,
-        chain_id: network.chainId,
-        symbol: network.symbol,
-        block_explorer_url: network.blockExplorer || undefined,
+      const { selectedAddress } = this.store.getState()
+      if (this.state(selectedAddress)?.jwtToken) {
+        const payload = {
+          network_name: network.networkName,
+          rpc_url: network.host,
+          chain_id: network.chainId,
+          symbol: network.symbol,
+          block_explorer_url: network.blockExplorer || undefined,
+        }
+        const res = await this.api.post(`${config.api}/customnetwork/${type}`, payload, this.headers(), { useAPIKey: true })
+        this.network.addSupportedNetworks({ ...network, id: res.data.id })
+        return res.data.id
       }
-      const res = await this.api.post(`${config.api}/customnetwork/${type}`, payload, this.headers(), { useAPIKey: true })
-      this.network.addSupportedNetworks({ ...network, id: res.data.id })
-      return res.data.id
+
+      // for dapps to add network via embed when user is not logged in.
+      this.network.addSupportedNetworks({ ...network })
+      return null
     } catch {
       this.handleError('navBar.snackFailCustomNetworkAdd')
       return null
@@ -811,6 +818,22 @@ class PreferencesController extends SafeEventEmitter {
 
   async getNftMetadata(api) {
     return this.api.get(`${config.api}/covalent?url=${encodeURIComponent(api)}`, this.headers(), { useAPIKey: true })
+  }
+
+  async getEnsOrUnstoppableAddress({ address, type }) {
+    const url = new URL(`${config.api}/lookup`)
+    url.searchParams.append('key', address)
+    url.searchParams.append('type', type)
+    return this.api.get(url.href, this.headers(), { useAPIKey: true })
+  }
+
+  async getTorusLookupAddress({ verifier, verifierId, walletVerifier, network }) {
+    const url = new URL(`${config.api}/lookup/torus`)
+    url.searchParams.append('verifier', verifier)
+    url.searchParams.append('verifierId', verifierId)
+    url.searchParams.append('walletVerifier', walletVerifier)
+    url.searchParams.append('network', network)
+    return this.api.get(url.href, this.headers(), { useAPIKey: true })
   }
 
   /* istanbul ignore next */

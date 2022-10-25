@@ -113,7 +113,6 @@ class NftHandler {
     if (!this.prefController) throw new Error('Preferences controller is not initialized')
     const api = `https://api.covalenthq.com/v1/${chainId}/tokens/${this.address}/nft_metadata/${this.tokenId}/`
     const res = await this.prefController.getCovalentNfts(api)
-
     if (res.success) {
       const item = res?.data?.data?.items[0]
       const { contract_name, logo_url } = item || {}
@@ -127,6 +126,7 @@ class NftHandler {
         nftName: nftData?.name || `${contract_name}#${this.tokenId}`,
         nftImageLink: nftData?.image || logo_url,
         description: nftData?.description || '',
+        video: nftData?.animation_url || null,
         nftStandard,
       }
     }

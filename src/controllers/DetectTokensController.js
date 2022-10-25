@@ -8,8 +8,8 @@ import Web3 from 'web3'
 import { toHex } from 'web3-utils'
 
 import TokenHandler from '../handlers/Token/TokenHandler'
-import contracts from '../utils/contractMetadata'
-import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, SUPPORTED_NETWORK_TYPES } from '../utils/enums'
+import contracts, { GNOSIS_CONTRACTS } from '../utils/contractMetadata'
+import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, SUPPORTED_NETWORK_TYPES, XDAI } from '../utils/enums'
 import { idleTimeTracker, toChecksumAddressByChainId } from '../utils/utils'
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
@@ -34,13 +34,15 @@ const mergeTokenArrays = (oldArray, newArray) => {
 
 const mergeCustomTokenArrays = (oldArray, newArray, networkIdentifier) => {
   const oldMap = getObjectFromArrayBasedonKey(oldArray || [], 'tokenAddress')
+  const newMap = getObjectFromArrayBasedonKey(newArray || [], 'tokenAddress')
 
   const finalArr = []
   const networkConfig = SUPPORTED_NETWORK_TYPES[networkIdentifier]
   const defaultErc20 = networkConfig?.tokenAddress
   // if customtokenid is present and oldarray customtokenid is not present, add it
   Object.keys(oldMap).forEach((x) => {
-    if (oldMap[x].tokenAddress?.toLowerCase() !== defaultErc20?.toLowerCase() && !oldMap[x].customTokenId) finalArr.push(oldMap[x])
+    if (!oldMap[x].customTokenId && !newMap[x]) finalArr.push(oldMap[x])
+    if (defaultErc20 && oldMap[x].tokenAddress?.toLowerCase() !== defaultErc20?.toLowerCase() && !newMap[x]) finalArr.push(oldMap[x])
   })
   finalArr.push(...newArray)
   return finalArr
@@ -67,6 +69,12 @@ class DetectTokensController {
     this.selectedCustomTokens = []
   }
 
+  getUserTokens() {
+    const userAddress = this.selectedAddress
+    if (!userAddress) return []
+    return this.detectedTokensStore.getState()[userAddress] || []
+  }
+
   /**
    * For each token in @metamask/contract-metadata, find check selectedAddress balance.
    *
@@ -80,12 +88,24 @@ class DetectTokensController {
       this.detectedTokensStore.updateState({ [userAddress]: [...tokensToDetect] })
       return
     }
+
     if (currentNetworkIdentifier === MAINNET) {
+      const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkIdentifier]
+
       for (const contractAddress in contracts) {
         if (contracts[contractAddress].erc20) {
-          tokensToDetect.push({ ...contracts[contractAddress], tokenAddress: contractAddress })
+          tokensToDetect.push({ ...contracts[contractAddress], tokenAddress: contractAddress, network: networkConfig.host })
         }
       }
+    } else if (currentNetworkIdentifier === XDAI) {
+      const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkIdentifier]
+      for (const contractAddress in GNOSIS_CONTRACTS) {
+        if (GNOSIS_CONTRACTS[contractAddress].erc20) {
+          tokensToDetect.push({ ...GNOSIS_CONTRACTS[contractAddress], tokenAddress: contractAddress, network: networkConfig.host })
+        }
+      }
+      await this.getCustomTokenBalances([...tokensToDetect])
+      return
     } else {
       const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkIdentifier]
 
@@ -104,7 +124,7 @@ class DetectTokensController {
       return
     }
 
-    if (tokensToDetect.length > 0) {
+    if (tokensToDetect.length > 0 && currentNetworkIdentifier === MAINNET) {
       const web3Instance = this.web3
       const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
       ethContract.methods
@@ -177,7 +197,6 @@ class DetectTokensController {
     const userAddress = this.selectedAddress
     if (userAddress === '') return
     if (this.network.getNetworkIdentifier() !== MAINNET) {
-      this.detectedTokensStore.updateState({ [userAddress]: [] })
       return
     }
     const oldTokens = this.detectedTokensStore.getState()[userAddress] || []
@@ -227,7 +246,7 @@ class DetectTokensController {
           return {
             decimals: tokenInstance.decimals,
             erc20: true,
-            logo: 'eth.svg',
+            logo: x.logo || 'eth.svg',
             name: tokenInstance.name,
             symbol: tokenInstance.symbol,
             tokenAddress: toChecksumAddressByChainId(tokenInstance.address, chainId),

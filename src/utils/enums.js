@@ -37,6 +37,7 @@ export const OPTIMISM_TESTNET = 'optimism_testnet'
 export const AVALANCHE_MAINNET = 'avalanche_mainnet'
 export const AVALANCHE_TESTNET = 'avalanche_testnet'
 export const GXC_TESTNET = 'gxc_testnet'
+export const VOC_TESTNET = 'voc_testnet'
 
 export const MAINNET_CODE = 1
 export const ROPSTEN_CODE = 3
@@ -61,6 +62,7 @@ export const OPTIMISM_TESTNET_CODE = 69
 export const AVALANCHE_MAINNET_CODE = 43_114
 export const AVALANCHE_TESTNET_CODE = 43_113
 export const GXC_TESTNET_CODE = 1068
+export const VOC_TESTNET_CODE = 1172
 
 export const MAINNET_CHAIN_ID = '0x1'
 export const ROPSTEN_CHAIN_ID = '0x3'
@@ -84,6 +86,7 @@ export const OPTIMISM_TESTNET_CHAIN_ID = '0x45'
 export const AVALANCHE_MAINNET_CHAIN_ID = '0xa86a'
 export const AVALANCHE_TESTNET_CHAIN_ID = '0xa869'
 export const GXC_TESTNET_CHAIN_ID = '0x42c'
+export const VOC_TESTNET_CHAIN_ID = '0x494'
 
 export const NFT_SUPPORTED_NETWORKS = {
   [MATIC]: MATIC_CODE,
@@ -99,7 +102,7 @@ export const COVALENT_SUPPORTED_CHAIN_IDS = {
   [MAINNET_CODE]: MAINNET,
 }
 export const ETHERSCAN_SUPPORTED_NETWORKS = new Set([MATIC, BSC_MAINNET, MAINNET])
-export const INFURA_PROVIDER_TYPES = new Set([ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI])
+export const INFURA_PROVIDER_TYPES = new Set([RINKEBY, KOVAN, MAINNET, GOERLI])
 
 export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
 export const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
@@ -125,6 +128,7 @@ export const OPTIMISM_TESTNET_DISPLAY_NAME = 'Optimism Kovan'
 export const AVALANCHE_MAINNET_DISPLAY_NAME = 'Avalanche Mainnet C-Chain'
 export const AVALANCHE_TESTNET_DISPLAY_NAME = 'Avalanche Testnet C-Chain'
 export const GXC_TESTNET_DISPLAY_NAME = 'GXC Testnet'
+export const VOC_TESTNET_DISPLAY_NAME = 'VegasOneChain testnet'
 
 export const MATIC_URL = `https://polygon-mainnet.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
 export const MATIC_BLOCK_EXPLORER = 'https://polygonscan.com'
@@ -174,8 +178,12 @@ export const AVALANCHE_TESTNET_URL = 'https://api.avax-test.network/ext/bc/C/rpc
 export const AVALANCHE_TESTNET_BLOCK_EXPLORER = 'https://testnet.snowtrace.io'
 export const GXC_TESTNET_URL = 'https://node.taisys.dev/rpc'
 export const GXC_TESTNET_BLOCK_EXPLORER = 'https://node.taisys.dev'
+export const VOC_TESTNET_URL = 'https://testnet-rpc.vegas.one'
+export const VOC_TESTNET_BLOCK_EXPLORER = 'https://testnet-explorer.vegas.one'
 
 export const BIT_HOST_URL = 'https://indexer-v1.did.id'
+
+export const ROPSTEN_URL = 'https://small-long-brook.ropsten.quiknode.pro/e2fd2eb01412e80623787d1c40094465aa67624a'
 
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
@@ -186,7 +194,8 @@ export const RSK_TESTNET_TICKER = 'RBTC'
 export const ARBITRUM_TICKER = 'ETH'
 export const OPTIMISM_TICKER = 'ETH'
 export const AVALANCHE_TICKER = 'AVAX'
-export const GXC_TICKER = 'VOC'
+export const GXC_TICKER = 'GXC'
+export const VOC_TICKER = 'VOC'
 
 export const MESSAGE_TYPE = {
   ETH_DECRYPT: 'eth_decrypt',
@@ -269,6 +278,7 @@ export const createNetwork = (host, networkName, chainId, blockExplorer, ticker,
   rpcUrl,
   isErc20,
   tokenAddress,
+  type: host,
 })
 
 export const CHAIN_ID_TO_TYPE_MAP = {
@@ -292,13 +302,23 @@ export const CHAIN_ID_TO_TYPE_MAP = {
   [AVALANCHE_MAINNET_CHAIN_ID]: { networkId: AVALANCHE_MAINNET_CODE, name: AVALANCHE_MAINNET },
   [AVALANCHE_TESTNET_CHAIN_ID]: { networkId: AVALANCHE_TESTNET_CODE, name: AVALANCHE_TESTNET },
   [GXC_TESTNET_CHAIN_ID]: { networkId: GXC_TESTNET_CODE, name: GXC_TESTNET },
+  [VOC_TESTNET_CHAIN_ID]: { networkId: VOC_TESTNET_CODE, name: VOC_TESTNET },
 }
 
 export const SUPPORTED_NETWORK_TYPES = {
   [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, getInfuraBlockExplorerUrl(MAINNET), 'ETH', 'Ethereum', 'eth.svg', undefined),
   [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE, getInfuraBlockExplorerUrl(RINKEBY), 'ETH', 'Ethereum', 'eth.svg', undefined),
   [KOVAN]: createNetwork(KOVAN, KOVAN_DISPLAY_NAME, KOVAN_CODE, getInfuraBlockExplorerUrl(KOVAN), 'ETH', 'Ethereum', 'eth.svg', undefined),
-  [ROPSTEN]: createNetwork(ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE, getInfuraBlockExplorerUrl(ROPSTEN), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [ROPSTEN]: createNetwork(
+    ROPSTEN,
+    ROPSTEN_DISPLAY_NAME,
+    ROPSTEN_CODE,
+    getInfuraBlockExplorerUrl(ROPSTEN),
+    'ETH',
+    'Ethereum',
+    'eth.svg',
+    ROPSTEN_URL
+  ),
   [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE, getInfuraBlockExplorerUrl(GOERLI), 'ETH', 'Ethereum', 'eth.svg', undefined),
   [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE, '', 'ETH', 'Ethereum', 'eth.svg', undefined),
   [MATIC]: createNetwork(
@@ -449,11 +469,23 @@ export const SUPPORTED_NETWORK_TYPES = {
     GXC_TESTNET_CODE,
     GXC_TESTNET_BLOCK_EXPLORER,
     GXC_TICKER,
-    'VOC',
+    'GXC',
     'voc.svg',
     GXC_TESTNET_URL,
     true,
     '0xfc3b3a06899f8c14ee8e322f1b4e31e96e37fb11'
+  ),
+  [VOC_TESTNET]: createNetwork(
+    VOC_TESTNET,
+    VOC_TESTNET_DISPLAY_NAME,
+    VOC_TESTNET_CODE,
+    VOC_TESTNET_BLOCK_EXPLORER,
+    VOC_TICKER,
+    'VOC',
+    'voc.svg',
+    VOC_TESTNET_URL,
+    true,
+    '0x17436fa7d8f87A696d4b585A52DfECABf59FF3a0'
   ),
 }
 
@@ -958,4 +990,17 @@ export const TRANSAK_NETWORK_MAP = {
   [BSC_MAINNET]: 'bsc',
   [MATIC]: 'polygon',
   [AVALANCHE_MAINNET]: 'avaxcchain',
+}
+
+export const WYRE_NETWORK_MAP = {
+  [MAINNET]: 'ethereum',
+  [MATIC]: 'matic',
+  [AVALANCHE_MAINNET]: 'avalanche',
+}
+
+export const AVAILABLE_WEBSITES = {
+  Ethereum: 'https://app.tor.us',
+  Solana: 'https://solana.tor.us',
+  Polygon: 'https://polygon.tor.us',
+  Binance: 'https://bnb.tor.us',
 }

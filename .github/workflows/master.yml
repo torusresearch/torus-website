@@ -102,7 +102,7 @@ jobs:
       - name: Run build
         run: |
           . ./scripts/setup.sh
-          npm version minor -m 'Updating version to %s [skip ci]'
+          npm version patch -m 'Updating version to %s [skip ci]'
           npm run build
           . ./scripts/gitPush.sh
         env:
@@ -127,3 +127,123 @@ jobs:
         env:
           GITHUB_SSH_KEY: ${{ secrets.ALPHA_SSH_KEY }}
           CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.DISTRIBUTION_APP_TOR_US }}
+
+  build-deploy-bnb:
+    name: Build & deploy bnb.tor.us
+    strategy:
+      matrix:
+        node: ['16.x']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - name: Node dependency cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-node-
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run build
+        run: npm run build:bnb
+        env:
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+
+      # Upload to S3
+      - name: sync s3
+        uses: jakejarvis/s3-sync-action@master
+        env:
+          SOURCE_DIR: 'dist'
+          AWS_REGION: 'us-east-1'
+          AWS_S3_BUCKET: 'bnb.tor.us'
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Invalidate Cloudfront (this action)
+      - name: invalidate
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          DISTRIBUTION: ${{ secrets.DISTRIBUTION_BNB_TOR_US }}
+          PATHS: '/*'
+          AWS_REGION: 'us-east-1'
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  build-deploy-polygon:
+    name: Build & deploy polygon.tor.us
+    strategy:
+      matrix:
+        node: ['16.x']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - name: Node dependency cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-node-
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run build
+        run: npm run build:polygon
+        env:
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+
+      # Upload to S3
+      - name: sync s3
+        uses: jakejarvis/s3-sync-action@master
+        env:
+          SOURCE_DIR: 'dist'
+          AWS_REGION: 'us-east-1'
+          AWS_S3_BUCKET: 'polygon.tor.us'
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Invalidate Cloudfront (this action)
+      - name: invalidate
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          DISTRIBUTION: ${{ secrets.DISTRIBUTION_POLYGON_TOR_US }}
+          PATHS: '/*'
+          AWS_REGION: 'us-east-1'
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

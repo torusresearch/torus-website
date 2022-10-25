@@ -163,13 +163,7 @@ if (canExcludeSw && 'serviceWorker' in navigator) {
 }
 
 function swregister() {
-  if (
-    'serviceWorker' in navigator &&
-    (process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
-      process.env.VUE_APP_TORUS_BUILD_ENV === 'binance' ||
-      process.env.VUE_APP_TORUS_BUILD_ENV === 'testing' ||
-      process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc')
-  ) {
+  if ('serviceWorker' in navigator && ['production', 'binance', 'testing', 'lrc', 'bnb', 'polygon'].includes(process.env.VUE_APP_TORUS_BUILD_ENV)) {
     log.info('non-integrity sw')
     // if swIntegrity is not calculated
     if (swIntegrity === ['SERVICE', 'WORKER', 'SHA', 'INTEGRITY'].join('_')) {

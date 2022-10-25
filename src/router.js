@@ -164,7 +164,11 @@ const router = new Router({
 })
 
 function hasQueryParameters(route) {
-  return Object.prototype.hasOwnProperty.call(route.query, 'instanceId')
+  return (
+    Object.prototype.hasOwnProperty.call(route.query, 'instanceId') ||
+    Object.prototype.hasOwnProperty.call(route.query, 'isCustomLogin') ||
+    Object.prototype.hasOwnProperty.call(route.query, 'namespace')
+  )
 }
 
 router.beforeResolve((to, from, next) => {
@@ -183,7 +187,7 @@ router.beforeResolve((to, from, next) => {
   }
   if (!hasQueryParameters(to) && hasQueryParameters(from)) {
     if (!to.name.includes('Topup') && to.name !== 'walletTransfer') {
-      Object.keys(from.query).forEach((key) => key === 'instanceId' || delete from.query[key])
+      Object.keys(from.query).forEach((key) => key === 'instanceId' || key === 'namespace' || key === 'isCustomLogin' || delete from.query[key])
     }
     return next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
     // next()
