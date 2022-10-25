@@ -40,6 +40,7 @@ if (config.localStorageAvailable) {
       locale: state.locale,
       defaultPublicAddress: state.defaultPublicAddress,
       wcConnectorSession: state.wcConnectorSession,
+      hideChatSupport: state.embedState.hideChatSupport,
     }),
   })
 }
@@ -94,6 +95,7 @@ const VuexStore = new Vuex.Store({
         whiteLabel: state.whiteLabel,
         selectedAddress: state.selectedAddress,
         networkDetails: state.networkDetails,
+        hideChatSupport: state.embedState.hideChatSupport,
       }
       if (isTx) {
         const txParameters = payload

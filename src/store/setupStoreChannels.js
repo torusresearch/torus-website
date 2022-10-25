@@ -70,6 +70,7 @@ if (!isMain) {
         loginConfig = {},
         skipTKey = false,
         mfaLevel = 'default',
+        hideSupportChat = false,
         network = SUPPORTED_NETWORK_TYPES.mainnet,
       },
     } = chunk
@@ -86,6 +87,7 @@ if (!isMain) {
       VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
       VuexStore.commit('setSkipTKey', skipTKey)
       VuexStore.commit('setMfaLevel', mfaLevel)
+      VuexStore.commit('setHideSupportChat', hideSupportChat)
       VuexStore.dispatch('setProviderType', { network })
       const { isRehydrationComplete } = VuexStore.state
       if (isRehydrationComplete) {

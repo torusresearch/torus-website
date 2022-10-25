@@ -65,6 +65,7 @@ const initialState = {
     apiKey: 'torus-default',
     skipTKey: false,
     mfaLevel: 'default',
+    hideSupportChat: false,
     loginInProgress: false,
     showWalletConnect: false,
   },

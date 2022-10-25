@@ -164,6 +164,13 @@ export default {
       mfaLevel: payload || 'default',
     }
   },
+  setHideSupportChat(state, payload) {
+    state.embedState = {
+      ...state.embedState,
+      hideSupportChat: payload || false,
+    }
+    sessionStorage.setItem('torus-hide-support-chat', payload)
+  },
   setShowWalletConnect(state, payload) {
     state.embedState = {
       ...state.embedState,
