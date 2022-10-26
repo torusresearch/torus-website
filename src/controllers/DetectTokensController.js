@@ -8,8 +8,8 @@ import Web3 from 'web3'
 import { toHex } from 'web3-utils'
 
 import TokenHandler from '../handlers/Token/TokenHandler'
-import contracts from '../utils/contractMetadata'
-import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, SUPPORTED_NETWORK_TYPES } from '../utils/enums'
+import contracts, { GNOSIS_CONTRACTS } from '../utils/contractMetadata'
+import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, SUPPORTED_NETWORK_TYPES, XDAI } from '../utils/enums'
 import { idleTimeTracker, toChecksumAddressByChainId } from '../utils/utils'
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
@@ -88,12 +88,24 @@ class DetectTokensController {
       this.detectedTokensStore.updateState({ [userAddress]: [...tokensToDetect] })
       return
     }
+
     if (currentNetworkIdentifier === MAINNET) {
+      const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkIdentifier]
+
       for (const contractAddress in contracts) {
         if (contracts[contractAddress].erc20) {
-          tokensToDetect.push({ ...contracts[contractAddress], tokenAddress: contractAddress })
+          tokensToDetect.push({ ...contracts[contractAddress], tokenAddress: contractAddress, network: networkConfig.host })
         }
       }
+    } else if (currentNetworkIdentifier === XDAI) {
+      const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkIdentifier]
+      for (const contractAddress in GNOSIS_CONTRACTS) {
+        if (GNOSIS_CONTRACTS[contractAddress].erc20) {
+          tokensToDetect.push({ ...GNOSIS_CONTRACTS[contractAddress], tokenAddress: contractAddress, network: networkConfig.host })
+        }
+      }
+      await this.getCustomTokenBalances([...tokensToDetect])
+      return
     } else {
       const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkIdentifier]
 
@@ -112,7 +124,7 @@ class DetectTokensController {
       return
     }
 
-    if (tokensToDetect.length > 0) {
+    if (tokensToDetect.length > 0 && currentNetworkIdentifier === MAINNET) {
       const web3Instance = this.web3
       const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
       ethContract.methods

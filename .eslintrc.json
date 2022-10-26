@@ -27,6 +27,7 @@
     }
   },
   "rules": {
+    "array-callback-return": 0,
     "unicorn/switch-case-braces": 0,
     "unicorn/prefer-logical-operator-over-ternary": 0,
     "no-promise-executor-return": 0,

@@ -505,7 +505,7 @@ export const paymentProviders = {
       ],
       [MATIC]: [{ value: 'MUSDC', display: 'USDC' }],
       // AVAXC? or AVAX?
-      [AVALANCHE_MAINNET]: [{ value: 'AVAXC', display: 'AVAXC' }],
+      [AVALANCHE_MAINNET]: [{ value: 'AVAX', display: 'AVAX' }],
     },
     includeFees: false,
     api: true,
