@@ -998,6 +998,11 @@ export const WYRE_NETWORK_MAP = {
   [AVALANCHE_MAINNET]: 'avalanche',
 }
 
+export const BANXA_NETWORK_MAP = {
+  [MAINNET]: 'ETH',
+  [BSC_MAINNET]: 'BNB',
+}
+
 export const AVAILABLE_WEBSITES = {
   Ethereum: 'https://app.tor.us',
   Solana: 'https://solana.tor.us',

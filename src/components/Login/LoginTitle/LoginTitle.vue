@@ -32,7 +32,7 @@
       {{ t('login.titleNew') }}
     </div>
   </v-flex>
-  <flex v-else class="mb-2 mb-sm-0">
+  <div v-else class="mb-2 mb-sm-0">
     <div
       class="text_2--text"
       :class="isDapp ? 'headline font-weight-medium' : 'display-1 font-weight-bold'"
@@ -40,7 +40,7 @@
     >
       {{ t('login.title') }}
     </div>
-  </flex>
+  </div>
 </template>
 
 <script>

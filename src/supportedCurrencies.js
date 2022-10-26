@@ -537,7 +537,7 @@ const PROVIDER_SUPPORTED_FIAT_CURRENCIES = {
     'USD',
     'ZAR',
   ],
-  [BANXA]: ['EUR', 'GBP', 'USD'],
+  [BANXA]: ['AUD', 'CAD', 'CZK', 'DKK', 'EUR', 'GBP', 'HKD', 'JPY', 'NOK', 'NZD', 'NZD', 'PLN', 'RUB', 'SEK', 'SGD', 'TRY', 'USD'],
 }
 
 const cryptoCompareCurrenciesSet = new Set(CRYPTO_COMPARE_CURRENCIES)

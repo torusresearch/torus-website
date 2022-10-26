@@ -1,6 +1,6 @@
 <template>
   <WalletTopupBase
-    selected-provider="transak"
+    selected-provider="banxa"
     :crypto-currency-value="cryptoCurrencyValue"
     :currency-rate="currencyRate"
     :fetch-quote-error="fetchQuoteError"
@@ -18,7 +18,7 @@ import { mapState } from 'vuex'
 
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 import cleanTopupQuoteError from '../../../utils/cleanTopupQuoteError'
-import { TRANSAK_NETWORK_MAP } from '../../../utils/enums'
+import { BANXA_NETWORK_MAP } from '../../../utils/enums'
 
 export default {
   components: {
@@ -39,14 +39,15 @@ export default {
       const self = this
       this.fetchQuoteError = ''
       this.fetchingQuote = true
-      payload.network = TRANSAK_NETWORK_MAP[this.networkType.host]
+      payload.blockchain = BANXA_NETWORK_MAP[this.networkType.host]
       throttle(() => {
         self.$store
-          .dispatch('fetchTransakQuote', payload)
+          .dispatch('fetchBanxaQuote', payload)
           .then((result) => {
-            self.cryptoCurrencyValue = result.response.cryptoAmount
-            self.currencyRate = result.response.conversionPrice
-            self.currentOrder = result.response
+            const { spot_price, prices } = result.data
+            self.currencyRate = 1 / Number(spot_price)
+            self.cryptoCurrencyValue = prices[0].coin_amount
+            self.currentOrder = prices[0]
             this.fetchingQuote = false
             this.fetchQuoteError = ''
           })
@@ -64,11 +65,10 @@ export default {
     sendOrder(callback) {
       const { selectedAddress } = this.$route.query
       callback(
-        this.$store.dispatch('fetchTransakOrder', {
+        this.$store.dispatch('fetchBanxaOrder', {
           currentOrder: this.currentOrder,
-          colorCode: this.$vuetify.theme.currentTheme.torusBrand1,
           selectedAddress: selectedAddress || this.selectedAddress,
-          network: TRANSAK_NETWORK_MAP[this.networkType.host],
+          blockchain: BANXA_NETWORK_MAP[this.networkType.host],
         })
       )
     },
