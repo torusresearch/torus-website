@@ -180,7 +180,7 @@ export default {
         } else if (provider === BANXA) {
           const currentOrder = {
             fiat_code: selectedParameters.selectedCurrency,
-            fiat_amount: selectedParameters.fiatValue || '',
+            fiat_amount: selectedParameters.fiatValue.toString() || '',
             coin_code: selectedParameters.selectedCryptoCurrency,
           }
 

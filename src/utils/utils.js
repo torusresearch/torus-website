@@ -653,6 +653,7 @@ export const paymentProviders = {
         { value: 'COMP', display: 'COMP' },
         { value: 'ENJ', display: 'ENJ' },
       ],
+      [MATIC]: [{ value: 'MATIC', display: 'MATIC' }],
       // [BSC_MAINNET]: [{ value: 'BNB', display: 'BNB' }],
     },
     includeFees: true,

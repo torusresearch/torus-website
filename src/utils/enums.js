@@ -1001,6 +1001,7 @@ export const WYRE_NETWORK_MAP = {
 export const BANXA_NETWORK_MAP = {
   [MAINNET]: 'ETH',
   [BSC_MAINNET]: 'BNB',
+  [MATIC]: 'MATIC',
 }
 
 export const AVAILABLE_WEBSITES = {
