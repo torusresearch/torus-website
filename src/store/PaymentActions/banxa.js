@@ -20,7 +20,7 @@ export default {
       { Authorization: `Bearer ${state.jwtToken[state.selectedAddress]}` }
     )
   },
-  fetchBanxaOrder({ dispatch, state }, { currentOrder, preopenInstanceId: preopenInstanceIdPayload, selectedAddress, blockchain }) {
+  fetchBanxaOrder({ dispatch }, { currentOrder, preopenInstanceId: preopenInstanceIdPayload, selectedAddress, blockchain }) {
     return new Promise((resolve, reject) => {
       const orderInstanceId = randomId()
       let preopenInstanceId = preopenInstanceIdPayload
@@ -52,7 +52,7 @@ export default {
         blockchain,
       }
 
-      getWalletOrder(parameters, { Authorization: `Bearer ${state.jwtToken[state.selectedAddress]}` })
+      getWalletOrder(parameters, {})
         .then(({ data }) => dispatch('postBanxaOrder', { finalUrl: data.checkout_url, preopenInstanceId, orderInstanceId }))
         .then(resolve)
         .catch(reject)
