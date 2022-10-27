@@ -344,7 +344,7 @@ export default {
           return transaction.type_image_link
         }
         const action = transaction.action.split('.')
-        return action.length > 0 ? `$vuetify.icons.coins_${transaction.action.split('.')[1]?.toLowerCase()}` || '' : ''
+        return action.length > 0 ? `$vuetify.icons.coins_${transaction.action.split('.')[1]?.toLowerCase() || 'eth'}` : ''
       }
       return ''
     },
