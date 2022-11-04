@@ -199,10 +199,6 @@ export default {
   transakTestApiQuoteHost: 'https://staging-api.transak.com/api/v2',
   transakTestAPIKEY: 'e5adb5e3-b30c-4fa8-85ea-adcbadc98198',
 
-  banxaHost: 'https://widget-instant.ramp.network',
-  banxaApiQuoteHost: 'https://api-instant.ramp.network/api/host-api/assets',
-  banxaAPIKEY: 'dw9fe8drpzmdfuks79ub5hvmqzuyjbme4kwkwkqf',
-
   redirect_uri: redirectURI,
   supportedCurrencies: CRYPTO_COMPARE_CURRENCIES,
   // TODO clarify what additionalCurrencies is
