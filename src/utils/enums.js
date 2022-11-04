@@ -658,6 +658,7 @@ export const WYRE = 'wyre'
 export const CRYPTO = 'crypto'
 export const MERCURYO = 'mercuryo'
 export const TRANSAK = 'transak'
+export const BANXA = 'banxa'
 export const PNG = 'png'
 export const SVG = 'svg'
 
@@ -995,6 +996,12 @@ export const WYRE_NETWORK_MAP = {
   [MAINNET]: 'ethereum',
   [MATIC]: 'matic',
   [AVALANCHE_MAINNET]: 'avalanche',
+}
+
+export const BANXA_NETWORK_MAP = {
+  [MAINNET]: 'ETH',
+  [BSC_MAINNET]: 'BNB',
+  [MATIC]: 'MATIC',
 }
 
 export const AVAILABLE_WEBSITES = {

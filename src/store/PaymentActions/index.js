@@ -5,8 +5,21 @@ import config from '../../config'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MERCURYO, MOONPAY, RAMPNETWORK, TRANSAK, TRANSAK_NETWORK_MAP, WYRE, WYRE_NETWORK_MAP, XANPOOL } from '../../utils/enums'
+import {
+  BANXA,
+  BANXA_NETWORK_MAP,
+  MAINNET,
+  MERCURYO,
+  MOONPAY,
+  RAMPNETWORK,
+  TRANSAK,
+  TRANSAK_NETWORK_MAP,
+  WYRE,
+  WYRE_NETWORK_MAP,
+  XANPOOL,
+} from '../../utils/enums'
 import { fakeStream, paymentProviders } from '../../utils/utils'
+import banxa from './banxa'
 import mercuryo from './mercuryo'
 import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
@@ -37,6 +50,7 @@ const handleFailure = (error) => {
 }
 
 export default {
+  ...banxa,
   ...simplex,
   ...rampnetwork,
   ...moonpay,
@@ -160,6 +174,20 @@ export default {
             colorCode: state.whiteLabel.theme.colors.torusBrand1 || '',
             selectedAddress: selectedParameters.selectedAddress,
             network: selectedParameters.network,
+            preopenInstanceId,
+          })
+          handleSuccess(success)
+        } else if (provider === BANXA) {
+          const currentOrder = {
+            fiat_code: selectedParameters.selectedCurrency,
+            fiat_amount: selectedParameters.fiatValue.toString() || '',
+            coin_code: selectedParameters.selectedCryptoCurrency,
+          }
+
+          const { success } = await dispatch('fetchBanxaOrder', {
+            currentOrder,
+            selectedAddress: selectedParameters.selectedAddress,
+            blockchain: BANXA_NETWORK_MAP[selectedParameters.chainNetwork || MAINNET],
             preopenInstanceId,
           })
           handleSuccess(success)
