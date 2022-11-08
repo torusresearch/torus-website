@@ -1,4 +1,4 @@
-import { MERCURYO, MOONPAY, RAMPNETWORK, SIMPLEX, TRANSAK, WYRE, XANPOOL } from './utils/enums'
+import { BANXA, MERCURYO, MOONPAY, RAMPNETWORK, SIMPLEX, TRANSAK, WYRE, XANPOOL } from './utils/enums'
 
 /**
  * From https://min-api.cryptocompare.com/data/v2/pair/mapping/fsym?fsym=BTC&extraParams=YourSite
@@ -537,6 +537,7 @@ const PROVIDER_SUPPORTED_FIAT_CURRENCIES = {
     'USD',
     'ZAR',
   ],
+  [BANXA]: ['AUD', 'CAD', 'CZK', 'DKK', 'EUR', 'GBP', 'HKD', 'JPY', 'NOK', 'NZD', 'NZD', 'PLN', 'RUB', 'SEK', 'SGD', 'TRY', 'USD'],
 }
 
 const cryptoCompareCurrenciesSet = new Set(CRYPTO_COMPARE_CURRENCIES)

@@ -166,6 +166,7 @@ export default {
   xanpoolApiHost: 'https://xanpool-api.tor.us',
   mercuryoApiHost: 'https://mercuryo-api.tor.us',
   transakApiHost: 'https://transak-api.tor.us',
+  banxaApiHost: 'https://banxa-api.tor.us',
 
   moonpayHost: 'https://buy.moonpay.io',
   moonpayApiQuoteHost: 'https://api.moonpay.io',
