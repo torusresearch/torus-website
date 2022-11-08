@@ -287,7 +287,7 @@ export default {
     },
     finalBalancesArray() {
       const balances = this.tokenBalances.finalBalancesArray
-      return balances || []
+      return balances.sort((x, y) => y.currencyBalanceRounded - x.currencyBalanceRounded) || []
     },
     filteredBalancesArray() {
       const search = this.search || ''
