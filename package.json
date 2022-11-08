@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "1.36.7",
+  "version": "1.37.0",
   "private": true,
   "scripts": {
     "serve": "npm run locale && vue-cli-service serve",
