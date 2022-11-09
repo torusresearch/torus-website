@@ -287,7 +287,12 @@ export default {
     },
     finalBalancesArray() {
       const balances = this.tokenBalances.finalBalancesArray
-      return balances.sort((x, y) => y.currencyBalanceRounded - x.currencyBalanceRounded) || []
+      const defaultToken = balances.length > 0 ? balances[0] : {}
+      balances.splice(0, 1).sort((x, y) => y.currencyBalanceRounded - x.currencyBalanceRounded)
+      if (defaultToken !== {}) {
+        return [defaultToken, ...balances] || []
+      }
+      return balances || []
     },
     filteredBalancesArray() {
       const search = this.search || ''
