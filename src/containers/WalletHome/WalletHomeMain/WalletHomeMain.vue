@@ -287,6 +287,11 @@ export default {
     },
     finalBalancesArray() {
       const balances = this.tokenBalances.finalBalancesArray
+      const defaultToken = balances.length > 0 ? balances[0] : null
+      balances.splice(0, 1).sort((x, y) => y.currencyBalanceRounded - x.currencyBalanceRounded)
+      if (defaultToken !== null) {
+        return [defaultToken, ...balances]
+      }
       return balances || []
     },
     filteredBalancesArray() {
