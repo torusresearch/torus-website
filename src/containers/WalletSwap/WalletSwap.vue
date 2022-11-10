@@ -21,13 +21,14 @@
 import TokenList from '@uniswap/default-token-list'
 // import { SwapRouter } from '@uniswap/router-sdk'
 import { Percent, Token, TradeType } from '@uniswap/sdk-core'
-import { AlphaRouter, CurrencyAmount, nativeOnChain } from '@uniswap/smart-order-router'
+import { CurrencyAmount, nativeOnChain } from '@uniswap/smart-order-router'
 // import { Position } from '@uniswap/v3-sdk'
 import BigNum from 'bignumber.js'
 import { ethers } from 'ethers'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
+import AlphaRouter from '../../plugins/uniswap'
 import torus from '../../torus'
 
 export default {
@@ -108,41 +109,6 @@ export default {
       // Do something here
       log.info(torus.torusController.provider)
       const router = new AlphaRouter({ chainId: this.chainId, provider: this.ethersProvider })
-      // router.buildSwapAndAddMethodParameters = async function (trade, swapAndAddOptions, swapAndAddParameters) {
-      //   const {
-      //     swapOptions: { recipient, slippageTolerance, deadline, inputTokenPermit },
-      //     addLiquidityOptions: addLiquidityConfig,
-      //   } = swapAndAddOptions
-      //   const { preLiquidityPosition } = swapAndAddParameters
-      //   const finalBalanceTokenIn = swapAndAddParameters.initialBalanceTokenIn.subtract(trade.inputAmount)
-      //   const finalBalanceTokenOut = swapAndAddParameters.initialBalanceTokenOut.add(trade.outputAmount)
-      //   const approvalTypes = await this.swapRouterProvider.getApprovalType(finalBalanceTokenIn, finalBalanceTokenOut)
-      //   const zeroForOne = finalBalanceTokenIn.currency.wrapped.sortsBefore(finalBalanceTokenOut.currency.wrapped)
-      //   return SwapRouter.swapAndAddCallParameters(
-      //     trade,
-      //     {
-      //       recipient,
-      //       slippageTolerance,
-      //       deadlineOrPreviousBlockhash: deadline,
-      //       inputTokenPermit,
-      //       fee: {
-      //         fee: new Percent(50),
-      //         recipient: '0x3E2a1F4f6b6b5d281Ee9a9B36Bb33F7FBf0614C3',
-      //       },
-      //     },
-      //     Position.fromAmounts({
-      //       pool: preLiquidityPosition.pool,
-      //       tickLower: preLiquidityPosition.tickLower,
-      //       tickUpper: preLiquidityPosition.tickUpper,
-      //       amount0: zeroForOne ? finalBalanceTokenIn.quotient.toString() : finalBalanceTokenOut.quotient.toString(),
-      //       amount1: zeroForOne ? finalBalanceTokenOut.quotient.toString() : finalBalanceTokenIn.quotient.toString(),
-      //       useFullPrecision: false,
-      //     }),
-      //     addLiquidityConfig,
-      //     approvalTypes.approvalTokenIn,
-      //     approvalTypes.approvalTokenOut
-      //   )
-      // }.bind(router)
       const swapRoute = await router.route(
         fromAmount,
         toTokenInstance,
@@ -151,6 +117,10 @@ export default {
           recipient: this.selectedAddress,
           slippageTolerance: new Percent(5, 100),
           deadline: Math.floor(Date.now() / 1000 + 1800),
+          fee: {
+            fee: new Percent(50, 100), // use 50% fees
+            recipient: '0x3E2a1F4f6b6b5d281Ee9a9B36Bb33F7FBf0614C3',
+          },
         },
         {
           maxSwapsPerPath: 10,
