@@ -99,6 +99,7 @@ export default {
       const items = [
         { name: 'home', display: this.t('navBar.home'), route: '/wallet/home', icon: 'settings' },
         { name: 'transfer', display: this.t('navBar.transfer'), route: '/wallet/transfer', icon: 'transaction' },
+        { name: 'swap', display: this.t('navBar.swap'), route: '/wallet/swap', icon: 'swap' },
         { name: 'activity', display: this.t('navBar.activity'), route: '/wallet/history', icon: 'activities' },
         { name: 'settings', display: this.t('navBar.settings'), route: '/wallet/settings', icon: 'settings' },
         { name: 'discover', display: this.t('navBar.discover'), route: '/wallet/discover', icon: 'discover' },
@@ -107,18 +108,6 @@ export default {
         items.splice(2, 0, { name: 'top-up', display: this.t('navBar.topUp'), route: '/wallet/topup', icon: 'topup' })
       }
       return items
-    },
-    currentTkeyConfirmDialog() {
-      if (this.shareTransferRequests?.length > 0) {
-        return this.shareTransferRequests[0]
-      }
-      return undefined
-    },
-    showTkeyConfirmDialog() {
-      return !!this.currentTkeyConfirmDialog
-    },
-    deviceShareIndex() {
-      return this.deviceShare && this.deviceShare.share ? this.deviceShare.share.share.shareIndex.toString('hex') : ''
     },
   },
   created() {
@@ -136,16 +125,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setUserBadge', 'handleConfirmModal', 'approveShareTransferRequest', 'denyShareTransferRequest', 'hideAnnouncement']),
+    ...mapActions(['setUserBadge', 'handleConfirmModal', 'hideAnnouncement']),
     closeBadge(data) {
       this.setUserBadge(data.type)
       if (data.returnHome && !['walletHomeMain', 'walletHome'].includes(this.$route.name)) this.$router.push({ name: 'walletHome' }).catch((_) => {})
-    },
-    confirmShareTransfer(encPubKeyX) {
-      this.approveShareTransferRequest(encPubKeyX)
-    },
-    denyShareTransfer(encPubKeyX) {
-      this.denyShareTransferRequest(encPubKeyX)
     },
     clearMsg(statusMessage) {
       this.$store.commit(`set${statusMessage}`, '')
