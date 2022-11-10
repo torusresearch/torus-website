@@ -361,10 +361,15 @@ export default {
       }
       return `${`${this.t(transaction.action)} ${transaction.from}`} `
     },
-    showWidget() {
+    async showWidget() {
       const currentWidgetVisibility = this.activeWidget
       this.toggleWidgetVisibility(!currentWidgetVisibility)
       this.activeWidget = !currentWidgetVisibility
+
+      // hack to hide chat button which shows up sometimes after clicking on widget button.
+      setTimeout(() => {
+        window.$crisp.push(['do', 'chat:hide'])
+      })
     },
   },
 }

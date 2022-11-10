@@ -111,6 +111,7 @@ export default {
     },
   },
   created() {
+    window.$crisp.push(['do', 'chat:hide'])
     this.channel = `torus_provider_change_channel_${this.$route.query.instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
