@@ -3,7 +3,7 @@
   "version": "1.37.0",
   "private": true,
   "scripts": {
-    "serve": "npm run locale && vue-cli-service serve",
+    "serve": "npm run locale && npm run supportedBrowsers && vue-cli-service serve",
     "build": "cross-env VUE_APP_TORUS_BUILD_ENV=production npm run pre-build && vue-cli-service build && npm run post-build",
     "test:e2e": "mocha --timeout=60000 ./test/e2e",
     "lint": "vue-cli-service lint",
@@ -20,14 +20,15 @@
     "lint:vue": "eslint --fix 'src/**/*.vue'",
     "locale": "node ./scripts/importLocales.js",
     "post-build": ". ./scripts/buildErrorPage.sh",
-    "pre-build": "npm run locale",
+    "pre-build": "npm run locale && npm run supportedBrowsers",
     "prepare": "husky install",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
     "test": "npm run locale && mocha ./test/unit/controllers/transactions/*.js ./test/unit/controllers/*.js",
     "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov; fi",
     "test:coverage-codecov": "nyc --reporter=text --reporter=html npm test && npm run test:codecov-upload",
     "test:e2e:headful": "node ./test/e2e/puppeteer.js false",
-    "test:e2e:mobile": "env MOBILE_ENV=true mocha --timeout=60000 ./test/e2e"
+    "test:e2e:mobile": "env MOBILE_ENV=true mocha --timeout=60000 ./test/e2e",
+    "supportedBrowsers": "echo \"window.browserListRegex = $(browserslist-useragent-regexp --allowHigherVersions);\" > public/supportedBrowsers.js"
   },
   "dependencies": {
     "@ethereumjs/common": "^2.6.5",
@@ -116,6 +117,7 @@
     "@vue/cli-service": "^5.0.8",
     "@vue/eslint-config-standard": "^8.0.1",
     "assert": "^2.0.0",
+    "browserslist-useragent-regexp": "^3.0.2",
     "codecov": "^3.8.3",
     "cross-env": "^7.0.3",
     "crypto-browserify": "^3.12.0",

@@ -3,6 +3,9 @@
 # dependencies
 /node_modules
 
+# auto generated
+/public/supportedBrowsers.js
+
 # testing
 /coverage
 
