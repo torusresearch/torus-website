@@ -361,7 +361,7 @@ export default {
       }
       return `${`${this.t(transaction.action)} ${transaction.from}`} `
     },
-    async showWidget() {
+    showWidget() {
       const currentWidgetVisibility = this.activeWidget
       this.toggleWidgetVisibility(!currentWidgetVisibility)
       this.activeWidget = !currentWidgetVisibility
