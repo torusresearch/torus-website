@@ -53,7 +53,14 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" />
     <script type="text/javascript" src="./supportedBrowsers.js"></script>
     <script type="text/javascript">
-      window.browserListRegex && !window.browserListRegex.test(navigator.userAgent) && alert("Your browser version seems to be outdated, Please update your browser for using wallet securely.")
+      window.onerror = function (msg, url, lineNo, columnNo, error) {
+        const app = document.getElementById("app")
+        const isVueLoaded = app && app.__vue__
+        const isBrowserSupported = window.browserListRegex && window.browserListRegex.test(navigator.userAgent)
+        if (!isVueLoaded && !isBrowserSupported) {
+          alert("Your browser version seems to be outdated, Please update your browser for using wallet securely.")
+        }
+      }
     </script>
     <script type="text/javascript">window.$crisp=[];window.$crisp.push(["safe", true], ["set", "session:segments", [["Wallet"]]]);window.CRISP_WEBSITE_ID="b1ae36a2-c9d5-4554-9db8-b28aeb8ddf4e";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
     <style>
