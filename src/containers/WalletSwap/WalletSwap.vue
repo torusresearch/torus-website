@@ -63,7 +63,7 @@
         <div v-else-if="!currentSwapQuote && valid && fetchingQuote">
           <div>Fetching best price</div>
         </div>
-        <v-btn class="text-h6 mt-2" color="primary" x-large block type="submit" :loading="sendingTx">Swap</v-btn>
+        <v-btn class="text-h6 mt-2" color="primary" x-large block type="submit" :disabled="!currentSwapQuote" :loading="sendingTx">Swap</v-btn>
       </v-card>
     </v-form>
   </v-container>
