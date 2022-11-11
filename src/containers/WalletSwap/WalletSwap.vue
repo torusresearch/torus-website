@@ -151,44 +151,53 @@ export default {
       this.getSwapQuote()
     },
     async getSwapQuote() {
-      const valid = this.$refs.form.validate()
-      log.info(valid, 'valid')
-      log.info('getting swap quote after validation', valid)
-      if (!valid) return
+      try {
+        const valid = this.$refs.form.validate()
+        log.info(valid, 'valid')
+        log.info('getting swap quote after validation', valid)
+        if (!valid) return
 
-      log.info(this.chainId, 'chainId')
-      const fromTokenInstance = this.getTokenInstance(this.fromToken)
-      const toTokenInstance = this.getTokenInstance(this.toToken)
-      const fromAmount = CurrencyAmount.fromRawAmount(
-        fromTokenInstance,
-        new BigNum(this.fromValue).multipliedBy(new BigNum(10).pow(new BigNum(fromTokenInstance.decimals))).toString()
-      )
-      // Do something here
-      log.info(torus.torusController.provider)
-      const router = new AlphaRouter({ chainId: this.chainId, provider: this.ethersProvider })
-      const swapRoute = await router.route(
-        fromAmount,
-        toTokenInstance,
-        TradeType.EXACT_INPUT,
-        {
-          recipient: this.selectedAddress,
-          slippageTolerance: new Percent(5, 100),
-          deadline: Math.floor(Date.now() / 1000 + 1800),
-          fee: {
-            fee: new Percent(1, 100), // use 1% fees
-            recipient: '0x3E2a1F4f6b6b5d281Ee9a9B36Bb33F7FBf0614C3',
+        // reset values
+        this.currentSwapQuote = null
+        this.priceImpact = 0
+        this.gasFees = 0
+
+        log.info(this.chainId, 'chainId')
+        const fromTokenInstance = this.getTokenInstance(this.fromToken)
+        const toTokenInstance = this.getTokenInstance(this.toToken)
+        const fromAmount = CurrencyAmount.fromRawAmount(
+          fromTokenInstance,
+          new BigNum(this.fromValue).multipliedBy(new BigNum(10).pow(new BigNum(fromTokenInstance.decimals))).toString()
+        )
+        // Do something here
+        log.info(torus.torusController.provider)
+        const router = new AlphaRouter({ chainId: this.chainId, provider: this.ethersProvider })
+        const swapRoute = await router.route(
+          fromAmount,
+          toTokenInstance,
+          TradeType.EXACT_INPUT,
+          {
+            recipient: this.selectedAddress,
+            slippageTolerance: new Percent(5, 100),
+            deadline: Math.floor(Date.now() / 1000 + 1800),
+            fee: {
+              fee: new Percent(1, 100), // use 1% fees
+              recipient: '0x3E2a1F4f6b6b5d281Ee9a9B36Bb33F7FBf0614C3',
+            },
           },
-        },
-        {}
-      )
-      log.info(swapRoute)
-      log.info(`Quote Exact In: ${swapRoute.quote.toSignificant()}`)
-      log.info(`Gas Adjusted Quote In: ${swapRoute.quoteGasAdjusted.toSignificant()}`)
-      log.info(`Gas Used USD: ${swapRoute.estimatedGasUsedUSD.toSignificant()}`)
-      this.toValue = swapRoute.quote.toSignificant()
-      this.priceImpact = swapRoute.trade.priceImpact.toFixed(2)
-      this.gasFees = swapRoute.estimatedGasUsedUSD.toSignificant()
-      this.currentSwapQuote = swapRoute
+          {}
+        )
+        log.info(swapRoute)
+        log.info(`Quote Exact In: ${swapRoute.quote.toSignificant()}`)
+        log.info(`Gas Adjusted Quote In: ${swapRoute.quoteGasAdjusted.toSignificant()}`)
+        log.info(`Gas Used USD: ${swapRoute.estimatedGasUsedUSD.toSignificant()}`)
+        this.toValue = swapRoute.quote.toSignificant()
+        this.priceImpact = swapRoute.trade.priceImpact.toFixed(2)
+        this.gasFees = swapRoute.estimatedGasUsedUSD.toSignificant()
+        this.currentSwapQuote = swapRoute
+      } catch (error) {
+        log.error(error)
+      }
     },
     getTokenInstance(symbol) {
       if (symbol === this.nativeToken.symbol) {
