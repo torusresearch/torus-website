@@ -70,10 +70,8 @@
 </template>
 <script>
 import TokenList from '@uniswap/default-token-list'
-// import { SwapRouter } from '@uniswap/router-sdk'
 import { Percent, Token, TradeType } from '@uniswap/sdk-core'
 import { CurrencyAmount, nativeOnChain } from '@uniswap/smart-order-router'
-// import { Position } from '@uniswap/v3-sdk'
 import BigNum from 'bignumber.js'
 import { ethers } from 'ethers'
 import log from 'loglevel'
