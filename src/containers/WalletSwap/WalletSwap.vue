@@ -60,7 +60,7 @@
           <div>Price Impact: {{ priceImpact }} %</div>
           <div>Network Fee: {{ gasFees }} USD</div>
         </div>
-        <div v-else-if="!currentSwapQuote && valid">
+        <div v-else-if="!currentSwapQuote && valid && fetchingQuote">
           <div>Fetching best price</div>
         </div>
         <v-btn class="text-h6 mt-2" color="primary" x-large block type="submit" :loading="sendingTx">Swap</v-btn>
@@ -98,6 +98,7 @@ export default {
       priceImpact: 0,
       gasFees: 0,
       sendingTx: false,
+      fetchingQuote: false,
     }
   },
   computed: {
@@ -158,6 +159,7 @@ export default {
         if (!valid) return
 
         // reset values
+        this.fetchingQuote = true
         this.currentSwapQuote = null
         this.priceImpact = 0
         this.gasFees = 0
@@ -197,6 +199,8 @@ export default {
         this.currentSwapQuote = swapRoute
       } catch (error) {
         log.error(error)
+      } finally {
+        this.fetchingQuote = false
       }
     },
     getTokenInstance(symbol) {
@@ -204,9 +208,8 @@ export default {
         return nativeOnChain(this.chainId)
       }
       const tokenData = TokenList.tokens.find((x) => x.symbol === symbol && x.chainId === this.chainId)
-      log.info(TokenList, symbol, tokenData)
-      const chainId = Number.parseInt(this.networkType.chainId, 10)
-      const tokenInstance = new Token(chainId, tokenData.address, tokenData.decimals, tokenData.symbol, tokenData.name)
+      log.info(symbol, tokenData)
+      const tokenInstance = new Token(this.chainId, tokenData.address, tokenData.decimals, tokenData.symbol, tokenData.name)
       return tokenInstance
     },
     async sendTx() {
