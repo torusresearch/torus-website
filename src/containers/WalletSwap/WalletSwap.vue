@@ -1,8 +1,8 @@
 <template>
-  <v-container class="dapp-parent d-flex flex-column justify-start align-center" :class="$vuetify.breakpoint.xsOnly ? 'xs-parent px-4' : ''">
+  <v-container class="dapp-parent d-flex flex-column justify-start align-center pt-6" :class="$vuetify.breakpoint.xsOnly ? 'xs-parent px-4' : ''">
     <v-form ref="form" v-model="valid" lazy-validation @submit.prevent="sendTx">
       <v-card class="swap-container elevation-1 pa-4">
-        <div class="font-weight-bold mb-2">Swap</div>
+        <div class="font-weight-bold mb-2">{{ t('walletSwap.swap') }}</div>
         <v-card flat outlined class="mb-2 pa-1">
           <v-row class="align-center" no-gutters>
             <v-col>
@@ -56,16 +56,33 @@
           </v-row>
         </v-card>
         <div v-if="!!currentSwapQuote">
-          <div>Expected Output: {{ toValue }} {{ toToken }}</div>
-          <div>Price Impact: {{ priceImpact }} %</div>
-          <div>Network Fee: {{ gasFees }} USD</div>
+          <div>{{ t('walletSwap.expectedOutput') }}: {{ toValue }} {{ toToken }}</div>
+          <div>{{ t('walletSwap.priceImpact') }}: {{ priceImpact }} %</div>
+          <div>{{ t('walletSwap.networkFee') }}: {{ gasFees }} USD</div>
         </div>
         <div v-else-if="!currentSwapQuote && valid">
-          <div>Fetching best price</div>
+          <div>{{ t('walletSwap.fetching') }}</div>
         </div>
-        <v-btn class="text-h6 mt-2" color="primary" x-large block type="submit" :loading="sendingTx">Swap</v-btn>
+        <v-btn class="text-h6 mt-2" color="primary" x-large block type="submit" :loading="sendingTx">{{ t('walletSwap.swap') }}</v-btn>
       </v-card>
     </v-form>
+    <v-dialog v-model="messageModalShow" max-width="375" persistent>
+      <MessageModal
+        :detail-text="messageModalDetails"
+        :modal-type="messageModalType"
+        :title="messageModalTitle"
+        :no-close="messageModalType === MESSAGE_MODAL_TYPE_SUCCESS"
+        @onClose="messageModalShow = false"
+      >
+        <template v-if="messageModalType === MESSAGE_MODAL_TYPE_SUCCESS" #link>
+          <div class="mb-4">
+            <v-btn text class="share-btn" :href="etherscanLink" target="_blank">
+              <span class="body-2 font-weight-bold">{{ t('walletSwap.viewEtherscan') }}</span>
+            </v-btn>
+          </div>
+        </template>
+      </MessageModal>
+    </v-dialog>
   </v-container>
 </template>
 <script>
@@ -79,11 +96,15 @@ import { ethers } from 'ethers'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
+import MessageModal from '../../components/WalletTransfer/MessageModal'
 import AlphaRouter from '../../plugins/uniswap'
 import torus from '../../torus'
+import { MESSAGE_MODAL_TYPE_FAIL, MESSAGE_MODAL_TYPE_SUCCESS } from '../../utils/enums'
+import { getEtherScanHashLink } from '../../utils/utils'
 
 export default {
   name: 'WalletDiscover',
+  components: { MessageModal },
   data() {
     return {
       fromValue: 0.01,
@@ -91,13 +112,19 @@ export default {
       fromToken: '',
       toToken: '',
       rules: {
-        required: (v) => !!v || 'Value is required',
+        required: (v) => !!v || this.t('walletSwap.valueRequired'),
       },
       currentSwapQuote: null,
       valid: false,
       priceImpact: 0,
       gasFees: 0,
       sendingTx: false,
+      messageModalShow: false,
+      messageModalType: '',
+      messageModalTitle: '',
+      messageModalDetails: '',
+      MESSAGE_MODAL_TYPE_SUCCESS,
+      etherscanLink: '',
     }
   },
   computed: {
@@ -225,6 +252,18 @@ export default {
       log.info(transaction)
       torus.web3.eth.sendTransaction(transaction, (err, txHash) => {
         log.info(err, txHash)
+        if (err) {
+          this.messageModalShow = true
+          this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+          this.messageModalTitle = this.t('walletSwap.swapFailTitle')
+          this.messageModalDetails = this.t('walletSwap.swapFailMessage')
+        } else {
+          this.messageModalShow = true
+          this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+          this.messageModalTitle = this.t('walletSwap.swapSuccessTitle')
+          this.messageModalDetails = ''
+          this.etherscanLink = getEtherScanHashLink(txHash, this.networkType.host)
+        }
         this.sendingTx = false
         // TODO: Handle error and success
         // Maybe show tx success modal in etherscan

@@ -69,6 +69,7 @@ import SendIcon from './SendIcon.vue'
 import ServerIcon from './ServerIcon.vue'
 import SettingsIcon from './SettingsIcon.vue'
 import ShieldLockIcon from './ShieldLockIcon.vue'
+import SwapIcon from './SwapIcon.vue'
 import TimeIcon from './TimeIcon.vue'
 import TokenIcon from './TokenIcon.vue'
 import TopupIcon from './TopupIcon.vue'
@@ -194,6 +195,9 @@ export default {
   },
   transaction: {
     component: TransactionIcon,
+  },
+  swap: {
+    component: SwapIcon,
   },
   topup: {
     component: TopupIcon,
