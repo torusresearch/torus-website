@@ -151,9 +151,6 @@ export default {
     tokenSymbols() {
       return this.tokenList.map((x) => x.symbol)
     },
-    ethersProvider() {
-      return new ethers.providers.Web3Provider(torus.torusController.provider)
-    },
   },
   async mounted() {
     this.fromToken = this.nativeToken.symbol
@@ -200,7 +197,7 @@ export default {
         )
         // Do something here
         log.info(torus.torusController.provider)
-        const router = new AlphaRouter({ chainId: this.chainId, provider: this.ethersProvider })
+        const router = new AlphaRouter({ chainId: this.chainId, provider: new ethers.providers.Web3Provider(torus.torusController.provider) })
         const swapRoute = await router.route(
           fromAmount,
           toTokenInstance,
@@ -223,7 +220,13 @@ export default {
         this.toValue = swapRoute.quote.toSignificant()
         this.priceImpact = swapRoute.trade.priceImpact.toFixed(2)
         this.gasFees = swapRoute.estimatedGasUsedUSD.toSignificant()
-        this.currentSwapQuote = swapRoute
+        this.currentSwapQuote = {
+          methodParameters: {
+            calldata: swapRoute.methodParameters.calldata,
+            value: swapRoute.methodParameters.value,
+          },
+          gasPriceWei: swapRoute.gasPriceWei.toHexString(),
+        }
       } catch (error) {
         log.error(error)
       } finally {
@@ -250,7 +253,7 @@ export default {
         to: '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45',
         value: this.currentSwapQuote.methodParameters.value,
         from: this.selectedAddress,
-        gasPrice: this.currentSwapQuote.gasPriceWei.toHexString(),
+        gasPrice: this.currentSwapQuote.gasPriceWei,
       }
       log.info(transaction)
       torus.web3.eth.sendTransaction(transaction, (err, txHash) => {
