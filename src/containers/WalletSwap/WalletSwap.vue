@@ -60,10 +60,12 @@
           <div>{{ t('walletSwap.priceImpact') }}: {{ priceImpact }} %</div>
           <div>{{ t('walletSwap.networkFee') }}: {{ gasFees }} USD</div>
         </div>
-        <div v-else-if="!currentSwapQuote && valid">
+        <div v-else-if="!currentSwapQuote && valid && fetchingQuote">
           <div>{{ t('walletSwap.fetching') }}</div>
         </div>
-        <v-btn class="text-h6 mt-2" color="primary" x-large block type="submit" :loading="sendingTx">{{ t('walletSwap.swap') }}</v-btn>
+        <v-btn class="text-h6 mt-2" color="primary" x-large block type="submit" :disabled="!currentSwapQuote" :loading="sendingTx">
+          {{ t('walletSwap.swap') }}
+        </v-btn>
       </v-card>
     </v-form>
     <v-dialog v-model="messageModalShow" max-width="375" persistent>
@@ -87,10 +89,8 @@
 </template>
 <script>
 import TokenList from '@uniswap/default-token-list'
-// import { SwapRouter } from '@uniswap/router-sdk'
 import { Percent, Token, TradeType } from '@uniswap/sdk-core'
 import { CurrencyAmount, nativeOnChain } from '@uniswap/smart-order-router'
-// import { Position } from '@uniswap/v3-sdk'
 import BigNum from 'bignumber.js'
 import { ethers } from 'ethers'
 import log from 'loglevel'
@@ -125,6 +125,7 @@ export default {
       messageModalDetails: '',
       MESSAGE_MODAL_TYPE_SUCCESS,
       etherscanLink: '',
+      fetchingQuote: false,
     }
   },
   computed: {
@@ -185,6 +186,7 @@ export default {
         if (!valid) return
 
         // reset values
+        this.fetchingQuote = true
         this.currentSwapQuote = null
         this.priceImpact = 0
         this.gasFees = 0
@@ -224,6 +226,8 @@ export default {
         this.currentSwapQuote = swapRoute
       } catch (error) {
         log.error(error)
+      } finally {
+        this.fetchingQuote = false
       }
     },
     getTokenInstance(symbol) {
@@ -231,9 +235,8 @@ export default {
         return nativeOnChain(this.chainId)
       }
       const tokenData = TokenList.tokens.find((x) => x.symbol === symbol && x.chainId === this.chainId)
-      log.info(TokenList, symbol, tokenData)
-      const chainId = Number.parseInt(this.networkType.chainId, 10)
-      const tokenInstance = new Token(chainId, tokenData.address, tokenData.decimals, tokenData.symbol, tokenData.name)
+      log.info(symbol, tokenData)
+      const tokenInstance = new Token(this.chainId, tokenData.address, tokenData.decimals, tokenData.symbol, tokenData.name)
       return tokenInstance
     },
     async sendTx() {
