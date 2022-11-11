@@ -1,6 +1,6 @@
 import { Protocol, SwapRouter } from '@uniswap/router-sdk'
 import { TradeType } from '@uniswap/sdk-core'
-import { AlphaRouter as AlphaBaseRouter, V2_SUPPORTED } from '@uniswap/smart-order-router'
+import { AlphaRouter as AlphaBaseRouter, ChainId, CurrencyAmount, V2_SUPPORTED } from '@uniswap/smart-order-router'
 import { DEFAULT_ROUTING_CONFIG_BY_CHAIN } from '@uniswap/smart-order-router/build/module/routers/alpha-router/config'
 import { getBestSwapRoute } from '@uniswap/smart-order-router/build/module/routers/alpha-router/functions/best-swap-route'
 import { buildTrade } from '@uniswap/smart-order-router/build/module/util/methodParameters'
@@ -49,22 +49,23 @@ export default class AlphaRouter extends AlphaBaseRouter {
 
     const protocolsSet = new Set(protocols ?? [])
 
-    const v3gasModel = await this.v3GasModelFactory.buildGasModel({
-      chainId: this.chainId,
-      gasPriceWei,
-      v3poolProvider: this.v3PoolProvider,
-      token: quoteToken,
-      v2poolProvider: this.v2PoolProvider,
-      l2GasDataProvider: this.l2GasDataProvider,
-    })
-
-    const mixedRouteGasModel = await this.mixedRouteGasModelFactory.buildGasModel({
-      chainId: this.chainId,
-      gasPriceWei,
-      v3poolProvider: this.v3PoolProvider,
-      token: quoteToken,
-      v2poolProvider: this.v2PoolProvider,
-    })
+    const [v3gasModel, mixedRouteGasModel] = await Promise.all([
+      this.v3GasModelFactory.buildGasModel({
+        chainId: this.chainId,
+        gasPriceWei,
+        v3poolProvider: this.v3PoolProvider,
+        token: quoteToken,
+        v2poolProvider: this.v2PoolProvider,
+        l2GasDataProvider: this.l2GasDataProvider,
+      }),
+      this.mixedRouteGasModelFactory.buildGasModel({
+        chainId: this.chainId,
+        gasPriceWei,
+        v3poolProvider: this.v3PoolProvider,
+        token: quoteToken,
+        v2poolProvider: this.v2PoolProvider,
+      }),
+    ])
 
     if ((protocolsSet.size === 0 || (protocolsSet.has(Protocol.V2) && protocolsSet.has(Protocol.V3))) && V2_SUPPORTED.includes(this.chainId)) {
       log.info({ protocols, tradeType }, 'Routing across all protocols')
@@ -73,6 +74,7 @@ export default class AlphaRouter extends AlphaBaseRouter {
       /// @dev only add mixedRoutes in the case where no protocols were specified, and if TradeType is correct
       if (
         tradeType === TradeType.EXACT_INPUT &&
+        (this.chainId === ChainId.MAINNET || this.chainId === ChainId.GÖRLI) &&
         /// The cases where protocols = [] and protocols = [V2, V3, MIXED]
         (protocolsSet.size === 0 || protocolsSet.has(Protocol.MIXED))
       ) {
@@ -90,7 +92,11 @@ export default class AlphaRouter extends AlphaBaseRouter {
       }
       /// If protocolsSet is not empty, and we specify mixedRoutes, consider them if the chain has v2 liq
       /// and tradeType === EXACT_INPUT
-      if (protocolsSet.has(Protocol.MIXED) && V2_SUPPORTED.includes(this.chainId) && tradeType === TradeType.EXACT_INPUT) {
+      if (
+        protocolsSet.has(Protocol.MIXED) &&
+        (this.chainId === ChainId.MAINNET || this.chainId === ChainId.GÖRLI) &&
+        tradeType === TradeType.EXACT_INPUT
+      ) {
         log.info({ protocols, swapType: tradeType }, 'Routing across MixedRoutes')
         quotePromises.push(this.getMixedRouteQuotes(tokenIn, tokenOut, amounts, percents, quoteToken, mixedRouteGasModel, tradeType, routingConfig))
       }
@@ -134,7 +140,7 @@ export default class AlphaRouter extends AlphaBaseRouter {
 
     this.emitPoolSelectionMetrics(swapRouteRaw, allCandidatePools)
 
-    return {
+    const swapRoute = {
       quote,
       quoteGasAdjusted,
       estimatedGasUsed,
@@ -146,5 +152,25 @@ export default class AlphaRouter extends AlphaBaseRouter {
       methodParameters,
       blockNumber: BigNumber.from(await blockNumber),
     }
+
+    if (swapConfig && swapConfig.simulate && methodParameters && methodParameters.calldata) {
+      if (!this.simulator) {
+        throw new Error('Simulator not initialized!')
+      }
+      const { fromAddress } = swapConfig.simulate
+
+      const swapRouteWithSimulation = await this.simulator.simulate(
+        fromAddress,
+        swapRoute,
+        amount,
+        // Quote will be in WETH even if quoteCurrency is ETH
+        // So we init a new CurrencyAmount object here
+        CurrencyAmount.fromRawAmount(quoteCurrency, quote.quotient.toString()),
+        this.l2GasDataProvider ? await this.l2GasDataProvider.getGasData() : undefined
+      )
+      return swapRouteWithSimulation
+    }
+
+    return swapRoute
   }
 }
