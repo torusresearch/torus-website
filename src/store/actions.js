@@ -385,6 +385,17 @@ export default {
       await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home' })
     else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
 
+    const openloginInstance = OpenLoginHandler.getInstance({}, {}, config.namespace)
+    const existingSessionData = await openloginInstance.getActiveSession()
+    if (!existingSessionData) {
+      dispatch('logOut')
+      return undefined
+    }
+    const sessionData = {
+      ...existingSessionData,
+      networkType,
+    }
+    await openloginInstance.updateSession(sessionData)
     // Set custom currency
     if (getters.supportedCurrencies.includes(networkType.ticker) && networkType.ticker !== state.selectedCurrency)
       await commit('setCustomCurrency', networkType.ticker)
@@ -612,6 +623,7 @@ export default {
   async rehydrate({ state, dispatch, commit }) {
     const { networkType, networkId, wcConnectorSession } = state
     let walletKey = {}
+    let finalNetworkType = networkType
     try {
       const currentRoute = router.match(window.location.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
       if (!currentRoute.meta.skipOpenLoginCheck) {
@@ -652,10 +664,12 @@ export default {
         } else {
           log.info('no openlogin session')
         }
+
+        if (sessionInfo?.networkType) finalNetworkType = sessionInfo?.networkType
       }
 
-      if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
-      else await dispatch('setProviderType', { network: networkType, type: RPC })
+      if (SUPPORTED_NETWORK_TYPES[finalNetworkType.host]) await dispatch('setProviderType', { network: finalNetworkType })
+      else await dispatch('setProviderType', { network: finalNetworkType, type: RPC })
       dispatch('subscribeToControllers')
 
       const _finalSelectedAddress = state.selectedAddress || walletKey?.ethAddress

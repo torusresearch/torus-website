@@ -31,10 +31,7 @@ if (config.localStorageAvailable) {
     storage: !isMain ? (config.isCustomLogin === null ? window.sessionStorage : window.localStorage) : window.localStorage,
     reducer: (state) => ({
       selectedAddress: state.selectedAddress,
-      networkType: state.networkType,
-      networkId: state.networkId,
       selectedCurrency: state.selectedCurrency,
-      customNetworks: state.customNetworks,
       jwtToken: state.jwtToken,
       theme: state.theme,
       locale: state.locale,
