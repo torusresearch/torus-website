@@ -17,11 +17,25 @@ import { toHex } from 'web3-utils'
 
 import {
   SINGLE_CALL_BALANCES_ADDRESS,
-  SINGLE_CALL_BALANCES_ADDRESS_KOVAN,
-  SINGLE_CALL_BALANCES_ADDRESS_RINKEBY,
-  SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN,
+  SINGLE_CALL_BALANCES_ADDRESS_ARBITRUM,
+  SINGLE_CALL_BALANCES_ADDRESS_AVALANCHE,
+  SINGLE_CALL_BALANCES_ADDRESS_BSC,
+  SINGLE_CALL_BALANCES_ADDRESS_GOERLI,
+  SINGLE_CALL_BALANCES_ADDRESS_OPTIMISM,
+  SINGLE_CALL_BALANCES_ADDRESS_POLYGON,
+  // SINGLE_CALL_BALANCES_ADDRESS_SEPOLIA,
 } from '../utils/contractAddresses'
-import { KOVAN_CHAIN_ID, MAINNET_CHAIN_ID, RINKEBY_CHAIN_ID, ROPSTEN_CHAIN_ID, ZERO_ADDRESS } from '../utils/enums'
+import {
+  ARBITRUM_MAINNET_CHAIN_ID,
+  AVALANCHE_MAINNET_CHAIN_ID,
+  BSC_MAINNET_CHAIN_ID,
+  GOERLI_CHAIN_ID,
+  MAINNET_CHAIN_ID,
+  MATIC_CHAIN_ID,
+  OPTIMISM_MAINNET_CHAIN_ID,
+  // SEPOLIA_CHAIN_ID,
+  ZERO_ADDRESS,
+} from '../utils/enums'
 
 export default class AccountTracker {
   /**
@@ -188,14 +202,23 @@ export default class AccountTracker {
         case MAINNET_CHAIN_ID:
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS)
           break
-        case RINKEBY_CHAIN_ID:
-          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_RINKEBY)
+        case BSC_MAINNET_CHAIN_ID:
+          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_BSC)
           break
-        case ROPSTEN_CHAIN_ID:
-          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN)
+        case ARBITRUM_MAINNET_CHAIN_ID:
+          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_ARBITRUM)
           break
-        case KOVAN_CHAIN_ID:
-          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_KOVAN)
+        case AVALANCHE_MAINNET_CHAIN_ID:
+          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_AVALANCHE)
+          break
+        case GOERLI_CHAIN_ID:
+          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_GOERLI)
+          break
+        case OPTIMISM_MAINNET_CHAIN_ID:
+          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_OPTIMISM)
+          break
+        case MATIC_CHAIN_ID:
+          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_POLYGON)
           break
         default:
           await Promise.all(addresses.map((x) => this._updateAccount(x)))

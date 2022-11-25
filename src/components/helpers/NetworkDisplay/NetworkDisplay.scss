@@ -35,20 +35,12 @@
     background: #cde0ff;
   }
 
-  &.network-chip--rinkeby {
-    background: #caf1fe;
-  }
-
-  &.network-chip--kovan {
-    background: #b7f7e9;
-  }
-
-  &.network-chip--ropsten {
-    background: #ffd9f8;
-  }
-
   &.network-chip--goerli {
     background: #ffe1d4;
+  }
+
+  &.network-chip--sepolia {
+    background: #caf1fe;
   }
 
   &.network-chip--rpc {
@@ -101,17 +93,16 @@
   }
 }
 .select-item-list {
-.v-icon {
-  color: #5c6c7f;
-  margin-right: 4px;
-  margin-bottom: 2px;
-  width: 13px;
-  &.theme--dark{
-    color: #d3d5e2;
+  .v-icon {
+    color: #5c6c7f;
+    margin-right: 4px;
+    margin-bottom: 2px;
+    width: 13px;
+    &.theme--dark {
+      color: #d3d5e2;
+    }
   }
-}
 }
 .row-pointer:hover {
   cursor: pointer;
 }
-

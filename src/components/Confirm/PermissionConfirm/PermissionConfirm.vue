@@ -66,7 +66,7 @@
           <div class="mb-4">
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--title">
               <v-icon size="12">$vuetify.icons.network</v-icon>
-              {{ t('dappPermission.changeNetwork').replace(/\{network\}/gi, 'Rinkeby Network') }}
+              {{ t('dappPermission.changeNetwork').replace(/\{network\}/gi, 'Goerli Network') }}
             </div>
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="permission-list--subtitle"></div>
           </div>

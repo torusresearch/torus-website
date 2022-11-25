@@ -410,8 +410,8 @@ describe('AssetsController', () => {
   })
 
   it('should add token by provider type', async () => {
-    const firstNetworkType = 'rinkeby'
-    const secondNetworkType = 'ropsten'
+    const firstNetworkType = 'goerli'
+    const secondNetworkType = 'sepolia'
     await setProviderTypeAndWait(firstNetworkType)
     await assetsController.addToken('foo', 'bar', 2, '')
     await setProviderTypeAndWait(secondNetworkType)
@@ -551,8 +551,8 @@ describe('AssetsController', () => {
   })
 
   it('should add collectible by provider type', async () => {
-    const firstNetworkType = 'rinkeby'
-    const secondNetworkType = 'ropsten'
+    const firstNetworkType = 'goerli'
+    const secondNetworkType = 'sepolia'
     sandbox.stub(assetsController, 'getCollectibleContractInformation').returns({ name: 'name', image_url: 'url', symbol: 'FOO', video: 'video url' })
     sandbox
       .stub(assetsController, 'getCollectibleInfo')
