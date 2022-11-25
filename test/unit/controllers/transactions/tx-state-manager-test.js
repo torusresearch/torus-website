@@ -3,15 +3,7 @@ import sinon from 'sinon'
 
 import TxStateManager from '../../../../src/controllers/transactions/TransactionStateManager'
 import { snapshotFromTxMeta } from '../../../../src/controllers/transactions/tx-state-history-helper'
-import {
-  GAS_LIMITS,
-  KOVAN_CHAIN_ID,
-  KOVAN_CODE,
-  MAINNET_CHAIN_ID,
-  RINKEBY_CHAIN_ID,
-  TRANSACTION_STATUSES,
-  TRANSACTION_TYPES,
-} from '../../../../src/utils/enums'
+import { GAS_LIMITS, GOERLI_CHAIN_ID, GOERLI_CODE, MAINNET_CHAIN_ID, TRANSACTION_STATUSES, TRANSACTION_TYPES } from '../../../../src/utils/enums'
 
 const VALID_ADDRESS = '0x0000000000000000000000000000000000000000'
 const VALID_ADDRESS_TWO = '0x0000000000000000000000000000000000000001'
@@ -37,8 +29,8 @@ function generateTransactions(numToGen, { chainId, to, from, status, type = TRAN
 }
 describe('TransactionStateManager', () => {
   let txStateManager
-  const currentNetworkId = KOVAN_CODE
-  const currentChainId = KOVAN_CHAIN_ID
+  const currentNetworkId = GOERLI_CODE
+  const currentChainId = GOERLI_CHAIN_ID
   const otherNetworkId = '2'
 
   beforeEach(() => {
@@ -611,7 +603,7 @@ describe('TransactionStateManager', () => {
       const txs = generateTransactions(limit + 5, {
         chainId: (i) => {
           if (i === 0 || i === 1) return MAINNET_CHAIN_ID
-          if (i === 4 || i === 5) return RINKEBY_CHAIN_ID
+          if (i === 4 || i === 5) return GOERLI_CHAIN_ID
           return currentChainId
         },
         to: VALID_ADDRESS,
