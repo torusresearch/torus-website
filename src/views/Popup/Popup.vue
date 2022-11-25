@@ -36,9 +36,6 @@ export default {
       return apiStreamSupported()
     },
   }),
-  created() {
-    window.$crisp.push(['do', 'chat:hide'])
-  },
   methods: {
     ...mapActions({
       cancelLogin: 'cancelLogin',
