@@ -621,7 +621,7 @@ export default {
     }
   },
   async rehydrate({ state, dispatch, commit }) {
-    const { networkType, networkId, wcConnectorSession } = state
+    const { networkType, wcConnectorSession } = state
     let walletKey = {}
     let finalNetworkType = networkType
     try {
@@ -673,9 +673,8 @@ export default {
       dispatch('subscribeToControllers')
 
       const _finalSelectedAddress = state.selectedAddress || walletKey?.ethAddress
-      if (_finalSelectedAddress && state.wallet[toChecksumAddressByChainId(_finalSelectedAddress, networkId)]) {
-        dispatch('updateSelectedAddress', { selectedAddress: toChecksumAddressByChainId(_finalSelectedAddress, networkId) }) // synchronous
-        dispatch('updateNetworkId', { networkId })
+      if (_finalSelectedAddress && state.wallet[toChecksumAddressByChainId(_finalSelectedAddress, finalNetworkType.chainId)]) {
+        dispatch('updateSelectedAddress', { selectedAddress: toChecksumAddressByChainId(_finalSelectedAddress, finalNetworkType.chainId) })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: state.userInfo.verifier })
         if (Object.keys(wcConnectorSession).length > 0) dispatch('initWalletConnect', { session: wcConnectorSession })
