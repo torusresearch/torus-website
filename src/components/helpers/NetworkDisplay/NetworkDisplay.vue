@@ -37,6 +37,7 @@
 
 <script>
 // import { debug } from 'console'
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
 import { mapGetters } from 'vuex'
 

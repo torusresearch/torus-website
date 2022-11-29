@@ -18,7 +18,7 @@ describe('NetworkController', () => {
     let setProviderTypeAndWait
     let getLatestBlockStub
     beforeEach(() => {
-      nock('https://rinkeby.infura.io').persist().post('/metamask').reply(200)
+      nock('https://goerli.infura.io').persist().post('/metamask').reply(200)
 
       networkController = new NetworkController()
       setProviderTypeAndWait = (networkType) =>
@@ -124,28 +124,8 @@ describe('NetworkController', () => {
     it('getNetworkDisplayName should return the correct network name', () => {
       const tests = [
         {
-          input: 3,
-          expected: 'Ropsten Test Network',
-        },
-        {
-          input: 4,
-          expected: 'Rinkeby Test Network',
-        },
-        {
-          input: 42,
-          expected: 'Kovan Test Network',
-        },
-        {
-          input: 'ropsten',
-          expected: 'Ropsten Test Network',
-        },
-        {
-          input: 'rinkeby',
-          expected: 'Rinkeby Test Network',
-        },
-        {
-          input: 'kovan',
-          expected: 'Kovan Test Network',
+          input: 5,
+          expected: 'Goerli Test Network',
         },
         {
           input: 'mainnet',

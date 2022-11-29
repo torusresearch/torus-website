@@ -13,9 +13,7 @@ export const ENVIRONMENT_TYPE_NOTIFICATION = 'notification'
 export const ENVIRONMENT_TYPE_FULLSCREEN = 'fullscreen'
 export const ENVIRONMENT_TYPE_BACKGROUND = 'background'
 
-export const ROPSTEN = 'ropsten'
-export const RINKEBY = 'rinkeby'
-export const KOVAN = 'kovan'
+export const SEPOLIA = 'sepolia'
 export const MAINNET = 'mainnet'
 export const LOCALHOST = 'localhost'
 export const GOERLI = 'goerli'
@@ -40,10 +38,8 @@ export const GXC_TESTNET = 'gxc_testnet'
 export const VOC_TESTNET = 'voc_testnet'
 
 export const MAINNET_CODE = 1
-export const ROPSTEN_CODE = 3
-export const RINKEBY_CODE = 4
-export const KOVAN_CODE = 42
 export const GOERLI_CODE = 5
+export const SEPOLIA_CODE = 11_155_111
 export const MATIC_CODE = 137
 export const MUMBAI_CODE = 80_001
 export const LOCALHOST_CODE = 5777
@@ -65,10 +61,8 @@ export const GXC_TESTNET_CODE = 1068
 export const VOC_TESTNET_CODE = 1172
 
 export const MAINNET_CHAIN_ID = '0x1'
-export const ROPSTEN_CHAIN_ID = '0x3'
-export const RINKEBY_CHAIN_ID = '0x4'
-export const KOVAN_CHAIN_ID = '0x2a'
 export const GOERLI_CHAIN_ID = '0x5'
+export const SEPOLIA_CHAIN_ID = '0xaa36a7'
 export const MATIC_CHAIN_ID = '0x89'
 export const MUMBAI_CHAIN_ID = '0x13881'
 export const BSC_MAINNET_CHAIN_ID = '0x38'
@@ -102,13 +96,11 @@ export const COVALENT_SUPPORTED_CHAIN_IDS = {
   [MAINNET_CODE]: MAINNET,
 }
 export const ETHERSCAN_SUPPORTED_NETWORKS = new Set([MATIC, BSC_MAINNET, MAINNET])
-export const INFURA_PROVIDER_TYPES = new Set([RINKEBY, KOVAN, MAINNET, GOERLI])
+export const INFURA_PROVIDER_TYPES = new Set([SEPOLIA, MAINNET, GOERLI])
 
-export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
-export const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
-export const KOVAN_DISPLAY_NAME = 'Kovan Test Network'
 export const MAINNET_DISPLAY_NAME = 'Main Ethereum Network'
 export const GOERLI_DISPLAY_NAME = 'Goerli Test Network'
+export const SEPOLIA_DISPLAY_NAME = 'Sepolia Test Network'
 export const RPC_DISPLAY_NAME = 'RPC'
 export const LOCALHOST_DISPLAY_NAME = 'https://localhost:8545'
 export const MATIC_DISPLAY_NAME = 'Polygon Mainnet'
@@ -183,8 +175,6 @@ export const VOC_TESTNET_BLOCK_EXPLORER = 'https://testnet-explorer.vegas.one'
 
 export const BIT_HOST_URL = 'https://indexer-v1.did.id'
 
-export const ROPSTEN_URL = 'https://small-long-brook.ropsten.quiknode.pro/e2fd2eb01412e80623787d1c40094465aa67624a'
-
 export const MATIC_TICKER = 'MATIC'
 export const BSC_TICKER = 'BNB'
 export const OKC_TICKER = 'OKT'
@@ -258,10 +248,8 @@ export const getInfuraBlockExplorerUrl = (network) => {
 }
 
 export const INFURA_NETWORK_TYPE_TO_ID_MAP = {
-  [ROPSTEN]: { networkId: ROPSTEN_CODE, chainId: ROPSTEN_CHAIN_ID },
-  [RINKEBY]: { networkId: RINKEBY_CODE, chainId: RINKEBY_CHAIN_ID },
-  [KOVAN]: { networkId: KOVAN_CODE, chainId: KOVAN_CHAIN_ID },
   [GOERLI]: { networkId: GOERLI_CODE, chainId: GOERLI_CHAIN_ID },
+  [SEPOLIA]: { networkId: SEPOLIA_CODE, chainId: SEPOLIA_CHAIN_ID },
   [MAINNET]: { networkId: MAINNET_CODE, chainId: MAINNET_CHAIN_ID },
 }
 
@@ -282,10 +270,8 @@ export const createNetwork = (host, networkName, chainId, blockExplorer, ticker,
 })
 
 export const CHAIN_ID_TO_TYPE_MAP = {
-  [ROPSTEN_CHAIN_ID]: { networkId: ROPSTEN_CODE, name: ROPSTEN },
-  [RINKEBY_CHAIN_ID]: { networkId: RINKEBY_CODE, name: RINKEBY },
-  [KOVAN_CHAIN_ID]: { networkId: KOVAN_CODE, name: KOVAN },
   [GOERLI_CHAIN_ID]: { networkId: GOERLI_CODE, name: GOERLI },
+  [SEPOLIA_CHAIN_ID]: { networkId: SEPOLIA_CODE, name: SEPOLIA },
   [MAINNET_CHAIN_ID]: { networkId: MAINNET_CODE, name: MAINNET },
   [MATIC_CHAIN_ID]: { networkId: MATIC_CODE, name: MATIC },
   [MUMBAI_CHAIN_ID]: { networkId: MUMBAI_CODE, name: MUMBAI },
@@ -307,20 +293,6 @@ export const CHAIN_ID_TO_TYPE_MAP = {
 
 export const SUPPORTED_NETWORK_TYPES = {
   [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, getInfuraBlockExplorerUrl(MAINNET), 'ETH', 'Ethereum', 'eth.svg', undefined),
-  [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE, getInfuraBlockExplorerUrl(RINKEBY), 'ETH', 'Ethereum', 'eth.svg', undefined),
-  [KOVAN]: createNetwork(KOVAN, KOVAN_DISPLAY_NAME, KOVAN_CODE, getInfuraBlockExplorerUrl(KOVAN), 'ETH', 'Ethereum', 'eth.svg', undefined),
-  [ROPSTEN]: createNetwork(
-    ROPSTEN,
-    ROPSTEN_DISPLAY_NAME,
-    ROPSTEN_CODE,
-    getInfuraBlockExplorerUrl(ROPSTEN),
-    'ETH',
-    'Ethereum',
-    'eth.svg',
-    ROPSTEN_URL
-  ),
-  [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE, getInfuraBlockExplorerUrl(GOERLI), 'ETH', 'Ethereum', 'eth.svg', undefined),
-  [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE, '', 'ETH', 'Ethereum', 'eth.svg', undefined),
   [MATIC]: createNetwork(
     MATIC,
     MATIC_DISPLAY_NAME,
@@ -330,16 +302,6 @@ export const SUPPORTED_NETWORK_TYPES = {
     'Matic Network Token',
     'matic-network-logo.svg',
     MATIC_URL
-  ),
-  [MUMBAI]: createNetwork(
-    MUMBAI,
-    MUMBAI_DISPLAY_NAME,
-    MUMBAI_CODE,
-    MUMBAI_BLOCK_EXPLORER,
-    MATIC_TICKER,
-    'Matic Network Token',
-    'matic-network-logo.svg',
-    MUMBAI_URL
   ),
   [BSC_MAINNET]: createNetwork(
     BSC_MAINNET,
@@ -351,58 +313,16 @@ export const SUPPORTED_NETWORK_TYPES = {
     'bnb.png',
     BSC_MAINNET_URL
   ),
-  [BSC_TESTNET]: createNetwork(
-    BSC_TESTNET,
-    BSC_TESTNET_DISPLAY_NAME,
-    BSC_TESTNET_CODE,
-    BSC_TESTNET_BLOCK_EXPLORER,
-    BSC_TICKER,
-    'Binance Coin',
-    'bnb.png',
-    BSC_TESTNET_URL
+  [AVALANCHE_MAINNET]: createNetwork(
+    AVALANCHE_MAINNET,
+    AVALANCHE_MAINNET_DISPLAY_NAME,
+    AVALANCHE_MAINNET_CODE,
+    AVALANCHE_MAINNET_BLOCK_EXPLORER,
+    AVALANCHE_TICKER,
+    'Avalanche',
+    'avax.svg',
+    AVALANCHE_MAINNET_URL
   ),
-  [OKC_MAINNET]: createNetwork(
-    OKC_MAINNET,
-    OKC_MAINNET_DISPLAY_NAME,
-    OKC_MAINNET_CODE,
-    OKC_MAINNET_BLOCK_EXPLORER,
-    OKC_TICKER,
-    'OKX Coin',
-    'okx.png',
-    OKC_MAINNET_URL
-  ),
-  [OKC_TESTNET]: createNetwork(
-    OKC_TESTNET,
-    OKC_TESTNET_DISPLAY_NAME,
-    OKC_TESTNET_CODE,
-    OKC_TESTNET_BLOCK_EXPLORER,
-    OKC_TICKER,
-    'OKX Coin',
-    'okx.png',
-    OKC_TESTNET_URL
-  ),
-  [XDAI]: createNetwork(XDAI, XDAI_DISPLAY_NAME, XDAI_CODE, XDAI_BLOCK_EXPLORER, XDAI_TICKER, 'xDai Network Token', 'xdai.svg', XDAI_URL),
-  [RSK_MAINNET]: createNetwork(
-    RSK_MAINNET,
-    RSK_MAINNET_DISPLAY_NAME,
-    RSK_MAINNET_CODE,
-    RSK_MAINNET_BLOCK_EXPLORER,
-    RSK_MAINNET_TICKER,
-    'RSK',
-    'rsk.svg',
-    RSK_MAINNET_URL
-  ),
-  [RSK_TESTNET]: createNetwork(
-    RSK_TESTNET,
-    RSK_TESTNET_DISPLAY_NAME,
-    RSK_TESTNET_CODE,
-    RSK_TESTNET_BLOCK_EXPLORER,
-    RSK_TESTNET_TICKER,
-    'RSK Testnet',
-    'rsk.svg',
-    RSK_TESTNET_URL
-  ),
-  [REEF]: createNetwork(REEF, REEF_DISPLAY_NAME, REEF_CODE, REEF_BLOCK_EXPLORER, 'REEF', 'Reef', 'eth.svg', undefined),
   [OPTIMISM_MAINNET]: createNetwork(
     OPTIMISM_MAINNET,
     OPTIMISM_MAINNET_DISPLAY_NAME,
@@ -412,16 +332,6 @@ export const SUPPORTED_NETWORK_TYPES = {
     'Ethereum',
     'eth.svg',
     OPTIMISM_MAINNET_URL
-  ),
-  [OPTIMISM_TESTNET]: createNetwork(
-    OPTIMISM_TESTNET,
-    OPTIMISM_TESTNET_DISPLAY_NAME,
-    OPTIMISM_TESTNET_CODE,
-    OPTIMISM_TESTNET_BLOCK_EXPLORER,
-    OPTIMISM_TICKER,
-    'Ethereum',
-    'eth.svg',
-    OPTIMISM_TESTNET_URL
   ),
   [ARBITRUM_MAINNET]: createNetwork(
     ARBITRUM_MAINNET,
@@ -433,25 +343,39 @@ export const SUPPORTED_NETWORK_TYPES = {
     'eth.svg',
     ARBITRUM_MAINNET_URL
   ),
-  [ARBITRUM_TESTNET]: createNetwork(
-    ARBITRUM_TESTNET,
-    ARBITRUM_TESTNET_DISPLAY_NAME,
-    ARBITRUM_TESTNET_CODE,
-    ARBITRUM_TESTNET_BLOCK_EXPLORER,
-    ARBITRUM_TICKER,
-    'Ethereum',
-    'eth.svg',
-    ARBITRUM_TESTNET_URL
+  [XDAI]: createNetwork(XDAI, XDAI_DISPLAY_NAME, XDAI_CODE, XDAI_BLOCK_EXPLORER, XDAI_TICKER, 'xDai Network Token', 'xdai.svg', XDAI_URL),
+  [OKC_MAINNET]: createNetwork(
+    OKC_MAINNET,
+    OKC_MAINNET_DISPLAY_NAME,
+    OKC_MAINNET_CODE,
+    OKC_MAINNET_BLOCK_EXPLORER,
+    OKC_TICKER,
+    'OKX Coin',
+    'okx.png',
+    OKC_MAINNET_URL
   ),
-  [AVALANCHE_MAINNET]: createNetwork(
-    AVALANCHE_MAINNET,
-    AVALANCHE_MAINNET_DISPLAY_NAME,
-    AVALANCHE_MAINNET_CODE,
-    AVALANCHE_MAINNET_BLOCK_EXPLORER,
-    AVALANCHE_TICKER,
-    'Avalanche',
-    'avax.svg',
-    AVALANCHE_MAINNET_URL
+  [REEF]: createNetwork(REEF, REEF_DISPLAY_NAME, REEF_CODE, REEF_BLOCK_EXPLORER, 'REEF', 'Reef', 'eth.svg', undefined),
+  [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE, getInfuraBlockExplorerUrl(GOERLI), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [SEPOLIA]: createNetwork(SEPOLIA, SEPOLIA_DISPLAY_NAME, SEPOLIA_CODE, getInfuraBlockExplorerUrl(SEPOLIA), 'ETH', 'Ethereum', 'eth.svg', undefined),
+  [MUMBAI]: createNetwork(
+    MUMBAI,
+    MUMBAI_DISPLAY_NAME,
+    MUMBAI_CODE,
+    MUMBAI_BLOCK_EXPLORER,
+    MATIC_TICKER,
+    'Matic Network Token',
+    'matic-network-logo.svg',
+    MUMBAI_URL
+  ),
+  [BSC_TESTNET]: createNetwork(
+    BSC_TESTNET,
+    BSC_TESTNET_DISPLAY_NAME,
+    BSC_TESTNET_CODE,
+    BSC_TESTNET_BLOCK_EXPLORER,
+    BSC_TICKER,
+    'Binance Coin',
+    'bnb.png',
+    BSC_TESTNET_URL
   ),
   [AVALANCHE_TESTNET]: createNetwork(
     AVALANCHE_TESTNET,
@@ -462,6 +386,36 @@ export const SUPPORTED_NETWORK_TYPES = {
     'Avalanche',
     'avax.svg',
     AVALANCHE_TESTNET_URL
+  ),
+  [ARBITRUM_TESTNET]: createNetwork(
+    ARBITRUM_TESTNET,
+    ARBITRUM_TESTNET_DISPLAY_NAME,
+    ARBITRUM_TESTNET_CODE,
+    ARBITRUM_TESTNET_BLOCK_EXPLORER,
+    ARBITRUM_TICKER,
+    'Ethereum',
+    'eth.svg',
+    ARBITRUM_TESTNET_URL
+  ),
+  [OPTIMISM_TESTNET]: createNetwork(
+    OPTIMISM_TESTNET,
+    OPTIMISM_TESTNET_DISPLAY_NAME,
+    OPTIMISM_TESTNET_CODE,
+    OPTIMISM_TESTNET_BLOCK_EXPLORER,
+    OPTIMISM_TICKER,
+    'Ethereum',
+    'eth.svg',
+    OPTIMISM_TESTNET_URL
+  ),
+  [RSK_MAINNET]: createNetwork(
+    RSK_MAINNET,
+    RSK_MAINNET_DISPLAY_NAME,
+    RSK_MAINNET_CODE,
+    RSK_MAINNET_BLOCK_EXPLORER,
+    RSK_MAINNET_TICKER,
+    'RSK',
+    'rsk.svg',
+    RSK_MAINNET_URL
   ),
   [GXC_TESTNET]: createNetwork(
     GXC_TESTNET,
@@ -487,6 +441,27 @@ export const SUPPORTED_NETWORK_TYPES = {
     true,
     '0x17436fa7d8f87A696d4b585A52DfECABf59FF3a0'
   ),
+  [OKC_TESTNET]: createNetwork(
+    OKC_TESTNET,
+    OKC_TESTNET_DISPLAY_NAME,
+    OKC_TESTNET_CODE,
+    OKC_TESTNET_BLOCK_EXPLORER,
+    OKC_TICKER,
+    'OKX Coin',
+    'okx.png',
+    OKC_TESTNET_URL
+  ),
+  [RSK_TESTNET]: createNetwork(
+    RSK_TESTNET,
+    RSK_TESTNET_DISPLAY_NAME,
+    RSK_TESTNET_CODE,
+    RSK_TESTNET_BLOCK_EXPLORER,
+    RSK_TESTNET_TICKER,
+    'RSK Testnet',
+    'rsk.svg',
+    RSK_TESTNET_URL
+  ),
+  [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE, '', 'ETH', 'Ethereum', 'eth.svg', undefined),
 }
 
 export const WALLET_HEADERS_HOME = 'My Wallet'
@@ -833,8 +808,8 @@ export const CHAIN_ID_TO_GAS_LIMIT_BUFFER_MAP = {
   [OPTIMISM_TESTNET_CHAIN_ID]: 1.5,
 }
 
-export const TEST_CHAINS = [ROPSTEN_CHAIN_ID, RINKEBY_CHAIN_ID, GOERLI_CHAIN_ID, KOVAN_CHAIN_ID]
-export const TEST_CHAINS_NUMERIC_IDS = [ROPSTEN_CODE, RINKEBY_CODE, GOERLI_CODE, KOVAN_CODE]
+export const TEST_CHAINS = [GOERLI_CHAIN_ID, SEPOLIA_CHAIN_ID]
+export const TEST_CHAINS_NUMERIC_IDS = [GOERLI_CODE, SEPOLIA_CODE]
 
 const TWENTY_ONE_THOUSAND = 21_000
 const ONE_HUNDRED_THOUSAND = 100_000

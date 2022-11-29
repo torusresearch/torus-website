@@ -1,7 +1,7 @@
 /* eslint-disable */
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const { RINKEBY_DISPLAY_NAME, ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_PERIOD_WEEK_ONE } = require('../../src/utils/enums')
+const { GOERLI_DISPLAY_NAME, ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_PERIOD_WEEK_ONE } = require('../../src/utils/enums')
 
 const config = require('./lib/config')
 const { loadUrl, click, login, selectItem, navigateTo } = require('./lib/helpers')
@@ -37,11 +37,11 @@ describe('Tests Wallet Activity Page', () => {
     await login(page)
   })
 
-  it('Should change network to rinkeby', async () => {
+  it('Should change network to goerli', async () => {
     await navigateTo(page, '#settings-link', '.wallet-settings')
     await click(page, '#network-panel-header')
 
-    const textToSelect = RINKEBY_DISPLAY_NAME
+    const textToSelect = GOERLI_DISPLAY_NAME
     await selectItem(page, '#select-network', '.select-network-container', textToSelect)
     await page.waitFor(100)
     const networkSelected = await page.$eval('.select-network-container .v-select__selection', (element) => element.textContent)
