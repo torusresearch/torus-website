@@ -86,7 +86,6 @@ if (!isMain) {
       VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
       VuexStore.commit('setSkipTKey', skipTKey)
       VuexStore.commit('setMfaLevel', mfaLevel)
-      VuexStore.dispatch('setProviderType', { network })
       const { isRehydrationComplete } = VuexStore.state
       if (isRehydrationComplete) {
         initStream.write({
@@ -96,8 +95,9 @@ if (!isMain) {
       } else {
         const unWatcher = VuexStore.watch(
           (state) => state.isRehydrationComplete,
-          (newValue, oldValue) => {
+          async (newValue, oldValue) => {
             if (newValue !== oldValue && newValue === true) {
+              await VuexStore.dispatch('setProviderType', { network })
               initStream.write({
                 name: 'init_complete',
                 data: { success: true },
