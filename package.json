@@ -18,7 +18,7 @@
     "dev": "cross-env NODE_ENV=development VUE_APP_TORUS_BUILD_ENV=development node server.js",
     "lint:js": "eslint --fix 'src/**/*.js'",
     "lint:vue": "eslint --fix 'src/**/*.vue'",
-    "locale": "node ./scripts/importLocales.js",
+    "locale": "node ./scripts/importLocales.mjs",
     "post-build": ". ./scripts/buildErrorPage.sh",
     "pre-build": "npm run locale",
     "prepare": "husky install",

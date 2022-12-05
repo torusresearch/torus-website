@@ -57,7 +57,7 @@ if (!isMain) {
     if (chunk.name === 'wallet_connect_stream_req') VuexStore.dispatch('handleShowWalletConnectReq', chunk.data)
   })
   const initStream = torus.communicationMux.getStream('init_stream')
-  initStream.on('data', (chunk) => {
+  initStream.on('data', async (chunk) => {
     const {
       name,
       data: {
@@ -88,6 +88,7 @@ if (!isMain) {
       VuexStore.commit('setMfaLevel', mfaLevel)
       const { isRehydrationComplete } = VuexStore.state
       if (isRehydrationComplete) {
+        await VuexStore.dispatch('setProviderType', { network })
         initStream.write({
           name: 'init_complete',
           data: { success: true },
