@@ -42,9 +42,10 @@
           hide-details
           outlined
           height="44"
+          :disabled="wcConnectorSession && wcConnectorSession.connected"
           class="custom-placeholer"
           :placeholder="ctaPlaceholder"
-          @change="onWcInputChanged"
+          @input="onWcInputChanged"
         >
           <template #append>
             <v-btn
@@ -55,22 +56,13 @@
               tabindex="-3"
               @click="toggleWC"
             >
-              <!-- <v-icon small>$vuetify.icons.goto</v-icon> -->
               <span class="caption mr-1">{{ t('walletConnect.gotoApp') }}</span>
               <v-img :src="require(`../../../assets/images/goto-link.svg`)"></v-img>
             </v-btn>
-            <!-- <span v-if="(wcConnectorSession && wcConnectorSession.connected) || false" class="mt-1 ma-0 p-0" @click="toggleWC">Go to dApp</span>
-            <v-img
-              v-if="(wcConnectorSession && wcConnectorSession.connected) || false"
-              :src="require(`../../../assets/images/goto-link.svg`)"
-            ></v-img> -->
           </template>
         </v-text-field>
       </v-col>
       <v-col cols="12" sm="6">
-        <!-- <v-btn block large class="torus-btn1 torusBrand1--text" @click="toggleWC">
-          <span size="16">{{ t('walletConnect.scanToConnect') }}</span>
-        </v-btn> -->
         <v-dialog v-model="showQrScanner" :eager="true" :width="qrLoading ? 0 : 600" @click:outside="closeQRScanner">
           <div v-if="showQrScanner" class="qr-scan-container">
             <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
