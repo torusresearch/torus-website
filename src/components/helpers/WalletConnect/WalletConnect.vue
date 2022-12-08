@@ -92,15 +92,15 @@
           </v-btn>
         </v-col>
       </v-row>
-      <v-dialog v-model="showQrScanner" :eager="true" :width="qrLoading ? 0 : 600" @click:outside="closeQRScanner">
-        <div v-if="showQrScanner" class="qr-scan-container">
-          <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
-          <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
-            <v-icon>$vuetify.icons.close</v-icon>
-          </v-btn>
-        </div>
-      </v-dialog>
     </v-form>
+    <v-dialog v-model="showQrScanner" :eager="true" :width="qrLoading ? 0 : 600" @click:outside="closeQRScanner">
+      <div v-if="showQrScanner" class="qr-scan-container">
+        <QrcodeStream :camera="camera" :style="camera === 'off' && { display: 'none' }" @decode="onDecodeQr" @init="onInit" />
+        <v-btn class="close-btn" icon aria-label="Close QR Scanner" title="Close QR Scanner" @click="closeQRScanner">
+          <v-icon>$vuetify.icons.close</v-icon>
+        </v-btn>
+      </div>
+    </v-dialog>
   </div>
 </template>
 

@@ -29,7 +29,8 @@ export default {
     torusWidgetVisibility: (state) => state.embedState.torusWidgetVisibility,
     loginInProgress: (state) => state.embedState.loginInProgress,
     showWalletConnect: (state) => {
-      const canConnect = state.embedState.showWalletConnect && apiStreamSupported && this.loggedIn
+      const loggedIn = state.selectedAddress !== '' && state.wallet[state.selectedAddress] !== undefined
+      const canConnect = state.embedState.showWalletConnect && apiStreamSupported && loggedIn
       return canConnect
     },
     apiStreamSupported() {
