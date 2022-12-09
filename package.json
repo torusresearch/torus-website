@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@ethereumjs/common": "^2.6.5",
-    "@ethereumjs/tx": "^3.5.2",
+    "@ethereumjs/tx": "^4.0.1",
     "@gtm-support/vue2-gtm": "^1.3.0",
     "@metamask/contract-metadata": "^2.0.0",
     "@metamask/eth-sig-util": "^4.0.1",
