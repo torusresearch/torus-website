@@ -700,8 +700,35 @@ export default {
       data: payload,
     })
   },
-  initWalletConnect(_, payload) {
-    return walletConnectController.init(payload)
+  async initWalletConnect({ dispatch }, payload) {
+    try {
+      if (!payload.session && !payload.uri.startsWith('wc:')) {
+        throw new Error('Invalid input. Please ensure you copy from the Wallet Connect QR code.')
+      }
+      await walletConnectController.init(payload)
+      if (payload.fromEmbed) {
+        dispatch('sendWalletConnectResponse', { success: true })
+      }
+      return true
+    } catch (error) {
+      dispatch('setErrorMessage', 'Invalid input. Please ensure you copy from the Wallet Connect QR code.')
+
+      if (payload.fromEmbed) {
+        dispatch('sendWalletConnectResponse', { success: false, errorMessage: error?.message })
+      }
+      return false
+    }
+  },
+  checkWalletConnectExpire({ state, dispatch }) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!(state.wcConnectorSession && state.wcConnectorSession.connected)) {
+          dispatch('setErrorMessage', 'QR code link expired. Please copy from a new Wallet Connect QR code.')
+          reject(new Error('QR code link expired. Please copy from a new Wallet Connect QR code.'))
+        }
+        resolve()
+      }, 5000)
+    })
   },
   disconnectWalletConnect(_, __) {
     return walletConnectController.disconnect()
@@ -721,6 +748,9 @@ export default {
   handleShowWalletConnectReq({ commit }) {
     log.debug('handleShowWalletConnectReq')
     commit('setShowWalletConnect', true)
+  },
+  handleWalletConnectUriReq({ dispatch }, payload) {
+    dispatch('initWalletConnect', { uri: payload.uri, fromEmbed: true })
   },
   sendWalletConnectResponse({ commit }, { success, errorMessage }) {
     commit('setShowWalletConnect', false)

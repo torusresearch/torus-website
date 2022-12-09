@@ -176,6 +176,7 @@ export default {
       'sendWalletConnectResponse',
       'getWalletConnectedApp',
       'setErrorMessage',
+      'checkWalletConnectExpire',
     ]),
     async toggleWC() {
       if (this.wcConnectorSession?.connected) {
@@ -254,29 +255,19 @@ export default {
       }
     },
     async submitWalletConnect() {
-      try {
-        if (!this.wcCopyPasteLink.startsWith('wc:')) {
-          throw new Error('Invalid input. Please ensure you copy from the Wallet Connect QR code.')
+      this.wcConnecting = true
+      const isSuccess = await this.initWalletConnect({ uri: this.wcCopyPasteLink, fromEmbed: this.isIframe && this.showFromEmbed })
+      if (isSuccess) {
+        try {
+          await this.checkWalletConnectExpire()
+        } catch (error) {
+          this.wcConnecting = false
+          this.wcCopyPasteLink = ''
+          log.error(error)
         }
-        this.wcConnecting = true
-        await this.initWalletConnect({ uri: this.wcCopyPasteLink })
-        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
-
-        // Check if connected after 5 seconds
-        setTimeout(() => {
-          if (this.wcConnecting) {
-            this.setErrorMessage('QR code link expired. Please copy from a new Wallet Connect QR code.')
-            this.wcConnecting = false
-            this.wcCopyPasteLink = ''
-          }
-        }, 5000)
-      } catch (error) {
-        log.error(error)
-
-        this.setErrorMessage('Invalid input. Please ensure you copy from the Wallet Connect QR code.')
+      } else {
         this.wcConnecting = false
         this.wcCopyPasteLink = ''
-        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: false, errorMessage: error?.message })
       }
     },
   },

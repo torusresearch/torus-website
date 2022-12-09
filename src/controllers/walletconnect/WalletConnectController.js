@@ -101,8 +101,12 @@ class WalletConnectController {
   }
 
   updateSession() {
-    this.walletConnector?.updateSession(this.sessionConfig)
-    if (this.walletConnector) this.setStoreSession()
+    try {
+      this.walletConnector?.updateSession(this.sessionConfig)
+      if (this.walletConnector) this.setStoreSession()
+    } catch (error) {
+      log.error(error)
+    }
   }
 
   getPeerMetaURL() {
