@@ -812,7 +812,10 @@ class PreferencesController extends SafeEventEmitter {
         data: [],
       }
     }
-    const res = await this.api.get(`${config.api}/nfts?userAddress=${userAddress}&network=${network}`, this.headers(), { useAPIKey: true })
+
+    const res = await this.api.get(`${config.api}/nfts?userAddress=${userAddress}&network=${network}`, this.headers(), {
+      useAPIKey: true,
+    })
     return res
   }
 

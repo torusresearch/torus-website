@@ -8,7 +8,7 @@
 import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 
-import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, NFT_SUPPORTED_NETWORKS, OLD_ERC721_LIST, SUPPORTED_NFT_STANDARDS } from '../utils/enums'
+import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, COVALENT_SUPPORTED_CHAIN_IDS, OLD_ERC721_LIST, SUPPORTED_NFT_STANDARDS } from '../utils/enums'
 import { get } from '../utils/httpHelpers'
 import { isAddressByChainId, sanitizeNftMetdataUrl, toChecksumAddressByChainId, validateImageUrl } from '../utils/utils'
 
@@ -85,7 +85,7 @@ export default class AssetController {
 
   getCollectibleApi(contractAddress, tokenId) {
     const networkType = this.network.getNetworkIdentifier()
-    const chainId = NFT_SUPPORTED_NETWORKS[networkType]
+    const chainId = COVALENT_SUPPORTED_CHAIN_IDS[networkType]
     if (chainId) {
       return `https://api.covalenthq.com/v1/${chainId}/tokens/${contractAddress}/nft_metadata/${tokenId}/`
     }
