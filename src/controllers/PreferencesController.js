@@ -560,7 +560,7 @@ class PreferencesController extends SafeEventEmitter {
         await this.api.patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers(), { useAPIKey: true })
         this.handleSuccess('navBar.snackSuccessCurrency')
       }
-      this.updateStore({ selectedCurrency: payload.selectedCurrency, address: payload.address })
+      this.updateStore({ selectedCurrency: payload.selectedCurrency }, payload?.address)
     } catch (error) {
       log.error(error)
       this.handleError('navBar.snackFailCurrency')
