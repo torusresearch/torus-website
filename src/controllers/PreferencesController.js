@@ -140,7 +140,7 @@ class PreferencesController extends SafeEventEmitter {
       if (supportedCurrencies.includes(savedCurrency)) {
         await dispatch('setSelectedCurrency', { selectedCurrency: savedCurrency, origin: 'store', address })
       } else {
-        const finalCurrency = supportedCurrencies.includes(customCurrency) ? customCurrency : currentState.selectedCurrency
+        const finalCurrency = customCurrency || currentState.selectedCurrency
         await dispatch('setSelectedCurrency', { selectedCurrency: finalCurrency, origin: 'home', address })
       }
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
@@ -148,7 +148,7 @@ class PreferencesController extends SafeEventEmitter {
     } else {
       const accountState = this.store.getState()[postboxAddress] || currentState
       // Use customCurrency if available for new user
-      const finalCurrency = supportedCurrencies.includes(customCurrency) ? customCurrency : accountState.selectedCurrency
+      const finalCurrency = customCurrency || accountState.selectedCurrency
       await this.createUser(finalCurrency, accountState.theme, verifier, verifierId, accountType, address)
       commit('setNewUser', true)
       dispatch('setSelectedCurrency', { selectedCurrency: finalCurrency, origin: 'home' })
