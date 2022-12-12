@@ -733,6 +733,14 @@ export const getIFrameOriginObject = () => {
   }
 }
 
+export const storageUtils = {
+  storage: !isMain ? (config.isCustomLogin === null ? window.sessionStorage : window.localStorage) : window.localStorage,
+  storageKey: config.isCustomLogin === true ? `torus_app_${config.namespace || getIFrameOriginObject().hostname}` : 'torus-app',
+  openloginStoreKey: config.isCustomLogin === true ? `openlogin_store_${config.namespace || getIFrameOriginObject().hostname}` : 'openlogin_store',
+}
+
+export const getSessionIdFromStorage = () => JSON.parse(storageUtils.storage.getItem(`${storageUtils.openloginStoreKey}`) || '{}').sessionId
+
 export const fakeStream = {
   write: () => {},
 }
@@ -1171,6 +1179,10 @@ export const parsePopupUrl = (url) => {
   localUrl.searchParams.append('isCustomLogin', config.isCustomLogin)
   if (config.isCustomLogin) {
     localUrl.searchParams.append('namespace', iframeOrigin.hostname)
+  }
+  const sessionId = getSessionIdFromStorage()
+  if (sessionId) {
+    localUrl.searchParams.append('sessionId', sessionId)
   }
   return localUrl
 }

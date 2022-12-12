@@ -136,6 +136,7 @@ const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search}`)
 
 const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
 const namespace = finalUrl.searchParams.get('namespace')
+const sessionId = finalUrl.searchParams.get('sessionId')
 
 // no reddit for binance.tor.us
 
@@ -497,4 +498,5 @@ export default {
   loginsWithLightLogo: [APPLE, GITHUB, JWT],
   isCustomLogin: isCustomLogin === 'true' ? true : isCustomLogin === 'false' ? false : null,
   namespace,
+  sessionId,
 }
