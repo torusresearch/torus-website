@@ -162,7 +162,6 @@ export default {
     torusController.setCurrentCurrency(payload, (error, data) => {
       if (error) log.error('currency fetch failed')
       else {
-        commit('setSelectedCurrency', payload.selectedCurrency)
         commit('setCurrencyData', data)
       }
     })
