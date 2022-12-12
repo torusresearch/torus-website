@@ -385,10 +385,10 @@ export default {
     commit('setNetworkType', networkType)
     await networkController.setProviderType(networkType.host, networkType.rpcUrl || networkType.host, networkType.ticker, networkType.networkName)
     if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency) {
-      await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home' })
+      await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home', doNotNotify: true })
       await commit('setCustomCurrency', networkType.ticker)
     } else {
-      await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
+      await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store', doNotNotify: true })
       await commit('setCustomCurrency', state.selectedCurrency)
     }
 

@@ -1064,7 +1064,7 @@ export default class TorusController extends SafeEventEmitter {
         conversionDate: this.currencyController.getConversionDate(),
       }
       if (payload.origin && payload.origin !== 'store') {
-        this.prefsController.setSelectedCurrency(payload)
+        await this.prefsController.setSelectedCurrency(payload)
       }
       if (callback) return callback(null, data)
     } catch (error) {
