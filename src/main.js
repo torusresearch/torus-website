@@ -1,4 +1,3 @@
-import './plugins/bigint'
 import './registerServiceWorker'
 import './reset.css'
 
