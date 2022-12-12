@@ -134,15 +134,14 @@ class PreferencesController extends SafeEventEmitter {
     const { verifier, verifierId } = userInfo
     const user = await this.sync(address)
     let defaultPublicAddress = address
-    this.store.updateState({ selectedAddress: address })
     if (user?.data) {
       const { default_currency: savedCurrency, verifier: storedVerifier, verifier_id: storedVerifierId, default_public_address } = user.data || {}
       // use the saved currency if supported.
       if (supportedCurrencies.includes(savedCurrency)) {
-        await dispatch('setSelectedCurrency', { selectedCurrency: savedCurrency, origin: 'home', doNotNotify: true })
+        await dispatch('setSelectedCurrency', { selectedCurrency: savedCurrency, origin: 'home', doNotNotify: true, address })
       } else {
         const finalCurrency = supportedCurrencies.includes(customCurrency) ? customCurrency : currentState.selectedCurrency
-        await dispatch('setSelectedCurrency', { selectedCurrency: finalCurrency, origin: 'home', doNotNotify: true })
+        await dispatch('setSelectedCurrency', { selectedCurrency: finalCurrency, origin: 'home', doNotNotify: true, address })
       }
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
       defaultPublicAddress = default_public_address
@@ -558,7 +557,7 @@ class PreferencesController extends SafeEventEmitter {
     if (payload.selectedCurrency === this.state()?.selectedCurrency) return
     try {
       await this.api.patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers(), { useAPIKey: true })
-      this.updateStore({ selectedCurrency: payload.selectedCurrency })
+      this.updateStore({ selectedCurrency: payload.selectedCurrency, address: payload.address })
       if (!payload.doNotNotify) this.handleSuccess('navBar.snackSuccessCurrency')
     } catch (error) {
       log.error(error)
