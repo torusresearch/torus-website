@@ -203,27 +203,29 @@ export default {
         this.qrLoading = false
       } catch (error) {
         log.error(error)
+        let errorMessage = ''
         if (error.name === 'NotAllowedError') {
-          this.wcErrorMsg = 'accountMenu.qrErrorNeedCameraPermission'
+          errorMessage = 'accountMenu.qrErrorNeedCameraPermission'
           log.error('ERROR: you need to grant camera access permisson')
         } else if (error.name === 'NotFoundError') {
-          this.wcErrorMsg = 'accountMenu.qrErrorNoCamera'
+          errorMessage = 'accountMenu.qrErrorNoCamera'
           log.error('ERROR: no camera on this device')
         } else if (error.name === 'NotSupportedError') {
-          this.wcErrorMsg = 'accountMenu.qrErrorSecureContextRequired'
+          errorMessage = 'accountMenu.qrErrorSecureContextRequired'
           log.error('ERROR: secure context required (HTTPS, localhost)')
         } else if (error.name === 'NotReadableError') {
-          this.wcErrorMsg = 'accountMenu.qrErrorCameraAlreadyInUse'
+          errorMessage = 'accountMenu.qrErrorCameraAlreadyInUse'
           log.error('ERROR: is the camera already in use?')
         } else if (error.name === 'OverconstrainedError') {
-          this.wcErrorMsg = 'accountMenu.qrErrorInstalledCamerasAreNotSuitable'
+          errorMessage = 'accountMenu.qrErrorInstalledCamerasAreNotSuitable'
           log.error('ERROR: installed cameras are not suitable')
         } else if (error.name === 'StreamApiNotSupportedError') {
-          this.wcErrorMsg = 'accountMenu.qrErrorStreamAPINotSupported'
+          errorMessage = 'accountMenu.qrErrorStreamAPINotSupported'
           log.error('ERROR: Stream Api not supported')
 
           this.hasStreamApiSupport = false
         }
+        if (errorMessage) this.handleError(errorMessage)
       }
     },
     async closeQRScanner() {
