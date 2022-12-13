@@ -92,7 +92,7 @@
             {{ t('walletConnect.disconnect') }}
           </v-btn>
           <v-btn v-else depressed large block class="torus-btn1 torusBrand1--text gmt-billboard-cta" tabindex="-3" title="Connect" type="submit">
-            {{ t('walletConnect.connected') }}
+            {{ t('walletConnect.connect') }}
           </v-btn>
         </v-col>
       </v-row>
@@ -141,7 +141,7 @@ export default {
       return this.wcConnectorSession && this.wcConnectorSession.connected
     },
     walletConnectDisplay() {
-      if (this.wcConnecting) return 'Connecting...'
+      if (this.wcConnecting) return `${this.t('walletConnect.connecting')}...`
       return this.walletConnectConnected ? this.t('walletConnect.connected') : this.wcCopyPasteLink
     },
   },
@@ -149,7 +149,7 @@ export default {
     wcConnectorSession(value) {
       if (value.connected) {
         this.wcConnecting = false
-        this.$store.dispatch('setSuccessMessage', 'walletConnect.connected')
+        this.$store.dispatch('setSuccessMessage', 'walletConnect.connectedTo')
         if (value.uri) this.wcCopyPasteLink = value.uri
       }
     },
