@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-form v-if="!isIframe" ref="walletConnectForm" @submit.prevent="submitWalletConnect">
-      <v-row>
+    <v-form ref="walletConnectForm" @submit.prevent="submitWalletConnect">
+      <v-row :class="{ 'ma-0': showFromEmbed }">
         <v-menu
           :value="guideOn"
           :close-on-content-click="false"
@@ -12,7 +12,7 @@
           @change="guideOn = !guideOn"
         >
           <template #activator="{ attrs }">
-            <span class="torusBrand1--text caption ml-3 mt-3" v-bind="attrs" @click="guideOn = !guideOn">
+            <span class="torusBrand1--text caption" :class="showFromEmbed ? 'mb-2 ml-1' : 'ml-3 mt-3'" v-bind="attrs" @click="guideOn = !guideOn">
               {{ !guideOn ? t('walletConnect.viewGuide') : t('walletConnect.hideGuide') }}
             </span>
           </template>
@@ -27,17 +27,20 @@
           </v-card>
         </v-menu>
       </v-row>
-      <v-row :dense="$vuetify.breakpoint.xsOnly" :class="{ 'mt-4': $vuetify.breakpoint.xsOnly }">
-        <v-col cols="12" sm="6">
+      <v-row
+        :dense="$vuetify.breakpoint.xsOnly || showFromEmbed"
+        :class="{ 'mt-4': $vuetify.breakpoint.xsOnly && !showFromEmbed, 'ma-0': showFromEmbed }"
+      >
+        <v-col cols="12" :sm="showFromEmbed ? 12 : 6">
           <v-text-field
             ref="walletConnectInput"
             name="walletConnectInput"
             :value="walletConnectDisplay"
             dense
-            hide-details
             outlined
+            hide-details
             height="44"
-            :disabled="walletConnectConnected"
+            :disabled="walletConnectConnected || wcConnecting"
             class="wallet-connect-input text-caption"
             :class="{ 'wallet-connect-input--connected': walletConnectConnected }"
             :placeholder="walletConnectConnected ? 'Connected' : ctaPlaceholder"
@@ -60,7 +63,7 @@
                 <v-icon x-small>$vuetify.icons.link</v-icon>
               </v-btn>
               <v-btn
-                v-else-if="$vuetify.breakpoint.xsOnly && hasStreamApiSupport && !isIframe"
+                v-else-if="hasStreamApiSupport"
                 icon
                 small
                 title="Capture QR"
@@ -72,8 +75,9 @@
               </v-btn>
             </template>
           </v-text-field>
+          <div v-if="wcErrorMsg" class="caption mt-1 mb-2 text-right error--text">{{ wcErrorMsg }}</div>
         </v-col>
-        <v-col cols="12" sm="6">
+        <v-col cols="12" :sm="showFromEmbed ? 12 : 6">
           <v-btn
             v-if="wcConnecting || (wcConnectorSession && wcConnectorSession.connected)"
             depressed
@@ -109,8 +113,6 @@ import log from 'loglevel'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapActions, mapState } from 'vuex'
 
-import { isMain } from '../../../utils/utils'
-
 export default {
   components: { QrcodeStream },
   props: {
@@ -130,13 +132,11 @@ export default {
       wcNoResponse: false,
       guideOn: false,
       ctaPlaceholder: 'wc:ff9e1dfa-68be-47ed...',
+      wcErrorMsg: '',
     }
   },
   computed: {
     ...mapState(['wcConnectorSession']),
-    isIframe() {
-      return !isMain
-    },
     walletConnectConnected() {
       return this.wcConnectorSession && this.wcConnectorSession.connected
     },
@@ -146,20 +146,6 @@ export default {
     },
   },
   watch: {
-    qrErrorMsg(value) {
-      if (value) {
-        this.setErrorMessage(value)
-        this.qrErrorMsg = ''
-      }
-    },
-    showFromEmbed(value) {
-      this.showQrScanner = value
-      if (value) {
-        this.camera = 'auto'
-      } else {
-        this.camera = 'off'
-      }
-    },
     wcConnectorSession(value) {
       if (value.connected) {
         this.wcConnecting = false
@@ -176,7 +162,6 @@ export default {
       'sendWalletConnectResponse',
       'getWalletConnectedApp',
       'setErrorMessage',
-      'checkWalletConnectExpire',
     ]),
     async toggleWC() {
       if (this.wcConnectorSession?.connected) {
@@ -205,10 +190,8 @@ export default {
     async onDecodeQr(result) {
       try {
         await this.initWalletConnect({ uri: result })
-        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: true })
       } catch (error) {
         log.error(error)
-        if (this.isIframe && this.showFromEmbed) await this.sendWalletConnectResponse({ success: false, errorMessage: error?.message })
       } finally {
         this.camera = 'off'
         this.showQrScanner = false
@@ -221,53 +204,66 @@ export default {
       } catch (error) {
         log.error(error)
         if (error.name === 'NotAllowedError') {
-          this.qrErrorMsg = 'accountMenu.qrErrorNeedCameraPermission'
+          this.wcErrorMsg = 'accountMenu.qrErrorNeedCameraPermission'
           log.error('ERROR: you need to grant camera access permisson')
         } else if (error.name === 'NotFoundError') {
-          this.qrErrorMsg = 'accountMenu.qrErrorNoCamera'
+          this.wcErrorMsg = 'accountMenu.qrErrorNoCamera'
           log.error('ERROR: no camera on this device')
         } else if (error.name === 'NotSupportedError') {
-          this.qrErrorMsg = 'accountMenu.qrErrorSecureContextRequired'
+          this.wcErrorMsg = 'accountMenu.qrErrorSecureContextRequired'
           log.error('ERROR: secure context required (HTTPS, localhost)')
         } else if (error.name === 'NotReadableError') {
-          this.qrErrorMsg = 'accountMenu.qrErrorCameraAlreadyInUse'
+          this.wcErrorMsg = 'accountMenu.qrErrorCameraAlreadyInUse'
           log.error('ERROR: is the camera already in use?')
         } else if (error.name === 'OverconstrainedError') {
-          this.qrErrorMsg = 'accountMenu.qrErrorInstalledCamerasAreNotSuitable'
+          this.wcErrorMsg = 'accountMenu.qrErrorInstalledCamerasAreNotSuitable'
           log.error('ERROR: installed cameras are not suitable')
         } else if (error.name === 'StreamApiNotSupportedError') {
-          this.qrErrorMsg = 'accountMenu.qrErrorStreamAPINotSupported'
+          this.wcErrorMsg = 'accountMenu.qrErrorStreamAPINotSupported'
           log.error('ERROR: Stream Api not supported')
 
           this.hasStreamApiSupport = false
-        }
-
-        if (this.isIframe && this.showFromEmbed) {
-          this.sendWalletConnectResponse({ success: false, errorMessage: this.t(this.qrErrorMsg) })
         }
       }
     },
     async closeQRScanner() {
       this.camera = 'off'
       this.showQrScanner = false
-      if (this.isIframe && this.showFromEmbed) {
-        await this.sendWalletConnectResponse({ success: false, errorMessage: 'User Closed Scanner' })
-      }
     },
     async submitWalletConnect() {
-      this.wcConnecting = true
-      const isSuccess = await this.initWalletConnect({ uri: this.wcCopyPasteLink, fromEmbed: this.isIframe && this.showFromEmbed })
-      if (isSuccess) {
-        try {
-          await this.checkWalletConnectExpire()
-        } catch (error) {
-          this.wcConnecting = false
-          this.wcCopyPasteLink = ''
-          log.error(error)
+      try {
+        this.wcConnecting = true
+        this.wcErrorMsg = ''
+        if (!this.wcCopyPasteLink.startsWith('wc:')) {
+          throw new Error('QR code link expired. Please copy from a new Wallet Connect QR code.')
         }
-      } else {
+
+        await this.initWalletConnect({ uri: this.wcCopyPasteLink })
+
+        setTimeout(() => {
+          if (!(this.wcConnectorSession && this.wcConnectorSession.connected)) {
+            this.handleError('QR code link expired. Please copy from a new Wallet Connect QR code.')
+            this.wcConnecting = false
+            this.wcCopyPasteLink = ''
+          }
+        }, 5000)
+      } catch (error) {
+        log.error(error)
         this.wcConnecting = false
         this.wcCopyPasteLink = ''
+
+        this.handleError('QR code link expired. Please copy from a new Wallet Connect QR code.')
+      }
+    },
+    handleError(msg) {
+      if (this.showFromEmbed) {
+        this.wcErrorMsg = msg
+        setTimeout(() => {
+          this.wcErrorMsg = ''
+        }, 3000)
+      } else {
+        this.setErrorMessage(msg)
+        this.wcErrorMsg = ''
       }
     },
   },

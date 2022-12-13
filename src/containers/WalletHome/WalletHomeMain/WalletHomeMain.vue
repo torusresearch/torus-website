@@ -124,10 +124,7 @@
         </v-card>
       </v-flex> -->
       <v-flex v-if="!whiteLabel.featuredBillboardHide && apiStreamSupported" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
-        <WalletConnectCard
-          image-path="https://images.web3auth.io/wallet-connect.svg"
-          image-dark-path="https://images.web3auth.io/wallet-connect.svg"
-        ></WalletConnectCard>
+        <WalletConnectCard />
       </v-flex>
       <v-flex
         v-for="(event, i) in isFreshAccount || whiteLabel.featuredBillboardHide ? [] : events"
