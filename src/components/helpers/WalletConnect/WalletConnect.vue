@@ -75,7 +75,7 @@
               </v-btn>
             </template>
           </v-text-field>
-          <div v-if="wcErrorMsg" class="caption mt-1 mb-2 text-right error--text">{{ wcErrorMsg }}</div>
+          <div v-if="wcErrorMsg" class="caption mt-1 mb-2 text-right error--text">{{ t(wcErrorMsg) }}</div>
         </v-col>
         <v-col cols="12" :sm="showFromEmbed ? 12 : 6">
           <v-btn
@@ -89,10 +89,10 @@
             title="Disconnect"
             @click="disconnect"
           >
-            {{ `Disconnect` }}
+            {{ t('walletConnect.disconnect') }}
           </v-btn>
           <v-btn v-else depressed large block class="torus-btn1 torusBrand1--text gmt-billboard-cta" tabindex="-3" title="Connect" type="submit">
-            Connect
+            {{ t('walletConnect.connected') }}
           </v-btn>
         </v-col>
       </v-row>
@@ -142,7 +142,7 @@ export default {
     },
     walletConnectDisplay() {
       if (this.wcConnecting) return 'Connecting...'
-      return this.walletConnectConnected ? 'Connected' : this.wcCopyPasteLink
+      return this.walletConnectConnected ? this.t('walletConnect.connected') : this.wcCopyPasteLink
     },
   },
   watch: {
@@ -237,14 +237,14 @@ export default {
         this.wcConnecting = true
         this.wcErrorMsg = ''
         if (!this.wcCopyPasteLink.startsWith('wc:')) {
-          throw new Error('QR code link expired. Please copy from a new Wallet Connect QR code.')
+          throw new Error('accountMenu.wcErrorLinkInvalid')
         }
 
         await this.initWalletConnect({ uri: this.wcCopyPasteLink })
 
         setTimeout(() => {
           if (!(this.wcConnectorSession && this.wcConnectorSession.connected)) {
-            this.handleError('QR code link expired. Please copy from a new Wallet Connect QR code.')
+            this.handleError('accountMenu.wcErrorLinkExpired')
             this.wcConnecting = false
             this.wcCopyPasteLink = ''
           }
@@ -254,7 +254,7 @@ export default {
         this.wcConnecting = false
         this.wcCopyPasteLink = ''
 
-        this.handleError('QR code link expired. Please copy from a new Wallet Connect QR code.')
+        this.handleError('accountMenu.wcErrorLinkInvalid')
       }
     },
     handleError(msg) {
