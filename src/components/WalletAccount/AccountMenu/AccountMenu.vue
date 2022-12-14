@@ -216,7 +216,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['logOut', 'updateSelectedAddress', 'disconnectWalletConnect']),
+    ...mapActions(['logOut', 'updateSelectedAddress']),
     etherscanAddressLink(address) {
       return getEtherScanAddressLink(toChecksumAddressByChainId(address, this.$store.state.networkId), this.networkType.host)
     },
