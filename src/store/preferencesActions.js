@@ -53,6 +53,9 @@ export default {
   getEnsOrUnstoppableAddress(_, payload) {
     return prefsController.getEnsOrUnstoppableAddress(payload)
   },
+  getRnsAddress(_, payload) {
+    return prefsController.getRnsAddress(payload)
+  },
   getTorusLookupAddress(_, payload) {
     return prefsController.getTorusLookupAddress(payload)
   },
