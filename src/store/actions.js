@@ -703,7 +703,7 @@ export default {
       data: payload,
     })
   },
-  initWalletConnect(_, payload) {
+  async initWalletConnect(_, payload) {
     return walletConnectController.init(payload)
   },
   disconnectWalletConnect(_, __) {
@@ -724,6 +724,9 @@ export default {
   handleShowWalletConnectReq({ commit }) {
     log.debug('handleShowWalletConnectReq')
     commit('setShowWalletConnect', true)
+  },
+  handleWalletConnectUriReq({ dispatch }, payload) {
+    dispatch('initWalletConnect', { uri: payload.uri, fromEmbed: true })
   },
   sendWalletConnectResponse({ commit }, { success, errorMessage }) {
     commit('setShowWalletConnect', false)
