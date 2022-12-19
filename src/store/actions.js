@@ -628,10 +628,10 @@ export default {
     let walletKey = {}
     let finalNetworkType = networkType
     try {
+      const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
+      const sessionInfo = await openLoginHandler.getActiveSession()
       const currentRoute = router.match(window.location.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
       if (!currentRoute.meta.skipOpenLoginCheck) {
-        const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
-        const sessionInfo = await openLoginHandler.getActiveSession()
         if (!sessionInfo) {
           commit('setRehydrationStatus', true)
 
@@ -667,9 +667,8 @@ export default {
         } else {
           log.info('no openlogin session')
         }
-
-        if (sessionInfo?.networkType) finalNetworkType = sessionInfo?.networkType
       }
+      if (sessionInfo?.networkType) finalNetworkType = sessionInfo?.networkType
 
       if (SUPPORTED_NETWORK_TYPES[finalNetworkType.host]) await dispatch('setProviderType', { network: finalNetworkType })
       else await dispatch('setProviderType', { network: finalNetworkType, type: RPC })
