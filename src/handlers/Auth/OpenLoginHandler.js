@@ -88,7 +88,7 @@ class OpenLoginHandler {
         const encData = await get(url.href)
         if (encData.message) {
           const loginDetails = await decryptData(finalSessionId, encData.message)
-          this.openLoginInstance._syncState(loginDetails)
+          this.openLoginInstance._syncState({ ...loginDetails, sessionNamespace: finalSessionNamespace })
           return loginDetails
         }
         this.openLoginInstance.state.store.set('sessionId', null)
@@ -114,7 +114,7 @@ class OpenLoginHandler {
         const signatureBf = await sign(privKey, keccak256(encData))
         const signature = signatureBf.toString('hex')
         await put(`${config.storageServerUrl}/store/update`, { key: publicKeyHex, data: encData, signature, namespace: finalSessionNamespace })
-        this.openLoginInstance._syncState(sessionData)
+        this.openLoginInstance._syncState({ ...sessionData, sessionNamespace: finalSessionNamespace })
       }
     } catch (error) {
       log.warn(error)
@@ -133,7 +133,7 @@ class OpenLoginHandler {
         const signatureBf = await sign(privKey, keccak256(encData))
         const signature = signatureBf.toString('hex')
         await post(`${config.storageServerUrl}/store/set`, { key: publicKeyHex, data: encData, signature, namespace: sessionNamespace })
-        this.openLoginInstance._syncState(sessionData)
+        this.openLoginInstance._syncState({ ...sessionData, sessionNamespace })
       }
     } catch (error) {
       log.warn(error)
