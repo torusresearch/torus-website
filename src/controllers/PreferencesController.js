@@ -135,20 +135,23 @@ class PreferencesController extends SafeEventEmitter {
     const user = await this.sync(address)
     let defaultPublicAddress = address
     if (user?.data) {
-      const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId, default_public_address } = user.data || {}
-      if (supportedCurrencies.includes(defaultCurrency)) {
-        dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
+      const { default_currency: savedCurrency, verifier: storedVerifier, verifier_id: storedVerifierId, default_public_address } = user.data || {}
+      // use the saved currency if supported.
+      if (supportedCurrencies.includes(savedCurrency)) {
+        await dispatch('setSelectedCurrency', { selectedCurrency: savedCurrency, origin: 'store', address })
       } else {
-        dispatch('setSelectedCurrency', { selectedCurrency: customCurrency || currentState.selectedCurrency, origin: 'home' })
+        const finalCurrency = customCurrency || currentState.selectedCurrency
+        await dispatch('setSelectedCurrency', { selectedCurrency: finalCurrency, origin: 'home', address })
       }
       if (!storedVerifier || !storedVerifierId) this.setVerifier(verifier, verifierId, address)
       defaultPublicAddress = default_public_address
     } else {
-      // Use customCurrency if available for new user
       const accountState = this.store.getState()[postboxAddress] || currentState
-      await this.createUser(customCurrency || accountState.selectedCurrency, accountState.theme, verifier, verifierId, accountType, address)
+      // Use customCurrency if available for new user
+      const finalCurrency = customCurrency || accountState.selectedCurrency
+      await this.createUser(finalCurrency, accountState.theme, verifier, verifierId, accountType, address)
       commit('setNewUser', true)
-      dispatch('setSelectedCurrency', { selectedCurrency: customCurrency || accountState.selectedCurrency, origin: 'home' })
+      dispatch('setSelectedCurrency', { selectedCurrency: finalCurrency, origin: 'home' })
     }
     if (!rehydrate) this.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate }, address)
     return defaultPublicAddress
@@ -553,9 +556,11 @@ class PreferencesController extends SafeEventEmitter {
   async setSelectedCurrency(payload) {
     if (payload.selectedCurrency === this.state()?.selectedCurrency) return
     try {
-      await this.api.patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers(), { useAPIKey: true })
-      this.updateStore({ selectedCurrency: payload.selectedCurrency })
-      this.handleSuccess('navBar.snackSuccessCurrency')
+      if (payload.origin !== 'store') {
+        await this.api.patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers(), { useAPIKey: true })
+        this.handleSuccess('navBar.snackSuccessCurrency')
+      }
+      this.updateStore({ selectedCurrency: payload.selectedCurrency }, payload?.address)
     } catch (error) {
       log.error(error)
       this.handleError('navBar.snackFailCurrency')

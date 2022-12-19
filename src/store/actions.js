@@ -161,7 +161,9 @@ export default {
   setSelectedCurrency({ commit }, payload) {
     torusController.setCurrentCurrency(payload, (error, data) => {
       if (error) log.error('currency fetch failed')
-      else commit('setCurrencyData', data)
+      else {
+        commit('setCurrencyData', data)
+      }
     })
   },
   async forceFetchTokens({ state }) {
@@ -381,9 +383,13 @@ export default {
     }
     commit('setNetworkType', networkType)
     await networkController.setProviderType(networkType.host, networkType.rpcUrl || networkType.host, networkType.ticker, networkType.networkName)
-    if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency)
+    if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency) {
       await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home' })
-    else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
+      await commit('setCustomCurrency', networkType.ticker)
+    } else {
+      await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
+      await commit('setCustomCurrency', state.selectedCurrency)
+    }
 
     const openloginInstance = OpenLoginHandler.getInstance({}, {}, config.namespace)
     const existingSessionData = await openloginInstance.getActiveSession()
@@ -396,9 +402,6 @@ export default {
       networkType,
     }
     await openloginInstance.updateSession(sessionData)
-    // Set custom currency
-    if (getters.supportedCurrencies.includes(networkType.ticker) && networkType.ticker !== state.selectedCurrency)
-      await commit('setCustomCurrency', networkType.ticker)
     return undefined
   },
   async deleteCustomNetwork({ _commit }, id) {
