@@ -460,6 +460,8 @@ export default {
       }
       if (config.localStorageAvailable) {
         const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
+        if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType })
+        else await dispatch('setProviderType', { network: state.networkType, type: RPC })
         await openLoginHandler.openLoginInstance._syncState({
           store: {
             sessionId,
@@ -629,45 +631,50 @@ export default {
     let finalNetworkType = networkType
     try {
       const currentRoute = router.match(window.location.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
-      if (!currentRoute.meta.skipOpenLoginCheck) {
+      if (!currentRoute.meta.skipOpenLoginCheck || currentRoute.meta.fetchSession) {
         const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
         const sessionInfo = await openLoginHandler.getActiveSession()
-        if (!sessionInfo) {
-          commit('setRehydrationStatus', true)
+        if (!currentRoute.meta.skipOpenLoginCheck) {
+          if (!sessionInfo) {
+            commit('setRehydrationStatus', true)
 
-          if (isMain) await dispatch('logOut')
-          else commit('setSelectedAddress', '')
-          return
-        }
-        const { store } = sessionInfo
-        // log.info(sessionInfo, 'current session info')
-        if (sessionInfo.walletKey || sessionInfo.tKey) {
-          walletKey = openLoginHandler.getWalletKey()
-          // already logged in
-          // call autoLogin
-          log.info('auto-login with openlogin session')
-          await dispatch('autoLogin', { calledFromEmbed: !isMain })
-
-          if (store.appState) {
-            const appStateParams = JSON.parse(safeatob(store.appState))
-            if (appStateParams?.whiteLabel) {
-              commit('setWhiteLabel', { ...appStateParams.whiteLabel })
-            }
-            if (appStateParams?.loginConfig && typeof appStateParams.loginConfig === 'object' && Object.keys(appStateParams.loginConfig).length > 0) {
-              commit('setLoginConfig', { ...appStateParams.loginConfig })
-            }
+            if (isMain) await dispatch('logOut')
+            else commit('setSelectedAddress', '')
+            return
           }
-          if (currentRoute.name !== 'popup' && currentRoute.meta.requiresAuth === false) {
-            const noRedirectQuery = Object.fromEntries(new URLSearchParams(window.location.search))
-            const { redirect } = noRedirectQuery
-            delete noRedirectQuery.redirect
+          const { store } = sessionInfo
+          // log.info(sessionInfo, 'current session info')
+          if (sessionInfo.walletKey || sessionInfo.tKey) {
+            walletKey = openLoginHandler.getWalletKey()
+            // already logged in
+            // call autoLogin
+            log.info('auto-login with openlogin session')
+            await dispatch('autoLogin', { calledFromEmbed: !isMain })
 
-            router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})
+            if (store.appState) {
+              const appStateParams = JSON.parse(safeatob(store.appState))
+              if (appStateParams?.whiteLabel) {
+                commit('setWhiteLabel', { ...appStateParams.whiteLabel })
+              }
+              if (
+                appStateParams?.loginConfig &&
+                typeof appStateParams.loginConfig === 'object' &&
+                Object.keys(appStateParams.loginConfig).length > 0
+              ) {
+                commit('setLoginConfig', { ...appStateParams.loginConfig })
+              }
+            }
+            if (currentRoute.name !== 'popup' && currentRoute.meta.requiresAuth === false) {
+              const noRedirectQuery = Object.fromEntries(new URLSearchParams(window.location.search))
+              const { redirect } = noRedirectQuery
+              delete noRedirectQuery.redirect
+
+              router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})
+            }
+          } else {
+            log.info('no openlogin session')
           }
-        } else {
-          log.info('no openlogin session')
         }
-
         if (sessionInfo?.networkType) finalNetworkType = sessionInfo?.networkType
       }
 
