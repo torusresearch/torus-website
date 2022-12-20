@@ -26,8 +26,7 @@ class WalletConnectV2Controller {
     if (this.walletConnector?.uri !== options?.uri && this.walletConnector?.disconnect) this.walletConnector.disconnect()
     this.walletConnector = await SignClient.init({
       logger: 'debug',
-      projectId: options.projectId,
-      relayUrl: options.WalletConnectRelayUrl,
+      projectId: '04309ed1007e77d1f119b85205bb779d',
       metadata: {
         name: 'Torus Wallet',
         description: 'Wallet connect for torus wallet',
@@ -38,11 +37,20 @@ class WalletConnectV2Controller {
     log.info(this.walletConnector)
     this.setStoreSession()
     this._setupListeners()
-    await this.walletConnector.pair({ uri: options.uri })
+    if (options?.uri) {
+      await this.walletConnector.pair({ uri: options.uri })
+    }
   }
 
   setStoreSession() {
-    this.store.putState({ ...JSON.parse(JSON.stringify(this.walletConnector.session)), uri: this.walletConnector.uri })
+    if (this.walletConnector?.session?.values) {
+      const sessionData = JSON.stringify(this.walletConnector.session.values)
+      this.store.putState({
+        sessionData,
+      })
+    } else {
+      this.store.putState({})
+    }
   }
 
   onSessionRequest = async (requestEvent) => {
@@ -91,8 +99,8 @@ class WalletConnectV2Controller {
       requiredNamespaces[key].chains.map((chain) => {
         accounts.push(`${chain}:${this.selectedAddress}`)
       })
-      const supportedMethods = requiredNamespaces[key].methods.map((method) => !!SAFE_METHODS.includes(method))
-      const supportedEvents = requiredNamespaces[key].events.map((event) => !!SUPPORTED_WALLET_EVENTS.includes(event))
+      const supportedMethods = requiredNamespaces[key].methods.filter((method) => !!SAFE_METHODS.includes(method))
+      const supportedEvents = requiredNamespaces[key].events.filter((event) => !!SUPPORTED_WALLET_EVENTS.includes(event))
       namespaces[key] = {
         accounts,
         methods: supportedMethods,
@@ -109,39 +117,29 @@ class WalletConnectV2Controller {
   }
 
   _setupListeners() {
-    this.walletConnector.on('session_proposal', (err, proposal) => {
+    this.walletConnector.on('session_proposal', async (proposal) => {
       if (!this.walletConnector) return
-      log.info('SESSION PROPOSAL', err, proposal)
-      this.onSessionApprove(proposal)
+      log.info('SESSION PROPOSAL', proposal)
+      await this.onSessionApprove(proposal)
       this.setStoreSession()
     })
-    this.walletConnector.on('session_update', (err, payload) => {
+    this.walletConnector.on('session_update', (payload) => {
       if (!this.walletConnector) return
-      log.info('SESSION UPDATE', err, payload)
+      log.info('SESSION UPDATE', payload)
       this.setStoreSession()
     })
-    this.walletConnector.on('session_request', async (err, requestEvent) => {
+    this.walletConnector.on('session_request', async (requestEvent) => {
       if (!this.walletConnector) return
-      log.info('SESSION REQUEST', err, requestEvent)
-      const { params } = requestEvent
-      const { topic, request } = params
-      if (err) {
-        log.info(`CALL REQUEST INTERNAL, ERROR ${err.message}`)
-        const response = { id: request.id, error: { message: `Failed or Rejected Request ${err.message}` } }
-        await this.walletConnector.respond({
-          topic,
-          response,
-        })
-      }
+      log.info('SESSION REQUEST', requestEvent)
       await this.onSessionRequest(requestEvent)
     })
-    this.walletConnector.on('connect', (err, payload) => {
+    this.walletConnector.on('connect', (payload) => {
       if (!this.walletConnector) return
-      log.info('SESSION UPDATE', err, payload)
+      log.info('SESSION CONNECT', payload)
       this.setStoreSession()
     })
-    this.walletConnector.on('disconnect', (err, payload) => {
-      log.info('DISCONNECT', err, payload)
+    this.walletConnector.on('disconnect', (payload) => {
+      log.info('DISCONNECT', payload)
       this.walletConnector = undefined
       this.store.putState({})
     })
@@ -175,7 +173,7 @@ class WalletConnectV2Controller {
   }
 
   getPeerMetaURL() {
-    return this.walletConnector?.metadata?.url
+    return this.walletConnector?.session?.values[0]?.peer?.metadata?.url
   }
 }
 

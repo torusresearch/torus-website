@@ -714,10 +714,7 @@ export const NOTIFICATION_NAMES = {
   chainChanged: 'wallet_chainChanged',
 }
 
-export const SUPPORTED_WALLET_EVENTS = {
-  chainChanged: 'chainChanged',
-  accountsChanged: 'accoutsChanged',
-}
+export const SUPPORTED_WALLET_EVENTS = ['chainChanged', 'accountsChanged']
 export const LOG_IGNORE_METHODS = ['wallet_sendDomainMetadata']
 
 export const SAFE_METHODS = [

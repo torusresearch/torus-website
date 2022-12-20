@@ -15,6 +15,7 @@ class WalletConnectController {
 
   async init(options) {
     const uri = options?.uri || options.session?.uri
+    const sessionV2Data = options?.session?.sessionData
     if (uri) {
       const wc = parseUri(uri)
       if (wc.version === 1) {
@@ -30,9 +31,15 @@ class WalletConnectController {
           store: this.store,
         })
       }
-      this.walletConnectorController.setSelectedAddress(this.selectedAddress)
-      await this.walletConnectorController.init(options)
+    } else if (sessionV2Data) {
+      this.walletConnectorController = new WalletConnectV2Controller({
+        provider: this.provider,
+        network: this.network,
+        store: this.store,
+      })
     }
+    this.walletConnectorController.setSelectedAddress(this.selectedAddress)
+    await this.walletConnectorController.init(options)
   }
 
   setSelectedAddress(address) {

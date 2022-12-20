@@ -47,14 +47,7 @@
           @change="onWcInputChanged"
         >
           <template #append>
-            <v-btn
-              v-if="(wcConnectorSession && wcConnectorSession.connected) || false"
-              text
-              small
-              color="torusBrand1"
-              tabindex="-3"
-              @click="toggleWC"
-            >
+            <v-btn v-if="isWcConnected" text small color="torusBrand1" tabindex="-3" @click="toggleWC">
               <!-- <v-icon small>$vuetify.icons.goto</v-icon> -->
               <span class="caption mr-1">{{ t('walletConnect.gotoApp') }}</span>
               <v-img :src="require(`../../../assets/images/goto-link.svg`)"></v-img>
@@ -91,7 +84,7 @@
           :loading="showQrScanner"
           @click="openScanner"
         >
-          <span v-if="(wcConnectorSession && wcConnectorSession.connected) || false" size="16">{{ t('walletConnect.disconnect') }}</span>
+          <span v-if="isWcConnected" size="16">{{ t('walletConnect.disconnect') }}</span>
           <span v-else size="16">{{ t('walletConnect.scanToConnect') }}</span>
         </v-btn>
         <!-- </div> -->
@@ -131,6 +124,9 @@ export default {
     isIframe() {
       return !isMain
     },
+    isWcConnected() {
+      return this.wcConnectorSession && (this.wcConnectorSession.connected || this.wcConnectorSession.sessionData)
+    },
   },
   watch: {
     qrErrorMsg(value) {
@@ -151,6 +147,11 @@ export default {
       if (value.connected) {
         this.$store.dispatch('setSuccessMessage', 'walletConnect.connected')
         if (value.uri) this.wcCopyPasteLink = value.uri
+      } else if (value.sessionData) {
+        const parsedData = JSON.parse(value.sessionData || '{}')
+        const peerMetadata = parsedData[0]?.peer?.metadata
+        const appName = peerMetadata?.name || peerMetadata?.url
+        if (appName) this.wcCopyPasteLink = appName
       }
     },
   },
@@ -158,7 +159,7 @@ export default {
     ...mapActions(['updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect', 'sendWalletConnectResponse', 'getWalletConnectedApp']),
     ...mapMutations(['setErrorMsg']),
     async toggleWC() {
-      if (this.wcConnectorSession?.connected) {
+      if (this.wcConnectorSession?.connected || this.wcConnectorSession?.sessionData) {
         const url = await this.getWalletConnectedApp()
         window.open(url)
       } else {
