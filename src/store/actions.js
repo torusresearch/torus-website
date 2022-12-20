@@ -218,11 +218,11 @@ export default {
       handleProviderChangeDeny('user denied provider change request')
     }
   },
-  showWalletPopup(context, payload) {
+  async showWalletPopup(context, payload) {
     const url = payload.path.includes('tkey') ? `${baseRoute}${payload.path || ''}` : `${baseRoute}wallet${payload.path || ''}`
     const finalUrl = `${url}?instanceId=${torus.instanceId}`
     const walletWindow = new PopupHandler({ url: finalUrl, features: FEATURES_DEFAULT_WALLET_WINDOW })
-    walletWindow.open()
+    await walletWindow.open()
     if (walletWindow.window.blur) walletWindow.window.blur()
     if (walletWindow.window.focus) setTimeout(walletWindow.window.focus(), 0)
   },

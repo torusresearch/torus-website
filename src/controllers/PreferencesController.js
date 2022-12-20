@@ -5,6 +5,7 @@ import { hashPersonalMessage } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import Web3 from 'web3'
+import { isHexStrict, toHex } from 'web3-utils'
 
 import config from '../config'
 import ApiHelpers from '../utils/apiHelpers'
@@ -691,10 +692,11 @@ class PreferencesController extends SafeEventEmitter {
     try {
       const { selectedAddress } = this.store.getState()
       if (this.state(selectedAddress)?.jwtToken) {
+        const numChainId = Number.parseInt(network.chainId, isHexStrict(network.chainId) ? 16 : 10)
         const payload = {
           network_name: network.networkName,
           rpc_url: network.host,
-          chain_id: network.chainId,
+          chain_id: toHex(numChainId),
           symbol: network.symbol,
           block_explorer_url: network.blockExplorer || undefined,
         }
@@ -725,10 +727,11 @@ class PreferencesController extends SafeEventEmitter {
 
   async editCustomNetwork(network) {
     try {
+      const numChainId = Number.parseInt(network.chainId, isHexStrict(network.chainId) ? 16 : 10)
       const payload = {
         network_name: network.networkName,
         rpc_url: network.host,
-        chain_id: network.chainId,
+        chain_id: toHex(numChainId),
         symbol: network.symbol || undefined,
         block_explorer_url: network.blockExplorer || undefined,
       }
