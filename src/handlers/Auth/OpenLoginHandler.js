@@ -105,7 +105,7 @@ class OpenLoginHandler {
     try {
       const { sessionId } = this.openLoginInstance.state.store.getStore()
       const { sessionNamespace } = this.openLoginInstance.state
-      const finalSessionNamespace = sessionNamespace || config.namespace
+      const finalSessionNamespace = sessionNamespace || config.namespace || ''
       const finalSessionId = sessionId || config.sessionId
       if (finalSessionId) {
         const privKey = Buffer.from(finalSessionId.padStart(64, '0'), 'hex')

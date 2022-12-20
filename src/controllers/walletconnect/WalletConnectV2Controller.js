@@ -1,6 +1,7 @@
-import { ObservableStore } from '@metamask/obs-store'
 import SignClient from '@walletconnect/sign-client'
 import log from 'loglevel'
+
+import { SAFE_METHODS, SUPPORTED_WALLET_EVENTS } from '../../utils/enums'
 
 class WalletConnectV2Controller {
   constructor(options) {
@@ -8,7 +9,7 @@ class WalletConnectV2Controller {
     this.provider = options.provider
     this.network = options.network
     this.selectedAddress = ''
-    this.store = new ObservableStore({})
+    this.store = options.store
   }
 
   async disconnect() {
@@ -41,7 +42,7 @@ class WalletConnectV2Controller {
   }
 
   setStoreSession() {
-    this.store.putState({ uri: this.walletConnector.uri })
+    this.store.putState({ ...JSON.parse(JSON.stringify(this.walletConnector.session)), uri: this.walletConnector.uri })
   }
 
   onSessionRequest = async (requestEvent) => {
@@ -85,17 +86,17 @@ class WalletConnectV2Controller {
 
     const namespaces = {}
     Object.keys(requiredNamespaces).forEach((key) => {
+      if (key !== 'eip155') return
       const accounts = []
       requiredNamespaces[key].chains.map((chain) => {
-        // TODO: fix this check
-        if (chain === 'eip155') {
-          accounts.push(`${chain}:${this.selectedAddress}`)
-        }
+        accounts.push(`${chain}:${this.selectedAddress}`)
       })
+      const supportedMethods = requiredNamespaces[key].methods.map((method) => !!SAFE_METHODS.includes(method))
+      const supportedEvents = requiredNamespaces[key].events.map((event) => !!SUPPORTED_WALLET_EVENTS.includes(event))
       namespaces[key] = {
         accounts,
-        methods: requiredNamespaces[key].methods,
-        events: requiredNamespaces[key].events,
+        methods: supportedMethods,
+        events: supportedEvents,
       }
     })
 
@@ -112,12 +113,12 @@ class WalletConnectV2Controller {
       if (!this.walletConnector) return
       log.info('SESSION PROPOSAL', err, proposal)
       this.onSessionApprove(proposal)
-      // this.setStoreSession()
+      this.setStoreSession()
     })
     this.walletConnector.on('session_update', (err, payload) => {
       if (!this.walletConnector) return
       log.info('SESSION UPDATE', err, payload)
-      //   this.setStoreSession()
+      this.setStoreSession()
     })
     this.walletConnector.on('session_request', async (err, requestEvent) => {
       if (!this.walletConnector) return
@@ -146,27 +147,35 @@ class WalletConnectV2Controller {
     })
   }
 
-  get sessionConfig() {
+  get _sessionConfig() {
     return {
-      chainId: this.network.getProviderConfig().chainId,
-      accounts: [this.selectedAddress],
+      currentChainId: this.network.getProviderConfig().chainId,
+      currnentAccounts: [this.selectedAddress],
     }
   }
 
   setSelectedAddress(address) {
+    // disconnect if address is not the same which was allowed
+    // if (address !== this.selectedAddress) {
+    //   this.disconnect()
+    // }
+
     if (address !== this.selectedAddress) {
       this.selectedAddress = address
-      this.updateSession()
     }
+    // eslint-disable-next-line no-console
+    console.log('new address', address, this.walletConnector?.session)
   }
 
   updateSession() {
-    this.walletConnector?.updateSession(this.sessionConfig)
-    if (this.walletConnector) this.setStoreSession()
+    // eslint-disable-next-line no-console
+    console.log('new network and session', this._sessionConfig.currentChainId, this.walletConnector?.session)
+    // this.walletConnector?.updateSession(this.sessionConfig)
+    // if (this.walletConnector) this.setStoreSession()
   }
 
   getPeerMetaURL() {
-    return this.walletConnector?.peerMeta?.url
+    return this.walletConnector?.metadata?.url
   }
 }
 

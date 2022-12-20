@@ -1,4 +1,3 @@
-import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 
 import WalletConnect from './WalletConnect'
@@ -9,7 +8,7 @@ class WalletConnectV1Controller {
     this.provider = options.provider
     this.network = options.network
     this.selectedAddress = ''
-    this.store = new ObservableStore({})
+    this.store = options.store
   }
 
   async disconnect() {
@@ -41,7 +40,7 @@ class WalletConnectV1Controller {
     this.walletConnector.on('session_request', (err, payload) => {
       if (!this.walletConnector) return
       log.info('SESSION REQUEST', err, payload)
-      this.walletConnector.approveSession(this.sessionConfig)
+      this.walletConnector.approveSession(this._sessionConfig)
       this.setStoreSession()
     })
     this.walletConnector.on('session_update', (err, payload) => {
@@ -82,7 +81,7 @@ class WalletConnectV1Controller {
     })
   }
 
-  get sessionConfig() {
+  get _sessionConfig() {
     return {
       chainId: this.network.getProviderConfig().chainId,
       accounts: [this.selectedAddress],
@@ -97,7 +96,7 @@ class WalletConnectV1Controller {
   }
 
   updateSession() {
-    this.walletConnector?.updateSession(this.sessionConfig)
+    this.walletConnector?.updateSession(this._sessionConfig)
     if (this.walletConnector) this.setStoreSession()
   }
 
