@@ -1,5 +1,7 @@
 import SignClient from '@walletconnect/sign-client'
+import { getAccountsFromNamespaces, getChainsFromNamespaces, parseAccountId, parseChainId } from '@walletconnect/utils'
 import log from 'loglevel'
+import { isHexStrict } from 'web3-utils'
 
 import { SAFE_METHODS, SUPPORTED_WALLET_EVENTS } from '../../utils/enums'
 
@@ -14,7 +16,9 @@ class WalletConnectV2Controller {
 
   async disconnect() {
     if (this.walletConnector) {
-      await this.walletConnector.killSession()
+      await this.walletConnector.disconnect({
+        topic: this._sessionConfig.connectedTopic,
+      })
       this.walletConnector = undefined
     }
     this.store.putState({})
@@ -147,29 +151,58 @@ class WalletConnectV2Controller {
 
   get _sessionConfig() {
     return {
-      currentChainId: this.network.getProviderConfig().chainId,
-      currnentAccounts: [this.selectedAddress],
+      currentChainId: isHexStrict(this.network.getProviderConfig().chainId)
+        ? Number.parseInt(this.network.getProviderConfig().chainId, 16)
+        : this.network.getProviderConfig().chainId,
+      currentAccounts: [this.selectedAddress],
+      connectedTopic: this.walletConnector?.session?.values?.[0]?.topic, // currently we are supporting only 1 active session
     }
   }
 
   setSelectedAddress(address) {
-    // disconnect if address is not the same which was allowed
-    // if (address !== this.selectedAddress) {
-    //   this.disconnect()
-    // }
+    if (!this.walletConnector) return
+    const sessionData = this.walletConnector?.session?.values || []
+    const allAccounts = []
+    for (const session of sessionData) {
+      const accounts = getAccountsFromNamespaces(session.namespaces)
+      allAccounts.push(...accounts)
+    }
 
-    if (address !== this.selectedAddress) {
+    let accountAllowed = false
+    for (const account of allAccounts) {
+      const parsedAccount = parseAccountId(account)
+      if (parsedAccount.address?.toLowerCase() === address?.toLowerCase()) {
+        accountAllowed = true
+        break
+      }
+    }
+    if (!accountAllowed) {
+      this.disconnect()
+    } else {
       this.selectedAddress = address
     }
-    // eslint-disable-next-line no-console
-    console.log('new address', address, this.walletConnector?.session)
   }
 
   updateSession() {
-    // eslint-disable-next-line no-console
-    console.log('new network and session', this._sessionConfig.currentChainId, this.walletConnector?.session)
-    // this.walletConnector?.updateSession(this.sessionConfig)
-    // if (this.walletConnector) this.setStoreSession()
+    if (!this.walletConnector) return
+    const sessionData = this.walletConnector?.session?.values || []
+    const allChains = []
+    for (const session of sessionData) {
+      const chains = getChainsFromNamespaces(session.namespaces)
+      allChains.push(...chains)
+    }
+
+    let chainAllowed = false
+    for (const chain of allChains) {
+      const parsedId = parseChainId(chain)
+      if (Number.parseInt(parsedId.reference, 10) === this._sessionConfig.currentChainId) {
+        chainAllowed = true
+        break
+      }
+    }
+    if (!chainAllowed) {
+      this.disconnect()
+    }
   }
 
   getPeerMetaURL() {
