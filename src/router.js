@@ -41,7 +41,7 @@ const router = new Router({
       path: '/redirect',
       name: 'redirect',
       component: () => import(/* webpackChunkName: "redirect" */ './views/RedirectCatch'),
-      meta: { requiresAuth: false, skipOpenLoginCheck: true },
+      meta: { requiresAuth: false, skipOpenLoginCheck: true, fetchSession: true },
     },
     {
       path: '/confirm',

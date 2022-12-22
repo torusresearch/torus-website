@@ -23,8 +23,8 @@ export default {
   },
   methods: {
     ...mapActions(['showWalletPopup']),
-    openOnboarding() {
-      this.showWalletPopup({ path: 'tkey' })
+    async openOnboarding() {
+      await this.showWalletPopup({ path: 'tkey' })
       this.showLoginTkey = false
     },
   },

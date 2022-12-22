@@ -6,6 +6,10 @@
   &.isMobile {
     height: inherit;
   }
+  &.fromEmbed {
+    height: unset;
+    padding-top: 12px;
+  }
 }
 .more-details-container {
   margin-top: 16px;
@@ -25,4 +29,11 @@
   &.theme--dark {
     border: 1px solid var(--v-text_3-base);
   }
+}
+
+.close-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: #d3d3d4;
 }

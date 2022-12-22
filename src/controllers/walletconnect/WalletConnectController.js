@@ -13,11 +13,16 @@ class WalletConnectController {
   }
 
   async disconnect() {
-    if (this.walletConnector) {
-      await this.walletConnector.killSession()
-      this.walletConnector = undefined
+    try {
+      if (this.walletConnector) {
+        await this.walletConnector.killSession()
+        this.walletConnector = undefined
+      }
+    } catch (error) {
+      log.error(error)
+    } finally {
+      this.store.putState({})
     }
-    this.store.putState({})
   }
 
   async init(options) {
@@ -25,7 +30,6 @@ class WalletConnectController {
     // To kill session if the user scans a new uri
     if (this.walletConnector?.uri !== options?.uri && this.walletConnector?.killSession) this.walletConnector.killSession()
     this.walletConnector = new WalletConnect(options)
-    log.info(this.walletConnector)
     if (!this.walletConnector.connected) {
       await this.walletConnector.createSession()
     }
@@ -97,8 +101,12 @@ class WalletConnectController {
   }
 
   updateSession() {
-    this.walletConnector?.updateSession(this.sessionConfig)
-    if (this.walletConnector) this.setStoreSession()
+    try {
+      this.walletConnector?.updateSession(this.sessionConfig)
+      if (this.walletConnector) this.setStoreSession()
+    } catch (error) {
+      log.error(error)
+    }
   }
 
   getPeerMetaURL() {
