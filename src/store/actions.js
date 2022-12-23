@@ -370,6 +370,7 @@ export default {
       networkType = { ...getters.supportedNetworks[networkType.host], ...networkType }
       isSupportedNetwork = true
     }
+
     const currentTicker = networkType.ticker || 'ETH'
     if ((payload.type && payload.type === RPC) || !isSupportedNetwork) {
       const networkId = await torusController.setCustomRpc(networkType.host, networkType.chainId || 1, currentTicker, networkType.networkName || '', {
@@ -379,7 +380,6 @@ export default {
         networkType.id = networkId
       }
       commit('setNetworkType', networkType)
-      return null
     }
     commit('setNetworkType', networkType)
     await networkController.setProviderType(networkType.host, networkType.rpcUrl || networkType.host, networkType.ticker, networkType.networkName)
