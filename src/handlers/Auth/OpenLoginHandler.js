@@ -77,7 +77,7 @@ class OpenLoginHandler {
     try {
       const { sessionId } = this.openLoginInstance.state.store.getStore()
       const { sessionNamespace } = this.openLoginInstance.state
-      const finalSessionNamespace = sessionNamespace || config.namespace
+      const finalSessionNamespace = sessionNamespace || config.namespace || ''
       const finalSessionId = sessionId || config.sessionId
       if (finalSessionId) {
         log.info('found session id')
@@ -105,7 +105,7 @@ class OpenLoginHandler {
     try {
       const { sessionId } = this.openLoginInstance.state.store.getStore()
       const { sessionNamespace } = this.openLoginInstance.state
-      const finalSessionNamespace = sessionNamespace || config.namespace
+      const finalSessionNamespace = sessionNamespace || config.namespace || ''
       const finalSessionId = sessionId || config.sessionId
       if (finalSessionId) {
         const privKey = Buffer.from(finalSessionId.padStart(64, '0'), 'hex')
@@ -125,7 +125,7 @@ class OpenLoginHandler {
     try {
       const { sessionId } = this.openLoginInstance.state.store.getStore()
       const { sessionNamespace } = this.openLoginInstance.state
-      const finalSessionNamespace = sessionNamespace || config.namespace
+      const finalSessionNamespace = sessionNamespace || config.namespace || ''
 
       if (sessionId) {
         const privKey = Buffer.from(sessionId.padStart(64, '0'), 'hex')
@@ -145,7 +145,7 @@ class OpenLoginHandler {
     try {
       const { sessionId } = this.openLoginInstance.state.store.getStore()
       const { sessionNamespace } = this.openLoginInstance.state
-      const finalSessionNamespace = sessionNamespace || config.namespace
+      const finalSessionNamespace = sessionNamespace || config.namespace || ''
       if (sessionId) {
         const privKey = Buffer.from(sessionId.padStart(64, '0'), 'hex')
         const publicKeyHex = getPublic(privKey).toString('hex')
