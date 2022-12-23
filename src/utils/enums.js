@@ -120,8 +120,8 @@ export const BSC_TESTNET_DISPLAY_NAME = 'Binance Smart Chain Testnet'
 export const OKC_MAINNET_DISPLAY_NAME = 'OKXChain Mainnet'
 export const OKC_TESTNET_DISPLAY_NAME = 'OKXChain Testnet'
 export const XDAI_DISPLAY_NAME = 'Gnosis Chain'
-export const RSK_MAINNET_DISPLAY_NAME = 'RSK Mainnet'
-export const RSK_TESTNET_DISPLAY_NAME = 'RSK Testnet'
+export const RSK_MAINNET_DISPLAY_NAME = 'Rootstock Mainnet'
+export const RSK_TESTNET_DISPLAY_NAME = 'Rootstock Testnet'
 export const REEF_DISPLAY_NAME = 'Reef Chain'
 export const ARBITRUM_MAINNET_DISPLAY_NAME = 'Arbitrum One'
 export const ARBITRUM_TESTNET_DISPLAY_NAME = 'Arbitrum Testnet'
@@ -423,7 +423,7 @@ export const SUPPORTED_NETWORK_TYPES = {
     RSK_MAINNET_CODE,
     RSK_MAINNET_BLOCK_EXPLORER,
     RSK_MAINNET_TICKER,
-    'RSK',
+    'Rootstock',
     'rsk.svg',
     RSK_MAINNET_URL
   ),
@@ -467,7 +467,7 @@ export const SUPPORTED_NETWORK_TYPES = {
     RSK_TESTNET_CODE,
     RSK_TESTNET_BLOCK_EXPLORER,
     RSK_TESTNET_TICKER,
-    'RSK Testnet',
+    'Rootstock Testnet',
     'rsk.svg',
     RSK_TESTNET_URL
   ),
