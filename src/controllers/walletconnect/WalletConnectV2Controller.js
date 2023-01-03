@@ -3,7 +3,9 @@ import { getAccountsFromNamespaces, getChainsFromNamespaces, getSdkError, parseA
 import log from 'loglevel'
 import { isHexStrict } from 'web3-utils'
 
+import config from '../../config'
 import { SAFE_METHODS, SUPPORTED_WALLET_EVENTS } from '../../utils/enums'
+import { getIFrameOrigin, isMain } from '../../utils/utils'
 
 class WalletConnectV2Controller {
   constructor(options) {
@@ -15,14 +17,15 @@ class WalletConnectV2Controller {
   }
 
   async init(options) {
+    // for plugin
+    const walletUrl = isMain() ? window.location.origin : getIFrameOrigin()
     this.walletConnector = await SignClient.init({
-      logger: 'debug',
-      projectId: '04309ed1007e77d1f119b85205bb779d',
+      projectId: config.walletConnectProjectId,
       metadata: {
         name: 'Torus Wallet',
         description: 'Wallet connect for torus wallet',
-        url: 'https://app.tor.us',
-        icons: ['https://app.tor.us/favicon.png'],
+        url: walletUrl, // different urls for different hosted environments
+        icons: [`${walletUrl}/favicon.png`],
       },
     })
     log.info(this.walletConnector)
@@ -30,7 +33,7 @@ class WalletConnectV2Controller {
     this._setupListeners()
     if (options?.uri) {
       await this.walletConnector.pair({ uri: options.uri })
-    } else if (this._sessionConfig.connectedTopic()) {
+    } else if (this.sessionConfig.connectedTopic()) {
       await this._rehydrateConnection()
     }
   }
@@ -184,13 +187,13 @@ class WalletConnectV2Controller {
   }
 
   async _rehydrateConnection() {
-    const { currentChainId } = this._sessionConfig
+    const { currentChainId } = this.sessionConfig
     await this._processChainUpdate(currentChainId)
     await this._processAccountUpdate(this.selectedAddress)
   }
 
   setStoreSession() {
-    if (this._sessionConfig.connectedTopic()) {
+    if (this.sessionConfig.connectedTopic()) {
       const sessionData = JSON.stringify(this.walletConnector.session.values)
       this.store.putState({
         sessionData,
@@ -201,23 +204,36 @@ class WalletConnectV2Controller {
   }
 
   onSessionRequest = async (requestEvent) => {
-    // eslint-disable-next-line no-console
-    console.log('session_request', requestEvent)
     const { params } = requestEvent
-    const { topic, request } = params
-    // const requestSession = this.walletConnector.session.get(topic)
-
+    const { topic, request, chainId } = params
     request.isWalletConnectRequest = 'true'
+    const { currentChainId } = this.sessionConfig
+    const incomingChainId = isHexStrict(chainId) ? Number.parseInt(chainId, 16) : chainId
+    // TODO: Create a UX flow to prompt user to switch chain, if requested chain is supported
+    // currently we just throws an error and expect the dapp to switch chain.
+    if (currentChainId !== incomingChainId) {
+      const response = {
+        id: request.id,
+        error: {
+          message: `Failed or Rejected Request, request contains request id ${incomingChainId}, 
+          whereas current selected chainId is ${currentChainId}`,
+        },
+      }
+      await this.walletConnector.respond({
+        topic,
+        response,
+      })
+    }
     this.provider.send(request, async (error, res) => {
       if (error) {
-        log.info(`FAILED REJECT REQUEST, ERROR ${error.message}`)
+        log.error(`FAILED REJECT REQUEST, ERROR ${error.message}`)
         const response = { id: request.id, error: { message: `Failed or Rejected Request ${error.message}` } }
         await this.walletConnector.respond({
           topic,
           response,
         })
       } else if (res.error) {
-        log.info(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(res.error)}`)
+        log.error(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(res.error)}`)
         const response = { id: request.id, error: { message: `Failed or Rejected Request ${JSON.stringify(res.error)}` } }
         await this.walletConnector.respond({
           topic,
@@ -241,7 +257,7 @@ class WalletConnectV2Controller {
 
   updateSession() {
     if (!this.walletConnector) return
-    this._processChainUpdate(this._sessionConfig.currentChainId)
+    this._processChainUpdate(this.sessionConfig.currentChainId)
   }
 
   getPeerMetaURL() {
@@ -249,9 +265,9 @@ class WalletConnectV2Controller {
   }
 
   async disconnect() {
-    if (this.walletConnector && this._sessionConfig.connectedTopic()) {
+    if (this.walletConnector && this.sessionConfig.connectedTopic()) {
       await this.walletConnector.disconnect({
-        topic: this._sessionConfig.connectedTopic(),
+        topic: this.sessionConfig.connectedTopic(),
       })
       this.walletConnector = undefined
     }
