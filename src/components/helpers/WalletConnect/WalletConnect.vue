@@ -156,6 +156,8 @@ export default {
         const peerMetadata = parsedData[0]?.peer?.metadata
         const appName = peerMetadata?.name || peerMetadata?.url
         if (appName) this.wcCopyPasteLink = appName
+      } else {
+        this.wcCopyPasteLink = ''
       }
     },
   },
@@ -186,7 +188,7 @@ export default {
       this.scannerOpened = true
     },
     disconnect() {
-      if (this.wcConnectorSession?.connected) {
+      if (this.walletConnectConnected) {
         this.disconnectWalletConnect()
         this.wcConnecting = false
         this.wcCopyPasteLink = ''

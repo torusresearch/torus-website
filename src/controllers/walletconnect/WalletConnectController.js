@@ -61,7 +61,6 @@ class WalletConnectController {
     }
     this.store.putState({})
     this.walletConnectorController = undefined
-    this.selectedAddress = ''
   }
 }
 
