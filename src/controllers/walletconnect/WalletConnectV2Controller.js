@@ -35,7 +35,7 @@ class WalletConnectV2Controller {
         name: 'Torus Wallet',
         description: 'Wallet connect for torus wallet',
         url: 'https://app.tor.us',
-        icons: ['https://app.tor.us/favicon.ico'],
+        icons: ['https://app.tor.us/favicon.png'],
       },
     })
     log.info(this.walletConnector)
