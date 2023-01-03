@@ -18,6 +18,7 @@ export const languageMap = {
   ko: 'korean',
   zh: 'mandarin',
   es: 'spanish',
+  in: 'hindi',
 }
 
 function setI18nLanguage(lang) {
