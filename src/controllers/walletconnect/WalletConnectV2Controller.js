@@ -17,7 +17,7 @@ class WalletConnectV2Controller {
   async disconnect() {
     if (this.walletConnector) {
       await this.walletConnector.disconnect({
-        topic: this._sessionConfig.connectedTopic,
+        topic: this.sessionConfig.connectedTopic,
       })
       this.walletConnector = undefined
     }
@@ -149,7 +149,7 @@ class WalletConnectV2Controller {
     })
   }
 
-  get _sessionConfig() {
+  get sessionConfig() {
     return {
       currentChainId: isHexStrict(this.network.getProviderConfig().chainId)
         ? Number.parseInt(this.network.getProviderConfig().chainId, 16)
@@ -195,7 +195,7 @@ class WalletConnectV2Controller {
     let chainAllowed = false
     for (const chain of allChains) {
       const parsedId = parseChainId(chain)
-      if (Number.parseInt(parsedId.reference, 10) === this._sessionConfig.currentChainId) {
+      if (Number.parseInt(parsedId.reference, 10) === this.sessionConfig.currentChainId) {
         chainAllowed = true
         break
       }

@@ -1,3 +1,4 @@
+import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 
 import WalletConnect from './WalletConnect'
@@ -8,15 +9,20 @@ class WalletConnectV1Controller {
     this.provider = options.provider
     this.network = options.network
     this.selectedAddress = ''
-    this.store = options.store
+    this.store = new ObservableStore({})
   }
 
   async disconnect() {
-    if (this.walletConnector) {
-      await this.walletConnector.killSession()
-      this.walletConnector = undefined
+    try {
+      if (this.walletConnector) {
+        await this.walletConnector.killSession()
+        this.walletConnector = undefined
+      }
+    } catch (error) {
+      log.error(error)
+    } finally {
+      this.store.putState({})
     }
-    this.store.putState({})
   }
 
   async init(options) {
@@ -24,7 +30,6 @@ class WalletConnectV1Controller {
     // To kill session if the user scans a new uri
     if (this.walletConnector?.uri !== options?.uri && this.walletConnector?.killSession) this.walletConnector.killSession()
     this.walletConnector = new WalletConnect(options)
-    log.info(this.walletConnector)
     if (!this.walletConnector.connected) {
       await this.walletConnector.createSession()
     }
@@ -40,7 +45,7 @@ class WalletConnectV1Controller {
     this.walletConnector.on('session_request', (err, payload) => {
       if (!this.walletConnector) return
       log.info('SESSION REQUEST', err, payload)
-      this.walletConnector.approveSession(this._sessionConfig)
+      this.walletConnector.approveSession(this.sessionConfig)
       this.setStoreSession()
     })
     this.walletConnector.on('session_update', (err, payload) => {
@@ -81,7 +86,7 @@ class WalletConnectV1Controller {
     })
   }
 
-  get _sessionConfig() {
+  get sessionConfig() {
     return {
       chainId: this.network.getProviderConfig().chainId,
       accounts: [this.selectedAddress],
@@ -96,8 +101,12 @@ class WalletConnectV1Controller {
   }
 
   updateSession() {
-    this.walletConnector?.updateSession(this._sessionConfig)
-    if (this.walletConnector) this.setStoreSession()
+    try {
+      this.walletConnector?.updateSession(this.sessionConfig)
+      if (this.walletConnector) this.setStoreSession()
+    } catch (error) {
+      log.error(error)
+    }
   }
 
   getPeerMetaURL() {
