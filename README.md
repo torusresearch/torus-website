@@ -13,7 +13,7 @@ npm install --legacy-peer-deps
 find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
 
-Add `.env` the project's root directory:
+Add this in the `.env` of the project's root directory:
 
 ```
 VUE_APP_INFURA_KEY={Infura key}
