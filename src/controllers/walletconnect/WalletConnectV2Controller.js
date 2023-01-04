@@ -144,7 +144,7 @@ class WalletConnectV2Controller {
     }
   }
 
-  async _processChainUpdate(chainId) {
+  async _checkIfChainIdAllowed(chainId) {
     const sessionData = this.walletConnector?.session?.values || []
     const allChains = []
     for (const session of sessionData) {
@@ -160,7 +160,11 @@ class WalletConnectV2Controller {
         break
       }
     }
-    if (!chainAllowed) {
+    return chainAllowed
+  }
+
+  async _processChainUpdate(chainId) {
+    if (!this._checkIfChainIdAllowed(chainId)) {
       await this.disconnect()
     }
   }
@@ -210,7 +214,6 @@ class WalletConnectV2Controller {
     request.id = id
     const { currentChainId } = this.sessionConfig
     const parsedChainIdParams = parseChainId(chainId)
-
     const incomingChainId = isHexStrict(parsedChainIdParams.reference)
       ? Number.parseInt(parsedChainIdParams.reference, 16)
       : Number.parseInt(parsedChainIdParams.reference, 10)
