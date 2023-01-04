@@ -18,7 +18,7 @@ class WalletConnectV2Controller {
 
   async init(options) {
     // for plugin
-    const walletUrl = isMain() ? window.location.origin : getIFrameOrigin()
+    const walletUrl = isMain ? window.location.origin : getIFrameOrigin()
     this.walletConnector = await SignClient.init({
       projectId: config.walletConnectProjectId,
       metadata: {
@@ -104,7 +104,7 @@ class WalletConnectV2Controller {
       log.info('SESSION PROPOSAL', proposal)
       await this._onSessionApprove(proposal).catch((error_) => {
         log.error('error wc approval', error_)
-        const response = { id: proposal.id, error: { message: `Failed or Rejected Request ${error_.message}` } }
+        const response = { id: proposal.id, jsonrpc: '2.0', error: getSdkError('SESSION_SETTLEMENT_FAILED') }
         this.walletConnector.respond({
           topic: proposal.params.pairingTopic,
           response,
@@ -204,44 +204,51 @@ class WalletConnectV2Controller {
   }
 
   onSessionRequest = async (requestEvent) => {
-    const { params } = requestEvent
-    const { topic, request, chainId } = params
+    const { params, topic, id } = requestEvent
+    const { request, chainId } = params
     request.isWalletConnectRequest = 'true'
+    request.id = id
     const { currentChainId } = this.sessionConfig
-    const incomingChainId = isHexStrict(chainId) ? Number.parseInt(chainId, 16) : chainId
+    const parsedChainIdParams = parseChainId(chainId)
+
+    const incomingChainId = isHexStrict(parsedChainIdParams.reference)
+      ? Number.parseInt(parsedChainIdParams.reference, 16)
+      : Number.parseInt(parsedChainIdParams.reference, 10)
     // TODO: Create a UX flow to prompt user to switch chain, if requested chain is supported
     // currently we just throws an error and expect the dapp to switch chain.
     if (currentChainId !== incomingChainId) {
-      const response = {
-        id: request.id,
-        error: {
-          message: `Failed or Rejected Request, request contains request id ${incomingChainId}, 
+      const error = {
+        code: 4002,
+        message: `Failed or Rejected Request, request contains request id ${incomingChainId},
           whereas current selected chainId is ${currentChainId}`,
-        },
       }
+
+      const response = { id, jsonrpc: '2.0', error }
+
       await this.walletConnector.respond({
         topic,
         response,
       })
+      return
     }
     this.provider.send(request, async (error, res) => {
       if (error) {
         log.error(`FAILED REJECT REQUEST, ERROR ${error.message}`)
-        const response = { id: request.id, error: { message: `Failed or Rejected Request ${error.message}` } }
+        const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
         await this.walletConnector.respond({
           topic,
           response,
         })
       } else if (res.error) {
         log.error(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(res.error)}`)
-        const response = { id: request.id, error: { message: `Failed or Rejected Request ${JSON.stringify(res.error)}` } }
+        const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
         await this.walletConnector.respond({
           topic,
           response,
         })
       } else {
         log.info(`SUCCEEDED APPROVE REQUEST, RESULT ${JSON.stringify(res)}`)
-        const response = { id: request.id, result: res.result }
+        const response = { id, jsonrpc: '2.0', result: res.result }
         await this.walletConnector.respond({
           topic,
           response,

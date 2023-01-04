@@ -138,7 +138,7 @@ export default {
   computed: {
     ...mapState(['wcConnectorSession']),
     walletConnectConnected() {
-      return this.wcConnectorSession && (this.wcConnectorSession.connected || this.wcConnectorSession.sessionData)
+      return !!(this.wcConnectorSession && (this.wcConnectorSession.connected || this.wcConnectorSession.sessionData))
     },
     walletConnectDisplay() {
       if (this.wcConnecting) return `${this.t('walletConnect.connecting')}...`
@@ -152,6 +152,7 @@ export default {
         this.$store.dispatch('setSuccessMessage', 'walletConnect.connectedTo')
         if (value.uri) this.wcCopyPasteLink = value.uri
       } else if (value.sessionData) {
+        this.wcConnecting = false
         const parsedData = JSON.parse(value.sessionData || '{}')
         const peerMetadata = parsedData[0]?.peer?.metadata
         const appName = peerMetadata?.name || peerMetadata?.url
@@ -250,12 +251,12 @@ export default {
         await this.initWalletConnect({ uri: this.wcCopyPasteLink })
 
         setTimeout(() => {
-          if (!(this.wcConnectorSession && this.wcConnectorSession.connected)) {
+          if (!this.walletConnectConnected) {
             this.handleError('accountMenu.wcErrorLinkExpired')
             this.wcConnecting = false
             this.wcCopyPasteLink = ''
           }
-        }, 5000)
+        }, 10_000)
       } catch (error) {
         log.error(error)
         this.wcConnecting = false

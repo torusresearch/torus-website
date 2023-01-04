@@ -1,4 +1,3 @@
-import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 
 import WalletConnect from './WalletConnect'
@@ -9,7 +8,7 @@ class WalletConnectV1Controller {
     this.provider = options.provider
     this.network = options.network
     this.selectedAddress = ''
-    this.store = new ObservableStore({})
+    this.store = options.store
   }
 
   async disconnect() {
