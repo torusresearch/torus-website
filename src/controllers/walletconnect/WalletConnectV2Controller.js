@@ -28,7 +28,6 @@ class WalletConnectV2Controller {
         icons: [`${walletUrl}/favicon.png`],
       },
     })
-    log.info(this.walletConnector)
     this.setStoreSession()
     this._setupListeners()
     if (options?.uri) {
@@ -43,7 +42,13 @@ class WalletConnectV2Controller {
     const { id, params } = proposal
     const { requiredNamespaces, relays } = params
 
-    const namespaces = {}
+    const namespaces = {
+      eip155: {
+        accounts: [],
+        methods: [],
+        events: [],
+      },
+    }
     Object.keys(requiredNamespaces).forEach((key) => {
       if (key !== 'eip155') return
       const accounts = []
@@ -66,7 +71,7 @@ class WalletConnectV2Controller {
       })
       return
     }
-    if (namespaces.eip155?.accounts?.length === 0 || namespaces.eip155?.accounts?.length < requiredNamespaces.eip155?.accounts?.length) {
+    if (requiredNamespaces.eip155?.accounts?.length && namespaces.eip155.accounts.length === 0) {
       await this.walletConnector.reject({
         id,
         reason: getSdkError('UNSUPPORTED_ACCOUNTS'),
@@ -74,7 +79,7 @@ class WalletConnectV2Controller {
       return
     }
 
-    if (namespaces.eip155?.methods?.length === 0 || namespaces.eip155?.methods?.length < requiredNamespaces.eip155?.methods?.length) {
+    if (requiredNamespaces.eip155?.methods?.length && namespaces.eip155.methods.length < requiredNamespaces.eip155.methods.length) {
       await this.walletConnector.reject({
         id,
         reason: getSdkError('UNSUPPORTED_METHODS'),
@@ -82,7 +87,7 @@ class WalletConnectV2Controller {
       return
     }
 
-    if (namespaces.eip155?.events?.length === 0 || namespaces.eip155?.events?.length < requiredNamespaces.eip155?.events?.length) {
+    if (requiredNamespaces.eip155?.events?.length && namespaces.eip155.events.length < requiredNamespaces.eip155.events.length) {
       await this.walletConnector.reject({
         id,
         reason: getSdkError('UNSUPPORTED_EVENTS'),
@@ -140,7 +145,14 @@ class WalletConnectV2Controller {
         ? Number.parseInt(this.network.getProviderConfig().chainId, 16)
         : this.network.getProviderConfig().chainId,
       currentAccounts: [this.selectedAddress],
-      connectedTopic: () => this.walletConnector?.session?.values?.[0]?.topic, // currently we are supporting only 1 active session
+      connectedTopic: () => {
+        if (this.walletConnector?.session?.length) {
+          // currently we are supporting only 1 active session
+          const lastKeyIndex = this.walletConnector.session.keys.length - 1
+          return this.walletConnector.session.get(this.walletConnector.session.keys[lastKeyIndex])?.topic
+        }
+        return undefined
+      },
     }
   }
 
@@ -191,7 +203,11 @@ class WalletConnectV2Controller {
   }
 
   async _rehydrateConnection() {
+    if (!this.sessionConfig.connectedTopic()) return
     const { currentChainId } = this.sessionConfig
+    if (!currentChainId) return
+    if (!this.selectedAddress) return
+
     await this._processChainUpdate(currentChainId)
     await this._processAccountUpdate(this.selectedAddress)
   }
