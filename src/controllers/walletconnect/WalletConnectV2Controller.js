@@ -4,7 +4,6 @@ import log from 'loglevel'
 import { isHexStrict } from 'web3-utils'
 
 import config from '../../config'
-import { SAFE_METHODS, SUPPORTED_WALLET_EVENTS } from '../../utils/enums'
 import { getIFrameOrigin, isMain } from '../../utils/utils'
 
 class WalletConnectV2Controller {
@@ -55,12 +54,10 @@ class WalletConnectV2Controller {
       requiredNamespaces[key].chains.map((chain) => {
         accounts.push(`${chain}:${this.selectedAddress}`)
       })
-      const supportedMethods = requiredNamespaces[key].methods.filter((method) => !!SAFE_METHODS.includes(method))
-      const supportedEvents = requiredNamespaces[key].events.filter((event) => !!SUPPORTED_WALLET_EVENTS.includes(event))
       namespaces[key] = {
         accounts,
-        methods: supportedMethods,
-        events: supportedEvents,
+        methods: requiredNamespaces[key].methods,
+        events: requiredNamespaces[key].events,
       }
     })
 
@@ -68,29 +65,6 @@ class WalletConnectV2Controller {
       await this.walletConnector.reject({
         id,
         reason: getSdkError('UNSUPPORTED_CHAINS'),
-      })
-      return
-    }
-    if (requiredNamespaces.eip155?.accounts?.length && namespaces.eip155.accounts.length === 0) {
-      await this.walletConnector.reject({
-        id,
-        reason: getSdkError('UNSUPPORTED_ACCOUNTS'),
-      })
-      return
-    }
-
-    if (requiredNamespaces.eip155?.methods?.length && namespaces.eip155.methods.length < requiredNamespaces.eip155.methods.length) {
-      await this.walletConnector.reject({
-        id,
-        reason: getSdkError('UNSUPPORTED_METHODS'),
-      })
-      return
-    }
-
-    if (requiredNamespaces.eip155?.events?.length && namespaces.eip155.events.length < requiredNamespaces.eip155.events.length) {
-      await this.walletConnector.reject({
-        id,
-        reason: getSdkError('UNSUPPORTED_EVENTS'),
       })
       return
     }
