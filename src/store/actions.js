@@ -653,7 +653,7 @@ export default {
 
             if (store.appState) {
               const appStateParams = JSON.parse(safeatob(store.appState))
-              if (appStateParams?.whiteLabel) {
+              if (!isMain && appStateParams?.whiteLabel) {
                 commit('setWhiteLabel', { ...appStateParams.whiteLabel })
               }
               if (
