@@ -7,7 +7,7 @@ import log from 'loglevel'
 import config from '../../config'
 import { ACCOUNT_TYPE } from '../../utils/enums'
 import { get, post, put } from '../../utils/httpHelpers'
-import { generateAddressFromPrivateKey, generateTorusAuthHeaders, getIFrameOriginObject } from '../../utils/utils'
+import { generateAddressFromPrivateKey, generateTorusAuthHeaders, getIFrameOriginObject, storageUtils } from '../../utils/utils'
 
 const getOpenloginWhitelabel = (whiteLabel = {}) => {
   const whiteLabelOpenLogin = {}
@@ -70,6 +70,7 @@ class OpenLoginHandler {
       network: config.torusNetwork,
       no3PC: true,
       _sessionNamespace: sessionNamespace || namespace,
+      storageKey: storageUtils.storageType,
     })
   }
 

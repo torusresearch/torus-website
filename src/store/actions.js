@@ -137,6 +137,7 @@ export default {
       }
     }
     statusStream.write({ loggedIn: false })
+    sessionStorage.removeItem('torus-white-label')
     resetStore(accountTracker.store, accountTrackerHandler)
     resetStore(txController.store, transactionControllerHandler)
     resetStore(assetController.store, assetControllerHandler)

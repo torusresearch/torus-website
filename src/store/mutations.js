@@ -177,12 +177,11 @@ export default {
     state.embedState = { ...state.embedState, buttonSize: payload || 56 }
   },
   async setWhiteLabel(state, payload) {
-    if (!payload && config.sessionStorageAvailable) {
+    if (!payload) {
       state.whiteLabel = {
         isActive: false,
       }
       localThemeSet(THEME_LIGHT_BLUE_NAME, state)
-      sessionStorage.removeItem('torus-white-label')
       return
     }
     state.whiteLabel = {
@@ -192,7 +191,7 @@ export default {
     }
     localThemeSet(undefined, state)
     // Set locale here from defaultLanguage
-    if (config.sessionStorageAvailable && payload) {
+    if (payload) {
       // Checks if whitelabel defaultLanguage is supported
       const selectedLocale = LOCALES.find((localeInner) => localeInner.value === payload.defaultLanguage)
       if (selectedLocale) {
@@ -205,8 +204,6 @@ export default {
           i18n.mergeLocaleMessage(key, payload.customTranslations[key])
         })
       }
-
-      sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
     }
   },
   setOAuthModalStatus(state, payload) {
