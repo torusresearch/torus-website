@@ -134,7 +134,8 @@ export function storageAvailable(type) {
 }
 
 const { hash, search } = window.location
-const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search}`)
+// search also has a ? in the value.
+const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search.slice(1)}`)
 
 const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
 const namespace = finalUrl.searchParams.get('namespace')
