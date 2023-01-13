@@ -25,7 +25,7 @@ Vue.use(Vuex)
 
 let vuexPersist
 
-if (config.localStorageAvailable) {
+if (config.storageAvailability[storageUtils.storageType]) {
   vuexPersist = new VuexPersistence({
     key: storageUtils.storageKey,
     storage: storageUtils.storage,
@@ -316,7 +316,7 @@ function getLatestMessageParameters(id) {
   return message ? { msgParams: message.msgParams, id, type } : {}
 }
 
-if (config.localStorageAvailable) {
+if (config.storageAvailability.local) {
   const torusTheme = localStorage.getItem('torus-theme')
   if (torusTheme) {
     VuexStore.commit('setTheme', torusTheme)
@@ -326,10 +326,12 @@ if (config.localStorageAvailable) {
     VuexStore.commit('setCrashReport', Boolean(torusEnableCrashReporter))
   }
 
-  const openLoginStore = localStorage.getItem('openlogin_store')
-  if (openLoginStore !== null) {
-    const { typeOfLogin, verifierId, aggregateVerifier, verifier, email } = JSON.parse(openLoginStore)
-    VuexStore.commit('setLastLoginInfo', { typeOfLogin, verifierId, aggregateVerifier, verifier, email })
+  if (config.storageAvailability[storageUtils.storageType]) {
+    const openLoginStore = storageUtils.storage.getItem(storageUtils.openloginStoreKey)
+    if (openLoginStore !== null) {
+      const { typeOfLogin, verifierId, aggregateVerifier, verifier, email } = JSON.parse(openLoginStore)
+      VuexStore.commit('setLastLoginInfo', { typeOfLogin, verifierId, aggregateVerifier, verifier, email })
+    }
   }
 }
 

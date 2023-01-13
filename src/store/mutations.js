@@ -279,8 +279,8 @@ function localThemeSet(payload, state) {
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
   }
-  if (config.localStorageAvailable && payload) localStorage.setItem('torus-theme', payload)
-  if (config.localStorageAvailable && !localStorage.getItem('torus-theme')) localStorage.setItem('torus-theme', state.theme)
+  if (config.storageAvailability.local && payload) localStorage.setItem('torus-theme', payload)
+  if (config.storageAvailability.local && !localStorage.getItem('torus-theme')) localStorage.setItem('torus-theme', state.theme)
 }
 async function updateDefaultLanguage(state, language) {
   state.locale = language

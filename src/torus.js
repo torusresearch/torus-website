@@ -38,7 +38,7 @@ const torus = {
 }
 let sessionData
 
-if (config.localStorageAvailable) {
+if (config.storageAvailability[storageUtils.storageType]) {
   const { storage, storageKey } = storageUtils
   sessionData = storage.getItem(storageKey)
 }

@@ -1,3 +1,5 @@
+import { safeatob } from '@toruslabs/openlogin-utils'
+
 import { CRYPTO_COMPARE_CURRENCIES } from './supportedCurrencies'
 import {
   APPLE,
@@ -137,6 +139,15 @@ const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search}`)
 const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
 const namespace = finalUrl.searchParams.get('namespace')
 const sessionId = finalUrl.searchParams.get('sessionId')
+const state = finalUrl.searchParams.get('state')
+
+let isCustomDapp = true
+
+if (state) {
+  const decodedState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(state))))
+  // this means that it's from another domain
+  isCustomDapp = decodedState.origin.hostname !== window.location.hostname
+}
 
 // no reddit for binance.tor.us
 
@@ -157,8 +168,13 @@ export default {
   storageServerUrl: 'https://broadcast-server.tor.us',
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
-  localStorageAvailable: storageAvailable('localStorage'),
-  sessionStorageAvailable: storageAvailable('sessionStorage'),
+
+  storageAvailability: {
+    local: storageAvailable('localStorage'),
+    session: storageAvailable('sessionStorage'),
+  },
+  // we do the isCustomDapp check to differentiate b/w app.tor.us and older dapps without isCustomLogin flag
+  isCustomLogin: isCustomLogin === 'true' ? true : isCustomLogin === 'false' ? false : isCustomDapp ? null : false,
 
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
@@ -496,7 +512,7 @@ export default {
     // }),
   },
   loginsWithLightLogo: [APPLE, GITHUB, JWT],
-  isCustomLogin: isCustomLogin === 'true' ? true : isCustomLogin === 'false' ? false : null,
+
   namespace,
   sessionId,
 }
