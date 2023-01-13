@@ -734,8 +734,8 @@ export const getIFrameOriginObject = () => {
 }
 
 export const storageUtils = {
-  storage: !isMain ? (config.isCustomLogin === null ? window.sessionStorage : window.localStorage) : window.localStorage,
-  storageType: !isMain ? (config.isCustomLogin === null ? 'session' : 'local') : 'local',
+  storage: config.isCustomLogin === null ? (window.sessionStorage ? window.sessionStorage : window.localStorage) : window.localStorage,
+  storageType: config.isCustomLogin === null ? (window.sessionStorage ? 'session' : 'local') : 'local',
   storageKey: config.isCustomLogin === true ? `torus_app_${config.namespace || getIFrameOriginObject().hostname}` : 'torus-app',
   openloginStoreKey: config.isCustomLogin === true ? `openlogin_store_${config.namespace || getIFrameOriginObject().hostname}` : 'openlogin_store',
 }
