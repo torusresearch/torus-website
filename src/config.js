@@ -141,13 +141,27 @@ const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
 const namespace = finalUrl.searchParams.get('namespace')
 const sessionId = finalUrl.searchParams.get('sessionId')
 const state = finalUrl.searchParams.get('state')
+const result = finalUrl.searchParams.get('result')
 
-let isCustomDapp = true
+// by default value should be false as user can open
+// torus wallet directly also and they dont start journey
+// from /start or /end url which is the case for custom dapps login.
+let isCustomDapp = false
 
+// state is presend in the /start url.
 if (state) {
   const decodedState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(state))))
   // this means that it's from another domain
   isCustomDapp = decodedState.origin.hostname !== window.location.hostname
+}
+
+// result is present in the /end url.
+if (result) {
+  const decodedResultParams = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(result))))
+  if (decodedResultParams && decodedResultParams.store && decodedResultParams.store.appState) {
+    const decodedAppParams = JSON.parse(safeatob(decodedResultParams.store.appState))
+    isCustomDapp = decodedAppParams.origin.hostname !== window.location.hostname
+  }
 }
 
 // no reddit for binance.tor.us
