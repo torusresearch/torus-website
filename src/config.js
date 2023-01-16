@@ -137,7 +137,7 @@ const { hash, search } = window.location
 // search also has a ? in the value.
 const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search.slice(1)}`)
 
-const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
+const isCustomLogin = null
 const namespace = finalUrl.searchParams.get('namespace')
 const sessionId = finalUrl.searchParams.get('sessionId')
 const state = finalUrl.searchParams.get('state')
@@ -146,7 +146,7 @@ const result = finalUrl.searchParams.get('result')
 // by default value should be false as user can open
 // torus wallet directly also and they dont start journey
 // from /start or /end url which is the case for custom dapps login.
-let isCustomDapp = false
+let isCustomDapp = window.self !== window.top
 
 // state is presend in the /start url.
 if (state) {
