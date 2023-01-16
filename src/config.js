@@ -1,3 +1,5 @@
+import { safeatob } from '@toruslabs/openlogin-utils'
+
 import { CRYPTO_COMPARE_CURRENCIES } from './supportedCurrencies'
 import {
   APPLE,
@@ -132,11 +134,35 @@ export function storageAvailable(type) {
 }
 
 const { hash, search } = window.location
-const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search}`)
+// search also has a ? in the value.
+const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search.slice(1)}`)
 
 const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
 const namespace = finalUrl.searchParams.get('namespace')
 const sessionId = finalUrl.searchParams.get('sessionId')
+const state = finalUrl.searchParams.get('state')
+const result = finalUrl.searchParams.get('result')
+
+// by default value should be false as user can open
+// torus wallet directly also and they dont start journey
+// from /start or /end url which is the case for custom dapps login.
+let isCustomDapp = false
+
+// state is presend in the /start url.
+if (state) {
+  const decodedState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(state))))
+  // this means that it's from another domain
+  isCustomDapp = decodedState.origin.hostname !== window.location.hostname
+}
+
+// result is present in the /end url.
+if (result) {
+  const decodedResultParams = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(result))))
+  if (decodedResultParams && decodedResultParams.store && decodedResultParams.store.appState) {
+    const decodedAppParams = JSON.parse(safeatob(decodedResultParams.store.appState))
+    isCustomDapp = decodedAppParams.origin.hostname !== window.location.hostname
+  }
+}
 
 // no reddit for binance.tor.us
 
@@ -157,8 +183,13 @@ export default {
   storageServerUrl: 'https://broadcast-server.tor.us',
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
-  localStorageAvailable: storageAvailable('localStorage'),
-  sessionStorageAvailable: storageAvailable('sessionStorage'),
+
+  storageAvailability: {
+    local: storageAvailable('localStorage'),
+    session: storageAvailable('sessionStorage'),
+  },
+  // we do the isCustomDapp check to differentiate b/w app.tor.us and older dapps without isCustomLogin flag
+  isCustomLogin: isCustomLogin === 'true' ? true : isCustomLogin === 'false' ? false : isCustomDapp ? null : false,
 
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
@@ -496,7 +527,7 @@ export default {
     // }),
   },
   loginsWithLightLogo: [APPLE, GITHUB, JWT],
-  isCustomLogin: isCustomLogin === 'true' ? true : isCustomLogin === 'false' ? false : null,
+
   namespace,
   sessionId,
 }

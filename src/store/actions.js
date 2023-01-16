@@ -25,7 +25,7 @@ import {
   SUPPORTED_NETWORK_TYPES,
 } from '../utils/enums'
 import { remove } from '../utils/httpHelpers'
-import { fakeStream, generateAddressFromPrivateKey, getIFrameOriginObject, isMain, toChecksumAddressByChainId } from '../utils/utils'
+import { fakeStream, generateAddressFromPrivateKey, getIFrameOriginObject, isMain, storageUtils, toChecksumAddressByChainId } from '../utils/utils'
 import {
   accountTrackerHandler,
   announcementsHandler,
@@ -137,6 +137,7 @@ export default {
       }
     }
     statusStream.write({ loggedIn: false })
+    sessionStorage.removeItem('torus-white-label')
     resetStore(accountTracker.store, accountTrackerHandler)
     resetStore(txController.store, transactionControllerHandler)
     resetStore(assetController.store, assetControllerHandler)
@@ -458,7 +459,7 @@ export default {
       if (error) {
         throw new Error(error)
       }
-      if (config.localStorageAvailable) {
+      if (config.storageAvailability[storageUtils.storageType]) {
         const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
         if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType })
         else await dispatch('setProviderType', { network: state.networkType, type: RPC })
