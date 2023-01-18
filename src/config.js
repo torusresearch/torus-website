@@ -146,7 +146,7 @@ const result = finalUrl.searchParams.get('result')
 // by default value should be false as user can open
 // torus wallet directly also and they dont start journey
 // from /start or /end url which is the case for custom dapps login.
-let isCustomDapp = false
+let isCustomDapp = window.self !== window.top
 
 // state is presend in the /start url.
 if (state) {
