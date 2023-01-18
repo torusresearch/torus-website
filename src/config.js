@@ -137,7 +137,7 @@ const { hash, search } = window.location
 // search also has a ? in the value.
 const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search.slice(1)}`)
 
-const isCustomLogin = null
+const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
 const namespace = finalUrl.searchParams.get('namespace')
 const sessionId = finalUrl.searchParams.get('sessionId')
 const state = finalUrl.searchParams.get('state')
