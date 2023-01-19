@@ -1072,7 +1072,7 @@ class TransactionController extends SafeEventEmitter {
       ].find((methodName) => methodName.toLowerCase() === name.toLowerCase())
       methodParameters = params
       contractParameters.erc20 = true
-      contractParameters.symbol = 'ERC20'
+      contractParameters.symbol = currentToken?.symbol ?? 'ERC20'
       if (currentToken?.logo) {
         contractParameters.logo = currentToken.logo
       }

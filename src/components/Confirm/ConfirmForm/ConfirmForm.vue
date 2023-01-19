@@ -722,7 +722,11 @@ export default {
           decimals = new BigNumber(await tokenHandler.getDecimals())
         }
         this.userInfo = userInfo
-        this.selectedToken = tokenObject.erc20 ? getFungibleTokenStandard(txParams?.chainId) : tokenObject.symbol
+        this.selectedToken = tokenObject.erc20
+          ? tokenObject.symbol
+            ? tokenObject.symbol
+            : getFungibleTokenStandard(txParams?.chainId)
+          : tokenObject.symbol
         this.id = id
         this.network = network
         this.transactionCategory = transactionCategory
