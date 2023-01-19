@@ -9,12 +9,6 @@
         <v-icon size="22" class="black--text mr-2">$vuetify.icons.alert</v-icon>
         <div class="text-caption text-sm-body-2">{{ t('walletTopUp.topUpNotSupported', [networkType.networkName]) }}</div>
       </div>
-
-      <div class="text-right" style="margin-top: -4px">
-        <router-link class="text-uppercase text-decoration-none text-body-2 ml-1" :to="{ name: 'walletSettings' }" :style="{ lineHeight: 0 }">
-          {{ t('walletTopUp.changeNetwork') }}
-        </router-link>
-      </div>
     </div>
 
     <NoSupportedProvidersForNetworkPlaceholder v-if="noSupportedProvidersForNetwork">
