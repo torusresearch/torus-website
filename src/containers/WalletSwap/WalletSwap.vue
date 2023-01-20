@@ -1,5 +1,6 @@
 <template>
   <v-container class="dapp-parent d-flex flex-column justify-start align-center pt-6" :class="$vuetify.breakpoint.xsOnly ? 'xs-parent px-4' : ''">
+    <NetworkDisplay :store-network-type="networkType" :is-network-pill="true" />
     <v-form ref="form" v-model="valid" lazy-validation @submit.prevent="sendTx">
       <v-card class="swap-container elevation-1 pa-4">
         <div class="font-weight-bold mb-2">{{ t('walletSwap.swap') }}</div>
@@ -96,6 +97,7 @@ import { ethers } from 'ethers'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
+import NetworkDisplay from '../../components/helpers/NetworkDisplay/NetworkDisplay.vue'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import AlphaRouter from '../../plugins/uniswap'
 import torus from '../../torus'
@@ -104,7 +106,7 @@ import { getEtherScanHashLink } from '../../utils/utils'
 
 export default {
   name: 'WalletDiscover',
-  components: { MessageModal },
+  components: { MessageModal, NetworkDisplay },
   data() {
     return {
       fromValue: 0.01,
