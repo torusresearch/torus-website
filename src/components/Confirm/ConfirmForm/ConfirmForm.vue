@@ -715,7 +715,6 @@ export default {
         if (tokenObject.decimals) {
           decimals = new BigNumber(tokenObject.decimals)
         }
-
         if (tokenObject.erc20) {
           const tokenHandler = new TokenHandler({
             ...tokenObject,
@@ -727,7 +726,7 @@ export default {
           }
           if (!tokenObject.symbol || tokenObject.symbol === 'ERC20') {
             try {
-              symbol = await tokenHandler.getName()
+              symbol = await tokenHandler.getSymbol()
             } catch {
               log.warn(`Failed to fetch token name for token: ${checkSummedTo}`)
             }
