@@ -711,18 +711,30 @@ export default {
         const checkSummedTo = toChecksumAddressByChainId(to, network.chainId)
         const tokenObject = contractParams
         let decimals = new BigNumber('0')
+        let { symbol } = tokenObject
         if (tokenObject.decimals) {
           decimals = new BigNumber(tokenObject.decimals)
-        } else if (!tokenObject.decimals && tokenObject.erc20) {
+        }
+
+        if (tokenObject.erc20) {
           const tokenHandler = new TokenHandler({
             ...tokenObject,
             address: checkSummedTo,
             web3: torus.web3,
           })
-          decimals = new BigNumber(await tokenHandler.getDecimals())
+          if (!tokenObject.decimals) {
+            decimals = new BigNumber(await tokenHandler.getDecimals())
+          }
+          if (!tokenObject.symbol || tokenObject.symbol === 'ERC20') {
+            try {
+              symbol = await tokenHandler.getName()
+            } catch {
+              log.warn(`Failed to fetch token name for token: ${checkSummedTo}`)
+            }
+          }
         }
         this.userInfo = userInfo
-        this.selectedToken = tokenObject.erc20 ? getFungibleTokenStandard(txParams?.chainId) : tokenObject.symbol
+        this.selectedToken = tokenObject.erc20 ? symbol || getFungibleTokenStandard(txParams?.chainId) : 'ERC20'
         this.id = id
         this.network = network
         this.transactionCategory = transactionCategory
