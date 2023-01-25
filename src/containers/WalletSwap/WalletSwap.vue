@@ -37,7 +37,7 @@
         <v-card flat outlined class="pa-1 mb-4">
           <v-row class="align-center" no-gutters>
             <v-col>
-              <v-text-field class="swap-amount" :value="toValue" readonly hide-details outlined type="number" @change="toValueChanged"></v-text-field>
+              <v-text-field class="swap-amount" :value="toValue" hide-details outlined type="number" @change="toValueChanged" />
             </v-col>
             <v-col cols="3">
               <v-combobox
@@ -175,9 +175,9 @@ export default {
     },
     toValueChanged(value) {
       this.toValue = value
-      this.getSwapQuote()
+      this.getSwapQuote(true)
     },
-    async getSwapQuote() {
+    async getSwapQuote(reverse = false) {
       try {
         const valid = this.$refs.form.validate()
         log.info(valid, 'valid')
@@ -191,25 +191,28 @@ export default {
         this.gasFees = 0
 
         log.info(this.chainId, 'chainId')
-        const fromTokenInstance = this.getTokenInstance(this.fromToken)
-        const toTokenInstance = this.getTokenInstance(this.toToken)
-        const fromAmount = CurrencyAmount.fromRawAmount(
-          fromTokenInstance,
-          new BigNum(this.fromValue).multipliedBy(new BigNum(10).pow(new BigNum(fromTokenInstance.decimals))).toString()
-        )
-        // Do something here
+        let swapParams = []
+        if (!reverse) {
+          const fromCurrencyAmount = this.getCurrencyAmount(this.fromValue, this.fromToken)
+          const toTokenInstance = this.getTokenInstance(this.toToken)
+          swapParams = [fromCurrencyAmount, toTokenInstance, TradeType.EXACT_INPUT]
+        } else {
+          const toCurrencyAmount = this.getCurrencyAmount(this.toValue, this.toToken)
+          const fromTokenInstance = this.getTokenInstance(this.fromToken)
+          swapParams = [toCurrencyAmount, fromTokenInstance, TradeType.EXACT_OUTPUT]
+        }
+
         log.info(torus.torusController.provider)
         const router = new AlphaRouter({ chainId: this.chainId, provider: new ethers.providers.Web3Provider(torus.torusController.provider) })
         const swapRoute = await router.route(
-          fromAmount,
-          toTokenInstance,
-          TradeType.EXACT_INPUT,
+          ...swapParams,
           {
             recipient: this.selectedAddress,
             slippageTolerance: new Percent(5, 100),
             deadline: Math.floor(Date.now() / 1000 + 1800),
             fee: {
               fee: new Percent(1, 100), // use 1% fees
+              // TODO: change addr
               recipient: '0x3E2a1F4f6b6b5d281Ee9a9B36Bb33F7FBf0614C3',
             },
           },
@@ -219,7 +222,11 @@ export default {
         log.info(`Quote Exact In: ${swapRoute.quote.toSignificant()}`)
         log.info(`Gas Adjusted Quote In: ${swapRoute.quoteGasAdjusted.toSignificant()}`)
         log.info(`Gas Used USD: ${swapRoute.estimatedGasUsedUSD.toSignificant()}`)
-        this.toValue = swapRoute.quote.toSignificant()
+        if (!reverse) {
+          this.toValue = swapRoute.quote.toSignificant()
+        } else {
+          this.fromValue = swapRoute.quote.toSignificant()
+        }
         this.priceImpact = swapRoute.trade.priceImpact.toFixed(2)
         this.gasFees = swapRoute.estimatedGasUsedUSD.toSignificant()
         this.currentSwapQuote = {
@@ -243,6 +250,13 @@ export default {
       log.info(symbol, tokenData)
       const tokenInstance = new Token(this.chainId, tokenData.address, tokenData.decimals, tokenData.symbol, tokenData.name)
       return tokenInstance
+    },
+    getCurrencyAmount(value, token) {
+      const tokenInstance = this.getTokenInstance(token)
+      return CurrencyAmount.fromRawAmount(
+        tokenInstance,
+        new BigNum(value).multipliedBy(new BigNum(10).pow(new BigNum(tokenInstance.decimals))).toString()
+      )
     },
     async sendTx() {
       log.info('sendTx')
