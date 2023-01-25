@@ -12,7 +12,7 @@ class TokenHandler {
   }
 
   async getSymbol() {
-    if (!this.symbol) this.symbol = await this.contract.methods.symbol().call()
+    if (!this.symbol || this.symbol === 'ERC20') this.symbol = await this.contract.methods.symbol().call()
     return this.symbol
   }
 
