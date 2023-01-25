@@ -192,14 +192,14 @@ export default {
 
         log.info(this.chainId, 'chainId')
         let swapParams = []
-        if (!reverse) {
-          const fromCurrencyAmount = this.getCurrencyAmount(this.fromValue, this.fromToken)
-          const toTokenInstance = this.getTokenInstance(this.toToken)
-          swapParams = [fromCurrencyAmount, toTokenInstance, TradeType.EXACT_INPUT]
-        } else {
+        if (reverse) {
           const toCurrencyAmount = this.getCurrencyAmount(this.toValue, this.toToken)
           const fromTokenInstance = this.getTokenInstance(this.fromToken)
           swapParams = [toCurrencyAmount, fromTokenInstance, TradeType.EXACT_OUTPUT]
+        } else {
+          const fromCurrencyAmount = this.getCurrencyAmount(this.fromValue, this.fromToken)
+          const toTokenInstance = this.getTokenInstance(this.toToken)
+          swapParams = [fromCurrencyAmount, toTokenInstance, TradeType.EXACT_INPUT]
         }
 
         log.info(torus.torusController.provider)
@@ -222,10 +222,10 @@ export default {
         log.info(`Quote Exact In: ${swapRoute.quote.toSignificant()}`)
         log.info(`Gas Adjusted Quote In: ${swapRoute.quoteGasAdjusted.toSignificant()}`)
         log.info(`Gas Used USD: ${swapRoute.estimatedGasUsedUSD.toSignificant()}`)
-        if (!reverse) {
-          this.toValue = swapRoute.quote.toSignificant()
-        } else {
+        if (reverse) {
           this.fromValue = swapRoute.quote.toSignificant()
+        } else {
+          this.toValue = swapRoute.quote.toSignificant()
         }
         this.priceImpact = swapRoute.trade.priceImpact.toFixed(2)
         this.gasFees = swapRoute.estimatedGasUsedUSD.toSignificant()
