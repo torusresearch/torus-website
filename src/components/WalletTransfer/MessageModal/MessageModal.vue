@@ -54,6 +54,7 @@ export default {
       default: '',
     },
   },
+  emits: ['onClose'],
   data() {
     return {
       MESSAGE_MODAL_TYPE_SUCCESS,
