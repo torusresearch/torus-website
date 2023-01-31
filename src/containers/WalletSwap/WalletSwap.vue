@@ -1,7 +1,8 @@
 <template>
   <v-container class="dapp-parent d-flex flex-column justify-start align-center pt-6" :class="$vuetify.breakpoint.xsOnly ? 'xs-parent px-4' : ''">
     <NetworkDisplay :store-network-type="networkType" :is-network-pill="true" />
-    <v-form ref="form" v-model="valid" lazy-validation @submit.prevent="sendTx">
+
+    <v-form ref="form" v-model="valid" lazy-validation>
       <v-card class="swap-container elevation-1 pa-4">
         <div class="font-weight-bold mb-2">{{ t('walletSwap.swap') }}</div>
         <v-card flat outlined class="mb-2 pa-1">
@@ -64,11 +65,12 @@
         <div v-else-if="!currentSwapQuote && valid && fetchingQuote">
           <div>{{ t('walletSwap.fetching') }}</div>
         </div>
-        <v-btn class="text-h6 mt-2" color="primary" x-large block type="submit" :disabled="!currentSwapQuote" :loading="sendingTx">
+        <v-btn class="text-h6 mt-2" color="primary" x-large block :disabled="!currentSwapQuote" @click.stop="confirmationModalShow = true">
           {{ t('walletSwap.swap') }}
         </v-btn>
       </v-card>
     </v-form>
+
     <v-dialog v-model="messageModalShow" max-width="375" persistent>
       <MessageModal
         :detail-text="messageModalDetails"
@@ -85,6 +87,18 @@
           </div>
         </template>
       </MessageModal>
+    </v-dialog>
+
+    <v-dialog v-model="confirmationModalShow" max-width="375">
+      <v-card>
+        <v-card-title>Confirm swap</v-card-title>
+        <v-card-text>{{ confirmSwapDetailText }}</v-card-text>
+        <v-card-actions>
+          <v-btn class="text-h6 mb-4" color="primary" x-large block :disabled="!currentSwapQuote" :loading="sendingTx" @click="sendTx">
+            {{ t('walletSwap.swap') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
   </v-container>
 </template>
@@ -122,6 +136,7 @@ export default {
       gasFees: 0,
       sendingTx: false,
       messageModalShow: false,
+      confirmationModalShow: false,
       messageModalType: '',
       messageModalTitle: '',
       messageModalDetails: '',
@@ -152,6 +167,9 @@ export default {
     },
     tokenSymbols() {
       return this.tokenList.map((x) => x.symbol)
+    },
+    confirmSwapDetailText() {
+      return `Are you sure you wish to swap ${this.fromValue} ${this.fromToken} for ${this.toValue} ${this.toToken}?`
     },
   },
   async mounted() {
@@ -287,6 +305,7 @@ export default {
           this.etherscanLink = getEtherScanHashLink(txHash, this.networkType.host)
         }
         this.sendingTx = false
+        this.confirmationModalShow = false
         // TODO: Handle error and success
         // Maybe show tx success modal in etherscan
         // Do correct etherscan url depending on chainId from wallet transfer page
