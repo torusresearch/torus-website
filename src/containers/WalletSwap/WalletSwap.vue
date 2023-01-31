@@ -1,105 +1,110 @@
 <template>
-  <v-container class="dapp-parent d-flex flex-column justify-start align-center pt-6" :class="$vuetify.breakpoint.xsOnly ? 'xs-parent px-4' : ''">
-    <NetworkDisplay :store-network-type="networkType" :is-network-pill="true" />
+  <v-container class="pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+    <div class="d-flex flex-wrap align-center justify-end">
+      <NetworkDisplay :store-network-type="networkType" :is-network-pill="true" />
+      <QuickAddress />
+    </div>
 
-    <v-form ref="form" v-model="valid" lazy-validation>
-      <v-card class="swap-container elevation-1 pa-4">
-        <div class="font-weight-bold mb-2">{{ t('walletSwap.swap') }}</div>
-        <v-card flat outlined class="mb-2 pa-1">
-          <v-row class="align-center" no-gutters>
-            <v-col>
-              <v-text-field
-                class="swap-amount"
-                :value="fromValue"
-                hide-details
-                outlined
-                type="number"
-                :rules="[rules.required]"
-                @change="fromValueChanged"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="3">
-              <v-combobox
-                :value="fromToken"
-                class="swap-token"
-                flat
-                outlined
-                hide-details
-                solo
-                :items="tokenList"
-                item-text="symbol"
-                item-value="symbol"
-                :rules="[rules.required]"
-                @change="fromTokenChanged"
-              ></v-combobox>
-            </v-col>
-          </v-row>
-        </v-card>
-        <v-card flat outlined class="pa-1 mb-4">
-          <v-row class="align-center" no-gutters>
-            <v-col>
-              <v-text-field class="swap-amount" :value="toValue" hide-details outlined type="number" @change="toValueChanged" />
-            </v-col>
-            <v-col cols="3">
-              <v-combobox
-                :value="toToken"
-                class="swap-token"
-                flat
-                outlined
-                hide-details
-                solo
-                :items="tokenList"
-                item-text="symbol"
-                item-value="symbol"
-                :rules="[rules.required]"
-                @change="toTokenChanged"
-              ></v-combobox>
-            </v-col>
-          </v-row>
-        </v-card>
-        <div v-if="!!currentSwapQuote">
-          <div>{{ t('walletSwap.expectedOutput') }}: {{ toValue }} {{ toToken }}</div>
-          <div>{{ t('walletSwap.priceImpact') }}: {{ priceImpact }} %</div>
-          <div>{{ t('walletSwap.networkFee') }}: {{ gasFees }} USD</div>
-        </div>
-        <div v-else-if="!currentSwapQuote && valid && fetchingQuote">
-          <div>{{ t('walletSwap.fetching') }}</div>
-        </div>
-        <v-btn class="text-h6 mt-2" color="primary" x-large block :disabled="!currentSwapQuote" @click.stop="confirmationModalShow = true">
-          {{ t('walletSwap.swap') }}
-        </v-btn>
-      </v-card>
-    </v-form>
-
-    <v-dialog v-model="messageModalShow" max-width="375" persistent>
-      <MessageModal
-        :detail-text="messageModalDetails"
-        :modal-type="messageModalType"
-        :title="messageModalTitle"
-        :no-close="messageModalType === MESSAGE_MODAL_TYPE_SUCCESS"
-        @onClose="messageModalShow = false"
-      >
-        <template v-if="messageModalType === MESSAGE_MODAL_TYPE_SUCCESS" #link>
-          <div class="mb-4">
-            <v-btn text class="share-btn" :href="etherscanLink" target="_blank">
-              <span class="body-2 font-weight-bold">{{ t('walletSwap.viewEtherscan') }}</span>
-            </v-btn>
+    <v-container class="dapp-parent d-flex flex-column justify-start align-center pt-6" :class="$vuetify.breakpoint.xsOnly ? 'xs-parent px-4' : ''">
+      <v-form ref="form" v-model="valid" lazy-validation>
+        <v-card class="swap-container elevation-1 pa-4">
+          <div class="font-weight-bold mb-2">{{ t('walletSwap.swap') }}</div>
+          <v-card flat outlined class="mb-2 pa-1">
+            <v-row class="align-center" no-gutters>
+              <v-col>
+                <v-text-field
+                  class="swap-amount"
+                  :value="fromValue"
+                  hide-details
+                  outlined
+                  type="number"
+                  :rules="[rules.required]"
+                  @change="fromValueChanged"
+                />
+              </v-col>
+              <v-col cols="3">
+                <v-combobox
+                  :value="fromToken"
+                  class="swap-token"
+                  flat
+                  outlined
+                  hide-details
+                  solo
+                  :items="tokenList"
+                  item-text="symbol"
+                  item-value="symbol"
+                  :rules="[rules.required]"
+                  @change="fromTokenChanged"
+                ></v-combobox>
+              </v-col>
+            </v-row>
+          </v-card>
+          <v-card flat outlined class="pa-1 mb-4">
+            <v-row class="align-center" no-gutters>
+              <v-col>
+                <v-text-field class="swap-amount" :value="toValue" hide-details outlined type="number" @change="toValueChanged" />
+              </v-col>
+              <v-col cols="3">
+                <v-combobox
+                  :value="toToken"
+                  class="swap-token"
+                  flat
+                  outlined
+                  hide-details
+                  solo
+                  :items="tokenList"
+                  item-text="symbol"
+                  item-value="symbol"
+                  :rules="[rules.required]"
+                  @change="toTokenChanged"
+                ></v-combobox>
+              </v-col>
+            </v-row>
+          </v-card>
+          <div v-if="!!currentSwapQuote">
+            <div>{{ t('walletSwap.expectedOutput') }}: {{ toValue }} {{ toToken }}</div>
+            <div>{{ t('walletSwap.priceImpact') }}: {{ priceImpact }} %</div>
+            <div>{{ t('walletSwap.networkFee') }}: {{ gasFees }} USD</div>
           </div>
-        </template>
-      </MessageModal>
-    </v-dialog>
-
-    <v-dialog v-model="confirmationModalShow" max-width="375">
-      <v-card>
-        <v-card-title>Confirm swap</v-card-title>
-        <v-card-text>{{ confirmSwapDetailText }}</v-card-text>
-        <v-card-actions>
-          <v-btn class="text-h6 mb-4" color="primary" x-large block :disabled="!currentSwapQuote" :loading="sendingTx" @click="sendTx">
+          <div v-else-if="!currentSwapQuote && valid && fetchingQuote">
+            <div>{{ t('walletSwap.fetching') }}</div>
+          </div>
+          <v-btn class="text-h6 mt-2" color="primary" x-large block :disabled="!currentSwapQuote" @click.stop="confirmationModalShow = true">
             {{ t('walletSwap.swap') }}
           </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        </v-card>
+      </v-form>
+
+      <v-dialog v-model="messageModalShow" max-width="375" persistent>
+        <MessageModal
+          :detail-text="messageModalDetails"
+          :modal-type="messageModalType"
+          :title="messageModalTitle"
+          :no-close="messageModalType === MESSAGE_MODAL_TYPE_SUCCESS"
+          @onClose="messageModalShow = false"
+        >
+          <template v-if="messageModalType === MESSAGE_MODAL_TYPE_SUCCESS" #link>
+            <div class="mb-4">
+              <v-btn text class="share-btn" :href="etherscanLink" target="_blank">
+                <span class="body-2 font-weight-bold">{{ t('walletSwap.viewEtherscan') }}</span>
+              </v-btn>
+            </div>
+          </template>
+        </MessageModal>
+      </v-dialog>
+
+      <v-dialog v-model="confirmationModalShow" max-width="375">
+        <v-card>
+          <v-card-title>Confirm swap</v-card-title>
+          <v-card-text>{{ confirmSwapDetailText }}</v-card-text>
+          <v-card-actions>
+            <v-btn class="text-h6 mb-4" color="primary" x-large block :disabled="!currentSwapQuote" :loading="sendingTx" @click="sendTx">
+              {{ t('walletSwap.swap') }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-container>
   </v-container>
 </template>
 <script>
@@ -112,6 +117,7 @@ import log from 'loglevel'
 import { mapState } from 'vuex'
 
 import NetworkDisplay from '../../components/helpers/NetworkDisplay/NetworkDisplay.vue'
+import QuickAddress from '../../components/helpers/QuickAddress/QuickAddress.vue'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import AlphaRouter from '../../plugins/uniswap'
 import torus from '../../torus'
@@ -120,7 +126,7 @@ import { getEtherScanHashLink } from '../../utils/utils'
 
 export default {
   name: 'WalletDiscover',
-  components: { MessageModal, NetworkDisplay },
+  components: { MessageModal, NetworkDisplay, QuickAddress },
   data() {
     return {
       fromValue: 0.01,
