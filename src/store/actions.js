@@ -25,7 +25,7 @@ import {
   SUPPORTED_NETWORK_TYPES,
 } from '../utils/enums'
 import { remove } from '../utils/httpHelpers'
-import { fakeStream, generateAddressFromPrivateKey, getIFrameOriginObject, isMain, toChecksumAddressByChainId } from '../utils/utils'
+import { fakeStream, generateAddressFromPrivateKey, getIFrameOriginObject, isMain, storageUtils, toChecksumAddressByChainId } from '../utils/utils'
 import {
   accountTrackerHandler,
   announcementsHandler,
@@ -137,6 +137,7 @@ export default {
       }
     }
     statusStream.write({ loggedIn: false })
+    sessionStorage.removeItem('torus-white-label')
     resetStore(accountTracker.store, accountTrackerHandler)
     resetStore(txController.store, transactionControllerHandler)
     resetStore(assetController.store, assetControllerHandler)
@@ -161,7 +162,9 @@ export default {
   setSelectedCurrency({ commit }, payload) {
     torusController.setCurrentCurrency(payload, (error, data) => {
       if (error) log.error('currency fetch failed')
-      else commit('setCurrencyData', data)
+      else {
+        commit('setCurrencyData', data)
+      }
     })
   },
   async forceFetchTokens({ state }) {
@@ -216,11 +219,11 @@ export default {
       handleProviderChangeDeny('user denied provider change request')
     }
   },
-  showWalletPopup(context, payload) {
+  async showWalletPopup(context, payload) {
     const url = payload.path.includes('tkey') ? `${baseRoute}${payload.path || ''}` : `${baseRoute}wallet${payload.path || ''}`
     const finalUrl = `${url}?instanceId=${torus.instanceId}`
     const walletWindow = new PopupHandler({ url: finalUrl, features: FEATURES_DEFAULT_WALLET_WINDOW })
-    walletWindow.open()
+    await walletWindow.open()
     if (walletWindow.window.blur) walletWindow.window.blur()
     if (walletWindow.window.focus) setTimeout(walletWindow.window.focus(), 0)
   },
@@ -368,6 +371,7 @@ export default {
       networkType = { ...getters.supportedNetworks[networkType.host], ...networkType }
       isSupportedNetwork = true
     }
+
     const currentTicker = networkType.ticker || 'ETH'
     if ((payload.type && payload.type === RPC) || !isSupportedNetwork) {
       const networkId = await torusController.setCustomRpc(networkType.host, networkType.chainId || 1, currentTicker, networkType.networkName || '', {
@@ -377,17 +381,28 @@ export default {
         networkType.id = networkId
       }
       commit('setNetworkType', networkType)
-      return null
     }
     commit('setNetworkType', networkType)
     await networkController.setProviderType(networkType.host, networkType.rpcUrl || networkType.host, networkType.ticker, networkType.networkName)
-    if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency)
+    if (!config.supportedCurrencies.includes(state.selectedCurrency) && networkType.ticker !== state.selectedCurrency) {
       await dispatch('setSelectedCurrency', { selectedCurrency: networkType.ticker, origin: 'home' })
-    else await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
-
-    // Set custom currency
-    if (getters.supportedCurrencies.includes(networkType.ticker) && networkType.ticker !== state.selectedCurrency)
       await commit('setCustomCurrency', networkType.ticker)
+    } else {
+      await dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
+      await commit('setCustomCurrency', state.selectedCurrency)
+    }
+
+    const openloginInstance = OpenLoginHandler.getInstance({}, {}, config.namespace)
+    const existingSessionData = await openloginInstance.getActiveSession()
+    if (!existingSessionData) {
+      dispatch('logOut')
+      return undefined
+    }
+    const sessionData = {
+      ...existingSessionData,
+      networkType,
+    }
+    await openloginInstance.updateSession(sessionData)
     return undefined
   },
   async deleteCustomNetwork({ _commit }, id) {
@@ -444,8 +459,10 @@ export default {
       if (error) {
         throw new Error(error)
       }
-      if (config.localStorageAvailable) {
+      if (config.storageAvailability[storageUtils.storageType]) {
         const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
+        if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType })
+        else await dispatch('setProviderType', { network: state.networkType, type: RPC })
         await openLoginHandler.openLoginInstance._syncState({
           store: {
             sessionId,
@@ -610,58 +627,65 @@ export default {
     }
   },
   async rehydrate({ state, dispatch, commit }) {
-    const { networkType, networkId, wcConnectorSession } = state
+    const { networkType, wcConnectorSession } = state
     let walletKey = {}
+    let finalNetworkType = networkType
     try {
       const currentRoute = router.match(window.location.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
-      if (!currentRoute.meta.skipOpenLoginCheck) {
+      if (!currentRoute.meta.skipOpenLoginCheck || currentRoute.meta.fetchSession) {
         const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
         const sessionInfo = await openLoginHandler.getActiveSession()
-        if (!sessionInfo) {
-          commit('setRehydrationStatus', true)
+        if (!currentRoute.meta.skipOpenLoginCheck) {
+          if (!sessionInfo) {
+            commit('setRehydrationStatus', true)
 
-          if (isMain) await dispatch('logOut')
-          else commit('setSelectedAddress', '')
-          return
-        }
-        const { store } = sessionInfo
-        // log.info(sessionInfo, 'current session info')
-        if (sessionInfo.walletKey || sessionInfo.tKey) {
-          walletKey = openLoginHandler.getWalletKey()
-          // already logged in
-          // call autoLogin
-          log.info('auto-login with openlogin session')
-          await dispatch('autoLogin', { calledFromEmbed: !isMain })
-
-          if (store.appState) {
-            const appStateParams = JSON.parse(safeatob(store.appState))
-            if (appStateParams?.whiteLabel) {
-              commit('setWhiteLabel', { ...appStateParams.whiteLabel })
-            }
-            if (appStateParams?.loginConfig && typeof appStateParams.loginConfig === 'object' && Object.keys(appStateParams.loginConfig).length > 0) {
-              commit('setLoginConfig', { ...appStateParams.loginConfig })
-            }
+            if (isMain) await dispatch('logOut')
+            else commit('setSelectedAddress', '')
+            return
           }
-          if (currentRoute.name !== 'popup' && currentRoute.meta.requiresAuth === false) {
-            const noRedirectQuery = Object.fromEntries(new URLSearchParams(window.location.search))
-            const { redirect } = noRedirectQuery
-            delete noRedirectQuery.redirect
+          const { store } = sessionInfo
+          // log.info(sessionInfo, 'current session info')
+          if (sessionInfo.walletKey || sessionInfo.tKey) {
+            walletKey = openLoginHandler.getWalletKey()
+            // already logged in
+            // call autoLogin
+            log.info('auto-login with openlogin session')
+            await dispatch('autoLogin', { calledFromEmbed: !isMain })
 
-            router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})
+            if (store.appState) {
+              const appStateParams = JSON.parse(safeatob(store.appState))
+              if (appStateParams?.whiteLabel) {
+                commit('setWhiteLabel', { ...appStateParams.whiteLabel })
+              }
+              if (
+                appStateParams?.loginConfig &&
+                typeof appStateParams.loginConfig === 'object' &&
+                Object.keys(appStateParams.loginConfig).length > 0
+              ) {
+                commit('setLoginConfig', { ...appStateParams.loginConfig })
+              }
+            }
+            if (currentRoute.name !== 'popup' && currentRoute.meta.requiresAuth === false) {
+              const noRedirectQuery = Object.fromEntries(new URLSearchParams(window.location.search))
+              const { redirect } = noRedirectQuery
+              delete noRedirectQuery.redirect
+
+              router.push({ path: redirect || '/wallet', query: noRedirectQuery, hash: window.location.hash }).catch((_) => {})
+            }
+          } else {
+            log.info('no openlogin session')
           }
-        } else {
-          log.info('no openlogin session')
         }
+        if (sessionInfo?.networkType) finalNetworkType = sessionInfo?.networkType
       }
 
-      if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
-      else await dispatch('setProviderType', { network: networkType, type: RPC })
+      if (SUPPORTED_NETWORK_TYPES[finalNetworkType.host]) await dispatch('setProviderType', { network: finalNetworkType })
+      else await dispatch('setProviderType', { network: finalNetworkType, type: RPC })
       dispatch('subscribeToControllers')
 
       const _finalSelectedAddress = state.selectedAddress || walletKey?.ethAddress
-      if (_finalSelectedAddress && state.wallet[toChecksumAddressByChainId(_finalSelectedAddress, networkId)]) {
-        dispatch('updateSelectedAddress', { selectedAddress: toChecksumAddressByChainId(_finalSelectedAddress, networkId) }) // synchronous
-        dispatch('updateNetworkId', { networkId })
+      if (_finalSelectedAddress && state.wallet[toChecksumAddressByChainId(_finalSelectedAddress, finalNetworkType.chainId)]) {
+        dispatch('updateSelectedAddress', { selectedAddress: toChecksumAddressByChainId(_finalSelectedAddress, finalNetworkType.chainId) })
         // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: state.userInfo.verifier })
         if (Object.keys(wcConnectorSession).length > 0) dispatch('initWalletConnect', { session: wcConnectorSession })
@@ -687,7 +711,7 @@ export default {
       data: payload,
     })
   },
-  initWalletConnect(_, payload) {
+  async initWalletConnect(_, payload) {
     return walletConnectController.init(payload)
   },
   disconnectWalletConnect(_, __) {
@@ -708,6 +732,9 @@ export default {
   handleShowWalletConnectReq({ commit }) {
     log.debug('handleShowWalletConnectReq')
     commit('setShowWalletConnect', true)
+  },
+  handleWalletConnectUriReq({ dispatch }, payload) {
+    dispatch('initWalletConnect', { uri: payload.uri, fromEmbed: true })
   },
   sendWalletConnectResponse({ commit }, { success, errorMessage }) {
     commit('setShowWalletConnect', false)

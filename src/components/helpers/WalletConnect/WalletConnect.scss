@@ -16,11 +16,27 @@
   }
 }
 
-
-.custom-placeholer{
+.guide-info {
   font-size: 10px;
 }
 
+.wallet-connect-input {
+  :deep(.v-input__prepend-inner) {
+    margin-top: 9px !important;
+  }
+  :deep(input) {
+    padding: 7px 0 8px;
+  }
+  &--connected {
+    :deep(.v-input__slot fieldset) {
+      border-width: 1px !important;
+      border-color: var(--v-success-base) !important;
+    }
+    :deep(input) {
+      color: var(--v-success-base) !important;
+    }
+  }
+}
 
 .close-btn {
   position: absolute;
@@ -29,15 +45,15 @@
   color: #d3d3d4;
 }
 
-.hidden-btn{
+.hidden-btn {
   visibility: hidden;
 }
 
-.guide-menu.theme--dark{
+.guide-menu.theme--dark {
   border: 1px white solid;
   border-radius: 9px;
 }
 
-.goto-button{
+.goto-button {
   margin-left: -10px;
 }

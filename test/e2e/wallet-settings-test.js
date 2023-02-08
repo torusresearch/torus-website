@@ -1,7 +1,7 @@
 /* eslint-disable */
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, GOOGLE_LABEL } = require('../../src/utils/enums')
+const { WALLET_HEADERS_HOME, GOERLI_DISPLAY_NAME, GOOGLE_LABEL } = require('../../src/utils/enums')
 
 const config = require('./lib/config')
 const { login, loadUrl, click, typeText, waitForText, shouldExist, selectItem, navigateTo, waitForClass } = require('./lib/helpers')
@@ -43,10 +43,10 @@ describe('Tests Wallet Settings Page', () => {
     await navigateTo(page, '#settings-link', '.wallet-settings')
   })
 
-  it('Should change network to rinkeby', async () => {
+  it('Should change network to goerli', async () => {
     await click(page, '#network-panel-header')
 
-    const textToSelect = RINKEBY_DISPLAY_NAME
+    const textToSelect = GOERLI_DISPLAY_NAME
     await selectItem(page, '#select-network', '.select-network-container', textToSelect)
     await page.waitFor(100)
     const networkSelected = await page.$eval('.select-network-container .v-select__selection', (element) => element.textContent)
@@ -74,7 +74,7 @@ describe('Tests Wallet Settings Page', () => {
     // wait for download wallet to appear
     await page.waitForResponse(
       (response) =>
-        response.url().includes('https://rinkeby.infura.io/v3/341eacb578dd44a1a049cbc5f6fd4035') &&
+        response.url().includes('https://goerli.infura.io/v3/341eacb578dd44a1a049cbc5f6fd4035') &&
         (response.status() >= 200 || response.status() < 300),
       { timeout: 60000 }
     )

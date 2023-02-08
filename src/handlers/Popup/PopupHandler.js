@@ -33,7 +33,7 @@ class PopupHandler extends EventEmitter {
     }, 500)
   }
 
-  open() {
+  async open() {
     // if window is already open
     if (!this.preopenInstanceId) {
       // try to open a window first
@@ -42,10 +42,10 @@ class PopupHandler extends EventEmitter {
         // if it's blocked, open streamwindow
         this.window = new StreamWindow({ url: this.url })
       }
-      return Promise.resolve()
+      return
     }
     this.window = new StreamWindow({ preopenInstanceId: this.preopenInstanceId })
-    return this.window.open(this.url)
+    await this.window.open(this.url)
   }
 
   close() {

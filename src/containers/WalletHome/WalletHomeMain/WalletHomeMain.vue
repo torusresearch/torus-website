@@ -124,10 +124,7 @@
         </v-card>
       </v-flex> -->
       <v-flex v-if="!whiteLabel.featuredBillboardHide && apiStreamSupported" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
-        <WalletConnectCard
-          image-path="https://images.web3auth.io/wallet-connect.svg"
-          image-dark-path="https://images.web3auth.io/wallet-connect.svg"
-        ></WalletConnectCard>
+        <WalletConnectCard />
       </v-flex>
       <v-flex
         v-for="(event, i) in isFreshAccount || whiteLabel.featuredBillboardHide ? [] : events"
@@ -286,7 +283,7 @@ export default {
       return this.tokenBalances.totalPortfolioValue || '0'
     },
     finalBalancesArray() {
-      const balances = this.tokenBalances.finalBalancesArray
+      const balances = [...this.tokenBalances.finalBalancesArray]
       const defaultToken = balances.length > 0 ? balances[0] : null
       balances.splice(0, 1).sort((x, y) => y.currencyBalanceRounded - x.currencyBalanceRounded)
       if (defaultToken !== null) {

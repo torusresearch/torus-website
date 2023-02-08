@@ -8,12 +8,11 @@ import AssetsController from '../../../src/controllers/AssetsController'
 import AssetsDetectionController from '../../../src/controllers/AssetsDetectionController'
 import NetworkController from '../../../src/controllers/network/NetworkController'
 import PreferencesController from '../../../src/controllers/PreferencesController'
-import { BSC_MAINNET, MAINNET, MATIC, MUMBAI } from '../../../src/utils/enums'
+import { BSC_MAINNET, GOERLI, MAINNET, MATIC, MUMBAI } from '../../../src/utils/enums'
 import * as utils from '../../../src/utils/utils'
 import { userBalances } from '../../data/backend-nft-data'
 import { openseaNfts } from '../../data/opensea-nft-data'
 
-const ROPSTEN = 'ropsten'
 const noop = () => {}
 const TEST_ADDRESS = '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'
 const TORUS_API = config.api
@@ -156,7 +155,7 @@ describe('AssetsDetectionController', () => {
   it('should detect mainnet correctly', () => {
     network.setProviderType(MAINNET)
     assert(assetsDetection.isMainnet() === true)
-    network.setProviderType(ROPSTEN)
+    network.setProviderType(GOERLI)
     assert(assetsDetection.isMainnet() === false)
   })
 

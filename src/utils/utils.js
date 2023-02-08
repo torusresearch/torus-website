@@ -49,10 +49,6 @@ import {
   GOOGLE,
   JWT,
   KAKAO,
-  KOVAN,
-  KOVAN_CHAIN_ID,
-  KOVAN_CODE,
-  KOVAN_DISPLAY_NAME,
   LINE,
   LINKEDIN,
   MAINNET,
@@ -83,18 +79,14 @@ import {
   PNG,
   RAMPNETWORK,
   REDDIT,
-  RINKEBY,
-  RINKEBY_CHAIN_ID,
-  RINKEBY_CODE,
-  RINKEBY_DISPLAY_NAME,
-  ROPSTEN,
-  ROPSTEN_CHAIN_ID,
-  ROPSTEN_CODE,
-  ROPSTEN_DISPLAY_NAME,
   RSK_MAINNET_CHAIN_ID,
   RSK_MAINNET_CODE,
   RSK_TESTNET_CHAIN_ID,
   RSK_TESTNET_CODE,
+  SEPOLIA,
+  SEPOLIA_CHAIN_ID,
+  SEPOLIA_CODE,
+  SEPOLIA_DISPLAY_NAME,
   SIMPLEX,
   SUPPORTED_NETWORK_TYPES,
   SVG,
@@ -113,15 +105,11 @@ import {
 } from './enums'
 
 const networkToNameMap = {
-  [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
-  [RINKEBY]: RINKEBY_DISPLAY_NAME,
-  [KOVAN]: KOVAN_DISPLAY_NAME,
   [MAINNET]: MAINNET_DISPLAY_NAME,
   [GOERLI]: GOERLI_DISPLAY_NAME,
-  [ROPSTEN_CODE]: ROPSTEN_DISPLAY_NAME,
-  [RINKEBY_CODE]: RINKEBY_DISPLAY_NAME,
-  [KOVAN_CODE]: KOVAN_DISPLAY_NAME,
   [GOERLI_CODE]: GOERLI_DISPLAY_NAME,
+  [SEPOLIA]: SEPOLIA_DISPLAY_NAME,
+  [SEPOLIA_CODE]: SEPOLIA_DISPLAY_NAME,
 }
 
 export class UserError extends Error {}
@@ -708,10 +696,8 @@ export function capitalizeFirstLetter(string) {
 
 export const standardNetworkId = {
   [MAINNET_CODE.toString()]: MAINNET_CHAIN_ID,
-  [ROPSTEN_CODE.toString()]: ROPSTEN_CHAIN_ID,
-  [RINKEBY_CODE.toString()]: RINKEBY_CHAIN_ID,
-  [KOVAN_CODE.toString()]: KOVAN_CHAIN_ID,
   [GOERLI_CODE.toString()]: GOERLI_CHAIN_ID,
+  [SEPOLIA_CODE.toString]: SEPOLIA_CHAIN_ID,
   [MATIC_CODE.toString()]: MATIC_CHAIN_ID,
   [MUMBAI_CODE.toString()]: MUMBAI_CHAIN_ID,
   [BSC_MAINNET_CODE.toString()]: BSC_MAINNET_CHAIN_ID,
@@ -746,6 +732,15 @@ export const getIFrameOriginObject = () => {
     return { href: window.location.href, hostname: window.location.hostname }
   }
 }
+
+export const storageUtils = {
+  storage: config.isCustomLogin === null ? window.sessionStorage : window.localStorage,
+  storageType: config.isCustomLogin === null ? 'session' : 'local',
+  storageKey: config.isCustomLogin === true ? `torus_app_${config.namespace || getIFrameOriginObject().hostname}` : 'torus-app',
+  openloginStoreKey: config.isCustomLogin === true ? `openlogin_store_${config.namespace || getIFrameOriginObject().hostname}` : 'openlogin_store',
+}
+
+export const getSessionIdFromStorage = () => JSON.parse(storageUtils.storage.getItem(`${storageUtils.openloginStoreKey}`) || '{}').sessionId
 
 export const fakeStream = {
   write: () => {},
@@ -1185,6 +1180,10 @@ export const parsePopupUrl = (url) => {
   localUrl.searchParams.append('isCustomLogin', config.isCustomLogin)
   if (config.isCustomLogin) {
     localUrl.searchParams.append('namespace', iframeOrigin.hostname)
+  }
+  const sessionId = getSessionIdFromStorage()
+  if (sessionId) {
+    localUrl.searchParams.append('sessionId', sessionId)
   }
   return localUrl
 }

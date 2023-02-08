@@ -383,7 +383,7 @@ describe('Preferences Controller', () => {
         .reply(201, {
           data: {
             nft_address: '0xf0ee6b27b759c9893ce4f094b49ad28fd15a23e4',
-            network: 'rinkeby',
+            network: 'goerli',
             nft_name: 'ETHERMON',
             nft_image_link: 'https://ethermon.ipfs.io/abcd.jpg',
             nft_id: '10019029019901',
@@ -494,7 +494,7 @@ describe('Preferences Controller', () => {
     it('add custom nft', async () => {
       await preferencesController.addCustomNft({
         nft_address: '0xf0ee6b27b759c9893ce4f094b49ad28fd15a23e4',
-        network: 'rinkeby',
+        network: 'goerli',
         nft_name: 'ETHERMON',
         nft_image_link: 'https://ethermon.ipfs.io/abcd.jpg',
         nft_id: '10019029019901',
@@ -509,7 +509,7 @@ describe('Preferences Controller', () => {
           description: 'test desc',
           balance: 1,
           nft_address: '0xf0ee6b27b759c9893ce4f094b49ad28fd15a23e4',
-          network: 'rinkeby',
+          network: 'goerli',
           nft_name: 'ETHERMON',
           nft_image_link: 'https://ethermon.ipfs.io/abcd.jpg',
           nft_id: '10019029019901',

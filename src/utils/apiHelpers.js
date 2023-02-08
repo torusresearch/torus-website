@@ -109,7 +109,7 @@ export default class ApiHelpers {
     if (!COVALENT_SUPPORTED_CHAIN_IDS[chainId]) {
       throw new Error('Nft metadata not found')
     }
-    // for all other covalent supported chains except mainnnet.
+    // for all other covalent supported chains except mainnet.
     const url = encodeURIComponent(`https://api.covalenthq.com/v1/${chainId}/tokens/${contract}/nft_metadata/${tokenId}/`)
     const queryApi = `${config.api}/covalent?url=${url}`
     if (timeout > 0) {
