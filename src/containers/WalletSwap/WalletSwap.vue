@@ -218,16 +218,17 @@ export default {
         log.info(this.chainId, 'chainId')
         let swapParams = []
         if (reverse) {
-          const toCurrencyAmount = this.getCurrencyAmount(this.toValue, this.toToken)
+          // Account for fees here
+          const toCurrencyAmount = this.getCurrencyAmount(this.toValue, this.toToken).multiply(new Percent(1).add(config.feePercent))
           const fromTokenInstance = this.getTokenInstance(this.fromToken)
           swapParams = [toCurrencyAmount, fromTokenInstance, TradeType.EXACT_OUTPUT]
         } else {
+          // Here we take fees from output directly
           const fromCurrencyAmount = this.getCurrencyAmount(this.fromValue, this.fromToken)
           const toTokenInstance = this.getTokenInstance(this.toToken)
           swapParams = [fromCurrencyAmount, toTokenInstance, TradeType.EXACT_INPUT]
         }
 
-        log.info(torus.torusController.provider)
         const router = new AlphaRouter({ chainId: this.chainId, provider: new ethers.providers.Web3Provider(torus.torusController.provider) })
         const swapRoute = await router.route(
           ...swapParams,
@@ -236,7 +237,7 @@ export default {
             slippageTolerance: new Percent(5, 100),
             deadline: Math.floor(Date.now() / 1000 + 1800),
             fee: {
-              fee: new Percent(1, 100), // use 1% fees
+              fee: config.feePercent, // use 1% fees
               recipient: config.uniswapFeeRecipient,
             },
           },
@@ -249,7 +250,7 @@ export default {
         if (reverse) {
           this.fromValue = swapRoute.quote.toSignificant()
         } else {
-          this.toValue = swapRoute.quote.toSignificant()
+          this.toValue = swapRoute.quote.multiply(new Percent(1).subtract(config.feePercent)).toSignificant()
         }
         this.priceImpact = swapRoute.trade.priceImpact.toFixed(2)
         this.gasFees = swapRoute.estimatedGasUsedUSD.toSignificant()
