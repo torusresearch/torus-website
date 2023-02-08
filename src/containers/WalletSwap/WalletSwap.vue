@@ -119,6 +119,7 @@ import { mapState } from 'vuex'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay/NetworkDisplay.vue'
 import QuickAddress from '../../components/helpers/QuickAddress/QuickAddress.vue'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
+import config from '../../config'
 import AlphaRouter from '../../plugins/uniswap'
 import torus from '../../torus'
 import { MESSAGE_MODAL_TYPE_FAIL, MESSAGE_MODAL_TYPE_SUCCESS } from '../../utils/enums'
@@ -236,8 +237,7 @@ export default {
             deadline: Math.floor(Date.now() / 1000 + 1800),
             fee: {
               fee: new Percent(1, 100), // use 1% fees
-              // TODO: change addr
-              recipient: '0x3E2a1F4f6b6b5d281Ee9a9B36Bb33F7FBf0614C3',
+              recipient: config.uniswapFeeRecipient,
             },
           },
           {}
@@ -290,7 +290,7 @@ export default {
       this.sendingTx = true
       const transaction = {
         data: this.currentSwapQuote.methodParameters.calldata,
-        to: '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45',
+        to: config.uniswapContractAddress,
         value: this.currentSwapQuote.methodParameters.value,
         from: this.selectedAddress,
         gasPrice: this.currentSwapQuote.gasPriceWei,
@@ -312,9 +312,6 @@ export default {
         }
         this.sendingTx = false
         this.confirmationModalShow = false
-        // TODO: Handle error and success
-        // Maybe show tx success modal in etherscan
-        // Do correct etherscan url depending on chainId from wallet transfer page
       })
     },
   },
