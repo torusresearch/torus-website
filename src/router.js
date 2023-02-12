@@ -157,6 +157,12 @@ const router = new Router({
           component: () => import(/* webpackChunkName: "walletDiscover" */ './containers/WalletDiscover'),
           meta: { title: 'Discover' },
         },
+        {
+          path: 'swap',
+          name: 'walletSwap',
+          component: () => import(/* webpackChunkName: "walletSwap" */ './containers/WalletSwap'),
+          meta: { title: 'Swap' },
+        },
       ],
     },
     { path: '*', component: () => import(/* webpackChunkName: "login" */ './views/Login') },
