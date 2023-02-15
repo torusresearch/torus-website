@@ -114,7 +114,7 @@ function checkValidServiceWorker(swUrl, config) {
       const contentType = response.headers.get('content-type')
       if (response.status === 404 || (contentType != null && !contentType.includes('javascript'))) {
         // No service worker found. Probably a different app. Reload the page.
-        // eslint-disable-next-line promise/no-nesting
+
         navigator.serviceWorker.ready
           .then((registration) => registration.unregister())
           .then(() => {
@@ -163,7 +163,10 @@ if (canExcludeSw && 'serviceWorker' in navigator) {
 }
 
 function swregister() {
-  if ('serviceWorker' in navigator && ['production', 'binance', 'testing', 'lrc', 'bnb', 'polygon'].includes(process.env.VUE_APP_TORUS_BUILD_ENV)) {
+  if (
+    'serviceWorker' in navigator &&
+    ['production', 'binance', 'testing', 'lrc', 'bnb', 'polygon', 'cyan'].includes(process.env.VUE_APP_TORUS_BUILD_ENV)
+  ) {
     log.info('non-integrity sw')
     // if swIntegrity is not calculated
     if (swIntegrity === ['SERVICE', 'WORKER', 'SHA', 'INTEGRITY'].join('_')) {
