@@ -233,6 +233,14 @@ class OpenLoginHandler {
       })
     }
 
+    if (this.openLoginInstance.privKey) {
+      keys.push({
+        privKey: this.openLoginInstance.privKey.padStart(64, '0'),
+        accountType: ACCOUNT_TYPE.NORMAL,
+        ethAddress: generateAddressFromPrivateKey(this.openLoginInstance.privKey),
+      })
+    }
+
     let postboxKey
     if (state.oAuthPrivateKey) {
       postboxKey = {
