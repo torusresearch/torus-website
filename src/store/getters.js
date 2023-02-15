@@ -1,7 +1,5 @@
 import BigNumber from 'bignumber.js'
 
-import fallBackLogoDark from '../assets/images/torus-logo-blue.svg'
-import fallBackLogoLight from '../assets/images/torus-logo-white.svg'
 import fallBackIconDark from '../assets/img/icons/torus-icon-light.svg'
 import config from '../config'
 import { ETH, SUPPORTED_NETWORK_TYPES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
@@ -10,7 +8,7 @@ import { significantDigits } from '../utils/utils'
 const getLogo = (state) => {
   const { whiteLabel, theme } = state
   const { logoDark, logoLight, isActive } = whiteLabel
-  let finalLogo = theme === THEME_DARK_BLACK_NAME ? fallBackLogoLight : fallBackLogoDark
+  let finalLogo = theme === THEME_DARK_BLACK_NAME ? '/images/maskverse-white.png' : '/images/maskverse-blue.png'
   let isExternal = false
   if (isActive) {
     if (theme === THEME_DARK_BLACK_NAME && logoLight) {
