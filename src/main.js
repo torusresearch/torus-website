@@ -31,6 +31,7 @@ switch (buildEnvironment) {
   case 'binance':
   case 'bnb':
   case 'polygon':
+  case 'cyan':
     logLevel = 'error'
     break
   default:

@@ -161,7 +161,7 @@ export default {
   setMfaLevel(state, payload) {
     state.embedState = {
       ...state.embedState,
-      mfaLevel: payload || 'default',
+      mfaLevel: payload || 'none',
     }
   },
   setShowWalletConnect(state, payload) {
