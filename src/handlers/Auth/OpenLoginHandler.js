@@ -62,9 +62,6 @@ class OpenLoginHandler {
       redirectUrl: `${config.baseRoute}end`,
       replaceUrlOnRedirect: true,
       uxMode: 'redirect',
-      originData: {
-        [window.location.origin]: config.openLoginOriginSig,
-      },
       whiteLabel: whiteLabelOpenLogin,
       loginConfig,
       network: config.torusNetwork,

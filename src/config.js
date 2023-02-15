@@ -177,7 +177,7 @@ export default {
   api: 'https://api.tor.us',
   // api: 'http://localhost:2020',
   infuraKey: VUE_APP_INFURA_KEY,
-  openLoginClientId: 'BCY9aYsh8iGshQuzNjBbONYE-tKD0JM389l87IiMOVeOU1TBmRaZphKOyphkUpo41fuSMnO6QRlloxCV-3nt8dU',
+  openLoginClientId: 'BD6Lqdx97VrKmXaRnbGzLAeFLHqViYggO4nbf-l_insdSWrW6_9cIOUb1cluk7JiRMoljIsui9Hb_KEHDMa-oTI',
   torusNetwork: VUE_APP_PROXY_NETWORK || 'mainnet',
   openLoginOriginSig: VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
   developerDashboardUrl: VUE_APP_DEVELOPER_DASHBOARD_URL,
