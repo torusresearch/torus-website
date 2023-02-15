@@ -148,13 +148,13 @@
     <v-layout wrap align-center class="mt-7">
       <v-flex xs12 md6 :class="{ 'offset-md-3': $vuetify.breakpoint.mdAndUp }">
         <v-tabs v-model="activeTab" class="home-tab" centered hide-slider>
-          <v-tab :key="t('walletHome.tokens')" class="home-tab-token gmt-tokens-tab font-weight-bold">
-            <v-icon class="mr-1" small left>$vuetify.icons.token</v-icon>
-            {{ t('walletHome.tokens') }}
-          </v-tab>
           <v-tab :key="t('walletHome.collectibles')" class="home-tab-collectibles gmt-collectibles-tab font-weight-bold">
             <v-icon class="mr-1" small left>$vuetify.icons.collectibles</v-icon>
             {{ t('walletHome.collectibles') }}
+          </v-tab>
+          <v-tab :key="t('walletHome.tokens')" class="home-tab-token gmt-tokens-tab font-weight-bold">
+            <v-icon class="mr-1" small left>$vuetify.icons.token</v-icon>
+            {{ t('walletHome.tokens') }}
           </v-tab>
         </v-tabs>
       </v-flex>
