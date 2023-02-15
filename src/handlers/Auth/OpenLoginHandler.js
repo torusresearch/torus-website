@@ -68,6 +68,9 @@ class OpenLoginHandler {
       no3PC: true,
       _sessionNamespace: sessionNamespace || namespace,
       storageKey: storageUtils.storageType,
+      originData: {
+        [window.location.origin]: config.openLoginOriginSig,
+      },
     })
   }
 
