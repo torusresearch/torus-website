@@ -994,4 +994,5 @@ export const AVAILABLE_WEBSITES = {
   Solana: 'https://solana.tor.us',
   Polygon: 'https://polygon.tor.us',
   Binance: 'https://bnb.tor.us',
+  MASKVERSE: 'https://maskverse.web3auth.com',
 }
