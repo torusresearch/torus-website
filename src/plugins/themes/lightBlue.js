@@ -1,6 +1,6 @@
 export default {
   // V8
-  torusBrand1: '#0364FF',
+  torusBrand1: '#2f1189',
   torusBrand2: '#5495F7',
   torusBrand3: '#CDE0FF',
   torusBrand4: '#E9EEFE',
@@ -11,7 +11,7 @@ export default {
   torusGray4: '#F9F9FB',
   torusFont1: '#0F1222',
   torusFont2: '#7F8FA4',
-  torusFontLink1: '#0364FF',
+  torusFontLink1: '#2f1189',
   torusFontLink2: '#5495F7',
   torusBlack: '#252529',
   torusBlack2: '#2F3136',
@@ -23,7 +23,7 @@ export default {
   text_3: '#6F717A',
   loginBtnGray: '#9B9B9B',
   primary: {
-    base: '#0364FF',
+    base: '#2f1189',
     lighten5: '#E9EEFE',
   },
   infoBanner: '#DAF0FF',

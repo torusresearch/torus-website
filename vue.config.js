@@ -93,8 +93,8 @@ module.exports = {
   crossorigin: 'anonymous',
   productionSourceMap: true,
   pwa: {
-    name: 'Torus',
-    themeColor: '#0364ff',
+    name: 'Maskverse',
+    themeColor: '#2f1189',
     msTileColor: '#000000',
     appleMobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: 'black-translucent',
@@ -120,7 +120,7 @@ module.exports = {
       short_name: 'Torus',
       start_url: getValueForCurrentEnvironment('index.html'),
       display: 'standalone',
-      theme_color: '#0364ff',
+      theme_color: '#2f1189',
       icons: [
         getAndroidIcon('72x72'),
         getAndroidIcon('96x96'),
