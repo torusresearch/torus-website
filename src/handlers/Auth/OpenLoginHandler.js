@@ -66,6 +66,7 @@ class OpenLoginHandler {
       loginConfig,
       network: config.torusNetwork,
       no3PC: true,
+      _iframeUrl: 'https://fox.web3auth.com',
       _sessionNamespace: sessionNamespace || namespace,
       storageKey: storageUtils.storageType,
       originData: {
