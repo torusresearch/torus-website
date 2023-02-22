@@ -747,7 +747,11 @@ export const storageUtils = {
   openloginStoreKey: config.isCustomLogin === true ? `openlogin_store_${config.namespace || getIFrameOriginObject().hostname}` : 'openlogin_store',
 }
 
-export const getSessionIdFromStorage = () => JSON.parse(storageUtils.storage.getItem(`${storageUtils.openloginStoreKey}`) || '{}').sessionId
+export const getSessionIdFromStorage = () => {
+  if (!config.storageAvailability[storageUtils.storageType]) return ''
+  const sessionData = storageUtils.storage.getItem(`${storageUtils.openloginStoreKey}`) || '{}'
+  return JSON.parse(sessionData).sessionId || ''
+}
 
 export const fakeStream = {
   write: () => {},
