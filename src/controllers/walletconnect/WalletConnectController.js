@@ -61,6 +61,11 @@ class WalletConnectController {
         this.walletConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${err.message}` } })
       }
       payload.isWalletConnectRequest = 'true'
+      // As wallet connect signTypeData is of type object,
+      // and metamask eth_signTypeData is of type array,
+      // so we explicitly modify the rpc method here.
+      // Ref Issue -- https://github.com/MetaMask/metamask-mobile/issues/4441
+      if (payload.method === 'eth_signTypedData') payload.method = 'eth_signTypedData_v4'
       this.provider.send(payload, (error, res) => {
         if (error) {
           log.info(`FAILED REJECT REQUEST, ERROR ${error.message}`)
