@@ -342,11 +342,14 @@ class PreferencesController extends SafeEventEmitter {
   cancelTxCalculate(pastTx) {
     const nonceMap = {}
     for (const x of pastTx) {
-      if (!nonceMap[x.nonce]) nonceMap[x.nonce] = [x]
+      const txKey = [x.nonce, x.from].join(':')
+      if (!nonceMap[txKey]) nonceMap[txKey] = [x]
       else {
-        nonceMap[x.nonce].push(x)
+        nonceMap[txKey].push(x)
       }
     }
+
+    log.info('txs: nonceMap', nonceMap)
 
     for (const [, value] of Object.entries(nonceMap)) {
       // has duplicate
