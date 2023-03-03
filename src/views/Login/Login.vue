@@ -15,8 +15,11 @@
               <section class="py-10 py-sm-12">
                 <v-layout wrap>
                   <v-flex class="mb-8" xs10 ml-auto mr-auto>
-                    <!-- TODO: Moonsault LOGO -->
-                    <img height="35" :src="require(`../../assets/images/maskverse-${$vuetify.theme.dark ? 'white' : 'blue'}.png`)" alt="Torus Logo" />
+                    <img
+                      height="35"
+                      :src="require(`../../assets/images/moonsault-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+                      alt="Moonsault Logo"
+                    />
                   </v-flex>
                   <LoginTitle class="mb-6" />
                   <v-flex xs10 mx-auto mt-4>
@@ -45,12 +48,11 @@
                   <v-row :justify="'space-between'">
                     <!-- <v-col> -->
 
-                    <!-- TODO: Moonsault LOGO -->
                     <img
                       height="35"
                       class="mb-2"
-                      :src="require(`../../assets/images/maskverse-${$vuetify.theme.dark ? 'white' : 'blue'}.png`)"
-                      alt="Torus Logo"
+                      :src="require(`../../assets/images/moonsault-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+                      alt="Moonsault Logo"
                     />
                     <!-- </v-col> -->
                     <!-- <v-col> -->
@@ -69,8 +71,11 @@
           </v-layout>
           <v-layout v-else wrap align-center justify-center align-content-center>
             <v-flex xs12 text-center mb-12>
-              <!-- TODO: Moonsault LOGO -->
-              <img width="250" :src="require(`../../assets/images/maskverse-${$vuetify.theme.dark ? 'white-new' : 'blue'}.png`)" alt="Torus Logo" />
+              <img
+                width="250"
+                :src="require(`../../assets/images/moonsault-${$vuetify.theme.dark ? 'white-new' : 'blue'}.svg`)"
+                alt="Moonsault Logo"
+              />
             </v-flex>
             <v-flex xs12 text-center>
               <img

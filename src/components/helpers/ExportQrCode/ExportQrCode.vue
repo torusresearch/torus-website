@@ -8,13 +8,12 @@
     <v-card>
       <v-layout wrap>
         <v-flex class="card-header text-center" xs12 py-10 px-6>
-          <!-- TODO: Moonsault logo -->
           <img
             class="home-link mx-auto"
-            alt="Torus Logo"
+            alt="Moonsault Logo"
             width="104"
             height="24"
-            :src="require(`../../../assets/images/maskverse-${$vuetify.theme.dark ? 'white' : 'blue'}.png`)"
+            :src="require(`../../../assets/images/moonsault-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
           />
           <v-btn class="close-btn" icon aria-label="Close Export QR" title="Close Export QR" @click="qrDialoag = false">
             <v-icon>$vuetify.icons.close</v-icon>

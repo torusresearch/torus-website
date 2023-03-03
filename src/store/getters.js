@@ -8,8 +8,7 @@ import { significantDigits } from '../utils/utils'
 const getLogo = (state) => {
   const { whiteLabel, theme } = state
   const { logoDark, logoLight, isActive } = whiteLabel
-  // TODO: Moonsault logo
-  let finalLogo = theme === THEME_DARK_BLACK_NAME ? '/images/maskverse-white.png' : '/images/maskverse-blue.png'
+  let finalLogo = theme === THEME_DARK_BLACK_NAME ? '/images/moonsault-white.svg' : '/images/moonsault-blue.svg'
   let isExternal = false
   if (isActive) {
     if (theme === THEME_DARK_BLACK_NAME && logoLight) {
