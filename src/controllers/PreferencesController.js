@@ -349,8 +349,6 @@ class PreferencesController extends SafeEventEmitter {
       }
     }
 
-    log.info('txs: nonceMap', nonceMap)
-
     for (const [, value] of Object.entries(nonceMap)) {
       // has duplicate
       if (value.length > 1) {
