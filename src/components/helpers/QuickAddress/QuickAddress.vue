@@ -3,8 +3,8 @@
     <div class="ml-auto">
       <!-- TODO: update locale and confirm link -->
       <span v-if="!!showMaskSinger" class="mr-2">
-        <v-btn type="link" small class="address-btn" aria-label="Return to Moonsault">
-          <a href="https://www.wwemoonsault.com/marketplace">{{ t('homeAssets.returnToMaskverse') }}</a>
+        <v-btn type="link" small class="address-btn" aria-label="Return to WWE Moonsault">
+          <a href="https://www.wwemoonsault.com/marketplace">{{ t('homeAssets.returnToMoonsault') }}</a>
         </v-btn>
       </span>
       <ShowToolTip :address="selectedAddress">
