@@ -2,7 +2,7 @@
     <g filter="url(#filter0_d)">
         <path fill-rule="evenodd" clip-rule="evenodd"
             d="M72.7839 0.00670526C88.241 -0.302399 101.226 10.1192 110.905 22.2077C120.635 34.3579 126.974 49.1428 124.44 64.5168C121.71 81.0861 112.671 97.0545 97.4251 104.005C82.4913 110.813 65.9598 104.81 51.0355 97.9809C35.5624 90.9006 17.7322 82.7797 14.4622 66.0424C11.2498 49.5996 25.4444 36.2384 36.5225 23.6951C46.5851 12.3015 57.6097 0.310153 72.7839 0.00670526Z"
-            fill="#2f1189" />
+            fill="#0000ff" />
         <g filter="url(#filter1_d)">
             <rect x="34" y="23" width="80" height="18" rx="6" fill="url(#paint0_linear)" />
         </g>
@@ -13,7 +13,7 @@
             <rect x="34" y="67" width="80" height="18" rx="6" fill="url(#paint2_linear)" />
         </g>
     </g>
-    <circle cx="44.5" cy="31.5" r="3.5" fill="#2f1189" />
+    <circle cx="44.5" cy="31.5" r="3.5" fill="#0000ff" />
     <defs>
         <filter id="filter0_d" x="0" y="0" width="139" height="135" filterUnits="userSpaceOnUse"
             color-interpolation-filters="sRGB">

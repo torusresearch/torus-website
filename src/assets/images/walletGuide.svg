@@ -5,7 +5,7 @@
         fill="black" fill-opacity="0.5" />
     <path d="M0 185H151C151 189.971 146.971 194 142 194H9C4.02944 194 0 189.971 0 185Z" fill="black"
         fill-opacity="0.5" />
-    <rect x="50.5" y="171.5" width="53" height="9" stroke="#2f1189" stroke-linejoin="round" />
+    <rect x="50.5" y="171.5" width="53" height="9" stroke="#0000ff" stroke-linejoin="round" />
     <defs>
         <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
             <use xlink:href="#image0_1203_11453" transform="scale(0.000896057 0.000697447)" />

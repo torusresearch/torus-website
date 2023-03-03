@@ -1200,7 +1200,7 @@ export const parsePopupUrl = (url) => {
 }
 
 export const getDefaultNetwork = () => {
-  if (window.location.hostname === 'polygon.tor.us' || window.location.hostname === 'maskverse.web3auth.com') return SUPPORTED_NETWORK_TYPES[MATIC]
+  if (window.location.hostname === 'polygon.tor.us' || window.location.hostname === 'moonsault.web3auth.com') return SUPPORTED_NETWORK_TYPES[MATIC]
   if (window.location.hostname === 'bnb.tor.us') return SUPPORTED_NETWORK_TYPES[BSC_MAINNET]
   return SUPPORTED_NETWORK_TYPES[MAINNET]
 }

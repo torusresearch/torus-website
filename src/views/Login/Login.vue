@@ -15,6 +15,7 @@
               <section class="py-10 py-sm-12">
                 <v-layout wrap>
                   <v-flex class="mb-8" xs10 ml-auto mr-auto>
+                    <!-- TODO: Moonsault LOGO -->
                     <img height="35" :src="require(`../../assets/images/maskverse-${$vuetify.theme.dark ? 'white' : 'blue'}.png`)" alt="Torus Logo" />
                   </v-flex>
                   <LoginTitle class="mb-6" />
@@ -43,6 +44,8 @@
                 <v-flex mt-4 mb-10 xs10 sm8 ml-auto mr-auto>
                   <v-row :justify="'space-between'">
                     <!-- <v-col> -->
+
+                    <!-- TODO: Moonsault LOGO -->
                     <img
                       height="35"
                       class="mb-2"
@@ -66,6 +69,7 @@
           </v-layout>
           <v-layout v-else wrap align-center justify-center align-content-center>
             <v-flex xs12 text-center mb-12>
+              <!-- TODO: Moonsault LOGO -->
               <img width="250" :src="require(`../../assets/images/maskverse-${$vuetify.theme.dark ? 'white-new' : 'blue'}.png`)" alt="Torus Logo" />
             </v-flex>
             <v-flex xs12 text-center>

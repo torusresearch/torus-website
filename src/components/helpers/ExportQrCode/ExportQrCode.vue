@@ -8,6 +8,7 @@
     <v-card>
       <v-layout wrap>
         <v-flex class="card-header text-center" xs12 py-10 px-6>
+          <!-- TODO: Moonsault logo -->
           <img
             class="home-link mx-auto"
             alt="Torus Logo"

@@ -1,8 +1,9 @@
 <template>
   <div class="quick-address d-flex align-center">
     <div class="ml-auto">
+      <!-- TODO: add a link for Moonsault website -->
       <span v-if="!!showMaskSinger" class="mr-2">
-        <v-btn type="link" small class="address-btn" aria-label="Return to Maskverse">
+        <v-btn type="link" small class="address-btn" aria-label="Return to Moonsault">
           <a href="https://www.maskverse.com/profile">{{ t('homeAssets.returnToMaskverse') }}</a>
         </v-btn>
       </span>

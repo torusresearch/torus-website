@@ -87,18 +87,18 @@
         </linearGradient>
         <linearGradient x1="59.2085896%" y1="98.2547413%" x2="59.2085896%" y2="-11.8299994%"
             id="linearGradient-14">
-            <stop stop-color="#2f1189" offset="0%"></stop>
+            <stop stop-color="#0000ff" offset="0%"></stop>
             <stop stop-color="#307FFB" stop-opacity="0.276606206" offset="26.8185177%"></stop>
             <stop stop-color="#5495F7" stop-opacity="0" offset="100%"></stop>
         </linearGradient>
         <linearGradient x1="49.9832822%" y1="95.3356445%" x2="49.9832822%" y2="0.113496013%"
             id="linearGradient-15">
-            <stop stop-color="#2f1189" offset="0%"></stop>
-            <stop stop-color="#2f1189" offset="5.494619%"></stop>
-            <stop stop-color="#2f1189" offset="16.16%"></stop>
-            <stop stop-color="#2f1189" offset="30.1836993%"></stop>
-            <stop stop-color="#2f1189" stop-opacity="0.307391827" offset="48.1%"></stop>
-            <stop stop-color="#2f1189" stop-opacity="0" offset="100%"></stop>
+            <stop stop-color="#0000ff" offset="0%"></stop>
+            <stop stop-color="#0000ff" offset="5.494619%"></stop>
+            <stop stop-color="#0000ff" offset="16.16%"></stop>
+            <stop stop-color="#0000ff" offset="30.1836993%"></stop>
+            <stop stop-color="#0000ff" stop-opacity="0.307391827" offset="48.1%"></stop>
+            <stop stop-color="#0000ff" stop-opacity="0" offset="100%"></stop>
         </linearGradient>
         <linearGradient x1="50.2261421%" y1="100.028418%" x2="50.2261421%" y2="0.0568364611%"
             id="linearGradient-16">
