@@ -66,8 +66,9 @@ class WalletConnectController {
       // so we explicitly modify the rpc method here.
       // Ref Issue -- https://github.com/MetaMask/metamask-mobile/issues/4441
       if (payload.method === 'eth_signTypedData') {
-        if (typeof payload.data === 'object') payload.method = 'eth_signTypedData_v4'
-        else if (Array.isArray(payload.data)) payload.method = 'eth_signTypedData_v1'
+        const data = JSON.parse(payload.params[1])
+        if (typeof data === 'object' && !Array.isArray(data)) payload.method = 'eth_signTypedData_v4'
+        else payload.method = 'eth_signTypedData_v1'
       }
 
       this.provider.send(payload, (error, res) => {
