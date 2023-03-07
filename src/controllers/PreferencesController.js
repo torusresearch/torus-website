@@ -165,7 +165,7 @@ class PreferencesController extends SafeEventEmitter {
       this.errorStore.putState(error)
     } else if (error && typeof error === 'object') {
       const prettyError = prettyPrintData(error)
-      const payloadError = prettyError !== '' ? `Error: ${prettyError}` : 'Something went wrong. Pls try again'
+      const payloadError = prettyError === '' ? 'Something went wrong. Pls try again' : `Error: ${prettyError}`
       this.errorStore.putState(payloadError)
     } else {
       this.errorStore.putState(error || '')
@@ -178,7 +178,7 @@ class PreferencesController extends SafeEventEmitter {
       this.successStore.putState(message)
     } else if (message && typeof message === 'object') {
       const prettyMessage = prettyPrintData(message)
-      const payloadMessage = prettyMessage !== '' ? `Success: ${prettyMessage}` : 'Success'
+      const payloadMessage = prettyMessage === '' ? 'Success' : `Success: ${prettyMessage}`
       this.successStore.putState(payloadMessage)
     } else {
       this.successStore.putState(message || '')
@@ -316,11 +316,11 @@ class PreferencesController extends SafeEventEmitter {
         x.from &&
         (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase())
       ) {
-        if (x.status !== 'confirmed') {
-          pendingTx.push(x)
-        } else {
+        if (x.status === 'confirmed') {
           const finalObject = formatPastTx(x, lowerCaseSelectedAddress)
           pastTx.push(finalObject)
+        } else {
+          pendingTx.push(x)
         }
       }
     }
@@ -343,9 +343,10 @@ class PreferencesController extends SafeEventEmitter {
     const nonceMap = {}
     for (const x of pastTx) {
       const txKey = [x.nonce, x.from].join(':')
-      if (!nonceMap[txKey]) nonceMap[txKey] = [x]
-      else {
+      if (nonceMap[txKey]) {
         nonceMap[txKey].push(x)
+      } else {
+        nonceMap[txKey] = [x]
       }
     }
 

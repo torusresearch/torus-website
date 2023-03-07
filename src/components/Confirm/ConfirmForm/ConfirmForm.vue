@@ -610,7 +610,7 @@ export default {
       return `~ ${totalCost} ${this.selectedCurrency}`
     },
     currencyMultiplier() {
-      const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
+      const currencyMultiplierNumber = this.selectedCurrency === 'ETH' ? 1 : this.currencyData[this.selectedCurrency.toLowerCase()] || 1
       return new BigNumber(currencyMultiplierNumber)
     },
     getCurrencyRate() {
@@ -660,18 +660,7 @@ export default {
         this.id = id
         this.message = data
         this.sender = from
-      } else if (type !== TRANSACTION_TYPES.STANDARD_TRANSACTION) {
-        const { msgParams: { message, typedMessages } = {}, id = '' } = msgParams || {}
-        let finalTypedMessages = typedMessages
-        try {
-          finalTypedMessages = typedMessages && JSON.parse(typedMessages)
-        } catch (error) {
-          log.error(error)
-        }
-        this.id = id
-        this.message = message
-        this.typedMessages = finalTypedMessages
-      } else {
+      } else if (type === TRANSACTION_TYPES.STANDARD_TRANSACTION) {
         let finalValue = new BigNumber('0')
         const { simulationFails, id, transactionCategory, methodParams, contractParams, txParams: txObject, userInfo } = txParams || {}
         const { value, to, data, from: sender, gas, gasPrice, maxFeePerGas, maxPriorityFeePerGas } = txObject || {}
@@ -782,7 +771,7 @@ export default {
         this.gasEstimate = new BigNumber(gas, 16) // gas number
         this.gasEstimateDefault = new BigNumber(gas, 16) // gas number
         this.txData = data // data hex
-        this.txDataParams = txDataParameters !== '' ? JSON.stringify(txDataParameters, null, 2) : ''
+        this.txDataParams = txDataParameters === '' ? '' : JSON.stringify(txDataParameters, null, 2)
         this.sender = sender // address of sender
         this.gasCost = this.gasEstimate.times(gweiGasPrice).div(new BigNumber('10').pow(new BigNumber('9')))
         this.txFees = this.gasCost.times(this.currencyMultiplier)
@@ -804,6 +793,17 @@ export default {
           this.errorMsg = ''
           this.topUpErrorShow = false
         }
+      } else {
+        const { msgParams: { message, typedMessages } = {}, id = '' } = msgParams || {}
+        let finalTypedMessages = typedMessages
+        try {
+          finalTypedMessages = typedMessages && JSON.parse(typedMessages)
+        } catch (error) {
+          log.error(error)
+        }
+        this.id = id
+        this.message = message
+        this.typedMessages = finalTypedMessages
       }
       this.type = type // type of tx
     },

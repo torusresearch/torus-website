@@ -120,7 +120,7 @@ export default {
           return this.supportedNetworks[this.network].networkName
         }
 
-        finalNetwork = !state.networkType.networkName ? state.networkType.host : state.networkType.networkName
+        finalNetwork = state.networkType.networkName ? state.networkType.networkName : state.networkType.host
         return finalNetwork
       },
     }),

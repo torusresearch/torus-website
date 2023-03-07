@@ -284,7 +284,7 @@ export default class NetworkController extends EventEmitter {
   getCurrentChainId() {
     const { type, chainId: configChainId } = this.getProviderConfig()
     const chainId = SUPPORTED_NETWORK_TYPES[type]?.chainId || configChainId
-    return !isHexStrict(chainId) ? `0x${Number(chainId).toString(16)}` : chainId
+    return isHexStrict(chainId) ? chainId : `0x${Number(chainId).toString(16)}`
   }
 
   setRpcTarget(networkId, rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {

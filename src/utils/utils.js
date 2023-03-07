@@ -248,7 +248,7 @@ export function addressSlicer(address = '') {
 }
 
 export function significantDigits(number, perc = false, length_ = 2) {
-  let input = !BigNumber.isBigNumber(number) ? new BigNumber(number) : number
+  let input = BigNumber.isBigNumber(number) ? number : new BigNumber(number)
   if (input.isZero()) return input
   if (perc) {
     input = input.times(new BigNumber(100))
@@ -876,7 +876,7 @@ export function generateAddressFromPrivateKey(privKey) {
 export function rskToChecksumAddress(address, chainId) {
   const address2 = stripHexPrefix(address).toLowerCase()
   const chainId2 = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
-  const prefix = !Number.isNaN(chainId2) ? `${chainId2.toString()}0x` : ''
+  const prefix = Number.isNaN(chainId2) ? '' : `${chainId2.toString()}0x`
   const hash = keccak256(`${prefix}${address2}`).toString('hex')
   return `0x${[...address2].map((b, i) => (Number.parseInt(hash[i], 16) >= 8 ? b.toUpperCase() : b)).join('')}`
 }

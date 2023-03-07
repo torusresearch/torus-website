@@ -121,7 +121,7 @@ export function validateTxParameters(txParams, eip1559Compatibility = true) {
  *  present in txParams.
  */
 export function ensureMutuallyExclusiveFieldsNotProvided(txParams, fieldBeingValidated, mutuallyExclusiveField) {
-  if (typeof txParams[mutuallyExclusiveField] !== 'undefined') {
+  if (txParams[mutuallyExclusiveField] !== undefined) {
     throw ethErrors.rpc.invalidParams(
       `Invalid transaction params: specified ${fieldBeingValidated} but also included ${mutuallyExclusiveField}, these cannot be mixed`
     )
@@ -217,7 +217,7 @@ export function getFinalStates() {
 }
 
 export function transactionMatchesNetwork(transaction, chainId, networkId) {
-  if (typeof transaction.chainId !== 'undefined') {
+  if (transaction.chainId !== undefined) {
     return transaction.chainId === chainId
   }
   return transaction.metamaskNetworkId === networkId
@@ -245,8 +245,8 @@ export function isEIP1559Transaction(transaction) {
  */
 export function isLegacyTransaction(transaction) {
   return (
-    typeof transaction.txParams.maxFeePerGas === 'undefined' &&
-    typeof transaction.txParams.maxPriorityFeePerGas === 'undefined' &&
-    (typeof transaction.txParams.gasPrice === 'undefined' || isHexString(addHexPrefix(transaction.txParams.gasPrice)))
+    transaction.txParams.maxFeePerGas === undefined &&
+    transaction.txParams.maxPriorityFeePerGas === undefined &&
+    (transaction.txParams.gasPrice === undefined || isHexString(addHexPrefix(transaction.txParams.gasPrice)))
   )
 }

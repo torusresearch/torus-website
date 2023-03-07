@@ -245,22 +245,7 @@ export default {
           this.setErrorState(new Error('Unable to parse keystore file'))
           return
         }
-        if (!window.Worker) {
-          this.$store
-            .dispatch('importAccount', { keyData: [keyData, this.jsonPassword], strategy: 'JSON File' })
-            .then((privKey) => {
-              this.onClose()
-              this.keyStoreFileContents = ''
-              this.jsonPassword = ''
-              this.showJsonPassword = false
-              this.isLoadingKeystore = false
-              this.informClients(privKey)
-              this.$refs.jsonFileForm.resetValidation()
-            })
-            .catch((error) => {
-              this.setErrorState(error)
-            })
-        } else {
+        if (window.Worker) {
           const worker = new WalletWorker()
           worker.addEventListener('message', (event) => {
             const { privateKey: bufferPrivateKey } = event.data
@@ -286,6 +271,21 @@ export default {
             this.isLoadingKeystore = false
           })
           worker.postMessage({ type: 'unlockWallet', data: [keyData, this.jsonPassword] })
+        } else {
+          this.$store
+            .dispatch('importAccount', { keyData: [keyData, this.jsonPassword], strategy: 'JSON File' })
+            .then((privKey) => {
+              this.onClose()
+              this.keyStoreFileContents = ''
+              this.jsonPassword = ''
+              this.showJsonPassword = false
+              this.isLoadingKeystore = false
+              this.informClients(privKey)
+              this.$refs.jsonFileForm.resetValidation()
+            })
+            .catch((error) => {
+              this.setErrorState(error)
+            })
         }
       }
     },

@@ -202,7 +202,7 @@ export default {
       return finalTx.sort((a, b) => b.date - a.date) || []
     },
     currencyMultiplier() {
-      const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
+      const currencyMultiplierNumber = this.selectedCurrency === 'ETH' ? 1 : this.currencyData[this.selectedCurrency.toLowerCase()] || 1
       return new BigNumber(currencyMultiplierNumber)
     },
   },
@@ -270,11 +270,11 @@ export default {
         return this.t('walletActivity.contractDeployment')
       }
       if (activity.transaction_category === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE) {
-        return `${this.t('walletActivity.approved')} ${activity.type_name !== 'n/a' ? activity.type_name.toUpperCase() : activity.type.toUpperCase()}`
+        return `${this.t('walletActivity.approved')} ${activity.type_name === 'n/a' ? activity.type.toUpperCase() : activity.type_name.toUpperCase()}`
       }
       if (activity.type_name === 'n/a' || activity.type === 'n/a') {
         return `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
-          activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
+          activity.type_name === 'n/a' ? activity.type.toUpperCase() : activity.type_name
         }`
       }
       if (activity.type_name || activity.type) {

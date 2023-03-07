@@ -57,18 +57,18 @@ class TransactionStateManager extends SafeEventEmitter {
     // the originally submitted gasParams.
     // TODO: Maybe check origin here?
     if (opts.txParams && typeof opts.origin === 'string' && opts.origin !== 'torus') {
-      if (typeof opts.txParams.gasPrice !== 'undefined') {
+      if (opts.txParams.gasPrice !== undefined) {
         dappSuggestedGasFees = {
           gasPrice: opts.txParams.gasPrice,
         }
-      } else if (typeof opts.txParams.maxFeePerGas !== 'undefined' || typeof opts.txParams.maxPriorityFeePerGas !== 'undefined') {
+      } else if (opts.txParams.maxFeePerGas !== undefined || opts.txParams.maxPriorityFeePerGas !== undefined) {
         dappSuggestedGasFees = {
           maxPriorityFeePerGas: opts.txParams.maxPriorityFeePerGas,
           maxFeePerGas: opts.txParams.maxFeePerGas,
         }
       }
 
-      if (typeof opts.txParams.gas !== 'undefined') {
+      if (opts.txParams.gas !== undefined) {
         dappSuggestedGasFees = {
           ...dappSuggestedGasFees,
           gas: opts.txParams.gas,
@@ -411,7 +411,7 @@ class TransactionStateManager extends SafeEventEmitter {
     @param error_ {errorObject} - error object
   */
   setTxStatusFailed(txId, error_) {
-    const error = !error_ ? new Error('Internal torus failure') : error_
+    const error = error_ || new Error('Internal torus failure')
 
     const txMeta = this.getTransaction(txId)
     txMeta.err = {
