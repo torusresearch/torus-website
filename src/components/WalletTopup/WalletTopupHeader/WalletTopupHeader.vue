@@ -9,7 +9,7 @@
     </div>
     <div class="order-first order-md-0 d-md-inline-flex mx-md-2" :style="{ width: $vuetify.breakpoint.smAndDown ? '100%' : 'auto' }">
       <div class="d-inline-block">
-        <NetworkDisplay :store-network-type="networkType" />
+        <NetworkDisplay :store-network-type="networkType" :is-network-pill="true" />
       </div>
     </div>
     <span class="order-last">
@@ -31,7 +31,7 @@
     </div>
     <div class="order-first order-md-0 d-md-inline-flex mx-md-2" :style="{ width: $vuetify.breakpoint.smAndDown ? '100%' : 'auto' }">
       <div class="d-inline-block">
-        <NetworkDisplay :store-network-type="networkType" />
+        <NetworkDisplay :store-network-type="networkType" :is-network-pill="true" />
       </div>
     </div>
     <span class="order-last">

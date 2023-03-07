@@ -10,7 +10,7 @@ import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
-import { fromWei, sha3, toBN } from 'web3-utils'
+import { fromWei, isHexStrict, sha3, toBN } from 'web3-utils'
 
 import AbiDecoder from '../../utils/abiDecoder'
 import ApiHelpers from '../../utils/apiHelpers'
@@ -156,7 +156,7 @@ class TransactionController extends SafeEventEmitter {
   getChainId() {
     const networkState = this.networkStore.getState()
     const chainId = this._getCurrentChainId()
-    const integerChainId = typeof chainId === 'string' ? Number.parseInt(chainId, 16) : chainId
+    const integerChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
     if (networkState === 'loading' || Number.isNaN(integerChainId)) {
       return 0
     }

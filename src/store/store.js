@@ -11,7 +11,7 @@ import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
 import torus from '../torus'
 import { FEATURES_CONFIRM_WINDOW, MESSAGE_TYPE, TRANSACTION_TYPES } from '../utils/enums'
 import { setSentryEnabled } from '../utils/sentry'
-import { getIFrameOriginObject, isMain } from '../utils/utils'
+import { getIFrameOriginObject, isMain, storageUtils } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
 import mutations from './mutations'
@@ -25,16 +25,13 @@ Vue.use(Vuex)
 
 let vuexPersist
 
-if (config.localStorageAvailable) {
+if (config.storageAvailability[storageUtils.storageType]) {
   vuexPersist = new VuexPersistence({
-    key: config.isCustomLogin === true ? `torus_app_${config.namespace || getIFrameOriginObject().hostname}` : 'torus-app',
-    storage: !isMain ? (config.isCustomLogin === null ? window.sessionStorage : window.localStorage) : window.localStorage,
+    key: storageUtils.storageKey,
+    storage: storageUtils.storage,
     reducer: (state) => ({
       selectedAddress: state.selectedAddress,
-      networkType: state.networkType,
-      networkId: state.networkId,
       selectedCurrency: state.selectedCurrency,
-      customNetworks: state.customNetworks,
       jwtToken: state.jwtToken,
       theme: state.theme,
       locale: state.locale,
@@ -319,7 +316,7 @@ function getLatestMessageParameters(id) {
   return message ? { msgParams: message.msgParams, id, type } : {}
 }
 
-if (config.localStorageAvailable) {
+if (config.storageAvailability.local) {
   const torusTheme = localStorage.getItem('torus-theme')
   if (torusTheme) {
     VuexStore.commit('setTheme', torusTheme)
@@ -329,10 +326,12 @@ if (config.localStorageAvailable) {
     VuexStore.commit('setCrashReport', Boolean(torusEnableCrashReporter))
   }
 
-  const openLoginStore = localStorage.getItem('openlogin_store')
-  if (openLoginStore !== null) {
-    const { typeOfLogin, verifierId, aggregateVerifier, verifier, email } = JSON.parse(openLoginStore)
-    VuexStore.commit('setLastLoginInfo', { typeOfLogin, verifierId, aggregateVerifier, verifier, email })
+  if (config.storageAvailability[storageUtils.storageType]) {
+    const openLoginStore = storageUtils.storage.getItem(storageUtils.openloginStoreKey)
+    if (openLoginStore !== null) {
+      const { typeOfLogin, verifierId, aggregateVerifier, verifier, email } = JSON.parse(openLoginStore)
+      VuexStore.commit('setLastLoginInfo', { typeOfLogin, verifierId, aggregateVerifier, verifier, email })
+    }
   }
 }
 

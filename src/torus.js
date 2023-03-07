@@ -6,7 +6,7 @@ import Web3 from 'web3'
 import config from './config'
 import TorusController from './controllers/TorusController'
 import setupMultiplex from './controllers/utils/setupMultiplex'
-import { getDefaultNetwork, getIFrameOrigin, getIFrameOriginObject, isMain } from './utils/utils'
+import { getDefaultNetwork, getIFrameOrigin, isMain, storageUtils } from './utils/utils'
 // import store from './store'
 let storeReference
 let deferredDispatch = []
@@ -38,9 +38,8 @@ const torus = {
 }
 let sessionData
 
-if (config.localStorageAvailable) {
-  const storage = !isMain ? (config.isCustomLogin === null ? window.sessionStorage : window.localStorage) : window.localStorage
-  const storageKey = config.isCustomLogin === true ? `torus_app_${getIFrameOriginObject().hostname}` : 'torus-app'
+if (config.storageAvailability[storageUtils.storageType]) {
+  const { storage, storageKey } = storageUtils
   sessionData = storage.getItem(storageKey)
 }
 

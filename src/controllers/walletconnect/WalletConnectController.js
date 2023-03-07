@@ -13,11 +13,16 @@ class WalletConnectController {
   }
 
   async disconnect() {
-    if (this.walletConnector) {
-      await this.walletConnector.killSession()
-      this.walletConnector = undefined
+    try {
+      if (this.walletConnector) {
+        await this.walletConnector.killSession()
+        this.walletConnector = undefined
+      }
+    } catch (error) {
+      log.error(error)
+    } finally {
+      this.store.putState({})
     }
-    this.store.putState({})
   }
 
   async init(options) {
@@ -25,7 +30,6 @@ class WalletConnectController {
     // To kill session if the user scans a new uri
     if (this.walletConnector?.uri !== options?.uri && this.walletConnector?.killSession) this.walletConnector.killSession()
     this.walletConnector = new WalletConnect(options)
-    log.info(this.walletConnector)
     if (!this.walletConnector.connected) {
       await this.walletConnector.createSession()
     }
@@ -57,6 +61,16 @@ class WalletConnectController {
         this.walletConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${err.message}` } })
       }
       payload.isWalletConnectRequest = 'true'
+      // As wallet connect signTypeData is of type object,
+      // and metamask eth_signTypeData is of type array,
+      // so we explicitly modify the rpc method here.
+      // Ref Issue -- https://github.com/MetaMask/metamask-mobile/issues/4441
+      if (payload.method === 'eth_signTypedData') {
+        const data = payload.params && payload.params[1] && JSON.parse(payload.params[1])
+        if (typeof data === 'object' && !Array.isArray(data)) payload.method = 'eth_signTypedData_v4'
+        else payload.method = 'eth_signTypedData_v1'
+      }
+
       this.provider.send(payload, (error, res) => {
         if (error) {
           log.info(`FAILED REJECT REQUEST, ERROR ${error.message}`)
@@ -97,8 +111,12 @@ class WalletConnectController {
   }
 
   updateSession() {
-    this.walletConnector?.updateSession(this.sessionConfig)
-    if (this.walletConnector) this.setStoreSession()
+    try {
+      this.walletConnector?.updateSession(this.sessionConfig)
+      if (this.walletConnector) this.setStoreSession()
+    } catch (error) {
+      log.error(error)
+    }
   }
 
   getPeerMetaURL() {

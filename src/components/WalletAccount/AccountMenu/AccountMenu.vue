@@ -113,7 +113,7 @@
     </v-list>
 
     <v-divider></v-divider>
-    <div class="text-right py-4 px-3">
+    <div class="py-4 px-3">
       <v-btn text class="caption text_2--text font-weight-bold" @click="logout">{{ t('accountMenu.logOut') }}</v-btn>
     </div>
   </v-card>
@@ -216,7 +216,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['logOut', 'updateSelectedAddress', 'initWalletConnect', 'disconnectWalletConnect']),
+    ...mapActions(['logOut', 'updateSelectedAddress']),
     etherscanAddressLink(address) {
       return getEtherScanAddressLink(toChecksumAddressByChainId(address, this.$store.state.networkId), this.networkType.host)
     },

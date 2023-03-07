@@ -37,6 +37,7 @@
 
 <script>
 // import { debug } from 'console'
+import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
 import { mapGetters } from 'vuex'
 
@@ -75,8 +76,6 @@ export default {
   computed: {
     ...mapGetters(['supportedNetworks']),
     selectedNetwork() {
-      // debugger
-
       if (this.network && SUPPORTED_NETWORK_TYPES[this.network]) {
         return SUPPORTED_NETWORK_TYPES[this.network].networkName
       }

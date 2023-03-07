@@ -1,7 +1,7 @@
 <template>
-  <v-container px-0 py-0>
+  <v-container px-0 py-0 :class="{ spinner: type === 'none' }">
     <template v-if="type === 'none'">
-      <ChangeProviderScreenLoader />
+      <BoxLoader :force-spinner="true" />
     </template>
     <template v-else>
       <v-layout pa-6 class="provider-change-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
@@ -79,14 +79,14 @@
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { mapGetters } from 'vuex'
 
-import { ChangeProviderScreenLoader } from '../../content-loader'
+import BoxLoader from '../../components/helpers/BoxLoader'
 import { POPUP_LOADED, POPUP_RESULT, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   name: 'Confirm',
   components: {
-    ChangeProviderScreenLoader,
+    BoxLoader,
   },
   data() {
     return {

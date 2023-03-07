@@ -13,6 +13,7 @@ import EthQuery from 'eth-query'
 import EventEmitter from 'events'
 import log from 'loglevel'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
+import { isHexStrict } from 'web3-utils'
 
 import { ETH, INFURA_PROVIDER_TYPES, LOCALHOST, MAINNET, MAINNET_CHAIN_ID, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 // import { areProviderConfigsEqual } from '../../utils/utils'
@@ -282,7 +283,8 @@ export default class NetworkController extends EventEmitter {
 
   getCurrentChainId() {
     const { type, chainId: configChainId } = this.getProviderConfig()
-    return SUPPORTED_NETWORK_TYPES[type]?.chainId || configChainId
+    const chainId = SUPPORTED_NETWORK_TYPES[type]?.chainId || configChainId
+    return !isHexStrict(chainId) ? `0x${Number(chainId).toString(16)}` : chainId
   }
 
   setRpcTarget(networkId, rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {

@@ -41,7 +41,7 @@ const router = new Router({
       path: '/redirect',
       name: 'redirect',
       component: () => import(/* webpackChunkName: "redirect" */ './views/RedirectCatch'),
-      meta: { requiresAuth: false, skipOpenLoginCheck: true },
+      meta: { requiresAuth: false, skipOpenLoginCheck: true, fetchSession: true },
     },
     {
       path: '/confirm',
@@ -144,6 +144,11 @@ const router = new Router({
               name: 'walletTopupTransak',
               component: () => import(/* webpackChunkName: "walletTopupTransak" */ './containers/WalletTopup/WalletTopupTransak'),
             },
+            {
+              path: 'banxa',
+              name: 'walletTopupBanxa',
+              component: () => import(/* webpackChunkName: "walletTopupBanxa" */ './containers/WalletTopup/WalletTopupBanxa'),
+            },
           ],
         },
         {
@@ -151,6 +156,12 @@ const router = new Router({
           name: 'walletDiscover',
           component: () => import(/* webpackChunkName: "walletDiscover" */ './containers/WalletDiscover'),
           meta: { title: 'Discover' },
+        },
+        {
+          path: 'swap',
+          name: 'walletSwap',
+          component: () => import(/* webpackChunkName: "walletSwap" */ './containers/WalletSwap'),
+          meta: { title: 'Swap' },
         },
       ],
     },

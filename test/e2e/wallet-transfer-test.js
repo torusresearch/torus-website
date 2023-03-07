@@ -1,7 +1,7 @@
 /* eslint-disable */
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, WALLET_HEADERS_CONFIRM, GOOGLE_LABEL } = require('../../src/utils/enums')
+const { WALLET_HEADERS_HOME, GOERLI_DISPLAY_NAME, WALLET_HEADERS_CONFIRM, GOOGLE_LABEL } = require('../../src/utils/enums')
 const { significantDigits } = require('../../src/utils/utils')
 
 const config = require('./lib/config')
@@ -55,11 +55,11 @@ describe('Tests Wallet Transfer Transaction', () => {
     await waitForText(page, '.wallet-home .headline', WALLET_HEADERS_HOME)
   })
 
-  it('Should change network to rinkeby', async () => {
+  it('Should change network to goerli', async () => {
     await navigateTo(page, '#settings-link', '.wallet-settings')
     await click(page, '#network-panel-header')
 
-    const textToSelect = RINKEBY_DISPLAY_NAME
+    const textToSelect = GOERLI_DISPLAY_NAME
     await selectItem(page, '#select-network', '.select-network-container', textToSelect)
     await page.waitFor(100)
     const networkSelected = await page.$eval('.select-network-container .v-select__selection', (element) => element.textContent)
