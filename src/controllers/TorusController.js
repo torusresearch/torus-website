@@ -111,7 +111,10 @@ export default class TorusController extends SafeEventEmitter {
       storeDispatch: this.opts.storeDispatch,
     })
 
-    this.prefsController.on('newUnapprovedAddChainRequest', (addChainData, request) => options.showAddChain(addChainData.id, request))
+    this.prefsController.on('newUnapprovedAddChainRequest', (addChainData, request) => {
+      log.debug('add new chain')
+      options.showAddChain(addChainData.id, request)
+    })
 
     this.prefsController.getBillboardContents()
     this.prefsController.getAnnouncementsContents()
@@ -289,8 +292,8 @@ export default class TorusController extends SafeEventEmitter {
       processEncryptionPublicKey: this.newUnsignedEncryptionPublicKey.bind(this),
       processDecryptMessage: this.newUnsignedDecryptMessage.bind(this),
       processWatchAsset: this.newUnapprovedAsset.bind(this),
-      processAddChain: () => log.debug('To be implemented'),
-      processSwitchChain: () => log.debug('To be implemented'),
+      processAddChain: this.newAddChainRequest.bind(this),
+      processSwitchChain: this.newSwitchChainRequest.bind(this),
     }
     const providerProxy = this.networkController.initializeProvider(providerOptions)
     return providerProxy
@@ -556,7 +559,7 @@ export default class TorusController extends SafeEventEmitter {
   }
 
   cancelAddChain(reqId, callback) {
-    this.prefsController.cancelAddChain(reqId)
+    this.prefsController.rejectAddChainRequest(reqId)
     if (callback && typeof callback === 'function') {
       return callback(null, this.getState())
     }

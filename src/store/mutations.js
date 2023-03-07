@@ -239,6 +239,12 @@ export default {
   setUnapprovedAssets(state, unApprovedAssets) {
     state.unApprovedAssets = unApprovedAssets
   },
+  setUnapprovedAddChainRequests(state, unapprovedAddChainRequests) {
+    state.unapprovedAddChainRequests = unapprovedAddChainRequests
+  },
+  setUnapprovedSwitchChainRequests(state, unapprovedSwitchChainRequests) {
+    state.unapprovedSwitchChainRequests = unapprovedSwitchChainRequests
+  },
   setPostboxKey(state, payload) {
     state.postboxKey = payload
   },

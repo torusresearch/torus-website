@@ -57,10 +57,10 @@
       <v-flex xs12 mt-8>
         <v-layout mx-n2>
           <v-flex xs6 px-2>
-            <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
+            <v-btn block text large class="text_2--text" @click="rejectNetworkSwitch">{{ t('dappProvider.cancel') }}</v-btn>
           </v-flex>
           <v-flex xs6 px-2>
-            <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
+            <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="approveNetworkSwitch">
               {{ t('dappProvider.confirm') }}
             </v-btn>
           </v-flex>
@@ -88,7 +88,8 @@ export default {
     },
     currentNetworkHost: {
       type: String,
-      required: true,
+      required: false,
+      default: '',
     },
     newNetworkName: {
       type: String,

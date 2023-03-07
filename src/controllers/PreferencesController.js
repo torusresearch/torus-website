@@ -18,6 +18,7 @@ import {
   ERROR_TIME,
   ETHERSCAN_SUPPORTED_NETWORKS,
   MESSAGE_TYPE,
+  RPC,
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
@@ -76,14 +77,16 @@ class PreferencesController extends SafeEventEmitter {
     this.interval = options.interval || DEFAULT_INTERVAL
     this.store = new ObservableStore({
       selectedAddress: '',
-      unapprovedAddChainRequests: {},
-      unapprovedAddChainRequestsCount: 0,
     }) // Account specific object
     this.metadataStore = new ObservableStore({})
     this.errorStore = new ObservableStore('')
     this.successStore = new ObservableStore('')
     this.billboardStore = new ObservableStore({})
     this.announcementsStore = new ObservableStore({})
+    this.addChainRequestStore = new ObservableStore({
+      unapprovedAddChainRequests: {},
+      unapprovedAddChainRequestsCount: 0,
+    })
   }
 
   headers(address) {
@@ -758,25 +761,50 @@ class PreferencesController extends SafeEventEmitter {
       throw ethErrors.rpc.invalidParams('Invalid add chain params: please pass a valid hex chainId in params, for: ex: 0x1')
     }
 
-    if (!rpcUrls || rpcUrls.length === 0) throw new Error('NetworkController - params.rpcUrls not provided')
-    if (!nativeCurrency) throw new Error('NetworkController - params.nativeCurrency not provided')
+    if (!rpcUrls || rpcUrls.length === 0) ethErrors.rpc.invalidParams('params.rpcUrls not provided')
+    if (!nativeCurrency) ethErrors.rpc.invalidParams('params.nativeCurrency not provided')
     const { name, symbol, decimals } = nativeCurrency
 
-    if (!name) throw new Error('NetworkController - params.nativeCurrency.name not provided')
-    if (!symbol) throw new Error('NetworkController - params.nativeCurrency.symbol not provided')
-    if (decimals === undefined) throw new Error('NetworkController - params.nativeCurrency.decimals not provided')
+    if (!name) ethErrors.rpc.invalidParams('params.nativeCurrency.name not provided')
+    if (!symbol) ethErrors.rpc.invalidParams('params.nativeCurrency.symbol not provided')
+    if (decimals === undefined) throw new Error('params.nativeCurrency.decimals not provided')
+    const _web3 = new Web3(new Web3.providers.HttpProvider(rpcUrls[0]))
+    const networkChainID = await _web3.eth.getChainId()
+    if (networkChainID !== Number.parseInt(chainId, 16)) {
+      throw ethErrors.rpc.invalidParams(
+        `Provided rpc url's chainId version is not matching with provided chainId, expected: ${toHex(networkChainID)}, received: ${chainId}`
+      )
+    }
   }
 
-  normalizedAddChainParams(id, addChainParams, request) {
+  // validate params before calling this function
+  normalizedAddChainParams(id, addChainParams) {
+    /**
+     * addChainParams interface
+     * 
+     * interface AddEthereumChainParameter {
+        chainId: string; // A 0x-prefixed hexadecimal string
+        chainName: string;
+        nativeCurrency: {
+          name: string;
+          symbol: string; // 2-6 characters long
+          decimals: 18;
+        };
+        rpcUrls: string[];
+        blockExplorerUrls?: string[];
+        iconUrls?: string[]; // Currently ignored.
+      }
+     */
+    const { symbol } = addChainParams.nativeCurrency
     const finalParams = {
       id,
       addChainParams: {
-        network_name: addChainParams.name,
+        network_name: addChainParams.chainName,
         rpc_url: addChainParams.rpcUrls[0],
-        chain_id: Number.parseInt(addChainParams.chainId, 10),
-        symbol: addChainParams.symbol || undefined,
-        block_explorer_url: addChainParams.blockExplorerUrls[0] || undefined,
-        origin: request ? request.origin : '',
+        chain_id: Number.parseInt(addChainParams.chainId, 16),
+        symbol: symbol || undefined,
+        block_explorer_url: addChainParams.blockExplorerUrls ? addChainParams.blockExplorerUrls[0] : undefined,
+        icon_url: addChainParams.iconUrls ? addChainParams.iconUrls[0] : undefined,
       },
     }
     return finalParams
@@ -784,20 +812,20 @@ class PreferencesController extends SafeEventEmitter {
 
   async addChainRequestAsync(addChainParams, request, id) {
     await this._validateAddChainParams(addChainParams)
-    const normalizedAddChainParams = await this.normalizedAddChainParams(id, addChainParams, request)
+    const normalizedAddChainParams = this.normalizedAddChainParams(id, addChainParams)
     return new Promise((resolve, reject) => {
       this._addChainRequest(normalizedAddChainParams, request, id)
       this.emit('newUnapprovedAddChainRequest', normalizedAddChainParams, request)
       // await finished
       this.once(`${id}:finished`, (data) => {
-        const asset = this.getAsset(id)
+        const req = this.getAddChainRequest(id)
         switch (data.status) {
           case 'approved':
             return resolve()
           case 'rejected':
-            return reject(ethErrors.provider.userRejectedRequest(`Torus Watch Asset: ${asset.errorMsg || 'User denied watch asset request.'}`))
+            return reject(ethErrors.provider.userRejectedRequest(`Torus add chain: ${req.errorMsg || 'User denied add chain request.'}`))
           default:
-            return reject(new Error(`Torus Watch Asset: Unknown problem: ${JSON.stringify(normalizedAddChainParams)}`))
+            return reject(new Error(`Torus add chain: Unknown problem: ${JSON.stringify(normalizedAddChainParams)}`))
         }
       })
     })
@@ -809,10 +837,10 @@ class PreferencesController extends SafeEventEmitter {
     const time = Date.now()
     const chainRequestData = {
       id,
-      chainRequestParams: chainReqParams,
       time,
       status: 'unapproved',
       type: MESSAGE_TYPE.ADD_CHAIN,
+      ...chainReqParams,
     }
 
     this.addChainRequest(chainRequestData)
@@ -825,7 +853,7 @@ class PreferencesController extends SafeEventEmitter {
   _saveChainRequestList() {
     const unapprovedAddChainRequests = this.getUnapprovedAddChainReqs()
     const unapprovedAddChainRequestsCount = Object.keys(unapprovedAddChainRequests).length
-    this.store.updateState({ unapprovedAddChainRequests, unapprovedAddChainRequestsCount })
+    this.addChainRequestStore.updateState({ unapprovedAddChainRequests, unapprovedAddChainRequestsCount })
   }
 
   addChainRequest(chainRequest) {
@@ -842,13 +870,13 @@ class PreferencesController extends SafeEventEmitter {
     if (index !== -1) {
       this.addChainRequests[index] = existingChainReq
     }
-    this._saveAssetList()
+    this._saveChainRequestList()
   }
 
   _setAddChainReqStatus(addChainReqId, status, errorMsg = '') {
     const chainRequest = this.getAddChainRequest(addChainReqId)
     if (!chainRequest) {
-      throw new Error(`NetworkController - AddChainRequest not found for id: "${addChainReqId}".`)
+      throw new Error(`PreferencesController - AddChainRequest not found for id: "${addChainReqId}".`)
     }
     chainRequest.status = status
     if (errorMsg) {
@@ -863,12 +891,22 @@ class PreferencesController extends SafeEventEmitter {
 
   async approveAddChainRequest(addChainReqId) {
     try {
-      const chainReqData = this.getCurrentChainId(addChainReqId)
-      await this.addCustomNetwork(chainReqData.options)
+      const chainReqData = this.getAddChainRequest(addChainReqId)
+
+      const { network_name, rpc_url, chain_id, symbol, block_explorer_url } = chainReqData.addChainParams
+      const customNetwork = {
+        networkName: network_name,
+        host: rpc_url,
+        chainId: toHex(chain_id),
+        symbol,
+        blockExplorer: block_explorer_url || undefined,
+      }
+
+      await this.addCustomNetwork(RPC, customNetwork)
       this._setAddChainReqStatus(addChainReqId, 'approved')
     } catch (error) {
-      log.error('error while approving asset watch', error)
-      this.rejectAsset(addChainReqId, error?.message || 'Something went wrong while approving add chain request')
+      log.error('error while approving add chain', error)
+      this.rejectAddChainRequest(addChainReqId, error?.message || 'Something went wrong while approving add chain request')
       throw error
     }
   }

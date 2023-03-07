@@ -226,9 +226,9 @@
 
     <template v-if="type === MESSAGE_TYPE.SWITCH_CHAIN">
       <NetworkSwitch
-        :origin="switchChainParams.origin"
-        :new-network-host="switchChainParams.rpcUrl"
-        :new-network-name="switchChainParams.nickname"
+        :origin="origin.href"
+        :new-network-host="switchChainParams.rpc_url"
+        :new-network-name="switchChainParams.network_name"
         :current-network-host="switchChainParams.currentNetworkHost"
         :current-network-name="switchChainParams.currentNetworkName"
         @triggerRejectNetworkSwitch="triggerDeny"
@@ -237,9 +237,10 @@
     </template>
     <template v-if="type === MESSAGE_TYPE.ADD_CHAIN">
       <AddNetwork
-        :origin="addChainParams.origin"
-        :new-network-host="addChainParams.rpcUrl"
-        :new-network-name="addChainParams.nickname"
+        :origin="origin.href"
+        :network-host="addChainParams.rpc_url"
+        :network-name="addChainParams.network_name"
+        :chain-id="addChainParams.chain_id"
         @triggerRejectAddNetwork="triggerDeny"
         @triggerApproveAddNetwork="triggerSign"
       />
@@ -864,6 +865,7 @@ export default {
     triggerSign() {
       if (this.type === MESSAGE_TYPE.ADD_CHAIN || this.type === MESSAGE_TYPE.SWITCH_CHAIN) {
         const params = {
+          id: this.id,
           txType: this.type,
           approve: true,
         }

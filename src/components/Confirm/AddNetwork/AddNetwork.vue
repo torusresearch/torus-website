@@ -43,13 +43,35 @@
           </v-card-text>
         </v-card>
       </v-flex>
+      <v-flex xs12 mb-2>
+        <div class="caption mb-2 text_2--text">{{ t('dappProvider.networkHost') }}:</div>
+
+        <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
+          <v-card-text v-if="origin">
+            <div class="d-flex request-from align-center">
+              {{ networkHost }}
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+      <v-flex xs12 mb-2>
+        <div class="caption mb-2 text_2--text">{{ t('dappProvider.chainId') }}:</div>
+
+        <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
+          <v-card-text v-if="origin">
+            <div class="d-flex request-from align-center">
+              {{ chainId }}
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-flex>
       <v-flex xs12 mt-8>
         <v-layout mx-n2>
           <v-flex xs6 px-2>
-            <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
+            <v-btn block text large class="text_2--text" @click="rejectAddNetwork">{{ t('dappProvider.cancel') }}</v-btn>
           </v-flex>
           <v-flex xs6 px-2>
-            <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
+            <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="approveAddNetwork">
               {{ t('dappProvider.confirm') }}
             </v-btn>
           </v-flex>
@@ -71,12 +93,16 @@ export default {
       type: String,
       required: true,
     },
-    newNetworkName: {
+    networkName: {
       type: String,
       required: true,
     },
-    newNetworkHost: {
+    networkHost: {
       type: String,
+      required: true,
+    },
+    chainId: {
+      type: Number,
       required: true,
     },
   },
@@ -87,9 +113,7 @@ export default {
         .replace(/{host}/gi, this.requestHostDetails.hostname)
         .replace(
           /{network}/gi,
-          (SUPPORTED_NETWORK_TYPES[this.newNetworkHost] && SUPPORTED_NETWORK_TYPES[this.newNetworkHost].networkName) ||
-            this.newNetworkName ||
-            this.newNetworkHost
+          (SUPPORTED_NETWORK_TYPES[this.networkHost] && SUPPORTED_NETWORK_TYPES[this.networkHost].networkName) || this.networkName || this.networkHost
         )
     },
     requestHostDetails() {

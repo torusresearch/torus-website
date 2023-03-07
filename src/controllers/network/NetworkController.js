@@ -48,10 +48,15 @@ export default class NetworkController extends EventEmitter {
         ...defaultNetworkDetailsState,
       }
     )
+    this.switchChainReqStore = new ObservableStore({
+      unapprovedSwitchChainRequests: {},
+      unapprovedSwitchChainRequestsCount: 0,
+    })
     this.store = new ComposedStore({
       provider: this.providerStore,
       network: this.networkStore,
       networkDetails: this.networkDetails,
+      switchChainReqStore: this.switchChainReqStore,
     })
     this.on('networkDidChange', this.lookupNetwork)
     // provider and block tracker
@@ -61,11 +66,6 @@ export default class NetworkController extends EventEmitter {
     this._providerProxy = null
     this._blockTrackerProxy = null
     this.switchChainRequests = []
-
-    this.store = new ObservableStore({
-      unapprovedSwitchChainRequests: {},
-      unapprovedSwitchChainRequestsCount: 0,
-    })
   }
 
   getUnapprovedSwitchChainReqs() {
@@ -89,8 +89,8 @@ export default class NetworkController extends EventEmitter {
     }
   }
 
-  normalizedSwitchChainParams(id, switchChainParams, request) {
-    const chainIDNum = Number.parseInt(switchChainParams.chainId, 10)
+  normalizedSwitchChainParams(id, switchChainParams) {
+    const chainIDNum = Number.parseInt(switchChainParams.chainId, 16)
     const networkDetails = Object.values(this.supportedNetworks).find((network) => {
       if (network.chainId === chainIDNum) {
         return true
@@ -101,18 +101,18 @@ export default class NetworkController extends EventEmitter {
     if (!networkDetails) {
       throw ethErrors.rpc.invalidParams('Invalid switch chain params, unsupported chain, please add this chain before switching')
     }
-    const { rpcUrl, tickerName, networkName } = networkDetails
+    const { rpcUrl, tickerName, networkName, host } = networkDetails
     const currentNetworkConfig = this.getProviderConfig()
     return {
       id,
       switchChainParams: {
         type: RPC,
-        rpcUrl,
-        chainId: chainIDNum,
+        rpc_url: rpcUrl,
+        host,
+        chain_id: chainIDNum,
         ticker: tickerName,
-        nickname: networkName,
+        network_name: networkName,
         id: networkDetails.id,
-        origin: request ? request.origin : '',
         currentNetworkName: currentNetworkConfig.nickname,
         currentNetworkHost: currentNetworkConfig.rpcUrl,
       },
@@ -121,20 +121,18 @@ export default class NetworkController extends EventEmitter {
 
   async switchChainRequestAsync(switchChainParams, request, id) {
     await this._validateSwitchChainParams(switchChainParams)
-    const switchChainParamsNormalized = await this.normalizedSwitchChainParams(id, switchChainParams, request)
+    const switchChainParamsNormalized = await this.normalizedSwitchChainParams(id, switchChainParams)
     return new Promise((resolve, reject) => {
       this._addSwitchChainRequest(switchChainParamsNormalized, request, id)
       this.emit('newUnapprovedSwitchChainRequest', switchChainParamsNormalized, request)
       // await finished
       this.once(`${id}:finished`, (data) => {
-        const asset = this.getAsset(id)
+        const req = this.getSwitchChainRequest(id)
         switch (data.status) {
           case 'approved':
             return resolve()
           case 'rejected':
-            return reject(
-              ethErrors.provider.userRejectedRequest(`Torus switch chain method: ${asset.errorMsg || 'User denied watch asset request.'}`)
-            )
+            return reject(ethErrors.provider.userRejectedRequest(`Torus switch chain method: ${req.errorMsg || 'User denied switch chain request.'}`))
           default:
             return reject(new Error(`Torus switch chain method: Unknown problem: ${JSON.stringify(switchChainParamsNormalized)}`))
         }
@@ -148,10 +146,10 @@ export default class NetworkController extends EventEmitter {
     const time = Date.now()
     const chainRequestData = {
       id,
-      chainRequestParams: chainReqParams,
       time,
       status: 'unapproved',
       type: MESSAGE_TYPE.SWITCH_CHAIN,
+      ...chainReqParams,
     }
 
     this.addSwitchChainRequest(chainRequestData)
@@ -164,7 +162,7 @@ export default class NetworkController extends EventEmitter {
   _saveChainRequestList() {
     const unapprovedSwitchChainRequests = this.getUnapprovedSwitchChainReqs()
     const unapprovedSwitchChainRequestsCount = Object.keys(unapprovedSwitchChainRequests).length
-    this.store.updateState({ unapprovedSwitchChainRequests, unapprovedSwitchChainRequestsCount })
+    this.switchChainReqStore.updateState({ unapprovedSwitchChainRequests, unapprovedSwitchChainRequestsCount })
   }
 
   addSwitchChainRequest(chainRequest) {
@@ -181,7 +179,7 @@ export default class NetworkController extends EventEmitter {
     if (index !== -1) {
       this.switchChainRequests[index] = existingChainReq
     }
-    this._saveAssetList()
+    this._saveChainRequestList()
   }
 
   _setSwitchChainReqStatus(switchChainReqId, status, errorMsg = '') {
@@ -202,13 +200,24 @@ export default class NetworkController extends EventEmitter {
 
   async approveSwitchChainRequest(switchChainReqId) {
     try {
-      const chainReqData = this.getCurrentChainId(switchChainReqId)
-      const { networkId, rpcUrl, chainId, ticker, nickname } = chainReqData
-      this.setRpcTarget(networkId, rpcUrl, chainId, ticker, nickname)
+      const chainReqData = this.getSwitchChainRequest(switchChainReqId)
+      const { id, rpc_url, chain_id, ticker, network_name, host } = chainReqData.switchChainParams
+      if (rpc_url) {
+        this.setRpcTarget(id, rpc_url, chain_id, ticker, network_name)
+      } else {
+        this.setProviderConfig({
+          type: host,
+          chainId: chain_id,
+          ticker,
+          nickname: network_name,
+          rpcPrefs: {},
+          id,
+        })
+      }
       this._setSwitchChainReqStatus(switchChainReqId, 'approved')
     } catch (error) {
-      log.error('error while approving asset watch', error)
-      this.rejectAsset(switchChainReqId, error?.message || 'Something went wrong while approving switch chain request')
+      log.error('error while approving switch chain', error)
+      this.rejectSwitchChainRequest(switchChainReqId, error?.message || 'Something went wrong while approving switch chain request')
       throw error
     }
   }
