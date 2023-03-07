@@ -1,6 +1,7 @@
 import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import deepmerge from 'deepmerge'
+import { ethErrors } from 'eth-rpc-errors'
 import { hashPersonalMessage } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
@@ -16,6 +17,7 @@ import {
   ACTIVITY_ACTION_TOPUP,
   ERROR_TIME,
   ETHERSCAN_SUPPORTED_NETWORKS,
+  MESSAGE_TYPE,
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
@@ -68,9 +70,15 @@ class PreferencesController extends SafeEventEmitter {
     this.web3 = new Web3(provider)
     this.api = new ApiHelpers(options.storeDispatch)
     this.signMessage = signMessage
+    this.addChainRequests = []
+    this.switchChainRequests = []
 
     this.interval = options.interval || DEFAULT_INTERVAL
-    this.store = new ObservableStore({ selectedAddress: '' }) // Account specific object
+    this.store = new ObservableStore({
+      selectedAddress: '',
+      unapprovedAddChainRequests: {},
+      unapprovedAddChainRequestsCount: 0,
+    }) // Account specific object
     this.metadataStore = new ObservableStore({})
     this.errorStore = new ObservableStore('')
     this.successStore = new ObservableStore('')
@@ -728,6 +736,145 @@ class PreferencesController extends SafeEventEmitter {
     } catch {
       this.handleError('navBar.snackFailNetworkUpdate')
     }
+  }
+
+  getUnapprovedAddChainReqs() {
+    return this.addChainRequests
+      .filter((chainReq) => chainReq.status === 'unapproved')
+      .reduce((result, chainReq) => {
+        result[chainReq.id] = chainReq
+        return result
+      }, {})
+  }
+
+  async _validateAddChainParams(chainParams) {
+    const { chainId, rpcUrls, nativeCurrency } = chainParams || {}
+
+    if (!chainId) {
+      throw ethErrors.rpc.invalidParams('Invalid add chain params: please pass chainId in params')
+    }
+
+    if (!isHexStrict(chainId)) {
+      throw ethErrors.rpc.invalidParams('Invalid add chain params: please pass a valid hex chainId in params, for: ex: 0x1')
+    }
+
+    if (!rpcUrls || rpcUrls.length === 0) throw new Error('NetworkController - params.rpcUrls not provided')
+    if (!nativeCurrency) throw new Error('NetworkController - params.nativeCurrency not provided')
+    const { name, symbol, decimals } = nativeCurrency
+
+    if (!name) throw new Error('NetworkController - params.nativeCurrency.name not provided')
+    if (!symbol) throw new Error('NetworkController - params.nativeCurrency.symbol not provided')
+    if (decimals === undefined) throw new Error('NetworkController - params.nativeCurrency.decimals not provided')
+  }
+
+  normalizedAddChainParams(id, addChainParams, request) {
+    const finalParams = {
+      id,
+      addChainParams: {
+        network_name: addChainParams.name,
+        rpc_url: addChainParams.rpcUrls[0],
+        chain_id: Number.parseInt(addChainParams.chainId, 10),
+        symbol: addChainParams.symbol || undefined,
+        block_explorer_url: addChainParams.blockExplorerUrls[0] || undefined,
+        origin: request ? request.origin : '',
+      },
+    }
+    return finalParams
+  }
+
+  async addChainRequestAsync(addChainParams, request, id) {
+    await this._validateAddChainParams(addChainParams)
+    const normalizedAddChainParams = await this.normalizedAddChainParams(id, addChainParams, request)
+    return new Promise((resolve, reject) => {
+      this._addChainRequest(normalizedAddChainParams, request, id)
+      this.emit('newUnapprovedAddChainRequest', normalizedAddChainParams, request)
+      // await finished
+      this.once(`${id}:finished`, (data) => {
+        const asset = this.getAsset(id)
+        switch (data.status) {
+          case 'approved':
+            return resolve()
+          case 'rejected':
+            return reject(ethErrors.provider.userRejectedRequest(`Torus Watch Asset: ${asset.errorMsg || 'User denied watch asset request.'}`))
+          default:
+            return reject(new Error(`Torus Watch Asset: Unknown problem: ${JSON.stringify(normalizedAddChainParams)}`))
+        }
+      })
+    })
+  }
+
+  _addChainRequest(chainReqParams, request, id) {
+    // add origin from request
+    if (request) chainReqParams.origin = request.origin
+    const time = Date.now()
+    const chainRequestData = {
+      id,
+      chainRequestParams: chainReqParams,
+      time,
+      status: 'unapproved',
+      type: MESSAGE_TYPE.ADD_CHAIN,
+    }
+
+    this.addChainRequest(chainRequestData)
+
+    // signal update
+    this.emit('update')
+    return id
+  }
+
+  _saveChainRequestList() {
+    const unapprovedAddChainRequests = this.getUnapprovedAddChainReqs()
+    const unapprovedAddChainRequestsCount = Object.keys(unapprovedAddChainRequests).length
+    this.store.updateState({ unapprovedAddChainRequests, unapprovedAddChainRequestsCount })
+  }
+
+  addChainRequest(chainRequest) {
+    this.addChainRequests.push(chainRequest)
+    this._saveChainRequestList()
+  }
+
+  getAddChainRequest(chainRequestId) {
+    return this.addChainRequests.find((chainRequest) => chainRequest.id === chainRequestId)
+  }
+
+  _updateChainRequest(existingChainReq) {
+    const index = this.addChainRequests.findIndex((chainRequest) => existingChainReq.id === chainRequest.id)
+    if (index !== -1) {
+      this.addChainRequests[index] = existingChainReq
+    }
+    this._saveAssetList()
+  }
+
+  _setAddChainReqStatus(addChainReqId, status, errorMsg = '') {
+    const chainRequest = this.getAddChainRequest(addChainReqId)
+    if (!chainRequest) {
+      throw new Error(`NetworkController - AddChainRequest not found for id: "${addChainReqId}".`)
+    }
+    chainRequest.status = status
+    if (errorMsg) {
+      chainRequest.errorMsg = errorMsg
+    }
+    this._updateChainRequest(chainRequest)
+    this.emit(`${addChainReqId}:${status}`, chainRequest)
+    if (status === 'rejected' || status === 'approved' || status === 'errored') {
+      this.emit(`${addChainReqId}:finished`, chainRequest)
+    }
+  }
+
+  async approveAddChainRequest(addChainReqId) {
+    try {
+      const chainReqData = this.getCurrentChainId(addChainReqId)
+      await this.addCustomNetwork(chainReqData.options)
+      this._setAddChainReqStatus(addChainReqId, 'approved')
+    } catch (error) {
+      log.error('error while approving asset watch', error)
+      this.rejectAsset(addChainReqId, error?.message || 'Something went wrong while approving add chain request')
+      throw error
+    }
+  }
+
+  rejectAddChainRequest(addChainReqId, errorMsg = '') {
+    this._setAddChainReqStatus(addChainReqId, 'rejected', errorMsg)
   }
 
   /* istanbul ignore next */

@@ -223,6 +223,27 @@
         @triggerRejectCustomToken="triggerDeny"
       />
     </template>
+
+    <template v-if="type === MESSAGE_TYPE.SWITCH_CHAIN">
+      <NetworkSwitch
+        :origin="switchChainParams.origin"
+        :new-network-host="switchChainParams.rpcUrl"
+        :new-network-name="switchChainParams.nickname"
+        :current-network-host="switchChainParams.currentNetworkHost"
+        :current-network-name="switchChainParams.currentNetworkName"
+        @triggerRejectNetworkSwitch="triggerDeny"
+        @triggerApproveNetworkSwitch="triggerSign"
+      />
+    </template>
+    <template v-if="type === MESSAGE_TYPE.ADD_CHAIN">
+      <AddNetwork
+        :origin="addChainParams.origin"
+        :new-network-host="addChainParams.rpcUrl"
+        :new-network-name="addChainParams.nickname"
+        @triggerRejectAddNetwork="triggerDeny"
+        @triggerApproveAddNetwork="triggerSign"
+      />
+    </template>
     <template
       v-if="
         type === MESSAGE_TYPE.PERSONAL_SIGN ||
@@ -417,6 +438,8 @@ import ShowToolTip from '../../helpers/ShowToolTip'
 import TransactionFee from '../../helpers/TransactionFee'
 import TransactionSpeedSelect from '../../helpers/TransactionSpeedSelect'
 import AddAssetConfirm from '../AddAssetConfirm'
+import AddNetwork from '../AddNetwork'
+import NetworkSwitch from '../NetworkSwitch'
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
 
@@ -429,6 +452,8 @@ export default {
     NetworkDisplay,
     ShowToolTip,
     AddAssetConfirm,
+    NetworkSwitch,
+    AddNetwork,
   },
   props: {
     currentConfirmModal: {
@@ -509,6 +534,26 @@ export default {
         type: '',
         options: {},
         metadata: {},
+      },
+
+      switchChainParams: {
+        origin: '',
+        currentNetworkName: '',
+        currentNetworkHost: '',
+        type: '',
+        rpcUrl: '',
+        chainId: 0,
+        ticker: '',
+        nickname: '',
+        id: ' ',
+      },
+      addChainParams: {
+        origin: '',
+        network_name: '',
+        rpc_url: '',
+        chain_id: 0,
+        symbol: '',
+        block_explorer_url: '',
       },
     }
   },
@@ -654,6 +699,12 @@ export default {
       this.origin = origin || this.origin
       if (type === MESSAGE_TYPE.WATCH_ASSET) {
         this.assetParams = { ...msgParams.msgParams.assetParams }
+      }
+      if (type === MESSAGE_TYPE.ADD_CHAIN) {
+        this.addChainParams = { ...msgParams.msgParams.addChainParams }
+      }
+      if (type === MESSAGE_TYPE.SWITCH_CHAIN) {
+        this.switchChainParams = { ...msgParams.msgParams.switchChainParams }
       }
       if (type === MESSAGE_TYPE.ETH_DECRYPT) {
         const { msgParams: { data, from } = {}, id = '' } = msgParams || {}
@@ -811,6 +862,17 @@ export default {
       return addressSlicer(user) || '0x'
     },
     triggerSign() {
+      if (this.type === MESSAGE_TYPE.ADD_CHAIN || this.type === MESSAGE_TYPE.SWITCH_CHAIN) {
+        const params = {
+          txType: this.type,
+          approve: true,
+        }
+        if (this.isConfirmModal) {
+          this.$emit('triggerSign', params)
+        } else {
+          this.$emit('triggerSign', params)
+        }
+      }
       const gasPriceHex = `0x${this.gasPrice.times(weiInGwei).toString(16)}`
       const gasHex = this.gasEstimate.eq(new BigNumber('0')) ? undefined : `0x${this.gasEstimate.toString(16)}`
       const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined
