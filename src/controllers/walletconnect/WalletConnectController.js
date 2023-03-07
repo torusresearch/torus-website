@@ -1,5 +1,4 @@
 import { ObservableStore } from '@metamask/obs-store'
-import { parseUri } from '@walletconnect/utils'
 
 import WalletConnectV1Controller from './WalletConnectV1Controller'
 import WalletConnectV2Controller from './WalletConnectV2Controller'
@@ -17,8 +16,22 @@ class WalletConnectController {
     const uri = options?.uri || options.session?.uri
     const sessionV2Data = options?.session?.sessionData
     if (uri) {
-      const wc = parseUri(uri)
-      if (wc.version === 1) {
+      // Example url:
+      // "wc:cad627c2-02ac-462c-a3ae-737b82f0b927@1?bridge=https%3A%2F%2Fb.bridge.
+      // walletconnect.org&key=ab2d17eecdd56673dfce4efbdb3f8ab9e63e2df6a4d20cf99cdde910906a906d"
+      const splitByQueryParams = uri.split('?')
+      if (splitByQueryParams.length !== 2) {
+        throw new Error('Invalid wallet connect url')
+      }
+      const splitByVersion = splitByQueryParams[0].split('@')
+      if (splitByVersion.length !== 2) {
+        throw new Error('Invalid wallet connect url')
+      }
+      if (!splitByVersion[1]) {
+        throw new Error('Invalid wallet connect url')
+      }
+      const version = Number.parseInt(splitByVersion[1], 10)
+      if (version === 1) {
         this.walletConnectorController = new WalletConnectV1Controller({
           provider: this.provider,
           network: this.network,
