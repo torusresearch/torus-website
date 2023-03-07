@@ -224,6 +224,12 @@ class WalletConnectV2Controller {
       })
       return
     }
+
+    if (request.method === 'eth_signTypedData') {
+      const data = request.params && request.params[1] && JSON.parse(request.params[1])
+      if (typeof data === 'object' && !Array.isArray(data)) request.method = 'eth_signTypedData_v4'
+      else request.method = 'eth_signTypedData_v1'
+    }
     this.provider.send(request, async (error, res) => {
       if (error) {
         log.error(`FAILED REJECT REQUEST, ERROR ${error.message}`)
