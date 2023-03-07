@@ -1,3 +1,6 @@
 .container {
   max-width: 600px;
+  &.spinner {
+    max-width: unset;
+  }
 }

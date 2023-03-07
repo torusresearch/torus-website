@@ -28,7 +28,7 @@ import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 const DEFAULT_INTERVAL = 180 * 1000
 
 let themeGlobal = THEME_LIGHT_BLUE_NAME
-if (config.localStorageAvailable) {
+if (config.storageAvailability.local) {
   const torusTheme = localStorage.getItem('torus-theme')
   if (torusTheme) {
     themeGlobal = torusTheme
@@ -204,20 +204,6 @@ class PreferencesController extends SafeEventEmitter {
           customNfts,
           customNetworks,
         } = user.data || {}
-        let whiteLabelLocale
-
-        // White Label override
-        if (config.sessionStorageAvailable) {
-          let torusWhiteLabel = sessionStorage.getItem('torus-white-label')
-          if (torusWhiteLabel) {
-            try {
-              torusWhiteLabel = JSON.parse(torusWhiteLabel)
-              whiteLabelLocale = torusWhiteLabel.defaultLanguage
-            } catch (error) {
-              log.error(error)
-            }
-          }
-        }
 
         this.updateStore(
           {
@@ -225,7 +211,7 @@ class PreferencesController extends SafeEventEmitter {
             theme,
             crashReport: Boolean(enable_crash_reporter),
             selectedCurrency: defaultCurrency,
-            locale: whiteLabelLocale || locale || getUserLanguage(),
+            locale: locale || getUserLanguage(),
             permissions,
             accountType: account_type || ACCOUNT_TYPE.NORMAL,
             defaultPublicAddress: default_public_address || public_address,
@@ -356,9 +342,10 @@ class PreferencesController extends SafeEventEmitter {
   cancelTxCalculate(pastTx) {
     const nonceMap = {}
     for (const x of pastTx) {
-      if (!nonceMap[x.nonce]) nonceMap[x.nonce] = [x]
+      const txKey = [x.nonce, x.from].join(':')
+      if (!nonceMap[txKey]) nonceMap[txKey] = [x]
       else {
-        nonceMap[x.nonce].push(x)
+        nonceMap[txKey].push(x)
       }
     }
 
@@ -520,7 +507,7 @@ class PreferencesController extends SafeEventEmitter {
     if (payload === this.state()?.crashReport) return
     try {
       await this.api.patch(`${config.api}/user/crashreporter`, { enable_crash_reporter: payload }, this.headers(), { useAPIKey: true })
-      if (config.localStorageAvailable) {
+      if (config.storageAvailability.local) {
         localStorage.setItem('torus-enable-crash-reporter', String(payload))
       }
       setSentryEnabled(payload)

@@ -7,7 +7,7 @@ import log from 'loglevel'
 import config from '../../config'
 import { ACCOUNT_TYPE } from '../../utils/enums'
 import { get, post, put } from '../../utils/httpHelpers'
-import { generateAddressFromPrivateKey, generateTorusAuthHeaders, getIFrameOriginObject } from '../../utils/utils'
+import { generateAddressFromPrivateKey, generateTorusAuthHeaders, getIFrameOriginObject, storageUtils } from '../../utils/utils'
 
 const getOpenloginWhitelabel = (whiteLabel = {}) => {
   const whiteLabelOpenLogin = {}
@@ -70,6 +70,7 @@ class OpenLoginHandler {
       network: config.torusNetwork,
       no3PC: true,
       _sessionNamespace: sessionNamespace || namespace,
+      storageKey: storageUtils.storageType,
     })
   }
 
@@ -77,7 +78,7 @@ class OpenLoginHandler {
     try {
       const { sessionId } = this.openLoginInstance.state.store.getStore()
       const { sessionNamespace } = this.openLoginInstance.state
-      const finalSessionNamespace = sessionNamespace || config.namespace
+      const finalSessionNamespace = sessionNamespace || config.namespace || ''
       const finalSessionId = sessionId || config.sessionId
       if (finalSessionId) {
         log.info('found session id')
@@ -125,7 +126,7 @@ class OpenLoginHandler {
     try {
       const { sessionId } = this.openLoginInstance.state.store.getStore()
       const { sessionNamespace } = this.openLoginInstance.state
-      const finalSessionNamespace = sessionNamespace || config.namespace
+      const finalSessionNamespace = sessionNamespace || config.namespace || ''
 
       if (sessionId) {
         const privKey = Buffer.from(sessionId.padStart(64, '0'), 'hex')
@@ -145,7 +146,7 @@ class OpenLoginHandler {
     try {
       const { sessionId } = this.openLoginInstance.state.store.getStore()
       const { sessionNamespace } = this.openLoginInstance.state
-      const finalSessionNamespace = sessionNamespace || config.namespace
+      const finalSessionNamespace = sessionNamespace || config.namespace || ''
       if (sessionId) {
         const privKey = Buffer.from(sessionId.padStart(64, '0'), 'hex')
         const publicKeyHex = getPublic(privKey).toString('hex')

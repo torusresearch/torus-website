@@ -734,12 +734,24 @@ export const getIFrameOriginObject = () => {
 }
 
 export const storageUtils = {
-  storage: !isMain ? (config.isCustomLogin === null ? window.sessionStorage : window.localStorage) : window.localStorage,
+  storage:
+    config.isCustomLogin === null
+      ? config.storageAvailability.session
+        ? window.sessionStorage
+        : undefined
+      : config.storageAvailability.local
+      ? window.localStorage
+      : undefined,
+  storageType: config.isCustomLogin === null ? 'session' : 'local',
   storageKey: config.isCustomLogin === true ? `torus_app_${config.namespace || getIFrameOriginObject().hostname}` : 'torus-app',
   openloginStoreKey: config.isCustomLogin === true ? `openlogin_store_${config.namespace || getIFrameOriginObject().hostname}` : 'openlogin_store',
 }
 
-export const getSessionIdFromStorage = () => JSON.parse(storageUtils.storage.getItem(`${storageUtils.openloginStoreKey}`) || '{}').sessionId
+export const getSessionIdFromStorage = () => {
+  if (!config.storageAvailability[storageUtils.storageType]) return ''
+  const sessionData = storageUtils.storage.getItem(`${storageUtils.openloginStoreKey}`) || '{}'
+  return JSON.parse(sessionData).sessionId || ''
+}
 
 export const fakeStream = {
   write: () => {},
