@@ -8,7 +8,7 @@ import { RLP } from '@ethereumjs/rlp'
 import log from 'loglevel'
 
 import TorusKeyring from '../../../src/controllers/TorusKeyring'
-import { keccak256 } from '@toruslabs/openlogin-utils'
+import { keccak256 } from '@toruslabs/metadata-helpers'
 
 const TYPE_STR = 'Torus Keyring'
 
