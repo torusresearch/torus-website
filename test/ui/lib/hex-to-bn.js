@@ -1,4 +1,5 @@
-import { BN, stripHexPrefix } from 'ethereumjs-util'
+import { stripHexPrefix } from '@ethereumjs/util'
+import BN from 'bn.js'
 
 /**
  * Returns a [BinaryNumber]{@link BN} representation of the given hex value

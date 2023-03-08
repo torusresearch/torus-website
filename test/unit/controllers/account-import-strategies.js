@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
+import { stripHexPrefix } from '@ethereumjs/util'
 import assert from 'assert'
-import { stripHexPrefix } from 'ethereumjs-util'
 
 import accountImporter from '../../../src/utils/accountImporter'
 
