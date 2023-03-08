@@ -1,4 +1,4 @@
-import { addHexPrefix, ecsign, keccak, privateToAddress, pubToAddress, stripHexPrefix } from '@ethereumjs/util'
+import { addHexPrefix, ecsign, privateToAddress, pubToAddress, stripHexPrefix } from '@ethereumjs/util'
 import { concatSig } from '@metamask/eth-sig-util'
 import { keccak256 } from '@toruslabs/metadata-helpers'
 import assert from 'assert'
@@ -1161,7 +1161,7 @@ export function generateTorusAuthHeaders(privateKey, publicAddress) {
   let challenge = Date.now()
   challenge = ((challenge - (challenge % 1000)) / 1000).toString()
   const message = getTorusMessage(Buffer.from(challenge, 'utf8'))
-  const hash = keccak(message)
+  const hash = keccak256(message)
   const messageSig = ecsign(hash, Buffer.from(privateKey.padStart(64, '0'), 'hex'))
   const signature = concatSig(messageSig.v, messageSig.r, messageSig.s)
   const authHeaders = {
