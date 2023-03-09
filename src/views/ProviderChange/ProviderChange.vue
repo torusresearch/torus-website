@@ -24,7 +24,7 @@
       <v-divider class="mx-6"></v-divider>
       <v-layout wrap align-center ma-6>
         <v-flex xs12 mb-2>
-          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
+          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}</div>
 
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>

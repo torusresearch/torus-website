@@ -43,8 +43,10 @@ import {
   tokenRatesControllerHandler,
   transactionControllerHandler,
   typedMessageManagerHandler,
+  unapprovedAddChainMsgsHandler,
   unapprovedAssetMsgsHandler,
   unapprovedDecryptMsgsHandler,
+  unapprovedSwitchChainMsgsHandler,
   walletConnectHandler,
 } from './controllerSubscriptions'
 import initialState from './state'
@@ -150,12 +152,16 @@ export default {
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
     resetStore(prefsController.announcementsStore, announcementsHandler)
+    resetStore(prefsController.addChainRequestStore, unapprovedAddChainMsgsHandler)
+
     await walletConnectController.disconnect()
     resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
     resetStore(encryptionPublicKeyManager.store, encryptionPublicKeyHandler)
     resetStore(decryptMessageManager.store, unapprovedDecryptMsgsHandler)
     resetStore(watchAssetManager.store, unapprovedAssetMsgsHandler)
+    resetStore(networkController.switchChainReqStore, unapprovedSwitchChainMsgsHandler)
+
     assetDetectionController.stopAssetDetection()
     // torus.updateStaticData({ isUnlocked: false })
   },
@@ -550,6 +556,8 @@ export default {
     encryptionPublicKeyManager.store.subscribe(encryptionPublicKeyHandler)
     decryptMessageManager.store.subscribe(unapprovedDecryptMsgsHandler)
     watchAssetManager.store.subscribe(unapprovedAssetMsgsHandler)
+    networkController.switchChainReqStore.subscribe(unapprovedSwitchChainMsgsHandler)
+    prefsController.addChainRequestStore.subscribe(unapprovedAddChainMsgsHandler)
   },
   async initTorusKeyring({ dispatch, commit, getters, state }, payload) {
     const { keys, calledFromEmbed, rehydrate, postboxAddress } = payload

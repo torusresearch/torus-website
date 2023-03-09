@@ -1,126 +1,79 @@
 import { ObservableStore } from '@metamask/obs-store'
-import log from 'loglevel'
 
-import WalletConnect from './WalletConnect'
+import WalletConnectV1Controller from './WalletConnectV1Controller'
+import WalletConnectV2Controller from './WalletConnectV2Controller'
 
 class WalletConnectController {
   constructor(options) {
-    this.walletConnector = undefined
+    this.walletConnectorController = undefined
     this.provider = options.provider
     this.network = options.network
-    this.selectedAddress = ''
     this.store = new ObservableStore({})
-  }
-
-  async disconnect() {
-    try {
-      if (this.walletConnector) {
-        await this.walletConnector.killSession()
-        this.walletConnector = undefined
-      }
-    } catch (error) {
-      log.error(error)
-    } finally {
-      this.store.putState({})
-    }
+    this.selectedAddress = ''
   }
 
   async init(options) {
-    // options includes the uri
-    // To kill session if the user scans a new uri
-    if (this.walletConnector?.uri !== options?.uri && this.walletConnector?.killSession) this.walletConnector.killSession()
-    this.walletConnector = new WalletConnect(options)
-    if (!this.walletConnector.connected) {
-      await this.walletConnector.createSession()
-    }
-    this.setStoreSession()
-    this._setupListeners()
-  }
-
-  setStoreSession() {
-    this.store.putState({ ...JSON.parse(JSON.stringify(this.walletConnector.session)), uri: this.walletConnector.uri })
-  }
-
-  _setupListeners() {
-    this.walletConnector.on('session_request', (err, payload) => {
-      if (!this.walletConnector) return
-      log.info('SESSION REQUEST', err, payload)
-      this.walletConnector.approveSession(this.sessionConfig)
-      this.setStoreSession()
-    })
-    this.walletConnector.on('session_update', (err, payload) => {
-      if (!this.walletConnector) return
-      log.info('SESSION UPDATE', err, payload)
-      this.setStoreSession()
-    })
-    this.walletConnector.on('call_request', (err, payload) => {
-      if (!this.walletConnector) return
-      log.info('CALL REQUEST', err, payload)
-      if (err) {
-        log.info(`CALL REQUEST INTERNAL, ERROR ${err.message}`)
-        this.walletConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${err.message}` } })
+    const uri = options?.uri || options.session?.uri
+    const sessionV2Data = options?.session?.sessionData
+    if (uri) {
+      // Example url:
+      // "wc:cad627c2-02ac-462c-a3ae-737b82f0b927@1?bridge=https%3A%2F%2Fb.bridge.
+      // walletconnect.org&key=ab2d17eecdd56673dfce4efbdb3f8ab9e63e2df6a4d20cf99cdde910906a906d"
+      const splitByQueryParams = uri.split('?')
+      if (splitByQueryParams.length !== 2) {
+        throw new Error('Invalid wallet connect url')
       }
-      payload.isWalletConnectRequest = 'true'
-      // As wallet connect signTypeData is of type object,
-      // and metamask eth_signTypeData is of type array,
-      // so we explicitly modify the rpc method here.
-      // Ref Issue -- https://github.com/MetaMask/metamask-mobile/issues/4441
-      if (payload.method === 'eth_signTypedData') {
-        const data = payload.params && payload.params[1] && JSON.parse(payload.params[1])
-        if (typeof data === 'object' && !Array.isArray(data)) payload.method = 'eth_signTypedData_v4'
-        else payload.method = 'eth_signTypedData_v1'
+      const splitByVersion = splitByQueryParams[0].split('@')
+      if (splitByVersion.length !== 2) {
+        throw new Error('Invalid wallet connect url')
       }
-
-      this.provider.send(payload, (error, res) => {
-        if (error) {
-          log.info(`FAILED REJECT REQUEST, ERROR ${error.message}`)
-          this.walletConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${error.message}` } })
-        } else if (res.error) {
-          log.info(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(res.error)}`)
-          this.walletConnector.rejectRequest({ id: payload.id, error: { message: `Failed or Rejected Request ${JSON.stringify(res.error)}` } })
-        } else {
-          log.info(`SUCCEEDED APPROVE REQUEST, RESULT ${JSON.stringify(res)}`)
-          this.walletConnector.approveRequest({ id: payload.id, result: res.result })
-        }
+      if (!splitByVersion[1]) {
+        throw new Error('Invalid wallet connect url')
+      }
+      const version = Number.parseInt(splitByVersion[1], 10)
+      if (version === 1) {
+        this.walletConnectorController = new WalletConnectV1Controller({
+          provider: this.provider,
+          network: this.network,
+          store: this.store,
+        })
+      } else {
+        this.walletConnectorController = new WalletConnectV2Controller({
+          provider: this.provider,
+          network: this.network,
+          store: this.store,
+        })
+      }
+    } else if (sessionV2Data) {
+      this.walletConnectorController = new WalletConnectV2Controller({
+        provider: this.provider,
+        network: this.network,
+        store: this.store,
       })
-    })
-    this.walletConnector.on('connect', (err, payload) => {
-      if (!this.walletConnector) return
-      log.info('SESSION UPDATE', err, payload)
-      this.setStoreSession()
-    })
-    this.walletConnector.on('disconnect', (err, payload) => {
-      log.info('DISCONNECT', err, payload)
-      this.walletConnector = undefined
-      this.store.putState({})
-    })
-  }
-
-  get sessionConfig() {
-    return {
-      chainId: this.network.getProviderConfig().chainId,
-      accounts: [this.selectedAddress],
     }
+    this.walletConnectorController.setSelectedAddress(this.selectedAddress)
+    await this.walletConnectorController.init(options)
   }
 
   setSelectedAddress(address) {
-    if (address !== this.selectedAddress) {
-      this.selectedAddress = address
-      this.updateSession()
-    }
+    this.selectedAddress = address
+    this.walletConnectorController?.setSelectedAddress(address)
   }
 
   updateSession() {
-    try {
-      this.walletConnector?.updateSession(this.sessionConfig)
-      if (this.walletConnector) this.setStoreSession()
-    } catch (error) {
-      log.error(error)
-    }
+    this.walletConnectorController?.updateSession()
   }
 
   getPeerMetaURL() {
-    return this.walletConnector?.peerMeta?.url
+    return this.walletConnectorController?.getPeerMetaURL()
+  }
+
+  async disconnect() {
+    if (this.walletConnectorController) {
+      await this.walletConnectorController.disconnect()
+    }
+    this.store.putState({})
+    this.walletConnectorController = undefined
   }
 }
 
