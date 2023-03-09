@@ -1,7 +1,7 @@
 import SignClient from '@walletconnect/sign-client'
 import { getAccountsFromNamespaces, getChainsFromNamespaces, getSdkError, parseAccountId, parseChainId } from '@walletconnect/utils'
 import log from 'loglevel'
-import { isHexStrict } from 'web3-utils'
+import { isAddress, isHexStrict } from 'web3-utils'
 
 import config from '../../config'
 import { getIFrameOrigin, isMain } from '../../utils/utils'
@@ -106,7 +106,7 @@ class WalletConnectV2Controller {
       log.info('SESSION CONNECT', payload)
       this.setStoreSession()
     })
-    this.walletConnector.on('disconnect', (payload) => {
+    this.walletConnector.on('session_delete', (payload) => {
       log.info('DISCONNECT', payload)
       this.walletConnector = undefined
       this.store.putState({})
@@ -226,9 +226,8 @@ class WalletConnectV2Controller {
     }
 
     if (request.method === 'eth_signTypedData') {
-      const data = request.params && request.params[1] && JSON.parse(request.params[1])
+      const data = isAddress(request.params[0]) ? request.params[1] : request.params[0]
       if (typeof data === 'object' && !Array.isArray(data)) request.method = 'eth_signTypedData_v4'
-      else request.method = 'eth_signTypedData_v1'
     }
     this.provider.send(request, async (error, res) => {
       if (error) {
