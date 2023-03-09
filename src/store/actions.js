@@ -128,7 +128,7 @@ export default {
     if (selectedAddress) {
       const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
       if (isMain) {
-        router.push({ path: '/logout' }).catch(() => {})
+        router.push({ path: '/' }).catch(() => {})
       }
       try {
         // openLoginHandler.openLoginInstance.state.store.set('sessionId', null)
