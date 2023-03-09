@@ -165,7 +165,7 @@
 /* eslint-disable import/default */
 /* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable import/extensions */
-import { stripHexPrefix } from 'ethereumjs-util'
+import { stripHexPrefix } from '@ethereumjs/util'
 import Wallet from 'ethereumjs-wallet'
 import log from 'loglevel'
 import { mapState } from 'vuex'

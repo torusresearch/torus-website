@@ -1,8 +1,9 @@
+import { addHexPrefix, ecsign, privateToAddress, pubToAddress, stripHexPrefix } from '@ethereumjs/util'
 import { concatSig } from '@metamask/eth-sig-util'
-import * as rskUtils from '@rsksmart/rsk-utils'
+import { keccak256 } from '@toruslabs/metadata-helpers'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
-import { addHexPrefix, BN, ecsign, keccak, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
+import BN from 'bn.js'
 import log from 'loglevel'
 import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
@@ -872,11 +873,23 @@ export function generateAddressFromPrivateKey(privKey) {
   return toChecksumAddress(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex'))
 }
 
+export function rskToChecksumAddress(address, chainId) {
+  const address2 = stripHexPrefix(address).toLowerCase()
+  const chainId2 = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const prefix = Number.isNaN(chainId2) ? '' : `${chainId2.toString()}0x`
+  const hash = keccak256(`${prefix}${address2}`).toString('hex')
+  return `0x${[...address2].map((b, i) => (Number.parseInt(hash[i], 16) >= 8 ? b.toUpperCase() : b)).join('')}`
+}
+
+export function rskIsValidChecksumAddress(address, chainId) {
+  return isAddress(address) && rskToChecksumAddress(address, chainId) === address
+}
+
 export function toChecksumAddressByChainId(address, chainId) {
   const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
   if (!isAddressByChainId(address, chainId)) return address
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
-    return rskUtils.toChecksumAddress(address, chainId)
+    return rskToChecksumAddress(address, chainId)
   }
   return toChecksumAddress(address)
 }
@@ -884,7 +897,7 @@ export function toChecksumAddressByChainId(address, chainId) {
 export function isAddressByChainId(address, chainId) {
   const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
-    return rskUtils.isValidChecksumAddress(address, chainId)
+    return rskIsValidChecksumAddress(address, chainId)
   }
   return isAddress(address)
 }
@@ -1148,7 +1161,7 @@ export function generateTorusAuthHeaders(privateKey, publicAddress) {
   let challenge = Date.now()
   challenge = ((challenge - (challenge % 1000)) / 1000).toString()
   const message = getTorusMessage(Buffer.from(challenge, 'utf8'))
-  const hash = keccak(message)
+  const hash = keccak256(message)
   const messageSig = ecsign(hash, Buffer.from(privateKey.padStart(64, '0'), 'hex'))
   const signature = concatSig(messageSig.v, messageSig.r, messageSig.s)
   const authHeaders = {

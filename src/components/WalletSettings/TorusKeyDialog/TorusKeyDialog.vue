@@ -86,7 +86,8 @@
 </template>
 
 <script>
-import { addHexPrefix, BN, isValidPrivate, stripHexPrefix, toBuffer } from 'ethereumjs-util'
+import { addHexPrefix, isValidPrivate, stripHexPrefix, toBuffer } from '@ethereumjs/util'
+import BN from 'bn.js'
 import log from 'loglevel'
 
 export default {

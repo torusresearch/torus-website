@@ -149,9 +149,9 @@
 /* eslint-disable import/default */
 /* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable import/extensions */
+import { bufferToHex, stripHexPrefix } from '@ethereumjs/util'
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { randomId } from '@toruslabs/openlogin-utils'
-import { bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
 

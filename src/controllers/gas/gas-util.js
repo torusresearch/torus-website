@@ -1,4 +1,4 @@
-import { BN } from 'ethereumjs-util'
+import BN from 'bn.js'
 
 import { decGWEIToHexWEI, hexWEIToDecGWEI } from '../../utils/conversionUtils'
 import { get } from '../../utils/httpHelpers'
