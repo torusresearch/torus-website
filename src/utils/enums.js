@@ -562,6 +562,7 @@ export const EMAIL_PASSWORDLESS_LOGIN_PROVIDER = 'email_passwordless'
 export const LINKED_VERIFIER_SUBIDENTIFIER = process.env.VUE_APP_LINKED_VERIFIER_SUBIDENTIFIER
 
 export const ENS = 'ENS'
+export const RNS = 'RNS'
 export const UNSTOPPABLE_DOMAINS = 'Unstoppable_Domains'
 export const ETH_LABEL = 'walletSettings.ethAddress'
 export const GOOGLE_LABEL = 'walletSettings.googleId'
@@ -570,6 +571,7 @@ export const REDDIT_LABEL = 'walletSettings.redditId'
 export const DISCORD_LABEL = 'walletSettings.discordId'
 export const TWITCH_LABEL = 'walletSettings.twitchId'
 export const ENS_LABEL = 'walletSettings.ensId'
+export const RNS_LABEL = 'walletSettings.rnsId'
 export const UNSTOPPABLE_DOMAINS_LABEL = 'walletSettings.unstoppableDomainsId'
 export const TWITTER_LABEL = 'walletSettings.twitterId'
 export const GITHUB_LABEL = 'walletSettings.githubId'
@@ -622,6 +624,10 @@ export const ALLOWED_VERIFIERS = [
   {
     name: ENS_LABEL,
     value: ENS,
+  },
+  {
+    name: RNS_LABEL,
+    value: RNS,
   },
   {
     name: TWITTER_LABEL,

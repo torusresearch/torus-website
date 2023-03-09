@@ -141,7 +141,7 @@
                       :items="getToAddressComboboxItems"
                       :placeholder="verifierPlaceholder"
                       required
-                      :rules="[contactRule, rules.contactRequired, ensRule, unstoppableDomainsRule, bitRule, torusRule]"
+                      :rules="[contactRule, rules.contactRequired, ensRule, rnsRule, unstoppableDomainsRule, bitRule, torusRule]"
                       outlined
                       item-text="name"
                       item-value="value"
@@ -544,6 +544,7 @@ import {
   MESSAGE_MODAL_TYPE_SUCCESS,
   OLD_ERC721_LIST,
   REDDIT,
+  RNS,
   TRANSACTION_SPEED,
   TWITTER,
   UNSTOPPABLE_DOMAINS,
@@ -594,6 +595,7 @@ export default {
       toAddress: '',
       formValid: false,
       ensError: '',
+      rnsError: '',
       bitError: '',
       torusError: '',
       unstoppableDomainsError: '',
@@ -848,7 +850,7 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
-    ...mapActions(['getTorusLookupAddress', 'getEnsOrUnstoppableAddress']),
+    ...mapActions(['getTorusLookupAddress', 'getEnsOrUnstoppableAddress', 'getRnsAddress']),
     startQrScanning() {
       this.camera = 'auto'
       this.showQrScanner = true
@@ -862,6 +864,8 @@ export default {
         this.selectedVerifier = GOOGLE
       } else if (/.eth$/.test(toAddress) || /.xyz$/.test(toAddress) || /.kred$/i.test(toAddress)) {
         this.selectedVerifier = ENS
+      } else if (/.rsk$/.test(toAddress)) {
+        this.selectedVerifier = RNS
       } else if (/.crypto$/.test(toAddress)) {
         this.selectedVerifier = UNSTOPPABLE_DOMAINS
       } else if (new RegExp(`${this.bitTail}$`).test(toAddress)) {
@@ -970,6 +974,9 @@ export default {
     },
     ensRule() {
       return this.selectedVerifier === ENS && this.ensError ? this.ensError : true
+    },
+    rnsRule() {
+      return this.selectedVerifier === RNS && this.rnsError ? this.rnsError : true
     },
     bitRule() {
       return this.selectedVerifier === BIT && this.bitError ? this.bitError : true
@@ -1085,6 +1092,7 @@ export default {
         }
       }
       this.ensError = ''
+      this.rnsError = ''
       this.unstoppableDomainsError = ''
       this.torusError = ''
 
@@ -1233,6 +1241,17 @@ export default {
           this.ensError = 'walletSettings.invalidEns'
           this.$refs.form.validate()
         }
+      } else if (this.selectedVerifier === RNS) {
+        try {
+          const res = await this.getRnsAddress({ domain: this.toAddress, coinType: this.networkType.ticker })
+          log.info(res)
+          toAddress = res.toLowerCase()
+          this.rnsError = ''
+        } catch (error) {
+          log.error(error)
+          this.rnsError = 'walletSettings.invalidRns'
+        }
+        this.$refs.form.validate()
       } else if (this.selectedVerifier === UNSTOPPABLE_DOMAINS) {
         try {
           const res = await this.getUnstoppableDomains(this.toAddress)

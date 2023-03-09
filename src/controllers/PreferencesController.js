@@ -3,6 +3,7 @@ import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import deepmerge from 'deepmerge'
 import { ethErrors } from 'eth-rpc-errors'
+import { ethers } from 'ethers'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import Web3 from 'web3'
@@ -19,7 +20,9 @@ import {
   ETHERSCAN_SUPPORTED_NETWORKS,
   MESSAGE_TYPE,
   RPC,
+  RSK_MAINNET,
   SUCCESS_TIME,
+  SUPPORTED_NETWORK_TYPES,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
 import { notifyUser } from '../utils/notifications'
@@ -73,6 +76,8 @@ class PreferencesController extends SafeEventEmitter {
     this.signMessage = signMessage
     this.addChainRequests = []
     this.switchChainRequests = []
+    this.rskProvider = null
+    this.rnsRegistryContract = null
 
     this.interval = options.interval || DEFAULT_INTERVAL
     this.store = new ObservableStore({
@@ -1009,6 +1014,95 @@ class PreferencesController extends SafeEventEmitter {
     url.searchParams.append('key', address)
     url.searchParams.append('type', type)
     return this.api.get(url.href, this.headers(), { useAPIKey: true })
+  }
+
+  // This approach considers resolution for tokens
+  getRnsChainIdFromPluginId = (pluginId) => {
+    switch (pluginId) {
+      case 'RBTC':
+        return 137
+      case 'ETH':
+        return 60
+      case 'ETHC':
+        return 61
+      case 'BTC':
+        return 0
+      case 'LTC':
+        return 2
+      case 'dash':
+        return 5
+      case 'XRP':
+        return 144
+      case 'BCH':
+        return 145
+      case 'BNB':
+        return 714
+      case 'XLM':
+        return 148
+      case 'MATIC':
+        return 966
+      case 'AVAX':
+        return 9000
+      case 'GXC':
+        return 2303
+      case 'OKT':
+        return 996
+      case 'DAI':
+        return 700
+      default:
+        return -1
+    }
+  }
+
+  async getRnsAddress({ domain, coinType }) {
+    try {
+      const pluginId = this.getRnsChainIdFromPluginId(coinType)
+      if (pluginId === -1) {
+        return null
+      }
+      if (!this.rskProvider) {
+        const rskRpcServerUrl = SUPPORTED_NETWORK_TYPES[RSK_MAINNET].rpcUrl
+        this.rskProvider = new ethers.providers.JsonRpcProvider(rskRpcServerUrl)
+      }
+      if (!this.rnsRegistryContract) {
+        // REF: https://developers.rsk.co/rif/rns/architecture/registry/
+        const RNS_REGISTRY_ADDRESS = '0xcb868aeabd31e2b66f74e9a55cf064abb31a4ad5' // hardcoded RNS registry address
+        this.rnsRegistryContract = new ethers.Contract(
+          RNS_REGISTRY_ADDRESS,
+          ['function resolver(bytes32 node) public view returns (address)'],
+          this.rskProvider
+        )
+      }
+      const nameHash = ethers.utils.namehash(domain)
+      const resolverAddress = await this.rnsRegistryContract.resolver(nameHash)
+      if (resolverAddress === ethers.constants.AddressZero) {
+        return null
+      }
+      // Check if current selected currency is on RSK chain 137 if not check for multichain address
+      let address = null
+      if (pluginId === 137) {
+        const addrResolverContract = new ethers.Contract(
+          resolverAddress,
+          ['function addr(bytes32 node) public view returns (address)'],
+          this.rskProvider
+        )
+        address = await addrResolverContract.addr(nameHash)
+      } else {
+        const multichainAddrResolverContract = new ethers.Contract(
+          resolverAddress,
+          ['function addr(bytes32 node, uint coinType) external view returns(bytes memory)'],
+          this.rskProvider
+        )
+        address = await multichainAddrResolverContract.addr(nameHash, pluginId)
+      }
+      if (address === undefined || address === null) {
+        return null
+      }
+      return address.toLowerCase()
+    } catch (error) {
+      log.error(error)
+      return null
+    }
   }
 
   async getTorusLookupAddress({ verifier, verifierId, walletVerifier, network }) {
