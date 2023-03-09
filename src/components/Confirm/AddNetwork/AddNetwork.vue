@@ -20,7 +20,7 @@
     <v-divider class="mx-6"></v-divider>
     <v-layout wrap align-center ma-6>
       <v-flex xs12 mb-2>
-        <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
+        <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}</div>
 
         <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
           <v-card-text v-if="origin">
@@ -44,7 +44,7 @@
         </v-card>
       </v-flex>
       <v-flex xs12 mb-2>
-        <div class="caption mb-2 text_2--text">{{ t('dappProvider.networkHost') }}:</div>
+        <div class="caption mb-2 text_2--text">{{ t('dappProvider.networkHost') }}</div>
 
         <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
           <v-card-text v-if="origin">
@@ -55,12 +55,22 @@
         </v-card>
       </v-flex>
       <v-flex xs12 mb-2>
-        <div class="caption mb-2 text_2--text">{{ t('dappProvider.chainId') }}:</div>
-
+        <div class="caption mb-2 text_2--text">{{ t('dappProvider.chainId') }}</div>
         <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
           <v-card-text v-if="origin">
             <div class="d-flex request-from align-center">
               {{ chainId }}
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+
+      <v-flex xs12 mb-2>
+        <div class="caption mb-2 text_2--text">{{ t('dappPermission.symbol') }}</div>
+        <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
+          <v-card-text v-if="origin">
+            <div class="d-flex request-from align-center">
+              {{ symbol }}
             </div>
           </v-card-text>
         </v-card>
@@ -105,11 +115,15 @@ export default {
       type: Number,
       required: true,
     },
+    symbol: {
+      type: String,
+      required: true,
+    },
   },
   computed: {
     ...mapGetters(['getLogo']),
     headline() {
-      return this.t('dappPermission.allowNetworkChange')
+      return this.t('dappPermission.allowAddNetwork')
         .replace(/{host}/gi, this.requestHostDetails.hostname)
         .replace(
           /{network}/gi,

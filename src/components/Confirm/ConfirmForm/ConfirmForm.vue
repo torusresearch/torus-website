@@ -231,6 +231,7 @@
         :new-network-name="switchChainParams.network_name"
         :current-network-host="switchChainParams.currentNetworkHost"
         :current-network-name="switchChainParams.currentNetworkName"
+        :new-chain-id="switchChainParams.chain_id"
         @triggerRejectNetworkSwitch="triggerDeny"
         @triggerApproveNetworkSwitch="triggerSign"
       />
@@ -241,6 +242,7 @@
         :network-host="addChainParams.rpc_url"
         :network-name="addChainParams.network_name"
         :chain-id="addChainParams.chain_id"
+        :symbol="addChainParams.symbol"
         @triggerRejectAddNetwork="triggerDeny"
         @triggerApproveAddNetwork="triggerSign"
       />
@@ -280,7 +282,7 @@
       </v-layout>
       <v-layout wrap align-center mx-6 my-6>
         <v-flex xs12 mb-2>
-          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
+          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}</div>
 
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
@@ -542,11 +544,11 @@ export default {
         currentNetworkName: '',
         currentNetworkHost: '',
         type: '',
-        rpcUrl: '',
-        chainId: 0,
+        rpc_url: '',
+        chain_id: 0,
         ticker: '',
-        nickname: '',
-        id: ' ',
+        network_name: '',
+        id: '',
       },
       addChainParams: {
         origin: '',
@@ -702,10 +704,10 @@ export default {
         this.assetParams = { ...msgParams.msgParams.assetParams }
       }
       if (type === MESSAGE_TYPE.ADD_CHAIN) {
-        this.addChainParams = { ...msgParams.msgParams.addChainParams }
+        this.addChainParams = { origin: this.origin, ...msgParams.msgParams.addChainParams }
       }
       if (type === MESSAGE_TYPE.SWITCH_CHAIN) {
-        this.switchChainParams = { ...msgParams.msgParams.switchChainParams }
+        this.switchChainParams = { origin: this.origin, ...msgParams.msgParams.switchChainParams }
       }
       if (type === MESSAGE_TYPE.ETH_DECRYPT) {
         const { msgParams: { data, from } = {}, id = '' } = msgParams || {}

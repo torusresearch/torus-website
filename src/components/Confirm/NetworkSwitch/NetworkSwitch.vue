@@ -20,7 +20,7 @@
     <v-divider class="mx-6"></v-divider>
     <v-layout wrap align-center ma-6>
       <v-flex xs12 mb-2>
-        <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
+        <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}</div>
 
         <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
           <v-card-text v-if="origin">
@@ -45,11 +45,20 @@
       </v-flex>
       <v-flex xs12 mt-4>
         <div class="caption mb-2 text_2--text">{{ t('dappPermission.currentNetwork') }}</div>
-
         <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
           <v-card-text>
             <div class="caption text_2--text request-from">
               <span>{{ currentNetworkName || currentNetworkHost }}</span>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+      <v-flex xs12 mt-4>
+        <div class="caption mb-2 text_2--text">{{ t('dappPermission.new') }} {{ t('dappProvider.chainId') }}</div>
+        <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
+          <v-card-text>
+            <div class="caption text_2--text request-from">
+              <span>{{ newChainId }}</span>
             </div>
           </v-card-text>
         </v-card>
@@ -97,6 +106,11 @@ export default {
     },
     newNetworkHost: {
       type: String,
+      required: false,
+      default: '',
+    },
+    newChainId: {
+      type: Number,
       required: true,
     },
   },
