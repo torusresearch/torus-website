@@ -282,7 +282,7 @@ export default {
       this.newNonce = this.nonce >= 0 ? this.nonce : this.nonceItems[0]
     },
     convertedDisplay(amount, multiplier) {
-      return !BigNumber.isBigNumber(amount) ? new BigNumber(amount).times(multiplier) : amount.times(multiplier)
+      return BigNumber.isBigNumber(amount) ? amount.times(multiplier) : new BigNumber(amount).times(multiplier)
     },
   },
 }

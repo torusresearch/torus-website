@@ -247,7 +247,7 @@ export function addressSlicer(address = '') {
 }
 
 export function significantDigits(number, perc = false, length_ = 2) {
-  let input = !BigNumber.isBigNumber(number) ? new BigNumber(number) : number
+  let input = BigNumber.isBigNumber(number) ? number : new BigNumber(number)
   if (input.isZero()) return input
   if (perc) {
     input = input.times(new BigNumber(100))

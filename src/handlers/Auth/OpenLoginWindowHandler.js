@@ -37,7 +37,7 @@ class OpenLoginWindowHandler {
           redirectToOpener: this.redirectToOpener || false,
           origin: this.origin,
           whiteLabel: this.whiteLabel || {},
-          loginConfig: !Object.keys(config.loginConfig).includes(this.verifier) ? { [this.loginConfigItem.loginProvider]: this.loginConfigItem } : {},
+          loginConfig: Object.keys(config.loginConfig).includes(this.verifier) ? {} : { [this.loginConfigItem.loginProvider]: this.loginConfigItem },
         })
       )
     )

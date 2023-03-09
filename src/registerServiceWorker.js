@@ -114,7 +114,7 @@ function checkValidServiceWorker(swUrl, config) {
       const contentType = response.headers.get('content-type')
       if (response.status === 404 || (contentType != null && !contentType.includes('javascript'))) {
         // No service worker found. Probably a different app. Reload the page.
-        // eslint-disable-next-line promise/no-nesting
+
         navigator.serviceWorker.ready
           .then((registration) => registration.unregister())
           .then(() => {
@@ -199,10 +199,10 @@ function swregister() {
               response.err = new Error('no service worker installed')
             } else if (reg.updateViaCache !== 'all') {
               response.err = new Error('updateViaCache should be "all"')
-            } else if (new URL(reg.active.scriptURL).pathname !== serviceWorkerUrl) {
-              response.err = new Error(`unexpected scriptURL ${new URL(reg.active.scriptURL).pathname}, expected ${serviceWorkerUrl}`)
-            } else {
+            } else if (new URL(reg.active.scriptURL).pathname === serviceWorkerUrl) {
               response.sw = reg
+            } else {
+              response.err = new Error(`unexpected scriptURL ${new URL(reg.active.scriptURL).pathname}, expected ${serviceWorkerUrl}`)
             }
             resolve(response)
           })
