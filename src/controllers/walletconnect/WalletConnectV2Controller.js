@@ -1,9 +1,10 @@
 import SignClient from '@walletconnect/sign-client'
 import { getAccountsFromNamespaces, getChainsFromNamespaces, getSdkError, parseAccountId, parseChainId } from '@walletconnect/utils'
 import log from 'loglevel'
-import { isAddress, isHexStrict } from 'web3-utils'
+import { isAddress, isHexStrict, toHex } from 'web3-utils'
 
 import config from '../../config'
+import createRandomId from '../../utils/random-id'
 import { getIFrameOrigin, isMain } from '../../utils/utils'
 
 class WalletConnectV2Controller {
@@ -51,7 +52,14 @@ class WalletConnectV2Controller {
     Object.keys(requiredNamespaces).forEach((key) => {
       if (key !== 'eip155') return
       const accounts = []
-      requiredNamespaces[key].chains.map((chain) => {
+      requiredNamespaces[key].chains.map(async (chain) => {
+        const isChainSupported = await this._isChainIdSupported(chain)
+        if (!isChainSupported) {
+          await this.walletConnector.reject({
+            id,
+            reason: getSdkError('UNSUPPORTED_CHAINS', `${chain} is not supported`),
+          })
+        }
         accounts.push(`${chain}:${this.selectedAddress}`)
       })
       namespaces[key] = {
@@ -128,6 +136,23 @@ class WalletConnectV2Controller {
         return undefined
       },
     }
+  }
+
+  async _isChainIdSupported(chain) {
+    const parsedChain = parseChainId(chain)
+    const chainIDNum = Number.parseInt(parsedChain.reference, 10)
+    const networkDetails = Object.values(this.network.supportedNetworks).find((network) => {
+      if (network.chainId === chainIDNum) {
+        return true
+      }
+      return false
+    })
+
+    if (!networkDetails) {
+      return false
+    }
+
+    return true
   }
 
   async _checkIfChainIdAllowed(chainId) {
@@ -207,22 +232,52 @@ class WalletConnectV2Controller {
     const incomingChainId = isHexStrict(parsedChainIdParams.reference)
       ? Number.parseInt(parsedChainIdParams.reference, 16)
       : Number.parseInt(parsedChainIdParams.reference, 10)
-    // TODO: Create a UX flow to prompt user to switch chain, if requested chain is supported
-    // currently we just throws an error and expect the dapp to switch chain.
     if (currentChainId !== incomingChainId) {
-      const error = {
-        code: 4002,
-        message: `Failed or Rejected Request, request contains request id ${incomingChainId},
-          whereas current selected chainId is ${currentChainId}`,
+      try {
+        const isSuccess = await new Promise((resolve) => {
+          this.provider.send(
+            {
+              id: createRandomId(),
+              isWalletConnectRequest: true,
+              method: 'wallet_switchEthereumChain',
+              params: {
+                chainId: toHex(incomingChainId),
+              },
+            },
+            async (error, res) => {
+              if (error) {
+                log.error(`FAILED REJECT REQUEST, ERROR ${error.message}`)
+                const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
+                await this.walletConnector.respond({
+                  topic,
+                  response,
+                })
+                resolve(false)
+              } else if (res.error) {
+                log.error(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(res.error)}`)
+                const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
+                await this.walletConnector.respond({
+                  topic,
+                  response,
+                })
+                resolve(false)
+              } else {
+                resolve(true)
+              }
+            }
+          )
+        })
+        if (!isSuccess) {
+          return
+        }
+      } catch (error) {
+        log.error(`FAILED CHAIN SWITCH REQUEST, ERROR ${error.message}`)
+        const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_CHAINS') }
+        await this.walletConnector.respond({
+          topic,
+          response,
+        })
       }
-
-      const response = { id, jsonrpc: '2.0', error }
-
-      await this.walletConnector.respond({
-        topic,
-        response,
-      })
-      return
     }
 
     if (request.method === 'eth_signTypedData') {
