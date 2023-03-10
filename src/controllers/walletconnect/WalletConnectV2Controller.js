@@ -1,6 +1,7 @@
 import SignClient from '@walletconnect/sign-client'
 import { getAccountsFromNamespaces, getChainsFromNamespaces, getSdkError, parseAccountId, parseChainId } from '@walletconnect/utils'
 import log from 'loglevel'
+import pify from 'pify'
 import { isAddress, isHexStrict, toHex } from 'web3-utils'
 
 import config from '../../config'
@@ -232,42 +233,25 @@ class WalletConnectV2Controller {
     const incomingChainId = isHexStrict(parsedChainIdParams.reference)
       ? Number.parseInt(parsedChainIdParams.reference, 16)
       : Number.parseInt(parsedChainIdParams.reference, 10)
+    const promisifiedProvider = pify(this.provider)
     if (currentChainId !== incomingChainId) {
       try {
-        const isSuccess = await new Promise((resolve) => {
-          this.provider.send(
-            {
-              id: createRandomId(),
-              isWalletConnectRequest: true,
-              method: 'wallet_switchEthereumChain',
-              params: {
-                chainId: toHex(incomingChainId),
-              },
-            },
-            async (error, res) => {
-              if (error) {
-                log.error(`FAILED REJECT REQUEST, ERROR ${error.message}`)
-                const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
-                await this.walletConnector.respond({
-                  topic,
-                  response,
-                })
-                resolve(false)
-              } else if (res.error) {
-                log.error(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(res.error)}`)
-                const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
-                await this.walletConnector.respond({
-                  topic,
-                  response,
-                })
-                resolve(false)
-              } else {
-                resolve(true)
-              }
-            }
-          )
+        const res = await promisifiedProvider.send({
+          id: createRandomId(),
+          isWalletConnectRequest: true,
+          method: 'wallet_switchEthereumChain',
+          params: {
+            chainId: toHex(incomingChainId),
+          },
         })
-        if (!isSuccess) {
+
+        if (res?.error) {
+          log.error(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(res.error)}`)
+          const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
+          await this.walletConnector.respond({
+            topic,
+            response,
+          })
           return
         }
       } catch (error) {
@@ -277,6 +261,7 @@ class WalletConnectV2Controller {
           topic,
           response,
         })
+        return
       }
     }
 
@@ -284,15 +269,10 @@ class WalletConnectV2Controller {
       const data = isAddress(request.params[0]) ? request.params[1] : request.params[0]
       if (typeof data === 'object' && !Array.isArray(data)) request.method = 'eth_signTypedData_v4'
     }
-    this.provider.send(request, async (error, res) => {
-      if (error) {
-        log.error(`FAILED REJECT REQUEST, ERROR ${error.message}`)
-        const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
-        await this.walletConnector.respond({
-          topic,
-          response,
-        })
-      } else if (res.error) {
+
+    try {
+      const res = await promisifiedProvider.send(request)
+      if (res?.error) {
         log.error(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(res.error)}`)
         const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
         await this.walletConnector.respond({
@@ -307,7 +287,14 @@ class WalletConnectV2Controller {
           response,
         })
       }
-    })
+    } catch (error) {
+      log.error(`FAILED REJECT REQUEST, ERROR ${error.message}`)
+      const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
+      await this.walletConnector.respond({
+        topic,
+        response,
+      })
+    }
   }
 
   setSelectedAddress(address) {
