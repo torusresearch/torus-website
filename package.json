@@ -150,7 +150,7 @@
     "ganache": "^7.7.6",
     "https-browserify": "^1.0.0",
     "husky": "^8.0.3",
-    "jsdom": "^21.1.0",
+    "jsdom": "^21.1.1",
     "jsdom-global": "^3.0.2",
     "lint-staged": "^13.1.2",
     "lodash-es": "^4.17.21",
