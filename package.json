@@ -38,7 +38,7 @@
     "@metamask/eth-sig-util": "^5.0.2",
     "@metamask/obs-store": "^7.0.0",
     "@rsksmart/rsk-utils": "^1.1.0",
-    "@sentry/browser": "^7.41.0",
+    "@sentry/browser": "^7.43.0",
     "@sentry/tracing": "^7.41.0",
     "@sentry/vue": "^7.41.0",
     "@toruslabs/broadcast-channel": "^6.1.1",
