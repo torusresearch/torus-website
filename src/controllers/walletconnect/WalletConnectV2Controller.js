@@ -1,9 +1,11 @@
 import SignClient from '@walletconnect/sign-client'
 import { getAccountsFromNamespaces, getChainsFromNamespaces, getSdkError, parseAccountId, parseChainId } from '@walletconnect/utils'
 import log from 'loglevel'
-import { isHexStrict } from 'web3-utils'
+import pify from 'pify'
+import { isAddress, isHexStrict, toHex } from 'web3-utils'
 
 import config from '../../config'
+import createRandomId from '../../utils/random-id'
 import { getIFrameOrigin, isMain } from '../../utils/utils'
 
 class WalletConnectV2Controller {
@@ -51,7 +53,14 @@ class WalletConnectV2Controller {
     Object.keys(requiredNamespaces).forEach((key) => {
       if (key !== 'eip155') return
       const accounts = []
-      requiredNamespaces[key].chains.map((chain) => {
+      requiredNamespaces[key].chains.map(async (chain) => {
+        const isChainSupported = await this._isChainIdSupported(chain)
+        if (!isChainSupported) {
+          await this.walletConnector.reject({
+            id,
+            reason: getSdkError('UNSUPPORTED_CHAINS', `${chain} is not supported`),
+          })
+        }
         accounts.push(`${chain}:${this.selectedAddress}`)
       })
       namespaces[key] = {
@@ -106,7 +115,7 @@ class WalletConnectV2Controller {
       log.info('SESSION CONNECT', payload)
       this.setStoreSession()
     })
-    this.walletConnector.on('disconnect', (payload) => {
+    this.walletConnector.on('session_delete', (payload) => {
       log.info('DISCONNECT', payload)
       this.walletConnector = undefined
       this.store.putState({})
@@ -128,6 +137,23 @@ class WalletConnectV2Controller {
         return undefined
       },
     }
+  }
+
+  async _isChainIdSupported(chain) {
+    const parsedChain = parseChainId(chain)
+    const chainIDNum = Number.parseInt(parsedChain.reference, 10)
+    const networkDetails = Object.values(this.network.supportedNetworks).find((network) => {
+      if (network.chainId === chainIDNum) {
+        return true
+      }
+      return false
+    })
+
+    if (!networkDetails) {
+      return false
+    }
+
+    return true
   }
 
   async _checkIfChainIdAllowed(chainId) {
@@ -207,38 +233,46 @@ class WalletConnectV2Controller {
     const incomingChainId = isHexStrict(parsedChainIdParams.reference)
       ? Number.parseInt(parsedChainIdParams.reference, 16)
       : Number.parseInt(parsedChainIdParams.reference, 10)
-    // TODO: Create a UX flow to prompt user to switch chain, if requested chain is supported
-    // currently we just throws an error and expect the dapp to switch chain.
+    const promisifiedProvider = pify(this.provider)
     if (currentChainId !== incomingChainId) {
-      const error = {
-        code: 4002,
-        message: `Failed or Rejected Request, request contains request id ${incomingChainId},
-          whereas current selected chainId is ${currentChainId}`,
-      }
+      try {
+        const res = await promisifiedProvider.send({
+          id: createRandomId(),
+          isWalletConnectRequest: true,
+          method: 'wallet_switchEthereumChain',
+          params: {
+            chainId: toHex(incomingChainId),
+          },
+        })
 
-      const response = { id, jsonrpc: '2.0', error }
-
-      await this.walletConnector.respond({
-        topic,
-        response,
-      })
-      return
-    }
-
-    if (request.method === 'eth_signTypedData') {
-      const data = request.params && request.params[1] && JSON.parse(request.params[1])
-      if (typeof data === 'object' && !Array.isArray(data)) request.method = 'eth_signTypedData_v4'
-      else request.method = 'eth_signTypedData_v1'
-    }
-    this.provider.send(request, async (error, res) => {
-      if (error) {
-        log.error(`FAILED REJECT REQUEST, ERROR ${error.message}`)
-        const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
+        if (res?.error) {
+          log.error(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(res.error)}`)
+          const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
+          await this.walletConnector.respond({
+            topic,
+            response,
+          })
+          return
+        }
+      } catch (error) {
+        log.error(`FAILED CHAIN SWITCH REQUEST, ERROR ${error.message}`)
+        const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_CHAINS') }
         await this.walletConnector.respond({
           topic,
           response,
         })
-      } else if (res.error) {
+        return
+      }
+    }
+
+    if (request.method === 'eth_signTypedData') {
+      const data = isAddress(request.params[0]) ? request.params[1] : request.params[0]
+      if (typeof data === 'object' && !Array.isArray(data)) request.method = 'eth_signTypedData_v4'
+    }
+
+    try {
+      const res = await promisifiedProvider.send(request)
+      if (res?.error) {
         log.error(`FAILED REJECT REQUEST, ERROR ${JSON.stringify(res.error)}`)
         const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
         await this.walletConnector.respond({
@@ -253,7 +287,14 @@ class WalletConnectV2Controller {
           response,
         })
       }
-    })
+    } catch (error) {
+      log.error(`FAILED REJECT REQUEST, ERROR ${error.message}`)
+      const response = { id, jsonrpc: '2.0', error: getSdkError('USER_REJECTED_METHODS') }
+      await this.walletConnector.respond({
+        topic,
+        response,
+      })
+    }
   }
 
   setSelectedAddress(address) {

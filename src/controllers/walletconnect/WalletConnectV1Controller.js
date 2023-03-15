@@ -67,7 +67,6 @@ class WalletConnectV1Controller {
       if (payload.method === 'eth_signTypedData') {
         const data = payload.params && payload.params[1] && JSON.parse(payload.params[1])
         if (typeof data === 'object' && !Array.isArray(data)) payload.method = 'eth_signTypedData_v4'
-        else payload.method = 'eth_signTypedData_v1'
       }
 
       this.provider.send(payload, (error, res) => {
