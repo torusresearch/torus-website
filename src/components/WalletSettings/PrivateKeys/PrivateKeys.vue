@@ -165,7 +165,7 @@
 /* eslint-disable import/default */
 /* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable import/extensions */
-import { stripHexPrefix } from 'ethereumjs-util'
+import { stripHexPrefix } from '@ethereumjs/util'
 import Wallet from 'ethereumjs-wallet'
 import log from 'loglevel'
 import { mapState } from 'vuex'
@@ -216,11 +216,7 @@ export default {
       if (this.$refs.downloadForm.validate()) {
         this.isLoadingDownloadWallet = true
 
-        if (!window.Worker) {
-          const finishedWallet = await this.createWallet(this.keyStorePassword)
-          this.exportKeyStoreFile(finishedWallet)
-          this.isLoadingDownloadWallet = false
-        } else {
+        if (window.Worker) {
           const worker = new WalletWorker()
           worker.addEventListener('message', (ev) => {
             const finishedWallet = ev.data
@@ -233,6 +229,10 @@ export default {
           })
           // log.info(this.keyStorePassword, this.selectedKey)
           worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
+        } else {
+          const finishedWallet = await this.createWallet(this.keyStorePassword)
+          this.exportKeyStoreFile(finishedWallet)
+          this.isLoadingDownloadWallet = false
         }
       }
     },

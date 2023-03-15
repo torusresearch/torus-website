@@ -133,7 +133,7 @@ export default {
     if (enabledVerifiers && loginConfig) {
       const finalLoginConfig = merge(config.loginConfig, loginConfig)
       Object.keys(enabledVerifiers).forEach((x) => {
-        if (finalLoginConfig[x]) finalLoginConfig[x].showOnModal = !enabledVerifiers[x] ? false : finalLoginConfig[x].showOnModal
+        if (finalLoginConfig[x]) finalLoginConfig[x].showOnModal = enabledVerifiers[x] ? finalLoginConfig[x].showOnModal : false
       })
       Object.keys(finalLoginConfig).forEach((x) => {
         // Fallback to verifier name as login provider if not set
@@ -238,6 +238,12 @@ export default {
   },
   setUnapprovedAssets(state, unApprovedAssets) {
     state.unApprovedAssets = unApprovedAssets
+  },
+  setUnapprovedAddChainRequests(state, unapprovedAddChainRequests) {
+    state.unapprovedAddChainRequests = unapprovedAddChainRequests
+  },
+  setUnapprovedSwitchChainRequests(state, unapprovedSwitchChainRequests) {
+    state.unapprovedSwitchChainRequests = unapprovedSwitchChainRequests
   },
   setPostboxKey(state, payload) {
     state.postboxKey = payload

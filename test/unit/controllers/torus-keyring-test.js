@@ -3,10 +3,12 @@ import assert from 'assert'
 import { recoverPersonalSignature, recoverTypedSignature, encrypt } from '@metamask/eth-sig-util'
 import { TransactionFactory } from '@ethereumjs/tx'
 
-import { bufferToHex, bufferToInt, ecrecover, pubToAddress, rlphash, toBuffer, stripHexPrefix } from 'ethereumjs-util'
+import { bufferToHex, bufferToInt, ecrecover, pubToAddress, toBuffer, stripHexPrefix, bufferToBigInt } from '@ethereumjs/util'
+import { RLP } from '@ethereumjs/rlp'
 import log from 'loglevel'
 
 import TorusKeyring from '../../../src/controllers/TorusKeyring'
+import { keccak256 } from '@toruslabs/metadata-helpers'
 
 const TYPE_STR = 'Torus Keyring'
 
@@ -118,7 +120,7 @@ describe('torus-keyring', () => {
 
     it('reliably can decode messages it signs', async () => {
       const message = 'hello there!'
-      const messageHashHex = bufferToHex(rlphash(message))
+      const messageHashHex = bufferToHex(keccak256(RLP.encode(message).toString('hex')))
       await keyring.deserialize([privateKey])
       await keyring.addRandomAccounts(9)
       const addresses = await keyring.getAccounts()
@@ -128,7 +130,7 @@ describe('torus-keyring', () => {
 
         const r = toBuffer(sgn.slice(0, 66))
         const s = toBuffer(`0x${sgn.slice(66, 130)}`)
-        const v = bufferToInt(toBuffer(`0x${sgn.slice(130, 132)}`))
+        const v = bufferToBigInt(toBuffer(`0x${sgn.slice(130, 132)}`))
         const m = toBuffer(messageHashHex)
         const pub = ecrecover(m, v, r, s)
         const adr = `0x${pubToAddress(pub).toString('hex')}`

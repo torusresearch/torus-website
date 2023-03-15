@@ -1,7 +1,7 @@
 /* eslint-disable */
 import assert from 'assert'
 import { TransactionFactory } from '@ethereumjs/tx'
-import Common from '@ethereumjs/common'
+import { Common } from '@ethereumjs/common'
 import { hexToBn, bnToHex } from '../../../../src/utils/utils'
 import TxUtils from '../../../../src/controllers/transactions/TxGasUtil'
 
@@ -36,7 +36,7 @@ describe('txUtils', function () {
       const ethTx = TransactionFactory.fromTxData(txParams, {
         common: new Common({ chain: 'goerli' }),
       })
-      assert.equal(ethTx.common.chainIdBN().toNumber(), 5, 'chainId is set from tx params')
+      assert.equal(ethTx.common.chainId(), BigInt(5), 'chainId is set from tx params')
     })
   })
 

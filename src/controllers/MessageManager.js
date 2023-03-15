@@ -1,6 +1,7 @@
+import { bufferToHex } from '@ethereumjs/util'
 import { ObservableStore } from '@metamask/obs-store'
+import { keccak256 } from '@toruslabs/metadata-helpers'
 import { ethErrors } from 'eth-rpc-errors'
-import { bufferToHex, keccak256 } from 'ethereumjs-util'
 import EventEmitter from 'events'
 
 import { MESSAGE_TYPE } from '../utils/enums'

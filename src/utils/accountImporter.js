@@ -1,4 +1,4 @@
-import { addHexPrefix, isValidPrivate, stripHexPrefix, toBuffer } from 'ethereumjs-util'
+import { addHexPrefix, isValidPrivate, stripHexPrefix, toBuffer } from '@ethereumjs/util'
 import Wallet, { thirdparty as ThirdParty } from 'ethereumjs-wallet'
 import log from 'loglevel'
 

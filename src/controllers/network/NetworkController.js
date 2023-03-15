@@ -10,12 +10,13 @@ import {
   providerFromMiddleware,
 } from 'eth-json-rpc-middleware'
 import EthQuery from 'eth-query'
+import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'
 import log from 'loglevel'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 import { isHexStrict } from 'web3-utils'
 
-import { ETH, INFURA_PROVIDER_TYPES, LOCALHOST, MAINNET, MAINNET_CHAIN_ID, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
+import { ETH, INFURA_PROVIDER_TYPES, LOCALHOST, MAINNET, MAINNET_CHAIN_ID, MESSAGE_TYPE, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 // import { areProviderConfigsEqual } from '../../utils/utils'
 import { createInfuraClient } from './createInfuraClient'
 import { createJsonRpcClient } from './createJsonRpcClient'
@@ -47,10 +48,15 @@ export default class NetworkController extends EventEmitter {
         ...defaultNetworkDetailsState,
       }
     )
+    this.switchChainReqStore = new ObservableStore({
+      unapprovedSwitchChainRequests: {},
+      unapprovedSwitchChainRequestsCount: 0,
+    })
     this.store = new ComposedStore({
       provider: this.providerStore,
       network: this.networkStore,
       networkDetails: this.networkDetails,
+      switchChainReqStore: this.switchChainReqStore,
     })
     this.on('networkDidChange', this.lookupNetwork)
     // provider and block tracker
@@ -59,6 +65,165 @@ export default class NetworkController extends EventEmitter {
     // provider and block tracker proxies - because the network changes
     this._providerProxy = null
     this._blockTrackerProxy = null
+    this.switchChainRequests = []
+  }
+
+  getUnapprovedSwitchChainReqs() {
+    return this.switchChainRequests
+      .filter((chainReq) => chainReq.status === 'unapproved')
+      .reduce((result, chainReq) => {
+        result[chainReq.id] = chainReq
+        return result
+      }, {})
+  }
+
+  async _validateSwitchChainParams(chainParams) {
+    const { chainId } = chainParams || {}
+
+    if (!chainId) {
+      throw ethErrors.rpc.invalidParams('Invalid switch chain params: please pass chainId in params')
+    }
+
+    if (!isHexStrict(chainId)) {
+      throw ethErrors.rpc.invalidParams('Invalid switch chain params: please pass a valid hex chainId in params, for: ex: 0x1')
+    }
+  }
+
+  normalizedSwitchChainParams(id, switchChainParams) {
+    const chainIDNum = Number.parseInt(switchChainParams.chainId, 16)
+    const networkDetails = Object.values(this.supportedNetworks).find((network) => {
+      if (network.chainId === chainIDNum) {
+        return true
+      }
+      return false
+    })
+
+    if (!networkDetails) {
+      throw ethErrors.rpc.invalidParams('Invalid switch chain params, unsupported chain, please add this chain before switching')
+    }
+    const { rpcUrl, tickerName, networkName, host } = networkDetails
+    const currentNetworkConfig = this.getProviderConfig()
+    return {
+      id,
+      switchChainParams: {
+        type: RPC,
+        rpc_url: rpcUrl,
+        host,
+        chain_id: chainIDNum,
+        ticker: tickerName,
+        network_name: networkName,
+        id: networkDetails.id,
+        currentNetworkName: currentNetworkConfig.nickname,
+        currentNetworkHost: currentNetworkConfig.rpcUrl,
+      },
+    }
+  }
+
+  async switchChainRequestAsync(switchChainParams, request, id) {
+    await this._validateSwitchChainParams(switchChainParams)
+    const switchChainParamsNormalized = await this.normalizedSwitchChainParams(id, switchChainParams)
+    return new Promise((resolve, reject) => {
+      this._addSwitchChainRequest(switchChainParamsNormalized, request, id)
+      this.emit('newUnapprovedSwitchChainRequest', switchChainParamsNormalized, request)
+      // await finished
+      this.once(`${id}:finished`, (data) => {
+        const req = this.getSwitchChainRequest(id)
+        switch (data.status) {
+          case 'approved':
+            return resolve()
+          case 'rejected':
+            return reject(ethErrors.provider.userRejectedRequest(`Torus switch chain method: ${req.errorMsg || 'User denied switch chain request.'}`))
+          default:
+            return reject(new Error(`Torus switch chain method: Unknown problem: ${JSON.stringify(switchChainParamsNormalized)}`))
+        }
+      })
+    })
+  }
+
+  _addSwitchChainRequest(chainReqParams, request, id) {
+    // add origin from request
+    if (request) chainReqParams.origin = request.origin
+    const time = Date.now()
+    const chainRequestData = {
+      id,
+      time,
+      status: 'unapproved',
+      type: MESSAGE_TYPE.SWITCH_CHAIN,
+      ...chainReqParams,
+    }
+
+    this.addSwitchChainRequest(chainRequestData)
+
+    // signal update
+    this.emit('update')
+    return id
+  }
+
+  _saveChainRequestList() {
+    const unapprovedSwitchChainRequests = this.getUnapprovedSwitchChainReqs()
+    const unapprovedSwitchChainRequestsCount = Object.keys(unapprovedSwitchChainRequests).length
+    this.switchChainReqStore.updateState({ unapprovedSwitchChainRequests, unapprovedSwitchChainRequestsCount })
+  }
+
+  addSwitchChainRequest(chainRequest) {
+    this.switchChainRequests.push(chainRequest)
+    this._saveChainRequestList()
+  }
+
+  getSwitchChainRequest(switchChainReqId) {
+    return this.switchChainRequests.find((chainRequest) => chainRequest.id === switchChainReqId)
+  }
+
+  _updateChainRequest(existingChainReq) {
+    const index = this.switchChainRequests.findIndex((chainRequest) => existingChainReq.id === chainRequest.id)
+    if (index !== -1) {
+      this.switchChainRequests[index] = existingChainReq
+    }
+    this._saveChainRequestList()
+  }
+
+  _setSwitchChainReqStatus(switchChainReqId, status, errorMsg = '') {
+    const chainRequest = this.getSwitchChainRequest(switchChainReqId)
+    if (!chainRequest) {
+      throw new Error(`NetworkController - SwitchChainRequest not found for id: "${switchChainReqId}".`)
+    }
+    chainRequest.status = status
+    if (errorMsg) {
+      chainRequest.errorMsg = errorMsg
+    }
+    this._updateChainRequest(chainRequest)
+    this.emit(`${switchChainReqId}:${status}`, chainRequest)
+    if (status === 'rejected' || status === 'approved' || status === 'errored') {
+      this.emit(`${switchChainReqId}:finished`, chainRequest)
+    }
+  }
+
+  async approveSwitchChainRequest(switchChainReqId) {
+    try {
+      const chainReqData = this.getSwitchChainRequest(switchChainReqId)
+      const { id, rpc_url, chain_id, ticker, network_name, host } = chainReqData.switchChainParams
+      if (rpc_url) {
+        this.setRpcTarget(id, rpc_url, chain_id, ticker, network_name)
+      } else {
+        this.setProviderConfig({
+          type: host,
+          chainId: chain_id,
+          ticker,
+          nickname: network_name,
+          rpcPrefs: {},
+          id,
+        })
+      }
+      this._setSwitchChainReqStatus(switchChainReqId, 'approved')
+    } catch (error) {
+      log.error('error while approving switch chain', error)
+      this.rejectSwitchChainRequest(switchChainReqId, error?.message || 'Something went wrong while approving switch chain request')
+      throw error
+    }
+  }
+
+  rejectSwitchChainRequest(switchChainReqId, errorMsg = '') {
+    this._setSwitchChainReqStatus(switchChainReqId, 'rejected', errorMsg)
   }
 
   getNetworkIdentifier() {
@@ -284,7 +449,7 @@ export default class NetworkController extends EventEmitter {
   getCurrentChainId() {
     const { type, chainId: configChainId } = this.getProviderConfig()
     const chainId = SUPPORTED_NETWORK_TYPES[type]?.chainId || configChainId
-    return !isHexStrict(chainId) ? `0x${Number(chainId).toString(16)}` : chainId
+    return isHexStrict(chainId) ? chainId : `0x${Number(chainId).toString(16)}`
   }
 
   setRpcTarget(networkId, rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {

@@ -1,6 +1,6 @@
+import { privateToAddress } from '@ethereumjs/util'
 import { randomId, safeatob, safebtoa } from '@toruslabs/openlogin-utils'
 import deepmerge from 'deepmerge'
-import { privateToAddress } from 'ethereumjs-util'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
@@ -43,8 +43,10 @@ import {
   tokenRatesControllerHandler,
   transactionControllerHandler,
   typedMessageManagerHandler,
+  unapprovedAddChainMsgsHandler,
   unapprovedAssetMsgsHandler,
   unapprovedDecryptMsgsHandler,
+  unapprovedSwitchChainMsgsHandler,
   walletConnectHandler,
 } from './controllerSubscriptions'
 import initialState from './state'
@@ -126,7 +128,7 @@ export default {
     if (selectedAddress) {
       const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
       if (isMain) {
-        router.push({ path: '/logout' }).catch(() => {})
+        router.push({ path: '/' }).catch(() => {})
       }
       try {
         // openLoginHandler.openLoginInstance.state.store.set('sessionId', null)
@@ -150,12 +152,16 @@ export default {
     resetStore(prefsController.successStore, successMessageHandler)
     resetStore(prefsController.errorStore, errorMessageHandler)
     resetStore(prefsController.announcementsStore, announcementsHandler)
+    resetStore(prefsController.addChainRequestStore, unapprovedAddChainMsgsHandler)
+
     await walletConnectController.disconnect()
     resetStore(walletConnectController.store, walletConnectHandler, {})
     resetStore(txController.etherscanTxStore, etherscanTxHandler, [])
     resetStore(encryptionPublicKeyManager.store, encryptionPublicKeyHandler)
     resetStore(decryptMessageManager.store, unapprovedDecryptMsgsHandler)
     resetStore(watchAssetManager.store, unapprovedAssetMsgsHandler)
+    resetStore(networkController.switchChainReqStore, unapprovedSwitchChainMsgsHandler)
+
     assetDetectionController.stopAssetDetection()
     // torus.updateStaticData({ isUnlocked: false })
   },
@@ -550,6 +556,8 @@ export default {
     encryptionPublicKeyManager.store.subscribe(encryptionPublicKeyHandler)
     decryptMessageManager.store.subscribe(unapprovedDecryptMsgsHandler)
     watchAssetManager.store.subscribe(unapprovedAssetMsgsHandler)
+    networkController.switchChainReqStore.subscribe(unapprovedSwitchChainMsgsHandler)
+    prefsController.addChainRequestStore.subscribe(unapprovedAddChainMsgsHandler)
   },
   async initTorusKeyring({ dispatch, commit, getters, state }, payload) {
     const { keys, calledFromEmbed, rehydrate, postboxAddress } = payload

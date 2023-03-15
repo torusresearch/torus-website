@@ -758,7 +758,7 @@ export default {
       const selectedAsset =
         this.contractType === CONTRACT_TYPE_ERC721 || this.contractType === CONTRACT_TYPE_ERC1155 ? this.assetSelected.name : this.selectedItem.symbol
       const amount = `${this.contractType === CONTRACT_TYPE_ERC721 || this.contractType === CONTRACT_TYPE_ERC1155 ? '' : this.displayAmount} ${
-        !this.toggle_exclusive ? selectedAsset : this.selectedCurrency
+        this.toggle_exclusive ? this.selectedCurrency : selectedAsset
       }`
       const message = this.t('walletTransfer.transferTweet')
         .replace(/{address}/gi, this.toAddress)
@@ -1312,7 +1312,7 @@ export default {
       this.toggle_exclusive = value
       const currencyRate = this.getCurrencyTokenRate
       if (value === 0) {
-        this.onChangeDisplayAmount(!currencyRate.eq(new BigNumber('0')) ? this.displayAmount.div(currencyRate) : this.displayAmount)
+        this.onChangeDisplayAmount(currencyRate.eq(new BigNumber('0')) ? this.displayAmount : this.displayAmount.div(currencyRate))
       } else if (value === 1) {
         this.onChangeDisplayAmount(this.displayAmount.times(currencyRate))
       }

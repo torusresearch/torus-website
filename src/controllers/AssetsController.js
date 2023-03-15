@@ -329,15 +329,15 @@ export default class AssetController {
         return {}
       }
     }
-    if (!normalizedContractInfo.logo) {
-      // fallback to asset image
-      normalizedContractInfo.logo = assetImage
-    } else {
+    if (normalizedContractInfo.logo) {
       try {
         await validateImageUrl(sanitizeNftMetdataUrl(normalizedContractInfo.logo))
       } catch {
         normalizedContractInfo.logo = assetImage
       }
+    } else {
+      // fallback to asset image
+      normalizedContractInfo.logo = assetImage
     }
     return normalizedContractInfo
   }

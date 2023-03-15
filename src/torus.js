@@ -57,6 +57,8 @@ const torusController = new TorusController({
   unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
   showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
   openPopup: triggerUi.bind(window, 'bindopenPopup'),
+  showSwitchChain: triggerUi.bind(window, 'showSwitchChain'),
+  showAddChain: triggerUi.bind(window, 'showAddChain'),
   storeProps: () => {
     const { state } = getStore()
     const { selectedAddress, wallet } = state || {}

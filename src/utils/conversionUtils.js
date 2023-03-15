@@ -21,8 +21,9 @@
  * on the accompanying options.
  */
 
+import { stripHexPrefix } from '@ethereumjs/util'
 import BigNumber from 'bignumber.js'
-import { BN, stripHexPrefix } from 'ethereumjs-util'
+import BN from 'bn.js'
 
 // Big Number Constants
 const BIG_NUMBER_WEI_MULTIPLIER = new BigNumber('1000000000000000000')

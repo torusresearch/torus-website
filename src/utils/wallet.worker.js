@@ -1,4 +1,4 @@
-import { stripHexPrefix } from 'ethereumjs-util'
+import { stripHexPrefix } from '@ethereumjs/util'
 import Wallet, { thirdparty as ThirdParty } from 'ethereumjs-wallet'
 import log from 'loglevel'
 
