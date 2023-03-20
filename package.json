@@ -132,7 +132,7 @@
     "empty-module": "0.0.2",
     "eslint": "^8.36.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^8.7.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-config-problems": "^7.0.1",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.27.5",
