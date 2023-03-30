@@ -3,7 +3,7 @@ import assert from 'assert'
 import { recoverPersonalSignature, recoverTypedSignature, encrypt } from '@metamask/eth-sig-util'
 import { TransactionFactory } from '@ethereumjs/tx'
 
-import { bufferToHex, bufferToInt, ecrecover, pubToAddress, toBuffer, stripHexPrefix, bufferToBigInt } from '@ethereumjs/util'
+import { bufferToHex, ecrecover, pubToAddress, toBuffer, stripHexPrefix, bufferToBigInt } from '@ethereumjs/util'
 import { RLP } from '@ethereumjs/rlp'
 import log from 'loglevel'
 
