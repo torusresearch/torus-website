@@ -995,4 +995,5 @@ export const AVAILABLE_WEBSITES = {
   Polygon: 'https://polygon.tor.us',
   Binance: 'https://bnb.tor.us',
   MASKVERSE: 'https://maskverse.web3auth.com',
+  USFL: 'https://usfl.web3auth.com',
 }

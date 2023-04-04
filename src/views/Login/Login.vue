@@ -15,7 +15,7 @@
               <section class="py-10 py-sm-12">
                 <v-layout wrap>
                   <v-flex class="mb-8" xs10 ml-auto mr-auto>
-                    <img height="35" :src="require(`../../assets/images/maskverse-${$vuetify.theme.dark ? 'white' : 'blue'}.png`)" alt="Torus Logo" />
+                    <img height="35" :src="require(`../../assets/images/usfl-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                   </v-flex>
                   <LoginTitle class="mb-6" />
                   <v-flex xs10 mx-auto mt-4>
@@ -46,7 +46,7 @@
                     <img
                       height="35"
                       class="mb-2"
-                      :src="require(`../../assets/images/maskverse-${$vuetify.theme.dark ? 'white' : 'blue'}.png`)"
+                      :src="require(`../../assets/images/usfl-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
                       alt="Torus Logo"
                     />
                     <!-- </v-col> -->
@@ -66,7 +66,7 @@
           </v-layout>
           <v-layout v-else wrap align-center justify-center align-content-center>
             <v-flex xs12 text-center mb-12>
-              <img width="250" :src="require(`../../assets/images/maskverse-${$vuetify.theme.dark ? 'white-new' : 'blue'}.png`)" alt="Torus Logo" />
+              <img width="250" :src="require(`../../assets/images/usfl-${$vuetify.theme.dark ? 'white-new' : 'blue'}.svg`)" alt="Torus Logo" />
             </v-flex>
             <v-flex xs12 text-center>
               <img

@@ -13,7 +13,7 @@
             alt="Torus Logo"
             width="104"
             height="24"
-            :src="require(`../../../assets/images/maskverse-${$vuetify.theme.dark ? 'white' : 'blue'}.png`)"
+            :src="require(`../../../assets/images/usfl-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
           />
           <v-btn class="close-btn" icon aria-label="Close Export QR" title="Close Export QR" @click="qrDialoag = false">
             <v-icon>$vuetify.icons.close</v-icon>

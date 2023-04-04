@@ -93,8 +93,8 @@ module.exports = {
   crossorigin: 'anonymous',
   productionSourceMap: true,
   pwa: {
-    name: 'Maskverse',
-    themeColor: '#2f1189',
+    name: 'USFL',
+    themeColor: '#ce0e2d',
     msTileColor: '#000000',
     appleMobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: 'black-translucent',
@@ -110,7 +110,7 @@ module.exports = {
     iconPaths: {
       favicon32: 'img/icons/favicon-32x32.png',
       favicon16: 'img/icons/favicon-16x16.png',
-      appleTouchIcon: 'img/icons/apple-touch-icon-180x180.png',
+      appleTouchIcon: 'img/icons/apple-touch-icon-64x64.png',
       maskIcon: 'img/icons/safari-pinned-tab.svg',
       msTileImage: 'img/icons/msapplication-icon-144x144.png',
     },
@@ -120,7 +120,7 @@ module.exports = {
       short_name: 'Torus',
       start_url: getValueForCurrentEnvironment('index.html'),
       display: 'standalone',
-      theme_color: '#2f1189',
+      theme_color: '#ce0e2d',
       icons: [
         getAndroidIcon('72x72'),
         getAndroidIcon('96x96'),

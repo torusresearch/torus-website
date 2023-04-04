@@ -2,8 +2,9 @@
   <div class="quick-address d-flex align-center">
     <div class="ml-auto">
       <span v-if="!!showMaskSinger" class="mr-2">
-        <v-btn type="link" small class="address-btn" aria-label="Return to Maskverse">
-          <a href="https://www.maskverse.com/profile">{{ t('homeAssets.returnToMaskverse') }}</a>
+        <!-- TODO: update profile link -->
+        <v-btn type="link" small class="address-btn" aria-label="Return to USFL">
+          <a href="https://www.maskverse.com/profile">{{ t('homeAssets.returnToUsfl') }}</a>
         </v-btn>
       </span>
       <ShowToolTip :address="selectedAddress">

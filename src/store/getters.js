@@ -8,7 +8,7 @@ import { significantDigits } from '../utils/utils'
 const getLogo = (state) => {
   const { whiteLabel, theme } = state
   const { logoDark, logoLight, isActive } = whiteLabel
-  let finalLogo = theme === THEME_DARK_BLACK_NAME ? '/images/maskverse-white.png' : '/images/maskverse-blue.png'
+  let finalLogo = theme === THEME_DARK_BLACK_NAME ? '/images/usfl-white.svg' : '/images/usfl-blue.svg'
   let isExternal = false
   if (isActive) {
     if (theme === THEME_DARK_BLACK_NAME && logoLight) {
