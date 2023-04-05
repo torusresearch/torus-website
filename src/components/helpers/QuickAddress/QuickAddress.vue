@@ -1,10 +1,9 @@
 <template>
   <div class="quick-address d-flex align-center">
     <div class="ml-auto">
-      <span v-if="!!showMaskSinger" class="mr-2">
-        <!-- TODO: update profile link -->
+      <span v-if="!!showBackToApp" class="mr-2">
         <v-btn type="link" small class="address-btn" aria-label="Return to USFL">
-          <a href="https://www.maskverse.com/profile">{{ t('homeAssets.returnToUsfl') }}</a>
+          <a href="https://usfl.fans">{{ t('homeAssets.returnToUsfl') }}</a>
         </v-btn>
       </span>
       <ShowToolTip :address="selectedAddress">
@@ -36,7 +35,7 @@ import ShowToolTip from '../ShowToolTip'
 export default {
   components: { ExportQrCode, ShowToolTip },
   props: {
-    showMaskSinger: {
+    showBackToApp: {
       type: Boolean,
       default: false,
     },

@@ -5,7 +5,7 @@
         {{ t('walletHome.walletHome') }}
       </div>
       <div class="ml-auto">
-        <QuickAddress :show-mask-singer="true" />
+        <QuickAddress :show-back-to-app="true" />
       </div>
     </div>
     <v-layout wrap mx-n4 mt-7>
