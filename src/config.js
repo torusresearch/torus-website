@@ -84,6 +84,7 @@ const {
   VUE_APP_PASSWORDLESS_DOMAIN,
   VUE_APP_DEVELOPER_DASHBOARD_URL,
   VUE_APP_PROXY_NETWORK,
+  VUE_APP_WALLET_CONNECT_PROJECT_ID,
 } = process.env
 
 const baseUrl = window.location.origin
@@ -536,4 +537,5 @@ export default {
 
   namespace,
   sessionId,
+  walletConnectProjectId: VUE_APP_WALLET_CONNECT_PROJECT_ID,
 }

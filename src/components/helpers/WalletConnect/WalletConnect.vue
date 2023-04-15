@@ -79,7 +79,7 @@
         </v-col>
         <v-col cols="12" :sm="showFromEmbed ? 12 : 6">
           <v-btn
-            v-if="wcConnecting || (wcConnectorSession && wcConnectorSession.connected)"
+            v-if="wcConnecting || walletConnectConnected"
             depressed
             large
             block
@@ -138,7 +138,7 @@ export default {
   computed: {
     ...mapState(['wcConnectorSession']),
     walletConnectConnected() {
-      return this.wcConnectorSession && this.wcConnectorSession.connected
+      return !!(this.wcConnectorSession && (this.wcConnectorSession.connected || this.wcConnectorSession.sessionData))
     },
     walletConnectDisplay() {
       if (this.wcConnecting) return `${this.t('walletConnect.connecting')}...`
@@ -151,6 +151,14 @@ export default {
         this.wcConnecting = false
         this.$store.dispatch('setSuccessMessage', 'walletConnect.connectedTo')
         if (value.uri) this.wcCopyPasteLink = value.uri
+      } else if (value.sessionData) {
+        this.wcConnecting = false
+        const parsedData = JSON.parse(value.sessionData || '{}')
+        const peerMetadata = parsedData[0]?.peer?.metadata
+        const appName = peerMetadata?.name || peerMetadata?.url
+        if (appName) this.wcCopyPasteLink = appName
+      } else {
+        this.wcCopyPasteLink = ''
       }
     },
   },
@@ -164,7 +172,7 @@ export default {
       'setErrorMessage',
     ]),
     async toggleWC() {
-      if (this.wcConnectorSession?.connected) {
+      if (this.walletConnectConnected) {
         const url = await this.getWalletConnectedApp()
         window.open(url)
       } else {
@@ -181,7 +189,7 @@ export default {
       this.scannerOpened = true
     },
     disconnect() {
-      if (this.wcConnectorSession?.connected) {
+      if (this.walletConnectConnected) {
         this.disconnectWalletConnect()
         this.wcConnecting = false
         this.wcCopyPasteLink = ''
@@ -243,12 +251,12 @@ export default {
         await this.initWalletConnect({ uri: this.wcCopyPasteLink })
 
         setTimeout(() => {
-          if (!(this.wcConnectorSession && this.wcConnectorSession.connected)) {
+          if (!this.walletConnectConnected) {
             this.handleError('accountMenu.wcErrorLinkExpired')
             this.wcConnecting = false
             this.wcCopyPasteLink = ''
           }
-        }, 5000)
+        }, 10_000)
       } catch (error) {
         log.error(error)
         this.wcConnecting = false

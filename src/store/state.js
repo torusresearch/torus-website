@@ -38,6 +38,8 @@ const initialState = {
   unapprovedEncryptionPublicKeyMsgs: {},
   unapprovedDecryptMsgs: {},
   unApprovedAssets: {},
+  unapprovedAddChainRequests: {},
+  unapprovedSwitchChainRequests: {},
   // preferences
   defaultPublicAddress: '',
   selectedAddress: '',

@@ -1,5 +1,5 @@
+import { bufferToHex, ecsign, stripHexPrefix } from '@ethereumjs/util'
 import { concatSig, decrypt, getEncryptionPublicKey, normalize, personalSign, signTypedData } from '@metamask/eth-sig-util'
-import { bufferToHex, ecsign, stripHexPrefix } from 'ethereumjs-util'
 import Wallet from 'ethereumjs-wallet'
 import { EventEmitter } from 'events'
 import log from 'loglevel'

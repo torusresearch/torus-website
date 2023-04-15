@@ -43,7 +43,7 @@ const unApprovedTransactions = (state) => {
 
 const currencyMultiplier = (state) => {
   const currencyMultiplierNumber =
-    state.selectedCurrency !== state.networkType.ticker ? state.currencyData[state.selectedCurrency.toLowerCase()] || 1 : 1
+    state.selectedCurrency === state.networkType.ticker ? 1 : state.currencyData[state.selectedCurrency.toLowerCase()] || 1
   return new BigNumber(currencyMultiplierNumber)
 }
 
@@ -111,7 +111,7 @@ function calculateBalances(state, y) {
   const { weiBalance, tokenData: tokenDataState, tokenRates: tokenRatesState, selectedCurrency, networkType } = state || {}
   const tokenData = tokenDataState
   const tokenRates = tokenRatesState
-  const formatter = selectedCurrency !== networkType.ticker ? 2 : 3
+  const formatter = selectedCurrency === networkType.ticker ? 3 : 2
   let full = []
   if (!networkType?.isErc20) {
     full.push({

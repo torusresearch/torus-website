@@ -186,7 +186,7 @@ export default {
     ...mapGetters(['supportedNetworks']),
     ...mapState(['networkType']),
     networks() {
-      return [...Object.values(this.supportedNetworks)]
+      return Object.values(this.supportedNetworks)
     },
     isRPCSelected() {
       return this.selectedNetwork.host === RPC

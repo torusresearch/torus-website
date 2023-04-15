@@ -1,5 +1,5 @@
 import { normalize } from '@metamask/eth-sig-util'
-import { BN } from 'ethereumjs-util'
+import BN from 'bn.js'
 
 class PendingBalanceCalculator {
   /**

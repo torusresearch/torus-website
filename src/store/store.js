@@ -244,6 +244,10 @@ function handleConfirm(ev) {
     torusController.updateAndApproveTransaction(txMeta)
   } else if (ev.data.txType === MESSAGE_TYPE.WATCH_ASSET) {
     torusController.approveWatchAsset(ev.data.id)
+  } else if (ev.data.txType === MESSAGE_TYPE.ADD_CHAIN) {
+    torusController.approveAddChain(ev.data.id)
+  } else if (ev.data.txType === MESSAGE_TYPE.SWITCH_CHAIN) {
+    torusController.approveSwitchChain(ev.data.id)
   } else {
     throw new Error('No new transactions.')
   }
@@ -265,6 +269,10 @@ function handleDeny(id, txType) {
     torusController.cancelDecryptMessage(Number.parseInt(id, 10))
   } else if (txType === MESSAGE_TYPE.WATCH_ASSET) {
     torusController.cancelWatchAsset(Number.parseInt(id, 10))
+  } else if (txType === MESSAGE_TYPE.ADD_CHAIN) {
+    torusController.cancelAddChain(Number.parseInt(id, 10))
+  } else if (txType === MESSAGE_TYPE.SWITCH_CHAIN) {
+    torusController.cancelSwitchChain(Number.parseInt(id, 10))
   }
 }
 
@@ -311,6 +319,19 @@ function getLatestMessageParameters(id) {
       msgParams: VuexStore.state.unApprovedAssets[id],
     }
     type = MESSAGE_TYPE.WATCH_ASSET
+  }
+
+  if (VuexStore.state.unapprovedAddChainRequests[id]) {
+    message = {
+      msgParams: VuexStore.state.unapprovedAddChainRequests[id],
+    }
+    type = MESSAGE_TYPE.ADD_CHAIN
+  }
+  if (VuexStore.state.unapprovedSwitchChainRequests[id]) {
+    message = {
+      msgParams: VuexStore.state.unapprovedSwitchChainRequests[id],
+    }
+    type = MESSAGE_TYPE.SWITCH_CHAIN
   }
 
   return message ? { msgParams: message.msgParams, id, type } : {}

@@ -1,7 +1,8 @@
+import { hashPersonalMessage } from '@ethereumjs/util'
 import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import deepmerge from 'deepmerge'
-import { hashPersonalMessage } from 'ethereumjs-util'
+import { ethErrors } from 'eth-rpc-errors'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import Web3 from 'web3'
@@ -16,6 +17,8 @@ import {
   ACTIVITY_ACTION_TOPUP,
   ERROR_TIME,
   ETHERSCAN_SUPPORTED_NETWORKS,
+  MESSAGE_TYPE,
+  RPC,
   SUCCESS_TIME,
   THEME_LIGHT_BLUE_NAME,
 } from '../utils/enums'
@@ -68,14 +71,22 @@ class PreferencesController extends SafeEventEmitter {
     this.web3 = new Web3(provider)
     this.api = new ApiHelpers(options.storeDispatch)
     this.signMessage = signMessage
+    this.addChainRequests = []
+    this.switchChainRequests = []
 
     this.interval = options.interval || DEFAULT_INTERVAL
-    this.store = new ObservableStore({ selectedAddress: '' }) // Account specific object
+    this.store = new ObservableStore({
+      selectedAddress: '',
+    }) // Account specific object
     this.metadataStore = new ObservableStore({})
     this.errorStore = new ObservableStore('')
     this.successStore = new ObservableStore('')
     this.billboardStore = new ObservableStore({})
     this.announcementsStore = new ObservableStore({})
+    this.addChainRequestStore = new ObservableStore({
+      unapprovedAddChainRequests: {},
+      unapprovedAddChainRequestsCount: 0,
+    })
   }
 
   headers(address) {
@@ -165,7 +176,7 @@ class PreferencesController extends SafeEventEmitter {
       this.errorStore.putState(error)
     } else if (error && typeof error === 'object') {
       const prettyError = prettyPrintData(error)
-      const payloadError = prettyError !== '' ? `Error: ${prettyError}` : 'Something went wrong. Pls try again'
+      const payloadError = prettyError === '' ? 'Something went wrong. Pls try again' : `Error: ${prettyError}`
       this.errorStore.putState(payloadError)
     } else {
       this.errorStore.putState(error || '')
@@ -178,7 +189,7 @@ class PreferencesController extends SafeEventEmitter {
       this.successStore.putState(message)
     } else if (message && typeof message === 'object') {
       const prettyMessage = prettyPrintData(message)
-      const payloadMessage = prettyMessage !== '' ? `Success: ${prettyMessage}` : 'Success'
+      const payloadMessage = prettyMessage === '' ? 'Success' : `Success: ${prettyMessage}`
       this.successStore.putState(payloadMessage)
     } else {
       this.successStore.putState(message || '')
@@ -316,11 +327,11 @@ class PreferencesController extends SafeEventEmitter {
         x.from &&
         (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase())
       ) {
-        if (x.status !== 'confirmed') {
-          pendingTx.push(x)
-        } else {
+        if (x.status === 'confirmed') {
           const finalObject = formatPastTx(x, lowerCaseSelectedAddress)
           pastTx.push(finalObject)
+        } else {
+          pendingTx.push(x)
         }
       }
     }
@@ -342,9 +353,11 @@ class PreferencesController extends SafeEventEmitter {
   cancelTxCalculate(pastTx) {
     const nonceMap = {}
     for (const x of pastTx) {
-      if (!nonceMap[x.nonce]) nonceMap[x.nonce] = [x]
-      else {
-        nonceMap[x.nonce].push(x)
+      const txKey = [x.nonce, x.from].join(':')
+      if (nonceMap[txKey]) {
+        nonceMap[txKey].push(x)
+      } else {
+        nonceMap[txKey] = [x]
       }
     }
 
@@ -727,6 +740,180 @@ class PreferencesController extends SafeEventEmitter {
     } catch {
       this.handleError('navBar.snackFailNetworkUpdate')
     }
+  }
+
+  getUnapprovedAddChainReqs() {
+    return this.addChainRequests
+      .filter((chainReq) => chainReq.status === 'unapproved')
+      .reduce((result, chainReq) => {
+        result[chainReq.id] = chainReq
+        return result
+      }, {})
+  }
+
+  async _validateAddChainParams(chainParams) {
+    const { chainId, rpcUrls, nativeCurrency } = chainParams || {}
+
+    if (!chainId) {
+      throw ethErrors.rpc.invalidParams('Invalid add chain params: please pass chainId in params')
+    }
+
+    if (!isHexStrict(chainId)) {
+      throw ethErrors.rpc.invalidParams('Invalid add chain params: please pass a valid hex chainId in params, for: ex: 0x1')
+    }
+
+    if (!rpcUrls || rpcUrls.length === 0) ethErrors.rpc.invalidParams('params.rpcUrls not provided')
+    if (!nativeCurrency) ethErrors.rpc.invalidParams('params.nativeCurrency not provided')
+    const { name, symbol, decimals } = nativeCurrency
+
+    if (!name) ethErrors.rpc.invalidParams('params.nativeCurrency.name not provided')
+    if (!symbol) ethErrors.rpc.invalidParams('params.nativeCurrency.symbol not provided')
+    if (decimals === undefined) throw new Error('params.nativeCurrency.decimals not provided')
+    const _web3 = new Web3(new Web3.providers.HttpProvider(rpcUrls[0]))
+    const networkChainID = await _web3.eth.getChainId()
+    if (networkChainID !== Number.parseInt(chainId, 16)) {
+      throw ethErrors.rpc.invalidParams(
+        `Provided rpc url's chainId version is not matching with provided chainId, expected: ${toHex(networkChainID)}, received: ${chainId}`
+      )
+    }
+  }
+
+  // validate params before calling this function
+  normalizedAddChainParams(id, addChainParams) {
+    /**
+     * addChainParams interface
+     * 
+     * interface AddEthereumChainParameter {
+        chainId: string; // A 0x-prefixed hexadecimal string
+        chainName: string;
+        nativeCurrency: {
+          name: string;
+          symbol: string; // 2-6 characters long
+          decimals: 18;
+        };
+        rpcUrls: string[];
+        blockExplorerUrls?: string[];
+        iconUrls?: string[]; // Currently ignored.
+      }
+     */
+    const { symbol } = addChainParams.nativeCurrency
+    const finalParams = {
+      id,
+      addChainParams: {
+        network_name: addChainParams.chainName,
+        rpc_url: addChainParams.rpcUrls[0],
+        chain_id: Number.parseInt(addChainParams.chainId, 16),
+        symbol: symbol || undefined,
+        block_explorer_url: addChainParams.blockExplorerUrls ? addChainParams.blockExplorerUrls[0] : undefined,
+        icon_url: addChainParams.iconUrls ? addChainParams.iconUrls[0] : undefined,
+      },
+    }
+    return finalParams
+  }
+
+  async addChainRequestAsync(addChainParams, request, id) {
+    await this._validateAddChainParams(addChainParams)
+    const normalizedAddChainParams = this.normalizedAddChainParams(id, addChainParams)
+    return new Promise((resolve, reject) => {
+      this._addChainRequest(normalizedAddChainParams, request, id)
+      this.emit('newUnapprovedAddChainRequest', normalizedAddChainParams, request)
+      // await finished
+      this.once(`${id}:finished`, (data) => {
+        const req = this.getAddChainRequest(id)
+        switch (data.status) {
+          case 'approved':
+            return resolve()
+          case 'rejected':
+            return reject(ethErrors.provider.userRejectedRequest(`Torus add chain: ${req.errorMsg || 'User denied add chain request.'}`))
+          default:
+            return reject(new Error(`Torus add chain: Unknown problem: ${JSON.stringify(normalizedAddChainParams)}`))
+        }
+      })
+    })
+  }
+
+  _addChainRequest(chainReqParams, request, id) {
+    // add origin from request
+    if (request) chainReqParams.origin = request.origin
+    const time = Date.now()
+    const chainRequestData = {
+      id,
+      time,
+      status: 'unapproved',
+      type: MESSAGE_TYPE.ADD_CHAIN,
+      ...chainReqParams,
+    }
+
+    this.addChainRequest(chainRequestData)
+
+    // signal update
+    this.emit('update')
+    return id
+  }
+
+  _saveChainRequestList() {
+    const unapprovedAddChainRequests = this.getUnapprovedAddChainReqs()
+    const unapprovedAddChainRequestsCount = Object.keys(unapprovedAddChainRequests).length
+    this.addChainRequestStore.updateState({ unapprovedAddChainRequests, unapprovedAddChainRequestsCount })
+  }
+
+  addChainRequest(chainRequest) {
+    this.addChainRequests.push(chainRequest)
+    this._saveChainRequestList()
+  }
+
+  getAddChainRequest(chainRequestId) {
+    return this.addChainRequests.find((chainRequest) => chainRequest.id === chainRequestId)
+  }
+
+  _updateChainRequest(existingChainReq) {
+    const index = this.addChainRequests.findIndex((chainRequest) => existingChainReq.id === chainRequest.id)
+    if (index !== -1) {
+      this.addChainRequests[index] = existingChainReq
+    }
+    this._saveChainRequestList()
+  }
+
+  _setAddChainReqStatus(addChainReqId, status, errorMsg = '') {
+    const chainRequest = this.getAddChainRequest(addChainReqId)
+    if (!chainRequest) {
+      throw new Error(`PreferencesController - AddChainRequest not found for id: "${addChainReqId}".`)
+    }
+    chainRequest.status = status
+    if (errorMsg) {
+      chainRequest.errorMsg = errorMsg
+    }
+    this._updateChainRequest(chainRequest)
+    this.emit(`${addChainReqId}:${status}`, chainRequest)
+    if (status === 'rejected' || status === 'approved' || status === 'errored') {
+      this.emit(`${addChainReqId}:finished`, chainRequest)
+    }
+  }
+
+  async approveAddChainRequest(addChainReqId) {
+    try {
+      const chainReqData = this.getAddChainRequest(addChainReqId)
+
+      const { network_name, rpc_url, chain_id, symbol, block_explorer_url } = chainReqData.addChainParams
+      const customNetwork = {
+        networkName: network_name,
+        host: rpc_url,
+        chainId: toHex(chain_id),
+        symbol,
+        blockExplorer: block_explorer_url || undefined,
+      }
+
+      await this.addCustomNetwork(RPC, customNetwork)
+      this._setAddChainReqStatus(addChainReqId, 'approved')
+    } catch (error) {
+      log.error('error while approving add chain', error)
+      this.rejectAddChainRequest(addChainReqId, error?.message || 'Something went wrong while approving add chain request')
+      throw error
+    }
+  }
+
+  rejectAddChainRequest(addChainReqId, errorMsg = '') {
+    this._setAddChainReqStatus(addChainReqId, 'rejected', errorMsg)
   }
 
   /* istanbul ignore next */

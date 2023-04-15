@@ -1,10 +1,10 @@
+import { stripHexPrefix } from '@ethereumjs/util'
 import { normalize } from '@metamask/eth-sig-util'
 import { ObservableStore, storeAsStream } from '@metamask/obs-store'
 import { createEngineStream, JRPCEngine, SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import { providerAsMiddleware } from 'eth-json-rpc-middleware'
-import { stripHexPrefix } from 'ethereumjs-util'
 import { debounce } from 'lodash'
 import log from 'loglevel'
 import pump from 'pump'
@@ -111,6 +111,11 @@ export default class TorusController extends SafeEventEmitter {
       storeDispatch: this.opts.storeDispatch,
     })
 
+    this.prefsController.on('newUnapprovedAddChainRequest', (addChainData, request) => {
+      log.debug('add new chain')
+      options.showAddChain(addChainData.id, request)
+    })
+
     this.prefsController.getBillboardContents()
     this.prefsController.getAnnouncementsContents()
 
@@ -139,6 +144,8 @@ export default class TorusController extends SafeEventEmitter {
       currency: this.currencyController.store,
       tokensStore: this.detectTokensController.detectedTokensStore,
     })
+
+    this.networkController.on('newUnapprovedSwitchChainRequest', (switchChainData, request) => options.showSwitchChain(switchChainData.id, request))
 
     // ensure accountTracker updates balances after network change
     this.networkController.on('networkDidChange', () => {
@@ -285,6 +292,8 @@ export default class TorusController extends SafeEventEmitter {
       processEncryptionPublicKey: this.newUnsignedEncryptionPublicKey.bind(this),
       processDecryptMessage: this.newUnsignedDecryptMessage.bind(this),
       processWatchAsset: this.newUnapprovedAsset.bind(this),
+      processAddChain: this.newAddChainRequest.bind(this),
+      processSwitchChain: this.newSwitchChainRequest.bind(this),
     }
     const providerProxy = this.networkController.initializeProvider(providerOptions)
     return providerProxy
@@ -445,6 +454,14 @@ export default class TorusController extends SafeEventEmitter {
     })
   }
 
+  async newUnsignedPersonalMessage(messageParameters, request) {
+    const messageId = createRandomId()
+    const promise = this.personalMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageId)
+    this.sendUpdate()
+    this.opts.showUnconfirmedMessage(messageId, request)
+    return promise
+  }
+
   /**
    * Called when a Dapp suggests a new tx to be signed.
    * this wrapper needs to exist so we can provide a reference to
@@ -530,27 +547,43 @@ export default class TorusController extends SafeEventEmitter {
     }
     return undefined
   }
+  // network methods
+
+  async newAddChainRequest(addChainParams, request) {
+    const id = createRandomId()
+    return this.prefsController.addChainRequestAsync(addChainParams, request, id)
+  }
+
+  approveAddChain(reqId) {
+    return this.prefsController.approveAddChainRequest(reqId).then(() => this.getState())
+  }
+
+  cancelAddChain(reqId, callback) {
+    this.prefsController.rejectAddChainRequest(reqId)
+    if (callback && typeof callback === 'function') {
+      return callback(null, this.getState())
+    }
+    return undefined
+  }
+
+  async newSwitchChainRequest(switchChainParams, request) {
+    const id = createRandomId()
+    return this.networkController.switchChainRequestAsync(switchChainParams, request, id)
+  }
+
+  approveSwitchChain(reqId) {
+    return this.networkController.approveSwitchChainRequest(reqId).then(() => this.getState())
+  }
+
+  cancelSwitchChain(reqId, callback) {
+    this.networkController.rejectSwitchChainRequest(reqId)
+    if (callback && typeof callback === 'function') {
+      return callback(null, this.getState())
+    }
+    return undefined
+  }
 
   // personal_sign methods:
-
-  /**
-   * Called when a dapp uses the personal_sign method.
-   * This is identical to the Geth eth_sign method, and may eventually replace
-   * eth_sign.
-   *
-   * We currently define our eth_sign and personal_sign mostly for legacy Dapps.
-   *
-   * @param {Object} msgParams - The params of the message to sign & return to the Dapp.
-   * @param {Function} cb - The callback function called with the signature.
-   * Passed back to the requesting Dapp.
-   */
-  async newUnsignedPersonalMessage(messageParameters, request) {
-    const messageId = createRandomId()
-    const promise = this.personalMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageId)
-    this.sendUpdate()
-    this.opts.showUnconfirmedMessage(messageId, request)
-    return promise
-  }
 
   /**
    * Signifies a user's approval to sign a personal_sign message in queue.
