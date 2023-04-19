@@ -6,9 +6,9 @@
           <div
             class="text-body-2 text-sm-body-1 font-weight-bold text_1--text"
             :class="{ 'text-clamp-one': !$vuetify.breakpoint.xsOnly }"
-            :title="t('walletConnect.title')"
+            :title="t('walletConnect.titleOpensea')"
           >
-            {{ t('walletConnect.title') }}
+            {{ t('walletConnect.titleOpensea') }}
           </div>
           <div class="caption text_1--text" :title="t('walletConnect.caption')">
             {{ t('walletConnect.caption') }}
@@ -24,7 +24,7 @@
             max-width="170"
             max-height="30"
             :style="$vuetify.breakpoint.smAndDown && !showFromEmbed ? 'width: 100px' : 'width: 170px'"
-            :alt="t('walletConnect.title')"
+            :alt="t('walletConnect.titleOpensea')"
           />
         </div>
       </v-flex>
