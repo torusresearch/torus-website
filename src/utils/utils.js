@@ -881,8 +881,14 @@ export function rskToChecksumAddress(address, chainId) {
   return `0x${[...address2].map((b, i) => (Number.parseInt(hash[i], 16) >= 8 ? b.toUpperCase() : b)).join('')}`
 }
 
+export function isRSKAddress(address) {
+  // check if it has the basic requirements of an address
+  // eslint-disable-next-line
+  return /^(0x)?[0-9a-f]{40}$/i.test(address)
+}
+
 export function rskIsValidChecksumAddress(address, chainId) {
-  return isAddress(address) && rskToChecksumAddress(address, chainId) === address
+  return isRSKAddress(address) && rskToChecksumAddress(address, chainId) === address
 }
 
 export function toChecksumAddressByChainId(address, chainId) {
