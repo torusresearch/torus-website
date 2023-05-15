@@ -39,7 +39,7 @@
     "@metamask/obs-store": "^7.0.0",
     "@rsksmart/rsk-utils": "^1.1.0",
     "@sentry/browser": "^7.43.0",
-    "@sentry/tracing": "^7.43.0",
+    "@sentry/tracing": "^7.52.1",
     "@sentry/vue": "^7.43.0",
     "@toruslabs/broadcast-channel": "^6.2.0",
     "@toruslabs/eccrypto": "^2.0.0",
