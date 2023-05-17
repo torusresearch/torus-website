@@ -77,6 +77,7 @@ module.exports = {
       assert: require.resolve('assert/'),
       stream: require.resolve('stream-browserify'),
       url: require.resolve('url/'),
+      zlib: require.resolve('browserify-zlib'),
     }
   },
   // chainWebpack: (config) => {
