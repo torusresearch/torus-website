@@ -1,5 +1,5 @@
 import { privateToAddress } from '@ethereumjs/util'
-import { randomId, safeatob, safebtoa } from '@toruslabs/openlogin-utils'
+import { safeatob, safebtoa } from '@toruslabs/openlogin-utils'
 import deepmerge from 'deepmerge'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
@@ -25,7 +25,15 @@ import {
   SUPPORTED_NETWORK_TYPES,
 } from '../utils/enums'
 import { remove } from '../utils/httpHelpers'
-import { fakeStream, generateAddressFromPrivateKey, getIFrameOriginObject, isMain, storageUtils, toChecksumAddressByChainId } from '../utils/utils'
+import {
+  fakeStream,
+  generateAddressFromPrivateKey,
+  getIFrameOriginObject,
+  isMain,
+  randomId,
+  storageUtils,
+  toChecksumAddressByChainId,
+} from '../utils/utils'
 import {
   accountTrackerHandler,
   announcementsHandler,

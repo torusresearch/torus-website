@@ -1,4 +1,3 @@
-import { randomId } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import config from '../../config'
@@ -18,7 +17,7 @@ import {
   WYRE_NETWORK_MAP,
   XANPOOL,
 } from '../../utils/enums'
-import { fakeStream, paymentProviders } from '../../utils/utils'
+import { fakeStream, paymentProviders, randomId } from '../../utils/utils'
 import banxa from './banxa'
 import mercuryo from './mercuryo'
 import moonpay from './moonpay'

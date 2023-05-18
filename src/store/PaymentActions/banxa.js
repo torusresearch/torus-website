@@ -1,11 +1,9 @@
-import { randomId } from '@toruslabs/openlogin-utils'
-
 import config from '../../config'
 import PopupHandler from '../../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import { getQuote, getWalletOrder } from '../../plugins/banxa'
 import { BANXA, ETH } from '../../utils/enums'
-import { paymentProviders } from '../../utils/utils'
+import { paymentProviders, randomId } from '../../utils/utils'
 
 export default {
   fetchBanxaQuote({ state }, payload) {

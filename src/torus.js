@@ -1,12 +1,11 @@
 import { BasePostMessageStream } from '@toruslabs/openlogin-jrpc'
-import { randomId } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 import Web3 from 'web3'
 
 import config from './config'
 import TorusController from './controllers/TorusController'
 import setupMultiplex from './controllers/utils/setupMultiplex'
-import { getDefaultNetwork, getIFrameOrigin, isMain, storageUtils } from './utils/utils'
+import { getDefaultNetwork, getIFrameOrigin, isMain, randomId, storageUtils } from './utils/utils'
 // import store from './store'
 let storeReference
 let deferredDispatch = []

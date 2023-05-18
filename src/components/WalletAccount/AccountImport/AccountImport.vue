@@ -151,11 +151,10 @@
 /* eslint-disable import/extensions */
 import { bufferToHex, stripHexPrefix } from '@ethereumjs/util'
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
-import { randomId } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
 
-import { broadcastChannelOptions } from '../../../utils/utils'
+import { broadcastChannelOptions, randomId } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
 export default {

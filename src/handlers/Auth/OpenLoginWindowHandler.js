@@ -1,7 +1,8 @@
-import { randomId, safebtoa } from '@toruslabs/openlogin-utils'
+import { safebtoa } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import config from '../../config'
+import { randomId } from '../../utils/utils'
 import PopupWithBcHandler from '../Popup/PopupWithBcHandler'
 
 class OpenLoginWindowHandler {

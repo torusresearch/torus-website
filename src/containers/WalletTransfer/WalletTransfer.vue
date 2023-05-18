@@ -501,7 +501,6 @@
 </template>
 
 <script>
-import { randomId } from '@toruslabs/openlogin-utils'
 import BigNumber from 'bignumber.js'
 import Das from 'das-sdk'
 import erc721TransferABI from 'human-standard-collectible-abi'
@@ -558,6 +557,7 @@ import {
   getUserIcon,
   getVerifierOptions,
   isAddressByChainId,
+  randomId,
   significantDigits,
   toChecksumAddressByChainId,
   validateVerifierId,
