@@ -139,7 +139,7 @@ export default {
         router.push({ path: '/' }).catch(() => {})
       }
       try {
-        // openLoginHandler.openLoginInstance.state.store.set('sessionId', null)
+        await openLoginHandler.openLoginInstance.init()
         await openLoginHandler.invalidateSession()
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
@@ -294,12 +294,12 @@ export default {
       await openLoginHandler.updateSession(sessionData)
     } else {
       const sessionId = randomId()
-      await openLoginHandler.openLoginInstance._syncState({
-        walletKey: privateKey,
-        store: {
-          sessionId,
-        },
-      })
+      // await openLoginHandler.openLoginInstance._syncState({
+      //   walletKey: privateKey,
+      //   store: {
+      //     sessionId,
+      //   },
+      // })
       const sessionData = {
         walletKey: privateKey,
         store: {
@@ -406,17 +406,17 @@ export default {
       await commit('setCustomCurrency', state.selectedCurrency)
     }
 
-    const openloginInstance = OpenLoginHandler.getInstance({}, {}, config.namespace)
-    const existingSessionData = await openloginInstance.getActiveSession()
-    if (!existingSessionData) {
-      dispatch('logOut')
-      return undefined
-    }
-    const sessionData = {
-      ...existingSessionData,
-      networkType,
-    }
-    await openloginInstance.updateSession(sessionData)
+    // const openloginInstance = OpenLoginHandler.getInstance({}, {}, config.namespace)
+    // const existingSessionData = await openloginInstance.getActiveSession()
+    // if (!existingSessionData) {
+    //   dispatch('logOut')
+    //   return undefined
+    // }
+    // const sessionData = {
+    //   ...existingSessionData,
+    //   networkType,
+    // }
+    // await openloginInstance.updateSession(sessionData)
     return undefined
   },
   async deleteCustomNetwork({ _commit }, id) {
@@ -469,21 +469,21 @@ export default {
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
       })
-      const { keys, userInfo, postboxKey, userDapps, error, sessionId, sessionNamespace } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
       if (error) {
         throw new Error(error)
       }
       if (config.storageAvailability[storageUtils.storageType]) {
-        const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
+        // const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
         if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType })
         else await dispatch('setProviderType', { network: state.networkType, type: RPC })
-        await openLoginHandler.openLoginInstance._syncState({
-          store: {
-            sessionId,
-            sessionNamespace,
-          },
-          sessionNamespace,
-        })
+        // await openLoginHandler.openLoginInstance._syncState({
+        //   store: {
+        //     sessionId,
+        //     sessionNamespace,
+        //   },
+        //   sessionNamespace,
+        // })
       }
 
       // Get all open login results
@@ -519,6 +519,7 @@ export default {
     dispatch('getUserDapps', { postboxKey, calledFromEmbed })
     await dispatch('initTorusKeyring', {
       calledFromEmbed,
+      // TODO: not used anymore
       oAuthToken: userInfo.idToken || userInfo.accessToken,
       keys: keys.map((x) => ({
         ethAddress: x.ethAddress,
@@ -645,31 +646,33 @@ export default {
   async rehydrate({ state, dispatch, commit }) {
     const { networkType, wcConnectorSession } = state
     let walletKey = {}
-    let finalNetworkType = networkType
+    const finalNetworkType = networkType
     try {
       const currentRoute = router.match(window.location.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
+      // TODO: check skipOpenLoginCheck and fetchSession
       if (!currentRoute.meta.skipOpenLoginCheck || currentRoute.meta.fetchSession) {
         const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
-        const sessionInfo = await openLoginHandler.getActiveSession()
+        await openLoginHandler.openLoginInstance.init()
+        const { state: openloginState } = openLoginHandler.openLoginInstance
+        const { sessionId } = openLoginHandler.openLoginInstance.sessionManager
         if (!currentRoute.meta.skipOpenLoginCheck) {
-          if (!sessionInfo) {
+          if (!sessionId) {
             commit('setRehydrationStatus', true)
 
             if (isMain) await dispatch('logOut')
             else commit('setSelectedAddress', '')
             return
           }
-          const { store } = sessionInfo
           // log.info(sessionInfo, 'current session info')
-          if (sessionInfo.walletKey || sessionInfo.tKey) {
+          if (openloginState.walletKey || openloginState.tKey) {
             walletKey = openLoginHandler.getWalletKey()
             // already logged in
             // call autoLogin
             log.info('auto-login with openlogin session')
             await dispatch('autoLogin', { calledFromEmbed: !isMain })
 
-            if (store.appState) {
-              const appStateParams = JSON.parse(safeatob(store.appState))
+            if (openloginState.userInfo.appState) {
+              const appStateParams = JSON.parse(safeatob(openloginState.userInfo.appState))
               if (appStateParams?.whiteLabel) {
                 commit('setWhiteLabel', { ...appStateParams.whiteLabel })
               }
@@ -692,7 +695,8 @@ export default {
             log.info('no openlogin session')
           }
         }
-        if (sessionInfo?.networkType) finalNetworkType = sessionInfo?.networkType
+        // TODO: check networkType
+        // if (sessionInfo?.networkType) finalNetworkType = sessionInfo?.networkType
       }
 
       if (SUPPORTED_NETWORK_TYPES[finalNetworkType.host]) await dispatch('setProviderType', { network: finalNetworkType })

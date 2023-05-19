@@ -31,19 +31,19 @@ class OpenLoginHandler {
 
   static getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
     if (OpenLoginHandler.openLoginHandlerInstance) {
-      const updatedConfig = {}
-      if (Object.keys(whiteLabel).length > 0) {
-        const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
-        updatedConfig.whiteLabel = whiteLabelOpenLogin
-      }
-      if (Object.keys(loginConfig).length > 0) {
-        updatedConfig.loginConfig = loginConfig
-      }
-      if (Object.keys(updatedConfig).length > 0) {
-        OpenLoginHandler.openLoginHandlerInstance.openLoginInstance._syncState({
-          ...updatedConfig,
-        })
-      }
+      // const updatedConfig = {}
+      // if (Object.keys(whiteLabel).length > 0) {
+      //   const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
+      //   updatedConfig.whiteLabel = whiteLabelOpenLogin
+      // }
+      // if (Object.keys(loginConfig).length > 0) {
+      //   updatedConfig.loginConfig = loginConfig
+      // }
+      // if (Object.keys(updatedConfig).length > 0) {
+      //   OpenLoginHandler.openLoginHandlerInstance.openLoginInstance._syncState({
+      //     ...updatedConfig,
+      //   })
+      // }
 
       return OpenLoginHandler.openLoginHandlerInstance
     }
@@ -68,6 +68,7 @@ class OpenLoginHandler {
       whiteLabel: whiteLabelOpenLogin,
       loginConfig,
       network: config.torusNetwork,
+      sdkUrl: 'https://alpha.openlogin.com',
       no3PC: true,
       _sessionNamespace: sessionNamespace || namespace,
       storageKey: storageUtils.storageType,
@@ -144,8 +145,7 @@ class OpenLoginHandler {
 
   async invalidateSession() {
     try {
-      const { sessionId } = this.openLoginInstance.state.store.getStore()
-      const { sessionNamespace } = this.openLoginInstance.state
+      const { sessionId, sessionNamespace } = this.openLoginInstance.sessionManager
       const finalSessionNamespace = sessionNamespace || config.namespace || ''
       if (sessionId) {
         const privKey = Buffer.from(sessionId.padStart(64, '0'), 'hex')
@@ -160,18 +160,18 @@ class OpenLoginHandler {
           timeout: 1,
           namespace: finalSessionNamespace,
         })
-        this.openLoginInstance.state.store.set('sessionId', null)
+        this.openLoginInstance.logout()
       }
     } catch (error) {
       if (error?.status === 404) {
-        this.openLoginInstance.state.store.set('sessionId', null)
+        this.openLoginInstance.logout()
       }
       log.warn(error)
     }
   }
 
   getUserInfo() {
-    const allInfo = this.openLoginInstance.state.store.getStore()
+    const allInfo = this.openLoginInstance.getUserInfo()
     const userInfo = {
       name: allInfo.name, // first + last name
       profileImage: allInfo.profileImage, // image url

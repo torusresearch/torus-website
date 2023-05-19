@@ -80,8 +80,8 @@ export default {
       let resultParams = {
         store: {},
       }
-      const sessionId = hashUrl.searchParams.get('sessionId') || ''
-      const sessionNamespace = hashUrl.searchParams.get('sessionNamespace') || ''
+      // const sessionId = hashUrl.searchParams.get('sessionId') || ''
+      const paramSessionNamespace = hashUrl.searchParams.get('sessionNamespace') || ''
       if (result) {
         resultParams = JSON.parse(safeatob(result))
         loginError = resultParams.error
@@ -92,17 +92,10 @@ export default {
       }
 
       this.whiteLabel = whiteLabel
-
-      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig, sessionNamespace)
-      await openLoginHandler.openLoginInstance._syncState({
-        ...resultParams,
-        store: {
-          ...resultParams.store,
-          sessionId,
-          sessionNamespace,
-        },
-      })
+      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig, paramSessionNamespace)
+      await openLoginHandler.openLoginInstance.init()
       const { state } = openLoginHandler.openLoginInstance
+      const { sessionId, sessionNamespace } = openLoginHandler.openLoginInstance.sessionManager
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()
       const { keys: extraKeys, userDapps } = await openLoginHandler.getUserDapps(postboxKey)
@@ -128,7 +121,7 @@ export default {
       this.selectedAccount = Object.keys(this.accounts)[0] ?? ''
 
       // broadcast channel ID
-      const { appState } = state.store.getStore()
+      const { appState } = state.userInfo
       const parsedAppState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(appState))))
       this.channelId = parsedAppState.instanceId
 
@@ -140,8 +133,8 @@ export default {
         postboxKey,
         userDapps,
         error: loginError,
-        sessionId: openLoginHandler.getSessionId(),
-        sessionNamespace: openLoginHandler.getSessionNamespace(),
+        sessionId,
+        sessionNamespace,
       }
 
       // if there are no app accounts to choose, continue
