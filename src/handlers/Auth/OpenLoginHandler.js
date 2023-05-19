@@ -144,30 +144,7 @@ class OpenLoginHandler {
   }
 
   async invalidateSession() {
-    try {
-      const { sessionId, sessionNamespace } = this.openLoginInstance.sessionManager
-      const finalSessionNamespace = sessionNamespace || config.namespace || ''
-      if (sessionId) {
-        const privKey = Buffer.from(sessionId.padStart(64, '0'), 'hex')
-        const publicKeyHex = getPublic(privKey).toString('hex')
-        const encData = await encryptData(sessionId, {})
-        const signatureBf = await sign(privKey, keccak256(encData))
-        const signature = signatureBf.toString('hex')
-        await post(`${config.storageServerUrl}/store/set`, {
-          key: publicKeyHex,
-          data: encData,
-          signature,
-          timeout: 1,
-          namespace: finalSessionNamespace,
-        })
-        this.openLoginInstance.logout()
-      }
-    } catch (error) {
-      if (error?.status === 404) {
-        this.openLoginInstance.logout()
-      }
-      log.warn(error)
-    }
+    await this.openLoginInstance.logout()
   }
 
   getUserInfo() {

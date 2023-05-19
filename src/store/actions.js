@@ -139,7 +139,6 @@ export default {
         router.push({ path: '/' }).catch(() => {})
       }
       try {
-        await openLoginHandler.openLoginInstance.init()
         await openLoginHandler.invalidateSession()
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
