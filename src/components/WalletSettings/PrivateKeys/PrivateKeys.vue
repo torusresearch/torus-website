@@ -166,12 +166,13 @@
 /* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable import/extensions */
 import { stripHexPrefix } from '@ethereumjs/util'
-import Wallet from 'ethereumjs-wallet'
+import { Wallet } from 'ethers'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
 
 import { ACCOUNT_TYPE } from '../../../utils/enums'
+import { getV3Filename } from '../../../utils/utils'
 import ShowToolTip from '../../helpers/ShowToolTip'
 
 export default {
@@ -243,14 +244,14 @@ export default {
     async createWallet(password) {
       const createdWallet = {}
       const wallet = this.generateWallet(this.selectedKey)
-      createdWallet.walletJson = await wallet.toV3(password)
-      createdWallet.name = wallet.getV3Filename()
+      createdWallet.walletJson = await wallet.encrypt(password)
+      createdWallet.name = getV3Filename(wallet.address)
       return createdWallet
     },
     generateWallet(privateKey) {
       const stripped = stripHexPrefix(privateKey)
       const buffer = Buffer.from(stripped, 'hex')
-      const wallet = Wallet.fromPrivateKey(buffer)
+      const wallet = new Wallet(buffer)
       return wallet
     },
     createBlob(mime, string_) {

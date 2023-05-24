@@ -1219,3 +1219,8 @@ export const getDefaultNetwork = () => {
 }
 
 export const randomId = () => Math.random().toString(36).slice(2)
+
+export const getV3Filename = (address) => {
+  const ts = new Date()
+  return ['UTC--', ts.toJSON().replace(/:/g, '-'), '--', address.toString('hex')].join('')
+}

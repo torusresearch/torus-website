@@ -1,6 +1,6 @@
 import { bufferToHex, ecsign, stripHexPrefix } from '@ethereumjs/util'
 import { concatSig, decrypt, getEncryptionPublicKey, normalize, personalSign, signTypedData } from '@metamask/eth-sig-util'
-import Wallet from 'ethereumjs-wallet'
+import { Wallet } from 'ethers'
 import { EventEmitter } from 'events'
 import log from 'loglevel'
 
@@ -30,7 +30,7 @@ export default class TorusKeyring extends EventEmitter {
   generateWallet(privateKey) {
     const stripped = stripHexPrefix(privateKey)
     const buffer = Buffer.from(stripped, 'hex')
-    const wallet = Wallet.fromPrivateKey(buffer)
+    const wallet = new Wallet(buffer)
     return wallet
   }
 
@@ -51,7 +51,7 @@ export default class TorusKeyring extends EventEmitter {
   async addRandomAccounts(n = 1) {
     const newWallets = []
     for (let i = 0; i < n; i += 1) {
-      newWallets.push(Wallet.generate())
+      newWallets.push(Wallet.createRandom())
     }
     this.wallets = [...this.wallets, ...newWallets]
     const hexWallets = newWallets.map((w) => bufferToHex(w.getAddress()))

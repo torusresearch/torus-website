@@ -1,6 +1,11 @@
 import { stripHexPrefix } from '@ethereumjs/util'
-import Wallet, { thirdparty as ThirdParty } from 'ethereumjs-wallet'
+import { Wallet } from 'ethers'
 import log from 'loglevel'
+
+const getV3Filename = (address) => {
+  const ts = new Date()
+  return ['UTC--', ts.toJSON().replace(/:/g, '-'), '--', address.toString('hex')].join('')
+}
 
 const fromMyEtherWalletV2 = (json) => {
   if (json.privKey.length !== 64) {
@@ -9,13 +14,13 @@ const fromMyEtherWalletV2 = (json) => {
   const privKey = Buffer.from(json.privKey, 'hex')
   return new Wallet(privKey)
 }
+
 const getWalletFromPrivKeyFile = async (jsonfile, password) => {
   if (jsonfile.encseed != null) return Wallet.fromEthSale(jsonfile, password)
   if (jsonfile.Crypto != null || jsonfile.crypto != null) {
-    const wallet = await Wallet.fromV3(jsonfile, password, true)
+    const wallet = await Wallet.fromEncryptedJson(JSON.stringify(jsonfile), password)
     return wallet
   }
-  if (jsonfile.hash != null) return ThirdParty.fromEtherWallet(jsonfile, password)
   if (jsonfile.publisher === 'MyEtherWallet') return fromMyEtherWalletV2(jsonfile)
   throw new Error('Invalid Wallet file')
 }
@@ -23,15 +28,15 @@ const getWalletFromPrivKeyFile = async (jsonfile, password) => {
 const generateWallet = (privateKey) => {
   const stripped = stripHexPrefix(privateKey)
   const buffer = Buffer.from(stripped, 'hex')
-  const wallet = Wallet.fromPrivateKey(buffer)
+  const wallet = new Wallet(buffer)
   return wallet
 }
 
 const create = async (password, privateKey) => {
   const createdWallet = {}
   const wallet = generateWallet(privateKey)
-  createdWallet.walletJson = await wallet.toV3(password)
-  createdWallet.name = wallet.getV3Filename()
+  createdWallet.walletJson = await wallet.encrypt(password)
+  createdWallet.name = getV3Filename(wallet.address)
   return createdWallet
 }
 
@@ -54,8 +59,8 @@ if (!navigator.userAgent.includes('Node.js') && !navigator.userAgent.includes('j
         const workerResult = await create(event.data.data[0], event.data.data[1])
         postMessage(workerResult)
       } else if (event.data.type === 'unlockWallet') {
-        const workerResult = await unlock(event.data.data[0], event.data.data[1])
-        postMessage(workerResult)
+        const { privateKey } = await unlock(event.data.data[0], event.data.data[1])
+        postMessage({ privateKey })
       }
     } catch (error) {
       log.error(error)
