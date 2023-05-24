@@ -50,6 +50,7 @@
     "@toruslabs/openlogin-jrpc": "^4.4.0",
     "@toruslabs/openlogin-subkey": "^4.2.0",
     "@toruslabs/openlogin-utils": "^4.4.0",
+    "@toruslabs/openlogin-session-manager": "/Users/architgupta/Desktop/web3auth/session-manager-web/packages/openlogin-session-manager/toruslabs-openlogin-session-manager-1.0.0.tgz",
     "@uniswap/default-token-list": "^9.5.0",
     "@uniswap/router-sdk": "^1.4.0",
     "@uniswap/sdk-core": "^3.2.2",

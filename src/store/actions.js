@@ -291,24 +291,6 @@ export default {
         },
       }
       await openLoginHandler.updateSession(sessionData)
-    } else {
-      const sessionId = randomId()
-      // await openLoginHandler.openLoginInstance._syncState({
-      //   walletKey: privateKey,
-      //   store: {
-      //     sessionId,
-      //   },
-      // })
-      const sessionData = {
-        walletKey: privateKey,
-        store: {
-          whiteLabel: state.whiteLabel,
-          appState,
-          sessionId,
-          ...userInfo,
-        },
-      }
-      await openLoginHandler.setSession(sessionData)
     }
 
     // TODO: deprecate rehydrate false for the next major version bump

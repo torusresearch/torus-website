@@ -121,7 +121,7 @@ export default {
   },
   setMetaData(state, payload) {
     const keys = Object.keys(payload)
-    const key = keys[keys.length - 1] || ''
+    const key = keys.at(-1) || ''
     const value = payload[key] || { name: '', icon: '' }
     state.iframeMetadata = {
       origin: key,

@@ -286,7 +286,7 @@ export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', th
     return `${
       negativeSign +
       (j ? i.slice(0, j) + thousands : '') +
-      i.slice(j).replace(/(\d{3})(?=\d)/g, `$1${thousands}`) +
+      i.slice(j).replaceAll(/(\d{3})(?=\d)/g, `$1${thousands}`) +
       (decimals
         ? decimal +
           Math.abs(amount - i)
@@ -1064,7 +1064,7 @@ export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
     if (Number(maxPriorityFeePerGas) < Number(high.suggestedMaxPriorityFeePerGas)) {
       const finalTranslateKey = translateKey || 'walletTransfer.transferLessThan'
       // medium
-      return t(finalTranslateKey).replace(
+      return t(finalTranslateKey).replaceAll(
         /{time}/gi,
         translateKey ? `< ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}` : toHumanReadableTime(low.maxWaitTimeEstimate, t)
       )
@@ -1072,14 +1072,14 @@ export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
     const finalTranslateKey = translateKey || 'walletTransfer.transferLessThan'
 
     // high
-    return t(finalTranslateKey).replace(
+    return t(finalTranslateKey).replaceAll(
       /{time}/gi,
       translateKey ? `< ${toHumanReadableTime(high.minWaitTimeEstimate, t)}` : toHumanReadableTime(high.minWaitTimeEstimate, t)
     )
   }
   const finalTranslateKey = translateKey || 'walletTransfer.transferApprox'
 
-  return t(finalTranslateKey).replace(
+  return t(finalTranslateKey).replaceAll(
     /{time}/gi,
     translateKey ? `~ ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}` : toHumanReadableTime(low.maxWaitTimeEstimate, t)
   )
@@ -1089,9 +1089,9 @@ const SECOND_CUTOFF = 90
 function toHumanReadableTime(milliseconds, t) {
   const seconds = Math.ceil((milliseconds || 1) / 1000)
   if (seconds <= SECOND_CUTOFF) {
-    return t('walletTransfer.fee-edit-time-sec').replace(/{time}/gi, seconds)
+    return t('walletTransfer.fee-edit-time-sec').replaceAll(/{time}/gi, seconds)
   }
-  return t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, Math.ceil(seconds / 60))
+  return t('walletTransfer.fee-edit-time-min').replaceAll(/{time}/gi, Math.ceil(seconds / 60))
 }
 
 export function bnGreaterThan(a, b) {

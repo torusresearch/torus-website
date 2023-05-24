@@ -1,12 +1,11 @@
-import { getPublic, sign } from '@toruslabs/eccrypto'
-import { decryptData, encryptData, keccak256 } from '@toruslabs/metadata-helpers'
 import OpenLogin from '@toruslabs/openlogin'
+import { OpenloginSessionManager } from '@toruslabs/openlogin-session-manager'
 import { subkey } from '@toruslabs/openlogin-subkey'
 import log from 'loglevel'
 
 import config from '../../config'
 import { ACCOUNT_TYPE } from '../../utils/enums'
-import { get, post, put } from '../../utils/httpHelpers'
+import { get } from '../../utils/httpHelpers'
 import { generateAddressFromPrivateKey, generateTorusAuthHeaders, getIFrameOriginObject, storageUtils } from '../../utils/utils'
 
 const getOpenloginWhitelabel = (whiteLabel = {}) => {
@@ -51,6 +50,8 @@ class OpenLoginHandler {
     return OpenLoginHandler.openLoginHandlerInstance
   }
 
+  accounts = null
+
   // This constructor is private. Don't call it
   constructor(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
     const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
@@ -70,73 +71,49 @@ class OpenLoginHandler {
       network: config.torusNetwork,
       sdkUrl: 'https://alpha.openlogin.com',
       no3PC: true,
-      _sessionNamespace: sessionNamespace || namespace,
+      sessionNamespace: sessionNamespace || namespace,
       storageKey: storageUtils.storageType,
     })
   }
 
   async getActiveSession() {
     try {
-      const { sessionId } = this.openLoginInstance.state.store.getStore()
-      const { sessionNamespace } = this.openLoginInstance.state
-      const finalSessionNamespace = sessionNamespace || config.namespace || ''
-      const finalSessionId = sessionId || config.sessionId
-      if (finalSessionId) {
-        log.info('found session id')
-        const publicKeyHex = getPublic(Buffer.from(finalSessionId.padStart(64, '0'), 'hex')).toString('hex')
-        const url = new URL(`${config.storageServerUrl}/store/get`)
-        url.searchParams.append('key', publicKeyHex)
-        if (finalSessionNamespace) url.searchParams.append('namespace', finalSessionNamespace)
-        const encData = await get(url.href)
-        if (encData.message) {
-          const loginDetails = await decryptData(finalSessionId, encData.message)
-          this.openLoginInstance._syncState({ ...loginDetails, sessionNamespace: finalSessionNamespace })
-          return loginDetails
+      const sessionId = this.getSessionId()
+      const sessionNamespace = this.getSessionNamespace()
+      if (sessionId) {
+        const sessionManager = new OpenloginSessionManager({
+          sessionNamespace,
+          sessionId,
+        })
+
+        const data = await sessionManager.authorizeSession()
+        if (data.accounts) {
+          this.accounts = data.accounts
         }
-        this.openLoginInstance.state.store.set('sessionId', null)
+        return data
       }
       return null
     } catch (error) {
       log.warn(error)
-      this.openLoginInstance.state.store.set('sessionId', null)
       return null
     }
   }
 
   async updateSession(sessionData) {
     try {
-      const { sessionId } = this.openLoginInstance.state.store.getStore()
-      const { sessionNamespace } = this.openLoginInstance.state
-      const finalSessionNamespace = sessionNamespace || config.namespace || ''
-      const finalSessionId = sessionId || config.sessionId
-      if (finalSessionId) {
-        const privKey = Buffer.from(finalSessionId.padStart(64, '0'), 'hex')
-        const publicKeyHex = getPublic(privKey).toString('hex')
-        const encData = await encryptData(finalSessionId, sessionData)
-        const signatureBf = await sign(privKey, keccak256(encData))
-        const signature = signatureBf.toString('hex')
-        await put(`${config.storageServerUrl}/store/update`, { key: publicKeyHex, data: encData, signature, namespace: finalSessionNamespace })
-        this.openLoginInstance._syncState({ ...sessionData, sessionNamespace: finalSessionNamespace })
-      }
-    } catch (error) {
-      log.warn(error)
-    }
-  }
-
-  async setSession(sessionData) {
-    try {
-      const { sessionId } = this.openLoginInstance.state.store.getStore()
-      const { sessionNamespace } = this.openLoginInstance.state
-      const finalSessionNamespace = sessionNamespace || config.namespace || ''
-
+      const sessionId = this.getSessionId()
+      const sessionNamespace = this.getSessionNamespace()
       if (sessionId) {
-        const privKey = Buffer.from(sessionId.padStart(64, '0'), 'hex')
-        const publicKeyHex = getPublic(privKey).toString('hex')
-        const encData = await encryptData(sessionId, sessionData)
-        const signatureBf = await sign(privKey, keccak256(encData))
-        const signature = signatureBf.toString('hex')
-        await post(`${config.storageServerUrl}/store/set`, { key: publicKeyHex, data: encData, signature, namespace: finalSessionNamespace })
-        this.openLoginInstance._syncState({ ...sessionData, sessionNamespace })
+        if (sessionData.accounts) {
+          // saving this data locally as well and not in openlogin store.
+          this.accounts = sessionData.accounts
+        }
+        const sessionManager = new OpenloginSessionManager({
+          sessionNamespace,
+          sessionId,
+        })
+
+        sessionManager.updateSession(sessionData)
       }
     } catch (error) {
       log.warn(error)
@@ -162,46 +139,47 @@ class OpenLoginHandler {
   }
 
   getSessionId() {
-    const allInfo = this.openLoginInstance.state.store.getStore()
-    return allInfo.sessionId
+    const { sessionId } = this.openLoginInstance.state
+    return sessionId
   }
 
   getSessionNamespace() {
-    const allInfo = this.openLoginInstance.state
-    return allInfo.sessionNamespace
+    const { sessionNamespace } = this.openLoginInstance.options
+    return sessionNamespace
   }
 
   getWalletKey() {
-    const { state } = this.openLoginInstance
-    if (!state.walletKey) return null
-    const ethAddress = generateAddressFromPrivateKey(state.walletKey)
+    const { walletKey } = this.openLoginInstance.state
+    if (!walletKey) return null
+    const ethAddress = generateAddressFromPrivateKey(walletKey)
     return {
-      privKey: state.walletKey,
+      privKey: walletKey,
       ethAddress,
     }
   }
 
   getKeysInfo() {
-    const { state } = this.openLoginInstance
+    const { walletKey, tKey, oAuthPrivateKey } = this.openLoginInstance.state
     // keys
     const keys = []
-    if (state.walletKey) {
-      const ethAddress = generateAddressFromPrivateKey(state.walletKey)
+    if (walletKey) {
+      const ethAddress = generateAddressFromPrivateKey(walletKey)
       keys.push({
-        privKey: state.walletKey,
+        privKey: walletKey,
         accountType: ACCOUNT_TYPE.NORMAL,
         ethAddress,
       })
     }
-    if (state.tKey && state.tKey !== state.walletKey) {
+    if (tKey && tKey !== walletKey) {
       keys.push({
-        privKey: state.tKey.padStart(64, '0'),
+        privKey: tKey.padStart(64, '0'),
         accountType: ACCOUNT_TYPE.THRESHOLD,
-        ethAddress: generateAddressFromPrivateKey(state.tKey),
+        ethAddress: generateAddressFromPrivateKey(tKey),
       })
     }
-    if (state.accounts && typeof state.accounts === 'object') {
-      Object.values(state.accounts).forEach((val) => {
+    // TODO: fix this.
+    if (this.accounts && typeof this.accounts === 'object') {
+      Object.values(this.accounts).forEach((val) => {
         keys.push({
           privKey: val.privKey.padStart(64, '0'),
           accountType: val.accountType,
@@ -211,10 +189,10 @@ class OpenLoginHandler {
     }
 
     let postboxKey
-    if (state.oAuthPrivateKey) {
+    if (oAuthPrivateKey) {
       postboxKey = {
-        privKey: state.oAuthPrivateKey.padStart(64, '0'),
-        ethAddress: generateAddressFromPrivateKey(state.oAuthPrivateKey),
+        privKey: oAuthPrivateKey.padStart(64, '0'),
+        ethAddress: generateAddressFromPrivateKey(oAuthPrivateKey),
       }
     }
 
@@ -223,9 +201,9 @@ class OpenLoginHandler {
 
   async getUserDapps(postboxKey) {
     const userDapps = {}
-    const { state } = this.openLoginInstance
+    const { tKey, oAuthPrivateKey } = this.openLoginInstance.state
     const keys = []
-    if (state.tKey && state.oAuthPrivateKey) {
+    if (tKey && oAuthPrivateKey) {
       try {
         // projects are stored on oAuthPrivateKey but subkey is derived from tkey
         const headers = generateTorusAuthHeaders(postboxKey.privKey, postboxKey.ethAddress)
@@ -236,7 +214,7 @@ class OpenLoginHandler {
         const userProjects = response.user_projects ?? []
         userProjects.sort((a, b) => (a.last_login < b.last_login ? 1 : -1))
         userProjects.forEach((project) => {
-          const subKey = subkey(state.tKey, Buffer.from(project.project_id, 'base64'))
+          const subKey = subkey(tKey, Buffer.from(project.project_id, 'base64'))
           const subAddress = generateAddressFromPrivateKey(subKey)
           userDapps[subAddress] = project.hostname ? `${project.name} (${project.hostname})` : project.name
           keys.push({ ethAddress: subAddress, privKey: subKey.padStart(64, '0'), accountType: ACCOUNT_TYPE.APP_SCOPED })

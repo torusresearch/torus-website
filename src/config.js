@@ -140,17 +140,15 @@ const { hash, search } = window.location
 const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search.slice(1)}`)
 
 const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
-const namespace = finalUrl.searchParams.get('namespace')
-const sessionId = finalUrl.searchParams.get('sessionId')
 const state = finalUrl.searchParams.get('state')
-const result = finalUrl.searchParams.get('result')
+// const result = finalUrl.searchParams.get('result')
 
 // by default value should be false as user can open
 // torus wallet directly also and they dont start journey
 // from /start or /end url which is the case for custom dapps login.
 let isCustomDapp = window.self !== window.top
 
-// state is presend in the /start url.
+// state is present in the /start url.
 if (state) {
   const decodedState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(state))))
   // this means that it's from another domain
@@ -158,13 +156,15 @@ if (state) {
 }
 
 // result is present in the /end url.
-if (result) {
-  const decodedResultParams = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(result))))
-  if (decodedResultParams && decodedResultParams.store && decodedResultParams.store.appState) {
-    const decodedAppParams = JSON.parse(safeatob(decodedResultParams.store.appState))
-    isCustomDapp = decodedAppParams.origin.hostname !== window.location.hostname
-  }
-}
+// This will not be present in the new versions of openlogin.
+// TODO: how to fix this?
+// if (result) {
+//   const decodedResultParams = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(result))))
+//   if (decodedResultParams && decodedResultParams.store && decodedResultParams.store.appState) {
+//     const decodedAppParams = JSON.parse(safeatob(decodedResultParams.store.appState))
+//     isCustomDapp = decodedAppParams.origin.hostname !== window.location.hostname
+//   }
+// }
 
 // no reddit for binance.tor.us
 
@@ -534,8 +534,5 @@ export default {
     // }),
   },
   loginsWithLightLogo: [APPLE, GITHUB, JWT],
-
-  namespace,
-  sessionId,
   walletConnectProjectId: VUE_APP_WALLET_CONNECT_PROJECT_ID,
 }

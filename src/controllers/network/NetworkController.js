@@ -1,14 +1,14 @@
-import { ComposedStore, ObservableStore } from '@metamask/obs-store'
-import { JRPCEngine, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
-import assert from 'assert'
-import { PollingBlockTracker } from 'eth-block-tracker'
 import {
   createBlockRefRewriteMiddleware,
   createBlockTrackerInspectorMiddleware,
   createFetchMiddleware,
   providerFromEngine,
   providerFromMiddleware,
-} from 'eth-json-rpc-middleware'
+} from '@metamask/eth-json-rpc-middleware'
+import { ComposedStore, ObservableStore } from '@metamask/obs-store'
+import { JRPCEngine, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
+import assert from 'assert'
+import { PollingBlockTracker } from 'eth-block-tracker'
 import EthQuery from 'eth-query'
 import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'

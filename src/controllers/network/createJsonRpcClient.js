@@ -1,5 +1,3 @@
-import { mergeMiddleware } from '@toruslabs/openlogin-jrpc'
-import { PollingBlockTracker } from 'eth-block-tracker'
 import {
   createBlockCacheMiddleware,
   createBlockRefRewriteMiddleware,
@@ -7,7 +5,9 @@ import {
   createFetchMiddleware,
   createInflightCacheMiddleware,
   providerFromMiddleware,
-} from 'eth-json-rpc-middleware'
+} from '@metamask/eth-json-rpc-middleware'
+import { mergeMiddleware } from '@toruslabs/openlogin-jrpc'
+import { PollingBlockTracker } from 'eth-block-tracker'
 
 export function createJsonRpcClient({ rpcUrl, chainId }) {
   const fetchMiddleware = createFetchMiddleware({ rpcUrl })
