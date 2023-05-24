@@ -2,9 +2,9 @@ import {
   createBlockRefRewriteMiddleware,
   createBlockTrackerInspectorMiddleware,
   createFetchMiddleware,
-  providerFromEngine,
   providerFromMiddleware,
 } from '@metamask/eth-json-rpc-middleware'
+import { providerFromEngine } from '@metamask/eth-json-rpc-provider'
 import { ComposedStore, ObservableStore } from '@metamask/obs-store'
 import { JRPCEngine, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
 import assert from 'assert'

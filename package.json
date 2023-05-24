@@ -74,6 +74,7 @@
     "eth-json-rpc-filters": "^6.0.0",
     "@metamask/eth-json-rpc-infura": "^8.0.0",
     "@metamask/eth-json-rpc-middleware": "^11.0.0",
+    "@metamask/eth-json-rpc-provider": "^1.0.0",
     "eth-query": "^2.1.2",
     "eth-rpc-errors": "^4.0.3",
     "ethereumjs-wallet": "^1.0.2",
