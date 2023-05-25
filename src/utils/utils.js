@@ -1,11 +1,11 @@
-import { addHexPrefix, ecsign, privateToAddress, pubToAddress, stripHexPrefix } from '@ethereumjs/util'
+import { addHexPrefix, ecsign, isHexString, privateToAddress, pubToAddress, stripHexPrefix } from '@ethereumjs/util'
 import { concatSig } from '@metamask/eth-sig-util'
 import { keccak256 } from '@toruslabs/metadata-helpers'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import BN from 'bn.js'
 import log from 'loglevel'
-import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
+import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import { languageMap } from '../plugins/i18n-setup'
@@ -347,7 +347,7 @@ export const broadcastChannelOptions = {
 
 export function validateVerifierId(selectedTypeOfLogin, value, chainId) {
   if (selectedTypeOfLogin === ETH) {
-    const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+    const parsedChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
     if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
       return isAddressByChainId(value, chainId) || 'walletSettings.invalidEth'
     }
@@ -875,7 +875,7 @@ export function generateAddressFromPrivateKey(privKey) {
 
 export function rskToChecksumAddress(address, chainId) {
   const address2 = stripHexPrefix(address).toLowerCase()
-  const chainId2 = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const chainId2 = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
   const prefix = Number.isNaN(chainId2) ? '' : `${chainId2.toString()}0x`
   const hash = keccak256(`${prefix}${address2}`).toString('hex')
   return `0x${[...address2].map((b, i) => (Number.parseInt(hash[i], 16) >= 8 ? b.toUpperCase() : b)).join('')}`
@@ -886,7 +886,7 @@ export function rskIsValidChecksumAddress(address, chainId) {
 }
 
 export function toChecksumAddressByChainId(address, chainId) {
-  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const parsedChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
   if (!isAddressByChainId(address, chainId)) return address
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskToChecksumAddress(address, chainId)
@@ -895,7 +895,7 @@ export function toChecksumAddressByChainId(address, chainId) {
 }
 
 export function isAddressByChainId(address, chainId) {
-  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const parsedChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskIsValidChecksumAddress(address, chainId)
   }

@@ -4,11 +4,10 @@ import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import deepmerge from 'deepmerge'
 import EthQuery from 'eth-query'
 import { ethErrors } from 'eth-rpc-errors'
-import { BrowserProvider } from 'ethers'
+import { BrowserProvider, isHexString, toQuantity } from 'ethers'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import pify from 'pify'
-import { isHexStrict, toHex } from 'web3-utils'
 
 import config from '../config'
 import ApiHelpers from '../utils/apiHelpers'
@@ -693,11 +692,11 @@ class PreferencesController extends SafeEventEmitter {
     try {
       const { selectedAddress } = this.store.getState()
       if (this.state(selectedAddress)?.jwtToken) {
-        const numChainId = Number.parseInt(network.chainId, isHexStrict(network.chainId) ? 16 : 10)
+        const numChainId = Number.parseInt(network.chainId, isHexString(network.chainId) ? 16 : 10)
         const payload = {
           network_name: network.networkName,
           rpc_url: network.host,
-          chain_id: toHex(numChainId),
+          chain_id: toQuantity(numChainId),
           symbol: network.symbol,
           block_explorer_url: network.blockExplorer || undefined,
         }
@@ -728,11 +727,11 @@ class PreferencesController extends SafeEventEmitter {
 
   async editCustomNetwork(network) {
     try {
-      const numChainId = Number.parseInt(network.chainId, isHexStrict(network.chainId) ? 16 : 10)
+      const numChainId = Number.parseInt(network.chainId, isHexString(network.chainId) ? 16 : 10)
       const payload = {
         network_name: network.networkName,
         rpc_url: network.host,
-        chain_id: toHex(numChainId),
+        chain_id: toQuantity(numChainId),
         symbol: network.symbol || undefined,
         block_explorer_url: network.blockExplorer || undefined,
       }
@@ -760,7 +759,7 @@ class PreferencesController extends SafeEventEmitter {
       throw ethErrors.rpc.invalidParams('Invalid add chain params: please pass chainId in params')
     }
 
-    if (!isHexStrict(chainId)) {
+    if (!isHexString(chainId)) {
       throw ethErrors.rpc.invalidParams('Invalid add chain params: please pass a valid hex chainId in params, for: ex: 0x1')
     }
 
@@ -777,7 +776,7 @@ class PreferencesController extends SafeEventEmitter {
     const networkChainID = await _web3.chainId()
     if (networkChainID !== Number.parseInt(chainId, 16)) {
       throw ethErrors.rpc.invalidParams(
-        `Provided rpc url's chainId version is not matching with provided chainId, expected: ${toHex(networkChainID)}, received: ${chainId}`
+        `Provided rpc url's chainId version is not matching with provided chainId, expected: ${toQuantity(networkChainID)}, received: ${chainId}`
       )
     }
   }
@@ -902,7 +901,7 @@ class PreferencesController extends SafeEventEmitter {
       const customNetwork = {
         networkName: network_name,
         host: rpc_url,
-        chainId: toHex(chain_id),
+        chainId: toQuantity(chain_id),
         symbol,
         blockExplorer: block_explorer_url || undefined,
       }

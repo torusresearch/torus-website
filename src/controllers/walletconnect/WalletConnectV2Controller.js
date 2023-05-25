@@ -1,8 +1,9 @@
 import SignClient from '@walletconnect/sign-client'
 import { getAccountsFromNamespaces, getChainsFromNamespaces, getSdkError, parseAccountId, parseChainId } from '@walletconnect/utils'
+import { isHexString, toQuantity } from 'ethers'
 import log from 'loglevel'
 import pify from 'pify'
-import { isAddress, isHexStrict, toHex } from 'web3-utils'
+import { isAddress } from 'web3-utils'
 
 import config from '../../config'
 import createRandomId from '../../utils/random-id'
@@ -124,7 +125,7 @@ class WalletConnectV2Controller {
 
   get sessionConfig() {
     return {
-      currentChainId: isHexStrict(this.network.getProviderConfig().chainId)
+      currentChainId: isHexString(this.network.getProviderConfig().chainId)
         ? Number.parseInt(this.network.getProviderConfig().chainId, 16)
         : this.network.getProviderConfig().chainId,
       currentAccounts: [this.selectedAddress],
@@ -230,7 +231,7 @@ class WalletConnectV2Controller {
     request.id = id
     const { currentChainId } = this.sessionConfig
     const parsedChainIdParams = parseChainId(chainId)
-    const incomingChainId = isHexStrict(parsedChainIdParams.reference)
+    const incomingChainId = isHexString(parsedChainIdParams.reference)
       ? Number.parseInt(parsedChainIdParams.reference, 16)
       : Number.parseInt(parsedChainIdParams.reference, 10)
     const promisifiedProvider = pify(this.provider)
@@ -241,7 +242,7 @@ class WalletConnectV2Controller {
           isWalletConnectRequest: true,
           method: 'wallet_switchEthereumChain',
           params: {
-            chainId: toHex(incomingChainId),
+            chainId: toQuantity(incomingChainId),
           },
         })
 

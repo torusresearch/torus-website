@@ -1,10 +1,9 @@
-import { privateToAddress } from '@ethereumjs/util'
+import { isHexString, privateToAddress } from '@ethereumjs/util'
 import { safeatob, safebtoa } from '@toruslabs/openlogin-utils'
 import deepmerge from 'deepmerge'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
-import { isHexStrict } from 'web3-utils'
 
 import config from '../config'
 import { OpenLoginHandler, OpenLoginWindowHandler } from '../handlers/Auth'
@@ -356,7 +355,7 @@ export default {
   async setProviderType({ commit, dispatch, getters, state }, payload) {
     let networkType = payload.network
     let isSupportedNetwork = false
-    const activeChainId = networkType.chainId && (isHexStrict(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`)
+    const activeChainId = networkType.chainId && (isHexString(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`)
     const chainIdConfig = CHAIN_ID_TO_TYPE_MAP[activeChainId]
     if (chainIdConfig) {
       const networkConfig = getters.supportedNetworks[chainIdConfig.name]

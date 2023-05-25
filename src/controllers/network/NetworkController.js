@@ -11,10 +11,10 @@ import assert from 'assert'
 import { PollingBlockTracker } from 'eth-block-tracker'
 import EthQuery from 'eth-query'
 import { ethErrors } from 'eth-rpc-errors'
+import { isHexString } from 'ethers'
 import EventEmitter from 'events'
 import log from 'loglevel'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
-import { isHexStrict } from 'web3-utils'
 
 import { ETH, INFURA_PROVIDER_TYPES, LOCALHOST, MAINNET, MAINNET_CHAIN_ID, MESSAGE_TYPE, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 // import { areProviderConfigsEqual } from '../../utils/utils'
@@ -84,7 +84,7 @@ export default class NetworkController extends EventEmitter {
       throw ethErrors.rpc.invalidParams('Invalid switch chain params: please pass chainId in params')
     }
 
-    if (!isHexStrict(chainId)) {
+    if (!isHexString(chainId)) {
       throw ethErrors.rpc.invalidParams('Invalid switch chain params: please pass a valid hex chainId in params, for: ex: 0x1')
     }
   }
@@ -449,7 +449,7 @@ export default class NetworkController extends EventEmitter {
   getCurrentChainId() {
     const { type, chainId: configChainId } = this.getProviderConfig()
     const chainId = SUPPORTED_NETWORK_TYPES[type]?.chainId || configChainId
-    return isHexStrict(chainId) ? chainId : `0x${Number(chainId).toString(16)}`
+    return isHexString(chainId) ? chainId : `0x${Number(chainId).toString(16)}`
   }
 
   setRpcTarget(networkId, rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {

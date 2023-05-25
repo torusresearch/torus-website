@@ -1,11 +1,11 @@
 /* eslint-disable default-param-last */
 import { ObservableStore } from '@metamask/obs-store'
 import BigNumber from 'bignumber.js'
+import { toQuantity } from 'ethers'
 import { isEqual } from 'lodash'
 import log from 'loglevel'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 import Web3 from 'web3'
-import { toHex } from 'web3-utils'
 
 import TokenHandler from '../handlers/Token/TokenHandler'
 import contracts, { GNOSIS_CONTRACTS } from '../utils/contractMetadata'
@@ -139,7 +139,7 @@ class DetectTokensController {
           }
           const nonZeroTokens = []
           tokensToDetect.forEach((x, index) => {
-            const balance = toHex(result[index])
+            const balance = toQuantity(result[index])
             if (balance && balance !== '0x0') {
               // do sth else here
               nonZeroTokens.push({ ...x, balance, network: MAINNET })
@@ -211,7 +211,7 @@ class DetectTokensController {
         }
         const nonZeroTokens = []
         tokenAddresses.forEach((_, index) => {
-          const balance = toHex(result[index])
+          const balance = toQuantity(result[index])
           if (balance && balance !== '0x0') {
             nonZeroTokens.push({ ...oldTokens[index], balance, network: MAINNET })
           }
