@@ -1,5 +1,5 @@
 import { bufferToHex, ecsign, stripHexPrefix } from '@ethereumjs/util'
-import { concatSig, decrypt, getEncryptionPublicKey, normalize, personalSign, signTypedData } from '@metamask/eth-sig-util'
+import { concatSig, decrypt, getEncryptionPublicKey, personalSign, signTypedData } from '@metamask/eth-sig-util'
 import { Wallet } from 'ethers'
 import { EventEmitter } from 'events'
 import log from 'loglevel'
@@ -24,13 +24,11 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   generatePrivKey(wallet) {
-    return wallet.getPrivateKey().toString('hex')
+    return wallet.privateKey
   }
 
   generateWallet(privateKey) {
-    const stripped = stripHexPrefix(privateKey)
-    const buffer = Buffer.from(stripped, 'hex')
-    const wallet = new Wallet(buffer)
+    const wallet = new Wallet(privateKey)
     return wallet
   }
 
@@ -66,7 +64,7 @@ export default class TorusKeyring extends EventEmitter {
   // tx is an instance of the ethereumjs-transaction class.
   async signTransaction(tx, address) {
     const wallet = this._getWalletForAccount(address)
-    const privKey = wallet.getPrivateKey()
+    const privKey = wallet.privateKey
     const signedTx = tx.sign(privKey)
     // Newer versions of Ethereumjs-tx are immutable and return a new tx object
     return signedTx === undefined ? tx : signedTx
@@ -76,7 +74,12 @@ export default class TorusKeyring extends EventEmitter {
   async signMessage(address, data) {
     const wallet = this._getWalletForAccount(address)
     const message = stripHexPrefix(data)
-    const privKey = wallet.getPrivateKey()
+    // const privKey = wallet.privateKey
+
+    // privKeyBuffer
+    const stripped = stripHexPrefix(wallet.privateKey)
+    const privKey = Buffer.from(stripped, 'hex')
+
     const messageSig = ecsign(Buffer.from(message, 'hex'), privKey)
     const rawMessageSig = concatSig(messageSig.v, messageSig.r, messageSig.s)
     return rawMessageSig
@@ -94,7 +97,7 @@ export default class TorusKeyring extends EventEmitter {
   // personal_signTypedData, signs data along with the schema
   async signTypedData(withAccount, typedData, version = 'V1') {
     const wallet = this._getWalletForAccount(withAccount)
-    const privKey = wallet.getPrivateKey()
+    const privKey = wallet.privateKey
     return signTypedData({ privateKey: privKey, data: typedData, version })
   }
 
@@ -102,7 +105,7 @@ export default class TorusKeyring extends EventEmitter {
   // exportAccount should return a hex-encoded private key:
   async exportAccount(address) {
     const wallet = this._getWalletForAccount(address)
-    return wallet.getPrivateKey().toString('hex')
+    return wallet.privateKey.toString('hex')
   }
 
   // not using
@@ -115,21 +118,21 @@ export default class TorusKeyring extends EventEmitter {
 
   signEncryptionPublicKey(address) {
     const wallet = this._getWalletForAccount(address)
-    const privKey = wallet.getPrivateKey()
+    const privKey = wallet.privateKey
     return getEncryptionPublicKey(privKey)
   }
 
   decryptMessage(data, address) {
     const wallet = this._getWalletForAccount(address)
-    const privKey = wallet.getPrivateKey()
+    const privKey = wallet.privateKey
     return decrypt({ encryptedData: data, privateKey: privKey })
   }
 
   /* PRIVATE METHODS */
 
   _getWalletForAccount(account) {
-    const address = normalize(account)
-    const wallet = this.wallets.find((w) => w.getAddressString() === address)
+    const address = account
+    const wallet = this.wallets.find((w) => w.address === address)
     if (!wallet) throw new Error('Torus Keyring - Unable to find matching address.')
     return wallet
   }
