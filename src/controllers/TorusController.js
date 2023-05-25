@@ -5,10 +5,10 @@ import { ObservableStore, storeAsStream } from '@metamask/obs-store'
 import { createEngineStream, JRPCEngine, SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
+import { getAddress } from 'ethers'
 import { debounce } from 'lodash'
 import log from 'loglevel'
 import pump from 'pump'
-import { toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, RPC, TRANSACTION_STATUSES } from '../utils/enums'
@@ -652,7 +652,7 @@ export default class TorusController extends SafeEventEmitter {
     const { version: messageVersion } = messageParameters
     try {
       const cleanMessageParameters = await this.typedMessageManager.approveMessage(messageParameters)
-      const address = toChecksumAddress(normalize(cleanMessageParameters.from))
+      const address = getAddress(normalize(cleanMessageParameters.from))
       // For some reason every version after V1 used stringified params.
       if (
         messageVersion !== 'V1' && // But we don't have to require that. We can stop suggesting it now:
@@ -712,7 +712,7 @@ export default class TorusController extends SafeEventEmitter {
     const messageId = messageParameters.metamaskId
     try {
       const cleanMessageParameters = await this.encryptionPublicKeyManager.approveMessage(messageParameters)
-      const address = toChecksumAddress(normalize(cleanMessageParameters.msgParams))
+      const address = getAddress(normalize(cleanMessageParameters.msgParams))
       const publicKey = this.keyringController.signEncryptionPublicKey(address)
       this.encryptionPublicKeyManager.setMsgStatusReceived(messageId, publicKey)
     } catch (error) {
@@ -761,7 +761,7 @@ export default class TorusController extends SafeEventEmitter {
     const messageId = messageParameters.metamaskId
     try {
       const cleanMessageParameters = await this.decryptMessageManager.approveMessage(messageParameters)
-      const address = toChecksumAddress(normalize(cleanMessageParameters.from))
+      const address = getAddress(normalize(cleanMessageParameters.from))
 
       const stripped = stripHexPrefix(cleanMessageParameters.data)
       const buff = Buffer.from(stripped, 'hex')
@@ -785,7 +785,7 @@ export default class TorusController extends SafeEventEmitter {
    */
   async decryptMessageInline(msgParams) {
     log.info('MetaMaskController - eth_decrypt inline')
-    const address = toChecksumAddress(normalize(msgParams.from))
+    const address = getAddress(normalize(msgParams.from))
     const stripped = stripHexPrefix(msgParams.data)
     const buff = Buffer.from(stripped, 'hex')
     msgParams.data = JSON.parse(buff.toString('utf8'))

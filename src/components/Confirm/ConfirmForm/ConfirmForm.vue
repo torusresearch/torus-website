@@ -409,10 +409,10 @@
 
 <script>
 import BigNumber from 'bignumber.js'
+import { formatEther } from 'ethers'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
 import { mapActions, mapGetters } from 'vuex'
-import { fromWei } from 'web3-utils'
 
 import TokenHandler from '../../../handlers/Token/TokenHandler'
 import torus from '../../../torus'
@@ -721,7 +721,7 @@ export default {
         log.info(txParams, 'txParams')
         const { reason = '' } = simulationFails || {}
         if (value) {
-          finalValue = new BigNumber(fromWei(value.toString()))
+          finalValue = new BigNumber(formatEther(value.toString()))
         }
         let txDataParameters = ''
         if (contractParams.isSpecial && transactionCategory.toLowerCase() === TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER) {

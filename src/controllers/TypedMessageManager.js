@@ -3,11 +3,10 @@ import { TYPED_MESSAGE_SCHEMA, typedSignatureHash } from '@metamask/eth-sig-util
 import { ObservableStore } from '@metamask/obs-store'
 import assert from 'assert'
 import { ethErrors } from 'eth-rpc-errors'
-import { isHexString } from 'ethers'
+import { isAddress, isHexString } from 'ethers'
 import EventEmitter from 'events'
 import jsonschema from 'jsonschema'
 import log from 'loglevel'
-import { isAddress } from 'web3-utils'
 
 import { MESSAGE_TYPE } from '../utils/enums'
 

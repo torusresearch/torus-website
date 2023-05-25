@@ -503,6 +503,7 @@
 <script>
 import BigNumber from 'bignumber.js'
 import Das from 'das-sdk'
+import { getAddress } from 'ethers'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import { cloneDeep, isEqual } from 'lodash'
@@ -510,7 +511,6 @@ import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapActions, mapGetters, mapState } from 'vuex'
-import { toChecksumAddress } from 'web3-utils'
 
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import ComponentLoader from '../../components/helpers/ComponentLoader'
@@ -1237,7 +1237,7 @@ export default {
         try {
           const res = await this.getUnstoppableDomains(this.toAddress)
           log.info(res)
-          toAddress = toChecksumAddress(res.data)
+          toAddress = getAddress(res.data)
         } catch (error) {
           log.error(error)
           this.unstoppableDomainsError = 'walletTransfer.invalidUnstoppable'
@@ -1245,7 +1245,7 @@ export default {
         }
       } else if (this.selectedVerifier === BIT) {
         try {
-          toAddress = toChecksumAddress(this.toAddress)
+          toAddress = getAddress(this.toAddress)
         } catch (error) {
           log.error('invalidBit', this.toAddress, error)
           this.bitError = 'walletTransfer.invalidBit'

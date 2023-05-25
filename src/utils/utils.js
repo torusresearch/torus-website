@@ -4,8 +4,8 @@ import { keccak256 } from '@toruslabs/metadata-helpers'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import BN from 'bn.js'
+import { getAddress, isAddress } from 'ethers'
 import log from 'loglevel'
-import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import { languageMap } from '../plugins/i18n-setup'
@@ -870,7 +870,7 @@ export function generateAddressFromPubKey(point) {
 }
 
 export function generateAddressFromPrivateKey(privKey) {
-  return toChecksumAddress(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex'))
+  return getAddress(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex'))
 }
 
 export function rskToChecksumAddress(address, chainId) {
@@ -891,7 +891,7 @@ export function toChecksumAddressByChainId(address, chainId) {
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskToChecksumAddress(address, chainId)
   }
-  return toChecksumAddress(address)
+  return getAddress(address)
 }
 
 export function isAddressByChainId(address, chainId) {

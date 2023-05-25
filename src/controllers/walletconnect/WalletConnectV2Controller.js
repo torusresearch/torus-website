@@ -1,9 +1,8 @@
 import SignClient from '@walletconnect/sign-client'
 import { getAccountsFromNamespaces, getChainsFromNamespaces, getSdkError, parseAccountId, parseChainId } from '@walletconnect/utils'
-import { isHexString, toQuantity } from 'ethers'
+import { isAddress, isHexString, toQuantity } from 'ethers'
 import log from 'loglevel'
 import pify from 'pify'
-import { isAddress } from 'web3-utils'
 
 import config from '../../config'
 import createRandomId from '../../utils/random-id'

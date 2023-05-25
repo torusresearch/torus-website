@@ -2,7 +2,7 @@
 import assert from 'assert'
 import nock from 'nock'
 import { createSandbox } from 'sinon'
-import { toChecksumAddress } from 'web3-utils'
+import { getAddress } from 'ethers'
 
 import config from '../../../src/config'
 import * as utils from '../../../src/utils/utils'
@@ -584,7 +584,7 @@ describe('AssetsController', () => {
     stubbedCollectibleInfo.restore()
     stubbedContractInfo.restore()
     await assetsController.addCollectibles([{ contractAddress: `${KUDOSADDRESS}`, tokenID: '1203' }])
-    const checkSummedAddress = toChecksumAddress(`${KUDOSADDRESS}`)
+    const checkSummedAddress = getAddress(`${KUDOSADDRESS}`)
     assert.deepStrictEqual(assetsController.state.collectibles, [
       {
         address: checkSummedAddress,
