@@ -1,4 +1,3 @@
-import { stripHexPrefix } from '@ethereumjs/util'
 import { Wallet } from 'ethers'
 import log from 'loglevel'
 
@@ -26,9 +25,7 @@ const getWalletFromPrivKeyFile = async (jsonfile, password) => {
 }
 
 const generateWallet = (privateKey) => {
-  const stripped = stripHexPrefix(privateKey)
-  const buffer = Buffer.from(stripped, 'hex')
-  const wallet = new Wallet(buffer)
+  const wallet = new Wallet(privateKey)
   return wallet
 }
 

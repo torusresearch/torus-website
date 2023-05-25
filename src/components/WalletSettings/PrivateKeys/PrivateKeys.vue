@@ -165,7 +165,6 @@
 /* eslint-disable import/default */
 /* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable import/extensions */
-import { stripHexPrefix } from '@ethereumjs/util'
 import { Wallet } from 'ethers'
 import log from 'loglevel'
 import { mapState } from 'vuex'
@@ -218,6 +217,10 @@ export default {
         this.isLoadingDownloadWallet = true
 
         if (window.Worker) {
+          const finishedWallet = await this.createWallet(this.keyStorePassword)
+          this.exportKeyStoreFile(finishedWallet)
+          this.isLoadingDownloadWallet = false
+        } else {
           const worker = new WalletWorker()
           worker.addEventListener('message', (ev) => {
             const finishedWallet = ev.data
@@ -230,10 +233,6 @@ export default {
           })
           // log.info(this.keyStorePassword, this.selectedKey)
           worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
-        } else {
-          const finishedWallet = await this.createWallet(this.keyStorePassword)
-          this.exportKeyStoreFile(finishedWallet)
-          this.isLoadingDownloadWallet = false
         }
       }
     },
@@ -249,9 +248,7 @@ export default {
       return createdWallet
     },
     generateWallet(privateKey) {
-      const stripped = stripHexPrefix(privateKey)
-      const buffer = Buffer.from(stripped, 'hex')
-      const wallet = new Wallet(buffer)
+      const wallet = new Wallet(privateKey)
       return wallet
     },
     createBlob(mime, string_) {
