@@ -239,7 +239,6 @@
 
 <script>
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
-import { toQuantity } from 'ethers'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
@@ -329,10 +328,6 @@ export default {
     this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
 
     this.$vuetify.goTo(0)
-
-    const b1 = toQuantity(0)
-    // eslint-disable-next-line no-console
-    console.log('check', b1)
   },
   methods: {
     ...mapActions(['forceFetchTokens', 'setSelectedCurrency']),

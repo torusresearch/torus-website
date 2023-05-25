@@ -1,11 +1,10 @@
 import { setAPIKey } from '@toruslabs/http-helpers'
-import { formatEther } from 'ethers'
+import { formatEther, toUtf8String } from 'ethers'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
-import { hexToUtf8 } from 'web3-utils'
 
 import config from '../config'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
@@ -292,7 +291,7 @@ function getLatestMessageParameters(id) {
   if (message) {
     let finalMessage
     try {
-      finalMessage = hexToUtf8(message.msgParams.data)
+      finalMessage = toUtf8String(message.msgParams.data)
     } catch {
       finalMessage = message.msgParams.data
     }
