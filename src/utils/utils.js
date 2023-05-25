@@ -333,7 +333,7 @@ export function getStatus(status) {
 }
 
 export async function getEthTxStatus(hash, web3) {
-  const receipt = await web3.eth.getTransactionReceipt(hash)
+  const receipt = await web3.getTransactionReceipt(hash)
   if (receipt === null) return 'pending'
   if (receipt && receipt.status) return 'confirmed'
   if (receipt && !receipt.status) return 'rejected'

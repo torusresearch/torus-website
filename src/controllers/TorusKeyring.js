@@ -27,6 +27,11 @@ export default class TorusKeyring extends EventEmitter {
     return wallet.privateKey
   }
 
+  getBufferPrivateKey(privateKey) {
+    const stripped = stripHexPrefix(privateKey)
+    return Buffer.from(stripped, 'hex')
+  }
+
   generateWallet(privateKey) {
     const wallet = new Wallet(privateKey)
     return wallet
@@ -64,7 +69,7 @@ export default class TorusKeyring extends EventEmitter {
   // tx is an instance of the ethereumjs-transaction class.
   async signTransaction(tx, address) {
     const wallet = this._getWalletForAccount(address)
-    const privKey = wallet.privateKey
+    const privKey = this.getBufferPrivateKey(wallet.privateKey)
     const signedTx = tx.sign(privKey)
     // Newer versions of Ethereumjs-tx are immutable and return a new tx object
     return signedTx === undefined ? tx : signedTx
@@ -77,8 +82,7 @@ export default class TorusKeyring extends EventEmitter {
     // const privKey = wallet.privateKey
 
     // privKeyBuffer
-    const stripped = stripHexPrefix(wallet.privateKey)
-    const privKey = Buffer.from(stripped, 'hex')
+    const privKey = this.getBufferPrivateKey(wallet.privateKey)
 
     const messageSig = ecsign(Buffer.from(message, 'hex'), privKey)
     const rawMessageSig = concatSig(messageSig.v, messageSig.r, messageSig.s)
@@ -97,7 +101,7 @@ export default class TorusKeyring extends EventEmitter {
   // personal_signTypedData, signs data along with the schema
   async signTypedData(withAccount, typedData, version = 'V1') {
     const wallet = this._getWalletForAccount(withAccount)
-    const privKey = wallet.privateKey
+    const privKey = this.getBufferPrivateKey(wallet.privateKey)
     return signTypedData({ privateKey: privKey, data: typedData, version })
   }
 
@@ -131,8 +135,8 @@ export default class TorusKeyring extends EventEmitter {
   /* PRIVATE METHODS */
 
   _getWalletForAccount(account) {
-    const address = account
-    const wallet = this.wallets.find((w) => w.address === address)
+    const address = account.toLowerCase()
+    const wallet = this.wallets.find((w) => w.address.toLowerCase() === address)
     if (!wallet) throw new Error('Torus Keyring - Unable to find matching address.')
     return wallet
   }

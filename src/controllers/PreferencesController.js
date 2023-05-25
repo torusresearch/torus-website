@@ -2,10 +2,12 @@ import { hashPersonalMessage } from '@ethereumjs/util'
 import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import deepmerge from 'deepmerge'
+import EthQuery from 'eth-query'
 import { ethErrors } from 'eth-rpc-errors'
+import { BrowserProvider } from 'ethers'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
-import Web3 from 'web3'
+import pify from 'pify'
 import { isHexStrict, toHex } from 'web3-utils'
 
 import config from '../config'
@@ -68,7 +70,7 @@ class PreferencesController extends SafeEventEmitter {
     const { network, provider, signMessage } = options
 
     this.network = network
-    this.web3 = new Web3(provider)
+    this.web3 = pify(new EthQuery(provider))
     this.api = new ApiHelpers(options.storeDispatch)
     this.signMessage = signMessage
     this.addChainRequests = []
@@ -769,8 +771,10 @@ class PreferencesController extends SafeEventEmitter {
     if (!name) ethErrors.rpc.invalidParams('params.nativeCurrency.name not provided')
     if (!symbol) ethErrors.rpc.invalidParams('params.nativeCurrency.symbol not provided')
     if (decimals === undefined) throw new Error('params.nativeCurrency.decimals not provided')
-    const _web3 = new Web3(new Web3.providers.HttpProvider(rpcUrls[0]))
-    const networkChainID = await _web3.eth.getChainId()
+    // TODO: not sure if BrowserProvider is the right provider to use here
+    // const _web3 = new Web3(new Web3.providers.HttpProvider(rpcUrls[0]))
+    const _web3 = new BrowserProvider(rpcUrls[0])
+    const networkChainID = await _web3.chainId()
     if (networkChainID !== Number.parseInt(chainId, 16)) {
       throw ethErrors.rpc.invalidParams(
         `Provided rpc url's chainId version is not matching with provided chainId, expected: ${toHex(networkChainID)}, received: ${chainId}`
