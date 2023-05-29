@@ -54,8 +54,7 @@ export default {
       this.iframeOrigin = origin
       this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
-      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig, namespace)
-      await openLoginHandler.openLoginInstance.init()
+      const openLoginHandler = await OpenLoginHandler.getInstance(whiteLabel, loginConfig, namespace)
       await openLoginHandler.openLoginInstance.login({
         loginProvider,
         getWalletKey: true,

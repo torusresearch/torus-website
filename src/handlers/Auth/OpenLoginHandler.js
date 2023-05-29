@@ -28,7 +28,7 @@ const getOpenloginWhitelabel = (whiteLabel = {}) => {
 class OpenLoginHandler {
   static openLoginHandlerInstance = null
 
-  static getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
+  static async getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
     if (OpenLoginHandler.openLoginHandlerInstance) {
       // const updatedConfig = {}
       // if (Object.keys(whiteLabel).length > 0) {
@@ -47,17 +47,20 @@ class OpenLoginHandler {
       return OpenLoginHandler.openLoginHandlerInstance
     }
     OpenLoginHandler.openLoginHandlerInstance = new OpenLoginHandler(whiteLabel, loginConfig, sessionNamespace)
+    await OpenLoginHandler.openLoginHandlerInstance.openLoginInstance.init()
     return OpenLoginHandler.openLoginHandlerInstance
   }
 
   accounts = null
+
+  networkType = null
 
   // This constructor is private. Don't call it
   constructor(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
     const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
 
     const iframeObj = getIFrameOriginObject()
-    const namespace = config.isCustomLogin ? iframeObj.hostname : undefined
+    const namespace = config.isCustomLogin ? iframeObj.hostname : ''
     this.openLoginInstance = new OpenLogin({
       clientId: config.openLoginClientId,
       redirectUrl: `${config.baseRoute}end`,
@@ -69,27 +72,46 @@ class OpenLoginHandler {
       whiteLabel: whiteLabelOpenLogin,
       loginConfig,
       network: config.torusNetwork,
-      sdkUrl: 'https://alpha.openlogin.com',
+      sdkUrl: 'https://testing.openlogin.com',
       no3PC: true,
       sessionNamespace: sessionNamespace || namespace,
       storageKey: storageUtils.storageType,
     })
   }
 
+  get sessionId() {
+    return this.openLoginInstance.state.sessionId || null
+  }
+
+  get sessionNamespace() {
+    return this.openLoginInstance.options.sessionNamespace || ''
+  }
+
+  get state() {
+    return this.openLoginInstance.state || {}
+  }
+
+  set whiteLabel(value) {
+    this.openLoginInstance.options.whiteLabel = value
+  }
+
+  set loginConfig(value) {
+    this.openLoginInstance.options.loginConfig = value
+  }
+
   async getActiveSession() {
     try {
-      const sessionId = this.getSessionId()
-      const sessionNamespace = this.getSessionNamespace()
-      if (sessionId) {
+      if (this.sessionId) {
         const sessionManager = new OpenloginSessionManager({
-          sessionNamespace,
-          sessionId,
+          sessionNamespace: this.sessionNamespace,
+          sessionId: this.sessionId,
         })
 
         const data = await sessionManager.authorizeSession()
         if (data.accounts) {
           this.accounts = data.accounts
         }
+        if (data.networkType) this.networkType = data.networkType
         return data
       }
       return null
@@ -101,16 +123,15 @@ class OpenLoginHandler {
 
   async updateSession(sessionData) {
     try {
-      const sessionId = this.getSessionId()
-      const sessionNamespace = this.getSessionNamespace()
-      if (sessionId) {
+      if (this.sessionId) {
         if (sessionData.accounts) {
           // saving this data locally as well and not in openlogin store.
           this.accounts = sessionData.accounts
         }
+        if (sessionData.networkType) sessionData.networkType = this.networkType
         const sessionManager = new OpenloginSessionManager({
-          sessionNamespace,
-          sessionId,
+          sessionId: this.sessionId,
+          sessionNamespace: this.sessionNamespace,
         })
 
         sessionManager.updateSession(sessionData)
@@ -136,16 +157,6 @@ class OpenLoginHandler {
       typeOfLogin: allInfo.typeOfLogin,
     }
     return userInfo
-  }
-
-  getSessionId() {
-    const { sessionId } = this.openLoginInstance.state
-    return sessionId
-  }
-
-  getSessionNamespace() {
-    const { sessionNamespace } = this.openLoginInstance.options
-    return sessionNamespace
   }
 
   getWalletKey() {

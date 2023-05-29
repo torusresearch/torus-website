@@ -70,32 +70,18 @@ export default {
     try {
       const { hash } = this.$route
       const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
-      const result = hashUrl.searchParams.get('result')
+      const error = hashUrl.searchParams.get('error')
 
-      let whiteLabel = {}
-      let loginConfig = {}
-
-      let loginError = ''
-
-      let resultParams = {
-        store: {},
-      }
-      // const sessionId = hashUrl.searchParams.get('sessionId') || ''
       const paramSessionNamespace = hashUrl.searchParams.get('sessionNamespace') || ''
-      if (result) {
-        resultParams = JSON.parse(safeatob(result))
-        loginError = resultParams.error
-        const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
-        whiteLabel = appStateParams.whiteLabel || {}
-        loginConfig = appStateParams.loginConfig || {}
-        this.isCustomVerifier = Object.keys(loginConfig).length > 0
-      }
 
-      this.whiteLabel = whiteLabel
-      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig, paramSessionNamespace)
-      await openLoginHandler.openLoginInstance.init()
-      const { state } = openLoginHandler.openLoginInstance
-      const { sessionId, sessionNamespace } = openLoginHandler.openLoginInstance.sessionManager
+      const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, paramSessionNamespace)
+      const { appState } = openLoginHandler.state.userInfo
+      const parsedAppState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(appState || ''))))
+      this.whiteLabel = parsedAppState.whiteLabel || {}
+      openLoginHandler.whiteLabel = this.whiteLabel
+      const loginConfig = parsedAppState.loginConfig || {}
+      openLoginHandler.loginConfig = this.loginConfig
+      this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()
       const { keys: extraKeys, userDapps } = await openLoginHandler.getUserDapps(postboxKey)
@@ -119,10 +105,6 @@ export default {
 
       // set default selected account
       this.selectedAccount = Object.keys(this.accounts)[0] ?? ''
-
-      // broadcast channel ID
-      const { appState } = state.userInfo
-      const parsedAppState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(appState))))
       this.channelId = parsedAppState.instanceId
 
       // prepare data
@@ -132,14 +114,12 @@ export default {
         keys,
         postboxKey,
         userDapps,
-        error: loginError,
-        sessionId,
-        sessionNamespace,
+        error,
       }
 
       // if there are no app accounts to choose, continue
       if (Object.keys(userDapps).length === 0 || parsedAppState.origin.hostname === window.location.hostname) {
-        await this.continueToApp()
+        // await this.continueToApp()
       }
     } catch (error) {
       log.error(error, 'something went wrong')

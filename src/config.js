@@ -141,6 +141,7 @@ const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search.slice(1)}`)
 
 const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
 const state = finalUrl.searchParams.get('state')
+const namespace = finalUrl.searchParams.get('sessionNamespace')
 // const result = finalUrl.searchParams.get('result')
 
 // by default value should be false as user can open
@@ -533,6 +534,7 @@ export default {
     //   },
     // }),
   },
+  namespace,
   loginsWithLightLogo: [APPLE, GITHUB, JWT],
   walletConnectProjectId: VUE_APP_WALLET_CONNECT_PROJECT_ID,
 }
