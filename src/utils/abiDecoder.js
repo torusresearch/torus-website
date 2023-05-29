@@ -1,8 +1,9 @@
 import BN from 'bn.js'
-import Web3 from 'web3'
+import { AbiCoder } from 'ethers'
 
-const web3 = new Web3()
-const { sha3 } = web3.utils
+import { sha3 } from './utils'
+
+const abiCoder = AbiCoder.defaultAbiCoder()
 
 class AbiDecoder {
   constructor(abi) {
@@ -68,7 +69,7 @@ class AbiDecoder {
     const abiItem = this.state.methodIDs[methodID]
     if (abiItem) {
       const parameters = abiItem.inputs.map((item) => item.type)
-      const decoded = web3.eth.abi.decodeParameters(parameters, data.slice(10))
+      const decoded = abiCoder.decode(parameters, data.slice(10))
 
       const returnValueData = {
         name: abiItem.name,
@@ -135,7 +136,7 @@ class AbiDecoder {
             return undefined
           })
 
-          const decodedData = web3.eth.abi.decodeParameters(dataTypes, logData.slice(2))
+          const decodedData = abiCoder.decode(dataTypes, logData.slice(2))
 
           // Loop topic and data to get the params
           method.inputs.map((parameter) => {

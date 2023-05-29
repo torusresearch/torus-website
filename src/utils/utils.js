@@ -1,11 +1,11 @@
-import { addHexPrefix, ecsign, privateToAddress, pubToAddress, stripHexPrefix } from '@ethereumjs/util'
+import { addHexPrefix, ecsign, isHexString, privateToAddress, pubToAddress, stripHexPrefix } from '@ethereumjs/util'
 import { concatSig } from '@metamask/eth-sig-util'
 import { keccak256 } from '@toruslabs/metadata-helpers'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import BN from 'bn.js'
+import { getAddress, isAddress, keccak256 as ethersKeccak256, toUtf8Bytes } from 'ethers'
 import log from 'loglevel'
-import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import { languageMap } from '../plugins/i18n-setup'
@@ -333,7 +333,7 @@ export function getStatus(status) {
 }
 
 export async function getEthTxStatus(hash, web3) {
-  const receipt = await web3.eth.getTransactionReceipt(hash)
+  const receipt = await web3.getTransactionReceipt(hash)
   if (receipt === null) return 'pending'
   if (receipt && receipt.status) return 'confirmed'
   if (receipt && !receipt.status) return 'rejected'
@@ -347,7 +347,7 @@ export const broadcastChannelOptions = {
 
 export function validateVerifierId(selectedTypeOfLogin, value, chainId) {
   if (selectedTypeOfLogin === ETH) {
-    const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+    const parsedChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
     if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
       return isAddressByChainId(value, chainId) || 'walletSettings.invalidEth'
     }
@@ -870,12 +870,12 @@ export function generateAddressFromPubKey(point) {
 }
 
 export function generateAddressFromPrivateKey(privKey) {
-  return toChecksumAddress(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex'))
+  return getAddress(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex'))
 }
 
 export function rskToChecksumAddress(address, chainId) {
   const address2 = stripHexPrefix(address).toLowerCase()
-  const chainId2 = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const chainId2 = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
   const prefix = Number.isNaN(chainId2) ? '' : `${chainId2.toString()}0x`
   const hash = keccak256(`${prefix}${address2}`).toString('hex')
   return `0x${[...address2].map((b, i) => (Number.parseInt(hash[i], 16) >= 8 ? b.toUpperCase() : b)).join('')}`
@@ -886,16 +886,16 @@ export function rskIsValidChecksumAddress(address, chainId) {
 }
 
 export function toChecksumAddressByChainId(address, chainId) {
-  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const parsedChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
   if (!isAddressByChainId(address, chainId)) return address
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskToChecksumAddress(address, chainId)
   }
-  return toChecksumAddress(address)
+  return getAddress(address)
 }
 
 export function isAddressByChainId(address, chainId) {
-  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const parsedChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskIsValidChecksumAddress(address, chainId)
   }
@@ -1219,3 +1219,10 @@ export const getDefaultNetwork = () => {
 }
 
 export const randomId = () => Math.random().toString(36).slice(2)
+
+export const getV3Filename = (address) => {
+  const ts = new Date()
+  return ['UTC--', ts.toJSON().replace(/:/g, '-'), '--', address.toString('hex')].join('')
+}
+
+export const sha3 = (value) => ethersKeccak256(toUtf8Bytes(value))

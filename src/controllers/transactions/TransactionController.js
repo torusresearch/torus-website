@@ -1,16 +1,16 @@
 /* eslint-disable require-atomic-updates */
 import { Common } from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
-import { addHexPrefix, bufferToHex, stripHexPrefix } from '@ethereumjs/util'
+import { addHexPrefix, bufferToHex, isHexString, stripHexPrefix } from '@ethereumjs/util'
 import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import { ethErrors } from 'eth-rpc-errors'
+import { formatEther, getBigInt } from 'ethers'
 import EthQuery from 'ethjs-query'
 import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
-import { fromWei, isHexStrict, sha3, toBN } from 'web3-utils'
 
 import AbiDecoder from '../../utils/abiDecoder'
 import ApiHelpers from '../../utils/apiHelpers'
@@ -42,6 +42,7 @@ import {
   getEtherScanHashLink,
   hexToBn,
   isAddressByChainId,
+  sha3,
   toChecksumAddressByChainId,
 } from '../../utils/utils'
 import NonceTracker from '../NonceTracker'
@@ -156,7 +157,7 @@ class TransactionController extends SafeEventEmitter {
   getChainId() {
     const networkState = this.networkStore.getState()
     const chainId = this._getCurrentChainId()
-    const integerChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+    const integerChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
     if (networkState === 'loading' || Number.isNaN(integerChainId)) {
       return 0
     }
@@ -873,7 +874,7 @@ class TransactionController extends SafeEventEmitter {
     )
 
     const finalTxs = transactionPromises.reduce((accumulator, x) => {
-      const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
+      const totalAmount = x.value ? formatEther(getBigInt(x.value)) : ''
       const etherscanTransaction = {
         etherscanLink: getEtherScanHashLink(x.hash, network),
         type: x.type || SUPPORTED_NETWORK_TYPES[network]?.ticker || CONTRACT_TYPE_ETH,

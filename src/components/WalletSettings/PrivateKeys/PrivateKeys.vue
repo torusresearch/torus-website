@@ -165,13 +165,13 @@
 /* eslint-disable import/default */
 /* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable import/extensions */
-import { stripHexPrefix } from '@ethereumjs/util'
-import Wallet from 'ethereumjs-wallet'
+import { Wallet } from 'ethers'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
 
 import { ACCOUNT_TYPE } from '../../../utils/enums'
+import { getV3Filename } from '../../../utils/utils'
 import ShowToolTip from '../../helpers/ShowToolTip'
 
 export default {
@@ -217,6 +217,10 @@ export default {
         this.isLoadingDownloadWallet = true
 
         if (window.Worker) {
+          const finishedWallet = await this.createWallet(this.keyStorePassword)
+          this.exportKeyStoreFile(finishedWallet)
+          this.isLoadingDownloadWallet = false
+        } else {
           const worker = new WalletWorker()
           worker.addEventListener('message', (ev) => {
             const finishedWallet = ev.data
@@ -229,10 +233,6 @@ export default {
           })
           // log.info(this.keyStorePassword, this.selectedKey)
           worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
-        } else {
-          const finishedWallet = await this.createWallet(this.keyStorePassword)
-          this.exportKeyStoreFile(finishedWallet)
-          this.isLoadingDownloadWallet = false
         }
       }
     },
@@ -243,14 +243,12 @@ export default {
     async createWallet(password) {
       const createdWallet = {}
       const wallet = this.generateWallet(this.selectedKey)
-      createdWallet.walletJson = await wallet.toV3(password)
-      createdWallet.name = wallet.getV3Filename()
+      createdWallet.walletJson = await wallet.encrypt(password)
+      createdWallet.name = getV3Filename(wallet.address)
       return createdWallet
     },
     generateWallet(privateKey) {
-      const stripped = stripHexPrefix(privateKey)
-      const buffer = Buffer.from(stripped, 'hex')
-      const wallet = Wallet.fromPrivateKey(buffer)
+      const wallet = new Wallet(privateKey)
       return wallet
     },
     createBlob(mime, string_) {

@@ -160,9 +160,9 @@
 
 <script>
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
+import { isHexString } from 'ethers'
 import log from 'loglevel'
 import { mapGetters, mapState } from 'vuex'
-import { isHexStrict } from 'web3-utils'
 
 import { RPC, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
 import { broadcastChannelOptions, getDefaultNetwork } from '../../../utils/utils'
@@ -175,7 +175,7 @@ export default {
       formValid: true,
       rules: {
         required: (value) => !!value || 'Required',
-        requiredHex: (value) => (!!value && isHexStrict(value)) || 'Please enter chainId in hex format for ex: "0x1"',
+        requiredHex: (value) => (!!value && isHexString(value)) || 'Please enter chainId in hex format for ex: "0x1"',
       },
       addCustomNetwork: false,
       isEdit: false,

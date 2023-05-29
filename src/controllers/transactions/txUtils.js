@@ -1,6 +1,6 @@
 import { addHexPrefix, isHexString } from '@ethereumjs/util'
 import { ethErrors } from 'eth-rpc-errors'
-import { isAddress } from 'web3-utils'
+import { isAddress } from 'ethers'
 
 import { TRANSACTION_ENVELOPE_TYPES, TRANSACTION_STATUSES } from '../../utils/enums'
 
