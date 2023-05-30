@@ -59,7 +59,7 @@ export default class WatchAssetManager extends EventEmitter {
   async addUnapprovedAssetAsync(assetParameters, request, id) {
     await this.validateWatchAssetParams(assetParameters, this.web3)
     const providerConfig = await this.network.getProviderConfig()
-    const normalizedAssetParams = await this.normalizeWatchAssetParams(id, assetParameters, providerConfig, this.web3, this.ethersProvider)
+    const normalizedAssetParams = await this.normalizeWatchAssetParams(id, assetParameters, providerConfig, this.ethersProvider)
     return new Promise((resolve, reject) => {
       this.addUnapprovedAsset(normalizedAssetParams, request, id)
       this.emit('newUnapprovedAsset', normalizedAssetParams, request)
@@ -201,7 +201,7 @@ export default class WatchAssetManager extends EventEmitter {
     if (!isValidAddress) throw ethErrors.rpc.invalidParams(`Invalid watch asset params: Invalid asset address ${address}`)
   }
 
-  async normalizeWatchAssetParams(assetId, assetParams, providerConfig, web3, ethersProvider) {
+  async normalizeWatchAssetParams(assetId, assetParams, providerConfig, ethersProvider) {
     const nft_contract_standard = [CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155]
     let finalParams = {}
     if (assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20) {
@@ -234,7 +234,13 @@ export default class WatchAssetManager extends EventEmitter {
       const userAddress = this.prefsController.store.getState().selectedAddress
       if (!address) throw ethErrors.rpc.invalidParams('Invalid watch asset params: asset address is required.')
       const explorerLink = getEtherScanAddressLink(address, providerConfig.host)
-      const nftHandler = new NftHandler({ userAddress, tokenId: id, address: address.toLowerCase(), web3, prefController: this.prefsController })
+      const nftHandler = new NftHandler({
+        userAddress,
+        tokenId: id,
+        address: address.toLowerCase(),
+        ethersProvider,
+        prefController: this.prefsController,
+      })
 
       const nftData = await Promise.any([nftHandler.getNftMetadataFromApi(), nftHandler.getNftMetadata()])
       const options = assetParams.options || {}

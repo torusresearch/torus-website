@@ -6,14 +6,14 @@ import log from 'loglevel'
 class TokenHandler {
   constructor({ address, symbol, decimals, name, ethersProvider }) {
     this.address = address
-    this.contract = new Contract(tokenAbi, address, ethersProvider)
+    this.contract = new Contract(address, tokenAbi, ethersProvider)
     this.symbol = symbol
     this.decimals = decimals
     this.name = name
   }
 
   async getSymbol() {
-    if (!this.symbol || this.symbol === 'ERC20') this.symbol = await this.contract.methods.symbol().call()
+    if (!this.symbol || this.symbol === 'ERC20') this.symbol = await this.contract.symbol()
     return this.symbol
   }
 

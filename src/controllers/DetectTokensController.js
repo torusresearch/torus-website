@@ -255,7 +255,7 @@ class DetectTokensController {
             name: tokenInstance.name,
             symbol: tokenInstance.symbol,
             tokenAddress: toChecksumAddressByChainId(tokenInstance.address, chainId),
-            balance: `0x${balance}`,
+            balance,
             customTokenId: x.id,
             network: localNetwork,
           }
