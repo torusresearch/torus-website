@@ -9,11 +9,10 @@
 
 import { ObservableStore } from '@metamask/obs-store'
 import EthQuery from 'eth-query'
-import { toQuantity } from 'ethers'
+import { Contract, JsonRpcProvider, toQuantity } from 'ethers'
 import log from 'loglevel'
 import pify from 'pify'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
-import Web3 from 'web3'
 
 import {
   SINGLE_CALL_BALANCES_ADDRESS,
@@ -76,7 +75,7 @@ export default class AccountTracker {
 
     this.getCurrentChainId = options.getCurrentChainId
 
-    this.web3 = new Web3(this._provider)
+    this.getCurrentNetworkUrl = options.getCurrentNetworkUrl
   }
 
   start() {
@@ -252,11 +251,12 @@ export default class AccountTracker {
    * @param {*} deployedContractAddress
    */
   async _updateAccountsViaBalanceChecker(addresses, deployedContractAddress) {
-    const web3Instance = this.web3
-    web3Instance.setProvider(this._provider)
-    const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, deployedContractAddress)
+    const networkUrl = this.getCurrentNetworkUrl()
+    const provider = new JsonRpcProvider(networkUrl)
+    const ethContract = new Contract(deployedContractAddress, SINGLE_CALL_BALANCES_ABI, provider)
     try {
-      const result = await ethContract.methods.balances(addresses, [ZERO_ADDRESS]).call()
+      const result = await ethContract.balances(addresses, [ZERO_ADDRESS])
+
       const { accounts } = this.store.getState()
       addresses.forEach((address, index) => {
         const balance = toQuantity(result[index])

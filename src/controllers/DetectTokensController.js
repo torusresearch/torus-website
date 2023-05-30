@@ -1,7 +1,7 @@
 /* eslint-disable default-param-last */
 import { ObservableStore } from '@metamask/obs-store'
 import BigNumber from 'bignumber.js'
-import { toQuantity } from 'ethers'
+import { JsonRpcProvider, toQuantity } from 'ethers'
 import { isEqual } from 'lodash'
 import log from 'loglevel'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
@@ -232,6 +232,11 @@ class DetectTokensController {
       return acc
     }, [])
     const chainId = this.network.getCurrentChainId()
+    const networkUrl = this.network.getCurrentNetworkUrl()
+
+    // Ethers contract
+    const ethersProvider = new JsonRpcProvider(networkUrl)
+
     let nonZeroTokens = await Promise.all(
       currentNetworkTokens.map(async (x) => {
         try {
@@ -240,7 +245,7 @@ class DetectTokensController {
             decimals: x.decimals,
             name: x.token_name || x.name,
             symbol: x.token_symbol || x.symbol,
-            web3: this.web3,
+            ethersProvider,
           })
           const balance = await tokenInstance.getUserBalance(userAddress)
           return {

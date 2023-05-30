@@ -191,7 +191,7 @@ export default {
       this.isValidAddress = await validateContractAddress(torus.web3, this.customAddress, this.$store.state.networkId)
       if (this.isValidAddress) {
         try {
-          this.currentToken = new TokenHandler({ address: this.customAddress.toLowerCase(), web3: torus.web3 })
+          this.currentToken = new TokenHandler({ address: this.customAddress.toLowerCase(), ethersProvider: torus.ethersProvider })
           const [symbol, name, balance, decimals] = await Promise.all([
             this.currentToken.getSymbol(),
             this.currentToken.getName(),

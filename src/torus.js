@@ -1,4 +1,5 @@
 import { BasePostMessageStream } from '@toruslabs/openlogin-jrpc'
+import { JsonRpcProvider } from 'ethers'
 import log from 'loglevel'
 import Web3 from 'web3'
 
@@ -67,9 +68,12 @@ const torusController = new TorusController({
 })
 
 torus.torusController = torusController
-
 torusController.provider.setMaxListeners(100)
 torus.web3 = new Web3(torusController.provider)
+
+const networkUrl = torusController.networkController.getCurrentNetworkUrl()
+torus.ethersProvider = new JsonRpcProvider(networkUrl)
+
 log.info('torus network', process.env.VUE_APP_PROXY_NETWORK)
 
 // we use this to start accounttracker balances

@@ -1,5 +1,6 @@
 import { ObservableStore } from '@metamask/obs-store'
 import { ethErrors } from 'eth-rpc-errors'
+import { JsonRpcProvider } from 'ethers'
 import EventEmitter from 'events'
 import log from 'loglevel'
 import Web3 from 'web3'
@@ -26,6 +27,7 @@ export default class WatchAssetManager extends EventEmitter {
 
     this.network = network
     this.web3 = new Web3(provider)
+    this.ethersProvider = new JsonRpcProvider(network.getCurrentNetworkUrl())
     this.prefsController = prefsController
 
     this.store = new ObservableStore({
@@ -57,7 +59,7 @@ export default class WatchAssetManager extends EventEmitter {
   async addUnapprovedAssetAsync(assetParameters, request, id) {
     await this.validateWatchAssetParams(assetParameters, this.web3)
     const providerConfig = await this.network.getProviderConfig()
-    const normalizedAssetParams = await this.normalizeWatchAssetParams(id, assetParameters, providerConfig, this.web3)
+    const normalizedAssetParams = await this.normalizeWatchAssetParams(id, assetParameters, providerConfig, this.web3, this.ethersProvider)
     return new Promise((resolve, reject) => {
       this.addUnapprovedAsset(normalizedAssetParams, request, id)
       this.emit('newUnapprovedAsset', normalizedAssetParams, request)
@@ -199,14 +201,14 @@ export default class WatchAssetManager extends EventEmitter {
     if (!isValidAddress) throw ethErrors.rpc.invalidParams(`Invalid watch asset params: Invalid asset address ${address}`)
   }
 
-  async normalizeWatchAssetParams(assetId, assetParams, providerConfig, web3) {
+  async normalizeWatchAssetParams(assetId, assetParams, providerConfig, web3, ethersProvider) {
     const nft_contract_standard = [CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155]
     let finalParams = {}
     if (assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20) {
       const userAddress = this.prefsController.store.getState().selectedAddress
       const { address, decimals, symbol, balance } = assetParams.options || {}
       if (!address) throw ethErrors.rpc.invalidParams('Invalid watch asset params: asset address is required.')
-      const tokenHandler = new TokenHandler({ address: address.toLowerCase(), web3 })
+      const tokenHandler = new TokenHandler({ address: address.toLowerCase(), ethersProvider })
       const options = assetParams.options || {}
       if (!decimals) options.decimals = await tokenHandler.getDecimals()
       if (!symbol) options.symbol = await tokenHandler.getSymbol()

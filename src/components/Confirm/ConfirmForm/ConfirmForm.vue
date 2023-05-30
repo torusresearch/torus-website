@@ -762,7 +762,7 @@ export default {
           const tokenHandler = new TokenHandler({
             ...tokenObject,
             address: checkSummedTo,
-            web3: torus.web3,
+            ethersProvider: torus.ethersProvider,
           })
           if (!tokenObject.decimals) {
             decimals = new BigNumber(await tokenHandler.getDecimals())
