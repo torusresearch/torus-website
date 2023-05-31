@@ -140,6 +140,8 @@ export default class AlphaRouter extends AlphaBaseRouter {
 
     this.emitPoolSelectionMetrics(swapRouteRaw, allCandidatePools)
 
+    const blockNumberFinal = await blockNumber
+
     const swapRoute = {
       quote,
       quoteGasAdjusted,
@@ -150,7 +152,7 @@ export default class AlphaRouter extends AlphaBaseRouter {
       route: routeAmounts,
       trade,
       methodParameters,
-      blockNumber: BigNumber.from(await blockNumber),
+      blockNumber: BigNumber(blockNumberFinal),
     }
 
     if (swapConfig && swapConfig.simulate && methodParameters && methodParameters.calldata) {

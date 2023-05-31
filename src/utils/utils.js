@@ -892,7 +892,7 @@ export function toChecksumAddressByChainId(address, chainId) {
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskToChecksumAddress(address, chainId)
   }
-  return toChecksumAddress(address)
+  return toChecksumAddress(normalize(address))
 }
 
 export function isAddressByChainId(address, chainId) {
