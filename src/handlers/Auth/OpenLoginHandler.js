@@ -62,7 +62,6 @@ class OpenLoginHandler {
       whiteLabel: whiteLabelOpenLogin,
       loginConfig,
       network: config.torusNetwork,
-      sdkUrl: 'https://testing.openlogin.com',
       sessionNamespace: sessionNamespace || customNamespace,
       storageKey: storageUtils.storageType,
     })

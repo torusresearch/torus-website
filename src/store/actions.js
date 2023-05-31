@@ -278,6 +278,7 @@ export default {
 
     const openLoginHandler = await OpenLoginHandler.getInstance(state.whiteLabel, {}, config.sessionNamespace)
     const { sessionId, state: openloginState } = openLoginHandler
+    // this is import private key into torus wallet
     if (sessionId && openloginState.walletKey === privateKey) {
       const _store = openloginState?.userInfo || {}
       const sessionData = {
@@ -290,6 +291,8 @@ export default {
         },
       }
       await openLoginHandler.updateSession(sessionData)
+    } else {
+      // TODO: login with private key from torus wallet plugin
     }
 
     // TODO: deprecate rehydrate false for the next major version bump
@@ -448,10 +451,11 @@ export default {
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
       })
-      const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, userDapps, error, sessionId } = await loginHandler.handleLoginWindow()
       if (error) {
         throw new Error(error)
       }
+      // TODO: Sync sessionId into iframe
       if (config.storageAvailability[storageUtils.storageType]) {
         if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType, reinitialize: true })
         else await dispatch('setProviderType', { network: state.networkType, type: RPC, reinitialize: true })
@@ -623,8 +627,7 @@ export default {
       // TODO: check skipOpenLoginCheck and fetchSession
       if (!currentRoute.meta.skipOpenLoginCheck || currentRoute.meta.fetchSession) {
         const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
-        const { sessionId } = openLoginHandler
-        const { state: openloginState } = openLoginHandler
+        const { sessionId, state: openloginState } = openLoginHandler
         if (!currentRoute.meta.skipOpenLoginCheck) {
           if (!sessionId) {
             commit('setRehydrationStatus', true)
@@ -667,7 +670,6 @@ export default {
             log.info('no openlogin session')
           }
         }
-        // TODO: check networkType
         if (openLoginHandler?.networkType) finalNetworkType = openLoginHandler?.networkType
       }
 

@@ -116,11 +116,12 @@ export default {
         postboxKey,
         userDapps,
         error,
+        sessionId: openLoginHandler.sessionId,
       }
 
       // if there are no app accounts to choose, continue
       if (Object.keys(userDapps).length === 0 || parsedAppState.origin.hostname === window.location.hostname) {
-        // await this.continueToApp()
+        await this.continueToApp()
       }
     } catch (error) {
       log.error(error, 'something went wrong')
