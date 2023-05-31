@@ -305,7 +305,7 @@ export default {
         },
       }
       openLoginHandler.state = { walletKey: privateKey, userInfo: { sessionId } }
-      if (config.storageAvailability.local) {
+      if (config.storageAvailability[storageUtils.storageType]) {
         const storage = BrowserStorage.getInstance(storageUtils.openloginStoreKey, storageUtils.storageType)
         storage.set('sessionId', sessionId)
       }
@@ -474,10 +474,8 @@ export default {
       }
       if (config.storageAvailability[storageUtils.storageType]) {
         // add sessionId to local storage.
-        if (config.storageAvailability.local) {
-          const storage = BrowserStorage.getInstance(storageUtils.openloginStoreKey, storageUtils.storageType)
-          storage.set('sessionId', sessionId)
-        }
+        const storage = BrowserStorage.getInstance(storageUtils.openloginStoreKey, storageUtils.storageType)
+        storage.set('sessionId', sessionId)
         // reinitializing openlogin instance with new session id after login is complete.
         await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace, true)
         if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType })
