@@ -31,7 +31,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm instal
+        run: npm install
 
       - name: Pre-build setup
         run: npm run pre-build
