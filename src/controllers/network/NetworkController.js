@@ -453,6 +453,17 @@ export default class NetworkController extends EventEmitter {
     return isHexString(chainId) ? chainId : `0x${Number(chainId).toString(16)}`
   }
 
+  getCurrentNetworkUrl() {
+    const { type, rpcUrl } = this.getProviderConfig()
+
+    const isInfura = INFURA_PROVIDER_TYPES.has(type)
+    if (isInfura) {
+      return `https://${type}.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
+    }
+    const networkConfig = SUPPORTED_NETWORK_TYPES[type]
+    return networkConfig?.rpcUrl || rpcUrl
+  }
+
   setRpcTarget(networkId, rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {
     this.setProviderConfig({
       type: RPC,

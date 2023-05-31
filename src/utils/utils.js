@@ -308,13 +308,6 @@ export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', th
   return null
 }
 
-export async function isSmartContractAddress(address, web3) {
-  const code = await web3.eth.getCode(address)
-  // Geth will return '0x', and ganache-core v2.2.1 will return '0x0'
-  const codeIsEmpty = !code || code === '0x' || code === '0x0'
-  return !codeIsEmpty
-}
-
 export function getEtherScanHashLink(txHash, network) {
   if (!SUPPORTED_NETWORK_TYPES[network]) return ''
   return `${SUPPORTED_NETWORK_TYPES[network].blockExplorer}/tx/${txHash}`
@@ -1001,9 +994,9 @@ export function getVerifierOptions() {
   }
 }
 
-export async function validateContractAddress(web3, address, chainId) {
+export async function validateContractAddress(ethersProvider, address, chainId) {
   if (isAddressByChainId(address, chainId)) {
-    const contractCode = await web3.eth.getCode(address.toLowerCase())
+    const contractCode = await ethersProvider.getCode(address.toLowerCase())
     // user account address will return 0x for networks , except ganache returns 0x0
     if (contractCode === '0x' || contractCode === '0x0') {
       return false

@@ -188,10 +188,10 @@ export default {
     async onCustomAddressChange(value) {
       this.customAddress = value
       // log.debug(await torus.web3.eth.getCode(value))
-      this.isValidAddress = await validateContractAddress(torus.web3, this.customAddress, this.$store.state.networkId)
+      this.isValidAddress = await validateContractAddress(torus.etherProvider, this.customAddress, this.$store.state.networkId)
       if (this.isValidAddress) {
         try {
-          this.currentToken = new TokenHandler({ address: this.customAddress.toLowerCase(), web3: torus.web3 })
+          this.currentToken = new TokenHandler({ address: this.customAddress.toLowerCase(), provider: torus.etherProvider })
           const [symbol, name, balance, decimals] = await Promise.all([
             this.currentToken.getSymbol(),
             this.currentToken.getName(),

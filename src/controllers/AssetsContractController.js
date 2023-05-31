@@ -4,11 +4,12 @@
  * Controller that interacts with contracts on mainnet through web3
  * @author Shubham, Chaitanya
  */
+import { ethers } from 'ethers'
 import abiERC721 from 'human-standard-collectible-abi'
 import abiERC20 from 'human-standard-token-abi'
 import { ERC1155 as erc1155abi, ERC1155Metadata as erc1155MetadataAbi } from 'multi-token-standard-abi'
 import abiSingleCallBalancesContract from 'single-call-balance-checker-abi'
-import Web3 from 'web3'
+import { toHex } from 'web3-utils'
 
 import {
   CONTRACT_TYPE_ERC721,
@@ -29,8 +30,8 @@ export default class AssetContractController {
    * @param {Object} opts Initialize various properties of the class.
    */
   constructor(options) {
-    this._provider = options.provider
-    this.web3 = new Web3(this._provider)
+    this.network = options.network
+    this.provider = new ethers.providers.JsonRpcProvider(this.network.getCurrentNetworkUrl())
     this.name = 'AssetsContractController'
   }
 
@@ -43,9 +44,8 @@ export default class AssetContractController {
    * @returns - Promise resolving to whether the contract implements `interfaceID`
    */
   contractSupportsInterface(address, interfaceId) {
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC721, address)
-    return contract.methods.supportsInterface(interfaceId).call()
+    const contract = new ethers.Contract(address, abiERC721, this.provider)
+    return contract.supportsInterface(interfaceId)
   }
 
   /**
@@ -101,15 +101,13 @@ export default class AssetContractController {
    * @returns - Promise resolving to BN object containing balance for current account on specific asset contract
    */
   getBalanceOf(address, selectedAddress) {
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC20, address)
-    return contract.methods.balanceOf(selectedAddress).call()
+    const contract = new ethers.Contract(address, abiERC20, this.provider)
+    return contract.balanceOf(selectedAddress)
   }
 
   getErc1155Balance(contractAddress, ownerAddress, tokenId) {
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(erc1155abi.abi, contractAddress)
-    return contract.methods.balanceOf(ownerAddress, tokenId).call()
+    const contract = new ethers.Contract(contractAddress, erc1155abi.abi, this.provider)
+    return contract.balanceOf(ownerAddress, tokenId)
   }
 
   /**
@@ -121,9 +119,8 @@ export default class AssetContractController {
    * @returns - Promise resolving to token identifier for the 'index'th asset assigned to 'selectedAddress'
    */
   getCollectibleTokenId(address, selectedAddress, index) {
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC721, address)
-    return contract.methods.tokenOfOwnerByIndex(selectedAddress, index)
+    const contract = new ethers.Contract(address, abiERC721, this.provider)
+    return contract.tokenOfOwnerByIndex(selectedAddress, index)
   }
 
   /**
@@ -136,9 +133,8 @@ export default class AssetContractController {
   getCollectibleTokenURI(address, tokenId, standard = CONTRACT_TYPE_ERC721) {
     const { abi, method } =
       standard === CONTRACT_TYPE_ERC721 ? { abi: abiERC721, method: 'tokenURI' } : { abi: erc1155MetadataAbi.abi, method: 'uri' }
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abi, address)
-    return contract.methods[method](tokenId).call()
+    const contract = new ethers.Contract(address, abi, this.provider)
+    return contract[method](tokenId)
   }
 
   /**
@@ -148,9 +144,8 @@ export default class AssetContractController {
    * @returns - Promise resolving to the 'decimals'
    */
   getTokenDecimals(address) {
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC20, address)
-    return contract.methods.decimals().call()
+    const contract = new ethers.Contract(address, abiERC20, this.provider)
+    return contract.decimals()
   }
 
   /**
@@ -160,9 +155,8 @@ export default class AssetContractController {
    * @returns - Promise resolving to the 'name'
    */
   getAssetName(address) {
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC721, address)
-    return contract.methods.name().call()
+    const contract = new ethers.Contract(address, abiERC721, this.provider)
+    return contract.name()
   }
 
   /**
@@ -172,9 +166,8 @@ export default class AssetContractController {
    * @returns - Promise resolving to the 'symbol'
    */
   getAssetSymbol(address) {
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC721, address)
-    return contract.methods.symbol().call()
+    const contract = new ethers.Contract(address, abiERC721, this.provider)
+    return contract.symbol()
   }
 
   /**
@@ -185,8 +178,7 @@ export default class AssetContractController {
    * @returns - Promise resolving to the owner address
    */
   getOwnerOf(address, tokenId) {
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC721, address)
+    const contract = new ethers.Contract(address, abiERC721, this.provider)
     return contract.methods.ownerOf(tokenId).call()
   }
 
@@ -196,18 +188,16 @@ export default class AssetContractController {
    * @returns - Promise resolving to array of non-zero balances
    */
   getBalancesInSingleCall(selectedAddress, tokensToDetect) {
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiSingleCallBalancesContract, SINGLE_CALL_BALANCES_ADDRESS)
+    const contract = new ethers.Contract(SINGLE_CALL_BALANCES_ADDRESS, abiSingleCallBalancesContract, this.provider)
     return new Promise((resolve, reject) => {
-      contract.methods
+      contract
         .balances([selectedAddress], tokensToDetect)
-        .call()
         .then((result) => {
           const nonZeroBalances = {}
           /* istanbul ignore else */
           if (result.length > 0) {
             tokensToDetect.forEach((tokenAddress, index) => {
-              const balance = this.web3.utils.toHex(result[index])
+              const balance = toHex(result[index])
               /* istanbul ignore else */
               if (balance && balance !== '0x0') {
                 nonZeroBalances[tokenAddress] = balance
