@@ -735,17 +735,10 @@ export const getIFrameOriginObject = () => {
 }
 
 export const storageUtils = {
-  storage:
-    config.isCustomLogin === null
-      ? config.storageAvailability.session
-        ? window.sessionStorage
-        : undefined
-      : config.storageAvailability.local
-      ? window.localStorage
-      : undefined,
-  storageType: config.isCustomLogin === null ? 'session' : 'local',
-  storageKey: config.isCustomLogin === true ? `torus_app_${config.namespace || getIFrameOriginObject().hostname}` : 'torus-app',
-  openloginStoreKey: config.isCustomLogin === true ? `openlogin_store_${config.namespace || getIFrameOriginObject().hostname}` : 'openlogin_store',
+  storage: config.storageAvailability.local ? window.localStorage : undefined,
+  storageType: 'local',
+  storageKey: config.isCustomLogin ? `torus_app_${config.sessionNamespace || getIFrameOriginObject().hostname}` : 'torus-app',
+  openloginStoreKey: config.isCustomLogin ? `openlogin_store_${config.sessionNamespace || getIFrameOriginObject().hostname}` : 'openlogin_store',
 }
 
 export const getSessionIdFromStorage = () => {
@@ -1203,7 +1196,7 @@ export const parsePopupUrl = (url) => {
   if (localUrl.hostname !== window.location.hostname) return localUrl
   localUrl.searchParams.append('isCustomLogin', config.isCustomLogin)
   if (config.isCustomLogin) {
-    localUrl.searchParams.append('namespace', iframeOrigin.hostname)
+    localUrl.searchParams.append('sessionNamespace', iframeOrigin.hostname)
   }
   const sessionId = getSessionIdFromStorage()
   if (sessionId) {

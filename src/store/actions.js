@@ -133,7 +133,7 @@ export default {
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     torusController.lock()
     if (selectedAddress) {
-      const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.namespace)
+      const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
       if (isMain) {
         router.push({ path: '/' }).catch(() => {})
       }
@@ -276,7 +276,7 @@ export default {
       })
     )
 
-    const openLoginHandler = await OpenLoginHandler.getInstance(state.whiteLabel, {}, config.namespace)
+    const openLoginHandler = await OpenLoginHandler.getInstance(state.whiteLabel, {}, config.sessionNamespace)
     const activeSession = await openLoginHandler.getActiveSession()
     if (activeSession && activeSession.walletKey === privateKey) {
       const _store = activeSession?.store || {}
@@ -310,7 +310,7 @@ export default {
       rehydrate: false,
     })
     dispatch('updateSelectedAddress', { selectedAddress: address })
-    const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.namespace)
+    const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
     const existingSessionData = await openloginInstance.getActiveSession()
     if (!existingSessionData) {
       dispatch('logOut')
@@ -386,7 +386,7 @@ export default {
       await commit('setCustomCurrency', state.selectedCurrency)
     }
 
-    const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.namespace)
+    const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
     const existingSessionData = await openloginInstance.getActiveSession()
     if (!existingSessionData) {
       dispatch('logOut')
@@ -483,7 +483,7 @@ export default {
     }
   },
   async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
-    const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.namespace)
+    const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()
     commit('setUserInfo', userInfo)
@@ -503,7 +503,7 @@ export default {
     })
   },
   async getUserDapps({ commit, dispatch, state }, { postboxKey, calledFromEmbed }) {
-    const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.namespace)
+    const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
     const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
     commit('setUserDapps', userDapps)
     await dispatch('initTorusKeyring', {
@@ -623,7 +623,7 @@ export default {
       const currentRoute = router.match(window.location.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
       // TODO: check skipOpenLoginCheck and fetchSession
       if (!currentRoute.meta.skipOpenLoginCheck || currentRoute.meta.fetchSession) {
-        const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.namespace)
+        const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
         const { sessionId } = openLoginHandler
         const { state: openloginState } = openLoginHandler
         if (!currentRoute.meta.skipOpenLoginCheck) {
