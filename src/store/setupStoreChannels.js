@@ -68,7 +68,6 @@ if (!isMain) {
         buttonSize = 56,
         torusWidgetVisibility = true,
         loginConfig = {},
-        skipTKey = false,
         mfaLevel = 'default',
         network = SUPPORTED_NETWORK_TYPES.mainnet,
       },
@@ -84,7 +83,6 @@ if (!isMain) {
       }
       VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
       VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
-      VuexStore.commit('setSkipTKey', skipTKey)
       VuexStore.commit('setMfaLevel', mfaLevel)
       const { isRehydrationComplete } = VuexStore.state
       if (isRehydrationComplete) {

@@ -30,19 +30,13 @@ class OpenLoginHandler {
 
   static async getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
     if (OpenLoginHandler.openLoginHandlerInstance) {
-      // const updatedConfig = {}
-      // if (Object.keys(whiteLabel).length > 0) {
-      //   const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
-      //   updatedConfig.whiteLabel = whiteLabelOpenLogin
-      // }
-      // if (Object.keys(loginConfig).length > 0) {
-      //   updatedConfig.loginConfig = loginConfig
-      // }
-      // if (Object.keys(updatedConfig).length > 0) {
-      //   OpenLoginHandler.openLoginHandlerInstance.openLoginInstance._syncState({
-      //     ...updatedConfig,
-      //   })
-      // }
+      if (Object.keys(whiteLabel).length > 0) {
+        const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
+        OpenLoginHandler.openLoginHandlerInstance.whiteLabel = whiteLabelOpenLogin
+      }
+      if (Object.keys(loginConfig).length > 0) {
+        OpenLoginHandler.openLoginHandlerInstance.loginConfig = loginConfig
+      }
 
       return OpenLoginHandler.openLoginHandlerInstance
     }
@@ -188,7 +182,6 @@ class OpenLoginHandler {
         ethAddress: generateAddressFromPrivateKey(tKey),
       })
     }
-    // TODO: fix this.
     if (this.accounts && typeof this.accounts === 'object') {
       Object.values(this.accounts).forEach((val) => {
         keys.push({

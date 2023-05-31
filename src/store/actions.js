@@ -443,7 +443,6 @@ export default {
           },
           jwtParameters || {}
         ),
-        skipTKey: state.embedState.skipTKey,
         whiteLabel,
         mfaLevel: state.embedState.mfaLevel,
         loginConfigItem: currentVerifierConfig,
