@@ -9,11 +9,11 @@
 
 import { ObservableStore } from '@metamask/obs-store'
 import EthQuery from 'eth-query'
-import { toQuantity } from 'ethers'
 import log from 'loglevel'
 import pify from 'pify'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 import Web3 from 'web3'
+import { toHex } from 'web3-utils'
 
 import {
   SINGLE_CALL_BALANCES_ADDRESS,
@@ -259,7 +259,7 @@ export default class AccountTracker {
       const result = await ethContract.methods.balances(addresses, [ZERO_ADDRESS]).call()
       const { accounts } = this.store.getState()
       addresses.forEach((address, index) => {
-        const balance = toQuantity(result[index])
+        const balance = toHex(result[index])
         accounts[address] = { address, balance }
       })
       return this.store.updateState({ accounts })

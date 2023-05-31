@@ -4,7 +4,7 @@ import { AlphaRouter as AlphaBaseRouter, ChainId, CurrencyAmount, V2_SUPPORTED }
 import { DEFAULT_ROUTING_CONFIG_BY_CHAIN } from '@uniswap/smart-order-router/build/module/routers/alpha-router/config'
 import { getBestSwapRoute } from '@uniswap/smart-order-router/build/module/routers/alpha-router/functions/best-swap-route'
 import { buildTrade } from '@uniswap/smart-order-router/build/module/util/methodParameters'
-import { BigNumber } from 'ethers'
+import BigNumber from 'bignumber.js'
 import _ from 'lodash'
 import log from 'loglevel'
 

@@ -5,7 +5,7 @@ import { ObservableStore, storeAsStream } from '@metamask/obs-store'
 import { createEngineStream, JRPCEngine, SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
-import { getAddress } from 'ethers'
+import { utils } from 'ethers'
 import { debounce } from 'lodash'
 import log from 'loglevel'
 import pump from 'pump'
@@ -41,6 +41,7 @@ import createMethodMiddleware from './utils/methodMiddleware'
 import WalletConnectController from './walletconnect/WalletConnectController'
 
 SafeEventEmitter.defaultMaxListeners = 100
+const { getAddress } = utils
 
 export default class TorusController extends SafeEventEmitter {
   /**

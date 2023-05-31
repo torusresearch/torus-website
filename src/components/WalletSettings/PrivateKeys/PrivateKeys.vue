@@ -217,10 +217,6 @@ export default {
         this.isLoadingDownloadWallet = true
 
         if (window.Worker) {
-          const finishedWallet = await this.createWallet(this.keyStorePassword)
-          this.exportKeyStoreFile(finishedWallet)
-          this.isLoadingDownloadWallet = false
-        } else {
           const worker = new WalletWorker()
           worker.addEventListener('message', (ev) => {
             const finishedWallet = ev.data
@@ -233,6 +229,10 @@ export default {
           })
           // log.info(this.keyStorePassword, this.selectedKey)
           worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
+        } else {
+          const finishedWallet = await this.createWallet(this.keyStorePassword)
+          this.exportKeyStoreFile(finishedWallet)
+          this.isLoadingDownloadWallet = false
         }
       }
     },
