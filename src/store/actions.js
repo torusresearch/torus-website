@@ -1,4 +1,5 @@
 import { isHexString, privateToAddress } from '@ethereumjs/util'
+import { OpenloginSessionManager } from '@toruslabs/openlogin-session-manager'
 import { safeatob, safebtoa } from '@toruslabs/openlogin-utils'
 import deepmerge from 'deepmerge'
 import { cloneDeep } from 'lodash'
@@ -277,9 +278,9 @@ export default {
     )
 
     const openLoginHandler = await OpenLoginHandler.getInstance(state.whiteLabel, {}, config.sessionNamespace)
-    const { sessionId, state: openloginState } = openLoginHandler
+    const { sessionId: openloginSessionId, state: openloginState } = openLoginHandler
     // this is import private key into torus wallet
-    if (sessionId && openloginState.walletKey === privateKey) {
+    if (openloginSessionId && openloginState.walletKey === privateKey) {
       const _store = openloginState?.userInfo || {}
       const sessionData = {
         ...openloginState,
@@ -292,7 +293,20 @@ export default {
       }
       await openLoginHandler.updateSession(sessionData)
     } else {
-      // TODO: login with private key from torus wallet plugin
+      // login with private key from torus wallet plugin
+      const sessionId = OpenloginSessionManager.generateRandomSessionKey()
+      const sessionData = {
+        walletKey: privateKey,
+        userInfo: {
+          whiteLabel: state.whiteLabel,
+          appState,
+          sessionId,
+          ...userInfo,
+        },
+      }
+      openLoginHandler.state = { walletKey: privateKey, userInfo: { sessionId } }
+      if (config.storageAvailability.local) storageUtils.storage.setItem('sessionId', sessionId)
+      await openLoginHandler.createSession(sessionData)
     }
 
     // TODO: deprecate rehydrate false for the next major version bump
@@ -389,7 +403,7 @@ export default {
       await commit('setCustomCurrency', state.selectedCurrency)
     }
 
-    const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace, payload.reinitialize || false)
+    const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
     const { sessionId, state: openloginState } = openloginInstance
     if (!sessionId) {
       dispatch('logOut')
@@ -455,10 +469,13 @@ export default {
       if (error) {
         throw new Error(error)
       }
-      // TODO: Sync sessionId into iframe
       if (config.storageAvailability[storageUtils.storageType]) {
-        if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType, reinitialize: true })
-        else await dispatch('setProviderType', { network: state.networkType, type: RPC, reinitialize: true })
+        // add sessionId to local storage.
+        if (config.storageAvailability.local) storageUtils.storage.setItem('sessionId', sessionId)
+        // reinitializing openlogin instance with new session id after login is complete.
+        await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace, true)
+        if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType })
+        else await dispatch('setProviderType', { network: state.networkType, type: RPC })
       }
 
       // Get all open login results

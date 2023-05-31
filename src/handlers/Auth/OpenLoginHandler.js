@@ -29,13 +29,17 @@ class OpenLoginHandler {
   static openLoginHandlerInstance = null
 
   static async getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '', reinitialize = false) {
-    if (OpenLoginHandler.openLoginHandlerInstance && !reinitialize) {
+    if (OpenLoginHandler.openLoginHandlerInstance) {
       if (Object.keys(whiteLabel).length > 0) {
         const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
         OpenLoginHandler.openLoginHandlerInstance.whiteLabel = whiteLabelOpenLogin
       }
       if (Object.keys(loginConfig).length > 0) {
         OpenLoginHandler.openLoginHandlerInstance.loginConfig = loginConfig
+      }
+
+      if (reinitialize) {
+        await OpenLoginHandler.openLoginHandlerInstance.init()
       }
 
       return OpenLoginHandler.openLoginHandlerInstance
@@ -79,6 +83,10 @@ class OpenLoginHandler {
     return this.openLoginInstance.state || {}
   }
 
+  set state(value) {
+    this.openLoginInstance.state = { ...this.state, ...value }
+  }
+
   get accounts() {
     return this.openLoginInstance.state.accounts || null
   }
@@ -107,6 +115,20 @@ class OpenLoginHandler {
       }
     } catch (error) {
       log.warn(error)
+    }
+  }
+
+  async createSession(sessionId, data) {
+    if (!sessionId) throw new Error('Session Id is required')
+    try {
+      const sessionManager = new OpenloginSessionManager({
+        sessionId,
+        sessionNamespace: this.sessionNamespace,
+      })
+
+      await sessionManager.createSession(data)
+    } catch (error) {
+      log.error(error)
     }
   }
 
