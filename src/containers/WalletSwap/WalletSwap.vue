@@ -235,7 +235,7 @@ export default {
         const swapRoute = await router.route(
           ...swapParams,
           {
-            type: SwapType.UNIVERSAL_ROUTER,
+            type: SwapType.SWAP_ROUTER_02,
             recipient: this.selectedAddress,
             slippageTolerance: new Percent(5, 100),
             deadline: Math.floor(Date.now() / 1000 + 1800),
