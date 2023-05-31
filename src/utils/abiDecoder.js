@@ -1,6 +1,6 @@
 import BN from 'bn.js'
-import { id } from 'ethers'
 import Web3 from 'web3'
+import { sha3 } from 'web3-utils'
 
 const web3 = new Web3()
 
@@ -22,7 +22,7 @@ class AbiDecoder {
       // Iterate new abi to generate method id's
       abiArray.map((abi) => {
         if (abi.name) {
-          const signature = id(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
+          const signature = sha3(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
           if (abi.type === 'event') {
             this.state.methodIDs[signature.slice(2)] = abi
           } else {
@@ -43,7 +43,7 @@ class AbiDecoder {
       // Iterate new abi to generate method id's
       abiArray.map((abi) => {
         if (abi.name) {
-          const signature = id(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
+          const signature = sha3(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
           if (abi.type === 'event') {
             if (this.state.methodIDs[signature.slice(2)]) {
               delete this.state.methodIDs[signature.slice(2)]

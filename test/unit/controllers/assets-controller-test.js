@@ -2,7 +2,6 @@
 import assert from 'assert'
 import nock from 'nock'
 import { createSandbox } from 'sinon'
-import { getAddress } from 'ethers'
 
 import config from '../../../src/config'
 import * as utils from '../../../src/utils/utils'
@@ -10,6 +9,7 @@ import AssetsContractController from '../../../src/controllers/AssetsContractCon
 import AssetsController from '../../../src/controllers/AssetsController'
 import NetworkController from '../../../src/controllers/network/NetworkController'
 import PreferencesController from '../../../src/controllers/PreferencesController'
+import { toChecksumAddress } from '@ethereumjs/util'
 
 const noop = () => {}
 const KUDOSADDRESS = '0x2aea4add166ebf38b63d09a75de1a7b94aa24163'
@@ -584,7 +584,7 @@ describe('AssetsController', () => {
     stubbedCollectibleInfo.restore()
     stubbedContractInfo.restore()
     await assetsController.addCollectibles([{ contractAddress: `${KUDOSADDRESS}`, tokenID: '1203' }])
-    const checkSummedAddress = getAddress(`${KUDOSADDRESS}`)
+    const checkSummedAddress = toChecksumAddress(`${KUDOSADDRESS}`)
     assert.deepStrictEqual(assetsController.state.collectibles, [
       {
         address: checkSummedAddress,

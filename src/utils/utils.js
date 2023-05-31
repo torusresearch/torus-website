@@ -1,10 +1,18 @@
-import { addHexPrefix, ecsign, isHexString, privateToAddress, pubToAddress, stripHexPrefix } from '@ethereumjs/util'
+import {
+  addHexPrefix,
+  ecsign,
+  isHexString,
+  isValidAddress,
+  privateToAddress,
+  pubToAddress,
+  stripHexPrefix,
+  toChecksumAddress,
+} from '@ethereumjs/util'
 import { concatSig } from '@metamask/eth-sig-util'
 import { keccak256 } from '@toruslabs/metadata-helpers'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import BN from 'bn.js'
-import { getAddress, isAddress } from 'ethers'
 import log from 'loglevel'
 
 import config from '../config'
@@ -351,7 +359,7 @@ export function validateVerifierId(selectedTypeOfLogin, value, chainId) {
     if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
       return isAddressByChainId(value, chainId) || 'walletSettings.invalidEth'
     }
-    return isAddress(value) || 'walletSettings.invalidEth'
+    return isValidAddress(value) || 'walletSettings.invalidEth'
   }
   if (selectedTypeOfLogin === GOOGLE) {
     return (
@@ -863,7 +871,7 @@ export function generateAddressFromPubKey(point) {
 }
 
 export function generateAddressFromPrivateKey(privKey) {
-  return getAddress(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex'))
+  return toChecksumAddress(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex'))
 }
 
 export function rskToChecksumAddress(address, chainId) {
@@ -875,7 +883,7 @@ export function rskToChecksumAddress(address, chainId) {
 }
 
 export function rskIsValidChecksumAddress(address, chainId) {
-  return isAddress(address) && rskToChecksumAddress(address, chainId) === address
+  return isValidAddress(address) && rskToChecksumAddress(address, chainId) === address
 }
 
 export function toChecksumAddressByChainId(address, chainId) {
@@ -884,7 +892,7 @@ export function toChecksumAddressByChainId(address, chainId) {
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskToChecksumAddress(address, chainId)
   }
-  return getAddress(address)
+  return toChecksumAddress(address)
 }
 
 export function isAddressByChainId(address, chainId) {
@@ -892,7 +900,7 @@ export function isAddressByChainId(address, chainId) {
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskIsValidChecksumAddress(address, chainId)
   }
-  return isAddress(address)
+  return isValidAddress(address)
 }
 
 export function downloadItem(filename, text) {

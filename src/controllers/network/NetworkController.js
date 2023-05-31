@@ -1,3 +1,4 @@
+import { isHexString } from '@ethereumjs/util'
 import {
   createBlockRefRewriteMiddleware,
   createBlockTrackerInspectorMiddleware,
@@ -11,7 +12,6 @@ import assert from 'assert'
 import { PollingBlockTracker } from 'eth-block-tracker'
 import EthQuery from 'eth-query'
 import { ethErrors } from 'eth-rpc-errors'
-import { isHexString } from 'ethers'
 import EventEmitter from 'events'
 import log from 'loglevel'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'

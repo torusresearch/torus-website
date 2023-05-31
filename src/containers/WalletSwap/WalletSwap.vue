@@ -112,7 +112,7 @@ import TokenList from '@uniswap/default-token-list'
 import { Percent, Token, TradeType } from '@uniswap/sdk-core'
 import { CurrencyAmount, nativeOnChain } from '@uniswap/smart-order-router'
 import BigNum from 'bignumber.js'
-import { BrowserProvider } from 'ethers'
+import { providers } from 'ethers'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
@@ -229,7 +229,7 @@ export default {
           swapParams = [fromCurrencyAmount, toTokenInstance, TradeType.EXACT_INPUT]
         }
 
-        const router = new AlphaRouter({ chainId: this.chainId, provider: new BrowserProvider(torus.torusController.provider) })
+        const router = new AlphaRouter({ chainId: this.chainId, provider: new providers.Web3Provider(torus.torusController.provider) })
         const swapRoute = await router.route(
           ...swapParams,
           {
