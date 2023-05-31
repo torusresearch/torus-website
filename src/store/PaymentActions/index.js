@@ -112,7 +112,7 @@ export default {
           // moonpay
           const currentOrder = {
             currency: { code: selectedParameters.selectedCryptoCurrency.toLowerCase() || '' },
-            baseCurrencyAmount: selectedParameters.fiatValue || '',
+            totalAmount: selectedParameters.fiatValue || '',
             baseCurrency: { code: selectedParameters.selectedCurrency || '' },
           }
 

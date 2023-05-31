@@ -4,7 +4,7 @@ import { keccak256 } from '@toruslabs/metadata-helpers'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import BN from 'bn.js'
-import { getAddress, isAddress, keccak256 as ethersKeccak256, toUtf8Bytes } from 'ethers'
+import { getAddress, isAddress } from 'ethers'
 import log from 'loglevel'
 
 import config from '../config'
@@ -1224,5 +1224,3 @@ export const getV3Filename = (address) => {
   const ts = new Date()
   return ['UTC--', ts.toJSON().replace(/:/g, '-'), '--', address.toString('hex')].join('')
 }
-
-export const sha3 = (value) => ethersKeccak256(toUtf8Bytes(value))

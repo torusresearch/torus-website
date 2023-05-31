@@ -4,8 +4,8 @@ import {
   createBlockTrackerInspectorMiddleware,
   createFetchMiddleware,
   createInflightCacheMiddleware,
-  providerFromMiddleware,
 } from '@metamask/eth-json-rpc-middleware'
+import { providerFromMiddleware } from '@metamask/eth-json-rpc-provider'
 import { mergeMiddleware } from '@toruslabs/openlogin-jrpc'
 import { PollingBlockTracker } from 'eth-block-tracker'
 

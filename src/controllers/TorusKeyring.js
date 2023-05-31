@@ -24,7 +24,7 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   generatePrivKey(wallet) {
-    return wallet.privateKey
+    return stripHexPrefix(wallet.privateKey)
   }
 
   getBufferPrivateKey(privateKey) {
@@ -57,13 +57,13 @@ export default class TorusKeyring extends EventEmitter {
       newWallets.push(Wallet.createRandom())
     }
     this.wallets = [...this.wallets, ...newWallets]
-    const hexWallets = newWallets.map((w) => bufferToHex(w.getAddress()))
+    const hexWallets = newWallets.map((w) => bufferToHex(w.address))
     return hexWallets
   }
 
   // Not using
   async getAccounts() {
-    return this.wallets.map((w) => bufferToHex(w.getAddress()))
+    return this.wallets.map((w) => bufferToHex(w.address))
   }
 
   // tx is an instance of the ethereumjs-transaction class.
@@ -92,7 +92,7 @@ export default class TorusKeyring extends EventEmitter {
   // For personal_sign, we need to prefix the message:
   async signPersonalMessage(address, messageHex) {
     const wallet = this._getWalletForAccount(address)
-    const privKey = stripHexPrefix(wallet.getPrivateKeyString())
+    const privKey = stripHexPrefix(wallet.privateKey)
     const privKeyBuffer = Buffer.from(privKey, 'hex')
     const sig = personalSign({ privateKey: privKeyBuffer, data: messageHex })
     return sig
@@ -114,22 +114,26 @@ export default class TorusKeyring extends EventEmitter {
 
   // not using
   removeAccount(address) {
-    if (!this.wallets.map((w) => w.getAddressString().toLowerCase()).includes(address.toLowerCase())) {
+    if (!this.wallets.map((w) => w.address.toLowerCase()).includes(address.toLowerCase())) {
       throw new Error(`Address ${address} not found in this keyring`)
     }
-    this.wallets = this.wallets.filter((w) => w.getAddressString().toLowerCase() !== address.toLowerCase())
+    this.wallets = this.wallets.filter((w) => w.address.toLowerCase() !== address.toLowerCase())
   }
 
   signEncryptionPublicKey(address) {
     const wallet = this._getWalletForAccount(address)
     const privKey = wallet.privateKey
-    return getEncryptionPublicKey(privKey)
+    const stripped = stripHexPrefix(privKey)
+    const buffer = Buffer.from(stripped, 'hex')
+    return getEncryptionPublicKey(buffer)
   }
 
   decryptMessage(data, address) {
     const wallet = this._getWalletForAccount(address)
     const privKey = wallet.privateKey
-    return decrypt({ encryptedData: data, privateKey: privKey })
+    const stripped = stripHexPrefix(privKey)
+    const buffer = Buffer.from(stripped, 'hex')
+    return decrypt({ encryptedData: data, privateKey: buffer })
   }
 
   /* PRIVATE METHODS */

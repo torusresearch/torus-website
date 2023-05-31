@@ -5,7 +5,7 @@ import { addHexPrefix, bufferToHex, isHexString, stripHexPrefix } from '@ethereu
 import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import { ethErrors } from 'eth-rpc-errors'
-import { formatEther, getBigInt } from 'ethers'
+import { formatEther, getBigInt, keccak256 } from 'ethers'
 import EthQuery from 'ethjs-query'
 import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
@@ -42,7 +42,6 @@ import {
   getEtherScanHashLink,
   hexToBn,
   isAddressByChainId,
-  sha3,
   toChecksumAddressByChainId,
 } from '../../utils/utils'
 import NonceTracker from '../NonceTracker'
@@ -771,7 +770,7 @@ class TransactionController extends SafeEventEmitter {
       txHash = await this.query.sendRawTransaction(rawTx)
     } catch (error) {
       if (error.message.toLowerCase().includes('known transaction')) {
-        txHash = sha3(addHexPrefix(rawTx)).toString('hex')
+        txHash = keccak256(addHexPrefix(rawTx)).toString('hex')
         txHash = addHexPrefix(txHash)
       } else {
         throw error

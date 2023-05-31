@@ -1,9 +1,8 @@
 import BN from 'bn.js'
-import { AbiCoder } from 'ethers'
+import { id } from 'ethers'
+import Web3 from 'web3'
 
-import { sha3 } from './utils'
-
-const abiCoder = AbiCoder.defaultAbiCoder()
+const web3 = new Web3()
 
 class AbiDecoder {
   constructor(abi) {
@@ -23,7 +22,7 @@ class AbiDecoder {
       // Iterate new abi to generate method id's
       abiArray.map((abi) => {
         if (abi.name) {
-          const signature = sha3(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
+          const signature = id(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
           if (abi.type === 'event') {
             this.state.methodIDs[signature.slice(2)] = abi
           } else {
@@ -44,7 +43,7 @@ class AbiDecoder {
       // Iterate new abi to generate method id's
       abiArray.map((abi) => {
         if (abi.name) {
-          const signature = sha3(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
+          const signature = id(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
           if (abi.type === 'event') {
             if (this.state.methodIDs[signature.slice(2)]) {
               delete this.state.methodIDs[signature.slice(2)]
@@ -69,7 +68,8 @@ class AbiDecoder {
     const abiItem = this.state.methodIDs[methodID]
     if (abiItem) {
       const parameters = abiItem.inputs.map((item) => item.type)
-      const decoded = abiCoder.decode(parameters, data.slice(10))
+      // TODO: migrate to ethers
+      const decoded = web3.eth.abi.decodeParameters(parameters, data.slice(10))
 
       const returnValueData = {
         name: abiItem.name,
@@ -136,7 +136,8 @@ class AbiDecoder {
             return undefined
           })
 
-          const decodedData = abiCoder.decode(dataTypes, logData.slice(2))
+          // TODO: migrate to ethers
+          const decodedData = web3.eth.abi.decodeParameters(dataTypes, logData.slice(2))
 
           // Loop topic and data to get the params
           method.inputs.map((parameter) => {
