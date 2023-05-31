@@ -306,7 +306,7 @@ export default {
       }
       openLoginHandler.state = { walletKey: privateKey, userInfo: { sessionId } }
       if (config.storageAvailability.local) storageUtils.storage.setItem('sessionId', sessionId)
-      await openLoginHandler.createSession(sessionData)
+      await openLoginHandler.createSession(sessionId, sessionData)
     }
 
     // TODO: deprecate rehydrate false for the next major version bump
