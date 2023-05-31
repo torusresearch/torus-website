@@ -277,12 +277,12 @@ export default {
     )
 
     const openLoginHandler = await OpenLoginHandler.getInstance(state.whiteLabel, {}, config.sessionNamespace)
-    const activeSession = await openLoginHandler.getActiveSession()
-    if (activeSession && activeSession.walletKey === privateKey) {
-      const _store = activeSession?.store || {}
+    const { sessionId, state: openloginState } = openLoginHandler
+    if (sessionId && openloginState.walletKey === privateKey) {
+      const _store = openloginState?.userInfo || {}
       const sessionData = {
-        ...activeSession,
-        store: {
+        ...openloginState,
+        userInfo: {
           ..._store,
           whiteLabel: state.whiteLabel,
           appState,
@@ -311,14 +311,14 @@ export default {
     })
     dispatch('updateSelectedAddress', { selectedAddress: address })
     const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
-    const existingSessionData = await openloginInstance.getActiveSession()
-    if (!existingSessionData) {
+    const { sessionId, state: openloginState } = openloginInstance
+    if (!sessionId) {
       dispatch('logOut')
       return ''
     }
-    const { accounts: oldAccounts = {} } = existingSessionData
+    const { accounts: oldAccounts = {} } = openloginState
     const sessionData = {
-      ...existingSessionData,
+      ...openloginState,
       accounts: {
         ...oldAccounts,
         [address]: {
@@ -386,14 +386,14 @@ export default {
       await commit('setCustomCurrency', state.selectedCurrency)
     }
 
-    const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
-    const existingSessionData = await openloginInstance.getActiveSession()
-    if (!existingSessionData) {
+    const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace, payload.reinitialize || false)
+    const { sessionId, state: openloginState } = openloginInstance
+    if (!sessionId) {
       dispatch('logOut')
       return undefined
     }
     const sessionData = {
-      ...existingSessionData,
+      ...openloginState,
       networkType,
     }
     await openloginInstance.updateSession(sessionData)
@@ -453,8 +453,8 @@ export default {
         throw new Error(error)
       }
       if (config.storageAvailability[storageUtils.storageType]) {
-        if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType })
-        else await dispatch('setProviderType', { network: state.networkType, type: RPC })
+        if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType, reinitialize: true })
+        else await dispatch('setProviderType', { network: state.networkType, type: RPC, reinitialize: true })
       }
 
       // Get all open login results

@@ -8,7 +8,7 @@ import {
   stripHexPrefix,
   toChecksumAddress,
 } from '@ethereumjs/util'
-import { concatSig } from '@metamask/eth-sig-util'
+import { concatSig, normalize } from '@metamask/eth-sig-util'
 import { keccak256 } from '@toruslabs/metadata-helpers'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
@@ -871,7 +871,7 @@ export function generateAddressFromPubKey(point) {
 }
 
 export function generateAddressFromPrivateKey(privKey) {
-  return toChecksumAddress(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex'))
+  return toChecksumAddress(normalize(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex')))
 }
 
 export function rskToChecksumAddress(address, chainId) {

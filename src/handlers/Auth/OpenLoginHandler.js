@@ -28,8 +28,8 @@ const getOpenloginWhitelabel = (whiteLabel = {}) => {
 class OpenLoginHandler {
   static openLoginHandlerInstance = null
 
-  static async getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
-    if (OpenLoginHandler.openLoginHandlerInstance) {
+  static async getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '', reinitialize = false) {
+    if (OpenLoginHandler.openLoginHandlerInstance && !reinitialize) {
       if (Object.keys(whiteLabel).length > 0) {
         const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
         OpenLoginHandler.openLoginHandlerInstance.whiteLabel = whiteLabelOpenLogin
@@ -67,7 +67,6 @@ class OpenLoginHandler {
       loginConfig,
       network: config.torusNetwork,
       sdkUrl: 'https://testing.openlogin.com',
-      no3PC: true,
       sessionNamespace: sessionNamespace || customNamespace,
       storageKey: storageUtils.storageType,
     })
@@ -93,28 +92,6 @@ class OpenLoginHandler {
     this.openLoginInstance.options.loginConfig = value
   }
 
-  async getActiveSession() {
-    try {
-      if (this.sessionId) {
-        const sessionManager = new OpenloginSessionManager({
-          sessionNamespace: this.sessionNamespace,
-          sessionId: this.sessionId,
-        })
-
-        const data = await sessionManager.authorizeSession()
-        if (data.accounts) {
-          this.accounts = data.accounts
-        }
-        if (data.networkType) this.networkType = data.networkType
-        return data
-      }
-      return null
-    } catch (error) {
-      log.warn(error)
-      return null
-    }
-  }
-
   async updateSession(sessionData) {
     try {
       if (this.sessionId) {
@@ -128,7 +105,7 @@ class OpenLoginHandler {
           sessionNamespace: this.sessionNamespace,
         })
 
-        sessionManager.updateSession(sessionData)
+        await sessionManager.updateSession(sessionData)
       }
     } catch (error) {
       log.warn(error)

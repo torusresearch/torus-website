@@ -63,6 +63,7 @@ export default {
       channelId: '',
       accounts: {},
       isCustomVerifier: false,
+      whiteLabel: {},
     }
   },
   async created() {
