@@ -39,7 +39,7 @@ class OpenLoginHandler {
       }
 
       if (reinitialize) {
-        await OpenLoginHandler.openLoginHandlerInstance.init()
+        await OpenLoginHandler.openLoginHandlerInstance.openLoginInstance.init()
       }
 
       return OpenLoginHandler.openLoginHandlerInstance

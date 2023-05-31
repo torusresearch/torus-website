@@ -1,6 +1,6 @@
 import { isHexString, privateToAddress } from '@ethereumjs/util'
 import { OpenloginSessionManager } from '@toruslabs/openlogin-session-manager'
-import { safeatob, safebtoa } from '@toruslabs/openlogin-utils'
+import { BrowserStorage, safeatob, safebtoa } from '@toruslabs/openlogin-utils'
 import deepmerge from 'deepmerge'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
@@ -305,7 +305,10 @@ export default {
         },
       }
       openLoginHandler.state = { walletKey: privateKey, userInfo: { sessionId } }
-      if (config.storageAvailability.local) storageUtils.storage.setItem('sessionId', sessionId)
+      if (config.storageAvailability.local) {
+        const storage = BrowserStorage.getInstance(storageUtils.openloginStoreKey, storageUtils.storageType)
+        storage.set('sessionId', sessionId)
+      }
       await openLoginHandler.createSession(sessionId, sessionData)
     }
 
@@ -471,7 +474,10 @@ export default {
       }
       if (config.storageAvailability[storageUtils.storageType]) {
         // add sessionId to local storage.
-        if (config.storageAvailability.local) storageUtils.storage.setItem('sessionId', sessionId)
+        if (config.storageAvailability.local) {
+          const storage = BrowserStorage.getInstance(storageUtils.openloginStoreKey, storageUtils.storageType)
+          storage.set('sessionId', sessionId)
+        }
         // reinitializing openlogin instance with new session id after login is complete.
         await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace, true)
         if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType })
