@@ -1,4 +1,3 @@
-import { safeatob } from '@toruslabs/openlogin-utils'
 import { Percent } from '@uniswap/sdk-core'
 
 import { CRYPTO_COMPARE_CURRENCIES } from './supportedCurrencies'
@@ -140,32 +139,7 @@ const { hash, search } = window.location
 const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search.slice(1)}`)
 
 const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
-const state = finalUrl.searchParams.get('state')
-const namespace = finalUrl.searchParams.get('sessionNamespace')
-// const result = finalUrl.searchParams.get('result')
-
-// by default value should be false as user can open
-// torus wallet directly also and they dont start journey
-// from /start or /end url which is the case for custom dapps login.
-let isCustomDapp = window.self !== window.top
-
-// state is present in the /start url.
-if (state) {
-  const decodedState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(state))))
-  // this means that it's from another domain
-  isCustomDapp = decodedState.origin.hostname !== window.location.hostname
-}
-
-// result is present in the /end url.
-// This will not be present in the new versions of openlogin.
-// TODO: how to fix this?
-// if (result) {
-//   const decodedResultParams = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(result))))
-//   if (decodedResultParams && decodedResultParams.store && decodedResultParams.store.appState) {
-//     const decodedAppParams = JSON.parse(safeatob(decodedResultParams.store.appState))
-//     isCustomDapp = decodedAppParams.origin.hostname !== window.location.hostname
-//   }
-// }
+const sessionNamespace = finalUrl.searchParams.get('sessionNamespace')
 
 // no reddit for binance.tor.us
 
@@ -183,7 +157,6 @@ export default {
   torusNetwork: VUE_APP_PROXY_NETWORK || 'mainnet',
   openLoginOriginSig: VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
   developerDashboardUrl: VUE_APP_DEVELOPER_DASHBOARD_URL,
-  storageServerUrl: 'https://broadcast-server.tor.us',
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
 
@@ -191,8 +164,8 @@ export default {
     local: storageAvailable('localStorage'),
     session: storageAvailable('sessionStorage'),
   },
-  // we do the isCustomDapp check to differentiate b/w app.tor.us and older dapps without isCustomLogin flag
-  isCustomLogin: isCustomLogin === 'true' ? true : isCustomLogin === 'false' ? false : isCustomDapp ? null : false,
+  // we do the isCustomDapp check to differentiate b/w app.tor.us and dapps without isCustomLogin flag
+  isCustomLogin: isCustomLogin === 'true' || !!sessionNamespace,
 
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
@@ -534,7 +507,7 @@ export default {
     //   },
     // }),
   },
-  namespace,
+  sessionNamespace,
   loginsWithLightLogo: [APPLE, GITHUB, JWT],
   walletConnectProjectId: VUE_APP_WALLET_CONNECT_PROJECT_ID,
 }
