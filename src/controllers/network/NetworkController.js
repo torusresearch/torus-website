@@ -6,7 +6,6 @@ import {
   providerFromMiddleware,
 } from '@metamask/eth-json-rpc-middleware'
 import { providerFromEngine } from '@metamask/eth-json-rpc-provider'
-import { ComposedStore, ObservableStore } from '@metamask/obs-store'
 import { JRPCEngine, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
 import assert from 'assert'
 import { PollingBlockTracker } from 'eth-block-tracker'
@@ -17,6 +16,8 @@ import log from 'loglevel'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 
 import { ETH, INFURA_PROVIDER_TYPES, LOCALHOST, MAINNET, MAINNET_CHAIN_ID, MESSAGE_TYPE, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
+import { ComposedStore } from '../utils/ComposedStore'
+import { ObservableStore } from '../utils/ObservableStore'
 // import { areProviderConfigsEqual } from '../../utils/utils'
 import { createInfuraClient } from './createInfuraClient'
 import { createJsonRpcClient } from './createJsonRpcClient'

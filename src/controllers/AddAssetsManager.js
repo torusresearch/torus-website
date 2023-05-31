@@ -1,4 +1,3 @@
-import { ObservableStore } from '@metamask/obs-store'
 import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'
 import log from 'loglevel'
@@ -8,6 +7,7 @@ import NftHandler from '../handlers/Token/NftHandler'
 import TokenHandler from '../handlers/Token/TokenHandler'
 import { CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MESSAGE_TYPE } from '../utils/enums'
 import { getEtherScanAddressLink, validateContractAddress } from '../utils/utils'
+import { ObservableStore } from './utils/ObservableStore'
 
 export default class WatchAssetManager extends EventEmitter {
   /**

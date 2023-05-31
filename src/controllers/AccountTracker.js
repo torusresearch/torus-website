@@ -7,7 +7,6 @@
  * on each new block.
  */
 
-import { ObservableStore } from '@metamask/obs-store'
 import EthQuery from 'eth-query'
 import log from 'loglevel'
 import pify from 'pify'
@@ -36,6 +35,7 @@ import {
   // SEPOLIA_CHAIN_ID,
   ZERO_ADDRESS,
 } from '../utils/enums'
+import { ObservableStore } from './utils/ObservableStore'
 
 export default class AccountTracker {
   /**

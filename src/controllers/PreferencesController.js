@@ -1,5 +1,4 @@
 import { hashPersonalMessage } from '@ethereumjs/util'
-import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import deepmerge from 'deepmerge'
 import EthQuery from 'eth-query'
@@ -27,6 +26,7 @@ import {
 import { notifyUser } from '../utils/notifications'
 import { setSentryEnabled } from '../utils/sentry'
 import { formatDate, formatPastTx, formatTime, getEthTxStatus, getIFrameOrigin, getUserLanguage, isMain, waitForMs } from '../utils/utils'
+import { ObservableStore } from './utils/ObservableStore'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
 // By default, poll every 3 minutes

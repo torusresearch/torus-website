@@ -1,5 +1,4 @@
 /* eslint-disable default-param-last */
-import { ObservableStore } from '@metamask/obs-store'
 import BigNumber from 'bignumber.js'
 import { isEqual } from 'lodash'
 import log from 'loglevel'
@@ -11,6 +10,7 @@ import TokenHandler from '../handlers/Token/TokenHandler'
 import contracts, { GNOSIS_CONTRACTS } from '../utils/contractMetadata'
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, SUPPORTED_NETWORK_TYPES, XDAI } from '../utils/enums'
 import { idleTimeTracker, toChecksumAddressByChainId } from '../utils/utils'
+import { ObservableStore } from './utils/ObservableStore'
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
 

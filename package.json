@@ -36,7 +36,6 @@
     "@gtm-support/vue2-gtm": "^2.0.0",
     "@metamask/contract-metadata": "^2.3.1",
     "@metamask/eth-sig-util": "^5.1.0",
-    "@metamask/obs-store": "^8.1.0",
     "@sentry/browser": "^7.53.1",
     "@sentry/tracing": "^7.53.1",
     "@sentry/vue": "^7.53.1",

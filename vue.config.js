@@ -69,14 +69,22 @@ module.exports = {
     )
     config.resolve.fallback = {
       ...(config.resolve.fallback || {}),
-      http: require.resolve('stream-http'),
-      https: require.resolve('https-browserify'),
-      os: require.resolve('os-browserify/browser'),
-      crypto: require.resolve('crypto-browserify'),
-      assert: require.resolve('assert/'),
-      stream: require.resolve('stream-browserify'),
-      url: require.resolve('url/'),
-      zlib: require.resolve('browserify-zlib'),
+      // http: require.resolve('stream-http'),
+      http: false,
+      // https: require.resolve('https-browserify'),
+      https: false,
+      // os: require.resolve('os-browserify/browser'),
+      os: false,
+      // crypto: require.resolve('crypto-browserify'),
+      crypto: false,
+      // assert: require.resolve('assert/'),
+      assert: false,
+      // stream: require.resolve('stream-browserify'),
+      stream: false,
+      // url: require.resolve('url/'),
+      url: false,
+      // zlib: require.resolve('browserify-zlib'),
+      zlib: false,
     }
   },
 
@@ -125,7 +133,7 @@ module.exports = {
       ],
     },
   },
-  parallel: !process.env.CIRCLECI,
+  parallel: !process.env.CI,
   pluginOptions: {
     webpackBundleAnalyzer: {
       openAnalyzer: false,
