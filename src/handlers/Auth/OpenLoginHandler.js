@@ -45,10 +45,6 @@ class OpenLoginHandler {
     return OpenLoginHandler.openLoginHandlerInstance
   }
 
-  accounts = null
-
-  networkType = null
-
   // This constructor is private. Don't call it
   constructor(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
     const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
@@ -84,6 +80,14 @@ class OpenLoginHandler {
     return this.openLoginInstance.state || {}
   }
 
+  get accounts() {
+    return this.openLoginInstance.state.accounts || null
+  }
+
+  get networkType() {
+    return this.openLoginInstance.state.networkType || null
+  }
+
   set whiteLabel(value) {
     this.openLoginInstance.options.whiteLabel = value
   }
@@ -95,11 +99,6 @@ class OpenLoginHandler {
   async updateSession(sessionData) {
     try {
       if (this.sessionId) {
-        if (sessionData.accounts) {
-          // saving this data locally as well and not in openlogin store.
-          this.accounts = sessionData.accounts
-        }
-        if (sessionData.networkType) sessionData.networkType = this.networkType
         const sessionManager = new OpenloginSessionManager({
           sessionId: this.sessionId,
           sessionNamespace: this.sessionNamespace,
