@@ -8,7 +8,7 @@
  */
 
 import EthQuery from 'eth-query'
-import { ethers } from 'ethers'
+import { Contract, providers } from 'ethers'
 import log from 'loglevel'
 import pify from 'pify'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
@@ -75,7 +75,7 @@ export default class AccountTracker {
     this._updateForBlock = this._updateForBlock.bind(this)
 
     this.getCurrentChainId = options.getCurrentChainId
-    this.getCurrentNetworkUrl = options.getCurrentNetworkUrl
+    this.ethersProvider = new providers.Web3Provider(this._provider)
   }
 
   start() {
@@ -251,9 +251,7 @@ export default class AccountTracker {
    * @param {*} deployedContractAddress
    */
   async _updateAccountsViaBalanceChecker(addresses, deployedContractAddress) {
-    const networkUrl = this.getCurrentNetworkUrl()
-    const provider = new ethers.providers.JsonRpcProvider(networkUrl)
-    const ethContract = new ethers.Contract(deployedContractAddress, SINGLE_CALL_BALANCES_ABI, provider)
+    const ethContract = new Contract(deployedContractAddress, SINGLE_CALL_BALANCES_ABI, this.ethersProvider)
     try {
       const result = await ethContract.balances(addresses, [ZERO_ADDRESS])
       const { accounts } = this.store.getState()

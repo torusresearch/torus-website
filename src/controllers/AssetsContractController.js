@@ -4,7 +4,7 @@
  * Controller that interacts with contracts on mainnet through web3
  * @author Shubham, Chaitanya
  */
-import { ethers } from 'ethers'
+import { Contract, providers } from 'ethers'
 import abiERC721 from 'human-standard-collectible-abi'
 import abiERC20 from 'human-standard-token-abi'
 import { ERC1155 as erc1155abi, ERC1155Metadata as erc1155MetadataAbi } from 'multi-token-standard-abi'
@@ -30,8 +30,7 @@ export default class AssetContractController {
    * @param {Object} opts Initialize various properties of the class.
    */
   constructor(options) {
-    this.network = options.network
-    this.provider = new ethers.providers.JsonRpcProvider(this.network.getCurrentNetworkUrl())
+    this.provider = new providers.Web3Provider(options.provider)
     this.name = 'AssetsContractController'
   }
 
@@ -44,7 +43,7 @@ export default class AssetContractController {
    * @returns - Promise resolving to whether the contract implements `interfaceID`
    */
   contractSupportsInterface(address, interfaceId) {
-    const contract = new ethers.Contract(address, abiERC721, this.provider)
+    const contract = new Contract(address, abiERC721, this.provider)
     return contract.supportsInterface(interfaceId)
   }
 
@@ -101,12 +100,12 @@ export default class AssetContractController {
    * @returns - Promise resolving to BN object containing balance for current account on specific asset contract
    */
   getBalanceOf(address, selectedAddress) {
-    const contract = new ethers.Contract(address, abiERC20, this.provider)
+    const contract = new Contract(address, abiERC20, this.provider)
     return contract.balanceOf(selectedAddress)
   }
 
   getErc1155Balance(contractAddress, ownerAddress, tokenId) {
-    const contract = new ethers.Contract(contractAddress, erc1155abi.abi, this.provider)
+    const contract = new Contract(contractAddress, erc1155abi.abi, this.provider)
     return contract.balanceOf(ownerAddress, tokenId)
   }
 
@@ -119,7 +118,7 @@ export default class AssetContractController {
    * @returns - Promise resolving to token identifier for the 'index'th asset assigned to 'selectedAddress'
    */
   getCollectibleTokenId(address, selectedAddress, index) {
-    const contract = new ethers.Contract(address, abiERC721, this.provider)
+    const contract = new Contract(address, abiERC721, this.provider)
     return contract.tokenOfOwnerByIndex(selectedAddress, index)
   }
 
@@ -133,7 +132,7 @@ export default class AssetContractController {
   getCollectibleTokenURI(address, tokenId, standard = CONTRACT_TYPE_ERC721) {
     const { abi, method } =
       standard === CONTRACT_TYPE_ERC721 ? { abi: abiERC721, method: 'tokenURI' } : { abi: erc1155MetadataAbi.abi, method: 'uri' }
-    const contract = new ethers.Contract(address, abi, this.provider)
+    const contract = new Contract(address, abi, this.provider)
     return contract[method](tokenId)
   }
 
@@ -144,7 +143,7 @@ export default class AssetContractController {
    * @returns - Promise resolving to the 'decimals'
    */
   getTokenDecimals(address) {
-    const contract = new ethers.Contract(address, abiERC20, this.provider)
+    const contract = new Contract(address, abiERC20, this.provider)
     return contract.decimals()
   }
 
@@ -155,7 +154,7 @@ export default class AssetContractController {
    * @returns - Promise resolving to the 'name'
    */
   getAssetName(address) {
-    const contract = new ethers.Contract(address, abiERC721, this.provider)
+    const contract = new Contract(address, abiERC721, this.provider)
     return contract.name()
   }
 
@@ -166,7 +165,7 @@ export default class AssetContractController {
    * @returns - Promise resolving to the 'symbol'
    */
   getAssetSymbol(address) {
-    const contract = new ethers.Contract(address, abiERC721, this.provider)
+    const contract = new Contract(address, abiERC721, this.provider)
     return contract.symbol()
   }
 
@@ -178,7 +177,7 @@ export default class AssetContractController {
    * @returns - Promise resolving to the owner address
    */
   getOwnerOf(address, tokenId) {
-    const contract = new ethers.Contract(address, abiERC721, this.provider)
+    const contract = new Contract(address, abiERC721, this.provider)
     return contract.methods.ownerOf(tokenId).call()
   }
 
@@ -188,7 +187,7 @@ export default class AssetContractController {
    * @returns - Promise resolving to array of non-zero balances
    */
   getBalancesInSingleCall(selectedAddress, tokensToDetect) {
-    const contract = new ethers.Contract(SINGLE_CALL_BALANCES_ADDRESS, abiSingleCallBalancesContract, this.provider)
+    const contract = new Contract(SINGLE_CALL_BALANCES_ADDRESS, abiSingleCallBalancesContract, this.provider)
     return new Promise((resolve, reject) => {
       contract
         .balances([selectedAddress], tokensToDetect)

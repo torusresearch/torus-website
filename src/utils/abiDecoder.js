@@ -1,6 +1,5 @@
 import BN from 'bn.js'
-import { ethers } from 'ethers'
-import { sha3 } from 'web3-utils'
+import { utils } from 'ethers'
 
 class AbiDecoder {
   constructor(abi) {
@@ -20,7 +19,7 @@ class AbiDecoder {
       // Iterate new abi to generate method id's
       abiArray.map((abi) => {
         if (abi.name) {
-          const signature = sha3(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
+          const signature = utils.keccak256(Buffer.from(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`, 'utf8'))
           if (abi.type === 'event') {
             this.state.methodIDs[signature.slice(2)] = abi
           } else {
@@ -41,7 +40,7 @@ class AbiDecoder {
       // Iterate new abi to generate method id's
       abiArray.map((abi) => {
         if (abi.name) {
-          const signature = sha3(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
+          const signature = utils.keccak256(Buffer.from(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`, 'utf8'))
           if (abi.type === 'event') {
             if (this.state.methodIDs[signature.slice(2)]) {
               delete this.state.methodIDs[signature.slice(2)]
@@ -66,7 +65,7 @@ class AbiDecoder {
     const abiItem = this.state.methodIDs[methodID]
     if (abiItem) {
       const parameters = abiItem.inputs.map((item) => item.type)
-      const decoded = ethers.utils.defaultAbiCoder.decode(parameters, data.slice(10))
+      const decoded = utils.defaultAbiCoder.decode(parameters, Buffer.from(data.slice(10), 'hex'))
 
       const returnValueData = {
         name: abiItem.name,
@@ -133,7 +132,7 @@ class AbiDecoder {
             return undefined
           })
 
-          const decodedData = ethers.utils.defaultAbiCoder.decode(dataTypes, logData.slice(2))
+          const decodedData = utils.defaultAbiCoder.decode(dataTypes, logData.slice(2))
 
           // Loop topic and data to get the params
           method.inputs.map((parameter) => {

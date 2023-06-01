@@ -3,7 +3,7 @@ import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import deepmerge from 'deepmerge'
 import EthQuery from 'eth-query'
 import { ethErrors } from 'eth-rpc-errors'
-import { ethers } from 'ethers'
+import { providers } from 'ethers'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import pify from 'pify'
@@ -771,8 +771,8 @@ class PreferencesController extends SafeEventEmitter {
     if (!name) ethErrors.rpc.invalidParams('params.nativeCurrency.name not provided')
     if (!symbol) ethErrors.rpc.invalidParams('params.nativeCurrency.symbol not provided')
     if (decimals === undefined) throw new Error('params.nativeCurrency.decimals not provided')
-    // TODO: not sure if BrowserProvider is the right provider to use here
-    const _web3 = new ethers.providers.JsonRpcProvider(rpcUrls[0])
+
+    const _web3 = new providers.JsonRpcProvider(rpcUrls[0])
     const { networkChainID } = await _web3.getNetwork()
     if (networkChainID !== Number.parseInt(chainId, 16)) {
       throw ethErrors.rpc.invalidParams(

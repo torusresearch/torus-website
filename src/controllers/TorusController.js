@@ -188,7 +188,7 @@ export default class TorusController extends SafeEventEmitter {
     })
 
     this.assetContractController = new AssetContractController({
-      network: this.networkController,
+      provider: this.provider,
     })
 
     // Asset controllers

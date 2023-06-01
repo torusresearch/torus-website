@@ -1,5 +1,5 @@
 import { ethErrors } from 'eth-rpc-errors'
-import { ethers } from 'ethers'
+import { providers } from 'ethers'
 import EventEmitter from 'events'
 import log from 'loglevel'
 
@@ -26,7 +26,7 @@ export default class WatchAssetManager extends EventEmitter {
 
     this.network = network
     this.prefsController = prefsController
-    this.ethersProvider = new ethers.providers.JsonRpcProvider(network.getCurrentNetworkUrl())
+    this.ethersProvider = new providers.Web3Provider(options.provider)
     this.store = new ObservableStore({
       unApprovedAssets: {},
       unApprovedAssetsCount: 0,

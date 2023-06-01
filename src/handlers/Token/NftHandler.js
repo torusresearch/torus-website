@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { Contract } from 'ethers'
 import abiERC721 from 'human-standard-collectible-abi'
 import { ERC1155 as erc1155abi, ERC1155Metadata as erc1155MetadataAbi } from 'multi-token-standard-abi'
 
@@ -141,7 +141,7 @@ class NftHandler {
    * @returns - Promise resolving to the 'name'
    */
   getAssetName() {
-    const contract = new ethers.Contract(this.address, abiERC721, this.provider)
+    const contract = new Contract(this.address, abiERC721, this.provider)
     return contract.name()
   }
 
@@ -179,7 +179,7 @@ class NftHandler {
     if (this.nftStandard && this.isSpecial !== undefined) {
       return { standard: this.nftStandard, isSpecial: false }
     }
-    this.contract = new ethers.Contract(this.address, abiERC721, this.provider)
+    this.contract = new Contract(this.address, abiERC721, this.provider)
     // For Cryptokitties
     if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.address.toLowerCase())) {
       this.nftStandard = CONTRACT_TYPE_ERC721
@@ -196,7 +196,7 @@ class NftHandler {
     if (isErc1155) {
       this.nftStandard = CONTRACT_TYPE_ERC1155
       this.isSpecial = false
-      this.contract = new ethers.Contract(this.address, abiErc1155, this.provider)
+      this.contract = new Contract(this.address, abiErc1155, this.provider)
       return { standard: CONTRACT_TYPE_ERC1155, isSpecial: false }
     }
 

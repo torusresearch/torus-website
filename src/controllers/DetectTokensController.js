@@ -1,6 +1,6 @@
 /* eslint-disable default-param-last */
 import BigNumber from 'bignumber.js'
-import { ethers } from 'ethers'
+import { Contract, providers } from 'ethers'
 import { isEqual } from 'lodash'
 import log from 'loglevel'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
@@ -58,11 +58,11 @@ class DetectTokensController {
    *
    * @param {Object} [config] - Options to configure controller
    */
-  constructor({ interval = DEFAULT_INTERVAL, network, preferencesStore } = {}) {
+  constructor({ interval = DEFAULT_INTERVAL, provider, network, preferencesStore } = {}) {
     this.interval = interval
     this.network = network
     this.detectedTokensStore = new ObservableStore({})
-    this.provider = new ethers.providers.JsonRpcProvider(this.network.getCurrentNetworkUrl())
+    this.provider = new providers.Web3Provider(provider)
     this.selectedAddress = ''
     this.preferencesStore = preferencesStore
     this.selectedCustomTokens = []
@@ -125,7 +125,7 @@ class DetectTokensController {
       }
 
       if (tokensToDetect.length > 0 && currentNetworkIdentifier === MAINNET) {
-        const ethContract = new ethers.Contract(SINGLE_CALL_BALANCES_ADDRESS, SINGLE_CALL_BALANCES_ABI, this.provider)
+        const ethContract = new Contract(SINGLE_CALL_BALANCES_ADDRESS, SINGLE_CALL_BALANCES_ABI, this.provider)
         const result = await ethContract.balances(
           [userAddress],
           tokensToDetect.map((x) => x.tokenAddress)
@@ -198,7 +198,7 @@ class DetectTokensController {
       const oldTokens = this.detectedTokensStore.getState()[userAddress] || []
       const tokenAddresses = oldTokens.map((x) => x.tokenAddress)
       if (tokenAddresses.length > 0) {
-        const ethContract = new ethers.Contract(SINGLE_CALL_BALANCES_ADDRESS, SINGLE_CALL_BALANCES_ABI, this.provider)
+        const ethContract = new Contract(SINGLE_CALL_BALANCES_ADDRESS, SINGLE_CALL_BALANCES_ABI, this.provider)
         const result = ethContract.balances([userAddress], tokenAddresses)
         const nonZeroTokens = []
         tokenAddresses.forEach((_, index) => {
