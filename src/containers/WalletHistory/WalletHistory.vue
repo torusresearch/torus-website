@@ -315,17 +315,19 @@ export default {
       const { from, gas, nonce } = transaction
       const { cancelGasPrice } = this
       const sendingWei = 0
-      return torus.web3.eth.sendTransaction({
-        from,
-        to: from,
-        value: `0x${sendingWei.toString(16)}`,
-        gas,
-        gasPrice: `0x${cancelGasPrice
-          .times(new BigNumber(10).pow(new BigNumber(9)))
-          .dp(0, BigNumber.ROUND_DOWN)
-          .toString(16)}`,
-        customNonceValue: nonce,
-      })
+      return torus.ethersProvider.send('eth_sendTransaction', [
+        {
+          from,
+          to: from,
+          value: `0x${sendingWei.toString(16)}`,
+          gas,
+          gasPrice: `0x${cancelGasPrice
+            .times(new BigNumber(10).pow(new BigNumber(9)))
+            .dp(0, BigNumber.ROUND_DOWN)
+            .toString(16)}`,
+          customNonceValue: nonce,
+        },
+      ])
     },
   },
 }

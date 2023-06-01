@@ -1423,17 +1423,10 @@ export default {
           customNonceValue,
         }
         log.info(this.gas.toString(), txParams)
-        torus.web3.eth.sendTransaction(txParams, (error, transactionHash) => {
-          if (error) {
-            const regEx = /user denied transaction signature/i
-            if (!error.message.match(regEx)) {
-              this.messageModalShow = true
-              this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-              this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
-            }
-            log.error(error)
-          } else {
+        torus.ethersProvider
+          .send('eth_sendTransaction', [txParams])
+          .then((txData) => {
+            const transactionHash = txData
             // Send email to the user
             this.sendEmail(transactionHash)
             this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
@@ -1442,8 +1435,17 @@ export default {
             this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
             this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
             this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
-          }
-        })
+          })
+          .catch((error) => {
+            const regEx = /user denied transaction signature/i
+            if (!error.message.match(regEx)) {
+              this.messageModalShow = true
+              this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+              this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+              this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
+            }
+            log.error(error)
+          })
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
         const value = `0x${this.amount
           .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
@@ -1460,7 +1462,7 @@ export default {
         torus.ethersProvider
           .send('eth_sendTransaction', [finalData])
           .then((txData) => {
-            const transactionHash = txData.hash
+            const transactionHash = txData
             // Send email to the user
             this.sendEmail(transactionHash)
             this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
@@ -1493,7 +1495,7 @@ export default {
         torus.ethersProvider
           .send('eth_sendTransaction', [finalData])
           .then((txData) => {
-            const transactionHash = txData.hash
+            const transactionHash = txData
             // Send email to the user
             this.sendEmail(transactionHash)
             this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
@@ -1526,7 +1528,7 @@ export default {
         torus.ethersProvider
           .send('eth_sendTransaction', [finalData])
           .then((txData) => {
-            const transactionHash = txData.hash
+            const transactionHash = txData
             // Send email to the user
             this.sendEmail(transactionHash)
             this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
