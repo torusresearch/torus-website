@@ -1122,8 +1122,8 @@ export default {
               .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
               .dp(0, BigNumber.ROUND_DOWN)
               .toString(16)}`
-            this.getTransferMethod(this.contractType, toAddress, value)
-              .estimateGas({ from: this.selectedAddress.toLowerCase() })
+            this.getTransferContract(this.contractType)
+              .estimateGas.transfer(toAddress.toLowerCase(), value, { from: this.selectedAddress.toLowerCase() })
               .then((response) => {
                 log.info(response, 'gas')
                 resolve(new BigNumber(response.toHexString() || '0'))
@@ -1132,9 +1132,22 @@ export default {
                 log.error(error)
                 resolve(new BigNumber('0'))
               })
+          } else if (
+            this.contractType === CONTRACT_TYPE_ERC721 &&
+            Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase())
+          ) {
+            this.getNftTransferContract(this.contractType)
+              .estimateGas.transfer(toAddress, this.assetSelected.tokenId, { from: this.selectedAddress.toLowerCase() })
+              .then((response) => {
+                resolve(new BigNumber(response.toHexString() || '0'))
+              })
+              .catch((error) => {
+                log.error(error)
+                resolve(new BigNumber('0'))
+              })
           } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-            this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId)
-              .estimateGas({ from: this.selectedAddress.toLowerCase() })
+            this.getNftTransferContract(this.contractType)
+              .estimateGas.safeTransferFrom(this.selectedAddress, toAddress, this.assetSelected.tokenId, { from: this.selectedAddress.toLowerCase() })
               .then((response) => {
                 resolve(new BigNumber(response.toHexString() || '0'))
               })
@@ -1145,8 +1158,10 @@ export default {
           } else if (this.contractType === CONTRACT_TYPE_ERC1155) {
             const val =
               Number.parseInt(this.assetSelected.tokenBalance, 10) === 1 ? new BigNumber(this.assetSelected.tokenBalance) : this.erc1155DisplayAmount
-            this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val)
-              .estimateGas({ from: this.selectedAddress.toLowerCase() })
+            this.getNftTransferContract(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val)
+              .estimateGas.safeTransferFrom(this.selectedAddress, toAddress, this.assetSelected.tokenId, val, '0x', {
+                from: this.selectedAddress.toLowerCase(),
+              })
               .then((response) => {
                 resolve(new BigNumber(response.toHexString() || '0'))
               })
@@ -1159,29 +1174,62 @@ export default {
       }
       return Promise.resolve(new BigNumber('0'))
     },
-    getTransferMethod(contractType, toAddress, value) {
+    getTransferMethod(contractType, toAddress, value, params = {}) {
       // For support of older ERC721
       if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
-        const contractInstance = new Contract(this.selectedTokenAddress.toLowerCase(), erc20TransferABI, torus.ethersProvider)
-        return contractInstance.transfer(toAddress.toLowerCase(), value)
+        const contractInstance = new Contract(this.selectedTokenAddress.toLowerCase(), erc20TransferABI, torus.ethersProvider.getSigner())
+        return contractInstance.transfer(toAddress.toLowerCase(), value, { from: this.selectedAddress.toLowerCase(), ...params })
       }
 
       throw new Error('Invalid Contract Type')
     },
-    getNftTransferMethod(contractType, selectedAddress, toAddress, tokenId, value = 1) {
+    getTransferContract(contractType) {
+      // For support of older ERC721
+      if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
+        const contractInstance = new Contract(this.selectedTokenAddress.toLowerCase(), erc20TransferABI, torus.ethersProvider.getSigner())
+        return contractInstance
+      }
+
+      throw new Error('Invalid Contract Type')
+    },
+    getNftTransferMethod(contractType, selectedAddress, toAddress, tokenId, value = 1, params = {}) {
       if (contractType === CONTRACT_TYPE_ERC721 && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase())) {
-        const contractInstance = new Contract(this.selectedTokenAddress, erc20TransferABI, torus.ethersProvider)
-        return contractInstance.transfer(toAddress, tokenId)
+        const contractInstance = new Contract(this.selectedTokenAddress, erc20TransferABI, torus.ethersProvider.getSigner())
+        return contractInstance.transfer(toAddress, tokenId, { from: this.selectedAddress.toLowerCase(), ...params })
       }
 
       if (contractType === CONTRACT_TYPE_ERC721) {
-        const contractInstance = new Contract(this.selectedTokenAddress, erc721TransferABI, torus.ethersProvider)
-        return contractInstance.safeTransferFrom(selectedAddress, toAddress, tokenId)
+        const contractInstance = new Contract(this.selectedTokenAddress, erc721TransferABI, torus.ethersProvider.getSigner())
+        return contractInstance.safeTransferFrom(selectedAddress, toAddress, tokenId, {
+          from: this.selectedAddress.toLowerCase(),
+          ...params,
+        })
       }
 
       if (contractType === CONTRACT_TYPE_ERC1155) {
-        const contractInstance = new Contract(this.selectedTokenAddress, erc1155Abi.abi, torus.ethersProvider)
-        return contractInstance.safeTransferFrom(selectedAddress, toAddress, tokenId, value, '0x')
+        const contractInstance = new Contract(this.selectedTokenAddress, erc1155Abi.abi, torus.ethersProvider.getSigner())
+        return contractInstance.safeTransferFrom(selectedAddress, toAddress, tokenId, value, '0x', {
+          from: this.selectedAddress.toLowerCase(),
+          ...params,
+        })
+      }
+
+      throw new Error('Invalid Contract Type')
+    },
+    getNftTransferContract(contractType) {
+      if (contractType === CONTRACT_TYPE_ERC721 && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase())) {
+        const contractInstance = new Contract(this.selectedTokenAddress, erc20TransferABI, torus.ethersProvider.getSigner())
+        return contractInstance
+      }
+
+      if (contractType === CONTRACT_TYPE_ERC721) {
+        const contractInstance = new Contract(this.selectedTokenAddress, erc721TransferABI, torus.ethersProvider.getSigner())
+        return contractInstance
+      }
+
+      if (contractType === CONTRACT_TYPE_ERC1155) {
+        const contractInstance = new Contract(this.selectedTokenAddress, erc1155Abi.abi, torus.ethersProvider.getSigner())
+        return contractInstance
       }
 
       throw new Error('Invalid Contract Type')
@@ -1402,95 +1450,86 @@ export default {
           .dp(0, BigNumber.ROUND_DOWN)
           .toString(16)}`
         log.info('amount', this.amount)
-        this.getTransferMethod(this.contractType, toAddress, value).send(
-          {
-            from: this.selectedAddress.toLowerCase(),
-            gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            ...gasPriceParams,
-            customNonceValue,
-          },
-          (error, transactionHash) => {
-            if (error) {
-              const regEx = /user denied transaction signature/i
-              if (!error.message.match(regEx)) {
-                this.messageModalShow = true
-                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
-              }
-              log.error(error)
-            } else {
-              // Send email to the user
-              this.sendEmail(transactionHash)
-              this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
+        this.getTransferMethod(this.contractType, toAddress, value, {
+          gasLimit: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
+          ...gasPriceParams,
+          customNonceValue,
+        })
+          .then((txData) => {
+            const transactionHash = txData.hash
+            // Send email to the user
+            this.sendEmail(transactionHash)
+            this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
 
+            this.messageModalShow = true
+            this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+            this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
+            this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+          })
+          .catch((error) => {
+            const regEx = /user denied transaction signature/i
+            if (!error.message.match(regEx)) {
               this.messageModalShow = true
-              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+              this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+              this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+              this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
             }
-          }
-        )
+            log.error(error)
+          })
       } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-        this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId).send(
-          {
-            from: this.selectedAddress.toLowerCase(),
-            gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            ...gasPriceParams,
-            customNonceValue,
-          },
-          (error, transactionHash) => {
-            if (error) {
-              const regEx = /user denied transaction signature/i
-              if (!error.message.match(regEx)) {
-                this.messageModalShow = true
-                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
-              }
-              log.error(error)
-            } else {
-              // Send email to the user
-              this.sendEmail(transactionHash)
-              this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
+        this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, {
+          gasLimit: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
+          ...gasPriceParams,
+          customNonceValue,
+        })
+          .then((txData) => {
+            const transactionHash = txData.hash
+            // Send email to the user
+            this.sendEmail(transactionHash)
+            this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
+            this.messageModalShow = true
+            this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+            this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
+            this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+          })
+          .catch((error) => {
+            const regEx = /user denied transaction signature/i
+            if (!error.message.match(regEx)) {
               this.messageModalShow = true
-              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+              this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+              this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+              this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
             }
-          }
-        )
+            log.error(error)
+          })
       } else if (this.contractType === CONTRACT_TYPE_ERC1155) {
         const val =
           Number.parseInt(this.assetSelected.tokenBalance, 10) === 1 ? new BigNumber(this.assetSelected.tokenBalance) : this.erc1155DisplayAmount
-        this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val).send(
-          {
-            from: this.selectedAddress.toLowerCase(),
-            gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            ...gasPriceParams,
-            customNonceValue,
-          },
-          (error, transactionHash) => {
-            if (error) {
-              const regEx = /user denied transaction signature/i
-              if (!error.message.match(regEx)) {
-                this.messageModalShow = true
-                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
-                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
-              }
-              log.error(error)
-            } else {
-              // Send email to the user
-              this.sendEmail(transactionHash)
-              this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
+        this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val, {
+          gasLimit: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
+          ...gasPriceParams,
+          customNonceValue,
+        })
+          .then((txData) => {
+            const transactionHash = txData.hash
+            // Send email to the user
+            this.sendEmail(transactionHash)
+            this.etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
+            this.messageModalShow = true
+            this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+            this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
+            this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+          })
+          .catch((error) => {
+            const regEx = /user denied transaction signature/i
+            if (!error.message.match(regEx)) {
               this.messageModalShow = true
-              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
-              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
+              this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+              this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+              this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
             }
-          }
-        )
+            log.error(error)
+          })
       }
     },
     getEthAmount(gas, gasPrice) {
