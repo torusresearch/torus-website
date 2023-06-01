@@ -109,12 +109,6 @@
 </template>
 <script>
 import TokenList from '@uniswap/default-token-list'
-import { Protocol } from '@uniswap/router-sdk'
-import { Percent, Token, TradeType } from '@uniswap/sdk-core'
-import { CurrencyAmount, nativeOnChain, SwapType } from '@uniswap/smart-order-router'
-import { DEFAULT_ROUTING_CONFIG_BY_CHAIN } from '@uniswap/smart-order-router/build/module/routers/alpha-router/config'
-import BigNum from 'bignumber.js'
-import { providers } from 'ethers'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
@@ -122,7 +116,7 @@ import NetworkDisplay from '../../components/helpers/NetworkDisplay/NetworkDispl
 import QuickAddress from '../../components/helpers/QuickAddress/QuickAddress.vue'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import config from '../../config'
-import AlphaRouter from '../../plugins/uniswap'
+import { getQuoteFromBackend } from '../../plugins/uniswap'
 import torus from '../../torus'
 import { MESSAGE_MODAL_TYPE_FAIL, MESSAGE_MODAL_TYPE_SUCCESS } from '../../utils/enums'
 import { getEtherScanHashLink } from '../../utils/utils'
@@ -132,8 +126,8 @@ export default {
   components: { MessageModal, NetworkDisplay, QuickAddress },
   data() {
     return {
-      fromValue: 0.01,
-      toValue: 0,
+      fromValue: '0.01',
+      toValue: '0',
       fromToken: '',
       toToken: '',
       rules: {
@@ -174,11 +168,11 @@ export default {
     tokenList() {
       return [this.nativeToken, ...TokenList.tokens.filter((x) => x.chainId === this.chainId)]
     },
-    tokenSymbols() {
-      return this.tokenList.map((x) => x.symbol)
-    },
     confirmSwapDetailText() {
       return `Are you sure you wish to swap ${this.fromValue} ${this.fromToken} for ${this.toValue} ${this.toToken}?`
+    },
+    networkUrl() {
+      return torus.torusController.networkController.getCurrentNetworkUrl()
     },
   },
   async mounted() {
@@ -207,7 +201,6 @@ export default {
     async getSwapQuote(reverse = false) {
       try {
         const valid = this.$refs.form.validate()
-        log.info(valid, 'valid')
         log.info('getting swap quote after validation', valid)
         if (!valid) return
 
@@ -218,76 +211,33 @@ export default {
         this.gasFees = 0
 
         log.info(this.chainId, 'chainId')
-        let swapParams = []
+        const result = await getQuoteFromBackend({
+          fromToken: this.fromToken,
+          toToken: this.toToken,
+          fromValue: this.fromValue,
+          toValue: this.toValue,
+          chainId: this.chainId,
+          recipient: this.selectedAddress,
+          reverse,
+          networkUrl: this.networkUrl,
+        })
+        log.info(result)
+        log.info(`Quote Exact In: ${result.quote}`)
+        log.info(`Gas Adjusted Quote In: ${result.priceImpact}`)
+        log.info(`Gas Used USD: ${result.gasPrice}`)
         if (reverse) {
-          // Account for fees here
-          const toCurrencyAmount = this.getCurrencyAmount(this.toValue, this.toToken).multiply(new Percent(1).add(config.feePercent))
-          const fromTokenInstance = this.getTokenInstance(this.fromToken)
-          swapParams = [toCurrencyAmount, fromTokenInstance, TradeType.EXACT_OUTPUT]
+          this.fromValue = result.quote
         } else {
-          // Here we take fees from output directly
-          const fromCurrencyAmount = this.getCurrencyAmount(this.fromValue, this.fromToken)
-          const toTokenInstance = this.getTokenInstance(this.toToken)
-          swapParams = [fromCurrencyAmount, toTokenInstance, TradeType.EXACT_INPUT]
+          this.toValue = result.quote
         }
-
-        const router = new AlphaRouter({ chainId: this.chainId, provider: new providers.Web3Provider(torus.torusController.provider) })
-        const swapRoute = await router.route(
-          ...swapParams,
-          {
-            type: SwapType.SWAP_ROUTER_02,
-            recipient: this.selectedAddress,
-            slippageTolerance: new Percent(5, 100),
-            deadline: Math.floor(Date.now() / 1000 + 1800),
-            fee: {
-              fee: config.feePercent, // use 1% fees
-              recipient: config.uniswapFeeRecipient,
-            },
-          },
-          {
-            ...DEFAULT_ROUTING_CONFIG_BY_CHAIN(this.chainId),
-            protocols: [Protocol.V3, Protocol.V2],
-          }
-        )
-        log.info(swapRoute)
-        log.info(`Quote Exact In: ${swapRoute.quote.toSignificant()}`)
-        log.info(`Gas Adjusted Quote In: ${swapRoute.quoteGasAdjusted.toSignificant()}`)
-        log.info(`Gas Used USD: ${swapRoute.estimatedGasUsedUSD.toSignificant()}`)
-        if (reverse) {
-          this.fromValue = swapRoute.quote.toSignificant()
-        } else {
-          this.toValue = swapRoute.quote.multiply(new Percent(1).subtract(config.feePercent)).toSignificant()
-        }
-        this.priceImpact = swapRoute.trade.priceImpact.toFixed(2)
-        this.gasFees = swapRoute.estimatedGasUsedUSD.toSignificant()
-        this.currentSwapQuote = {
-          methodParameters: {
-            calldata: swapRoute.methodParameters.calldata,
-            value: swapRoute.methodParameters.value,
-          },
-          gasPriceWei: swapRoute.gasPriceWei.toHexString(),
-        }
+        this.priceImpact = result.priceImpact
+        this.gasFees = result.gasPrice
+        this.currentSwapQuote = result.currentSwapQuote
       } catch (error) {
         log.error(error)
       } finally {
         this.fetchingQuote = false
       }
-    },
-    getTokenInstance(symbol) {
-      if (symbol === this.nativeToken.symbol) {
-        return nativeOnChain(this.chainId)
-      }
-      const tokenData = TokenList.tokens.find((x) => x.symbol === symbol && x.chainId === this.chainId)
-      log.info(symbol, tokenData)
-      const tokenInstance = new Token(this.chainId, tokenData.address, tokenData.decimals, tokenData.symbol, tokenData.name)
-      return tokenInstance
-    },
-    getCurrencyAmount(value, token) {
-      const tokenInstance = this.getTokenInstance(token)
-      return CurrencyAmount.fromRawAmount(
-        tokenInstance,
-        new BigNum(value).multipliedBy(new BigNum(10).pow(new BigNum(tokenInstance.decimals))).toString()
-      )
     },
     async sendTx() {
       try {

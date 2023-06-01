@@ -1,5 +1,3 @@
-import { Percent } from '@uniswap/sdk-core'
-
 import { CRYPTO_COMPARE_CURRENCIES } from './supportedCurrencies'
 import {
   APPLE,
@@ -215,9 +213,6 @@ export default {
   logosUrl: 'https://images.toruswallet.io',
 
   uniswapContractAddress: '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45',
-  // Company address
-  uniswapFeeRecipient: '0xd4efE698306aBE7bBf4de4bc2C8A29548B0250D4',
-  feePercent: new Percent(1, 100),
 
   // key is the verifier
   loginConfig: {
