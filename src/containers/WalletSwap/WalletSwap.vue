@@ -290,36 +290,35 @@ export default {
       )
     },
     async sendTx() {
-      log.info('sendTx')
-      if (!this.currentSwapQuote) {
-        return
-      }
-      this.sendingTx = true
-      const transaction = {
-        data: this.currentSwapQuote.methodParameters.calldata,
-        to: config.uniswapContractAddress,
-        value: this.currentSwapQuote.methodParameters.value,
-        from: this.selectedAddress,
-        gasPrice: this.currentSwapQuote.gasPriceWei,
-      }
-      log.info(transaction)
-      torus.web3.eth.sendTransaction(transaction, (err, txHash) => {
-        log.info(err, txHash)
-        if (err) {
-          this.messageModalShow = true
-          this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-          this.messageModalTitle = this.t('walletSwap.swapFailTitle')
-          this.messageModalDetails = this.t('walletSwap.swapFailMessage')
-        } else {
-          this.messageModalShow = true
-          this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-          this.messageModalTitle = this.t('walletSwap.swapSuccessTitle')
-          this.messageModalDetails = ''
-          this.etherscanLink = getEtherScanHashLink(txHash, this.networkType.host)
+      try {
+        log.info('sendTx')
+        if (!this.currentSwapQuote) {
+          return
         }
+        this.sendingTx = true
+        const transaction = {
+          data: this.currentSwapQuote.methodParameters.calldata,
+          to: config.uniswapContractAddress,
+          value: this.currentSwapQuote.methodParameters.value,
+          from: this.selectedAddress,
+          gasPrice: this.currentSwapQuote.gasPriceWei,
+        }
+        const txHash = await torus.ethersProvider.send('eth_sendTransaction', [transaction])
+        this.messageModalShow = true
+        this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+        this.messageModalTitle = this.t('walletSwap.swapSuccessTitle')
+        this.messageModalDetails = ''
+        this.etherscanLink = getEtherScanHashLink(txHash, this.networkType.host)
+      } catch (error) {
+        log.error(error)
+        this.messageModalShow = true
+        this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+        this.messageModalTitle = this.t('walletSwap.swapFailTitle')
+        this.messageModalDetails = this.t('walletSwap.swapFailMessage')
+      } finally {
         this.sendingTx = false
         this.confirmationModalShow = false
-      })
+      }
     },
   },
 }

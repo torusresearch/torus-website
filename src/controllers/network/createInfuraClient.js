@@ -17,7 +17,6 @@ export function createInfuraClient({ network }) {
   const infuraMiddleware = createInfuraMiddleware({ network, projectId: config.infuraKey })
   const infuraProvider = createProvider({ network, projectId: config.infuraKey })
   const blockTracker = new PollingBlockTracker({ provider: infuraProvider })
-
   const networkMiddleware = mergeMiddleware([
     createNetworkAndChainIdMiddleware({ network }),
     createBlockCacheMiddleware({ blockTracker }),

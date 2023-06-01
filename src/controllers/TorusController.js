@@ -90,6 +90,7 @@ export default class TorusController extends SafeEventEmitter {
       provider: this.provider,
       blockTracker: this.blockTracker,
       getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController),
+      getCurrentNetworkUrl: this.networkController.getCurrentNetworkUrl.bind(this.networkController),
     })
 
     // start and stop polling for balances based on activeControllerConnections

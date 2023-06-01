@@ -4,12 +4,12 @@ import { TransactionFactory } from '@ethereumjs/tx'
 import { addHexPrefix, bufferToHex, isHexString, stripHexPrefix } from '@ethereumjs/util'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import { ethErrors } from 'eth-rpc-errors'
+import { utils } from 'ethers'
 import EthQuery from 'ethjs-query'
 import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
-import { fromWei, sha3, toBN } from 'web3-utils'
 
 import AbiDecoder from '../../utils/abiDecoder'
 import ApiHelpers from '../../utils/apiHelpers'
@@ -770,7 +770,7 @@ class TransactionController extends SafeEventEmitter {
       txHash = await this.query.sendRawTransaction(rawTx)
     } catch (error) {
       if (error.message.toLowerCase().includes('known transaction')) {
-        txHash = sha3(addHexPrefix(rawTx)).toString('hex')
+        txHash = utils.keccak256(addHexPrefix(rawTx))
         txHash = addHexPrefix(txHash)
       } else {
         throw error
@@ -873,7 +873,7 @@ class TransactionController extends SafeEventEmitter {
     )
 
     const finalTxs = transactionPromises.reduce((accumulator, x) => {
-      const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
+      const totalAmount = x.value ? utils.formatEther(x.value) : ''
       const etherscanTransaction = {
         etherscanLink: getEtherScanHashLink(x.hash, network),
         type: x.type || SUPPORTED_NETWORK_TYPES[network]?.ticker || CONTRACT_TYPE_ETH,

@@ -66,6 +66,7 @@ describe('AssetsDetectionController', () => {
       assetController: assets,
       getNfts: prefsController.getNfts.bind(prefsController),
       preferencesStore: prefsController.store,
+      provider: network._providerProxy,
     })
 
     // do it only if the method is not already wrapped
@@ -133,7 +134,12 @@ describe('AssetsDetectionController', () => {
         network,
         getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
       })
-      const assetCtrlr = new AssetsDetectionController({ assetController: assetsController, network: localNetwork, selectedAddress: TEST_ADDRESS })
+      const assetCtrlr = new AssetsDetectionController({
+        assetController: assetsController,
+        network: localNetwork,
+        selectedAddress: TEST_ADDRESS,
+        provider: localNetwork._providerProxy,
+      })
       const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
       clock.tick(60_000)
       sandbox.assert.calledOnce(mockCollectibles)
@@ -174,7 +180,7 @@ describe('AssetsDetectionController', () => {
         network,
         getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
       })
-      const assetCtrlr = new AssetsDetectionController({ assetController, network: localNetwork })
+      const assetCtrlr = new AssetsDetectionController({ assetController, network: localNetwork, provider: localNetwork._providerProxy })
       const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
       assetCtrlr.startAssetDetection(TEST_ADDRESS)
       clock.tick(1)
@@ -198,7 +204,7 @@ describe('AssetsDetectionController', () => {
         network,
         getNftMetadata: prefsController.getNftMetadata.bind(prefsController),
       })
-      const assetCtrlr = new AssetsDetectionController({ assetController, network: localNetwork })
+      const assetCtrlr = new AssetsDetectionController({ assetController, network: localNetwork, provider: localNetwork._providerProxy })
       const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
       clock.tick(1)
       sandbox.assert.notCalled(mockCollectibles)
