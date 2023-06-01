@@ -503,6 +503,7 @@
 <script>
 import BigNumber from 'bignumber.js'
 import Das from 'das-sdk'
+import { Contract } from 'ethers'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import { cloneDeep, isEqual } from 'lodash'
@@ -1101,7 +1102,7 @@ export default {
               .times(new BigNumber(10).pow(new BigNumber(18)))
               .dp(0, BigNumber.ROUND_DOWN)
               .toString(16)}`
-            torus.web3.eth
+            torus.ethersProvider
               .estimateGas({ to: toAddress.toLowerCase(), value, from: this.selectedAddress.toLowerCase() })
               .then((response) => {
                 let resolved = new BigNumber(response || '0')
@@ -1161,7 +1162,7 @@ export default {
     getTransferMethod(contractType, toAddress, value) {
       // For support of older ERC721
       if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
-        const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress.toLowerCase())
+        const contractInstance = new Contract(this.selectedTokenAddress.toLowerCase(), erc20TransferABI, torus.ethersProvider)
         return contractInstance.methods.transfer(toAddress.toLowerCase(), value)
       }
 
@@ -1169,17 +1170,17 @@ export default {
     },
     getNftTransferMethod(contractType, selectedAddress, toAddress, tokenId, value = 1) {
       if (contractType === CONTRACT_TYPE_ERC721 && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase())) {
-        const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress)
+        const contractInstance = new Contract(this.selectedTokenAddress, erc20TransferABI, torus.ethersProvider)
         return contractInstance.methods.transfer(toAddress, tokenId)
       }
 
       if (contractType === CONTRACT_TYPE_ERC721) {
-        const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
+        const contractInstance = new Contract(this.selectedTokenAddress, erc721TransferABI, torus.ethersProvider)
         return contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, tokenId)
       }
 
       if (contractType === CONTRACT_TYPE_ERC1155) {
-        const contractInstance = new torus.web3.eth.Contract(erc1155Abi.abi, this.selectedTokenAddress)
+        const contractInstance = new Contract(this.selectedTokenAddress, erc1155Abi.abi, torus.ethersProvider)
         return contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, tokenId, value, '0x')
       }
 

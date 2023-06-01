@@ -187,7 +187,6 @@ export default {
     ...mapActions(['addCustomToken', 'deleteCustomToken']),
     async onCustomAddressChange(value) {
       this.customAddress = value
-      // log.debug(await torus.web3.eth.getCode(value))
       this.isValidAddress = await validateContractAddress(torus.etherProvider, this.customAddress, this.$store.state.networkId)
       if (this.isValidAddress) {
         try {

@@ -204,7 +204,6 @@ export default {
     },
     async setContractAddress(value) {
       this.contractAddress = value
-      // log.debug(await torus.web3.eth.getCode(value))
       this.isValidAddress = await validateContractAddress(torus.etherProvider, value)
       if (this.isValidAddress && this.tokenId) {
         await this.populateNftDetails(value, this.tokenId)

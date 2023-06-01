@@ -269,7 +269,7 @@ export default {
           this.averageGasPriceSpeed = avgWait
           this.fastestGasPriceSpeed = fastestWait
         } else {
-          const gasPrice = await torus.web3.eth.getGasPrice()
+          const gasPrice = await torus.ethersProvider.getGasPrice()
           log.info(gasPrice)
           this.averageGasPrice = new BigNumber(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
           this.fastestGasPrice = this.averageGasPrice.gt(0) ? this.averageGasPrice.plus(new BigNumber('5')) : this.averageGasPrice

@@ -222,7 +222,7 @@ export default {
         const { fastest: fastestTimes10 } = await resp.json()
         gasPrice = new BigNumber(fastestTimes10).div(new BigNumber('10'))
       } else {
-        const recommended = await torus.web3.eth.getGasPrice()
+        const recommended = await torus.ethersProvider.getGasPrice()
         gasPrice = new BigNumber(recommended).div(new BigNumber(10).pow(new BigNumber(9))).plus(new BigNumber('5'))
       }
       const percent10Extra = gasPrice.times(new BigNumber('1.1'))
