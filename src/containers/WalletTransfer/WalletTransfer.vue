@@ -1458,7 +1458,7 @@ export default {
           customNonceValue,
         }
         torus.ethersProvider
-          .send('eth_sendTransaction', finalData)
+          .send('eth_sendTransaction', [finalData])
           .then((txData) => {
             const transactionHash = txData.hash
             // Send email to the user
@@ -1491,7 +1491,7 @@ export default {
         }
 
         torus.ethersProvider
-          .send('eth_sendTransaction', finalData)
+          .send('eth_sendTransaction', [finalData])
           .then((txData) => {
             const transactionHash = txData.hash
             // Send email to the user
@@ -1516,6 +1516,7 @@ export default {
         const val =
           Number.parseInt(this.assetSelected.tokenBalance, 10) === 1 ? new BigNumber(this.assetSelected.tokenBalance) : this.erc1155DisplayAmount
         const data = await this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val, {})
+
         const finalData = {
           ...data,
           gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
@@ -1523,7 +1524,7 @@ export default {
           customNonceValue,
         }
         torus.ethersProvider
-          .send('eth_sendTransaction', finalData)
+          .send('eth_sendTransaction', [finalData])
           .then((txData) => {
             const transactionHash = txData.hash
             // Send email to the user

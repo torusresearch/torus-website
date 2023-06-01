@@ -72,8 +72,7 @@ class AbiDecoder {
         params: [],
       }
 
-      for (let i = 0; i < decoded.__length__; i += 1) {
-        const parameter = decoded[i]
+      for (const [i, parameter] of decoded.entries()) {
         let parsedParameter = parameter
         const isUint = abiItem.inputs[i].type.indexOf('uint') === 0
         const isInt = abiItem.inputs[i].type.indexOf('int') === 0
@@ -83,9 +82,9 @@ class AbiDecoder {
           const isArray = Array.isArray(parameter)
 
           if (isArray) {
-            parsedParameter = parameter.map((value) => new BN(value).toString())
+            parsedParameter = parameter.map((value) => new BN(value.toHexString().slice(2), 'hex').toString())
           } else {
-            parsedParameter = new BN(parameter).toString()
+            parsedParameter = new BN(parameter.toHexString().slice(2), 'hex').toString()
           }
         }
 
