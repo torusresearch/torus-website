@@ -98,14 +98,16 @@ export default class AssetContractController {
    * @param selectedAddress - Current account public address
    * @returns - Promise resolving to BN object containing balance for current account on specific asset contract
    */
-  getBalanceOf(address, selectedAddress) {
+  async getBalanceOf(address, selectedAddress) {
     const contract = new Contract(address, abiERC20, this.provider)
-    return contract.balanceOf(selectedAddress)
+    const bal = await contract.balanceOf(selectedAddress)
+    return bal.toString()
   }
 
-  getErc1155Balance(contractAddress, ownerAddress, tokenId) {
+  async getErc1155Balance(contractAddress, ownerAddress, tokenId) {
     const contract = new Contract(contractAddress, erc1155abi.abi, this.provider)
-    return contract.balanceOf(ownerAddress, tokenId)
+    const bal = await contract.balanceOf(ownerAddress, tokenId)
+    return bal.toString()
   }
 
   /**
@@ -177,7 +179,7 @@ export default class AssetContractController {
    */
   getOwnerOf(address, tokenId) {
     const contract = new Contract(address, abiERC721, this.provider)
-    return contract.methods.ownerOf(tokenId).call()
+    return contract.ownerOf(tokenId)
   }
 
   /**
