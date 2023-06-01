@@ -1105,7 +1105,7 @@ export default {
             torus.ethersProvider
               .estimateGas({ to: toAddress.toLowerCase(), value, from: this.selectedAddress.toLowerCase() })
               .then((response) => {
-                let resolved = new BigNumber(response || '0')
+                let resolved = new BigNumber(response.toHexString() || '0')
                 if (!resolved.eq(new BigNumber('21000'))) {
                   resolved = new BigNumber(resolved.times(new BigNumber('1.1')).toFixed(0))
                   this.sendEthToContractError = this.isSendAll
@@ -1126,7 +1126,7 @@ export default {
               .estimateGas({ from: this.selectedAddress.toLowerCase() })
               .then((response) => {
                 log.info(response, 'gas')
-                resolve(new BigNumber(response || '0'))
+                resolve(new BigNumber(response.toHexString() || '0'))
               })
               .catch((error) => {
                 log.error(error)
@@ -1136,7 +1136,7 @@ export default {
             this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId)
               .estimateGas({ from: this.selectedAddress.toLowerCase() })
               .then((response) => {
-                resolve(new BigNumber(response || '0'))
+                resolve(new BigNumber(response.toHexString() || '0'))
               })
               .catch((error) => {
                 log.error(error)
@@ -1148,7 +1148,7 @@ export default {
             this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val)
               .estimateGas({ from: this.selectedAddress.toLowerCase() })
               .then((response) => {
-                resolve(new BigNumber(response || '0'))
+                resolve(new BigNumber(response.toHexString() || '0'))
               })
               .catch((error) => {
                 log.error(error)
@@ -1163,7 +1163,7 @@ export default {
       // For support of older ERC721
       if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
         const contractInstance = new Contract(this.selectedTokenAddress.toLowerCase(), erc20TransferABI, torus.ethersProvider)
-        return contractInstance.methods.transfer(toAddress.toLowerCase(), value)
+        return contractInstance.transfer(toAddress.toLowerCase(), value)
       }
 
       throw new Error('Invalid Contract Type')
@@ -1171,17 +1171,17 @@ export default {
     getNftTransferMethod(contractType, selectedAddress, toAddress, tokenId, value = 1) {
       if (contractType === CONTRACT_TYPE_ERC721 && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase())) {
         const contractInstance = new Contract(this.selectedTokenAddress, erc20TransferABI, torus.ethersProvider)
-        return contractInstance.methods.transfer(toAddress, tokenId)
+        return contractInstance.transfer(toAddress, tokenId)
       }
 
       if (contractType === CONTRACT_TYPE_ERC721) {
         const contractInstance = new Contract(this.selectedTokenAddress, erc721TransferABI, torus.ethersProvider)
-        return contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, tokenId)
+        return contractInstance.safeTransferFrom(selectedAddress, toAddress, tokenId)
       }
 
       if (contractType === CONTRACT_TYPE_ERC1155) {
         const contractInstance = new Contract(this.selectedTokenAddress, erc1155Abi.abi, torus.ethersProvider)
-        return contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, tokenId, value, '0x')
+        return contractInstance.safeTransferFrom(selectedAddress, toAddress, tokenId, value, '0x')
       }
 
       throw new Error('Invalid Contract Type')
