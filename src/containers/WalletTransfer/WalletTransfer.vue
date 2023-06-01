@@ -1178,7 +1178,7 @@ export default {
       // For support of older ERC721
       if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
         const contractInstance = new Contract(this.selectedTokenAddress.toLowerCase(), erc20TransferABI, torus.ethersProvider.getSigner())
-        return contractInstance.transfer(toAddress.toLowerCase(), value, { from: this.selectedAddress.toLowerCase(), ...params })
+        return contractInstance.populateTransaction.transfer(toAddress.toLowerCase(), value, { from: this.selectedAddress.toLowerCase(), ...params })
       }
 
       throw new Error('Invalid Contract Type')
@@ -1195,12 +1195,12 @@ export default {
     getNftTransferMethod(contractType, selectedAddress, toAddress, tokenId, value = 1, params = {}) {
       if (contractType === CONTRACT_TYPE_ERC721 && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase())) {
         const contractInstance = new Contract(this.selectedTokenAddress, erc20TransferABI, torus.ethersProvider.getSigner())
-        return contractInstance.transfer(toAddress, tokenId, { from: this.selectedAddress.toLowerCase(), ...params })
+        return contractInstance.populateTransaction.transfer(toAddress, tokenId, { from: this.selectedAddress.toLowerCase(), ...params })
       }
 
       if (contractType === CONTRACT_TYPE_ERC721) {
         const contractInstance = new Contract(this.selectedTokenAddress, erc721TransferABI, torus.ethersProvider.getSigner())
-        return contractInstance.safeTransferFrom(selectedAddress, toAddress, tokenId, {
+        return contractInstance.populateTransaction.safeTransferFrom(selectedAddress, toAddress, tokenId, {
           from: this.selectedAddress.toLowerCase(),
           ...params,
         })
@@ -1208,7 +1208,7 @@ export default {
 
       if (contractType === CONTRACT_TYPE_ERC1155) {
         const contractInstance = new Contract(this.selectedTokenAddress, erc1155Abi.abi, torus.ethersProvider.getSigner())
-        return contractInstance.safeTransferFrom(selectedAddress, toAddress, tokenId, value, '0x', {
+        return contractInstance.populateTransaction.safeTransferFrom(selectedAddress, toAddress, tokenId, value, '0x', {
           from: this.selectedAddress.toLowerCase(),
           ...params,
         })
@@ -1450,11 +1450,15 @@ export default {
           .dp(0, BigNumber.ROUND_DOWN)
           .toString(16)}`
         log.info('amount', this.amount)
-        this.getTransferMethod(this.contractType, toAddress, value, {
-          gasLimit: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
+        const data = await this.getTransferMethod(this.contractType, toAddress, value, {})
+        const finalData = {
+          ...data,
+          gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
           ...gasPriceParams,
           customNonceValue,
-        })
+        }
+        torus.ethersProvider
+          .send('eth_sendTransaction', finalData)
           .then((txData) => {
             const transactionHash = txData.hash
             // Send email to the user
@@ -1477,11 +1481,17 @@ export default {
             log.error(error)
           })
       } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-        this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, {
-          gasLimit: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
+        const data = await this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, {})
+
+        const finalData = {
+          ...data,
+          gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
           ...gasPriceParams,
           customNonceValue,
-        })
+        }
+
+        torus.ethersProvider
+          .send('eth_sendTransaction', finalData)
           .then((txData) => {
             const transactionHash = txData.hash
             // Send email to the user
@@ -1505,11 +1515,15 @@ export default {
       } else if (this.contractType === CONTRACT_TYPE_ERC1155) {
         const val =
           Number.parseInt(this.assetSelected.tokenBalance, 10) === 1 ? new BigNumber(this.assetSelected.tokenBalance) : this.erc1155DisplayAmount
-        this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val, {
-          gasLimit: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
+        const data = await this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val, {})
+        const finalData = {
+          ...data,
+          gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
           ...gasPriceParams,
           customNonceValue,
-        })
+        }
+        torus.ethersProvider
+          .send('eth_sendTransaction', finalData)
           .then((txData) => {
             const transactionHash = txData.hash
             // Send email to the user
