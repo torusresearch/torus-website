@@ -1,10 +1,9 @@
 /* eslint-disable default-param-last */
 import BigNumber from 'bignumber.js'
-import { Contract, providers } from 'ethers'
+import { Contract, providers, utils } from 'ethers'
 import { isEqual } from 'lodash'
 import log from 'loglevel'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
-import { toHex } from 'web3-utils'
 
 import TokenHandler from '../handlers/Token/TokenHandler'
 import contracts, { GNOSIS_CONTRACTS } from '../utils/contractMetadata'
@@ -132,7 +131,7 @@ class DetectTokensController {
         )
         const nonZeroTokens = []
         tokensToDetect.forEach((x, index) => {
-          const balance = toHex(result[index])
+          const balance = utils.hexValue(result[index])
           if (balance && balance !== '0x0') {
             // do sth else here
             nonZeroTokens.push({ ...x, balance, network: MAINNET })
@@ -202,7 +201,7 @@ class DetectTokensController {
         const result = ethContract.balances([userAddress], tokenAddresses)
         const nonZeroTokens = []
         tokenAddresses.forEach((_, index) => {
-          const balance = toHex(result[index])
+          const balance = utils.hexValue(result[index])
           if (balance && balance !== '0x0') {
             nonZeroTokens.push({ ...oldTokens[index], balance, network: MAINNET })
           }

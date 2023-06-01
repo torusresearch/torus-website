@@ -4,12 +4,11 @@
  * Controller that interacts with contracts on mainnet through web3
  * @author Shubham, Chaitanya
  */
-import { Contract, providers } from 'ethers'
+import { Contract, providers, utils } from 'ethers'
 import abiERC721 from 'human-standard-collectible-abi'
 import abiERC20 from 'human-standard-token-abi'
 import { ERC1155 as erc1155abi, ERC1155Metadata as erc1155MetadataAbi } from 'multi-token-standard-abi'
 import abiSingleCallBalancesContract from 'single-call-balance-checker-abi'
-import { toHex } from 'web3-utils'
 
 import {
   CONTRACT_TYPE_ERC721,
@@ -196,7 +195,7 @@ export default class AssetContractController {
           /* istanbul ignore else */
           if (result.length > 0) {
             tokensToDetect.forEach((tokenAddress, index) => {
-              const balance = toHex(result[index])
+              const balance = utils.hexValue(result[index])
               /* istanbul ignore else */
               if (balance && balance !== '0x0') {
                 nonZeroBalances[tokenAddress] = balance

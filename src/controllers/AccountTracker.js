@@ -8,11 +8,10 @@
  */
 
 import EthQuery from 'eth-query'
-import { Contract, providers } from 'ethers'
+import { Contract, providers, utils } from 'ethers'
 import log from 'loglevel'
 import pify from 'pify'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
-import { toHex } from 'web3-utils'
 
 import {
   SINGLE_CALL_BALANCES_ADDRESS,
@@ -256,7 +255,7 @@ export default class AccountTracker {
       const result = await ethContract.balances(addresses, [ZERO_ADDRESS])
       const { accounts } = this.store.getState()
       addresses.forEach((address, index) => {
-        const balance = toHex(result[index])
+        const balance = utils.hexValue(result[index])
         accounts[address] = { address, balance }
       })
       return this.store.updateState({ accounts })
