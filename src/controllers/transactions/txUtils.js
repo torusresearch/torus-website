@@ -1,6 +1,5 @@
-import { addHexPrefix, isHexString } from '@ethereumjs/util'
+import { addHexPrefix, isHexString, isValidAddress } from '@ethereumjs/util'
 import { ethErrors } from 'eth-rpc-errors'
-import { isAddress } from 'ethers'
 
 import { TRANSACTION_ENVELOPE_TYPES, TRANSACTION_STATUSES } from '../../utils/enums'
 
@@ -182,7 +181,7 @@ export function validateFrom(txParams) {
   if (!(typeof txParams.from === 'string')) {
     throw ethErrors.rpc.invalidParams(`Invalid "from" address "${txParams.from}": not a string.`)
   }
-  if (!isAddress(txParams.from)) {
+  if (!isValidAddress(txParams.from)) {
     throw ethErrors.rpc.invalidParams('Invalid "from" address.')
   }
 }
@@ -198,7 +197,7 @@ export function validateRecipient(txParameters) {
     } else {
       throw ethErrors.rpc.invalidParams('Invalid "to" address.')
     }
-  } else if (txParameters.to !== undefined && !isAddress(txParameters.to)) {
+  } else if (txParameters.to !== undefined && !isValidAddress(txParameters.to)) {
     throw ethErrors.rpc.invalidParams('Invalid "to" address.')
   }
   return txParameters

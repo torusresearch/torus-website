@@ -159,8 +159,8 @@
 </template>
 
 <script>
+import { isHexString } from '@ethereumjs/util'
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
-import { isHexString } from 'ethers'
 import log from 'loglevel'
 import { mapGetters, mapState } from 'vuex'
 

@@ -152,12 +152,6 @@ export default {
       apiKey: payload || 'torus-default',
     }
   },
-  setSkipTKey(state, payload) {
-    state.embedState = {
-      ...state.embedState,
-      skipTKey: payload || false,
-    }
-  },
   setMfaLevel(state, payload) {
     state.embedState = {
       ...state.embedState,

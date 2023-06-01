@@ -28,21 +28,19 @@ const getOpenloginWhitelabel = (whiteLabel = {}) => {
 class OpenLoginHandler {
   static openLoginHandlerInstance = null
 
-  static async getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
+  static async getInstance(whiteLabel = {}, loginConfig = {}, sessionNamespace = '', reinitialize = false) {
     if (OpenLoginHandler.openLoginHandlerInstance) {
-      // const updatedConfig = {}
-      // if (Object.keys(whiteLabel).length > 0) {
-      //   const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
-      //   updatedConfig.whiteLabel = whiteLabelOpenLogin
-      // }
-      // if (Object.keys(loginConfig).length > 0) {
-      //   updatedConfig.loginConfig = loginConfig
-      // }
-      // if (Object.keys(updatedConfig).length > 0) {
-      //   OpenLoginHandler.openLoginHandlerInstance.openLoginInstance._syncState({
-      //     ...updatedConfig,
-      //   })
-      // }
+      if (Object.keys(whiteLabel).length > 0) {
+        const whiteLabelOpenLogin = getOpenloginWhitelabel(whiteLabel)
+        OpenLoginHandler.openLoginHandlerInstance.whiteLabel = whiteLabelOpenLogin
+      }
+      if (Object.keys(loginConfig).length > 0) {
+        OpenLoginHandler.openLoginHandlerInstance.loginConfig = loginConfig
+      }
+
+      if (reinitialize) {
+        await OpenLoginHandler.openLoginHandlerInstance.openLoginInstance.init()
+      }
 
       return OpenLoginHandler.openLoginHandlerInstance
     }
@@ -50,10 +48,6 @@ class OpenLoginHandler {
     await OpenLoginHandler.openLoginHandlerInstance.openLoginInstance.init()
     return OpenLoginHandler.openLoginHandlerInstance
   }
-
-  accounts = null
-
-  networkType = null
 
   // This constructor is private. Don't call it
   constructor(whiteLabel = {}, loginConfig = {}, sessionNamespace = '') {
@@ -72,8 +66,6 @@ class OpenLoginHandler {
       whiteLabel: whiteLabelOpenLogin,
       loginConfig,
       network: config.torusNetwork,
-      sdkUrl: 'https://testing.openlogin.com',
-      no3PC: true,
       sessionNamespace: sessionNamespace || customNamespace,
       storageKey: storageUtils.storageType,
     })
@@ -91,6 +83,18 @@ class OpenLoginHandler {
     return this.openLoginInstance.state || {}
   }
 
+  set state(value) {
+    this.openLoginInstance.state = { ...this.state, ...value }
+  }
+
+  get accounts() {
+    return this.openLoginInstance.state.accounts || null
+  }
+
+  get networkType() {
+    return this.openLoginInstance.state.networkType || null
+  }
+
   set whiteLabel(value) {
     this.openLoginInstance.options.whiteLabel = value
   }
@@ -99,45 +103,32 @@ class OpenLoginHandler {
     this.openLoginInstance.options.loginConfig = value
   }
 
-  async getActiveSession() {
-    try {
-      if (this.sessionId) {
-        const sessionManager = new OpenloginSessionManager({
-          sessionNamespace: this.sessionNamespace,
-          sessionId: this.sessionId,
-        })
-
-        const data = await sessionManager.authorizeSession()
-        if (data.accounts) {
-          this.accounts = data.accounts
-        }
-        if (data.networkType) this.networkType = data.networkType
-        return data
-      }
-      return null
-    } catch (error) {
-      log.warn(error)
-      return null
-    }
-  }
-
   async updateSession(sessionData) {
     try {
       if (this.sessionId) {
-        if (sessionData.accounts) {
-          // saving this data locally as well and not in openlogin store.
-          this.accounts = sessionData.accounts
-        }
-        if (sessionData.networkType) sessionData.networkType = this.networkType
         const sessionManager = new OpenloginSessionManager({
           sessionId: this.sessionId,
           sessionNamespace: this.sessionNamespace,
         })
 
-        sessionManager.updateSession(sessionData)
+        await sessionManager.updateSession(sessionData)
       }
     } catch (error) {
       log.warn(error)
+    }
+  }
+
+  async createSession(sessionId, data) {
+    if (!sessionId) throw new Error('Session Id is required')
+    try {
+      const sessionManager = new OpenloginSessionManager({
+        sessionId,
+        sessionNamespace: this.sessionNamespace,
+      })
+
+      await sessionManager.createSession(data)
+    } catch (error) {
+      log.error(error)
     }
   }
 
@@ -188,7 +179,6 @@ class OpenLoginHandler {
         ethAddress: generateAddressFromPrivateKey(tKey),
       })
     }
-    // TODO: fix this.
     if (this.accounts && typeof this.accounts === 'object') {
       Object.values(this.accounts).forEach((val) => {
         keys.push({

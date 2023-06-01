@@ -2,15 +2,14 @@
 import { Common } from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
 import { addHexPrefix, bufferToHex, isHexString, stripHexPrefix } from '@ethereumjs/util'
-import { ObservableStore } from '@metamask/obs-store'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import { ethErrors } from 'eth-rpc-errors'
-import { formatEther, getBigInt, keccak256 } from 'ethers'
 import EthQuery from 'ethjs-query'
 import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
 import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
+import { fromWei, sha3, toBN } from 'web3-utils'
 
 import AbiDecoder from '../../utils/abiDecoder'
 import ApiHelpers from '../../utils/apiHelpers'
@@ -46,6 +45,7 @@ import {
 } from '../../utils/utils'
 import NonceTracker from '../NonceTracker'
 import cleanErrorStack from '../utils/cleanErrorStack'
+import { ObservableStore } from '../utils/ObservableStore'
 import PendingTransactionTracker from './PendingTransactionTracker'
 import TransactionStateManager from './TransactionStateManager'
 import TxGasUtil from './TxGasUtil'
@@ -770,7 +770,7 @@ class TransactionController extends SafeEventEmitter {
       txHash = await this.query.sendRawTransaction(rawTx)
     } catch (error) {
       if (error.message.toLowerCase().includes('known transaction')) {
-        txHash = keccak256(addHexPrefix(rawTx)).toString('hex')
+        txHash = sha3(addHexPrefix(rawTx)).toString('hex')
         txHash = addHexPrefix(txHash)
       } else {
         throw error
@@ -873,7 +873,7 @@ class TransactionController extends SafeEventEmitter {
     )
 
     const finalTxs = transactionPromises.reduce((accumulator, x) => {
-      const totalAmount = x.value ? formatEther(getBigInt(x.value)) : ''
+      const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
       const etherscanTransaction = {
         etherscanLink: getEtherScanHashLink(x.hash, network),
         type: x.type || SUPPORTED_NETWORK_TYPES[network]?.ticker || CONTRACT_TYPE_ETH,

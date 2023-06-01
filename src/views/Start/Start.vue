@@ -46,9 +46,9 @@ export default {
   },
   async created() {
     try {
-      const { loginProvider, state, skipTKey, mfaLevel, sessionNamespace, ...rest } = this.$route.query
+      const { loginProvider, state, mfaLevel, sessionNamespace, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))
-      log.info('logging in with', loginProvider, state, skipTKey, rest, mfaLevel)
+      log.info('logging in with', loginProvider, state, rest, mfaLevel)
       const { whiteLabel, loginConfig = {}, origin } = stateParams
       this.whiteLabel = whiteLabel
       this.iframeOrigin = origin
@@ -59,7 +59,6 @@ export default {
         loginProvider,
         getWalletKey: true,
         appState: state,
-        skipTKey: skipTKey === 'true',
         mfaLevel,
         extraLoginOptions: {
           ...rest,

@@ -1,5 +1,4 @@
-import { ObservableStore } from '@metamask/obs-store'
-
+import { ObservableStore } from '../utils/ObservableStore'
 import WalletConnectV1Controller from './WalletConnectV1Controller'
 import WalletConnectV2Controller from './WalletConnectV2Controller'
 

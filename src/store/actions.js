@@ -1,5 +1,6 @@
 import { isHexString, privateToAddress } from '@ethereumjs/util'
-import { safeatob, safebtoa } from '@toruslabs/openlogin-utils'
+import { OpenloginSessionManager } from '@toruslabs/openlogin-session-manager'
+import { BrowserStorage, safeatob, safebtoa } from '@toruslabs/openlogin-utils'
 import deepmerge from 'deepmerge'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
@@ -277,12 +278,13 @@ export default {
     )
 
     const openLoginHandler = await OpenLoginHandler.getInstance(state.whiteLabel, {}, config.sessionNamespace)
-    const activeSession = await openLoginHandler.getActiveSession()
-    if (activeSession && activeSession.walletKey === privateKey) {
-      const _store = activeSession?.store || {}
+    const { sessionId: openloginSessionId, state: openloginState } = openLoginHandler
+    // this is import private key into torus wallet
+    if (openloginSessionId && openloginState.walletKey === privateKey) {
+      const _store = openloginState?.userInfo || {}
       const sessionData = {
-        ...activeSession,
-        store: {
+        ...openloginState,
+        userInfo: {
           ..._store,
           whiteLabel: state.whiteLabel,
           appState,
@@ -290,6 +292,24 @@ export default {
         },
       }
       await openLoginHandler.updateSession(sessionData)
+    } else {
+      // login with private key from torus wallet plugin
+      const sessionId = OpenloginSessionManager.generateRandomSessionKey()
+      const sessionData = {
+        walletKey: privateKey,
+        userInfo: {
+          whiteLabel: state.whiteLabel,
+          appState,
+          sessionId,
+          ...userInfo,
+        },
+      }
+      openLoginHandler.state = { walletKey: privateKey, userInfo: { sessionId } }
+      if (config.storageAvailability[storageUtils.storageType]) {
+        const storage = BrowserStorage.getInstance(storageUtils.openloginStoreKey, storageUtils.storageType)
+        storage.set('sessionId', sessionId)
+      }
+      await openLoginHandler.createSession(sessionId, sessionData)
     }
 
     // TODO: deprecate rehydrate false for the next major version bump
@@ -311,14 +331,14 @@ export default {
     })
     dispatch('updateSelectedAddress', { selectedAddress: address })
     const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
-    const existingSessionData = await openloginInstance.getActiveSession()
-    if (!existingSessionData) {
+    const { sessionId, state: openloginState } = openloginInstance
+    if (!sessionId) {
       dispatch('logOut')
       return ''
     }
-    const { accounts: oldAccounts = {} } = existingSessionData
+    const { accounts: oldAccounts = {} } = openloginState
     const sessionData = {
-      ...existingSessionData,
+      ...openloginState,
       accounts: {
         ...oldAccounts,
         [address]: {
@@ -387,13 +407,13 @@ export default {
     }
 
     const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
-    const existingSessionData = await openloginInstance.getActiveSession()
-    if (!existingSessionData) {
+    const { sessionId, state: openloginState } = openloginInstance
+    if (!sessionId) {
       dispatch('logOut')
       return undefined
     }
     const sessionData = {
-      ...existingSessionData,
+      ...openloginState,
       networkType,
     }
     await openloginInstance.updateSession(sessionData)
@@ -443,17 +463,21 @@ export default {
           },
           jwtParameters || {}
         ),
-        skipTKey: state.embedState.skipTKey,
         whiteLabel,
         mfaLevel: state.embedState.mfaLevel,
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
       })
-      const { keys, userInfo, postboxKey, userDapps, error } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, userDapps, error, sessionId } = await loginHandler.handleLoginWindow()
       if (error) {
         throw new Error(error)
       }
       if (config.storageAvailability[storageUtils.storageType]) {
+        // add sessionId to local storage.
+        const storage = BrowserStorage.getInstance(storageUtils.openloginStoreKey, storageUtils.storageType)
+        storage.set('sessionId', sessionId)
+        // reinitializing openlogin instance with new session id after login is complete.
+        await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace, true)
         if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType })
         else await dispatch('setProviderType', { network: state.networkType, type: RPC })
       }
@@ -624,8 +648,7 @@ export default {
       // TODO: check skipOpenLoginCheck and fetchSession
       if (!currentRoute.meta.skipOpenLoginCheck || currentRoute.meta.fetchSession) {
         const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
-        const { sessionId } = openLoginHandler
-        const { state: openloginState } = openLoginHandler
+        const { sessionId, state: openloginState } = openLoginHandler
         if (!currentRoute.meta.skipOpenLoginCheck) {
           if (!sessionId) {
             commit('setRehydrationStatus', true)
@@ -668,7 +691,6 @@ export default {
             log.info('no openlogin session')
           }
         }
-        // TODO: check networkType
         if (openLoginHandler?.networkType) finalNetworkType = openLoginHandler?.networkType
       }
 

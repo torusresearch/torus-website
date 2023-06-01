@@ -1,10 +1,10 @@
 import { addHexPrefix, bufferToHex, stripHexPrefix } from '@ethereumjs/util'
-import { ObservableStore } from '@metamask/obs-store'
 import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'
 import log from 'loglevel'
 
 import { MESSAGE_TYPE } from '../utils/enums'
+import { ObservableStore } from './utils/ObservableStore'
 
 const hexRe = /^[\dA-Fa-f]+$/g
 

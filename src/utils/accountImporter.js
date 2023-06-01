@@ -25,7 +25,14 @@ const accountImporter = {
       return stripped
     },
     'JSON File': async (input, password) => {
-      const wallet = await Wallet.fromEncryptedJson(JSON.stringify(input), password)
+      let wallet
+      try {
+        wallet = await Wallet.fromEncryptedJson(JSON.stringify(input), password)
+      } catch (error) {
+        // eslint-disable-next-line no-undef
+        log.info('Attempt to import as EtherWallet format failed, trying V3...', error)
+        throw error
+      }
 
       return walletToPrivateKey(wallet)
     },

@@ -8,12 +8,11 @@ import PopupWithBcHandler from '../Popup/PopupWithBcHandler'
 class OpenLoginWindowHandler {
   nonce = randomId()
 
-  constructor({ verifier, redirect_uri, preopenInstanceId, jwtParameters, skipTKey, whiteLabel, loginConfigItem, origin, mfaLevel }) {
+  constructor({ verifier, redirect_uri, preopenInstanceId, jwtParameters, whiteLabel, loginConfigItem, origin, mfaLevel }) {
     this.verifier = verifier
     this.preopenInstanceId = preopenInstanceId
     this.redirect_uri = redirect_uri
     this.jwtParameters = jwtParameters
-    this.skipTKey = skipTKey
     this.whiteLabel = whiteLabel
     this.loginConfigItem = loginConfigItem
     this.origin = origin
@@ -51,7 +50,6 @@ class OpenLoginWindowHandler {
     Object.keys(this.jwtParameters).forEach((x) => {
       if (this.jwtParameters[x]) finalUrl.searchParams.append(x, this.jwtParameters[x])
     })
-    finalUrl.searchParams.append('skipTKey', this.skipTKey)
     finalUrl.searchParams.append('mfaLevel', this.mfaLevel)
     log.info(finalUrl.href)
     this.finalURL = finalUrl

@@ -503,7 +503,6 @@
 <script>
 import BigNumber from 'bignumber.js'
 import Das from 'das-sdk'
-import { getAddress } from 'ethers'
 import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import { cloneDeep, isEqual } from 'lodash'
@@ -1237,7 +1236,7 @@ export default {
         try {
           const res = await this.getUnstoppableDomains(this.toAddress)
           log.info(res)
-          toAddress = getAddress(res.data)
+          toAddress = toChecksumAddressByChainId(res.data, this.$store.state.networkId)
         } catch (error) {
           log.error(error)
           this.unstoppableDomainsError = 'walletTransfer.invalidUnstoppable'
@@ -1245,7 +1244,7 @@ export default {
         }
       } else if (this.selectedVerifier === BIT) {
         try {
-          toAddress = getAddress(this.toAddress)
+          toAddress = toChecksumAddressByChainId(this.toAddress, this.$store.state.networkId)
         } catch (error) {
           log.error('invalidBit', this.toAddress, error)
           this.bitError = 'walletTransfer.invalidBit'

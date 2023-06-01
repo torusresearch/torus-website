@@ -1,4 +1,5 @@
 import { addHexPrefix, isValidAddress as isValidAddressUtil, isValidChecksumAddress, stripHexPrefix, toChecksumAddress } from '@ethereumjs/util'
+import { normalize } from '@metamask/eth-sig-util'
 import BN from 'bn.js'
 import abi from 'human-standard-token-abi'
 import { DateTime } from 'luxon'
@@ -273,7 +274,7 @@ function getTokenAddressFromTokenObject(token) {
  * @returns {String} - checksummed address
  */
 function checksumAddress(address) {
-  return address ? toChecksumAddress(address) : ''
+  return address ? toChecksumAddress(normalize(address)) : ''
 }
 
 function addressSlicer(address = '') {

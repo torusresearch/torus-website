@@ -109,10 +109,12 @@
 </template>
 <script>
 import TokenList from '@uniswap/default-token-list'
+import { Protocol } from '@uniswap/router-sdk'
 import { Percent, Token, TradeType } from '@uniswap/sdk-core'
-import { CurrencyAmount, nativeOnChain } from '@uniswap/smart-order-router'
+import { CurrencyAmount, nativeOnChain, SwapType } from '@uniswap/smart-order-router'
+import { DEFAULT_ROUTING_CONFIG_BY_CHAIN } from '@uniswap/smart-order-router/build/module/routers/alpha-router/config'
 import BigNum from 'bignumber.js'
-import { ethers } from 'ethers'
+import { providers } from 'ethers'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
@@ -229,10 +231,11 @@ export default {
           swapParams = [fromCurrencyAmount, toTokenInstance, TradeType.EXACT_INPUT]
         }
 
-        const router = new AlphaRouter({ chainId: this.chainId, provider: new ethers.providers.Web3Provider(torus.torusController.provider) })
+        const router = new AlphaRouter({ chainId: this.chainId, provider: new providers.Web3Provider(torus.torusController.provider) })
         const swapRoute = await router.route(
           ...swapParams,
           {
+            type: SwapType.SWAP_ROUTER_02,
             recipient: this.selectedAddress,
             slippageTolerance: new Percent(5, 100),
             deadline: Math.floor(Date.now() / 1000 + 1800),
@@ -241,7 +244,10 @@ export default {
               recipient: config.uniswapFeeRecipient,
             },
           },
-          {}
+          {
+            ...DEFAULT_ROUTING_CONFIG_BY_CHAIN(this.chainId),
+            protocols: [Protocol.V3, Protocol.V2],
+          }
         )
         log.info(swapRoute)
         log.info(`Quote Exact In: ${swapRoute.quote.toSignificant()}`)
