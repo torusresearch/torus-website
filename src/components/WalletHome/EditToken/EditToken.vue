@@ -187,10 +187,10 @@ export default {
     ...mapActions(['addCustomToken', 'deleteCustomToken']),
     async onCustomAddressChange(value) {
       this.customAddress = value
-      this.isValidAddress = await validateContractAddress(torus.etherProvider, this.customAddress, this.$store.state.networkId)
+      this.isValidAddress = await validateContractAddress(torus.ethersProvider, this.customAddress, this.$store.state.networkId)
       if (this.isValidAddress) {
         try {
-          this.currentToken = new TokenHandler({ address: this.customAddress.toLowerCase(), provider: torus.etherProvider })
+          this.currentToken = new TokenHandler({ address: this.customAddress.toLowerCase(), provider: torus.ethersProvider })
           const [symbol, name, balance, decimals] = await Promise.all([
             this.currentToken.getSymbol(),
             this.currentToken.getName(),
