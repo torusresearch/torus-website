@@ -1,0 +1,22 @@
+.header-container {
+  .v-tab {
+    text-transform: inherit;
+    &.v-tab--active {
+      color: var(--v-torusBrand1-base);
+    }
+  }
+
+  .home-link {
+    cursor: pointer;
+  }
+
+  .toast-container {
+    top: 66px;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    @media (max-width: 960px) {
+      top: 58px;
+    }
+  }
+}

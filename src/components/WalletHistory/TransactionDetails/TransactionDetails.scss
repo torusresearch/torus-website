@@ -1,0 +1,27 @@
+.activity {
+  .info {
+    font-size: 10px;
+  }
+
+  .etherscan-chip {
+    background: #f6f5f7;
+    color: #5c6c7f;
+    font-weight: normal;
+    font-size: 10px;
+    line-height: 12px;
+    &.isDark {
+      background: #242529;
+    }
+  }
+
+  .v-chip.status-chip {
+    color: #0f1222;
+    width: 100px;
+    ::v-deep .v-chip__content {
+      text-align: center;
+      display: block;
+      height: auto;
+      width: 100%;
+    }
+  }
+}

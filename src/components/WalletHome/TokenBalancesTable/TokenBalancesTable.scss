@@ -1,0 +1,23 @@
+.inline-small {
+  width: 20px;
+  height: 25px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.home-cards {
+  .card-header {
+    border: 0;
+  }
+}
+
+.v-badge {
+  width: 100%;
+  ::v-deep .v-badge__badge {
+    padding: 0;
+    background-color: #D3D3D4 !important;
+  }
+  ::v-deep .v-badge__badge::after {
+    display: none;
+  }
+}

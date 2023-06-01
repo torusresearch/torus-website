@@ -1,0 +1,31 @@
+.container {
+  max-width: 100%;
+}
+
+.redirect-container {
+  .redirect-title {
+    font-size: 14px;
+  }
+  .redirect-info {
+    font-size: 28px;
+  }
+  &--mobile {
+    .redirect-title {
+      font-size: 14px;
+    }
+    .redirect-info {
+      font-size: 24px;
+    }
+  }
+}
+
+.footer {
+  position: absolute;
+  bottom: 60px;
+  width: 100%;
+  font-size: 11px;
+  line-height: 1.2em;
+  .powered-by {
+    color: #b7b8bd;
+  }
+}

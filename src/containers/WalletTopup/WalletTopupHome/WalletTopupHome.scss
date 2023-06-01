@@ -1,0 +1,12 @@
+.page-title {
+  font-size: 20px;
+  line-height: 23px;
+}
+.error-box {
+  color: #0f1222;
+  &.is-mobile {
+    .v-icon {
+      margin-top: 3px;
+    }
+  }
+}

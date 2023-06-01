@@ -1,0 +1,13 @@
+::v-deep .v-breadcrumbs {
+  a {
+    color: var(--v-text_2-base);
+  }
+  a.v-breadcrumbs__item.v-breadcrumbs__item--disabled {
+    color: var(--v-torusFont1-base);
+  }
+}
+
+::v-deep .v-breadcrumbs .v-breadcrumbs__divider {
+  padding-left: 4px;
+  padding-right: 4px;
+}

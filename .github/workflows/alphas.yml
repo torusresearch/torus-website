@@ -1,0 +1,86 @@
+name: alpha release
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the alpha branches
+  push:
+    branches: ['alpha*']
+
+jobs:
+  test:
+    name: Test release
+    strategy:
+      matrix:
+        node: ['18.x']
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Pre-build setup
+        run: npm run pre-build
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Running unit tests with coverage
+        run: npm run test:coverage-codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+
+  build-deploy-alpha:
+    name: Build & deploy alpha*.tor.us
+    strategy:
+      matrix:
+        node: ['18.x']
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run build
+        run: npm run build:alpha-branches
+        env:
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+
+      - name: Extract branch name
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      # Upload to ec2
+      - name: Upload to ec2 machine
+        run: |
+          mkdir -p ~/.ssh
+          echo "$ALPHA_SSH_KEY" >> ~/.ssh/id_rsa_alpha
+          chmod 400 ~/.ssh/id_rsa_alpha
+          ssh-keyscan -H "$GH_BRANCH".tor.us >> ~/.ssh/known_hosts
+          tar czf - dist/ | ssh -i ~/.ssh/id_rsa_alpha ubuntu@"$GH_BRANCH".tor.us "rm -rf ~/"$GH_BRANCH"-torus-website/* && tar -zxf - -C ~/"$GH_BRANCH"-torus-website/"
+        env:
+          GH_BRANCH: ${{ steps.extract_branch.outputs.branch }}
+          ALPHA_SSH_KEY: ${{ secrets.ALPHA_SSH_KEY }}

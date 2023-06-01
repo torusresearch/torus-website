@@ -1,0 +1,32 @@
+.account-list {
+  border-radius: 6px;
+  .v-avatar {
+    border-radius: 0;
+    align-self: start;
+    & > svg, & > .v-icon {
+      margin: auto;
+    }
+  }
+  .v-list-item {
+    border-bottom: 1px solid #D3D5E2;
+    &.theme--dark {
+      border-bottom: 1px solid #202125;
+    }
+  }
+  .v-list-item:last-child {
+    border-bottom: 0;
+    &.theme--dark {
+      border-bottom: 0;
+    }
+  }
+  &.theme--dark {
+    border: 1px solid #202125;
+    .v-list-item {
+      background: #28292E;
+    }
+  }
+  
+  .tkey-features {
+    padding-left: 16px
+  }
+}

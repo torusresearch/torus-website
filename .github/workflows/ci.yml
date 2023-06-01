@@ -1,0 +1,51 @@
+name: Any branch test & lint & build
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events for all except ignored branches
+  push:
+    branches-ignore:
+      - 'alpha*'
+      - master
+      - develop
+      - binance
+
+jobs:
+  ci:
+    name: ci
+    strategy:
+      matrix:
+        node: ['18.x']
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Pre-build setup
+        run: npm run pre-build
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Running unit tests with coverage
+        run: npm run test:coverage-codecov
+        env:
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Run build
+        run: npm run build:testing
+        env:
+          VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}

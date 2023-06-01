@@ -1,0 +1,110 @@
+.confirm-transaction {
+  .transfer-to-from {
+    .icon-container {
+      padding-left: 18px;
+      &--right {
+        padding-left: 0;
+        padding-right: 18px;
+      }
+      .icon-box {
+        position: relative;
+        width: 48px;
+        height: 48px;
+        line-height: 0;
+        border-radius: 50%;
+        background: #ffffff;
+        box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+        &.isDark {
+          background-color: var(--v-torusBlack2-base);
+        }
+      }
+      .link-box {
+        position: relative;
+        display: inline-block;
+        width: 46px;
+        height: 46px;
+        line-height: 0;
+        border-radius: 50%;
+        box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+        &.isDark {
+          background-color: var(--v-torusBlack2-base);
+        }
+      }
+      img,
+      .v-icon,
+      .dapp-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .dapp-icon {
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 16px;
+      }
+    }
+  }
+
+  .transfer-to-from__details {
+    .name {
+      font-size: 12px;
+      line-height: 14px;
+      text-align: center;
+      color: #5c6c7f;
+      width: 84px;
+      height: 14px;
+      margin-top: 4px;
+      &--address {
+        font-size: 10px;
+      }
+    }
+    .network-container {
+      margin-top: -24px;
+      min-width: 162px;
+      &.isMobile {
+        min-width: 112px;
+      }
+    }
+  }
+
+  &.theme--dark {
+    .transfer-to-from__details .name {
+      color: #ffffff;
+    }
+  }
+
+  ::v-deep .v-badge__badge {
+    padding: 0;
+  }
+
+  .twitter-badge {
+    cursor: pointer;
+    padding: 4px 0;
+    display: block;
+  }
+}
+
+.v-tooltip__content {
+  width: 150px;
+  background: #ffffff;
+  border: 1px solid #f2f2f2;
+  box-sizing: border-box;
+  box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06) !important;
+  border-radius: 6px;
+  opacity: 1 !important;
+}
+.theme--dark {
+  .v-tooltip__content {
+    background: var(--v-torusBlack-base);
+    border: 0;
+    box-shadow: 0px 14px 28px rgba(0, 0, 0, 0.206649) !important;
+  }
+}
+.twitter-note {
+  font-weight: 300;
+  font-size: 10px;
+  line-height: 12px;
+  text-align: center;
+  letter-spacing: 0.0857143px;
+}

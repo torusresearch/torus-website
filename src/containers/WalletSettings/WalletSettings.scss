@@ -1,0 +1,40 @@
+@import '../../scss/elevation-one.mixin';
+
+.wallet-settings {
+  .page-title {
+    font-size: 20px;
+    line-height: 23px;
+  }
+  .v-expansion-panels {
+    .v-expansion-panel-header {
+      border-top: 0;
+      border-left: 0;
+      border-right: 0;
+      box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.03) !important;
+      padding: 12px 16px;
+      min-height: 50px;
+      border-bottom: 1px solid #F5F5F5;
+    }
+    .v-expansion-panel {
+      &::before {
+        @include elevationOne();
+      }
+      &:not(:first-child)::after {
+        border: 0;
+      }
+    }
+    &.theme--dark {
+      .v-expansion-panel-header {
+        border: 0 ;
+        box-shadow: 0px 14px 28px rgba(0, 0, 0, 0.16) !important;
+      }
+      .v-expansion-panel {
+        border: 1px solid #343539;
+        &::before {
+          box-shadow: 0px 14px 28px rgba(0, 0, 0, 0.16) !important;
+          border: 0;
+        }
+      }
+    }
+  }
+}

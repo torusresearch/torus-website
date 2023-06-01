@@ -1,0 +1,59 @@
+@mixin loginTypes() {
+  &__google-blue {
+    color: #4285f4;
+  }
+  &__google-red {
+    color: #ea4335;
+  }
+  &__google-yellow {
+    color: #fbbc05;
+  }
+  &__google-green {
+    color: #34a853;
+  }
+  &__facebook {
+    color: #3478ea;
+  }
+  &__reddit {
+    color: #ff4500;
+  }
+  &__twitch {
+    color: #695790;
+  }
+  &__discord {
+    color: #7289da;
+  }
+  &__github {
+    color: #000000;
+  }
+  &__linkedin {
+    color: #2867b2;
+  }
+  &__twitter {
+    color: #55acee;
+  }
+  &__weibo {
+    color: #e71f19;
+  }
+  &__kakao {
+    color: #f7e004;
+  }
+  &__email {
+    color: #000000;
+  }
+  &__email_password {
+    color: #000000;
+  }
+  &__line {
+    color: #00b900;
+  }
+  &__apple {
+    color: #000000;
+  }
+  &__wechat {
+    color: #2DC100;
+  }
+  &__jwt {
+    color: #000000;
+  }
+}

@@ -1,0 +1,41 @@
+.btn-speed {
+  padding: 14px;
+  opacity: 0.3;
+  &.is-confirm {
+    padding: 8px 14px;
+  }
+  cursor: pointer;
+  > div {
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 12px;
+  }
+  &__speed {
+    color: #4a4a4a;
+  }
+  &__price {
+    color: #5c6c7f;
+  }
+  &.selected {
+    opacity: 1;
+    font-weight: bold;
+  }
+  &:focus-visible {
+    outline: none;
+    border: 1px solid  var(--v-torusFont1-base);
+  }
+  &.theme--dark {
+    background-color: var(--v-torusBlack2-base);
+    opacity: 0.4;
+    .btn-speed__speed {
+      color: #d3d3d4;
+    }
+    .btn-speed__price {
+      color: #979797;
+    }
+    &.selected {
+      opacity: 1;
+      font-weight: bold;
+    }
+  }
+}

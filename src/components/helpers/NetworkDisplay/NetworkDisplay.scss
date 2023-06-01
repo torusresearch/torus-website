@@ -1,0 +1,108 @@
+.network-chip {
+  height: 20px;
+  background: #ffe9b3;
+  color: #5c6c7f;
+  border-radius: 10px;
+  padding: 0 12px;
+  justify-content: center;
+  flex: none;
+
+  &--minimal {
+    max-width: 210px;
+  }
+
+  .v-icon {
+    color: #5c6c7f;
+    height: 10px;
+    width: 10px;
+  }
+
+  &__name {
+    font-size: 12px;
+    font-weight: bold;
+    text-align: left;
+    &--mobile {
+      font-size: 10px;
+    }
+  }
+
+  &.theme--dark,
+  .v-icon {
+    color: #5c6c7f;
+  }
+
+  &.network-chip--mainnet {
+    background: #cde0ff;
+  }
+
+  &.network-chip--goerli {
+    background: #ffe1d4;
+  }
+
+  &.network-chip--sepolia {
+    background: #caf1fe;
+  }
+
+  &.network-chip--rpc {
+    background: #c8f8c1;
+  }
+
+  &.network-chip--matic {
+    background: #98dcff;
+  }
+
+  &.network-chip--mumbai {
+    background: #efe2ff;
+  }
+
+  &.network-chip--bsc_mainnet {
+    background: #f0b90b;
+  }
+
+  &.network-chip--bsc_testnet {
+    background: #f0b90b;
+  }
+
+  &.network-chip--reef {
+    background: #decaec;
+  }
+
+  &.network-chip--xdai {
+    background: #62a7a5;
+    .v-icon {
+      color: white;
+    }
+    color: white;
+  }
+
+  &.is-plain {
+    background: none;
+    margin: 0 -10px;
+    .network-chip__name {
+      font-size: 12px;
+      font-weight: normal;
+      text-align: left;
+      word-break: break-all;
+    }
+    &.theme--dark {
+      color: #d3d5e2;
+      .v-icon {
+        color: #d3d5e2;
+      }
+    }
+  }
+}
+.select-item-list {
+  .v-icon {
+    color: #5c6c7f;
+    margin-right: 4px;
+    margin-bottom: 2px;
+    width: 13px;
+    &.theme--dark {
+      color: #d3d5e2;
+    }
+  }
+}
+.row-pointer:hover {
+  cursor: pointer;
+}

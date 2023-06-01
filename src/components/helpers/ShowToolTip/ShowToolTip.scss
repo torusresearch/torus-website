@@ -1,0 +1,11 @@
+.selected-account {
+  cursor: pointer;
+
+  &.v-btn {
+    line-height: 0;
+    background-color: var(--v-torusGray4-base);
+    &.theme--dark {
+      background-color: var(--v-torusBlack2-base);
+    }
+  }
+}

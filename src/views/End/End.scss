@@ -1,0 +1,91 @@
+.container {
+  max-width: 100%;
+}
+
+.redirect-container {
+  .redirect-title {
+    font-size: 14px;
+  }
+  .redirect-info {
+    font-size: 28px;
+  }
+  &--mobile {
+    .redirect-title {
+      font-size: 14px;
+    }
+    .redirect-info {
+      font-size: 24px;
+    }
+  }
+}
+
+.footer {
+  position: absolute;
+  bottom: 60px;
+  width: 100%;
+  font-size: 11px;
+  line-height: 1.2em;
+  .powered-by {
+    color: #b7b8bd;
+  }
+}
+
+.account-list {
+  width: 420px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin: auto;
+  padding: 0 10px;
+}
+
+.account-item-checkbox {
+  justify-content: center;
+  padding: 10px 20px;
+  border: 1px solid #FFFFFF;
+  border-radius: 6px;
+
+  &:hover {
+    border-color: #DADADA;
+  }
+
+  &.selected {
+    border-color: #DADADA;
+    background-color: #F9F9FB;
+    
+    ::v-deep .v-input__slot {
+      background-color: #F9F9FB !important;
+    }
+  }
+
+  &.dark-theme {
+    background-color: #2f3136;
+    border-color: #404145;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+
+    &:hover {
+      border-color: #DADADA;
+    }
+
+    &.selected {
+      border-color: #DADADA;
+      background-color: #3f4146;
+
+      ::v-deep .v-input__slot {
+        background-color: #3f4146 !important;
+      }
+    }
+  }
+}
+
+.account-app {
+  font-size: 14px;
+}
+.account-address {
+  font-size: 12px;
+}
+
+.v-btn {
+  background-color: var(--v-torusBrand1-base);
+  color: #FFFFFF;
+  width: 400px;
+}

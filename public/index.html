@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Torus Wallet is the easiest blockchain digital wallet available on the web.
+    Take advantage of social logins like Google, Facebook, Twitter, Discord, Reddit and Email to instantly and securely manage your private keys, cryptocurrencies, digital tokens and DeFi transactions."
+    />
+    <meta name="keywords" content="crypto, wallet, oauth, login, best, ethereum, torus" />
+    <meta name="author" content="Torus Labs" />
+    <link rel="shortcut icon" href="<%= BASE_URL %>favicon.png" />
+    <title>Torus</title>
+
+    <!-- #OG Tags for facebook, linkedin -->
+    <meta property="og:title" content="Torus Wallet" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://app.tor.us" />
+    <meta property="og:image" content="https://images.toruswallet.io/torus_full_logo.png" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="de_DE" />
+    <meta property="og:locale:alternate" content="es_ES" />
+    <meta property="og:locale:alternate" content="zh_CN" />
+    <meta property="og:locale:alternate" content="ko_KR" />
+    <meta property="og:locale:alternate" content="ja_JP" />
+    <meta
+      property="og:description"
+      content="Torus Wallet is the easiest blockchain digital wallet available on the web.
+    Take advantage of social logins like Google, Facebook, Twitter, Discord, Reddit and Email to instantly and securely manage your private keys, cryptocurrencies, digital tokens and DeFi transactions."
+    />
+    <!-- #Tags for twitter -->
+    <meta property="twitter:title" content="Torus Wallet" />
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:url" content="https://app.tor.us" />
+    <meta property="twitter:image" content="https://images.toruswallet.io/torus_logo_512x512.png" />
+    <meta
+      property="twitter:description"
+      content="Torus Wallet is the easiest blockchain digital wallet available on the web.
+      Take advantage of social logins like Google, Facebook, Twitter, Discord, Reddit and Email to instantly and securely manage your private keys, cryptocurrencies, digital tokens and DeFi transactions."
+    />
+
+    <link rel="preconnect" href="https://www.google-analytics.com" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <link rel="preconnect" href="https://api.tor.us" />
+    <link rel="dns-prefetch" href="https://api.tor.us" />
+    <link rel="preconnect" href="https://mainnet.infura.io" />
+    <link rel="dns-prefetch" href="https://mainnet.infura.io" />
+    <link rel="stylesheet" href="<%= BASE_URL %>css/skeleton.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" />
+    <script type="text/javascript">
+      window.onerror = function (msg, url, lineNo, columnNo, error) {
+        const app = document.getElementById("app")
+        const isVueLoaded = app && app.__vue__
+        if (!isVueLoaded) {
+          alert("Your browser version seems to be outdated/unsupported, Please update your browser for using wallet securely.")
+        }
+      }
+    </script>
+    <script type="text/javascript">window.$crisp=[];window.$crisp.push(["safe", true], ["set", "session:segments", [["Wallet"]]]); if (window.self === window.top) { window.$crisp.push(['do', 'chat:show']); } else { window.$crisp.push(['do', 'chat:hide']); };window.CRISP_WEBSITE_ID="b1ae36a2-c9d5-4554-9db8-b28aeb8ddf4e";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+    <style>
+      body {
+        background: #fcfcfc;
+        padding: 0;
+        margin: 0;
+      }
+
+      @media screen and (max-width: 150px) {
+        .crisp-client {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body data-spy="scroll" data-target="#mainnav" data-offset="80">
+    <noscript>
+      <strong>We're sorry but app doesn't work properly without javascript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app">
+      <!-- LOADER -->
+      <div id="skeleton-redirect" class="redirect-skeleton-container">
+        <div class="redirect-skeleton-content">
+          <div id="skeleton-redirect-spinner" class="spinner">
+            <div class="head"></div>
+            <div class="mask"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const redirectPath = location.pathname
+      let theme = 'light'
+      function storageAvailable(type) {
+        var storage
+        try {
+          storage = window[type]
+          var x = '__storage_test__'
+          storage.setItem(x, x)
+          storage.removeItem(x)
+          return true
+        } catch (e) {
+          return (
+            e &&
+            // everything except Firefox
+            (e.code === 22 ||
+              // Firefox
+              e.code === 1014 ||
+              // test name field too, because code might not be present
+              // everything except Firefox
+              e.name === 'QuotaExceededError' ||
+              // Firefox
+              e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            storage &&
+            storage.length !== 0
+          )
+        }
+      }
+
+      if (storageAvailable('localStorage')) {
+        const torusTheme = localStorage.getItem('torus-theme')
+        if (torusTheme) {
+          theme = torusTheme.split('-')[0]
+        }
+      }
+
+      if (theme === 'dark') document.querySelector('body').style.backgroundColor = '#24252A'
+
+      // Don't show loader on start and end route
+      if (!(/\/end/i.test(redirectPath) || /\/start/i.test(redirectPath))) {
+        document.querySelector('html').style.height = '100%'
+        document.querySelector('body').style.height = '100%'
+        document.querySelector('#app').style.height = '100%'
+        document.querySelector('#app').style.backgroundColor = theme === 'dark' ? '#24252A' : '#FCFCFC'
+        document.querySelector('#skeleton-redirect-spinner .mask').style.backgroundColor = theme === 'dark' ? '#24252A' : '#FCFCFC'
+
+
+        const loaderElement = document.querySelector('#skeleton-redirect')
+        loaderElement.style.display = 'flex'
+      }
+    </script>
+  </body>
+</html>

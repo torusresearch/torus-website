@@ -1,0 +1,59 @@
+.v-btn.v-btn--icon.wallet-connect-btn {
+  background: var(--v-torusGray4-base);
+  color: var(--v-torusFont2-base);
+  &.theme--dark {
+    background: var(--v-torusBlack2-base);
+    color: var(--v-torusFont1-base);
+  }
+}
+
+.qr-scan-container {
+  position: relative;
+  .close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
+
+.guide-info {
+  font-size: 10px;
+}
+
+.wallet-connect-input {
+  :deep(.v-input__prepend-inner) {
+    margin-top: 9px !important;
+  }
+  :deep(input) {
+    padding: 7px 0 8px;
+  }
+  &--connected {
+    :deep(.v-input__slot fieldset) {
+      border-width: 1px !important;
+      border-color: var(--v-success-base) !important;
+    }
+    :deep(input) {
+      color: var(--v-success-base) !important;
+    }
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: #d3d3d4;
+}
+
+.hidden-btn {
+  visibility: hidden;
+}
+
+.guide-menu.theme--dark {
+  border: 1px white solid;
+  border-radius: 9px;
+}
+
+.goto-button {
+  margin-left: -10px;
+}

@@ -1,0 +1,104 @@
+.page-title {
+  font-size: 20px;
+  line-height: 23px;
+}
+
+.card-total {
+  .display-4 {
+    line-height: 1em;
+  }
+}
+
+.currency-selector {
+  margin-bottom: -10px;
+}
+
+::v-deep .search-tokens.v-input.v-text-field--outlined {
+  & > .v-input__control {
+    & > .v-input__slot {
+      height: 40px;
+      min-height: 40px;
+      max-width: 562px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
+      border-radius: 6px;
+      .v-input__append-inner {
+        margin-top: 8px;
+        .v-icon {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+  &.theme--dark {
+    & > .v-input__control > .v-input__slot {
+      background: var(--v-torusBlack2-base);
+    }
+  }
+}
+
+.token-tab-content {
+  overflow: visible;
+}
+
+.home-tab {
+  ::v-deep .v-tabs-slider-wrapper {
+    display: none;
+  }
+  .v-tab {
+    text-transform: none;
+    width: 100%;
+    border: 1px solid #D5D5D5;
+    border-radius: 6px;
+    background-color: var(--v-torusLight-base);
+    color: var(--v-text_2--text-base);
+    &.home-tab-token {
+      border-right: 0;
+    }
+    &--active {
+      color: var(--v-torusBrand1-base);
+      background-color: var(--v-torusGray2-base);
+    }
+    @media screen and (min-width: 960px) {
+      width: 180px;
+    }
+    @media screen and (min-width: 1264px) {
+      width: 280px;
+    }
+  }
+  &-token.v-tab {
+    border-radius: 6px 0px 0px 6px;
+  }
+  &-collectibles.v-tab {
+    border-radius: 0px 6px 6px 0px;
+  }
+  &.theme--dark {
+    &.v-tabs {
+      ::v-deep & > .v-tabs-bar {
+        background-color: transparent;
+      }
+    }
+    .v-tab {
+      border: 1px solid #343539;
+      background-color: inherit;
+      &--active {
+        background-color: var(--v-torusBlack2-base);
+      }
+    }
+  }
+}
+
+.token-tab-content.theme--dark {
+  background-color: transparent; 
+}
+
+.refresh-text {
+  font-size: 10px;
+  line-height: 12px;
+}
+
+.v-btn:not(.v-btn--text):not(.v-btn--icon):not(.v-btn--round).refresh-btn {
+  border-radius: 12px;
+}

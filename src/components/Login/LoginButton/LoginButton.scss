@@ -1,0 +1,159 @@
+.login-btn {
+  background: #f3f4f6;
+  border: 1px solid #E5E7EB;
+  box-sizing: border-box;
+  box-shadow: 2px 2px 12px rgba(3, 100, 255, 0.05);
+  border-radius: 10px;
+  width: 100%;
+  min-height: 60px;
+  display: flex;
+  outline: 0;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  position: relative;
+
+  .login-btn__text {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5rem;
+    letter-spacing: 0.03125em;
+  }
+
+  .login-btn__text--existing {
+    font-size: 0.875rem;
+    line-height: 1.2rem;
+  }
+
+  img,
+  ::v-deep .v-icon .v-icon__component {
+    width: 26px;
+    height: 26px;
+  }
+
+  &.theme--dark {
+    background: #111928;
+    border: 1px solid #4B5563;
+    border-radius: 10px
+    // box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+  }
+
+  &::before {
+    background-color: currentColor;
+    border-radius: inherit;
+    color: inherit;
+    content: '';
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.6, 1);
+  }
+
+  &:focus::before {
+    opacity: 0.24;
+  }
+
+  &:disabled .login-btn__text {
+    opacity: 0.4;
+  }
+
+  &.is-long {
+    height: unset;
+    padding: 8px 9.5vw;
+    justify-content: left;
+    .last-login-email {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 53vw;
+      max-width: 254px;
+      white-space: nowrap;
+    }
+    &.no-icon {
+      justify-content: center;
+    }
+    &.is-popup {
+      padding: 8px 8.5vw;
+      .last-login-email {
+        width: 48vw;
+        max-width: 220px;
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 480px) {
+  .login-btn.is-long {
+    padding: 8px 46px;
+    &.is-popup {
+      padding: 8px 40px;
+    }
+  }
+}
+
+@media only screen and (min-width: 600px) {
+  .login-btn.is-long {
+    padding: 8px 5vw;
+    .last-login-email {
+      width: 30vw;
+    }
+  }
+}
+
+@media only screen and (min-width: 750px) {
+  .login-btn.is-long {
+    padding: 8px 5.4vw;
+  }
+}
+
+@media only screen and (min-width: 870px) {
+  .login-btn.is-long {
+    padding: 8px 5vw;
+  }
+}
+
+@media only screen and (min-width: 960px) {
+  .login-btn.is-long {
+    padding: 8px 4vw;
+    .last-login-email {
+      width: 22vw;
+    }
+  }
+}
+
+@media only screen and (min-width: 1110px) {
+  .login-btn.is-long {
+    padding: 8px 46px;
+  }
+}
+
+@media only screen and (min-height: 1080px) {
+  .login-btn.is-popup {
+    height: 6.7vh;
+    margin-bottom: 0.8vh;
+    font-size: 1.7vh;
+    line-height: 1.2em;
+    img,
+    ::v-deep .v-icon .v-icon__component {
+      width: 3.3vh;
+      height: 3.3vh;
+    }
+  }
+}
+
+@media only screen and (min-height: 1440px) {
+  .login-btn.is-popup {
+    height: 5.5vh;
+    margin-bottom: 0.6vh;
+    font-size: 2vh;
+    line-height: 1.2em;
+    img,
+    ::v-deep .v-icon .v-icon__component {
+      width: 3vh;
+      height: 3vh;
+    }
+  }
+}

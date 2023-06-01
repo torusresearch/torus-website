@@ -1,0 +1,92 @@
+.spinner {
+  display: inline-block;
+  position: relative;
+  background-color: var(--v-torusBrand1-base);
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  background: conic-gradient(transparent, var(--v-torusBrand1-base));
+  animation: rotate 1s linear infinite;
+  .mask,
+  .head {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+  }
+  .mask {
+    width: 50px;
+    height: 50px;
+    top: 5px;
+    left: 5px;
+    background-color: #ffffff;
+  }
+  .head {
+    height: 5px;
+    width: 5px;
+    background-color: var(--v-torusBrand1-base);
+    top: 0;
+    left: 26px;
+  }
+
+  &.theme--dark {
+    .mask {
+      background-color: var(--v-torusBlack-base);
+    }
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotateZ(0);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
+.ping-container {
+  display: inline-flex;
+  position: relative;
+
+  .ping-animate {
+    background-color: var(--v-torusBrand1-base);
+    opacity: 0.5;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    border-radius: 50%;
+    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  .ping-content {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background-color: var(--v-torusBrand1-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      width: 34px;
+      height: auto;
+    }
+  }
+
+  &.theme--dark {
+    .ping-animate {
+      background-color: #fff;
+    }
+    .ping-content {
+      background-color: #fff;
+    }
+  }
+}
+
+@keyframes ping {
+  75%,
+  to {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}

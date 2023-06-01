@@ -1,0 +1,30 @@
+.v-list-item__content {
+  line-height: 1.2em;
+}
+
+.explore-container {
+  max-width: 315px;
+  &--mobile {
+    max-width: inherit;
+    width: 100%;
+  }
+}
+
+.explore-details {
+  font-size: 10px;
+  line-height: 12px;
+}
+
+.asset-note {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  font-size: 10px;
+  line-height: 12px;
+}
+
+.home-cards {
+  .card-header {
+    border: 0;
+  }
+}
