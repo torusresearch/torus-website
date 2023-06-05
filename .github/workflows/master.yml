@@ -63,26 +63,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
+          cache: 'npm'
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-
-      - name: Get npm cache directory
-        id: npm-cache
-        run: |
-          echo "::set-output name=dir::$(npm config get cache)"
-
-      - name: Node dependency cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.npm-cache.outputs.dir }}
-          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ matrix.os }}-node-
 
       - name: Install dependencies
         run: npm install
@@ -144,6 +132,13 @@ jobs:
         env:
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
       # Upload to S3
       - name: sync s3
         uses: jakejarvis/s3-sync-action@master
@@ -190,6 +185,13 @@ jobs:
         run: npm run build:polygon
         env:
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
       # Upload to S3
       - name: sync s3
