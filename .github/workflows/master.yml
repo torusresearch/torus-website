@@ -90,7 +90,7 @@ jobs:
       - name: Run build
         run: |
           . ./scripts/setup.sh
-          npm version patch -m 'Updating version to %s [skip ci]'
+          npm version major -m 'Updating version to %s [skip ci]'
           npm run build
           . ./scripts/gitPush.sh
         env:
