@@ -63,6 +63,7 @@ export default {
       channelId: '',
       accounts: {},
       isCustomVerifier: false,
+      whiteLabel: {},
     }
   },
   async created() {
@@ -70,39 +71,18 @@ export default {
     try {
       const { hash } = this.$route
       const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
-      const result = hashUrl.searchParams.get('result')
+      const error = hashUrl.searchParams.get('error')
 
-      let whiteLabel = {}
-      let loginConfig = {}
+      const paramSessionNamespace = hashUrl.searchParams.get('sessionNamespace') || ''
 
-      let loginError = ''
-
-      let resultParams = {
-        store: {},
-      }
-      const sessionId = hashUrl.searchParams.get('sessionId') || ''
-      const sessionNamespace = hashUrl.searchParams.get('sessionNamespace') || ''
-      if (result) {
-        resultParams = JSON.parse(safeatob(result))
-        loginError = resultParams.error
-        const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
-        whiteLabel = appStateParams.whiteLabel || {}
-        loginConfig = appStateParams.loginConfig || {}
-        this.isCustomVerifier = Object.keys(loginConfig).length > 0
-      }
-
-      this.whiteLabel = whiteLabel
-
-      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig, sessionNamespace)
-      await openLoginHandler.openLoginInstance._syncState({
-        ...resultParams,
-        store: {
-          ...resultParams.store,
-          sessionId,
-          sessionNamespace,
-        },
-      })
-      const { state } = openLoginHandler.openLoginInstance
+      const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, paramSessionNamespace)
+      const { appState } = openLoginHandler.state.userInfo
+      const parsedAppState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(appState || ''))))
+      this.whiteLabel = parsedAppState.whiteLabel || {}
+      openLoginHandler.whiteLabel = this.whiteLabel
+      const loginConfig = parsedAppState.loginConfig || {}
+      openLoginHandler.loginConfig = this.loginConfig
+      this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()
       const { keys: extraKeys, userDapps } = await openLoginHandler.getUserDapps(postboxKey)
@@ -126,10 +106,6 @@ export default {
 
       // set default selected account
       this.selectedAccount = Object.keys(this.accounts)[0] ?? ''
-
-      // broadcast channel ID
-      const { appState } = state.store.getStore()
-      const parsedAppState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(appState))))
       this.channelId = parsedAppState.instanceId
 
       // prepare data
@@ -139,9 +115,8 @@ export default {
         keys,
         postboxKey,
         userDapps,
-        error: loginError,
-        sessionId: openLoginHandler.getSessionId(),
-        sessionNamespace: openLoginHandler.getSessionNamespace(),
+        error,
+        sessionId: openLoginHandler.sessionId,
       }
 
       // if there are no app accounts to choose, continue

@@ -1,7 +1,6 @@
 const fs = require('fs')
 const path = require('path')
 const { IgnorePlugin, ProvidePlugin, DefinePlugin } = require('webpack')
-// const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 process.env.VUE_APP_TORUS_BUILD_VERSION = version
@@ -40,9 +39,6 @@ module.exports = {
       'bn.js': path.resolve(__dirname, 'node_modules/bn.js'),
       'js-sha3': path.resolve(__dirname, 'node_modules/js-sha3'),
       '#': path.resolve(__dirname, 'src/'),
-      'web3-providers-ipc': path.resolve(__dirname, 'node_modules/empty-module'),
-      'web3-providers-ws': path.resolve(__dirname, 'node_modules/empty-module'),
-      // 'web3-eth-ens': path.resolve(__dirname, 'node_modules/empty-module'),
       lodash: path.resolve(__dirname, 'node_modules/lodash-es'),
       wasmcurves: path.resolve(__dirname, 'node_modules/empty-module'),
     }
@@ -70,23 +66,24 @@ module.exports = {
     )
     config.resolve.fallback = {
       ...(config.resolve.fallback || {}),
-      http: require.resolve('stream-http'),
-      https: require.resolve('https-browserify'),
-      os: require.resolve('os-browserify/browser'),
-      crypto: require.resolve('crypto-browserify'),
-      assert: require.resolve('assert/'),
-      stream: require.resolve('stream-browserify'),
-      url: require.resolve('url/'),
+      // http: require.resolve('stream-http'),
+      http: false,
+      // https: require.resolve('https-browserify'),
+      https: false,
+      // os: require.resolve('os-browserify/browser'),
+      os: false,
+      // crypto: require.resolve('crypto-browserify'),
+      crypto: false,
+      // assert: require.resolve('assert/'),
+      assert: false,
+      // stream: require.resolve('stream-browserify'),
+      stream: false,
+      // url: require.resolve('url/'),
+      url: false,
+      // zlib: require.resolve('browserify-zlib'),
+      zlib: false,
     }
   },
-  // chainWebpack: (config) => {
-  //   if (process.env.NODE_ENV === 'production') {
-  //     config
-  //       .plugin('service-worker-integrity')
-  //       .use(serviceWorkerIntegrityPlugin, ['index.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
-  //       .after('workbox')
-  //   }
-  // },
 
   publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'binance' ? `/${version}/` : '/',
   integrity: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'binance',
@@ -133,7 +130,7 @@ module.exports = {
       ],
     },
   },
-  parallel: !process.env.CIRCLECI,
+  parallel: !process.env.CI,
   pluginOptions: {
     webpackBundleAnalyzer: {
       openAnalyzer: false,

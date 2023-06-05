@@ -24,7 +24,7 @@ describe('DetectTokensController', () => {
 
     network = new NetworkController()
     network.initializeProvider(networkControllerProviderConfig)
-    controller = new DetectTokensController({ network })
+    controller = new DetectTokensController({ network, provider: network._providerProxy })
   })
 
   afterEach(() => {
@@ -34,7 +34,7 @@ describe('DetectTokensController', () => {
 
   it('should poll on correct interval', async () => {
     const stub = sinon.stub(global, 'setInterval')
-    new DetectTokensController({ interval: 1337 }) // eslint-disable-line no-new
+    new DetectTokensController({ interval: 1337, provider: network._providerProxy }) // eslint-disable-line no-new
     assert.strictEqual(stub.getCall(0).args[1], 1337)
     stub.restore()
   })
@@ -44,7 +44,10 @@ describe('DetectTokensController', () => {
     const localNetworkController = new NetworkController()
     localNetworkController.initializeProvider(networkControllerProviderConfig)
     localNetworkController.setProviderType('mainnet')
-    const localController = new DetectTokensController({ network: localNetworkController })
+    const localController = new DetectTokensController({
+      network: localNetworkController,
+      provider: localNetworkController._providerProxy,
+    })
 
     const stub = sandbox.stub(localController, 'detectNewTokens')
 
@@ -113,7 +116,7 @@ describe('DetectTokensController', () => {
   })
 
   it('should not detect same token while in main network', async () => {
-    const localController = new DetectTokensController({ network })
+    const localController = new DetectTokensController({ network, provider: network._providerProxy })
     await localController.startTokenDetection(TEMP_ADDRESS)
     localController.detectedTokensStore.putState({
       tokens: [

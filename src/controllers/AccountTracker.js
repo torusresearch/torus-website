@@ -7,13 +7,11 @@
  * on each new block.
  */
 
-import { ObservableStore } from '@metamask/obs-store'
 import EthQuery from 'eth-query'
+import { Contract, providers, utils } from 'ethers'
 import log from 'loglevel'
 import pify from 'pify'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
-import Web3 from 'web3'
-import { toHex } from 'web3-utils'
 
 import {
   SINGLE_CALL_BALANCES_ADDRESS,
@@ -36,6 +34,7 @@ import {
   // SEPOLIA_CHAIN_ID,
   ZERO_ADDRESS,
 } from '../utils/enums'
+import { ObservableStore } from './utils/ObservableStore'
 
 export default class AccountTracker {
   /**
@@ -75,8 +74,7 @@ export default class AccountTracker {
     this._updateForBlock = this._updateForBlock.bind(this)
 
     this.getCurrentChainId = options.getCurrentChainId
-
-    this.web3 = new Web3(this._provider)
+    this.ethersProvider = new providers.Web3Provider(this._provider)
   }
 
   start() {
@@ -252,15 +250,12 @@ export default class AccountTracker {
    * @param {*} deployedContractAddress
    */
   async _updateAccountsViaBalanceChecker(addresses, deployedContractAddress) {
-    const web3Instance = this.web3
-    web3Instance.setProvider(this._provider)
-    const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, deployedContractAddress)
+    const ethContract = new Contract(deployedContractAddress, SINGLE_CALL_BALANCES_ABI, this.ethersProvider)
     try {
-      const result = await ethContract.methods.balances(addresses, [ZERO_ADDRESS]).call()
+      const result = await ethContract.balances(addresses, [ZERO_ADDRESS])
       const { accounts } = this.store.getState()
-
       addresses.forEach((address, index) => {
-        const balance = toHex(result[index])
+        const balance = utils.hexValue(result[index])
         accounts[address] = { address, balance }
       })
       return this.store.updateState({ accounts })

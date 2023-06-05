@@ -2,7 +2,6 @@ import { JRPCEngine } from '@toruslabs/openlogin-jrpc'
 import { ethErrors } from 'eth-rpc-errors'
 import log from 'loglevel'
 
-// import { ObservableStore } from '@metamask/obs-store'
 // import { CapabilitiesController as RpcCap } from 'rpc-cap'
 // Methods that do not require any permissions to use:
 import {

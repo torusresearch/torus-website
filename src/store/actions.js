@@ -1,10 +1,10 @@
-import { privateToAddress } from '@ethereumjs/util'
-import { randomId, safeatob, safebtoa } from '@toruslabs/openlogin-utils'
+import { isHexString, privateToAddress } from '@ethereumjs/util'
+import { OpenloginSessionManager } from '@toruslabs/openlogin-session-manager'
+import { BrowserStorage, safeatob, safebtoa } from '@toruslabs/openlogin-utils'
 import deepmerge from 'deepmerge'
 import { cloneDeep } from 'lodash'
 // import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
-import { isHexStrict } from 'web3-utils'
 
 import config from '../config'
 import { OpenLoginHandler, OpenLoginWindowHandler } from '../handlers/Auth'
@@ -25,7 +25,15 @@ import {
   SUPPORTED_NETWORK_TYPES,
 } from '../utils/enums'
 import { remove } from '../utils/httpHelpers'
-import { fakeStream, generateAddressFromPrivateKey, getIFrameOriginObject, isMain, storageUtils, toChecksumAddressByChainId } from '../utils/utils'
+import {
+  fakeStream,
+  generateAddressFromPrivateKey,
+  getIFrameOriginObject,
+  isMain,
+  randomId,
+  storageUtils,
+  toChecksumAddressByChainId,
+} from '../utils/utils'
 import {
   accountTrackerHandler,
   announcementsHandler,
@@ -126,12 +134,11 @@ export default {
     resetStore(prefsController.store, prefsControllerHandler, { selectedAddress: '' })
     torusController.lock()
     if (selectedAddress) {
-      const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
+      const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
       if (isMain) {
         router.push({ path: '/' }).catch(() => {})
       }
       try {
-        // openLoginHandler.openLoginInstance.state.store.set('sessionId', null)
         await openLoginHandler.invalidateSession()
       } catch (error) {
         log.warn(error, 'unable to logout with openlogin')
@@ -270,13 +277,14 @@ export default {
       })
     )
 
-    const openLoginHandler = OpenLoginHandler.getInstance(state.whiteLabel, {}, config.namespace)
-    const activeSession = await openLoginHandler.getActiveSession()
-    if (activeSession && activeSession.walletKey === privateKey) {
-      const _store = activeSession?.store || {}
+    const openLoginHandler = await OpenLoginHandler.getInstance(state.whiteLabel, {}, config.sessionNamespace)
+    const { sessionId: openloginSessionId, state: openloginState } = openLoginHandler
+    // this is import private key into torus wallet
+    if (openloginSessionId && openloginState.walletKey === privateKey) {
+      const _store = openloginState?.userInfo || {}
       const sessionData = {
-        ...activeSession,
-        store: {
+        ...openloginState,
+        userInfo: {
           ..._store,
           whiteLabel: state.whiteLabel,
           appState,
@@ -285,23 +293,23 @@ export default {
       }
       await openLoginHandler.updateSession(sessionData)
     } else {
-      const sessionId = randomId()
-      await openLoginHandler.openLoginInstance._syncState({
-        walletKey: privateKey,
-        store: {
-          sessionId,
-        },
-      })
+      // login with private key from torus wallet plugin
+      const sessionId = OpenloginSessionManager.generateRandomSessionKey()
       const sessionData = {
         walletKey: privateKey,
-        store: {
+        userInfo: {
           whiteLabel: state.whiteLabel,
           appState,
           sessionId,
           ...userInfo,
         },
       }
-      await openLoginHandler.setSession(sessionData)
+      openLoginHandler.state = { walletKey: privateKey, userInfo: { sessionId } }
+      if (config.storageAvailability[storageUtils.storageType]) {
+        const storage = BrowserStorage.getInstance(storageUtils.openloginStoreKey, storageUtils.storageType)
+        storage.set('sessionId', sessionId)
+      }
+      await openLoginHandler.createSession(sessionId, sessionData)
     }
 
     // TODO: deprecate rehydrate false for the next major version bump
@@ -322,15 +330,15 @@ export default {
       rehydrate: false,
     })
     dispatch('updateSelectedAddress', { selectedAddress: address })
-    const openloginInstance = OpenLoginHandler.getInstance({}, {}, config.namespace)
-    const existingSessionData = await openloginInstance.getActiveSession()
-    if (!existingSessionData) {
+    const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
+    const { sessionId, state: openloginState } = openloginInstance
+    if (!sessionId) {
       dispatch('logOut')
       return ''
     }
-    const { accounts: oldAccounts = {} } = existingSessionData
+    const { accounts: oldAccounts = {} } = openloginState
     const sessionData = {
-      ...existingSessionData,
+      ...openloginState,
       accounts: {
         ...oldAccounts,
         [address]: {
@@ -367,7 +375,7 @@ export default {
   async setProviderType({ commit, dispatch, getters, state }, payload) {
     let networkType = payload.network
     let isSupportedNetwork = false
-    const activeChainId = networkType.chainId && (isHexStrict(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`)
+    const activeChainId = networkType.chainId && (isHexString(networkType.chainId) ? networkType.chainId : `0x${networkType.chainId.toString(16)}`)
     const chainIdConfig = CHAIN_ID_TO_TYPE_MAP[activeChainId]
     if (chainIdConfig) {
       const networkConfig = getters.supportedNetworks[chainIdConfig.name]
@@ -398,14 +406,14 @@ export default {
       await commit('setCustomCurrency', state.selectedCurrency)
     }
 
-    const openloginInstance = OpenLoginHandler.getInstance({}, {}, config.namespace)
-    const existingSessionData = await openloginInstance.getActiveSession()
-    if (!existingSessionData) {
+    const openloginInstance = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
+    const { sessionId, state: openloginState } = openloginInstance
+    if (!sessionId) {
       dispatch('logOut')
       return undefined
     }
     const sessionData = {
-      ...existingSessionData,
+      ...openloginState,
       networkType,
     }
     await openloginInstance.updateSession(sessionData)
@@ -455,27 +463,23 @@ export default {
           },
           jwtParameters || {}
         ),
-        skipTKey: state.embedState.skipTKey,
         whiteLabel,
         mfaLevel: state.embedState.mfaLevel,
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
       })
-      const { keys, userInfo, postboxKey, userDapps, error, sessionId, sessionNamespace } = await loginHandler.handleLoginWindow()
+      const { keys, userInfo, postboxKey, userDapps, error, sessionId } = await loginHandler.handleLoginWindow()
       if (error) {
         throw new Error(error)
       }
       if (config.storageAvailability[storageUtils.storageType]) {
-        const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
+        // add sessionId to local storage.
+        const storage = BrowserStorage.getInstance(storageUtils.openloginStoreKey, storageUtils.storageType)
+        storage.set('sessionId', sessionId)
+        // reinitializing openlogin instance with new session id after login is complete.
+        await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace, true)
         if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType })
         else await dispatch('setProviderType', { network: state.networkType, type: RPC })
-        await openLoginHandler.openLoginInstance._syncState({
-          store: {
-            sessionId,
-            sessionNamespace,
-          },
-          sessionNamespace,
-        })
       }
 
       // Get all open login results
@@ -503,7 +507,7 @@ export default {
     }
   },
   async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
-    const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
+    const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()
     commit('setUserInfo', userInfo)
@@ -511,6 +515,7 @@ export default {
     dispatch('getUserDapps', { postboxKey, calledFromEmbed })
     await dispatch('initTorusKeyring', {
       calledFromEmbed,
+      // TODO: not used anymore
       oAuthToken: userInfo.idToken || userInfo.accessToken,
       keys: keys.map((x) => ({
         ethAddress: x.ethAddress,
@@ -522,7 +527,7 @@ export default {
     })
   },
   async getUserDapps({ commit, dispatch, state }, { postboxKey, calledFromEmbed }) {
-    const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
+    const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
     const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
     commit('setUserDapps', userDapps)
     await dispatch('initTorusKeyring', {
@@ -640,29 +645,30 @@ export default {
     let finalNetworkType = networkType
     try {
       const currentRoute = router.match(window.location.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
+      // TODO: check skipOpenLoginCheck and fetchSession
       if (!currentRoute.meta.skipOpenLoginCheck || currentRoute.meta.fetchSession) {
-        const openLoginHandler = OpenLoginHandler.getInstance({}, {}, config.namespace)
-        const sessionInfo = await openLoginHandler.getActiveSession()
+        const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
+        const { sessionId, state: openloginState } = openLoginHandler
         if (!currentRoute.meta.skipOpenLoginCheck) {
-          if (!sessionInfo) {
+          if (!sessionId) {
             commit('setRehydrationStatus', true)
 
             if (isMain) await dispatch('logOut')
             else commit('setSelectedAddress', '')
             return
           }
-          const { store } = sessionInfo
           // log.info(sessionInfo, 'current session info')
-          if (sessionInfo.walletKey || sessionInfo.tKey) {
+          if (openloginState.walletKey || openloginState.tKey) {
             walletKey = openLoginHandler.getWalletKey()
             // already logged in
             // call autoLogin
             log.info('auto-login with openlogin session')
             await dispatch('autoLogin', { calledFromEmbed: !isMain })
 
-            if (store.appState) {
-              const appStateParams = JSON.parse(safeatob(store.appState))
+            if (openloginState.userInfo.appState) {
+              const appStateParams = JSON.parse(safeatob(openloginState.userInfo.appState))
               if (appStateParams?.whiteLabel) {
+                openLoginHandler.whiteLabel = appStateParams.whiteLabel
                 commit('setWhiteLabel', { ...appStateParams.whiteLabel })
               }
               if (
@@ -670,6 +676,7 @@ export default {
                 typeof appStateParams.loginConfig === 'object' &&
                 Object.keys(appStateParams.loginConfig).length > 0
               ) {
+                openLoginHandler.loginConfig = appStateParams.loginConfig
                 commit('setLoginConfig', { ...appStateParams.loginConfig })
               }
             }
@@ -684,7 +691,7 @@ export default {
             log.info('no openlogin session')
           }
         }
-        if (sessionInfo?.networkType) finalNetworkType = sessionInfo?.networkType
+        if (openLoginHandler?.networkType) finalNetworkType = openLoginHandler?.networkType
       }
 
       if (SUPPORTED_NETWORK_TYPES[finalNetworkType.host]) await dispatch('setProviderType', { network: finalNetworkType })

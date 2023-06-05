@@ -149,13 +149,12 @@
 /* eslint-disable import/default */
 /* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable import/extensions */
-import { bufferToHex, stripHexPrefix } from '@ethereumjs/util'
+import { stripHexPrefix } from '@ethereumjs/util'
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
-import { randomId } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
 
-import { broadcastChannelOptions } from '../../../utils/utils'
+import { broadcastChannelOptions, randomId } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
 export default {
@@ -248,8 +247,8 @@ export default {
         if (window.Worker) {
           const worker = new WalletWorker()
           worker.addEventListener('message', (event) => {
-            const { privateKey: bufferPrivateKey } = event.data
-            const privKey = stripHexPrefix(bufferToHex(bufferPrivateKey))
+            const { privateKey: hexPrivateKey } = event.data
+            const privKey = stripHexPrefix(hexPrivateKey)
             this.$store
               .dispatch('finishImportAccount', { privKey })
               .then((privateKey) => {
@@ -290,7 +289,7 @@ export default {
       }
     },
     setErrorState(error) {
-      this.error = error && error.message && error.message.includes('wrong passphrase') ? this.t('accountMenu.incorrectPassword') : error
+      this.error = error && error.message && error.message.includes('invalid password') ? this.t('accountMenu.incorrectPassword') : error
       this.canShowError = true
       log.error(error)
       this.isLoadingKeystore = false
