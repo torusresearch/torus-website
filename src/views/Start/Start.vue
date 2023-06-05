@@ -57,7 +57,7 @@ export default {
       const openLoginHandler = await OpenLoginHandler.getInstance(whiteLabel, loginConfig, sessionNamespace)
       await openLoginHandler.openLoginInstance.login({
         loginProvider,
-        getWalletKey: true,
+        getWalletKey: false,
         appState: state,
         mfaLevel,
         extraLoginOptions: {

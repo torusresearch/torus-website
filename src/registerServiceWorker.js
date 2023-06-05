@@ -160,7 +160,10 @@ if (canExcludeSw && 'serviceWorker' in navigator) {
 }
 
 function swregister() {
-  if ('serviceWorker' in navigator && ['production', 'binance', 'testing', 'lrc', 'bnb', 'polygon'].includes(process.env.VUE_APP_TORUS_BUILD_ENV)) {
+  if (
+    'serviceWorker' in navigator &&
+    ['production', 'binance', 'testing', 'lrc', 'bnb', 'polygon', 'cyan'].includes(process.env.VUE_APP_TORUS_BUILD_ENV)
+  ) {
     log.info('non-integrity sw')
     // if swIntegrity is not calculated
     register({
