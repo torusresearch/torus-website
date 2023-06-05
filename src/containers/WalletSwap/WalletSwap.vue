@@ -171,9 +171,6 @@ export default {
     confirmSwapDetailText() {
       return `Are you sure you wish to swap ${this.fromValue} ${this.fromToken} for ${this.toValue} ${this.toToken}?`
     },
-    networkUrl() {
-      return torus.torusController.networkController.getCurrentNetworkUrl()
-    },
   },
   async mounted() {
     this.fromToken = this.nativeToken.symbol
@@ -219,7 +216,7 @@ export default {
           chainId: this.chainId,
           recipient: this.selectedAddress,
           reverse,
-          networkUrl: this.networkUrl,
+          networkType: this.networkType.type,
           nativeToken: this.nativeToken,
         })
         log.info(result)
