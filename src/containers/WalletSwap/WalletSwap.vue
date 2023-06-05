@@ -220,6 +220,7 @@ export default {
           recipient: this.selectedAddress,
           reverse,
           networkUrl: this.networkUrl,
+          nativeToken: this.nativeToken,
         })
         log.info(result)
         log.info(`Quote Exact In: ${result.quote}`)
