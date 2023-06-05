@@ -2,7 +2,7 @@
 import assert from 'assert'
 import sinon from 'sinon'
 import TokenRatesController from '../../../src/controllers/TokenRatesController'
-import { ObservableStore } from '@metamask/obs-store'
+import { ObservableStore } from '../../../src/controllers/utils/ObservableStore'
 
 describe('TokenRatesController', () => {
   it('should listen for preferences store updates', () => {
@@ -14,7 +14,7 @@ describe('TokenRatesController', () => {
 
   it('should poll on correct interval', async () => {
     const stub = sinon.stub(global, 'setInterval')
-    new TokenRatesController({ interval: 1337 }) // eslint-disable-line no-new
+    new TokenRatesController({ interval: 1337 })  
     assert.strictEqual(stub.getCall(0).args[1], 1337)
     stub.restore()
   })

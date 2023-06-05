@@ -1,9 +1,8 @@
-import { randomId } from '@toruslabs/openlogin-utils'
-
 import config from '../../config'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import getQuote from '../../plugins/xanpool'
 import { XANPOOL } from '../../utils/enums'
+import { randomId } from '../../utils/utils'
 
 export default {
   fetchXanpoolQuote(context, payload) {

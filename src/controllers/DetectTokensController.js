@@ -1,16 +1,15 @@
 /* eslint-disable default-param-last */
-import { ObservableStore } from '@metamask/obs-store'
 import BigNumber from 'bignumber.js'
+import { Contract, providers, utils } from 'ethers'
 import { isEqual } from 'lodash'
 import log from 'loglevel'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
-import Web3 from 'web3'
-import { toHex } from 'web3-utils'
 
 import TokenHandler from '../handlers/Token/TokenHandler'
 import contracts, { GNOSIS_CONTRACTS } from '../utils/contractMetadata'
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, SUPPORTED_NETWORK_TYPES, XDAI } from '../utils/enums'
 import { idleTimeTracker, toChecksumAddressByChainId } from '../utils/utils'
+import { ObservableStore } from './utils/ObservableStore'
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
 
@@ -58,12 +57,11 @@ class DetectTokensController {
    *
    * @param {Object} [config] - Options to configure controller
    */
-  constructor({ interval = DEFAULT_INTERVAL, network, provider, preferencesStore } = {}) {
+  constructor({ interval = DEFAULT_INTERVAL, provider, network, preferencesStore } = {}) {
     this.interval = interval
     this.network = network
     this.detectedTokensStore = new ObservableStore({})
-    this._provider = provider
-    this.web3 = new Web3(this._provider)
+    this.provider = new providers.Web3Provider(provider)
     this.selectedAddress = ''
     this.preferencesStore = preferencesStore
     this.selectedCustomTokens = []
@@ -80,75 +78,71 @@ class DetectTokensController {
    *
    */
   async detectNewTokens() {
-    const userAddress = this.selectedAddress
-    if (!userAddress) return
-    const currentNetworkIdentifier = this.network.getNetworkIdentifier()
-    const tokensToDetect = [] // object[]
-    if (!currentNetworkIdentifier) {
-      this.detectedTokensStore.updateState({ [userAddress]: [...tokensToDetect] })
-      return
-    }
+    try {
+      const userAddress = this.selectedAddress
+      if (!userAddress) return
+      const currentNetworkIdentifier = this.network.getNetworkIdentifier()
+      const tokensToDetect = [] // object[]
+      if (!currentNetworkIdentifier) {
+        this.detectedTokensStore.updateState({ [userAddress]: [...tokensToDetect] })
+        return
+      }
 
-    if (currentNetworkIdentifier === MAINNET) {
-      const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkIdentifier]
+      if (currentNetworkIdentifier === MAINNET) {
+        const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkIdentifier]
 
-      for (const contractAddress in contracts) {
-        if (contracts[contractAddress].erc20) {
-          tokensToDetect.push({ ...contracts[contractAddress], tokenAddress: contractAddress, network: networkConfig.host })
+        for (const contractAddress in contracts) {
+          if (contracts[contractAddress].erc20) {
+            tokensToDetect.push({ ...contracts[contractAddress], tokenAddress: contractAddress, network: networkConfig.host })
+          }
         }
-      }
-    } else if (currentNetworkIdentifier === XDAI) {
-      const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkIdentifier]
-      for (const contractAddress in GNOSIS_CONTRACTS) {
-        if (GNOSIS_CONTRACTS[contractAddress].erc20) {
-          tokensToDetect.push({ ...GNOSIS_CONTRACTS[contractAddress], tokenAddress: contractAddress, network: networkConfig.host })
+      } else if (currentNetworkIdentifier === XDAI) {
+        const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkIdentifier]
+        for (const contractAddress in GNOSIS_CONTRACTS) {
+          if (GNOSIS_CONTRACTS[contractAddress].erc20) {
+            tokensToDetect.push({ ...GNOSIS_CONTRACTS[contractAddress], tokenAddress: contractAddress, network: networkConfig.host })
+          }
         }
-      }
-      await this.getCustomTokenBalances([...tokensToDetect])
-      return
-    } else {
-      const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkIdentifier]
+        await this.getCustomTokenBalances([...tokensToDetect])
+        return
+      } else {
+        const networkConfig = SUPPORTED_NETWORK_TYPES[currentNetworkIdentifier]
 
-      if (networkConfig?.isErc20 && networkConfig?.tokenAddress) {
-        tokensToDetect.push({
-          tokenAddress: networkConfig.tokenAddress,
-          name: networkConfig.tickerName,
-          logo: networkConfig.logo,
-          erc20: true,
-          symbol: networkConfig.ticker,
-          decimals: 18,
-          network: networkConfig.host,
-        })
+        if (networkConfig?.isErc20 && networkConfig?.tokenAddress) {
+          tokensToDetect.push({
+            tokenAddress: networkConfig.tokenAddress,
+            name: networkConfig.tickerName,
+            logo: networkConfig.logo,
+            erc20: true,
+            symbol: networkConfig.ticker,
+            decimals: 18,
+            network: networkConfig.host,
+          })
+        }
+        await this.getCustomTokenBalances([...tokensToDetect])
+        return
       }
-      await this.getCustomTokenBalances([...tokensToDetect])
-      return
-    }
 
-    if (tokensToDetect.length > 0 && currentNetworkIdentifier === MAINNET) {
-      const web3Instance = this.web3
-      const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
-      ethContract.methods
-        .balances(
+      if (tokensToDetect.length > 0 && currentNetworkIdentifier === MAINNET) {
+        const ethContract = new Contract(SINGLE_CALL_BALANCES_ADDRESS, SINGLE_CALL_BALANCES_ABI, this.provider)
+        const result = await ethContract.balances(
           [userAddress],
           tokensToDetect.map((x) => x.tokenAddress)
         )
-        .call({ from: userAddress }, (error, result) => {
-          if (error) {
-            log.warn('MetaMask - DetectTokensController single call balance fetch failed', error)
-            return
+        const nonZeroTokens = []
+        tokensToDetect.forEach((x, index) => {
+          const balance = utils.hexValue(result[index])
+          if (balance && balance !== '0x0') {
+            // do sth else here
+            nonZeroTokens.push({ ...x, balance, network: MAINNET })
+            // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
           }
-          const nonZeroTokens = []
-          tokensToDetect.forEach((x, index) => {
-            const balance = toHex(result[index])
-            if (balance && balance !== '0x0') {
-              // do sth else here
-              nonZeroTokens.push({ ...x, balance, network: MAINNET })
-              // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
-            }
-          })
-          const currentTokens = this.detectedTokensStore.getState()[userAddress] || []
-          this.detectedTokensStore.updateState({ [userAddress]: mergeTokenArrays(currentTokens, nonZeroTokens) })
         })
+        const currentTokens = this.detectedTokensStore.getState()[userAddress] || []
+        this.detectedTokensStore.updateState({ [userAddress]: mergeTokenArrays(currentTokens, nonZeroTokens) })
+      }
+    } catch (error) {
+      log.warn('MetaMask - DetectTokensController single call balance fetch failed', error)
     }
   }
 
@@ -194,31 +188,29 @@ class DetectTokensController {
   }
 
   async refreshTokenBalances() {
-    const userAddress = this.selectedAddress
-    if (userAddress === '') return
-    if (this.network.getNetworkIdentifier() !== MAINNET) {
-      return
-    }
-    const oldTokens = this.detectedTokensStore.getState()[userAddress] || []
-    const tokenAddresses = oldTokens.map((x) => x.tokenAddress)
-    if (tokenAddresses.length > 0) {
-      const web3Instance = this.web3
-      const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
-      ethContract.methods.balances([userAddress], tokenAddresses).call({ from: userAddress }, (error, result) => {
-        if (error) {
-          log.warn('MetaMask - DetectTokensController single call balance fetch failed', error)
-          return
-        }
+    try {
+      const userAddress = this.selectedAddress
+      if (userAddress === '') return
+      if (this.network.getNetworkIdentifier() !== MAINNET) {
+        return
+      }
+      const oldTokens = this.detectedTokensStore.getState()[userAddress] || []
+      const tokenAddresses = oldTokens.map((x) => x.tokenAddress)
+      if (tokenAddresses.length > 0) {
+        const ethContract = new Contract(SINGLE_CALL_BALANCES_ADDRESS, SINGLE_CALL_BALANCES_ABI, this.provider)
+        const result = ethContract.balances([userAddress], tokenAddresses)
         const nonZeroTokens = []
         tokenAddresses.forEach((_, index) => {
-          const balance = toHex(result[index])
+          const balance = utils.hexValue(result[index])
           if (balance && balance !== '0x0') {
             nonZeroTokens.push({ ...oldTokens[index], balance, network: MAINNET })
           }
         })
         const currentTokens = this.detectedTokensStore.getState()[userAddress] || []
         this.detectedTokensStore.updateState({ [userAddress]: mergeTokenArrays(currentTokens, nonZeroTokens) })
-      })
+      }
+    } catch (error) {
+      log.warn('MetaMask - DetectTokensController single call balance fetch failed', error)
     }
   }
 
@@ -240,7 +232,7 @@ class DetectTokensController {
             decimals: x.decimals,
             name: x.token_name || x.name,
             symbol: x.token_symbol || x.symbol,
-            web3: this.web3,
+            provider: this.provider,
           })
           const balance = await tokenInstance.getUserBalance(userAddress)
           return {

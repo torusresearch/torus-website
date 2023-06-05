@@ -1,5 +1,4 @@
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
-import { randomId } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import config from '../../config'
@@ -7,7 +6,7 @@ import PopupHandler from '../../handlers/Popup/PopupHandler'
 import { getQuote } from '../../plugins/mercuryo'
 import torus from '../../torus'
 import { MERCURYO } from '../../utils/enums'
-import { broadcastChannelOptions } from '../../utils/utils'
+import { broadcastChannelOptions, randomId } from '../../utils/utils'
 
 export default {
   fetchMercuryoQuote({ state }, payload) {

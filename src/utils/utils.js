@@ -1,11 +1,19 @@
-import { addHexPrefix, ecsign, privateToAddress, pubToAddress, stripHexPrefix } from '@ethereumjs/util'
-import { concatSig } from '@metamask/eth-sig-util'
+import {
+  addHexPrefix,
+  ecsign,
+  isHexString,
+  isValidAddress,
+  privateToAddress,
+  pubToAddress,
+  stripHexPrefix,
+  toChecksumAddress,
+} from '@ethereumjs/util'
+import { concatSig, normalize } from '@metamask/eth-sig-util'
 import { keccak256 } from '@toruslabs/metadata-helpers'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import BN from 'bn.js'
 import log from 'loglevel'
-import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import { languageMap } from '../plugins/i18n-setup'
@@ -286,7 +294,7 @@ export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', th
     return `${
       negativeSign +
       (j ? i.slice(0, j) + thousands : '') +
-      i.slice(j).replace(/(\d{3})(?=\d)/g, `$1${thousands}`) +
+      i.slice(j).replaceAll(/(\d{3})(?=\d)/g, `$1${thousands}`) +
       (decimals
         ? decimal +
           Math.abs(amount - i)
@@ -298,13 +306,6 @@ export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', th
     log.error(error)
   }
   return null
-}
-
-export async function isSmartContractAddress(address, web3) {
-  const code = await web3.eth.getCode(address)
-  // Geth will return '0x', and ganache-core v2.2.1 will return '0x0'
-  const codeIsEmpty = !code || code === '0x' || code === '0x0'
-  return !codeIsEmpty
 }
 
 export function getEtherScanHashLink(txHash, network) {
@@ -333,7 +334,7 @@ export function getStatus(status) {
 }
 
 export async function getEthTxStatus(hash, web3) {
-  const receipt = await web3.eth.getTransactionReceipt(hash)
+  const receipt = await web3.getTransactionReceipt(hash)
   if (receipt === null) return 'pending'
   if (receipt && receipt.status) return 'confirmed'
   if (receipt && !receipt.status) return 'rejected'
@@ -347,11 +348,11 @@ export const broadcastChannelOptions = {
 
 export function validateVerifierId(selectedTypeOfLogin, value, chainId) {
   if (selectedTypeOfLogin === ETH) {
-    const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+    const parsedChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
     if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
       return isAddressByChainId(value, chainId) || 'walletSettings.invalidEth'
     }
-    return isAddress(value) || 'walletSettings.invalidEth'
+    return isValidAddress(value) || 'walletSettings.invalidEth'
   }
   if (selectedTypeOfLogin === GOOGLE) {
     return (
@@ -735,17 +736,10 @@ export const getIFrameOriginObject = () => {
 }
 
 export const storageUtils = {
-  storage:
-    config.isCustomLogin === null
-      ? config.storageAvailability.session
-        ? window.sessionStorage
-        : undefined
-      : config.storageAvailability.local
-      ? window.localStorage
-      : undefined,
-  storageType: config.isCustomLogin === null ? 'session' : 'local',
-  storageKey: config.isCustomLogin === true ? `torus_app_${config.namespace || getIFrameOriginObject().hostname}` : 'torus-app',
-  openloginStoreKey: config.isCustomLogin === true ? `openlogin_store_${config.namespace || getIFrameOriginObject().hostname}` : 'openlogin_store',
+  storage: config.storageAvailability.local ? window.localStorage : undefined,
+  storageType: 'local',
+  storageKey: config.isCustomLogin ? `torus_app_${config.sessionNamespace || getIFrameOriginObject().hostname}` : 'torus-app',
+  openloginStoreKey: config.isCustomLogin ? `openlogin_store_${config.sessionNamespace || getIFrameOriginObject().hostname}` : 'openlogin_store',
 }
 
 export const getSessionIdFromStorage = () => {
@@ -870,36 +864,36 @@ export function generateAddressFromPubKey(point) {
 }
 
 export function generateAddressFromPrivateKey(privKey) {
-  return toChecksumAddress(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex'))
+  return toChecksumAddress(normalize(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex')))
 }
 
 export function rskToChecksumAddress(address, chainId) {
   const address2 = stripHexPrefix(address).toLowerCase()
-  const chainId2 = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const chainId2 = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
   const prefix = Number.isNaN(chainId2) ? '' : `${chainId2.toString()}0x`
   const hash = keccak256(`${prefix}${address2}`).toString('hex')
   return `0x${[...address2].map((b, i) => (Number.parseInt(hash[i], 16) >= 8 ? b.toUpperCase() : b)).join('')}`
 }
 
 export function rskIsValidChecksumAddress(address, chainId) {
-  return isAddress(address) && rskToChecksumAddress(address, chainId) === address
+  return isValidAddress(address) && rskToChecksumAddress(address, chainId) === address
 }
 
 export function toChecksumAddressByChainId(address, chainId) {
-  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const parsedChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
   if (!isAddressByChainId(address, chainId)) return address
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskToChecksumAddress(address, chainId)
   }
-  return toChecksumAddress(address)
+  return toChecksumAddress(normalize(address))
 }
 
 export function isAddressByChainId(address, chainId) {
-  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const parsedChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
     return rskIsValidChecksumAddress(address, chainId)
   }
-  return isAddress(address)
+  return isValidAddress(address)
 }
 
 export function downloadItem(filename, text) {
@@ -1000,9 +994,9 @@ export function getVerifierOptions() {
   }
 }
 
-export async function validateContractAddress(web3, address, chainId) {
+export async function validateContractAddress(ethersProvider, address, chainId) {
   if (isAddressByChainId(address, chainId)) {
-    const contractCode = await web3.eth.getCode(address.toLowerCase())
+    const contractCode = await ethersProvider.getCode(address.toLowerCase())
     // user account address will return 0x for networks , except ganache returns 0x0
     if (contractCode === '0x' || contractCode === '0x0') {
       return false
@@ -1064,7 +1058,7 @@ export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
     if (Number(maxPriorityFeePerGas) < Number(high.suggestedMaxPriorityFeePerGas)) {
       const finalTranslateKey = translateKey || 'walletTransfer.transferLessThan'
       // medium
-      return t(finalTranslateKey).replace(
+      return t(finalTranslateKey).replaceAll(
         /{time}/gi,
         translateKey ? `< ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}` : toHumanReadableTime(low.maxWaitTimeEstimate, t)
       )
@@ -1072,14 +1066,14 @@ export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
     const finalTranslateKey = translateKey || 'walletTransfer.transferLessThan'
 
     // high
-    return t(finalTranslateKey).replace(
+    return t(finalTranslateKey).replaceAll(
       /{time}/gi,
       translateKey ? `< ${toHumanReadableTime(high.minWaitTimeEstimate, t)}` : toHumanReadableTime(high.minWaitTimeEstimate, t)
     )
   }
   const finalTranslateKey = translateKey || 'walletTransfer.transferApprox'
 
-  return t(finalTranslateKey).replace(
+  return t(finalTranslateKey).replaceAll(
     /{time}/gi,
     translateKey ? `~ ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}` : toHumanReadableTime(low.maxWaitTimeEstimate, t)
   )
@@ -1089,9 +1083,9 @@ const SECOND_CUTOFF = 90
 function toHumanReadableTime(milliseconds, t) {
   const seconds = Math.ceil((milliseconds || 1) / 1000)
   if (seconds <= SECOND_CUTOFF) {
-    return t('walletTransfer.fee-edit-time-sec').replace(/{time}/gi, seconds)
+    return t('walletTransfer.fee-edit-time-sec').replaceAll(/{time}/gi, seconds)
   }
-  return t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, Math.ceil(seconds / 60))
+  return t('walletTransfer.fee-edit-time-min').replaceAll(/{time}/gi, Math.ceil(seconds / 60))
 }
 
 export function bnGreaterThan(a, b) {
@@ -1203,7 +1197,7 @@ export const parsePopupUrl = (url) => {
   if (localUrl.hostname !== window.location.hostname) return localUrl
   localUrl.searchParams.append('isCustomLogin', config.isCustomLogin)
   if (config.isCustomLogin) {
-    localUrl.searchParams.append('namespace', iframeOrigin.hostname)
+    localUrl.searchParams.append('sessionNamespace', iframeOrigin.hostname)
   }
   const sessionId = getSessionIdFromStorage()
   if (sessionId) {
@@ -1216,4 +1210,11 @@ export const getDefaultNetwork = () => {
   if (window.location.hostname === 'polygon.tor.us') return SUPPORTED_NETWORK_TYPES[MATIC]
   if (window.location.hostname === 'bnb.tor.us') return SUPPORTED_NETWORK_TYPES[BSC_MAINNET]
   return SUPPORTED_NETWORK_TYPES[MAINNET]
+}
+
+export const randomId = () => Math.random().toString(36).slice(2)
+
+export const getV3Filename = (address) => {
+  const ts = new Date()
+  return ['UTC--', ts.toJSON().replace(/:/g, '-'), '--', address.toString('hex')].join('')
 }

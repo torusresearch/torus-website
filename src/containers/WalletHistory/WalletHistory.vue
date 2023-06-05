@@ -222,8 +222,8 @@ export default {
         const { fastest: fastestTimes10 } = await resp.json()
         gasPrice = new BigNumber(fastestTimes10).div(new BigNumber('10'))
       } else {
-        const recommended = await torus.web3.eth.getGasPrice()
-        gasPrice = new BigNumber(recommended).div(new BigNumber(10).pow(new BigNumber(9))).plus(new BigNumber('5'))
+        const recommended = await torus.ethersProvider.getGasPrice()
+        gasPrice = new BigNumber(recommended.toHexString()).div(new BigNumber(10).pow(new BigNumber(9))).plus(new BigNumber('5'))
       }
       const percent10Extra = gasPrice.times(new BigNumber('1.1'))
       // Add 5 to fastest recommended by transfer page
@@ -315,17 +315,19 @@ export default {
       const { from, gas, nonce } = transaction
       const { cancelGasPrice } = this
       const sendingWei = 0
-      return torus.web3.eth.sendTransaction({
-        from,
-        to: from,
-        value: `0x${sendingWei.toString(16)}`,
-        gas,
-        gasPrice: `0x${cancelGasPrice
-          .times(new BigNumber(10).pow(new BigNumber(9)))
-          .dp(0, BigNumber.ROUND_DOWN)
-          .toString(16)}`,
-        customNonceValue: nonce,
-      })
+      return torus.ethersProvider.send('eth_sendTransaction', [
+        {
+          from,
+          to: from,
+          value: `0x${sendingWei.toString(16)}`,
+          gas,
+          gasPrice: `0x${cancelGasPrice
+            .times(new BigNumber(10).pow(new BigNumber(9)))
+            .dp(0, BigNumber.ROUND_DOWN)
+            .toString(16)}`,
+          customNonceValue: nonce,
+        },
+      ])
     },
   },
 }

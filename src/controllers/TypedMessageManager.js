@@ -1,14 +1,14 @@
 /* eslint-disable no-case-declarations */
+import { isHexString, isValidAddress } from '@ethereumjs/util'
 import { TYPED_MESSAGE_SCHEMA, typedSignatureHash } from '@metamask/eth-sig-util'
-import { ObservableStore } from '@metamask/obs-store'
 import assert from 'assert'
 import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'
 import jsonschema from 'jsonschema'
 import log from 'loglevel'
-import { isAddress, isHexStrict } from 'web3-utils'
 
 import { MESSAGE_TYPE } from '../utils/enums'
+import { ObservableStore } from './utils/ObservableStore'
 
 /**
  * Represents, and contains data about, an 'eth_signTypedData' type signature request. These are created when a
@@ -140,7 +140,7 @@ export default class TypedMessageManager extends EventEmitter {
     assert.ok('data' in parameters, 'Params must include a "data" field.')
     assert.ok('from' in parameters, 'Params must include a "from" field.')
     assert.ok(
-      typeof parameters.from === 'string' && isAddress(parameters.from),
+      typeof parameters.from === 'string' && isValidAddress(parameters.from),
       '"from" field must be a valid, lowercase, hexadecimal Ethereum address string.'
     )
 
@@ -164,10 +164,10 @@ export default class TypedMessageManager extends EventEmitter {
         let { chainId } = data.domain
         if (chainId) {
           let activeChainId = this._getCurrentChainId()
-          activeChainId = Number.parseInt(activeChainId, isHexStrict(activeChainId) ? 16 : 10)
+          activeChainId = Number.parseInt(activeChainId, isHexString(activeChainId) ? 16 : 10)
           assert.ok(!Number.isNaN(activeChainId), `Cannot sign messages for chainId "${chainId}", because Torus is switching networks.`)
           if (typeof chainId === 'string') {
-            chainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+            chainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
           }
           assert.strictEqual(chainId, activeChainId, `Provided chainId "${chainId}" must match the active chainId "${activeChainId}"`)
         }

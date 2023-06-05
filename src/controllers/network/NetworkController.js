@@ -1,22 +1,23 @@
-import { ComposedStore, ObservableStore } from '@metamask/obs-store'
-import { JRPCEngine, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
-import assert from 'assert'
-import { PollingBlockTracker } from 'eth-block-tracker'
+import { isHexString } from '@ethereumjs/util'
 import {
   createBlockRefRewriteMiddleware,
   createBlockTrackerInspectorMiddleware,
   createFetchMiddleware,
-  providerFromEngine,
   providerFromMiddleware,
-} from 'eth-json-rpc-middleware'
+} from '@metamask/eth-json-rpc-middleware'
+import { providerFromEngine } from '@metamask/eth-json-rpc-provider'
+import { JRPCEngine, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
+import assert from 'assert'
+import { PollingBlockTracker } from 'eth-block-tracker'
 import EthQuery from 'eth-query'
 import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'
 import log from 'loglevel'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
-import { isHexStrict } from 'web3-utils'
 
 import { ETH, INFURA_PROVIDER_TYPES, LOCALHOST, MAINNET, MAINNET_CHAIN_ID, MESSAGE_TYPE, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
+import { ComposedStore } from '../utils/ComposedStore'
+import { ObservableStore } from '../utils/ObservableStore'
 // import { areProviderConfigsEqual } from '../../utils/utils'
 import { createInfuraClient } from './createInfuraClient'
 import { createJsonRpcClient } from './createJsonRpcClient'
@@ -84,7 +85,7 @@ export default class NetworkController extends EventEmitter {
       throw ethErrors.rpc.invalidParams('Invalid switch chain params: please pass chainId in params')
     }
 
-    if (!isHexStrict(chainId)) {
+    if (!isHexString(chainId)) {
       throw ethErrors.rpc.invalidParams('Invalid switch chain params: please pass a valid hex chainId in params, for: ex: 0x1')
     }
   }
@@ -449,7 +450,18 @@ export default class NetworkController extends EventEmitter {
   getCurrentChainId() {
     const { type, chainId: configChainId } = this.getProviderConfig()
     const chainId = SUPPORTED_NETWORK_TYPES[type]?.chainId || configChainId
-    return isHexStrict(chainId) ? chainId : `0x${Number(chainId).toString(16)}`
+    return isHexString(chainId) ? chainId : `0x${Number(chainId).toString(16)}`
+  }
+
+  getCurrentNetworkUrl() {
+    const { type, rpcUrl } = this.getProviderConfig()
+
+    const isInfura = INFURA_PROVIDER_TYPES.has(type)
+    if (isInfura) {
+      return `https://${type}.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
+    }
+    const networkConfig = SUPPORTED_NETWORK_TYPES[type]
+    return networkConfig?.rpcUrl || rpcUrl
   }
 
   setRpcTarget(networkId, rpcUrl, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {

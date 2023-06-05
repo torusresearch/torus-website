@@ -1,4 +1,13 @@
 {
+  "editor.formatOnSave": false,
+  "editor.formatOnType": true,
+  "eslint.alwaysShowStatus": true,
+  "eslint.debug": false,
+  "eslint.format.enable": true,
+  "eslint.lintTask.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
   "prettier.printWidth": 150,
   "cSpell.words": ["ARBITRUM", "loglevel", "openlogin", "toruslabs", "unstoppabledomains", "walletconnect"]
 }

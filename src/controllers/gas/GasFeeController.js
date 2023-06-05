@@ -1,11 +1,11 @@
 import { addHexPrefix, isHexString } from '@ethereumjs/util'
-import { ObservableStore } from '@metamask/obs-store'
 import EthQuery from 'eth-query'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import pify from 'pify'
 
 import { idleTimeTracker } from '../../utils/utils'
+import { ObservableStore } from '../utils/ObservableStore'
 import {
   calculateTimeEstimate,
   fetchEthGasPriceEstimate as defaultFetchEthGasPriceEstimate,

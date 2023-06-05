@@ -1,4 +1,4 @@
-import { ObservableStore } from '@metamask/obs-store'
+import { ObservableStore } from './ObservableStore'
 
 /**
  * An ObservableStore that can composes a flat

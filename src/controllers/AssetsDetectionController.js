@@ -3,9 +3,9 @@
  * Controller that passively polls on a set interval for assets auto detection
  */
 
+import { providers } from 'ethers'
 import { isEqual } from 'lodash'
 import log from 'loglevel'
-import Web3 from 'web3'
 
 import NftHandler from '../handlers/Token/NftHandler'
 import { MAINNET, MATIC, NFT_SUPPORTED_NETWORKS } from '../utils/enums'
@@ -17,8 +17,7 @@ export default class AssetsDetectionController {
     this.interval = options.interval || DEFAULT_INTERVAL
     this.selectedAddress = options.selectedAddress || ''
     this.network = options.network
-    this._provider = options.provider
-    this.web3 = new Web3(this._provider)
+    this.provider = new providers.Web3Provider(options.provider)
     this.assetController = options.assetController
     this.getNfts = options.getNfts
     this.currentNetwork = null
@@ -91,7 +90,7 @@ export default class AssetsDetectionController {
             userAddress: this.selectedAddress,
             nftStandard: x.nft_contract_standard,
             isSpecial: undefined,
-            web3: this.web3,
+            provider: this.provider,
           })
           const balance = await tokenInstance.fetchNftBalance()
           if (balance === 0) {
