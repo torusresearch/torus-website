@@ -2,10 +2,10 @@
   <v-app-bar app flat class="header-container" :color="$vuetify.theme.dark ? '' : 'white'">
     <div class="d-flex align-end">
       <router-link v-if="!$vuetify.breakpoint.xsOnly || $store.state.whiteLabel.isActive" :to="{ name: 'walletHome' }" :style="{ lineHeight: 0 }">
-        <v-img class="home-link mr-1" contain position="left center" alt="Torus Logo" :max-height="30" :width="193" :src="getLogo.logo" />
+        <v-img class="home-link mr-1" contain position="left center" alt="Exchangaweb3 Logo" :max-height="30" :width="193" :src="getLogo.logo" />
       </router-link>
       <router-link v-else id="logo-home-lnk" :to="{ name: 'walletHome' }" :style="{ lineHeight: 0 }">
-        <img src="../../../assets/img/icons/t-fill.svg" width="35" height="30" alt="Torus Logo" />
+        <img src="../../../assets/img/icons/exchangaweb3-icon.svg" width="35" height="30" alt="Exchangaweb3 Logo" />
       </router-link>
     </div>
     <v-spacer></v-spacer>

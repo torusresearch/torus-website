@@ -3,7 +3,7 @@
     <template v-if="type === TRANSACTION_TYPES.STANDARD_TRANSACTION">
       <v-layout pa-6 class="confirm-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
         <v-flex text-left xs12>
-          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
+          <img class="home-link mr-1" alt="Exchangaweb3 Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
           <div class="headline text_2--text">{{ t('dappTransfer.confirmation') }}</div>
         </v-flex>
       </v-layout>
@@ -258,7 +258,7 @@
     >
       <v-layout pa-6 class="confirm-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
         <v-flex xs12 text-left>
-          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
+          <img class="home-link mr-1" alt="Exchangaweb3 Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
           <div class="headline text_2--text">
             {{
               type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY

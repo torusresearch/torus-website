@@ -10,10 +10,10 @@
         <v-flex class="card-header text-center" xs12 py-10 px-6>
           <img
             class="home-link mx-auto"
-            alt="Torus Logo"
+            alt="Exchangaweb3 Logo"
             width="104"
             height="24"
-            :src="require(`../../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+            :src="require(`../../../assets/images/exchangaweb3-logo-${$vuetify.theme.dark ? 'dark' : 'light'}.svg`)"
           />
           <v-btn class="close-btn" icon aria-label="Close Export QR" title="Close Export QR" @click="qrDialoag = false">
             <v-icon>$vuetify.icons.close</v-icon>
@@ -34,7 +34,7 @@
               :color-light="'#FCFCFC'"
               :background-color="'#2F3136'"
               :logo-background-color="'#2F3136'"
-              :logo-src="require('../../../assets/img/icons/t-fill.svg')"
+              :logo-src="require('../../../assets/img/icons/exchangaweb3-icon.svg')"
               :logo-scale="0.28"
               :margin="1"
               :text="selectedAddress"
@@ -45,7 +45,7 @@
             <VueQr
               v-show="!$vuetify.theme.dark"
               ref="address-qr"
-              :logo-src="require('../../../assets/img/icons/t-fill.svg')"
+              :logo-src="require('../../../assets/img/icons/exchangaweb3-icon.svg')"
               :margin="20"
               :logo-scale="0.28"
               :text="selectedAddress"

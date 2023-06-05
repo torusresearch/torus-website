@@ -32,12 +32,12 @@
                 <div class="caption text-left text_2--text font-italic">{{ t('dappLogin.version').replace(/\{version\}/gi, appVersion) }}</div>
               </div>
               <v-spacer></v-spacer>
-              <div>
+              <!-- <div>
                 <div class="caption text-right text_2--text">{{ t('dappLogin.selfCustodial') }}</div>
                 <div class="text-right">
                   <img height="15" :src="require(`../../../assets/images/web3auth${$vuetify.theme.dark ? '' : '-dark'}.svg`)" alt="web3auth logo" />
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </v-card>
@@ -83,7 +83,7 @@ export default {
       return this.$i18n.locale
     },
     tncLink() {
-      let finalLink = 'https://docs.tor.us/legal/terms-and-conditions'
+      let finalLink = 'https://docs.exchangaweb3.com/legal/terms-of-conditions'
       const { isActive, tncLink } = this.whiteLabel
       if (isActive && tncLink) {
         finalLink = tncLink[this.localeSelected] || tncLink[Object.keys(tncLink)[0]]
@@ -91,7 +91,7 @@ export default {
       return finalLink
     },
     privacyPolicy() {
-      let finalLink = 'https://docs.tor.us/legal/privacy-policy'
+      let finalLink = 'https://docs.exchangaweb3.com/legal/privacy-policy'
       const { isActive, privacyPolicy } = this.whiteLabel
       if (isActive && privacyPolicy) {
         finalLink = privacyPolicy[this.localeSelected] || privacyPolicy[Object.keys(privacyPolicy)[0]]
@@ -99,7 +99,7 @@ export default {
       return finalLink
     },
     contactLink() {
-      let finalLink = 'https://t.me/TorusLabs'
+      let finalLink = 'mailto:support@exchangaweb3.com'
       const { isActive, contactLink } = this.whiteLabel
       if (isActive && contactLink) {
         finalLink = contactLink[this.localeSelected] || contactLink[Object.keys(contactLink)[0]]

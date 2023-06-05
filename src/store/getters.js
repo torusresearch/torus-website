@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
-import fallBackLogoDark from '../assets/images/torus-logo-blue.svg'
-import fallBackLogoLight from '../assets/images/torus-logo-white.svg'
+import fallBackLogoLight from '../assets/images/exchangaweb3-logo-dark.svg'
+import fallBackLogoDark from '../assets/images/exchangaweb3-logo-light.svg'
 import fallBackIconDark from '../assets/img/icons/torus-icon-light.svg'
 import config from '../config'
 import { ETH, SUPPORTED_NETWORK_TYPES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'

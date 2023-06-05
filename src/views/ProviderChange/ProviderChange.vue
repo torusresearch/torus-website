@@ -6,7 +6,7 @@
     <template v-else>
       <v-layout pa-6 class="provider-change-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
         <v-flex text-left xs12>
-          <img class="home-link mr-1" alt="Torus Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
+          <img class="home-link mr-1" alt="Exchangaweb3 Logo" :height="getLogo.isExternal ? 50 : 20" :src="getLogo.logo" />
           <div class="headline text_2--text">{{ t('dappInfo.permission') }}</div>
         </v-flex>
       </v-layout>

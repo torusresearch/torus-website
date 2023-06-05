@@ -16,9 +16,9 @@
                 <v-layout wrap>
                   <v-flex class="mb-8" xs10 ml-auto mr-auto>
                     <img
-                      height="25"
-                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
-                      alt="Torus Logo"
+                      height="30"
+                      :src="require(`../../assets/images/exchangaweb3-logo-${$vuetify.theme.dark ? 'dark' : 'light'}.svg`)"
+                      alt="Exchangaweb3 Logo"
                     />
                   </v-flex>
                   <LoginTitle class="mb-6" />
@@ -48,10 +48,10 @@
                   <v-row :justify="'space-between'">
                     <!-- <v-col> -->
                     <img
-                      height="25"
+                      height="30"
                       class="mb-2"
-                      :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
-                      alt="Torus Logo"
+                      :src="require(`../../assets/images/exchangaweb3-logo-${$vuetify.theme.dark ? 'dark' : 'light'}.svg`)"
+                      alt="Exchangaweb3 Logo"
                     />
                     <!-- </v-col> -->
                     <!-- <v-col> -->
@@ -70,7 +70,11 @@
           </v-layout>
           <v-layout v-else wrap align-center justify-center align-content-center>
             <v-flex xs12 text-center mb-12>
-              <img width="180" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white-new' : 'blue'}.svg`)" alt="Torus Logo" />
+              <img
+                width="180"
+                :src="require(`../../assets/images/exchangaweb3-logo-${$vuetify.theme.dark ? 'dark' : 'light'}.svg`)"
+                alt="Exchangaweb3 Logo"
+              />
             </v-flex>
             <v-flex xs12 text-center>
               <img

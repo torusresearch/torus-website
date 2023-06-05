@@ -8,10 +8,10 @@
         </div>
         <BoxLoader :white-label="whiteLabel" :is-custom-verifier="isCustomVerifier" />
       </v-flex>
-      <div class="footer">
+      <!-- <div class="footer">
         <div class="powered-by">{{ t('login.selfCustodial') }}</div>
         <img height="26" :src="require(`@/assets/images/web3auth.svg`)" alt="Web3Auth" />
-      </div>
+      </div> -->
     </v-layout>
   </v-container>
 </template>
