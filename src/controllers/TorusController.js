@@ -1,14 +1,12 @@
-import { stripHexPrefix } from '@ethereumjs/util'
+import { stripHexPrefix, toChecksumAddress } from '@ethereumjs/util'
+import { providerAsMiddleware } from '@metamask/eth-json-rpc-middleware'
 import { normalize } from '@metamask/eth-sig-util'
-import { ObservableStore, storeAsStream } from '@metamask/obs-store'
 import { createEngineStream, JRPCEngine, SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
-import { providerAsMiddleware } from 'eth-json-rpc-middleware'
 import { debounce } from 'lodash'
 import log from 'loglevel'
 import pump from 'pump'
-import { toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, RPC, TRANSACTION_STATUSES } from '../utils/enums'
@@ -37,6 +35,8 @@ import ComposableObservableStore from './utils/ComposableObservableStore'
 import createLoggerMiddleware from './utils/createLoggerMiddleware'
 import createOriginMiddleware from './utils/createOriginMiddleware'
 import createMethodMiddleware from './utils/methodMiddleware'
+import { ObservableStore } from './utils/ObservableStore'
+import { storeAsStream } from './utils/ObservableStoreStream'
 // import setupMultiplex from './utils/setupMultiplex'
 import WalletConnectController from './walletconnect/WalletConnectController'
 
@@ -90,6 +90,7 @@ export default class TorusController extends SafeEventEmitter {
       provider: this.provider,
       blockTracker: this.blockTracker,
       getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController),
+      getCurrentNetworkUrl: this.networkController.getCurrentNetworkUrl.bind(this.networkController),
     })
 
     // start and stop polling for balances based on activeControllerConnections

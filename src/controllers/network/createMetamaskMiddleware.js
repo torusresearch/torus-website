@@ -1,5 +1,5 @@
+import { createWalletMiddleware } from '@metamask/eth-json-rpc-middleware'
 import { createAsyncMiddleware, createScaffoldMiddleware, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
-import { createWalletMiddleware } from 'eth-json-rpc-middleware'
 
 import { MESSAGE_TYPE, TRANSACTION_ENVELOPE_TYPES } from '../../utils/enums'
 

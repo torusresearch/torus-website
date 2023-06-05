@@ -1,10 +1,9 @@
-import { randomId } from '@toruslabs/openlogin-utils'
-
 import config from '../../config'
 import PopupHandler from '../../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import { getQuote, getWalletOrder } from '../../plugins/wyre'
 import { WYRE } from '../../utils/enums'
+import { randomId } from '../../utils/utils'
 
 export default {
   fetchWyreQuote({ state }, payload) {

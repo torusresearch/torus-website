@@ -1,9 +1,8 @@
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
-import { randomId } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import torus from '../../torus'
-import { broadcastChannelOptions, fakeStream, getIFrameOrigin, waitForMs } from '../../utils/utils'
+import { broadcastChannelOptions, fakeStream, getIFrameOrigin, randomId, waitForMs } from '../../utils/utils'
 
 const windowStream = (torus && torus.communicationMux && torus.communicationMux.getStream('window')) || fakeStream
 

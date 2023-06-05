@@ -120,7 +120,7 @@ describe('torus-keyring', () => {
 
     it('reliably can decode messages it signs', async () => {
       const message = 'hello there!'
-      const messageHashHex = bufferToHex(keccak256(RLP.encode(message).toString('hex')))
+      const messageHashHex = bufferToHex(keccak256(RLP.encode(message)))
       await keyring.deserialize([privateKey])
       await keyring.addRandomAccounts(9)
       const addresses = await keyring.getAccounts()
@@ -161,9 +161,7 @@ describe('torus-keyring', () => {
       // Push a mock wallet
       const desiredOutput = '0xa12164fed66719297d2cf407bb314d07feb12c02'
       keyring.wallets.push({
-        getAddress() {
-          return toBuffer(desiredOutput)
-        },
+        address: toBuffer(desiredOutput),
       })
 
       const output = await keyring.getAccounts()

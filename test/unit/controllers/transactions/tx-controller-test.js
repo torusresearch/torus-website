@@ -5,7 +5,7 @@ import { toBuffer } from '@ethereumjs/util'
 import { Common } from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
 
-import { ObservableStore } from '@metamask/obs-store'
+import { ObservableStore } from '../../../../src/controllers/utils/ObservableStore'
 import sinon from 'sinon'
 import TransactionController from '../../../../src/controllers/transactions/TransactionController'
 import { TRANSACTION_TYPES, TRANSACTION_STATUSES, GAS_ESTIMATE_TYPES, MAINNET } from '../../../../src/utils/enums'

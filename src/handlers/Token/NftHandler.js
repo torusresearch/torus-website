@@ -1,3 +1,4 @@
+import { Contract } from 'ethers'
 import abiERC721 from 'human-standard-collectible-abi'
 import { ERC1155 as erc1155abi, ERC1155Metadata as erc1155MetadataAbi } from 'multi-token-standard-abi'
 
@@ -37,7 +38,7 @@ export const getDisplayErrorMsg = (type) => {
   return null
 }
 class NftHandler {
-  constructor({ userAddress, address, tokenId, nftName, nftImageLink, description, nftStandard, isSpecial, web3, prefController }) {
+  constructor({ userAddress, address, tokenId, nftName, nftImageLink, description, nftStandard, isSpecial, provider, prefController }) {
     if (!userAddress) {
       throw new Error('userAddress is required while initializing NftHandler')
     }
@@ -47,10 +48,10 @@ class NftHandler {
     if (tokenId === undefined) {
       throw new Error('tokenId is required while initializing NftHandler')
     }
-    if (!web3) {
-      throw new Error('web3 is required while initializing NftHandler')
+    if (!provider) {
+      throw new Error('provider is required while initializing NftHandler')
     }
-    this.web3 = web3
+    this.provider = provider
     this.userAddress = userAddress
     this.address = address
     this.tokenId = tokenId
@@ -108,7 +109,7 @@ class NftHandler {
   }
 
   async getNftMetadataFromApi() {
-    const chainId = await this.web3.eth.getChainId()
+    const { chainId } = await this.provider.getNetwork()
     if (!COVALENT_SUPPORTED_CHAIN_IDS[chainId]) throw new Error(`ChainId ${chainId} not supported by covalent api`)
     if (!this.prefController) throw new Error('Preferences controller is not initialized')
     const api = `https://api.covalenthq.com/v1/${chainId}/tokens/${this.address}/nft_metadata/${this.tokenId}/`
@@ -140,20 +141,19 @@ class NftHandler {
    * @returns - Promise resolving to the 'name'
    */
   getAssetName() {
-    const web3Instance = this.web3
-    const contract = new web3Instance.eth.Contract(abiERC721, this.address)
-    return contract.methods.name().call()
+    const contract = new Contract(this.address, abiERC721, this.provider)
+    return contract.name()
   }
 
   async fetchNftBalance() {
     const { standard } = await this.checkNftStandard()
     if (standard === CONTRACT_TYPE_ERC1155) {
-      const balance = await this.contract.methods.balanceOf(this.userAddress, this.tokenId).call()
+      const balance = await this.contract.balanceOf(this.userAddress, this.tokenId)
       return Number.parseInt(balance, 10)
     }
     let owner = ''
     try {
-      owner = await this.contract.methods.ownerOf(this.tokenId).call()
+      owner = await this.contract.ownerOf(this.tokenId)
     } catch {
       throw new Error(errorsType.NON_EXISTENT_TOKEN_ID)
     }
@@ -165,11 +165,11 @@ class NftHandler {
 
   getCollectibleTokenURI(tokenId, standard = CONTRACT_TYPE_ERC721) {
     const method = standard === CONTRACT_TYPE_ERC721 ? 'tokenURI' : 'uri'
-    return this.contract.methods[method](tokenId).call()
+    return this.contract[method](tokenId)
   }
 
   contractSupportsInterface(interfaceId) {
-    return this.contract.methods.supportsInterface(interfaceId).call()
+    return this.contract.supportsInterface(interfaceId)
   }
 
   async checkNftStandard() {
@@ -179,8 +179,7 @@ class NftHandler {
     if (this.nftStandard && this.isSpecial !== undefined) {
       return { standard: this.nftStandard, isSpecial: false }
     }
-    const web3Instance = this.web3
-    this.contract = new web3Instance.eth.Contract(abiERC721, this.address)
+    this.contract = new Contract(this.address, abiERC721, this.provider)
     // For Cryptokitties
     if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.address.toLowerCase())) {
       this.nftStandard = CONTRACT_TYPE_ERC721
@@ -197,7 +196,7 @@ class NftHandler {
     if (isErc1155) {
       this.nftStandard = CONTRACT_TYPE_ERC1155
       this.isSpecial = false
-      this.contract = new web3Instance.eth.Contract(abiErc1155, this.address)
+      this.contract = new Contract(this.address, abiErc1155, this.provider)
       return { standard: CONTRACT_TYPE_ERC1155, isSpecial: false }
     }
 
