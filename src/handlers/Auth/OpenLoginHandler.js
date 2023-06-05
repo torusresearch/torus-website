@@ -161,7 +161,7 @@ class OpenLoginHandler {
   }
 
   getKeysInfo() {
-    const { walletKey, tKey, oAuthPrivateKey } = this.openLoginInstance.state
+    const { walletKey, tKey, oAuthPrivateKey, privKey } = this.openLoginInstance.state
     // keys
     const keys = []
     if (walletKey) {
@@ -195,6 +195,14 @@ class OpenLoginHandler {
         privKey: oAuthPrivateKey.padStart(64, '0'),
         ethAddress: generateAddressFromPrivateKey(oAuthPrivateKey),
       }
+    }
+
+    if (privKey) {
+      keys.push({
+        privKey: privKey.padStart(64, '0'),
+        accountType: ACCOUNT_TYPE.NORMAL,
+        ethAddress: generateAddressFromPrivateKey(privKey),
+      })
     }
 
     return { keys, postboxKey }
