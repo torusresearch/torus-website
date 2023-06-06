@@ -11,7 +11,7 @@
         </a>
       </div> -->
       <div class="mb-2">
-        {{ t('login.dataPrivacyCustom').replace(/\{walletName\}/gi, 'Exchangeaweb3') }}
+        {{ t('login.dataPrivacyCustom').replace(/\{walletName\}/gi, 'Exchangaweb3') }}
       </div>
     </div>
     <v-divider class="mb-2" />

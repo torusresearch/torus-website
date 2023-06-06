@@ -63,7 +63,7 @@ export default {
           image: `login-bg-new-${this.$vuetify.theme.dark ? 'dark-' : ''}3.svg`,
           title: this.t('login.slide3Title'),
           subtitle1: this.t('login.slide3Subtitle1'),
-          subtitle2: this.t('login.slide3Subtitle2Custom').replace(/{walletname}/gi, 'Exchangeaweb3'),
+          subtitle2: this.t('login.slide3Subtitle2Custom').replace(/{walletname}/gi, 'Exchangaweb3'),
         },
       ]
       if (this.showSpringFestival)
