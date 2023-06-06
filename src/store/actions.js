@@ -464,7 +464,7 @@ export default {
           jwtParameters || {}
         ),
         whiteLabel,
-        mfaLevel: state.embedState.mfaLevel,
+        mfaLevel: 'none',
         loginConfigItem: currentVerifierConfig,
         origin: getIFrameOriginObject(),
       })
