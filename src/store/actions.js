@@ -658,8 +658,8 @@ export default {
             return
           }
           // log.info(sessionInfo, 'current session info')
-          if (openloginState.walletKey || openloginState.tKey) {
-            walletKey = openLoginHandler.getWalletKey()
+          if (openloginState.walletKey || openloginState.tKey || openloginState.privKey) {
+            walletKey = openloginState.privKey
             // already logged in
             // call autoLogin
             log.info('auto-login with openlogin session')
