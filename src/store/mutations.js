@@ -129,12 +129,9 @@ export default {
     }
   },
   setLoginConfig(state, payload) {
-    const { enabledVerifiers, loginConfig } = payload
-    if (enabledVerifiers && loginConfig) {
+    const { loginConfig } = payload
+    if (loginConfig) {
       const finalLoginConfig = merge(config.loginConfig, loginConfig)
-      Object.keys(enabledVerifiers).forEach((x) => {
-        if (finalLoginConfig[x]) finalLoginConfig[x].showOnModal = enabledVerifiers[x] ? finalLoginConfig[x].showOnModal : false
-      })
       Object.keys(finalLoginConfig).forEach((x) => {
         // Fallback to verifier name as login provider if not set
         if (!finalLoginConfig[x].loginProvider) finalLoginConfig[x].loginProvider = x
