@@ -61,7 +61,6 @@ if (!isMain) {
     const {
       name,
       data: {
-        enabledVerifiers = {},
         apiKey = 'torus-default',
         whiteLabel = {},
         buttonPosition = '',
@@ -82,7 +81,7 @@ if (!isMain) {
         VuexStore.commit('setWhiteLabel', undefined)
       }
       VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
-      VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
+      VuexStore.commit('setLoginConfig', { loginConfig })
       VuexStore.commit('setMfaLevel', mfaLevel)
       const { isRehydrationComplete } = VuexStore.state
       if (isRehydrationComplete) {
