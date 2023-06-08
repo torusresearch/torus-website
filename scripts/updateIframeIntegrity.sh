@@ -4,6 +4,7 @@ GH_BRANCH=${GITHUB_REF#refs/heads/}
 git clone -b $GH_BRANCH git@github.com:torusresearch/torus-embed.git ~/torus-embed
 git config user.email "no-reply@tor.us"
 git config user.name "torus-bot"
+cd ~/torus-embed/
 
 if [[ "$GITHUB_REF" = 'refs/heads/master' ]]; then 
     npm version patch -m 'Updating iframe integrity and publish %s'
