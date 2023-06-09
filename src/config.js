@@ -200,7 +200,7 @@ export default {
 
   transakHost: 'https://global.transak.com',
   transakApiQuoteHost: 'https://api.transak.com/api/v2',
-  transakLiveAPIKEY: '0ae336e4-1968-4ec3-b817-625f6810a7d2',
+  transakLiveAPIKEY: 'a3131cb5-2270-4deb-a931-f8e9d00c2c4b',
   transakTestHost: 'https://staging-global.transak.com',
   transakTestApiQuoteHost: 'https://staging-api.transak.com/api/v2',
   transakTestAPIKEY: 'e5adb5e3-b30c-4fa8-85ea-adcbadc98198',
