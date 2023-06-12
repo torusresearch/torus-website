@@ -665,7 +665,6 @@ export default class TorusController extends SafeEventEmitter {
       const signature = await this.keyringController.signTypedData(address, cleanMessageParameters.data, messageVersion)
       this.typedMessageManager.setMsgStatusSigned(messageId, signature)
       this.getState()
-      return
     } catch (error) {
       log.info('TorusController - eth_signTypedData failed.', error)
       this.typedMessageManager.errorMessage(messageId, error)
@@ -771,7 +770,6 @@ export default class TorusController extends SafeEventEmitter {
       const rawMess = this.keyringController.decryptMessage(cleanMessageParameters.data, address)
       this.decryptMessageManager.setMsgStatusDecrypted(messageId, rawMess)
       this.getState()
-      return
     } catch (error) {
       log.info('TorusController - eth_getEncryptionPublicKey failed.', error)
       this.encryptionPublicKeyManager.errorMessage(messageId, error)
