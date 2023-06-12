@@ -297,14 +297,14 @@ export default {
       const sessionId = OpenloginSessionManager.generateRandomSessionKey()
       const sessionData = {
         walletKey: privateKey,
+        sessionId,
         userInfo: {
           whiteLabel: state.whiteLabel,
           appState,
-          sessionId,
           ...userInfo,
         },
       }
-      openLoginHandler.state = { walletKey: privateKey, userInfo: { sessionId } }
+      openLoginHandler.state = sessionData
       if (config.storageAvailability[storageUtils.storageType]) {
         const storage = BrowserStorage.getInstance(storageUtils.openloginStoreKey, storageUtils.storageType)
         storage.set('sessionId', sessionId)
