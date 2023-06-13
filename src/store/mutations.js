@@ -260,6 +260,9 @@ export default {
   setUserDapps(state, payload) {
     state.userDapps = payload
   },
+  setIsPlugin(state, payload) {
+    state.isPlugin = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
