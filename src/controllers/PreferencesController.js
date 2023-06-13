@@ -772,7 +772,7 @@ class PreferencesController extends SafeEventEmitter {
     if (decimals === undefined) throw new Error('params.nativeCurrency.decimals not provided')
 
     const _web3 = new providers.JsonRpcProvider(rpcUrls[0])
-    const { networkChainID } = await _web3.getNetwork()
+    const { chainId: networkChainID } = await _web3.getNetwork()
     if (networkChainID !== Number.parseInt(chainId, 16)) {
       throw ethErrors.rpc.invalidParams(
         `Provided rpc url's chainId version is not matching with provided chainId, expected: ${utils.hexValue(networkChainID)}, received: ${chainId}`
