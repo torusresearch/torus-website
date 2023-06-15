@@ -67,7 +67,6 @@ export function createAddChainMiddleware({ processAddChain }) {
         iconUrls?: string[]; // Currently ignored.
       }
      */
-
     const { chainId, rpcUrls, nativeCurrency } = request.params || {}
     if (!chainId) throw new Error('createAddChainMiddleware - params.chainId not provided')
     if (!rpcUrls || rpcUrls.length === 0) throw new Error('createAddChainMiddleware - params.rpcUrls not provided')

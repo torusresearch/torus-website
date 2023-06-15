@@ -158,6 +158,8 @@ const userDapps = (state) => state.userDapps
 
 const supportedNetworks = (state) => ({ ...state.customNetworks, ...SUPPORTED_NETWORK_TYPES })
 
+const isPlugin = (state) => state.isPlugin
+
 export default {
   unApprovedTransactions,
   tokenBalances,
@@ -171,4 +173,5 @@ export default {
   filteredContacts,
   userDapps,
   supportedNetworks,
+  isPlugin,
 }

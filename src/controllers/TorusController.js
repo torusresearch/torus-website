@@ -9,6 +9,7 @@ import log from 'loglevel'
 import pump from 'pump'
 
 import config from '../config'
+import vuexStore from '../store/getters'
 import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, RPC, TRANSACTION_STATUSES } from '../utils/enums'
 import createRandomId from '../utils/random-id'
 import { isMain } from '../utils/utils'
@@ -551,6 +552,18 @@ export default class TorusController extends SafeEventEmitter {
   // network methods
 
   async newAddChainRequest(addChainParams, request) {
+    // add directly if via plugin and custom login.
+    if (vuexStore.isPlugin && config.isCustomLogin) {
+      const customNetwork = {
+        networkName: addChainParams.chainName,
+        host: addChainParams.rpcUrls[0],
+        chainId: addChainParams.chainId,
+        symbol: addChainParams.nativeCurrency.symbol,
+        blockExplorer: addChainParams.blockExplorerUrls ? addChainParams.blockExplorerUrls[0] : undefined,
+      }
+
+      return this.prefsController.addCustomNetwork(RPC, customNetwork)
+    }
     const id = createRandomId()
     return this.prefsController.addChainRequestAsync(addChainParams, request, id)
   }
