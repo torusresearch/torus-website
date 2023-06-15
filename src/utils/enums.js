@@ -646,6 +646,7 @@ export const CRYPTO = 'crypto'
 export const MERCURYO = 'mercuryo'
 export const TRANSAK = 'transak'
 export const BANXA = 'banxa'
+export const PAYBIS = 'paybis'
 export const PNG = 'png'
 export const SVG = 'svg'
 
