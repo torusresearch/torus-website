@@ -54,7 +54,7 @@
                 </template>
               </v-text-field>
 
-              <div class="v-text-field__details mb-6">
+              <div v-if="selectedProviderObj.includeFees || selectedProviderObj.line2" class="v-text-field__details mb-6">
                 <div class="v-messages">
                   <div class="v-messages__wrapper">
                     <div class="v-messages__message d-flex">
