@@ -32,7 +32,7 @@ const getWalletOrder = (payload, headers) => {
         ...headers,
       },
     }
-    return post(`${config.banxaApiHost}/order/create`, payload, options)
+    return post(`${config.paybisApiHost}/order`, payload, options)
   } catch (error) {
     log.error(error)
   }

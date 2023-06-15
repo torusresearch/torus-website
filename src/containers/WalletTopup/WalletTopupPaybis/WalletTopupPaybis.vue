@@ -18,7 +18,6 @@ import { mapState } from 'vuex'
 
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 import cleanTopupQuoteError from '../../../utils/cleanTopupQuoteError'
-import { BANXA_NETWORK_MAP } from '../../../utils/enums'
 
 export default {
   components: {
@@ -39,19 +38,21 @@ export default {
       const self = this
       this.fetchQuoteError = ''
       this.fetchingQuote = true
-      payload.blockchain = BANXA_NETWORK_MAP[this.networkType.host]
       throttle(() => {
         self.$store
           .dispatch('fetchPaybisQuote', payload)
           .then((result) => {
             log.info(result)
-            const { paymentMethods } = result.data
+            const { paymentMethods, currencyCodeTo, id: quoteId } = result.data
             // get credit card payment or the first one
             let details = paymentMethods.find((method) => method.id === 'exchanga-credit-card')
             if (!details) details = paymentMethods[0]
             self.cryptoCurrencyValue = details.amountTo.amount
             self.currencyRate = details.amountTo.amount / details.amountToEquivalent.amount
-            self.currentOrder = details.id
+            self.currentOrder = {
+              quoteId,
+              target: currencyCodeTo,
+            }
             this.fetchingQuote = false
             this.fetchQuoteError = ''
           })
@@ -72,14 +73,13 @@ export default {
         this.$store.dispatch('fetchPaybisOrder', {
           currentOrder: this.currentOrder,
           selectedAddress: selectedAddress || this.selectedAddress,
-          blockchain: BANXA_NETWORK_MAP[this.networkType.host],
         })
       )
     },
     clearQuote(payload) {
       this.cryptoCurrencyValue = 0
       this.currencyRate = 0
-      this.currentOrder = {}
+      this.quoteId = ''
       this.fetchQuote(payload)
     },
   },
