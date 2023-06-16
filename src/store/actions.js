@@ -297,14 +297,16 @@ export default {
       const sessionId = OpenloginSessionManager.generateRandomSessionKey()
       const sessionData = {
         walletKey: privateKey,
+        sessionId,
         userInfo: {
           whiteLabel: state.whiteLabel,
           appState,
-          sessionId,
+          isPlugin: true,
           ...userInfo,
         },
       }
-      openLoginHandler.state = { walletKey: privateKey, userInfo: { sessionId } }
+      openLoginHandler.state = sessionData
+      commit('setIsPlugin', true)
       if (config.storageAvailability[storageUtils.storageType]) {
         const storage = BrowserStorage.getInstance(storageUtils.openloginStoreKey, storageUtils.storageType)
         storage.set('sessionId', sessionId)
@@ -663,6 +665,7 @@ export default {
             // already logged in
             // call autoLogin
             log.info('auto-login with openlogin session')
+            commit('setIsPlugin', openloginState.userInfo.isPlugin)
             await dispatch('autoLogin', { calledFromEmbed: !isMain })
 
             if (openloginState.userInfo.appState) {

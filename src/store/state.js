@@ -84,6 +84,7 @@ const initialState = {
   ethTransferOnly: config.ethTransferOnly,
   lastLoginInfo: {},
   userDapps: {},
+  isPlugin: false,
 }
 
 export default initialState
