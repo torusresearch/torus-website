@@ -1,7 +1,7 @@
 import config from '../../config'
 import PopupHandler from '../../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
-import { getQuote, getWalletOrder, saveWalletOrder } from '../../plugins/paybis'
+import { getQuote, getWalletOrder } from '../../plugins/paybis'
 import { ETH } from '../../utils/enums'
 import { paymentProviders, randomId } from '../../utils/utils'
 
@@ -36,7 +36,7 @@ export default {
             const handledWindow = new PopupHandler({ url: finalUrl })
             handledWindow.open()
             handledWindow.once('close', () => {
-              reject(new Error('user closed Paybis popup'))
+              resolve({ success: true })
             })
           }
 
@@ -80,7 +80,7 @@ export default {
     // eslint-disable-next-line no-console
     console.log('result', result)
   },
-  savePaybisOrder({ state }, { orderParams }) {
-    saveWalletOrder(orderParams, { Authorization: `Bearer ${state.jwtToken[state.selectedAddress]}` })
-  },
+  // savePaybisOrder({ state }, { orderParams }) {
+  //   saveWalletOrder(orderParams, { Authorization: `Bearer ${state.jwtToken[state.selectedAddress]}` })
+  // },
 }

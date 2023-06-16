@@ -293,15 +293,18 @@ export default {
         if (instanceId) bc = new BroadcastChannel(`redirect_channel_${instanceId}`, broadcastChannelOptions)
         const callback = (p) => {
           p.then(async ({ success }) => {
-            if (success) {
-              this.snackbar = true
-              this.snackbarColor = 'success'
-              this.snackbarText = 'Your order has been placed successfully. It will reflect in your wallet activity shortly.'
-            } else {
-              this.snackbar = true
-              this.snackbarColor = 'error'
-              this.snackbarText = 'Something went wrong'
-            }
+            // if (success) {
+            //   this.snackbar = true
+            //   this.snackbarColor = 'success'
+            //   this.snackbarText = 'Your order has been placed successfully. It will reflect in your wallet activity shortly.'
+            // } else {
+            //   this.snackbar = true
+            //   this.snackbarColor = 'error'
+            //   this.snackbarText = 'Something went wrong'
+            // }
+            this.snackbar = true
+            this.snackbarColor = 'info'
+            this.snackbarText = 'If you completed the transaction. It will reflect in your wallet activity page shortly.'
             if (bc) {
               await bc.postMessage({
                 data: { instanceParams: { provider: this.selectedProvider }, queryParams: { transactionStatus: success ? 'success' : 'failed' } },
