@@ -81,7 +81,7 @@
         />
       </v-col>
     </v-row>
-    <div class="d-flex align-center mt-4" :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
+    <div v-if="showViewMore" class="d-flex align-center mt-4" :style="{ maxWidth: isPopup ? 'unset' : '380px' }">
       <v-spacer></v-spacer>
       <v-btn :class="{ 'has-more': viewMoreOptions }" class="view-option-selector" @click="viewMoreOptions = !viewMoreOptions">
         <span class="selector-text">{{ viewMoreOptions ? t('dappLogin.viewLess') : t('dappLogin.viewMore') }}</span>
@@ -139,20 +139,15 @@ export default {
   computed: {
     mainButtonsLong() {
       if (this.lastLoginConfigItem) return []
-      return this.loginButtonsArray.filter(
-        (button) =>
-          ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) &&
-          button.mainOption &&
-          !!button.description
-      )
+      return this.loginButtonsArray.filter((button) => this.showOnDeviceSize(button) && button.mainOption && !!button.description)
     },
     mainButtons() {
       return this.loginButtonsArray.filter((button) => {
         const descCheck = (this.lastLoginConfigItem || !button.description) && button.verifier !== HOSTED_EMAIL_PASSWORDLESS_VERIFIER
         if (this.viewMoreOptions) {
-          return ((this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)) && descCheck
+          return this.showOnDeviceSize(button) && descCheck
         }
-        return (!this.$vuetify.breakpoint.xsOnly || button.showOnMobile) && button.mainOption && descCheck
+        return this.showOnDeviceSize(button) && button.mainOption && descCheck
       })
     },
     loginButtonsLong() {
@@ -180,6 +175,12 @@ export default {
       const existingVerifier = this.lastLoginInfo.aggregateVerifier || this.lastLoginInfo.verifier
       const config = this.loginButtonsArray.find((button) => (button.linkedVerifier || button.verifier) === existingVerifier)
       return config
+    },
+    showViewMore() {
+      const found = this.loginButtonsArray.find(
+        (button) => this.showOnDeviceSize(button) && !button.mainOption && button.verifier !== HOSTED_EMAIL_PASSWORDLESS_VERIFIER
+      )
+      return found
     },
   },
   watch: {
@@ -225,6 +226,9 @@ export default {
     },
     triggerLogin(verifier, email) {
       this.$emit('triggerLogin', verifier, email)
+    },
+    showOnDeviceSize(button) {
+      return (this.$vuetify.breakpoint.xsOnly && button.showOnMobile) || (!this.$vuetify.breakpoint.xsOnly && button.showOnDesktop)
     },
   },
 }

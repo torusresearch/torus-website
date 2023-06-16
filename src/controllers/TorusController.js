@@ -1,7 +1,6 @@
 import { stripHexPrefix, toChecksumAddress } from '@ethereumjs/util'
-import { providerAsMiddleware } from '@metamask/eth-json-rpc-middleware'
 import { normalize } from '@metamask/eth-sig-util'
-import { createEngineStream, JRPCEngine, SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
+import { createEngineStream, JRPCEngine, providerAsMiddleware, SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import { debounce } from 'lodash'
@@ -665,7 +664,6 @@ export default class TorusController extends SafeEventEmitter {
       const signature = await this.keyringController.signTypedData(address, cleanMessageParameters.data, messageVersion)
       this.typedMessageManager.setMsgStatusSigned(messageId, signature)
       this.getState()
-      return
     } catch (error) {
       log.info('TorusController - eth_signTypedData failed.', error)
       this.typedMessageManager.errorMessage(messageId, error)
@@ -771,7 +769,6 @@ export default class TorusController extends SafeEventEmitter {
       const rawMess = this.keyringController.decryptMessage(cleanMessageParameters.data, address)
       this.decryptMessageManager.setMsgStatusDecrypted(messageId, rawMess)
       this.getState()
-      return
     } catch (error) {
       log.info('TorusController - eth_getEncryptionPublicKey failed.', error)
       this.encryptionPublicKeyManager.errorMessage(messageId, error)

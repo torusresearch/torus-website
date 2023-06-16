@@ -17,9 +17,11 @@
           <div class="buttons-holder">
             <LoginButtons :login-buttons-array="loginButtonsArray" :is-popup="true" :last-login-info="lastLoginInfo" @triggerLogin="startLogin" />
           </div>
-          <div v-if="!canHideDisclaimer1 && !viewMoreOptions && thirdPartyAuthenticators.length > 0" class="text_3--text footer-notes">
-            <div class="mb-2 text_1--text">{{ t('login.note') }}:</div>
-            <div class="mb-5">{{ t('login.dataPrivacy') }}</div>
+          <div class="text_3--text footer-notes">
+            <div v-if="!canHideDisclaimer1 && !viewMoreOptions && thirdPartyAuthenticators.length > 0">
+              <div class="mb-2 text_1--text">{{ t('login.note') }}:</div>
+              <div class="mb-5">{{ t('login.dataPrivacy') }}</div>
+            </div>
             <div class="d-flex justify-center footer-links pt-3 pb-4">
               <div>
                 <a class="text-decoration-none text_2--text d-block d-sm-inline" :href="tncLink" target="_blank" rel="noreferrer noopener">
