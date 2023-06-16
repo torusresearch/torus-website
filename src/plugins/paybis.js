@@ -39,4 +39,20 @@ const getWalletOrder = (payload, headers) => {
   return undefined
 }
 
-export { getQuote, getWalletOrder }
+const saveWalletOrder = (payload, headers) => {
+  try {
+    const options = {
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+    }
+    return post(`${config.paybisApiHost}/order/save`, payload, options)
+  } catch (error) {
+    log.error(error)
+  }
+  return undefined
+}
+
+export { getQuote, getWalletOrder, saveWalletOrder }

@@ -43,7 +43,7 @@ export default {
           .dispatch('fetchPaybisQuote', payload)
           .then((result) => {
             log.info(result)
-            const { paymentMethods, currencyCodeTo, id: quoteId } = result.data
+            const { paymentMethods, currencyCodeFrom, currencyCodeTo, id: quoteId } = result.data
             // get credit card payment or the first one
             let details = paymentMethods.find((method) => method.id === 'exchanga-credit-card')
             if (!details) details = paymentMethods[0]
@@ -52,6 +52,9 @@ export default {
             self.currentOrder = {
               quoteId,
               target: currencyCodeTo,
+              from: currencyCodeFrom,
+              fiatAmount: details.amountFrom.amount,
+              targetAmount: details.amountTo.amount,
             }
             this.fetchingQuote = false
             this.fetchQuoteError = ''

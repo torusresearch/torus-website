@@ -294,8 +294,9 @@ export default {
         const callback = (p) => {
           p.then(async ({ success }) => {
             if (success) {
-              // eslint-disable-next-line
-              this.$router.push({ name: 'walletHistory' }).catch((_) => {})
+              this.snackbar = true
+              this.snackbarColor = 'success'
+              this.snackbarText = 'Your order has been placed successfully. It will reflect in your wallet activity shortly.'
             } else {
               this.snackbar = true
               this.snackbarColor = 'error'
