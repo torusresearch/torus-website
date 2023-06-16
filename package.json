@@ -48,7 +48,7 @@
     "@toruslabs/loglevel-sentry": "^5.0.0",
     "@toruslabs/metadata-helpers": "^4.0.0",
     "@toruslabs/openlogin": "^4.5.4",
-    "@toruslabs/openlogin-jrpc": "^4.5.1",
+    "@toruslabs/openlogin-jrpc": "^4.6.0",
     "@toruslabs/openlogin-session-manager": "^1.1.0",
     "@toruslabs/openlogin-subkey": "^4.2.0",
     "@toruslabs/openlogin-utils": "^4.5.1",

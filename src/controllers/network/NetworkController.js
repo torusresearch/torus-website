@@ -1,12 +1,6 @@
 import { isHexString } from '@ethereumjs/util'
-import {
-  createBlockRefRewriteMiddleware,
-  createBlockTrackerInspectorMiddleware,
-  createFetchMiddleware,
-  providerFromMiddleware,
-} from '@metamask/eth-json-rpc-middleware'
-import { providerFromEngine } from '@metamask/eth-json-rpc-provider'
-import { JRPCEngine, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
+import { createBlockRefRewriteMiddleware, createBlockTrackerInspectorMiddleware, createFetchMiddleware } from '@metamask/eth-json-rpc-middleware'
+import { JRPCEngine, mergeMiddleware, providerFromEngine, providerFromMiddleware } from '@toruslabs/openlogin-jrpc'
 import assert from 'assert'
 import { PollingBlockTracker } from 'eth-block-tracker'
 import EthQuery from 'eth-query'
