@@ -2,7 +2,6 @@ import { isHexString } from '@ethereumjs/util'
 import { createBlockRefRewriteMiddleware, createBlockTrackerInspectorMiddleware, createFetchMiddleware } from '@metamask/eth-json-rpc-middleware'
 import { JRPCEngine, mergeMiddleware, providerFromEngine, providerFromMiddleware } from '@toruslabs/openlogin-jrpc'
 import assert from 'assert'
-import { PollingBlockTracker } from 'eth-block-tracker'
 import EthQuery from 'eth-query'
 import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'
@@ -16,6 +15,7 @@ import { ObservableStore } from '../utils/ObservableStore'
 import { createInfuraClient } from './createInfuraClient'
 import { createJsonRpcClient } from './createJsonRpcClient'
 import createMetamaskMiddleware from './createMetamaskMiddleware'
+import EthereumBlockTracker from './EthereumBlockTracker'
 
 // defaults and constants
 const defaultProviderConfig = { type: MAINNET, ticker: ETH.toUpperCase(), chainId: MAINNET_CHAIN_ID }
@@ -594,7 +594,7 @@ export default class NetworkController extends EventEmitter {
 function createLocalhostClient() {
   const fetchMiddleware = createFetchMiddleware({ rpcUrl: 'https://localhost:8545/' })
   const blockProvider = providerFromMiddleware(fetchMiddleware)
-  const blockTracker = new PollingBlockTracker({ provider: blockProvider, pollingInterval: 1000 })
+  const blockTracker = new EthereumBlockTracker({ provider: blockProvider, pollingInterval: 1000 })
 
   const networkMiddleware = mergeMiddleware([
     createBlockRefRewriteMiddleware({ blockTracker }),
