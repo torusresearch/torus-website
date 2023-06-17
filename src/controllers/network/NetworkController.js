@@ -575,6 +575,20 @@ export default class NetworkController extends EventEmitter {
     engine.push(metamaskMiddleware)
     engine.push(networkMiddleware)
     const provider = providerFromEngine(engine)
+    provider.request = async (args) => {
+      const req = {
+        ...args,
+        id: Math.random().toString(36).slice(2),
+        jsonrpc: '2.0',
+      }
+      return new Promise((resolve, reject) => {
+        provider.sendAsync(req, (err, res) => {
+          if (err) reject(err)
+          else if (res.error) reject(res.error)
+          else resolve(res.result)
+        })
+      })
+    }
     this._setProviderAndBlockTracker({ provider, blockTracker })
   }
 
