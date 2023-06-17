@@ -74,7 +74,7 @@ export default class AccountTracker {
     this._updateForBlock = this._updateForBlock.bind(this)
 
     this.getCurrentChainId = options.getCurrentChainId
-    this.ethersProvider = new providers.Web3Provider(this._provider, 'any')
+    this.ethersProvider = new providers.Web3Provider(this._provider)
   }
 
   start() {

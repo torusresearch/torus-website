@@ -69,7 +69,7 @@ const torusController = new TorusController({
 torus.torusController = torusController
 
 torusController.provider.setMaxListeners(100)
-torus.ethersProvider = new providers.Web3Provider(torus.torusController.provider, 'any')
+torus.ethersProvider = new providers.Web3Provider(torus.torusController.provider)
 log.info('torus network', process.env.VUE_APP_PROXY_NETWORK)
 
 // we use this to start accounttracker balances
