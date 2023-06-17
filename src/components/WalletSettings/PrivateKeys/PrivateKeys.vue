@@ -111,7 +111,7 @@
 
             <v-divider></v-divider>
             <!-- Show Private Key -->
-            <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
+            <!-- <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
                 <v-icon size="26" class="text_3--text" :style="{ marginRight: '10px' }">
                   {{ isSeedPhrase ? '$vuetify.icons.tkey_seed_phrase' : '$vuetify.icons.key' }}
@@ -149,7 +149,7 @@
                   <v-icon>{{ `$vuetify.icons.${isShowPrivateKey ? 'visibility_off' : 'visibility_on'}` }}</v-icon>
                 </v-btn>
               </v-list-item-icon>
-            </v-list-item>
+            </v-list-item> -->
           </v-list>
         </v-flex>
       </v-layout>
@@ -172,10 +172,10 @@ import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
 
 import { ACCOUNT_TYPE } from '../../../utils/enums'
 import { getV3Filename } from '../../../utils/utils'
-import ShowToolTip from '../../helpers/ShowToolTip'
+// import ShowToolTip from '../../helpers/ShowToolTip'
 
 export default {
-  components: { ShowToolTip },
+  components: {},
   data() {
     return {
       isShowPrivateKey: false,
