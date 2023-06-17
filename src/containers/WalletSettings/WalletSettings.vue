@@ -13,7 +13,7 @@
     <v-layout wrap mx-n4 mt-7>
       <v-flex px-4 xs12 md6>
         <v-expansion-panels v-model="leftPanel" multiple>
-          <!-- <v-expansion-panel class="my-2">
+          <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="privacy-panel-header">
               <v-icon size="18" class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.lock</v-icon>
               <div class="grow font-weight-bold title text_1--text">
@@ -23,7 +23,7 @@
             <v-expansion-panel-content>
               <PrivacySecurity />
             </v-expansion-panel-content>
-          </v-expansion-panel> -->
+          </v-expansion-panel>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="contact-list-panel-header">
               <v-icon size="16" class="d-inline-flex mr-4 text_2--text shrink">$vuetify.icons.list</v-icon>
@@ -95,13 +95,13 @@ import CrashReport from '../../components/WalletSettings/CrashReport'
 import DefaultAccount from '../../components/WalletSettings/DefaultAccount'
 import Display from '../../components/WalletSettings/Display'
 import Network from '../../components/WalletSettings/Network'
-// import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
+import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
 import { ACCOUNT_TYPE } from '../../utils/enums'
 
 export default {
   name: 'WalletSettings',
   components: {
-    // PrivacySecurity,
+    PrivacySecurity,
     Network,
     ContactList,
     CrashReport,
