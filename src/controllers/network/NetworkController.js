@@ -598,7 +598,7 @@ export default class NetworkController extends EventEmitter {
 }
 
 function createLocalhostClient() {
-  const fetchMiddleware = createFetchMiddleware({ rpcUrl: 'https://localhost:8545/' })
+  const fetchMiddleware = createFetchMiddleware({ rpcUrl: 'https://localhost:8545/', btoa: globalThis.btoa, fetch: globalThis.fetch })
   const blockProvider = providerFromMiddleware(fetchMiddleware)
   const blockTracker = new PollingBlockTracker({ provider: blockProvider, pollingInterval: 1000 })
 
