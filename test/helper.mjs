@@ -7,14 +7,13 @@ import nock from 'nock'
 import fetch, { Headers, Request, Response } from 'node-fetch'
 
 console.log('requiring helpers for tests in mocha')
-const allowedHosts = ['localhost', 'mainnet.infura.io:443', 'bsc-dataseed.binance.org:443', 'polygon-mumbai.infura.io:443']
+const allowedHosts = ['localhost', 'mainnet.infura.io:443']
 
 const isNetConnectAllowed = (host) => {
-  const found = allowedHosts.find((validHost) => host.includes(validHost) || validHost.includes(host))
-  if (!found) console.error(`Net connect not allowed to ${host}`)
+  const found = allowedHosts.find((validHost) => host.includes(validHost))
   return !!found
 }
-// nock.disableNetConnect()
+nock.disableNetConnect()
 nock.enableNetConnect((host) => isNetConnectAllowed(host))
 
 // catch rejections that are still unhandled when tests exit

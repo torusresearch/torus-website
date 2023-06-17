@@ -61,7 +61,7 @@ class DetectTokensController {
     this.interval = interval
     this.network = network
     this.detectedTokensStore = new ObservableStore({})
-    this.provider = new providers.Web3Provider(provider, 'any')
+    this.provider = new providers.Web3Provider(provider)
     this.selectedAddress = ''
     this.preferencesStore = preferencesStore
     this.selectedCustomTokens = []

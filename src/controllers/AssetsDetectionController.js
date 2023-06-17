@@ -17,7 +17,7 @@ export default class AssetsDetectionController {
     this.interval = options.interval || DEFAULT_INTERVAL
     this.selectedAddress = options.selectedAddress || ''
     this.network = options.network
-    this.provider = new providers.Web3Provider(options.provider, 'any')
+    this.provider = new providers.Web3Provider(options.provider)
     this.assetController = options.assetController
     this.getNfts = options.getNfts
     this.currentNetwork = null

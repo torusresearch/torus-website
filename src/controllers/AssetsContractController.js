@@ -29,7 +29,7 @@ export default class AssetContractController {
    * @param {Object} opts Initialize various properties of the class.
    */
   constructor(options) {
-    this.provider = new providers.Web3Provider(options.provider, 'any')
+    this.provider = new providers.Web3Provider(options.provider)
     this.name = 'AssetsContractController'
   }
 

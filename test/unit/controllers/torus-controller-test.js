@@ -32,6 +32,7 @@ describe('MetaMaskController', () => {
 
   beforeEach(async () => {
     nock.cleanAll()
+    nock.enableNetConnect((host) => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
     nock(TEST_GAS_FEE_API.replace('<chain_id>', '1'))
       .get(/.+/u)
       .reply(200, {
