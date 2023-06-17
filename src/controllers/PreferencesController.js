@@ -771,7 +771,7 @@ class PreferencesController extends SafeEventEmitter {
     if (!symbol) ethErrors.rpc.invalidParams('params.nativeCurrency.symbol not provided')
     if (decimals === undefined) throw new Error('params.nativeCurrency.decimals not provided')
 
-    const _web3 = new providers.JsonRpcProvider(rpcUrls[0])
+    const _web3 = new providers.JsonRpcProvider(rpcUrls[0], 'any')
     const { chainId: networkChainID } = await _web3.getNetwork()
     if (networkChainID !== Number.parseInt(chainId, 16)) {
       throw ethErrors.rpc.invalidParams(

@@ -26,7 +26,7 @@ export default class WatchAssetManager extends EventEmitter {
 
     this.network = network
     this.prefsController = prefsController
-    this.ethersProvider = new providers.Web3Provider(options.provider)
+    this.ethersProvider = new providers.Web3Provider(options.provider, 'any')
     this.store = new ObservableStore({
       unApprovedAssets: {},
       unApprovedAssetsCount: 0,
