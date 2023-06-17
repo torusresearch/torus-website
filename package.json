@@ -53,7 +53,7 @@
     "@toruslabs/openlogin-subkey": "^4.2.0",
     "@toruslabs/openlogin-utils": "^4.5.1",
     "@uniswap/default-token-list": "^11.1.0",
-    "@walletconnect/core": "^1.8.0",
+    "@walletconnect/core": "^2.8.1",
     "@walletconnect/iso-crypto": "^1.8.0",
     "@walletconnect/legacy-types": "^2.0.0",
     "@walletconnect/sign-client": "^2.8.0",
