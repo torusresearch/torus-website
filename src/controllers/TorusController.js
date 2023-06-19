@@ -1,6 +1,7 @@
 import { stripHexPrefix, toChecksumAddress } from '@ethereumjs/util'
+import { providerAsMiddleware } from '@metamask/eth-json-rpc-middleware'
 import { normalize } from '@metamask/eth-sig-util'
-import { createEngineStream, JRPCEngine, providerAsMiddleware, SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
+import { createEngineStream, JRPCEngine, SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import { debounce } from 'lodash'

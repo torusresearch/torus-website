@@ -6,16 +6,17 @@ import {
   createInflightCacheMiddleware,
   createRetryOnEmptyMiddleware,
 } from '@metamask/eth-json-rpc-middleware'
-import { createScaffoldMiddleware, mergeMiddleware, providerFromMiddleware } from '@toruslabs/openlogin-jrpc'
+import { providerFromMiddleware } from '@metamask/eth-json-rpc-provider'
+import { createScaffoldMiddleware, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
+import { PollingBlockTracker } from 'eth-block-tracker'
 
 import config from '../../config'
 import { INFURA_NETWORK_TYPE_TO_ID_MAP } from '../../utils/enums'
-import EthereumBlockTracker from './EthereumBlockTracker'
 
 export function createInfuraClient({ network }) {
   const infuraMiddleware = createInfuraMiddleware({ network, projectId: config.infuraKey })
   const infuraProvider = providerFromMiddleware(infuraMiddleware)
-  const blockTracker = new EthereumBlockTracker({ provider: infuraProvider })
+  const blockTracker = new PollingBlockTracker({ provider: infuraProvider })
   const networkMiddleware = mergeMiddleware([
     createNetworkAndChainIdMiddleware({ network }),
     createBlockCacheMiddleware({ blockTracker }),
