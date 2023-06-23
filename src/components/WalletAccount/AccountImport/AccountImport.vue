@@ -289,7 +289,7 @@ export default {
       }
     },
     setErrorState(error) {
-      this.error = error && error.message && error.message.includes('invalid password') ? this.t('accountMenu.incorrectPassword') : error
+      this.error = error && error.message && error.message.includes('incorrect password') ? this.t('accountMenu.incorrectPassword') : error
       this.canShowError = true
       log.error(error)
       this.isLoadingKeystore = false

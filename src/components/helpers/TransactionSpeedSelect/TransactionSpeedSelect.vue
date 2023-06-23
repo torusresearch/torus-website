@@ -269,9 +269,9 @@ export default {
           this.averageGasPriceSpeed = avgWait
           this.fastestGasPriceSpeed = fastestWait
         } else {
-          const gasPrice = await torus.ethersProvider.getGasPrice()
+          const gasPrice = await torus.ethersProvider.send('eth_gasPrice')
           log.info(gasPrice, 'fetched gas price from provider')
-          this.averageGasPrice = new BigNumber(gasPrice.toHexString()).div(new BigNumber(10).pow(new BigNumber(9)))
+          this.averageGasPrice = new BigNumber(gasPrice, 16).div(new BigNumber(10).pow(new BigNumber(9)))
           this.fastestGasPrice = this.averageGasPrice.gt(0) ? this.averageGasPrice.plus(new BigNumber('5')) : this.averageGasPrice
         }
         // Set selected gas price from confirm

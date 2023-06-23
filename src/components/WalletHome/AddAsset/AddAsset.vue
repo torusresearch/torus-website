@@ -180,11 +180,11 @@ export default {
     ...mapActions(['addCustomNft']),
     async populateNftDetails(contractAddress, tokenId) {
       try {
-        this.currentNft = new NftHandler({ address: contractAddress, tokenId, userAddress: this.selectedAddress, provider: torus.ethersProvider })
-        const balance = await this.currentNft.fetchNftBalance()
+        const currentNft = new NftHandler({ address: contractAddress, tokenId, userAddress: this.selectedAddress, provider: torus.ethersProvider })
+        const balance = await currentNft.fetchNftBalance()
         this.isOwner = balance > 0
         if (this.isOwner) {
-          const { nftName, nftImageLink, description, nftStandard } = await this.currentNft.getNftMetadata()
+          const { nftName, nftImageLink, description, nftStandard } = await currentNft.getNftMetadata()
           this.nftName = nftName
           this.nftImageLink = nftImageLink
           this.description = description

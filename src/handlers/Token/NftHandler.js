@@ -1,7 +1,6 @@
 import { Contract } from 'ethers'
-import abiERC721 from 'human-standard-collectible-abi'
-import { ERC1155 as erc1155abi, ERC1155Metadata as erc1155MetadataAbi } from 'multi-token-standard-abi'
 
+import { erc721Abi, erc1155Abi } from '../../utils/abis'
 import {
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
@@ -19,8 +18,6 @@ const errorsType = {
   NON_EXISTENT_TOKEN_ID: 'non_existent_token_id',
   NFT_METADATA_FAILED: 'nft_metadata_failed',
 }
-
-const abiErc1155 = [...erc1155abi.abi, ...erc1155MetadataAbi.abi]
 
 export const getDisplayErrorMsg = (type) => {
   if (type === errorsType.UNSUPPORTED_STANDARD) {
@@ -141,7 +138,7 @@ class NftHandler {
    * @returns - Promise resolving to the 'name'
    */
   getAssetName() {
-    const contract = new Contract(this.address, abiERC721, this.provider)
+    const contract = new Contract(this.address, erc721Abi, this.provider)
     return contract.name()
   }
 
@@ -179,7 +176,7 @@ class NftHandler {
     if (this.nftStandard && this.isSpecial !== undefined) {
       return { standard: this.nftStandard, isSpecial: false }
     }
-    this.contract = new Contract(this.address, abiERC721, this.provider)
+    this.contract = new Contract(this.address, erc721Abi, this.provider)
     // For Cryptokitties
     if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.address.toLowerCase())) {
       this.nftStandard = CONTRACT_TYPE_ERC721
@@ -196,7 +193,7 @@ class NftHandler {
     if (isErc1155) {
       this.nftStandard = CONTRACT_TYPE_ERC1155
       this.isSpecial = false
-      this.contract = new Contract(this.address, abiErc1155, this.provider)
+      this.contract = new Contract(this.address, erc1155Abi, this.provider)
       return { standard: CONTRACT_TYPE_ERC1155, isSpecial: false }
     }
 

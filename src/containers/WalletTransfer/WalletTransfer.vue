@@ -504,11 +504,8 @@
 import BigNumber from 'bignumber.js'
 import Das from 'das-sdk'
 import { Contract } from 'ethers'
-import erc721TransferABI from 'human-standard-collectible-abi'
-import erc20TransferABI from 'human-standard-token-abi'
 import { cloneDeep, isEqual } from 'lodash'
 import log from 'loglevel'
-import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
@@ -522,6 +519,7 @@ import AddContact from '../../components/WalletTransfer/AddContact'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import config from '../../config'
 import torus from '../../torus'
+import { ecr20Abi, erc721Abi, erc1155Abi } from '../../utils/abis'
 import {
   BIT,
   BIT_HOST_URL,
@@ -1092,8 +1090,9 @@ export default {
         this.toEthAddress = await this.calculateEthAddress()
       }
     },
-    calculateGas(toAddress) {
+    async calculateGas(toAddress) {
       this.sendEthToContractError = false
+      const signer = await torus.ethersProvider.getSigner()
       if (isAddressByChainId(toAddress, this.$store.state.networkId)) {
         // eslint-disable-next-line no-unused-vars
         return new Promise((resolve, reject) => {
@@ -1103,9 +1102,9 @@ export default {
               .dp(0, BigNumber.ROUND_DOWN)
               .toString(16)}`
             torus.ethersProvider
-              .estimateGas({ to: toAddress.toLowerCase(), value, from: this.selectedAddress.toLowerCase() })
+              .send('eth_estimateGas', [{ to: toAddress.toLowerCase(), value, from: this.selectedAddress.toLowerCase() }])
               .then((response) => {
-                let resolved = new BigNumber(response.toHexString() || '0')
+                let resolved = new BigNumber(response.toString(16) || '0', 16)
                 if (!resolved.eq(new BigNumber('21000'))) {
                   resolved = new BigNumber(resolved.times(new BigNumber('1.1')).toFixed(0))
                   this.sendEthToContractError = this.isSendAll
@@ -1122,11 +1121,11 @@ export default {
               .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
               .dp(0, BigNumber.ROUND_DOWN)
               .toString(16)}`
-            this.getTransferContract(this.contractType)
-              .estimateGas.transfer(toAddress.toLowerCase(), value, { from: this.selectedAddress.toLowerCase() })
+            this.getTransferContract(signer, this.contractType)
+              .transfer.estimateGas(toAddress.toLowerCase(), value, { from: this.selectedAddress.toLowerCase() })
               .then((response) => {
                 log.info(response, 'gas')
-                resolve(new BigNumber(response.toHexString() || '0'))
+                resolve(new BigNumber(response.toString(16) || '0', 16))
               })
               .catch((error) => {
                 log.error(error)
@@ -1136,20 +1135,22 @@ export default {
             this.contractType === CONTRACT_TYPE_ERC721 &&
             Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase())
           ) {
-            this.getNftTransferContract(this.contractType)
-              .estimateGas.transfer(toAddress, this.assetSelected.tokenId, { from: this.selectedAddress.toLowerCase() })
+            this.getNftTransferContract(signer, this.contractType)
+              .transfer.estimateGas(toAddress, this.assetSelected.tokenId, { from: this.selectedAddress.toLowerCase() })
               .then((response) => {
-                resolve(new BigNumber(response.toHexString() || '0'))
+                resolve(new BigNumber(response.toString(16) || '0', 16))
               })
               .catch((error) => {
                 log.error(error)
                 resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-            this.getNftTransferContract(this.contractType)
-              .estimateGas.safeTransferFrom(this.selectedAddress, toAddress, this.assetSelected.tokenId, { from: this.selectedAddress.toLowerCase() })
+            this.getNftTransferContract(signer, this.contractType)
+              .safeTransferFrom.estimateGas(this.selectedAddress, toAddress, this.assetSelected.tokenId, {
+                from: this.selectedAddress.toLowerCase(),
+              })
               .then((response) => {
-                resolve(new BigNumber(response.toHexString() || '0'))
+                resolve(new BigNumber(response.toString(16) || '0', 16))
               })
               .catch((error) => {
                 log.error(error)
@@ -1158,12 +1159,12 @@ export default {
           } else if (this.contractType === CONTRACT_TYPE_ERC1155) {
             const val =
               Number.parseInt(this.assetSelected.tokenBalance, 10) === 1 ? new BigNumber(this.assetSelected.tokenBalance) : this.erc1155DisplayAmount
-            this.getNftTransferContract(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val)
-              .estimateGas.safeTransferFrom(this.selectedAddress, toAddress, this.assetSelected.tokenId, val, '0x', {
+            this.getNftTransferContract(signer, this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val)
+              .safeTransferFrom.estimateGas(this.selectedAddress, toAddress, this.assetSelected.tokenId, val, '0x', {
                 from: this.selectedAddress.toLowerCase(),
               })
               .then((response) => {
-                resolve(new BigNumber(response.toHexString() || '0'))
+                resolve(new BigNumber(response.toString(16) || '0', 16))
               })
               .catch((error) => {
                 log.error(error)
@@ -1172,43 +1173,43 @@ export default {
           }
         })
       }
-      return Promise.resolve(new BigNumber('0'))
+      return new BigNumber('0')
     },
-    getTransferMethod(contractType, toAddress, value, params = {}) {
+    getTransferMethod(signer, contractType, toAddress, value, params = {}) {
       // For support of older ERC721
       if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
-        const contractInstance = new Contract(this.selectedTokenAddress.toLowerCase(), erc20TransferABI, torus.ethersProvider.getSigner())
-        return contractInstance.populateTransaction.transfer(toAddress.toLowerCase(), value, { from: this.selectedAddress.toLowerCase(), ...params })
+        const contractInstance = new Contract(this.selectedTokenAddress.toLowerCase(), ecr20Abi, signer)
+        return contractInstance.transfer.populateTransaction(toAddress.toLowerCase(), value, { from: this.selectedAddress.toLowerCase(), ...params })
       }
 
       throw new Error('Invalid Contract Type')
     },
-    getTransferContract(contractType) {
+    getTransferContract(signer, contractType) {
       // For support of older ERC721
       if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
-        const contractInstance = new Contract(this.selectedTokenAddress.toLowerCase(), erc20TransferABI, torus.ethersProvider.getSigner())
+        const contractInstance = new Contract(this.selectedTokenAddress.toLowerCase(), ecr20Abi, signer)
         return contractInstance
       }
 
       throw new Error('Invalid Contract Type')
     },
-    getNftTransferMethod(contractType, selectedAddress, toAddress, tokenId, value = 1, params = {}) {
+    getNftTransferMethod(signer, contractType, selectedAddress, toAddress, tokenId, value = 1, params = {}) {
       if (contractType === CONTRACT_TYPE_ERC721 && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase())) {
-        const contractInstance = new Contract(this.selectedTokenAddress, erc20TransferABI, torus.ethersProvider.getSigner())
-        return contractInstance.populateTransaction.transfer(toAddress, tokenId, { from: this.selectedAddress.toLowerCase(), ...params })
+        const contractInstance = new Contract(this.selectedTokenAddress, ecr20Abi, signer)
+        return contractInstance.transfer.populateTransaction(toAddress, tokenId, { from: this.selectedAddress.toLowerCase(), ...params })
       }
 
       if (contractType === CONTRACT_TYPE_ERC721) {
-        const contractInstance = new Contract(this.selectedTokenAddress, erc721TransferABI, torus.ethersProvider.getSigner())
-        return contractInstance.populateTransaction.safeTransferFrom(selectedAddress, toAddress, tokenId, {
+        const contractInstance = new Contract(this.selectedTokenAddress, erc721Abi, signer)
+        return contractInstance.safeTransferFrom.populateTransaction(selectedAddress, toAddress, tokenId, {
           from: this.selectedAddress.toLowerCase(),
           ...params,
         })
       }
 
       if (contractType === CONTRACT_TYPE_ERC1155) {
-        const contractInstance = new Contract(this.selectedTokenAddress, erc1155Abi.abi, torus.ethersProvider.getSigner())
-        return contractInstance.populateTransaction.safeTransferFrom(selectedAddress, toAddress, tokenId, value, '0x', {
+        const contractInstance = new Contract(this.selectedTokenAddress, erc1155Abi.abi, signer)
+        return contractInstance.safeTransferFrom.populateTransaction(selectedAddress, toAddress, tokenId, value, '0x', {
           from: this.selectedAddress.toLowerCase(),
           ...params,
         })
@@ -1216,19 +1217,19 @@ export default {
 
       throw new Error('Invalid Contract Type')
     },
-    getNftTransferContract(contractType) {
+    getNftTransferContract(signer, contractType) {
       if (contractType === CONTRACT_TYPE_ERC721 && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase())) {
-        const contractInstance = new Contract(this.selectedTokenAddress, erc20TransferABI, torus.ethersProvider.getSigner())
+        const contractInstance = new Contract(this.selectedTokenAddress, ecr20Abi, signer)
         return contractInstance
       }
 
       if (contractType === CONTRACT_TYPE_ERC721) {
-        const contractInstance = new Contract(this.selectedTokenAddress, erc721TransferABI, torus.ethersProvider.getSigner())
+        const contractInstance = new Contract(this.selectedTokenAddress, erc721Abi, signer)
         return contractInstance
       }
 
       if (contractType === CONTRACT_TYPE_ERC1155) {
-        const contractInstance = new Contract(this.selectedTokenAddress, erc1155Abi.abi, torus.ethersProvider.getSigner())
+        const contractInstance = new Contract(this.selectedTokenAddress, erc1155Abi.abi, signer)
         return contractInstance
       }
 
@@ -1409,6 +1410,7 @@ export default {
           gasPrice: fastGasPrice,
         }
       }
+      const signer = await torus.ethersProvider.getSigner()
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value = `0x${this.amount
           .times(new BigNumber(10).pow(new BigNumber(18)))
@@ -1452,7 +1454,7 @@ export default {
           .dp(0, BigNumber.ROUND_DOWN)
           .toString(16)}`
         log.info('amount', this.amount)
-        const data = await this.getTransferMethod(this.contractType, toAddress, value, {})
+        const data = await this.getTransferMethod(signer, this.contractType, toAddress, value, {})
         const finalData = {
           ...data,
           gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
@@ -1483,7 +1485,7 @@ export default {
             log.error(error)
           })
       } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-        const data = await this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, {})
+        const data = await this.getNftTransferMethod(signer, this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, {})
 
         const finalData = {
           ...data,
@@ -1517,7 +1519,7 @@ export default {
       } else if (this.contractType === CONTRACT_TYPE_ERC1155) {
         const val =
           Number.parseInt(this.assetSelected.tokenBalance, 10) === 1 ? new BigNumber(this.assetSelected.tokenBalance) : this.erc1155DisplayAmount
-        const data = await this.getNftTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val, {})
+        const data = await this.getNftTransferMethod(signer, this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId, val, {})
 
         const finalData = {
           ...data,
