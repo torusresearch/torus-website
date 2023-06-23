@@ -54,6 +54,12 @@ export default {
       this.iframeOrigin = origin
       this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
+      if (!whiteLabel.isActive) {
+        whiteLabel.theme.isDark = this.$vuetify.theme.dark
+        whiteLabel.theme.colors = { torusBrand1: this.$vuetify.theme.currentTheme.torusBrand1 }
+        whiteLabel.defaultLanguage = this.$i18n.locale
+      }
+
       const openLoginHandler = await OpenLoginHandler.getInstance(whiteLabel, loginConfig, sessionNamespace)
       await openLoginHandler.openLoginInstance.login({
         loginProvider,
