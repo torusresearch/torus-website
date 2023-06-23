@@ -1,7 +1,7 @@
 import { isHexString, isValidAddress } from '@ethereumjs/util'
 import SignClient from '@walletconnect/sign-client'
 import { getAccountsFromNamespaces, getChainsFromNamespaces, getSdkError, parseAccountId, parseChainId } from '@walletconnect/utils'
-import { utils } from 'ethers'
+import { toQuantity } from 'ethers'
 import log from 'loglevel'
 import pify from 'pify'
 
@@ -242,7 +242,7 @@ class WalletConnectV2Controller {
           isWalletConnectRequest: true,
           method: 'wallet_switchEthereumChain',
           params: {
-            chainId: utils.hexValue(incomingChainId),
+            chainId: toQuantity(incomingChainId),
           },
         })
 

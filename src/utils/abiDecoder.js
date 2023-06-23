@@ -1,5 +1,5 @@
 import BN from 'bn.js'
-import { utils } from 'ethers'
+import { AbiCoder, keccak256 } from 'ethers'
 
 class AbiDecoder {
   constructor(abi) {
@@ -19,7 +19,7 @@ class AbiDecoder {
       // Iterate new abi to generate method id's
       abiArray.map((abi) => {
         if (abi.name) {
-          const signature = utils.keccak256(Buffer.from(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`, 'utf8'))
+          const signature = keccak256(Buffer.from(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`, 'utf8'))
           if (abi.type === 'event') {
             this.state.methodIDs[signature.slice(2)] = abi
           } else {
@@ -40,7 +40,7 @@ class AbiDecoder {
       // Iterate new abi to generate method id's
       abiArray.map((abi) => {
         if (abi.name) {
-          const signature = utils.keccak256(Buffer.from(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`, 'utf8'))
+          const signature = keccak256(Buffer.from(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`, 'utf8'))
           if (abi.type === 'event') {
             if (this.state.methodIDs[signature.slice(2)]) {
               delete this.state.methodIDs[signature.slice(2)]
@@ -65,7 +65,7 @@ class AbiDecoder {
     const abiItem = this.state.methodIDs[methodID]
     if (abiItem) {
       const parameters = abiItem.inputs.map((item) => item.type)
-      const decoded = utils.defaultAbiCoder.decode(parameters, Buffer.from(data.slice(10), 'hex'))
+      const decoded = AbiCoder.defaultAbiCoder().decode(parameters, Buffer.from(data.slice(10), 'hex'))
 
       const returnValueData = {
         name: abiItem.name,
@@ -80,11 +80,10 @@ class AbiDecoder {
 
         if (isUint || isInt) {
           const isArray = Array.isArray(parameter)
-
           if (isArray) {
-            parsedParameter = parameter.map((value) => new BN(value.toHexString().slice(2), 'hex').toString())
+            parsedParameter = parameter.map((value) => new BN(value.toString(16), 'hex').toString())
           } else {
-            parsedParameter = new BN(parameter.toHexString().slice(2), 'hex').toString()
+            parsedParameter = new BN(parameter.toString(16), 'hex').toString()
           }
         }
 
@@ -131,7 +130,7 @@ class AbiDecoder {
             return undefined
           })
 
-          const decodedData = utils.defaultAbiCoder.decode(dataTypes, logData.slice(2))
+          const decodedData = AbiCoder.defaultAbiCoder().decode(dataTypes, logData.slice(2))
 
           // Loop topic and data to get the params
           method.inputs.map((parameter) => {
