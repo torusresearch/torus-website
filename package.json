@@ -168,7 +168,7 @@
     "vue-cli-plugin-webpack-bundle-analyzer": "~4.0.0",
     "vue-template-compiler": "^2.7.14",
     "vuetify-loader": "^1.9.2",
-    "web3-providers-http": "^1.10.0",
+    "web3-providers-http": "^4.0.1",
     "worker-loader": "^3.0.8"
   },
   "engines": {
