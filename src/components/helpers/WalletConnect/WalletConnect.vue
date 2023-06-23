@@ -149,7 +149,7 @@ export default {
     wcConnectorSession(value) {
       if (value.connected) {
         this.wcConnecting = false
-        this.$store.dispatch('setSuccessMessage', 'walletConnect.connectedTo')
+        this.$store.dispatch('setSuccessMessage', this.t('walletConnect.connectedToCustom').replace(/{wallet}/gi, 'Exchangaweb3'))
         if (value.uri) this.wcCopyPasteLink = value.uri
       } else if (value.sessionData) {
         this.wcConnecting = false
