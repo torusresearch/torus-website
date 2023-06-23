@@ -1,4 +1,4 @@
-import { BANXA, MERCURYO, MOONPAY, RAMPNETWORK, SIMPLEX, TRANSAK, WYRE, XANPOOL } from './utils/enums'
+import { BANXA, MERCURYO, MOONPAY, RAMPNETWORK, SIMPLEX, TRANSAK, XANPOOL } from './utils/enums'
 
 /**
  * From https://min-api.cryptocompare.com/data/v2/pair/mapping/fsym?fsym=BTC&extraParams=YourSite
@@ -442,42 +442,6 @@ const PROVIDER_SUPPORTED_FIAT_CURRENCIES = {
     'TRY',
     'TWD',
     'USD',
-    'VND',
-    'ZAR',
-  ],
-  /**
-   * https://docs.sendwyre.com/docs/supported-currencies#fiat
-   * The ones where credit card is supported
-   */
-  [WYRE]: [
-    'USD',
-    'EUR',
-    'GBP',
-    'AUD',
-    'CAD',
-    'NZD',
-    'CNY',
-    'ARS',
-    'BRL',
-    'CHF',
-    'CLP',
-    'COP',
-    'CZK',
-    'DKK',
-    'HKD',
-    'ILS',
-    'INR',
-    'ISK',
-    'JPY',
-    'KRW',
-    'MXN',
-    'MYR',
-    'NOK',
-    'PHP',
-    'PLN',
-    'SEK',
-    'SGD',
-    'THB',
     'VND',
     'ZAR',
   ],
