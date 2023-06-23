@@ -7,11 +7,11 @@ git config user.name "torus-bot"
 cd ~/torus-embed/
 
 if [[ "$GITHUB_REF" = 'refs/heads/master' ]]; then 
-    npm version patch -m 'Updating iframe integrity and publish %s'
+    npm version minor -m 'Updating iframe integrity and publish %s'
     git push origin master
     git push --tags 
 fi
 if [[ "$GITHUB_REF" = 'refs/heads/binance' ]]; then 
-    npm version patch -m 'Updating iframe integrity and publish %s'
+    npm version minor -m 'Updating iframe integrity and publish %s'
     git push origin binance
 fi

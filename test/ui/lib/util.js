@@ -1,9 +1,9 @@
 import { addHexPrefix, isValidAddress as isValidAddressUtil, isValidChecksumAddress, stripHexPrefix, toChecksumAddress } from '@ethereumjs/util'
 import { normalize } from '@metamask/eth-sig-util'
 import BN from 'bn.js'
-import abi from 'human-standard-token-abi'
 import { DateTime } from 'luxon'
 
+import { ecr20Abi } from '../../../src/utils/abis'
 import hexToBn from './hex-to-bn'
 
 const MIN_GAS_PRICE_GWEI_BN = new BN(1)
@@ -240,7 +240,7 @@ function getTxFeeBn(gas, gasPrice = MIN_GAS_PRICE_BN.toString(16)) {
 }
 
 function getContractAtAddress(tokenAddress) {
-  return global.eth.contract(abi).at(tokenAddress)
+  return global.eth.contract(ecr20Abi).at(tokenAddress)
 }
 
 function exportAsFile(filename, data, type = 'text/csv') {

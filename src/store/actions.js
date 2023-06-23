@@ -479,7 +479,7 @@ export default {
         const storage = BrowserStorage.getInstance(storageUtils.openloginStoreKey, storageUtils.storageType)
         storage.set('sessionId', sessionId)
         // reinitializing openlogin instance with new session id after login is complete.
-        await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace, true)
+        await OpenLoginHandler.getInstance(state.whiteLabel, {}, config.sessionNamespace, true)
         if (SUPPORTED_NETWORK_TYPES[state.networkType.host]) await dispatch('setProviderType', { network: state.networkType })
         else await dispatch('setProviderType', { network: state.networkType, type: RPC })
       }
@@ -509,7 +509,7 @@ export default {
     }
   },
   async autoLogin({ commit, dispatch, state }, { calledFromEmbed }) {
-    const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
+    const openLoginHandler = await OpenLoginHandler.getInstance(state.whiteLabel, {}, config.sessionNamespace)
     const { keys, postboxKey } = openLoginHandler.getKeysInfo()
     const userInfo = openLoginHandler.getUserInfo()
     commit('setUserInfo', userInfo)
@@ -529,7 +529,7 @@ export default {
     })
   },
   async getUserDapps({ commit, dispatch, state }, { postboxKey, calledFromEmbed }) {
-    const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
+    const openLoginHandler = await OpenLoginHandler.getInstance(state.whiteLabel, {}, config.sessionNamespace)
     const { userDapps, keys } = await openLoginHandler.getUserDapps(postboxKey)
     commit('setUserDapps', userDapps)
     await dispatch('initTorusKeyring', {
@@ -649,7 +649,7 @@ export default {
       const currentRoute = router.match(window.location.pathname.replace(/^\/v\d+\.\d+\.\d+\//, ''))
       // TODO: check skipOpenLoginCheck and fetchSession
       if (!currentRoute.meta.skipOpenLoginCheck || currentRoute.meta.fetchSession) {
-        const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, config.sessionNamespace)
+        const openLoginHandler = await OpenLoginHandler.getInstance(state.whiteLabel, {}, config.sessionNamespace)
         const { sessionId, state: openloginState } = openLoginHandler
         if (!currentRoute.meta.skipOpenLoginCheck) {
           if (!sessionId) {
