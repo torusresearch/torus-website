@@ -23,6 +23,7 @@ const getOpenloginWhitelabel = (whiteLabel = {}) => {
   if (whiteLabel.defaultLanguage) whiteLabelOpenLogin.defaultLanguage = whiteLabel.defaultLanguage
   if (whiteLabel.name) whiteLabelOpenLogin.name = whiteLabel.name
   if (whiteLabel.url) whiteLabelOpenLogin.url = whiteLabel.url
+  if (whiteLabel.useLogoLoader) whiteLabelOpenLogin.useLogoLoader = whiteLabel.useLogoLoader
   return whiteLabelOpenLogin
 }
 class OpenLoginHandler {
