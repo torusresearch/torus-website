@@ -4,19 +4,7 @@ import config from '../../config'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import {
-  BANXA,
-  BANXA_NETWORK_MAP,
-  MAINNET,
-  MERCURYO,
-  MOONPAY,
-  RAMPNETWORK,
-  TRANSAK,
-  TRANSAK_NETWORK_MAP,
-  WYRE,
-  WYRE_NETWORK_MAP,
-  XANPOOL,
-} from '../../utils/enums'
+import { BANXA, BANXA_NETWORK_MAP, MAINNET, MERCURYO, MOONPAY, RAMPNETWORK, TRANSAK, TRANSAK_NETWORK_MAP, XANPOOL } from '../../utils/enums'
 import { fakeStream, paymentProviders, randomId } from '../../utils/utils'
 import banxa from './banxa'
 import mercuryo from './mercuryo'
@@ -24,7 +12,6 @@ import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
 import simplex from './simplex'
 import transak from './transak'
-import wyre from './wyre'
 import xanpool from './xanpool'
 
 const topupStream = (torus && torus.communicationMux && torus.communicationMux.getStream('topup')) || fakeStream
@@ -53,7 +40,6 @@ export default {
   ...simplex,
   ...rampnetwork,
   ...moonpay,
-  ...wyre,
   ...xanpool,
   ...mercuryo,
   ...transak,
@@ -121,20 +107,6 @@ export default {
             colorCode: vuetify.framework.theme.themes.light.primary.base,
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
-          })
-          handleSuccess(success)
-        } else if (provider === WYRE) {
-          // wyre
-          const network = WYRE_NETWORK_MAP[selectedParameters.chainNetwork]
-          const { success } = await dispatch('fetchWyreOrder', {
-            currentOrder: {
-              destCurrency: selectedParameters.selectedCryptoCurrency || undefined,
-              sourceAmount: selectedParameters.fiatValue || undefined,
-              sourceCurrency: selectedParameters.selectedCurrency || undefined,
-            },
-            preopenInstanceId,
-            selectedAddress: selectedParameters.selectedAddress,
-            network,
           })
           handleSuccess(success)
         } else if (provider === XANPOOL) {

@@ -125,11 +125,6 @@ const router = new Router({
               component: () => import(/* webpackChunkName: "walletTopupMoonpay" */ './containers/WalletTopup/WalletTopupMoonpay'),
             },
             {
-              path: 'wyre',
-              name: 'walletTopupWyre',
-              component: () => import(/* webpackChunkName: "walletTopupWyre" */ './containers/WalletTopup/WalletTopupWyre'),
-            },
-            {
               path: 'xanpool',
               name: 'walletTopupXanpool',
               component: () => import(/* webpackChunkName: "walletTopupXanpool" */ './containers/WalletTopup/WalletTopupXanpool'),
