@@ -1,5 +1,5 @@
 import { BasePostMessageStream } from '@toruslabs/openlogin-jrpc'
-import { providers } from 'ethers'
+import { BrowserProvider } from 'ethers'
 import log from 'loglevel'
 
 import config from './config'
@@ -69,7 +69,7 @@ const torusController = new TorusController({
 torus.torusController = torusController
 
 torusController.provider.setMaxListeners(100)
-torus.ethersProvider = new providers.Web3Provider(torus.torusController.provider, 'any')
+torus.ethersProvider = new BrowserProvider(torus.torusController.provider, 'any')
 log.info('torus network', process.env.VUE_APP_PROXY_NETWORK)
 
 // we use this to start accounttracker balances

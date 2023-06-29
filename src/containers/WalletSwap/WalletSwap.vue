@@ -248,7 +248,7 @@ export default {
         }
         this.sendingTx = true
         const transaction = {
-          data: this.currentSwapQuote.methodParameters.calldata,
+          data: this.currentSwapQuote.methodParameters.callData,
           to: config.uniswapContractAddress,
           value: this.currentSwapQuote.methodParameters.value,
           from: this.selectedAddress,

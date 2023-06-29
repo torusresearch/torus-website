@@ -152,7 +152,6 @@ export default {
       customDecimals: 0,
       customName: '',
       customBalance: '',
-      currentToken: undefined,
       isValidAddress: true,
       rules: {
         required: (value) => !!value || this.t('walletSettings.required'),
@@ -190,12 +189,12 @@ export default {
       this.isValidAddress = await validateContractAddress(torus.ethersProvider, this.customAddress, this.$store.state.networkId)
       if (this.isValidAddress) {
         try {
-          this.currentToken = new TokenHandler({ address: this.customAddress.toLowerCase(), provider: torus.ethersProvider })
+          const currentToken = new TokenHandler({ address: this.customAddress.toLowerCase(), provider: torus.ethersProvider })
           const [symbol, name, balance, decimals] = await Promise.all([
-            this.currentToken.getSymbol(),
-            this.currentToken.getName(),
-            this.currentToken.getUserBalance(this.selectedAddress.toLowerCase()),
-            this.currentToken.getDecimals(),
+            currentToken.getSymbol(),
+            currentToken.getName(),
+            currentToken.getUserBalance(this.selectedAddress.toLowerCase()),
+            currentToken.getDecimals(),
           ])
           const computedBalance = new BigNumber(`0x${balance}`).dividedBy(new BigNumber(10).pow(new BigNumber(decimals))) || new BigNumber(0)
 

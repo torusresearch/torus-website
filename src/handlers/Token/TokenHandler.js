@@ -1,12 +1,13 @@
 import { stripHexPrefix } from '@ethereumjs/util'
 import { Contract } from 'ethers'
-import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
+
+import { ecr20Abi } from '../../utils/abis'
 
 class TokenHandler {
   constructor({ address, symbol, decimals, name, provider }) {
     this.address = address
-    this.contract = new Contract(address, tokenAbi, provider)
+    this.contract = new Contract(address, ecr20Abi, provider)
     this.symbol = symbol
     this.decimals = decimals
     this.name = name
@@ -35,7 +36,7 @@ class TokenHandler {
   async getUserBalance(userAddress) {
     if (!this.decimals) await this.getDecimals()
     const balance = await this.contract.balanceOf(userAddress)
-    return stripHexPrefix(balance.toHexString())
+    return stripHexPrefix(balance.toString(16))
   }
 }
 

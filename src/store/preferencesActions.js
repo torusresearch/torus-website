@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { utils } from 'ethers'
+import { formatEther } from 'ethers'
 // import LogFilter from 'eth-json-rpc-filters/log-filter'
 import log from 'loglevel'
 
@@ -92,7 +92,7 @@ export default {
               type = 'erc1155'
               typeName = contract.name || name
               typeImageLink = contract.logo || logo
-              totalAmount = utils.formatEther(txParams.value || 0)
+              totalAmount = formatEther(txParams.value || 0)
               finalTo = amountTo && isAddressByChainId(amountTo.value) && toChecksumAddressByChainId(amountTo.value, state.networkId)
             }
           } else {
@@ -101,7 +101,7 @@ export default {
             type = 'eth'
             typeName = state.networkType.ticker
             typeImageLink = 'n/a'
-            totalAmount = utils.formatEther(txParams.value || 0)
+            totalAmount = formatEther(txParams.value || 0)
             finalTo = toChecksumAddressByChainId(txParams.to, state.networkId)
           }
         } else if (contractParams.erc721) {
@@ -125,7 +125,7 @@ export default {
               type = 'erc721'
               typeName = contract.name || name
               typeImageLink = contract.logo || logo
-              totalAmount = utils.formatEther(txParams.value || 0)
+              totalAmount = formatEther(txParams.value || 0)
               finalTo =
                 transactionCategory === TRANSACTION_TYPES.COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
                   ? amountTo && isAddressByChainId(amountTo.value) && toChecksumAddressByChainId(amountTo.value, state.networkId)
@@ -138,7 +138,7 @@ export default {
               type = 'eth'
               typeName = state.networkType.ticker
               typeImageLink = 'n/a'
-              totalAmount = utils.formatEther(txParams.value || 0)
+              totalAmount = formatEther(txParams.value || 0)
               finalTo = toChecksumAddressByChainId(txParams.to, state.networkId)
             }
           } else {
@@ -147,7 +147,7 @@ export default {
             type = 'eth'
             typeName = state.networkType.ticker
             typeImageLink = 'n/a'
-            totalAmount = utils.formatEther(txParams.value || 0)
+            totalAmount = formatEther(txParams.value || 0)
             finalTo = toChecksumAddressByChainId(txParams.to, state.networkId)
           }
         } else if (contractParams.erc20) {
@@ -177,7 +177,7 @@ export default {
           type = 'eth'
           typeName = state.networkType.ticker
           typeImageLink = 'n/a'
-          totalAmount = utils.formatEther(txParams.value || 0)
+          totalAmount = formatEther(txParams.value || 0)
           finalTo = toChecksumAddressByChainId(txParams.to, state.networkId)
         }
         // Goes to db

@@ -13,9 +13,6 @@
         <v-icon x-small>$vuetify.icons.qr</v-icon>
       </ExportQrCode>
     </div>
-    <!-- <div v-if="apiStreamSupported">
-      <WalletConnect />
-    </div> -->
   </div>
 </template>
 
@@ -25,7 +22,6 @@ import { mapState } from 'vuex'
 import { apiStreamSupported, toChecksumAddressByChainId } from '../../../utils/utils'
 import ExportQrCode from '../ExportQrCode'
 import ShowToolTip from '../ShowToolTip'
-// import WalletConnect from '../WalletConnect'
 
 export default {
   components: { ExportQrCode, ShowToolTip },

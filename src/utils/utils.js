@@ -108,7 +108,6 @@ import {
   TWITTER,
   WECHAT,
   WEIBO,
-  // WYRE,
   // XANPOOL,
   // XDAI,
   XDAI_CHAIN_ID,
@@ -666,7 +665,7 @@ export const paymentProviders = {
 
 /**
  * {
- *   [MAINNET]: [SIMPLEX, TRANSAK, WYRE, ...],
+ *   [MAINNET]: [SIMPLEX, TRANSAK, ...],
  *   [BSC_MAINNET]: [SIMPLEX, ...],
  *   ...
  * }
