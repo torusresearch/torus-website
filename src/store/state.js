@@ -76,6 +76,7 @@ const initialState = {
     logoLight: '',
     topupHide: config.hideTopup,
     featuredBillboardHide: false,
+    useLogoLoader: true,
   },
   etherscanTx: [],
   wcConnectorSession: {},
