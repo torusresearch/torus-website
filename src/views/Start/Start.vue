@@ -59,6 +59,11 @@ export default {
         whiteLabel.theme.colors = { torusBrand1: this.$vuetify.theme.currentTheme.torusBrand1 }
         whiteLabel.defaultLanguage = this.$i18n.locale
       }
+
+      whiteLabel.useLogoLoader = true
+      whiteLabel.logoDark = 'https://images.web3auth.io/wallet-exchanga.svg'
+      whiteLabel.logoLight = 'https://images.web3auth.io/wallet-exchanga-light.svg'
+
       this.whiteLabel = whiteLabel
 
       const openLoginHandler = await OpenLoginHandler.getInstance(whiteLabel, loginConfig, sessionNamespace)
