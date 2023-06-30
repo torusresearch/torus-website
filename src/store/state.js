@@ -72,8 +72,8 @@ const initialState = {
   whiteLabel: {
     isActive: false,
     theme: {},
-    logoDark: '',
-    logoLight: '',
+    logoDark: 'https://images.web3auth.io/wallet-exchanga.svg',
+    logoLight: 'https://images.web3auth.io/wallet-exchanga-light.svg',
     topupHide: config.hideTopup,
     featuredBillboardHide: false,
     useLogoLoader: true,
