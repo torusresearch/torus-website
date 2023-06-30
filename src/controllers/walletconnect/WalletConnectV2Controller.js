@@ -42,7 +42,7 @@ class WalletConnectV2Controller {
   async _onSessionApprove(proposal) {
     // Get required proposal data
     const { id, params } = proposal
-    const { requiredNamespaces, relays } = params
+    const { optionalNamespaces, requiredNamespaces, relays } = params
 
     const namespaces = {
       eip155: {
@@ -51,18 +51,26 @@ class WalletConnectV2Controller {
         events: [],
       },
     }
+
+    const accounts = []
     Object.keys(requiredNamespaces).forEach((key) => {
       if (key !== 'eip155') return
-      const accounts = []
       requiredNamespaces[key].chains.map(async (chain) => {
         const isChainSupported = await this._isChainIdSupported(chain)
-        if (!isChainSupported) {
-          await this.walletConnector.reject({
-            id,
-            reason: getSdkError('UNSUPPORTED_CHAINS', `${chain} is not supported`),
-          })
-        }
-        accounts.push(`${chain}:${this.selectedAddress}`)
+        if (isChainSupported) accounts.push(`${chain}:${this.selectedAddress}`)
+      })
+      namespaces[key] = {
+        accounts,
+        methods: requiredNamespaces[key].methods,
+        events: requiredNamespaces[key].events,
+      }
+    })
+
+    Object.keys(optionalNamespaces).forEach((key) => {
+      if (key !== 'eip155') return
+      optionalNamespaces[key].chains.map(async (chain) => {
+        const isChainSupported = await this._isChainIdSupported(chain)
+        if (isChainSupported) accounts.push(`${chain}:${this.selectedAddress}`)
       })
       namespaces[key] = {
         accounts,

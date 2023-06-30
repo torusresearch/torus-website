@@ -34,7 +34,6 @@ export function installSentry(Vue) {
           config.commonApiHost,
           config.simplexApiHost,
           config.moonpayApiHost,
-          config.wyreApiHost,
           config.rampApiHost,
           config.xanpoolApiHost,
           config.mercuryoApiHost,

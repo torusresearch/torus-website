@@ -108,7 +108,6 @@ import {
   TWITTER,
   WECHAT,
   WEIBO,
-  WYRE,
   XANPOOL,
   // XDAI,
   XDAI_CHAIN_ID,
@@ -487,49 +486,6 @@ export const paymentProviders = {
     api: true,
     enforceMax: false,
   },
-  [WYRE]: {
-    line1: 'Apple Pay/ Debit/ Credit Card',
-    line2: '4.9% + 30¢ or 5 USD',
-    line3: '$250/day',
-    status: ACTIVE,
-    logoExtension: SVG,
-    supportPage: 'https://support.sendwyre.com/en/',
-    minOrderValue: 5,
-    maxOrderValue: 500,
-    validCurrencies: supportedFiatCurrencies(WYRE),
-    validCryptoCurrenciesByChain: {
-      [MAINNET]: [
-        { value: 'AAVE', display: 'AAVE' },
-        { value: 'COMP', display: 'COMP' },
-        { value: 'BAT', display: 'BAT' },
-        { value: 'BUSD', display: 'BUSD' },
-        { value: 'DAI', display: 'DAI' },
-        { value: 'ETH', display: 'ETH' },
-        { value: 'WBTC', display: 'WBTC' },
-        { value: 'MKR', display: 'MKR' },
-        { value: 'UNI', display: 'UNI' },
-        { value: 'WETH', display: 'WETH' },
-        { value: 'USDC', display: 'USDC' },
-        { value: 'USDT', display: 'USDT' },
-      ],
-      [MATIC]: [
-        { value: 'mUSDC', display: 'USDC' },
-        { value: 'MATIC', display: 'MATIC' },
-        { value: 'MWETH', display: 'WETH' },
-      ],
-      [AVALANCHE_MAINNET]: [
-        { value: 'AVAXC', display: 'AVAX' },
-        { value: 'AVAXCUSDC', display: 'USDC' },
-      ],
-      [BSC_MAINNET]: [
-        { value: 'BNB', display: 'BNB' },
-        { value: 'BBUSD', display: 'BUSD' },
-      ],
-    },
-    includeFees: false,
-    api: true,
-    enforceMax: false,
-  },
   [RAMPNETWORK]: {
     line1: 'Debit Card/ <br>Apple Pay/ Bank transfer',
     line2: '0.49% - 2.9%',
@@ -716,7 +672,7 @@ export const paymentProviders = {
 
 /**
  * {
- *   [MAINNET]: [SIMPLEX, TRANSAK, WYRE, ...],
+ *   [MAINNET]: [SIMPLEX, TRANSAK, ...],
  *   [BSC_MAINNET]: [SIMPLEX, ...],
  *   ...
  * }

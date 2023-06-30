@@ -29,7 +29,7 @@ export default {
         handledWindow.open()
 
         handledWindow.once('close', () => {
-          reject(new Error('user closed wyre popup'))
+          reject(new Error('user closed banxa popup'))
         })
       }
       const instanceState = encodeURIComponent(
