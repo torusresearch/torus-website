@@ -74,8 +74,8 @@ class WalletConnectV2Controller {
       })
       namespaces[key] = {
         accounts,
-        methods: requiredNamespaces[key].methods,
-        events: requiredNamespaces[key].events,
+        methods: optionalNamespaces[key].methods,
+        events: optionalNamespaces[key].events,
       }
     })
 
@@ -242,6 +242,7 @@ class WalletConnectV2Controller {
     const incomingChainId = isHexString(parsedChainIdParams.reference)
       ? Number.parseInt(parsedChainIdParams.reference, 16)
       : Number.parseInt(parsedChainIdParams.reference, 10)
+
     const promisifiedProvider = pify(this.provider)
     if (currentChainId !== incomingChainId) {
       try {
