@@ -173,7 +173,7 @@ export default {
   mercuryoApiHost: 'https://mercuryo-api.tor.us',
   transakApiHost: 'https://transak-api.tor.us',
   banxaApiHost: 'https://banxa-api.tor.us',
-  paybisApiHost: 'http://localhost:2110',
+  paybisApiHost: 'https://paybis-api.tor.us',
 
   moonpayHost: 'https://buy.moonpay.io',
   moonpayApiQuoteHost: 'https://api.moonpay.io',
