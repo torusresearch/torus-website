@@ -21,11 +21,11 @@
           </v-list-item-avatar>
           <v-list-item-content class="align-self-center text-right text_1--text caption">
             <div v-html="`${t('walletTopUp.paywith')} ${targetProvider.line1}`" />
-            <div>
+            <div v-if="targetProvider.line2">
               <span class="font-weight-medium">{{ t('walletTopUp.fees') }}</span>
               : {{ targetProvider.line2 }}
             </div>
-            <div>
+            <div v-if="targetProvider.line3">
               <span class="font-weight-medium">{{ t('walletTopUp.limits') }}</span>
               : {{ targetProvider.line3 }}
             </div>

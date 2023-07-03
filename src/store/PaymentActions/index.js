@@ -9,6 +9,7 @@ import { fakeStream, paymentProviders, randomId } from '../../utils/utils'
 import banxa from './banxa'
 import mercuryo from './mercuryo'
 import moonpay from './moonpay'
+import paybis from './paybis'
 import rampnetwork from './rampnetwork'
 import simplex from './simplex'
 import transak from './transak'
@@ -43,6 +44,7 @@ export default {
   ...xanpool,
   ...mercuryo,
   ...transak,
+  ...paybis,
   async initiateTopup({ state, dispatch }, { provider, params, preopenInstanceId }) {
     if (paymentProviders[provider] && paymentProviders[provider].api) {
       try {

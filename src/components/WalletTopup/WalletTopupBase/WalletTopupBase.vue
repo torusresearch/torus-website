@@ -54,7 +54,7 @@
                 </template>
               </v-text-field>
 
-              <div class="v-text-field__details mb-6">
+              <div v-if="selectedProviderObj.includeFees || selectedProviderObj.line2" class="v-text-field__details mb-6">
                 <div class="v-messages">
                   <div class="v-messages__wrapper">
                     <div class="v-messages__message d-flex">
@@ -293,14 +293,18 @@ export default {
         if (instanceId) bc = new BroadcastChannel(`redirect_channel_${instanceId}`, broadcastChannelOptions)
         const callback = (p) => {
           p.then(async ({ success }) => {
-            if (success) {
-              // eslint-disable-next-line
-              this.$router.push({ name: 'walletHistory' }).catch((_) => {})
-            } else {
-              this.snackbar = true
-              this.snackbarColor = 'error'
-              this.snackbarText = 'Something went wrong'
-            }
+            // if (success) {
+            //   this.snackbar = true
+            //   this.snackbarColor = 'success'
+            //   this.snackbarText = 'Your order has been placed successfully. It will reflect in your wallet activity shortly.'
+            // } else {
+            //   this.snackbar = true
+            //   this.snackbarColor = 'error'
+            //   this.snackbarText = 'Something went wrong'
+            // }
+            this.snackbar = true
+            this.snackbarColor = 'info'
+            this.snackbarText = this.t('walletTopUp.topupDone')
             if (bc) {
               await bc.postMessage({
                 data: { instanceParams: { provider: this.selectedProvider }, queryParams: { transactionStatus: success ? 'success' : 'failed' } },

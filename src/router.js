@@ -109,41 +109,51 @@ const router = new Router({
           component: () => import(/* webpackChunkName: "walletTopup" */ './containers/WalletTopup/WalletTopupHome'),
           meta: { title: 'Topup' },
           children: [
-            {
-              path: 'rampnetwork',
-              name: 'walletTopupRampNetwork',
-              component: () => import(/* webpackChunkName: "walletTopupRampNetwork" */ './containers/WalletTopup/WalletTopupRampNetwork'),
-            },
-            {
-              path: 'simplex',
-              name: 'walletTopupSimplex',
-              component: () => import(/* webpackChunkName: "walletTopupSimplex" */ './containers/WalletTopup/WalletTopupSimplex'),
-            },
-            {
-              path: 'moonpay',
-              name: 'walletTopupMoonpay',
-              component: () => import(/* webpackChunkName: "walletTopupMoonpay" */ './containers/WalletTopup/WalletTopupMoonpay'),
-            },
-            {
-              path: 'xanpool',
-              name: 'walletTopupXanpool',
-              component: () => import(/* webpackChunkName: "walletTopupXanpool" */ './containers/WalletTopup/WalletTopupXanpool'),
-            },
-            {
-              path: 'mercuryo',
-              name: 'walletTopupMercuryo',
-              component: () => import(/* webpackChunkName: "walletTopupMercuryo" */ './containers/WalletTopup/WalletTopupMercuryo'),
-            },
+            // {
+            //   path: 'rampnetwork',
+            //   name: 'walletTopupRampNetwork',
+            //   component: () => import(/* webpackChunkName: "walletTopupRampNetwork" */ './containers/WalletTopup/WalletTopupRampNetwork'),
+            // },
+            // {
+            //   path: 'simplex',
+            //   name: 'walletTopupSimplex',
+            //   component: () => import(/* webpackChunkName: "walletTopupSimplex" */ './containers/WalletTopup/WalletTopupSimplex'),
+            // },
+            // {
+            //   path: 'moonpay',
+            //   name: 'walletTopupMoonpay',
+            //   component: () => import(/* webpackChunkName: "walletTopupMoonpay" */ './containers/WalletTopup/WalletTopupMoonpay'),
+            // },
+            // {
+            //   path: 'wyre',
+            //   name: 'walletTopupWyre',
+            //   component: () => import(/* webpackChunkName: "walletTopupWyre" */ './containers/WalletTopup/WalletTopupWyre'),
+            // },
+            // {
+            //   path: 'xanpool',
+            //   name: 'walletTopupXanpool',
+            //   component: () => import(/* webpackChunkName: "walletTopupXanpool" */ './containers/WalletTopup/WalletTopupXanpool'),
+            // },
+            // {
+            //   path: 'mercuryo',
+            //   name: 'walletTopupMercuryo',
+            //   component: () => import(/* webpackChunkName: "walletTopupMercuryo" */ './containers/WalletTopup/WalletTopupMercuryo'),
+            // },
             {
               path: 'transak',
               name: 'walletTopupTransak',
               component: () => import(/* webpackChunkName: "walletTopupTransak" */ './containers/WalletTopup/WalletTopupTransak'),
             },
             {
-              path: 'banxa',
-              name: 'walletTopupBanxa',
-              component: () => import(/* webpackChunkName: "walletTopupBanxa" */ './containers/WalletTopup/WalletTopupBanxa'),
+              path: 'paybis',
+              name: 'walletTopupPaybis',
+              component: () => import(/* webpackChunkName: "walletTopupPaybis" */ './containers/WalletTopup/WalletTopupPaybis'),
             },
+            // {
+            //   path: 'banxa',
+            //   name: 'walletTopupBanxa',
+            //   component: () => import(/* webpackChunkName: "walletTopupBanxa" */ './containers/WalletTopup/WalletTopupBanxa'),
+            // },
           ],
         },
         {
