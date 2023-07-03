@@ -304,7 +304,7 @@ export default {
             // }
             this.snackbar = true
             this.snackbarColor = 'info'
-            this.snackbarText = 'If you completed the transaction. It will reflect in your wallet activity page shortly.'
+            this.snackbarText = this.t('walletTopUp.topupDone')
             if (bc) {
               await bc.postMessage({
                 data: { instanceParams: { provider: this.selectedProvider }, queryParams: { transactionStatus: success ? 'success' : 'failed' } },
