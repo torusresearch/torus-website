@@ -222,8 +222,9 @@ export default {
         const { fastest: fastestTimes10 } = await resp.json()
         gasPrice = new BigNumber(fastestTimes10).div(new BigNumber('10'))
       } else {
-        const recommended = await torus.ethersProvider.getGasPrice()
-        gasPrice = new BigNumber(recommended.toHexString()).div(new BigNumber(10).pow(new BigNumber(9))).plus(new BigNumber('5'))
+        const recommended = await torus.ethersProvider.send('eth_gasPrice')
+        log.info(recommended, 'fetched gas price from provider')
+        gasPrice = new BigNumber(recommended, 16).div(new BigNumber(10).pow(new BigNumber(9))).plus(new BigNumber('5'))
       }
       const percent10Extra = gasPrice.times(new BigNumber('1.1'))
       // Add 5 to fastest recommended by transfer page

@@ -49,10 +49,18 @@ export default {
       const { loginProvider, state, mfaLevel, sessionNamespace, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))
       log.info('logging in with', loginProvider, state, rest, mfaLevel)
-      const { whiteLabel, loginConfig = {}, origin } = stateParams
-      this.whiteLabel = whiteLabel
+      const { whiteLabel = {}, loginConfig = {}, origin } = stateParams
       this.iframeOrigin = origin
       this.isCustomVerifier = Object.keys(loginConfig).length > 0
+
+      if (!whiteLabel.isActive) {
+        if (!whiteLabel.theme) whiteLabel.theme = {}
+        whiteLabel.theme.isDark = this.$vuetify.theme.dark
+        whiteLabel.theme.colors = { torusBrand1: this.$vuetify.theme.currentTheme.torusBrand1 }
+        whiteLabel.defaultLanguage = this.$i18n.locale
+      }
+
+      this.whiteLabel = whiteLabel
 
       const openLoginHandler = await OpenLoginHandler.getInstance(whiteLabel, loginConfig, sessionNamespace)
       await openLoginHandler.openLoginInstance.login({

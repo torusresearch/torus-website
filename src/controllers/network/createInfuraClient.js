@@ -1,21 +1,21 @@
-import { createInfuraMiddleware, createProvider } from '@metamask/eth-json-rpc-infura'
+import { createInfuraMiddleware } from '@metamask/eth-json-rpc-infura'
 import {
   createBlockCacheMiddleware,
   createBlockRefMiddleware,
   createBlockTrackerInspectorMiddleware,
   createInflightCacheMiddleware,
   createRetryOnEmptyMiddleware,
-  // providerFromMiddleware,
 } from '@metamask/eth-json-rpc-middleware'
+import { providerFromMiddleware } from '@metamask/eth-json-rpc-provider'
 import { createScaffoldMiddleware, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
 import { PollingBlockTracker } from 'eth-block-tracker'
 
 import config from '../../config'
 import { INFURA_NETWORK_TYPE_TO_ID_MAP } from '../../utils/enums'
 
-export function createInfuraClient({ network }) {
-  const infuraMiddleware = createInfuraMiddleware({ network, projectId: config.infuraKey })
-  const infuraProvider = createProvider({ network, projectId: config.infuraKey })
+export function createInfuraClient({ network, projectId }) {
+  const infuraMiddleware = createInfuraMiddleware({ network, projectId: projectId || config.infuraKey })
+  const infuraProvider = providerFromMiddleware(infuraMiddleware)
   const blockTracker = new PollingBlockTracker({ provider: infuraProvider })
   const networkMiddleware = mergeMiddleware([
     createNetworkAndChainIdMiddleware({ network }),

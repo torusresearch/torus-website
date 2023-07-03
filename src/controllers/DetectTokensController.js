@@ -1,11 +1,11 @@
 /* eslint-disable default-param-last */
 import BigNumber from 'bignumber.js'
-import { Contract, providers, utils } from 'ethers'
+import { BrowserProvider, Contract, toQuantity } from 'ethers'
 import { isEqual } from 'lodash'
 import log from 'loglevel'
-import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 
 import TokenHandler from '../handlers/Token/TokenHandler'
+import { singleBalanceCheckerAbi } from '../utils/abis'
 import contracts, { GNOSIS_CONTRACTS } from '../utils/contractMetadata'
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, MAINNET, SUPPORTED_NETWORK_TYPES, XDAI } from '../utils/enums'
 import { idleTimeTracker, toChecksumAddressByChainId } from '../utils/utils'
@@ -61,7 +61,7 @@ class DetectTokensController {
     this.interval = interval
     this.network = network
     this.detectedTokensStore = new ObservableStore({})
-    this.provider = new providers.Web3Provider(provider)
+    this.provider = new BrowserProvider(provider, 'any')
     this.selectedAddress = ''
     this.preferencesStore = preferencesStore
     this.selectedCustomTokens = []
@@ -124,14 +124,14 @@ class DetectTokensController {
       }
 
       if (tokensToDetect.length > 0 && currentNetworkIdentifier === MAINNET) {
-        const ethContract = new Contract(SINGLE_CALL_BALANCES_ADDRESS, SINGLE_CALL_BALANCES_ABI, this.provider)
+        const ethContract = new Contract(SINGLE_CALL_BALANCES_ADDRESS, singleBalanceCheckerAbi, this.provider)
         const result = await ethContract.balances(
           [userAddress],
           tokensToDetect.map((x) => x.tokenAddress)
         )
         const nonZeroTokens = []
         tokensToDetect.forEach((x, index) => {
-          const balance = utils.hexValue(result[index])
+          const balance = toQuantity(result[index])
           if (balance && balance !== '0x0') {
             // do sth else here
             nonZeroTokens.push({ ...x, balance, network: MAINNET })
@@ -197,11 +197,11 @@ class DetectTokensController {
       const oldTokens = this.detectedTokensStore.getState()[userAddress] || []
       const tokenAddresses = oldTokens.map((x) => x.tokenAddress)
       if (tokenAddresses.length > 0) {
-        const ethContract = new Contract(SINGLE_CALL_BALANCES_ADDRESS, SINGLE_CALL_BALANCES_ABI, this.provider)
-        const result = ethContract.balances([userAddress], tokenAddresses)
+        const ethContract = new Contract(SINGLE_CALL_BALANCES_ADDRESS, singleBalanceCheckerAbi, this.provider)
+        const result = await ethContract.balances([userAddress], tokenAddresses)
         const nonZeroTokens = []
         tokenAddresses.forEach((_, index) => {
-          const balance = utils.hexValue(result[index])
+          const balance = toQuantity(result[index])
           if (balance && balance !== '0x0') {
             nonZeroTokens.push({ ...oldTokens[index], balance, network: MAINNET })
           }

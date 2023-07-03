@@ -641,7 +641,6 @@ export const XANPOOL = 'xanpool'
 export const RAMPNETWORK = 'rampnetwork'
 export const SIMPLEX = 'simplex'
 export const MOONPAY = 'moonpay'
-export const WYRE = 'wyre'
 export const CRYPTO = 'crypto'
 export const MERCURYO = 'mercuryo'
 export const TRANSAK = 'transak'
@@ -978,12 +977,6 @@ export const TRANSAK_NETWORK_MAP = {
   [BSC_MAINNET]: 'bsc',
   [MATIC]: 'polygon',
   [AVALANCHE_MAINNET]: 'avaxcchain',
-}
-
-export const WYRE_NETWORK_MAP = {
-  [MAINNET]: 'ethereum',
-  [MATIC]: 'matic',
-  [AVALANCHE_MAINNET]: 'avalanche',
 }
 
 export const BANXA_NETWORK_MAP = {

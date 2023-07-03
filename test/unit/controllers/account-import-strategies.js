@@ -50,7 +50,7 @@ describe('Account Import Strategies', () => {
       try {
         await accountImporter.importAccount('JSON File', [jsonFile, wrongPassword])
       } catch (error) {
-        assert.ok(error.message.startsWith('invalid password'))
+        assert.ok(error.message.startsWith('incorrect password'))
       }
     })
 

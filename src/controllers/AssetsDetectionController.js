@@ -3,7 +3,7 @@
  * Controller that passively polls on a set interval for assets auto detection
  */
 
-import { providers } from 'ethers'
+import { BrowserProvider } from 'ethers'
 import { isEqual } from 'lodash'
 import log from 'loglevel'
 
@@ -17,7 +17,7 @@ export default class AssetsDetectionController {
     this.interval = options.interval || DEFAULT_INTERVAL
     this.selectedAddress = options.selectedAddress || ''
     this.network = options.network
-    this.provider = new providers.Web3Provider(options.provider)
+    this.provider = new BrowserProvider(options.provider, 'any')
     this.assetController = options.assetController
     this.getNfts = options.getNfts
     this.currentNetwork = null

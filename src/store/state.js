@@ -72,10 +72,11 @@ const initialState = {
   whiteLabel: {
     isActive: false,
     theme: {},
-    logoDark: '',
-    logoLight: '',
+    logoDark: 'https://images.web3auth.io/wallet-exchanga.svg',
+    logoLight: 'https://images.web3auth.io/wallet-exchanga-light.svg',
     topupHide: config.hideTopup,
     featuredBillboardHide: false,
+    useLogoLoader: true,
   },
   etherscanTx: [],
   wcConnectorSession: {},
@@ -84,6 +85,7 @@ const initialState = {
   ethTransferOnly: config.ethTransferOnly,
   lastLoginInfo: {},
   userDapps: {},
+  isPlugin: false,
 }
 
 export default initialState

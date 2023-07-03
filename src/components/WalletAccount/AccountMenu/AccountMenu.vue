@@ -101,7 +101,7 @@
     </v-list>
     <v-divider v-if="$vuetify.breakpoint.smAndDown"></v-divider>
     <v-list class="ml-1">
-      <v-list-item href="https://docs.tor.us/#users" target="_blank" rel="noreferrer noopener">
+      <v-list-item href="https://docs.exchangaweb3.com" target="_blank" rel="noreferrer noopener">
         <v-list-item-action class="mr-2 justify-center">
           <v-icon size="20" class="text_2--text">$vuetify.icons.info</v-icon>
         </v-list-item-action>

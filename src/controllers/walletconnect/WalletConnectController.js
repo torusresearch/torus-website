@@ -1,5 +1,4 @@
 import { ObservableStore } from '../utils/ObservableStore'
-import WalletConnectV1Controller from './WalletConnectV1Controller'
 import WalletConnectV2Controller from './WalletConnectV2Controller'
 
 class WalletConnectController {
@@ -31,11 +30,7 @@ class WalletConnectController {
       }
       const version = Number.parseInt(splitByVersion[1], 10)
       if (version === 1) {
-        this.walletConnectorController = new WalletConnectV1Controller({
-          provider: this.provider,
-          network: this.network,
-          store: this.store,
-        })
+        throw new Error('v1 is deprecated')
       } else {
         this.walletConnectorController = new WalletConnectV2Controller({
           provider: this.provider,

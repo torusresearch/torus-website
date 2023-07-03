@@ -25,6 +25,7 @@ import {
   ACTIVITY_ACTION_SEND,
   ALLOWED_VERIFIERS,
   APPLE,
+  ARBITRUM_MAINNET,
   ARBITRUM_MAINNET_CHAIN_ID,
   ARBITRUM_MAINNET_CODE,
   ARBITRUM_TESTNET_CHAIN_ID,
@@ -75,6 +76,7 @@ import {
   OKC_MAINNET_CODE,
   OKC_TESTNET_CHAIN_ID,
   OKC_TESTNET_CODE,
+  OPTIMISM_MAINNET,
   OPTIMISM_MAINNET_CHAIN_ID,
   OPTIMISM_MAINNET_CODE,
   OPTIMISM_TESTNET_CHAIN_ID,
@@ -107,7 +109,6 @@ import {
   TWITTER,
   WECHAT,
   WEIBO,
-  // WYRE,
   // XANPOOL,
   // XDAI,
   XDAI_CHAIN_ID,
@@ -594,27 +595,37 @@ export const paymentProviders = {
     validCurrencies: supportedFiatCurrencies(TRANSAK),
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
+        { value: '1INCH', display: '1INCH' },
+        { value: 'BAT', display: 'BAT' },
         { value: 'AAVE', display: 'AAVE' },
         { value: 'DAI', display: 'DAI' },
         { value: 'ETH', display: 'ETH' },
         { value: 'USDC', display: 'USDC' },
         { value: 'USDT', display: 'USDT' },
-        { value: 'CHAIN', display: 'CHAIN' },
       ],
       [MATIC]: [
+        { value: 'BAT', display: 'BAT' },
         { value: 'AAVE', display: 'AAVE' },
         { value: 'DAI', display: 'DAI' },
         { value: 'MATIC', display: 'MATIC' },
         { value: 'USDC', display: 'USDC' },
         { value: 'USDT', display: 'USDT' },
         { value: 'WETH', display: 'WETH' },
-        { value: 'CHAIN', display: 'CHAIN' },
       ],
       [BSC_MAINNET]: [
+        { value: 'BAT', display: 'BAT' },
         { value: 'BNB', display: 'BNB' },
         { value: 'BUSD', display: 'BUSD' },
       ],
       [AVALANCHE_MAINNET]: [{ value: 'AVAX', display: 'AVAX' }],
+      [OPTIMISM_MAINNET]: [
+        { value: 'ETH', display: 'ETH' },
+        { value: 'USDC', display: 'USDC' },
+      ],
+      [ARBITRUM_MAINNET]: [
+        { value: 'USDC', display: 'USDC' },
+        { value: 'ETH', display: 'ETH' },
+      ],
     },
     includeFees: true,
     api: true,
@@ -697,7 +708,7 @@ export const paymentProviders = {
 
 /**
  * {
- *   [MAINNET]: [SIMPLEX, TRANSAK, WYRE, ...],
+ *   [MAINNET]: [SIMPLEX, TRANSAK, ...],
  *   [BSC_MAINNET]: [SIMPLEX, ...],
  *   ...
  * }

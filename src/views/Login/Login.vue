@@ -128,7 +128,7 @@
     </template>
     <template v-else>
       <v-container class="spinner" fluid :class="$vuetify.theme.dark ? 'torus-dark' : ''">
-        <BoxLoader :force-spinner="true" spinner-background="#111928" />
+        <BoxLoader :force-spinner="true" :spinner-background="$vuetify.theme.dark ? '#111928' : '#F3F4F6'" />
         <p class="bottom-text text-body-1 text-center font-weight-medium">
           {{ t('login.loader') }}
         </p>

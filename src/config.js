@@ -167,7 +167,6 @@ export default {
 
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
-  wyreApiHost: 'https://wyre-api.tor.us',
   rampApiHost: 'https://ramp-network-api.tor.us',
   xanpoolApiHost: 'https://xanpool-api.tor.us',
   mercuryoApiHost: 'https://mercuryo-api.tor.us',
@@ -180,9 +179,6 @@ export default {
   moonpayLiveAPIKEY: 'pk_live_Wg90NLnFst3ms7tiqnMDDO0yjlypMzYK',
   moonpayTestHost: 'https://buy-staging.moonpay.io',
   moonpayTestAPIKEY: 'pk_test_j6AnwGJD0XTJDg3bTO37OczjFsddYpS',
-
-  wyreHost: 'https://pay.sendwyre.com/purchase',
-  wyreAccountId: 'AC_RUQMPNP7QQY',
 
   rampHost: 'https://widget-instant.ramp.network',
   rampApiQuoteHost: `https://api-instant.ramp.network/api/host-api/quote?hostApiKey=${rampApiKey}`,

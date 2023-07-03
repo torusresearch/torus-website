@@ -1,4 +1,4 @@
-import { BANXA, MERCURYO, MOONPAY, PAYBIS, RAMPNETWORK, SIMPLEX, TRANSAK, WYRE, XANPOOL } from './utils/enums'
+import { BANXA, MERCURYO, MOONPAY, PAYBIS, RAMPNETWORK, SIMPLEX, TRANSAK, XANPOOL } from './utils/enums'
 
 /**
  * From https://min-api.cryptocompare.com/data/v2/pair/mapping/fsym?fsym=BTC&extraParams=YourSite
@@ -445,47 +445,79 @@ const PROVIDER_SUPPORTED_FIAT_CURRENCIES = {
     'VND',
     'ZAR',
   ],
-  /**
-   * https://docs.sendwyre.com/docs/supported-currencies#fiat
-   * The ones where credit card is supported
-   */
-  [WYRE]: [
+  // https://support.ramp.network/en/articles/471-supported-fiat-currencies
+  [RAMPNETWORK]: [
     'USD',
     'EUR',
     'GBP',
-    'AUD',
-    'CAD',
-    'NZD',
-    'ARS',
+    'BMD',
+    'BAM',
+    'BWP',
     'BRL',
-    'CHF',
-    'CLP',
+    'BGN',
     'COP',
+    'CRC',
     'CZK',
     'DKK',
-    'HKD',
-    'ILS',
-    'INR',
+    'DOP',
+    'GEL',
+    'GTQ',
+    'HNL',
+    'HUF',
     'ISK',
-    'JPY',
-    'KRW',
-    'MXN',
+    'INR',
+    'ILS',
+    'KZT',
+    'KES',
+    'KWD',
+    'LAK',
+    'MKD',
     'MYR',
-    'NOK',
-    'PHP',
+    'MXN',
+    'MDL',
+    'MZN',
+    'NZD',
+    'NGN',
+    'PYG',
+    'PEN',
     'PLN',
-    'SEK',
-    'THB',
-    'VND',
+    'RON',
+    'RSD',
+    'SGD',
     'ZAR',
+    'LKR',
+    'SEK',
+    'CHF',
+    'TJS',
+    'THB',
+    'UYU',
   ],
-  // https://support.ramp.network/en/articles/471-why-am-i-paying-in-usd-eur-gbp
-  [RAMPNETWORK]: ['USD', 'EUR', 'GBP'],
   // From https://xanpool.com/ fiat select dropdown
   [XANPOOL]: ['SGD', 'HKD', 'THB', 'PHP', 'INR', 'IDR', 'MYR', 'AUD', 'NZD', 'KRW'],
-  // https://support.aax.com/en/articles/5295762-mercuryo
+  // https://help.mercuryo.io/en/articles/6121246-which-fiat-currencies-are-supported
   // RUB / UAH currently not supported
-  [MERCURYO]: ['EUR', 'USD', 'GBP', 'TRY', 'JPY', 'BRL', 'NGN', 'VND', 'MXN', 'KRW'],
+  [MERCURYO]: [
+    'EUR',
+    'USD',
+    'GBP',
+    'TRY',
+    'JPY',
+    'BRL',
+    'NGN',
+    'VND',
+    'MXN',
+    'KRW',
+    'PLN',
+    'SEK',
+    'CHF',
+    'CAD',
+    'CZK',
+    'DKK',
+    'BGN',
+    'HKD',
+    'AUD',
+    'INR',
+  ],
   /**
    * https://support.transak.com/hc/en-us/articles/360020615578-Credit-and-Debit-Card-Payments-through-Transak
    * or
