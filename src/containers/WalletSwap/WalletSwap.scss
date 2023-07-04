@@ -20,4 +20,8 @@
       background: none;
     }
   }
+
+  &.not-supported {
+    opacity: 0.4;
+  }
 }

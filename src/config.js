@@ -209,8 +209,6 @@ export default {
   additionalCurrencies: ['ANT', 'BAT', 'DASH', 'DGD', 'GNO', 'LTC', 'QTUM', 'REP', 'SAI', 'XEM', 'XLM', 'XMR', 'XRP', 'ZEC'],
   logosUrl: 'https://images.toruswallet.io',
 
-  uniswapContractAddress: '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45',
-
   // key is the verifier
   loginConfig: {
     ...(GOOGLE_VERIFIER && {
