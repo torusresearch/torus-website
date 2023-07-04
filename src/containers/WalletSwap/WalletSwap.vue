@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SupportErrorBanner v-if="isChainNotSupported" :message="t('walletTopUp.notSupportedBanner', [t('walletSwap.swap'), networkType.networkName])" />
+    <SupportErrorBanner v-if="!isSupportedChainId" :message="t('walletTopUp.notSupportedBanner', [t('walletSwap.swap'), networkType.networkName])" />
     <v-container class="pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
       <div class="d-flex flex-wrap align-center justify-end">
         <div class="mr-2">
@@ -11,7 +11,7 @@
 
       <v-container class="dapp-parent d-flex flex-column justify-start align-center pt-6" :class="$vuetify.breakpoint.xsOnly ? 'xs-parent px-4' : ''">
         <v-form ref="form" v-model="valid" lazy-validation>
-          <v-card class="swap-container elevation-1 pa-4" :class="{ 'not-supported': isChainNotSupported }">
+          <v-card class="swap-container elevation-1 pa-4" :class="{ 'not-supported': !isSupportedChainId }">
             <div class="font-weight-bold mb-2">{{ t('walletSwap.swap') }}</div>
             <v-card flat outlined class="mb-2 pa-1">
               <v-row class="align-center" no-gutters>
@@ -23,7 +23,7 @@
                     outlined
                     type="number"
                     :rules="[rules.required]"
-                    :disabled="isChainNotSupported"
+                    :disabled="!isSupportedChainId"
                     @change="fromValueChanged"
                   />
                 </v-col>
@@ -38,7 +38,7 @@
                     :items="tokenList"
                     item-text="symbol"
                     item-value="symbol"
-                    :disabled="isChainNotSupported"
+                    :disabled="!isSupportedChainId"
                     :rules="[rules.required]"
                     @change="fromTokenChanged"
                   ></v-combobox>
@@ -51,7 +51,7 @@
                   <v-text-field
                     class="swap-amount"
                     :value="toValue"
-                    :disabled="isChainNotSupported"
+                    :disabled="!isSupportedChainId"
                     hide-details
                     outlined
                     type="number"
@@ -70,7 +70,7 @@
                     item-text="symbol"
                     item-value="symbol"
                     :rules="[rules.required]"
-                    :disabled="isChainNotSupported"
+                    :disabled="!isSupportedChainId"
                     @change="toTokenChanged"
                   ></v-combobox>
                 </v-col>
@@ -89,7 +89,7 @@
               color="primary"
               x-large
               block
-              :disabled="!currentSwapQuote || isChainNotSupported"
+              :disabled="!currentSwapQuote || !isSupportedChainId"
               @click.stop="confirmationModalShow = true"
             >
               {{ t('walletSwap.swap') }}
@@ -139,12 +139,12 @@ import NetworkDisplay from '../../components/helpers/NetworkDisplay/NetworkDispl
 import QuickAddress from '../../components/helpers/QuickAddress/QuickAddress.vue'
 import SupportErrorBanner from '../../components/helpers/SupportErrorBanner'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
-import config from '../../config'
 import { getQuoteFromBackend } from '../../plugins/uniswap'
 import torus from '../../torus'
 import {
   ARBITRUM_MAINNET_CODE,
   BSC_MAINNET_CODE,
+  GOERLI_CODE,
   MAINNET_CODE,
   MATIC_CODE,
   MESSAGE_MODAL_TYPE_FAIL,
@@ -153,7 +153,15 @@ import {
 } from '../../utils/enums'
 import { getEtherScanHashLink } from '../../utils/utils'
 
-const SupportedChains = new Set([MAINNET_CODE, MATIC_CODE, OPTIMISM_MAINNET_CODE, ARBITRUM_MAINNET_CODE, BSC_MAINNET_CODE])
+const uniswapSupportedChainIds = new Set([
+  BSC_MAINNET_CODE,
+  MAINNET_CODE,
+  GOERLI_CODE,
+  ARBITRUM_MAINNET_CODE,
+  OPTIMISM_MAINNET_CODE,
+  MATIC_CODE,
+  42_220,
+])
 
 export default {
   name: 'WalletDiscover',
@@ -208,8 +216,18 @@ export default {
     networkUrl() {
       return torus.torusController.networkController.getCurrentNetworkUrl()
     },
-    isChainNotSupported() {
-      return !SupportedChains.has(this.chainId)
+    uniswapContractAddress() {
+      switch (this.chainId) {
+        case BSC_MAINNET_CODE:
+          return '0xB971eF87ede563556b2ED4b1C0b0019111Dd85d2'
+        case 42_220:
+          return '0x5615CDAb10dc425a742d643d949a7F474C01abc4'
+        default:
+          return '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45'
+      }
+    },
+    isSupportedChainId() {
+      return uniswapSupportedChainIds.has(this.chainId)
     },
   },
   watch: {
@@ -300,7 +318,7 @@ export default {
         this.sendingTx = true
         const transaction = {
           data: this.currentSwapQuote.methodParameters.callData,
-          to: config.uniswapContractAddress,
+          to: this.uniswapContractAddress,
           value: this.currentSwapQuote.methodParameters.value,
           from: this.selectedAddress,
           gasPrice: this.currentSwapQuote.gasPriceWei,
