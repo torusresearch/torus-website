@@ -115,11 +115,29 @@ import { mapState } from 'vuex'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay/NetworkDisplay.vue'
 import QuickAddress from '../../components/helpers/QuickAddress/QuickAddress.vue'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
-import config from '../../config'
 import { getQuoteFromBackend } from '../../plugins/uniswap'
 import torus from '../../torus'
-import { MESSAGE_MODAL_TYPE_FAIL, MESSAGE_MODAL_TYPE_SUCCESS } from '../../utils/enums'
+import {
+  ARBITRUM_MAINNET_CODE,
+  BSC_MAINNET_CODE,
+  GOERLI_CODE,
+  MAINNET_CODE,
+  MATIC_CODE,
+  MESSAGE_MODAL_TYPE_FAIL,
+  MESSAGE_MODAL_TYPE_SUCCESS,
+  OPTIMISM_MAINNET_CODE,
+} from '../../utils/enums'
 import { getEtherScanHashLink } from '../../utils/utils'
+
+const uniswapSupportedChainIds = new Set([
+  BSC_MAINNET_CODE,
+  MAINNET_CODE,
+  GOERLI_CODE,
+  ARBITRUM_MAINNET_CODE,
+  OPTIMISM_MAINNET_CODE,
+  MATIC_CODE,
+  42_220,
+])
 
 export default {
   name: 'WalletDiscover',
@@ -173,6 +191,19 @@ export default {
     },
     networkUrl() {
       return torus.torusController.networkController.getCurrentNetworkUrl()
+    },
+    uniswapContractAddress() {
+      switch (this.chainId) {
+        case BSC_MAINNET_CODE:
+          return '0xB971eF87ede563556b2ED4b1C0b0019111Dd85d2'
+        case 42_220:
+          return '0x5615CDAb10dc425a742d643d949a7F474C01abc4'
+        default:
+          return '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45'
+      }
+    },
+    isSupportedChainId() {
+      return uniswapSupportedChainIds.has(this.chainId)
     },
   },
   async mounted() {
@@ -249,7 +280,7 @@ export default {
         this.sendingTx = true
         const transaction = {
           data: this.currentSwapQuote.methodParameters.callData,
-          to: config.uniswapContractAddress,
+          to: this.uniswapContractAddress,
           value: this.currentSwapQuote.methodParameters.value,
           from: this.selectedAddress,
           gasPrice: this.currentSwapQuote.gasPriceWei,
