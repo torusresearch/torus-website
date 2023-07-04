@@ -1,0 +1,8 @@
+.error-box {
+  color: #0f1222;
+  &.is-mobile {
+    .v-icon {
+      margin-top: 3px;
+    }
+  }
+}
