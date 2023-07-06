@@ -80,7 +80,7 @@
                   v-model="wcCopyPasteLink"
                   class="qr-field pr-0 caption"
                   hide-details
-                  :placeholder="t('qRInputPlaceholder')"
+                  :placeholder="t('walletConnect.qRInputPlaceholder')"
                   outlined
                   dense
                   height="40"

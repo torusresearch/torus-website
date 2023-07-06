@@ -9,7 +9,7 @@
       </div>
     </div>
     <v-layout wrap mx-n4 mt-7>
-      <v-flex px-4 xs12 md6>
+      <v-flex px-4 xs12 :class="{ md6: !whiteLabel.featuredBillboardHide && events.length > 0 }">
         <v-card class="card-total elevation-1 px-6 py-4">
           <div class="d-flex align-center" :style="{ marginBottom: '5px' }">
             <div :style="{ lineHeight: '1em' }">
@@ -94,11 +94,8 @@
           </v-layout>
         </v-card>
       </v-flex>
-      <v-flex v-if="!whiteLabel.featuredBillboardHide && apiStreamSupported" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
-        <WalletConnectCard />
-      </v-flex>
       <v-flex
-        v-for="(event, i) in isFreshAccount || whiteLabel.featuredBillboardHide ? [] : events"
+        v-for="(event, i) in whiteLabel.featuredBillboardHide ? [] : events"
         :key="`event-${i}`"
         px-4
         xs12
@@ -219,9 +216,8 @@ import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 // import Onboarding from '../../../components/WalletHome/Onboarding'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
-import WalletConnectCard from '../../../components/WalletHome/WalletConnectCard'
 import { LOCALE_EN, MAINNET } from '../../../utils/enums'
-import { apiStreamSupported, broadcastChannelOptions } from '../../../utils/utils'
+import { broadcastChannelOptions } from '../../../utils/utils'
 
 export default {
   name: 'WalletHome',
@@ -229,7 +225,6 @@ export default {
     TokenBalancesTable,
     CollectiblesList,
     QuickAddress,
-    WalletConnectCard,
     ComponentLoader,
     NetworkDisplay,
     PromotionCard,
@@ -252,7 +247,6 @@ export default {
       tokenDataLoaded: 'tokenDataLoaded',
       selectedCurrency: 'selectedCurrency',
       networkType: 'networkType',
-      isFreshAccount: 'isNewUser',
       billboard: 'billboard',
     }),
     canShowLrc() {
@@ -296,9 +290,6 @@ export default {
     },
     hasCustomToken() {
       return this.filteredBalancesArray.some((x) => !!x.customTokenId)
-    },
-    apiStreamSupported() {
-      return apiStreamSupported()
     },
   },
   mounted() {
