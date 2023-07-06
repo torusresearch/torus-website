@@ -224,12 +224,19 @@ class WalletConnectV2Controller {
   setStoreSession() {
     if (this.sessionConfig.connectedTopic()) {
       const sessionData = JSON.stringify(this.walletConnector.session.values)
-      this.store.putState({
+      this.store.updateState({
         sessionData,
       })
     } else {
       this.store.putState({})
     }
+  }
+
+  setStoreMessage(message) {
+    this.store.updateState({
+      message,
+    })
+    setTimeout(() => this.store.updateState({ message: '' }), 8000)
   }
 
   onSessionRequest = async (requestEvent) => {
@@ -296,6 +303,7 @@ class WalletConnectV2Controller {
           topic,
           response,
         })
+        this.setStoreMessage('request_approved')
       }
     } catch (error) {
       log.error(`FAILED REJECT REQUEST, ERROR ${error.message}`)
@@ -319,6 +327,15 @@ class WalletConnectV2Controller {
 
   getPeerMetaURL() {
     return this.walletConnector?.session?.values[0]?.peer?.metadata?.url
+  }
+
+  getPeerMetaInfo() {
+    const peerMetaURL = new URL(this.walletConnector?.session?.values[0]?.peer?.metadata?.url)
+    return {
+      name: peerMetaURL.hostname,
+      url: this.walletConnector?.session?.values[0]?.peer?.metadata?.url,
+      icon: this.walletConnector?.session?.values[0]?.peer?.metadata?.icons[0],
+    }
   }
 
   async disconnect() {

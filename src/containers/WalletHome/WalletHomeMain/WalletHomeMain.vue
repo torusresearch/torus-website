@@ -4,7 +4,7 @@
       <div class="font-weight-bold text_2--text float-left page-title" :class="{ 'display-1': $vuetify.breakpoint.width > 390 }">
         {{ t('walletHome.walletHome') }}
       </div>
-      <div class="ml-auto">
+      <div class="ml-auto d-flex items-center">
         <QuickAddress />
       </div>
     </div>
@@ -94,35 +94,6 @@
           </v-layout>
         </v-card>
       </v-flex>
-      <!-- <v-flex v-if="isFreshAccount || events.length === 0" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
-        <v-card class="card-shadow elevation-1" :style="{ height: $vuetify.breakpoint.xsOnly ? 'inherit' : '159px' }">
-          <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
-            <v-layout>
-              <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
-                <div class="text-body-1 font-weight-bold">{{ t('walletHome.welcome') }} Torus.</div>
-                <v-dialog v-model="dialogOnboarding" persistent max-width="600">
-                  <template #activator="{ on }">
-                    <div class="body-2'">
-                      <a id="learn-more-btn" class="torusBrand1--text font-weight-bold" v-on="on">
-                        {{ t('walletHome.learnMore') }}
-                      </a>
-                      {{ t('walletHome.aboutWallet') }}.
-                    </div>
-                  </template>
-                  <Onboarding @onClose="dialogOnboarding = false" />
-                </v-dialog>
-              </v-flex>
-              <v-flex xs4 pt-4 class="text-right hidden-xs-only">
-                <img
-                  :src="require(`../../../assets/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)"
-                  :style="{ height: '120px' }"
-                  alt="Onboarding"
-                />
-              </v-flex>
-            </v-layout>
-          </v-card-text>
-        </v-card>
-      </v-flex> -->
       <v-flex v-if="!whiteLabel.featuredBillboardHide && apiStreamSupported" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
         <WalletConnectCard />
       </v-flex>
@@ -254,7 +225,15 @@ import { apiStreamSupported, broadcastChannelOptions } from '../../../utils/util
 
 export default {
   name: 'WalletHome',
-  components: { TokenBalancesTable, CollectiblesList, QuickAddress, WalletConnectCard, ComponentLoader, NetworkDisplay, PromotionCard },
+  components: {
+    TokenBalancesTable,
+    CollectiblesList,
+    QuickAddress,
+    WalletConnectCard,
+    ComponentLoader,
+    NetworkDisplay,
+    PromotionCard,
+  },
   data() {
     return {
       selected: [],
