@@ -12,9 +12,16 @@
       {{ t('walletConnect.connected') }}
       <v-icon class="ml-4" size="18">$vuetify.icons.disconnect</v-icon>
     </v-btn>
-    <v-btn v-else-if="!isEmbed" class="wallet-connect-btn" small aria-label="Wallet Connect" title="Wallet Connect" @click="wcDialog = true">
+    <v-btn
+      v-else-if="!isEmbed"
+      class="wallet-connect-btn"
+      small
+      aria-label="Wallet Connect"
+      :title="t('walletConnect.useWalletConnect')"
+      @click="wcDialog = true"
+    >
       <img class="mr-1" height="20" width="20" src="https://images.web3auth.io/login-wallet-connect.svg" alt="Wallet Connect Logo" />
-      Use WalletConnect
+      {{ t('walletConnect.useWalletConnect') }}
     </v-btn>
     <v-dialog :value="showDialog" width="420" persistent @click:outside="closeDialog">
       <v-card>
@@ -30,7 +37,7 @@
             <div class="mb-10">
               <img class="mb-6" :src="require(`../../../assets/images/status-success.svg`)" width="48" height="48" alt="Success" />
               <div class="body-2 text_2--text">
-                {{ wcMessage ? 'You are all set!' : `Keep this wallet open to approve a signature request from ${connectedAppName} later` }}
+                {{ wcMessage ? t('walletConnect.youAllSet') : t('walletConnect.keepWalletOpen', [connectedAppName]) }}
               </div>
               <v-btn v-if="isEmbed" class="mt-4" aria-label="Disconnect" color="error" :title="t('walletConnect.disconnect')" @click="disconnect">
                 {{ t('walletConnect.disconnect') }}
@@ -44,27 +51,27 @@
                 target="_blank"
                 rel="noreferrer noopener"
               >
-                Take me to {{ connectedAppName }}
+                {{ t('walletConnect.takeMeToDapp', [connectedAppName]) }}
               </a>
             </div>
           </v-flex>
           <v-flex v-else class="xs12 px-12 mb-11">
             <div class="mb-6 body-2 font-weight-medium">
               <div class="text_3--text">
-                <span class="text_1--text font-weight-bold">STEP 1:</span>
-                Go to Application that has WalletConnect
+                <span class="text_1--text font-weight-bold">{{ t('walletConnect.step', [1]) }}:</span>
+                {{ t('walletConnect.step1Message') }}
               </div>
               <div class="text_3--text">
-                <span class="text_1--text font-weight-bold">STEP 2:</span>
-                Select WalletConnect
+                <span class="text_1--text font-weight-bold">{{ t('walletConnect.step', [2]) }}</span>
+                {{ t('walletConnect.step2Message') }}
               </div>
               <div class="text_3--text">
-                <span class="text_1--text font-weight-bold">STEP 3:</span>
-                Click "Copy to Clipboard"
+                <span class="text_1--text font-weight-bold">{{ t('walletConnect.step', [3]) }}</span>
+                {{ t('walletConnect.step3Message') }}
               </div>
               <div class="text_3--text">
-                <span class="text_1--text font-weight-bold">STEP 3:</span>
-                Paste QR link in the box below. Done!
+                <span class="text_1--text font-weight-bold">{{ t('walletConnect.step', [4]) }}</span>
+                {{ t('walletConnect.step4Message') }}
               </div>
             </div>
             <v-form ref="walletConnectForm" @submit.prevent="submitWalletConnect">
@@ -73,7 +80,7 @@
                   v-model="wcCopyPasteLink"
                   class="qr-field pr-0 caption"
                   hide-details
-                  placeholder="Paste QR link here"
+                  :placeholder="t('qRInputPlaceholder')"
                   outlined
                   dense
                   height="40"
@@ -90,7 +97,7 @@
                       @click="openScanner"
                     >
                       <v-icon class="mr-1" small>$vuetify.icons.scan</v-icon>
-                      Scan instead
+                      {{ t('walletConnect.qrScan') }}
                     </v-btn>
                   </template>
                 </v-text-field>
@@ -174,14 +181,13 @@ export default {
       return this.wcMessage || this.wcDialog
     },
     headerText() {
-      if (this.wcMessage === 'request_approved') return 'Request approved!'
-      if (this.isEmbed && this.walletConnectConnected) return 'You are now connected!'
-      return this.walletConnectConnected ? 'Successfully connected!' : 'Connect your Wallet'
+      if (this.wcMessage === 'request_approved') return this.t('walletConnect.requestApproved')
+      if (this.isEmbed && this.walletConnectConnected) return this.t('walletConnect.youAreConnected')
+      return this.walletConnectConnected ? this.t('walletConnect.successfulConnect') : this.t('walletConnect.connectWallet')
     },
   },
   watch: {
     wcConnectorSession(value, oldValue) {
-      log.info('check: value', value)
       if (value.message) {
         this.wcMessage = value.message
       } else {
