@@ -177,8 +177,9 @@ export default {
       return !!(this.wcConnectorSession && (this.wcConnectorSession.connected || this.wcConnectorSession.sessionData))
     },
     showDialog() {
+      if (this.wcMessage) return true
       if (this.isEmbed) return this.wcEmbedDialog
-      return this.wcMessage || this.wcDialog
+      return this.wcDialog
     },
     headerText() {
       if (this.wcMessage === 'request_approved') return this.t('walletConnect.requestApproved')
@@ -190,9 +191,16 @@ export default {
     wcConnectorSession(value, oldValue) {
       if (value.message) {
         this.wcMessage = value.message
+        if (this.isEmbed) {
+          this.toggleWidgetVisibility(true)
+        }
       } else {
         if (oldValue.message !== '' && oldValue.message !== undefined) {
           this.wcDialog = false
+
+          if (this.isEmbed) {
+            this.toggleWidgetVisibility(false)
+          }
         }
         this.wcMessage = ''
       }
@@ -210,7 +218,14 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['disconnectWalletConnect', 'getWalletConnectedAppInfo', 'initWalletConnect', 'sendWalletConnectResponse', 'setErrorMessage']),
+    ...mapActions([
+      'disconnectWalletConnect',
+      'getWalletConnectedAppInfo',
+      'initWalletConnect',
+      'sendWalletConnectResponse',
+      'setErrorMessage',
+      'toggleWidgetVisibility',
+    ]),
     disconnect() {
       if (this.walletConnectConnected) {
         this.disconnectWalletConnect()
