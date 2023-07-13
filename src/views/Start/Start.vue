@@ -22,6 +22,8 @@ import log from 'loglevel'
 
 import BoxLoader from '../../components/helpers/BoxLoader'
 import { OpenLoginHandler } from '../../handlers/Auth'
+import { FORCE_POPUP_LOGIN_MODE } from '../../utils/enums'
+// import { isMobileOrTablet } from '../../utils/utils'
 
 export default {
   name: 'Start',
@@ -45,6 +47,7 @@ export default {
     },
   },
   async created() {
+    let isPopupMode = false
     try {
       const { loginProvider, state, mfaLevel, sessionNamespace, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))
@@ -62,7 +65,11 @@ export default {
       this.whiteLabel = whiteLabel
 
       const openLoginHandler = await OpenLoginHandler.getInstance(whiteLabel, loginConfig, sessionNamespace)
-      await openLoginHandler.openLoginInstance.login({
+      if (FORCE_POPUP_LOGIN_MODE.includes(loginProvider)) {
+        isPopupMode = true
+        openLoginHandler.openLoginInstance.options.uxMode = 'popup'
+      }
+      const data = await openLoginHandler.openLoginInstance.login({
         loginProvider,
         getWalletKey: true,
         appState: state,
@@ -72,8 +79,23 @@ export default {
         },
         curve: 'secp256k1',
       })
+      if (isPopupMode && data) {
+        // changing this back to redirect for other login providers.
+        openLoginHandler.openLoginInstance.options.uxMode = 'redirect'
+        this.$router.push({
+          name: 'end',
+          query: {},
+        })
+      }
     } catch (error) {
       log.info(error, 'something went wrong')
+      if (isPopupMode) {
+        this.$router.push({
+          name: 'end',
+          query: {},
+          hash: `#error=${error.message || 'something went wrong, please try again later'}`,
+        })
+      }
     }
   },
 }
