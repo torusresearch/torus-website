@@ -23,7 +23,7 @@ import log from 'loglevel'
 import BoxLoader from '../../components/helpers/BoxLoader'
 import { OpenLoginHandler } from '../../handlers/Auth'
 import { FORCE_POPUP_LOGIN_MODE } from '../../utils/enums'
-// import { isMobileOrTablet } from '../../utils/utils'
+import { isMobileOrTablet } from '../../utils/utils'
 
 export default {
   name: 'Start',
@@ -65,7 +65,7 @@ export default {
       this.whiteLabel = whiteLabel
 
       const openLoginHandler = await OpenLoginHandler.getInstance(whiteLabel, loginConfig, sessionNamespace)
-      if (FORCE_POPUP_LOGIN_MODE.includes(loginProvider)) {
+      if (FORCE_POPUP_LOGIN_MODE.includes(loginProvider) && isMobileOrTablet()) {
         isPopupMode = true
         openLoginHandler.openLoginInstance.options.uxMode = 'popup'
       }
