@@ -48,7 +48,10 @@ export default {
             let details = paymentMethods.find((method) => method.id === 'exchanga-credit-card')
             if (!details) details = paymentMethods[0]
             self.cryptoCurrencyValue = details.amountTo.amount
-            self.currencyRate = details.amountTo.amount / details.amountToEquivalent.amount
+            self.currencyRate =
+              Number.parseFloat(details.amountToEquivalent.amount) > 0
+                ? Number.parseFloat(details.amountTo.amount) / Number.parseFloat(details.amountToEquivalent.amount)
+                : 0
             self.currentOrder = {
               quoteId,
               target: currencyCodeTo,
