@@ -13,6 +13,7 @@ import { keccak256 } from '@toruslabs/metadata-helpers'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import BN from 'bn.js'
+import bowser, { PLATFORMS_MAP } from 'bowser'
 import log from 'loglevel'
 
 import config from '../config'
@@ -343,7 +344,7 @@ export async function getEthTxStatus(hash, web3) {
 }
 
 export const broadcastChannelOptions = {
-  // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
+  // type: 'server', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
@@ -1235,4 +1236,10 @@ export const randomId = () => Math.random().toString(36).slice(2)
 export const getV3Filename = (address) => {
   const ts = new Date()
   return ['UTC--', ts.toJSON().replace(/:/g, '-'), '--', address.toString('hex')].join('')
+}
+
+export const isMobileOrTablet = () => {
+  const browser = bowser.getParser(window.navigator.userAgent)
+  const platform = browser.getPlatform()
+  return platform.type === PLATFORMS_MAP.tablet || platform.type === PLATFORMS_MAP.mobile
 }
