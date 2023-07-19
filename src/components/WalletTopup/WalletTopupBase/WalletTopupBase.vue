@@ -91,7 +91,7 @@
           <v-flex xs12 class="text-right">
             <div class="body-2">{{ t('walletTopUp.receive') }}</div>
             <ComponentLoader v-if="fetchingQuote" class="mt-1" />
-            <div v-else class="display-1" :title="cryptoCurrencyValue">
+            <div v-else class="text-h6 text-sm-h5 font-weight-bold" :title="cryptoCurrencyValue">
               {{ cryptoCurrencyValueDisplay || 0 }} {{ selectedCryptoCurrency.display }}
             </div>
             <div v-if="!fetchQuoteError" class="description">
@@ -232,7 +232,7 @@ export default {
       return this.selectedProviderObj.validCryptoCurrenciesByChain[network]
     },
     cryptoCurrencyValueDisplay() {
-      return Number.parseFloat(this.cryptoCurrencyValue).toPrecision(3).toString()
+      return Number.parseFloat(this.cryptoCurrencyValue).toString()
     },
   },
   watch: {
