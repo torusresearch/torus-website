@@ -41,7 +41,7 @@ export default {
           }
 
           const orderInstanceId = randomId()
-          const url = `https://widget.sandbox.paybis.com/?requestId=${data.requestId}#/v2/exchange-form`
+          const url = `https://widget.paybis.com/?requestId=${data.requestId}#/v2/exchange-form`
 
           dispatch('postPaybisOrder', { finalUrl: url, preopenInstanceId, orderInstanceId }).then(resolve).catch(reject)
 
