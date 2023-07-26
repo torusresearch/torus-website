@@ -70,6 +70,10 @@ export default {
             log.error(ev.error)
             bc.close()
           }
+
+          setTimeout(() => {
+            window.close()
+          }, 1000)
         })
       } else {
         this.textVisible = true
@@ -94,6 +98,7 @@ export default {
 
         setTimeout(() => {
           window.location.href = window.location.origin + window.location.search + window.location.hash
+          window.close()
         }, 5000)
       }
     } catch (error) {
