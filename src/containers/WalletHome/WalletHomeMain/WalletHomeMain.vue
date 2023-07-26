@@ -9,7 +9,7 @@
       </div>
     </div>
     <v-layout wrap mx-n4 mt-7>
-      <v-flex px-4 xs12 :class="{ md6: !whiteLabel.featuredBillboardHide && events.length > 0 }">
+      <v-flex px-4 xs12 :class="!whiteLabel.featuredBillboardHide && events.length > 0 ? 'md6' : 'xl10 mx-xl-auto'">
         <v-card class="card-total elevation-1 px-6 py-4">
           <div class="d-flex align-center" :style="{ marginBottom: '5px' }">
             <div :style="{ lineHeight: '1em' }">

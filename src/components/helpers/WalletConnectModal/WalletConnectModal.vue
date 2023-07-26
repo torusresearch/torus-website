@@ -26,14 +26,20 @@
     <v-dialog :value="showDialog" width="420" persistent @click:outside="closeDialog">
       <v-card>
         <v-layout wrap>
-          <v-flex class="card-header text-center" xs12 py-6 px-6>
+          <v-flex class="card-header text-center" xs12 pb-6 pt-8 px-6>
+            <img
+              class="mb-4"
+              :width="$vuetify.breakpoint.xsOnly ? 180 : 200"
+              src="../../../assets/images/wallet-connect-dapps.png"
+              alt="Wallet Connect Dapps"
+            />
             <div class="display-1 text_2--text">{{ headerText }}</div>
             <v-btn class="close-btn" icon aria-label="Close Connect WC" title="Close Connect WC" @click="closeDialog">
               <v-icon>$vuetify.icons.close</v-icon>
             </v-btn>
           </v-flex>
 
-          <v-flex v-if="walletConnectConnected" class="xs12 px-12 mb-11 text-center">
+          <v-flex v-if="walletConnectConnected" class="xs12 px-8 px-sm-12 mb-11 text-center">
             <div class="mb-10">
               <img class="mb-6" :src="require(`../../../assets/images/status-success.svg`)" width="48" height="48" alt="Success" />
               <div class="body-2 text_2--text">
@@ -55,7 +61,7 @@
               </a>
             </div>
           </v-flex>
-          <v-flex v-else class="xs12 px-12 mb-11">
+          <v-flex v-else class="xs12 px-8 px-sm-12 mb-11">
             <div class="mb-6 body-2 font-weight-medium">
               <div class="text_3--text">
                 <span class="text_1--text font-weight-bold">{{ t('walletConnect.step', [1]) }}:</span>
