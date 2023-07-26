@@ -738,6 +738,9 @@ export default {
   getWalletConnectedApp(_, __) {
     return walletConnectController.getPeerMetaURL()
   },
+  getWalletConnectedAppInfo(_, __) {
+    return walletConnectController.getPeerMetaInfo()
+  },
   decryptMessage(_, payload) {
     return torusController.decryptMessageInline(payload)
   },

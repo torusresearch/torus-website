@@ -3,10 +3,14 @@ import WalletConnectV2Controller from './WalletConnectV2Controller'
 
 class WalletConnectController {
   constructor(options) {
+    const initState = {
+      sessionData: '',
+      message: '',
+    }
     this.walletConnectorController = undefined
     this.provider = options.provider
     this.network = options.network
-    this.store = new ObservableStore({})
+    this.store = new ObservableStore(initState)
     this.selectedAddress = ''
   }
 
@@ -45,8 +49,11 @@ class WalletConnectController {
         store: this.store,
       })
     }
-    this.walletConnectorController.setSelectedAddress(this.selectedAddress)
-    await this.walletConnectorController.init(options)
+
+    if (this.walletConnectorController !== undefined) {
+      this.walletConnectorController.setSelectedAddress(this.selectedAddress)
+      await this.walletConnectorController.init(options)
+    }
   }
 
   setSelectedAddress(address) {
@@ -60,6 +67,10 @@ class WalletConnectController {
 
   getPeerMetaURL() {
     return this.walletConnectorController?.getPeerMetaURL()
+  }
+
+  getPeerMetaInfo() {
+    return this.walletConnectorController?.getPeerMetaInfo()
   }
 
   async disconnect() {
