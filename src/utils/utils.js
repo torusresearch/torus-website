@@ -13,6 +13,7 @@ import { keccak256 } from '@toruslabs/metadata-helpers'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import BN from 'bn.js'
+import bowser, { PLATFORMS_MAP } from 'bowser'
 import log from 'loglevel'
 
 import config from '../config'
@@ -41,6 +42,8 @@ import {
   BSC_MAINNET_CODE,
   BSC_TESTNET_CHAIN_ID,
   BSC_TESTNET_CODE,
+  CELO_MAINNET_CHAIN_ID,
+  CELO_MAINNET_CODE,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
@@ -50,6 +53,7 @@ import {
   ENVIRONMENT_TYPE_NOTIFICATION,
   ENVIRONMENT_TYPE_POPUP,
   ETH,
+  FACEBOOK,
   getIpfsEndpoint,
   GITHUB,
   GOERLI,
@@ -343,7 +347,7 @@ export async function getEthTxStatus(hash, web3) {
 }
 
 export const broadcastChannelOptions = {
-  // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
+  // type: 'server', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
@@ -731,6 +735,7 @@ export const standardNetworkId = {
   [ARBITRUM_TESTNET_CODE.toString()]: ARBITRUM_TESTNET_CHAIN_ID,
   [OPTIMISM_MAINNET_CODE.toString()]: OPTIMISM_MAINNET_CHAIN_ID,
   [OPTIMISM_TESTNET_CODE.toString()]: OPTIMISM_TESTNET_CHAIN_ID,
+  [CELO_MAINNET_CODE.toString()]: CELO_MAINNET_CHAIN_ID,
   [AVALANCHE_MAINNET_CODE.toString()]: AVALANCHE_MAINNET_CHAIN_ID,
   [AVALANCHE_TESTNET_CODE.toString()]: AVALANCHE_TESTNET_CHAIN_ID,
 }
@@ -1235,4 +1240,17 @@ export const randomId = () => Math.random().toString(36).slice(2)
 export const getV3Filename = (address) => {
   const ts = new Date()
   return ['UTC--', ts.toJSON().replace(/:/g, '-'), '--', address.toString('hex')].join('')
+}
+
+export const isMobileOrTablet = () => {
+  const browser = bowser.getParser(window.navigator.userAgent)
+  const platform = browser.getPlatform()
+  return platform.type === PLATFORMS_MAP.tablet || platform.type === PLATFORMS_MAP.mobile
+}
+
+export function getTimeout({ typeOfLogin = undefined, isPaymentTx = false }) {
+  if ((typeOfLogin === FACEBOOK || typeOfLogin === LINE || isPaymentTx) && isMobileOrTablet()) {
+    return 1000 * 60 * 5 // 5 minutes to finish the login
+  }
+  return 1000 * 10 // 10 seconds
 }

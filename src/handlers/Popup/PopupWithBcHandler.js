@@ -6,8 +6,8 @@ import { broadcastChannelOptions, UserError } from '../../utils/utils'
 import PopupHandler from './PopupHandler'
 
 class PopupWithBcHandler extends PopupHandler {
-  constructor({ url, target, features, preopenInstanceId, channelName }) {
-    super({ url, target, features, preopenInstanceId })
+  constructor({ url, target, features, preopenInstanceId, channelName, timeout }) {
+    super({ url, target, features, preopenInstanceId, timeout })
     this.bc = new BroadcastChannel(channelName, broadcastChannelOptions)
   }
 

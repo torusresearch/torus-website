@@ -6,16 +6,17 @@ import { parsePopupUrl } from '../../utils/utils'
 import StreamWindow from './StreamWindow'
 
 class PopupHandler extends EventEmitter {
-  constructor({ url, target, features, preopenInstanceId }) {
+  constructor({ url, target, features, preopenInstanceId, timeout = 30_000 }) {
     super()
     const localUrl = parsePopupUrl(url)
     this.url = localUrl.href
     this.target = target || '_blank'
     this.features = features || FEATURES_DEFAULT_POPUP_WINDOW
     this.window = undefined
-    this.windowTimer = {}
+    this.windowTimer = undefined
     this.iClosedWindow = false
     this.preopenInstanceId = preopenInstanceId
+    this.timeout = timeout
     this._setupTimer()
   }
 
@@ -23,11 +24,13 @@ class PopupHandler extends EventEmitter {
     this.windowTimer = setInterval(() => {
       if (this.window && this.window.closed) {
         clearInterval(this.windowTimer)
-        if (!this.iClosedWindow) {
-          this.emit('close')
-        }
-        this.iClosedWindow = false
-        this.window = undefined
+        setTimeout(() => {
+          if (!this.iClosedWindow) {
+            this.emit('close')
+          }
+          this.iClosedWindow = false
+          this.window = undefined
+        }, this.timeout)
       }
       if (this.window === undefined) clearInterval(this.windowTimer)
     }, 500)

@@ -144,6 +144,7 @@ import torus from '../../torus'
 import {
   ARBITRUM_MAINNET_CODE,
   BSC_MAINNET_CODE,
+  CELO_MAINNET_CODE,
   GOERLI_CODE,
   MAINNET_CODE,
   MATIC_CODE,
@@ -160,7 +161,7 @@ const uniswapSupportedChainIds = new Set([
   ARBITRUM_MAINNET_CODE,
   OPTIMISM_MAINNET_CODE,
   MATIC_CODE,
-  42_220,
+  CELO_MAINNET_CODE,
 ])
 
 export default {

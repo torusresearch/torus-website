@@ -2,7 +2,7 @@ import config from '../../config'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import getQuote from '../../plugins/xanpool'
 import { XANPOOL } from '../../utils/enums'
-import { randomId } from '../../utils/utils'
+import { getTimeout, randomId } from '../../utils/utils'
 
 export default {
   fetchXanpoolQuote(context, payload) {
@@ -33,7 +33,12 @@ export default {
   async postXanpoolOrder(_, { path, params, preopenInstanceId, orderInstanceId }) {
     const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(params)))
     const finalUrl = `${path}?${parameterString.toString()}`
-    const xanpoolWindow = new PopupWithBcHandler({ preopenInstanceId, url: finalUrl, channelName: `redirect_channel_${orderInstanceId}` })
+    const xanpoolWindow = new PopupWithBcHandler({
+      preopenInstanceId,
+      url: finalUrl,
+      channelName: `redirect_channel_${orderInstanceId}`,
+      timeout: getTimeout({ isPaymentTx: true }),
+    })
     await xanpoolWindow.handle()
     return { success: true }
   },
