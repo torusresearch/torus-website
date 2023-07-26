@@ -69,11 +69,10 @@ export default {
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             bc.close()
+            setTimeout(() => {
+              window.close()
+            }, 1000)
           }
-
-          setTimeout(() => {
-            window.close()
-          }, 1000)
         })
       } else {
         this.textVisible = true
@@ -82,6 +81,9 @@ export default {
           if (ev.success) {
             bc.close()
             log.info('posted', { queryParameters, hashParameters, instanceParameters })
+            setTimeout(() => {
+              window.close()
+            }, 1000)
           } else {
             window.close()
             this.showCloseText = true
@@ -98,7 +100,6 @@ export default {
 
         setTimeout(() => {
           window.location.href = window.location.origin + window.location.search + window.location.hash
-          window.close()
         }, 5000)
       }
     } catch (error) {
