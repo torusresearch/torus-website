@@ -138,11 +138,17 @@ export default {
         data: { type: POPUP_RESULT, approve: true },
       })
       bc.close()
+      setTimeout(() => {
+        window.close()
+      }, 1000)
     },
     async triggerDeny() {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({ data: { type: POPUP_RESULT, approve: false } })
       bc.close()
+      setTimeout(() => {
+        window.close()
+      }, 1000)
     },
     editPermissions() {
       this.$router.push({ path: '/wallet/settings' }).catch((_) => {})

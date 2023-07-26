@@ -94,11 +94,17 @@ export default {
         },
       })
       bc.close()
+      setTimeout(() => {
+        window.close()
+      }, 1000)
     },
     async triggerDeny({ id }) {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({ data: { type: POPUP_RESULT, id, txType: this.type, approve: false } })
       bc.close()
+      setTimeout(() => {
+        window.close()
+      }, 1000)
     },
   },
 }
