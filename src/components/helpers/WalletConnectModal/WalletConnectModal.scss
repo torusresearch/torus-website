@@ -1,0 +1,41 @@
+.v-btn.wallet-connect-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+  background-color: var(--v-torusGray4-base);
+  color: #7f8fa4;
+  border-radius: 12px;
+  letter-spacing: 0.1px;
+  font-size: 12px;
+  font-weight: bold;
+  &.theme--dark {
+    background-color: var(--v-torusBlack2-base);
+    color: #5c6c7f;
+  }
+  &.wallet-connect-btn--success {
+    background-color: var(--v-success-lighten5);
+    color: var(--v-success-base);
+  }
+}
+
+.card-header {
+  box-sizing: border-box;
+  border-radius: 6px;
+  line-height: 0;
+
+  .close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: var(--v-text_1-base);
+  }
+}
+
+::v-deep .v-text-field.v-text-field--outlined.qr-field {
+  .v-input__slot {
+    padding-right: 0;
+
+    .v-input__append-inner {
+      margin-top: 0;
+      padding-left: 0;
+      border-left: 1px solid #d3d5e2;
+    }
+  }
+}

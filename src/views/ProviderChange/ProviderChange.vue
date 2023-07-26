@@ -22,7 +22,7 @@
         </v-flex>
       </v-layout>
       <v-divider class="mx-6"></v-divider>
-      <v-layout wrap align-center ma-6>
+      <v-layout wrap align-center pa-6>
         <v-flex xs12 mb-2>
           <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}</div>
 

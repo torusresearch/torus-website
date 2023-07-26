@@ -53,6 +53,7 @@ import {
   ENVIRONMENT_TYPE_NOTIFICATION,
   ENVIRONMENT_TYPE_POPUP,
   ETH,
+  FACEBOOK,
   getIpfsEndpoint,
   GITHUB,
   GOERLI,
@@ -1245,4 +1246,11 @@ export const isMobileOrTablet = () => {
   const browser = bowser.getParser(window.navigator.userAgent)
   const platform = browser.getPlatform()
   return platform.type === PLATFORMS_MAP.tablet || platform.type === PLATFORMS_MAP.mobile
+}
+
+export function getTimeout({ typeOfLogin = undefined, isPaymentTx = false }) {
+  if ((typeOfLogin === FACEBOOK || typeOfLogin === LINE || isPaymentTx) && isMobileOrTablet()) {
+    return 1000 * 60 * 5 // 5 minutes to finish the login
+  }
+  return 1000 * 10 // 10 seconds
 }
