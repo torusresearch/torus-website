@@ -181,10 +181,6 @@ router.beforeResolve((to, from, next) => {
     if (to.name === 'logout') {
       return next()
     }
-    // this is to prevent the router to add state back in the url when going to end page.
-    if (to.name === 'end') {
-      return next()
-    }
     if (!hasQueryParameters(to) && hasQueryParameters(from)) {
       return next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
     }
