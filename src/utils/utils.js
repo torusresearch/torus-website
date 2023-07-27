@@ -632,7 +632,7 @@ export const paymentProviders = {
     enforceMax: true,
   },
   [PAYBIS]: {
-    line1: 'Credit/Debit Card',
+    line1: 'multiple payment methods',
     line2: '',
     line3: '',
     status: ACTIVE,
@@ -644,7 +644,6 @@ export const paymentProviders = {
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'AAVE', display: 'AAVE' },
-        { value: 'ADA', display: 'ADA' },
         { value: 'BAT', display: 'BAT' },
         { value: 'CHZ', display: 'CHZ' },
         { value: 'COMP', display: 'COMP' },
@@ -667,7 +666,10 @@ export const paymentProviders = {
         { value: 'USDT', display: 'USDT' },
       ],
       [MATIC]: [{ value: 'MATIC-POLYGON', display: 'MATIC' }],
-      [BSC_MAINNET]: [{ value: 'BUSD', display: 'BUSD' }],
+      [BSC_MAINNET]: [
+        { value: 'BUSD', display: 'BUSD' },
+        { value: 'BNBSC', display: 'BNB' },
+      ],
     },
     includeFees: false,
     api: true,
