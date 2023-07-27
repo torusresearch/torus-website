@@ -3,7 +3,7 @@ import PopupHandler from '../../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import { getQuote, getWalletOrder } from '../../plugins/banxa'
 import { BANXA, ETH } from '../../utils/enums'
-import { paymentProviders, randomId } from '../../utils/utils'
+import { getTimeout, paymentProviders, randomId } from '../../utils/utils'
 
 export default {
   fetchBanxaQuote({ state }, payload) {
@@ -25,7 +25,7 @@ export default {
       if (!preopenInstanceId) {
         preopenInstanceId = randomId()
         const finalUrl = `${config.redirect_uri}?preopenInstanceId=${preopenInstanceId}`
-        const handledWindow = new PopupHandler({ url: finalUrl })
+        const handledWindow = new PopupHandler({ url: finalUrl, timeout: getTimeout({ isPaymentTx: true }) })
         handledWindow.open()
 
         handledWindow.once('close', () => {
@@ -57,7 +57,12 @@ export default {
     })
   },
   async postBanxaOrder(_, { finalUrl, preopenInstanceId, orderInstanceId }) {
-    const banxaWindow = new PopupWithBcHandler({ preopenInstanceId, url: finalUrl, channelName: `redirect_channel_${orderInstanceId}` })
+    const banxaWindow = new PopupWithBcHandler({
+      preopenInstanceId,
+      url: finalUrl,
+      channelName: `redirect_channel_${orderInstanceId}`,
+      timeout: getTimeout({ isPaymentTx: true }),
+    })
     await banxaWindow.handle()
     return { success: true }
   },

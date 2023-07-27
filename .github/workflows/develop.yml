@@ -90,7 +90,7 @@ jobs:
       - name: invalidate
         uses: chaitanyapotti/cloudfront-update-distribution@v2
         with:
-          cloudfront-distribution-id: ${{ secrets.DISTRIBUTION_LRC_TOR_US }}
+          cloudfront-distribution-id: ${{ secrets.DISTRIBUTION_TESTING_TOR_US }}
           cloudfront-invalidation-path: '/*'
           cloudfront-invalidation-required: true
           cloudfront-wait-for-service-update: false

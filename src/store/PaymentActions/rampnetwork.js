@@ -2,7 +2,7 @@ import config from '../../config'
 import PopupHandler from '../../handlers/Popup/PopupHandler'
 import postQuote from '../../plugins/rampnetwork'
 import { ETH } from '../../utils/enums'
-import { paymentProviders } from '../../utils/utils'
+import { getTimeout, paymentProviders } from '../../utils/utils'
 
 export default {
   fetchRampNetworkQuote(_, payload) {
@@ -33,7 +33,7 @@ export default {
     return new Promise((resolve, reject) => {
       const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(params)))
       const finalUrl = `${path}?${parameterString.toString()}`
-      const rampInstantWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+      const rampInstantWindow = new PopupHandler({ url: finalUrl, preopenInstanceId, timeout: getTimeout({ isPaymentTx: true }) })
       let purchaseCreated = false
       let purchaseSuccess = false
 

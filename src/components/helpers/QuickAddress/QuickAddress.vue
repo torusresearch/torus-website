@@ -1,6 +1,9 @@
 <template>
   <div class="quick-address d-flex align-center">
     <div class="ml-auto">
+      <WalletConnectModal />
+    </div>
+    <div class="ml-2">
       <ShowToolTip :address="selectedAddress">
         <v-btn small class="address-btn" aria-label="Copy Address">
           <v-icon left size="9">$vuetify.icons.address</v-icon>
@@ -22,9 +25,10 @@ import { mapState } from 'vuex'
 import { apiStreamSupported, toChecksumAddressByChainId } from '../../../utils/utils'
 import ExportQrCode from '../ExportQrCode'
 import ShowToolTip from '../ShowToolTip'
+import WalletConnectModal from '../WalletConnectModal'
 
 export default {
-  components: { ExportQrCode, ShowToolTip },
+  components: { ExportQrCode, ShowToolTip, WalletConnectModal },
   computed: {
     ...mapState({
       selectedAddress(state) {

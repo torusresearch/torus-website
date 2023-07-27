@@ -380,7 +380,7 @@
         </v-flex>
       </v-layout>
       <v-layout wrap>
-        <v-flex xs12 mt-8 mx-6>
+        <v-flex xs12 my-8 mx-6>
           <v-layout mx-n2>
             <v-flex xs6 px-2>
               <v-btn block text large class="text_2--text" @click="triggerDeny">

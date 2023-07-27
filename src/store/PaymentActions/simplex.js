@@ -3,7 +3,7 @@ import PopupHandler from '../../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import { postOrder, postQuote } from '../../plugins/simplex'
 import { SIMPLEX } from '../../utils/enums'
-import { randomId } from '../../utils/utils'
+import { getTimeout, randomId } from '../../utils/utils'
 
 export default {
   fetchSimplexQuote({ state }, payload) {
@@ -26,7 +26,7 @@ export default {
       if (!preopenInstanceId) {
         preopenInstanceId = randomId()
         const finalUrl = `${config.redirect_uri}?preopenInstanceId=${preopenInstanceId}`
-        const handledWindow = new PopupHandler({ url: finalUrl, target: 'form-target' })
+        const handledWindow = new PopupHandler({ url: finalUrl, target: 'form-target', timeout: getTimeout({ isPaymentTx: true }) })
         handledWindow.open()
         handledWindow.once('close', () => {
           reject(new Error('user closed simplex popup'))
@@ -132,6 +132,7 @@ export default {
       target: 'form-target',
       preopenInstanceId,
       channelName: `redirect_channel_${orderInstanceId}`,
+      timeout: getTimeout({ isPaymentTx: true }),
     })
     setTimeout(() => {
       form.submit()
