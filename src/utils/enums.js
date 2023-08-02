@@ -32,6 +32,7 @@ export const ARBITRUM_MAINNET = 'arbitrum_mainnet'
 export const ARBITRUM_TESTNET = 'arbitrum_testnet'
 export const OPTIMISM_MAINNET = 'optimism_mainnet'
 export const OPTIMISM_TESTNET = 'optimism_testnet'
+export const CELO_MAINNET = 'celo_mainnet'
 export const AVALANCHE_MAINNET = 'avalanche_mainnet'
 export const AVALANCHE_TESTNET = 'avalanche_testnet'
 export const GXC_TESTNET = 'gxc_testnet'
@@ -55,6 +56,7 @@ export const ARBITRUM_MAINNET_CODE = 42_161
 export const ARBITRUM_TESTNET_CODE = 421_613
 export const OPTIMISM_MAINNET_CODE = 10
 export const OPTIMISM_TESTNET_CODE = 420
+export const CELO_MAINNET_CODE = 42_220
 export const AVALANCHE_MAINNET_CODE = 43_114
 export const AVALANCHE_TESTNET_CODE = 43_113
 export const GXC_TESTNET_CODE = 1068
@@ -77,6 +79,7 @@ export const ARBITRUM_MAINNET_CHAIN_ID = '0xa4b1'
 export const ARBITRUM_TESTNET_CHAIN_ID = '0x66eeb'
 export const OPTIMISM_MAINNET_CHAIN_ID = '0xa'
 export const OPTIMISM_TESTNET_CHAIN_ID = '0x45'
+export const CELO_MAINNET_CHAIN_ID = '0xa4ec'
 export const AVALANCHE_MAINNET_CHAIN_ID = '0xa86a'
 export const AVALANCHE_TESTNET_CHAIN_ID = '0xa869'
 export const GXC_TESTNET_CHAIN_ID = '0x42c'
@@ -90,6 +93,7 @@ export const NFT_SUPPORTED_NETWORKS = {
   [BSC_TESTNET]: BSC_TESTNET_CODE,
   [OPTIMISM_MAINNET]: OPTIMISM_MAINNET_CODE,
   [OPTIMISM_TESTNET]: OPTIMISM_TESTNET_CODE,
+  // [CELO_MAINNET]: CELO_MAINNET_CODE,
   [ARBITRUM_MAINNET]: ARBITRUM_MAINNET_CODE,
   [ARBITRUM_TESTNET]: ARBITRUM_TESTNET_CODE,
   [AVALANCHE_MAINNET]: AVALANCHE_MAINNET_CODE,
@@ -127,6 +131,7 @@ export const ARBITRUM_MAINNET_DISPLAY_NAME = 'Arbitrum One'
 export const ARBITRUM_TESTNET_DISPLAY_NAME = 'Arbitrum Testnet'
 export const OPTIMISM_MAINNET_DISPLAY_NAME = 'Optimism'
 export const OPTIMISM_TESTNET_DISPLAY_NAME = 'Optimism Kovan'
+export const CELO_MAINNET_DISPLAY_NAME = 'Celo Mainnet'
 export const AVALANCHE_MAINNET_DISPLAY_NAME = 'Avalanche Mainnet C-Chain'
 export const AVALANCHE_TESTNET_DISPLAY_NAME = 'Avalanche Testnet C-Chain'
 export const GXC_TESTNET_DISPLAY_NAME = 'GXC Testnet'
@@ -173,6 +178,9 @@ export const OPTIMISM_MAINNET_BLOCK_EXPLORER = 'https://optimistic.etherscan.io'
 export const OPTIMISM_TESTNET_URL = `https://optimism-kovan.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
 export const OPTIMISM_TESTNET_BLOCK_EXPLORER = 'https://kovan-optimistic.etherscan.io'
 
+export const CELO_MAINNET_URL = `https://celo-mainnet.infura.io/v3/${process.env.VUE_APP_INFURA_KEY}`
+export const CELO_MAINNET_BLOCK_EXPLORER = 'https://explorer.celo.org'
+
 export const AVALANCHE_MAINNET_URL = 'https://api.avax.network/ext/bc/C/rpc'
 export const AVALANCHE_MAINNET_BLOCK_EXPLORER = 'https://snowtrace.io'
 
@@ -193,6 +201,7 @@ export const RSK_MAINNET_TICKER = 'RBTC'
 export const RSK_TESTNET_TICKER = 'RBTC'
 export const ARBITRUM_TICKER = 'ETH'
 export const OPTIMISM_TICKER = 'ETH'
+export const CELO_TICKER = 'CELO'
 export const AVALANCHE_TICKER = 'AVAX'
 export const GXC_TICKER = 'GXC'
 export const VOC_TICKER = 'VOC'
@@ -297,6 +306,7 @@ export const CHAIN_ID_TO_TYPE_MAP = {
   [ARBITRUM_TESTNET_CHAIN_ID]: { networkId: ARBITRUM_TESTNET_CODE, name: ARBITRUM_TESTNET },
   [OPTIMISM_MAINNET_CHAIN_ID]: { networkId: OPTIMISM_MAINNET_CODE, name: OPTIMISM_MAINNET },
   [OPTIMISM_TESTNET_CHAIN_ID]: { networkId: OPTIMISM_TESTNET_CODE, name: OPTIMISM_TESTNET },
+  [CELO_MAINNET_CHAIN_ID]: { networkId: CELO_MAINNET_CODE, name: CELO_MAINNET },
   [AVALANCHE_MAINNET_CHAIN_ID]: { networkId: AVALANCHE_MAINNET_CODE, name: AVALANCHE_MAINNET },
   [AVALANCHE_TESTNET_CHAIN_ID]: { networkId: AVALANCHE_TESTNET_CODE, name: AVALANCHE_TESTNET },
   [GXC_TESTNET_CHAIN_ID]: { networkId: GXC_TESTNET_CODE, name: GXC_TESTNET },
@@ -344,6 +354,16 @@ export const SUPPORTED_NETWORK_TYPES = {
     'Ethereum',
     'eth.svg',
     OPTIMISM_MAINNET_URL
+  ),
+  [CELO_MAINNET]: createNetwork(
+    CELO_MAINNET,
+    CELO_MAINNET_DISPLAY_NAME,
+    CELO_MAINNET_CODE,
+    CELO_MAINNET_BLOCK_EXPLORER,
+    CELO_TICKER,
+    'Celo',
+    'celo.svg',
+    CELO_MAINNET_URL
   ),
   [ARBITRUM_MAINNET]: createNetwork(
     ARBITRUM_MAINNET,
@@ -868,6 +888,10 @@ export const COINGECKO_PLATFORMS_CHAIN_CODE_MAP = {
     platform: 'optimistic-ethereum',
     currency: 'eth',
   },
+  [CELO_MAINNET_CODE]: {
+    platform: 'celo',
+    currency: 'celo',
+  },
   [XDAI_CODE]: {
     platform: 'xdai',
     currency: 'xDAI',
@@ -970,6 +994,7 @@ export const CHAIN_TO_BIT_NAMESPACE = {
   [ARBITRUM_MAINNET_CODE]: 'address.arbitrum',
   [OPTIMISM_MAINNET_CODE]: 'address.op',
   [AVALANCHE_MAINNET_CODE]: 'address.avalanche',
+  [CELO_MAINNET_CODE]: 'address.celo',
 }
 
 export const TRANSAK_NETWORK_MAP = {
@@ -991,3 +1016,5 @@ export const AVAILABLE_WEBSITES = {
   Polygon: 'https://polygon.tor.us',
   Binance: 'https://bnb.tor.us',
 }
+
+export const FORCE_POPUP_LOGIN_MODE = [FACEBOOK_LOGIN_PROVIDER, LINE_LOGIN_PROVIDER]

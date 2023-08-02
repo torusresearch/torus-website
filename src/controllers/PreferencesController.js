@@ -773,7 +773,7 @@ class PreferencesController extends SafeEventEmitter {
 
     const _web3 = new JsonRpcProvider(rpcUrls[0], 'any')
     const { chainId: networkChainID } = await _web3.getNetwork()
-    if (networkChainID !== Number.parseInt(chainId, 16)) {
+    if (Number.parseInt(networkChainID, 16) !== Number.parseInt(chainId, 16)) {
       throw ethErrors.rpc.invalidParams(
         `Provided rpc url's chainId version is not matching with provided chainId, expected: ${toQuantity(networkChainID)}, received: ${chainId}`
       )

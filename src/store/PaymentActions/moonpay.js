@@ -3,7 +3,7 @@ import PopupHandler from '../../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import { getQuote, getSignature } from '../../plugins/moonpay'
 import { MOONPAY } from '../../utils/enums'
-import { randomId } from '../../utils/utils'
+import { getTimeout, randomId } from '../../utils/utils'
 
 export default {
   fetchMoonpayQuote(context, payload) {
@@ -20,7 +20,7 @@ export default {
       if (!preopenInstanceId) {
         preopenInstanceId = randomId()
         const finalUrl = `${config.redirect_uri}?preopenInstanceId=${preopenInstanceId}`
-        const handledWindow = new PopupHandler({ url: finalUrl })
+        const handledWindow = new PopupHandler({ url: finalUrl, timeout: getTimeout({ isPaymentTx: true }) })
         handledWindow.open()
         handledWindow.once('close', () => {
           reject(new Error('user closed moonpay popup'))
@@ -79,6 +79,7 @@ export default {
       url: finalUrl,
       preopenInstanceId,
       channelName: `redirect_channel_${orderInstanceId}`,
+      timeout: getTimeout({ isPaymentTx: true }),
     })
     const result = await moonpayWindow.handle()
     const { queryParams: { transactionStatus = '' } = {} } = result

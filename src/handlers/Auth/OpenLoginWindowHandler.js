@@ -2,7 +2,7 @@ import { safebtoa } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import config from '../../config'
-import { randomId } from '../../utils/utils'
+import { getTimeout, randomId } from '../../utils/utils'
 import PopupWithBcHandler from '../Popup/PopupWithBcHandler'
 
 class OpenLoginWindowHandler {
@@ -62,7 +62,12 @@ class OpenLoginWindowHandler {
     }
     const channelName = `redirect_openlogin_channel_${this.nonce}`
     log.info('channelname', channelName)
-    const verifierWindow = new PopupWithBcHandler({ channelName, url: this.finalURL, preopenInstanceId: this.preopenInstanceId })
+    const verifierWindow = new PopupWithBcHandler({
+      channelName,
+      url: this.finalURL,
+      preopenInstanceId: this.preopenInstanceId,
+      timeout: getTimeout({ typeOfLogin }),
+    })
     const result = await verifierWindow.handle()
     return result
   }

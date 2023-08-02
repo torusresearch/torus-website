@@ -5,7 +5,7 @@ import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
 import { BANXA, BANXA_NETWORK_MAP, MAINNET, MERCURYO, MOONPAY, RAMPNETWORK, TRANSAK, TRANSAK_NETWORK_MAP, XANPOOL } from '../../utils/enums'
-import { fakeStream, paymentProviders, randomId } from '../../utils/utils'
+import { fakeStream, getTimeout, paymentProviders, randomId } from '../../utils/utils'
 import banxa from './banxa'
 import mercuryo from './mercuryo'
 import moonpay from './moonpay'
@@ -177,7 +177,12 @@ export default {
           Object.keys(params).forEach((key) => {
             if (params[key]) finalUrl.searchParams.append(key, params[key])
           })
-        const handledWindow = new PopupWithBcHandler({ url: finalUrl, preopenInstanceId, channelName: `redirect_channel_${channelId}` })
+        const handledWindow = new PopupWithBcHandler({
+          url: finalUrl,
+          preopenInstanceId,
+          channelName: `redirect_channel_${channelId}`,
+          timeout: getTimeout({ isPaymentTx: true }),
+        })
         const result = await handledWindow.handle()
         const { queryParams: { transactionStatus = '' } = {} } = result
         log.info(result)

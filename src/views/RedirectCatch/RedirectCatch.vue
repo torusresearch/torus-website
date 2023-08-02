@@ -69,6 +69,9 @@ export default {
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             bc.close()
+            setTimeout(() => {
+              window.close()
+            }, 1000)
           }
         })
       } else {
@@ -78,6 +81,9 @@ export default {
           if (ev.success) {
             bc.close()
             log.info('posted', { queryParameters, hashParameters, instanceParameters })
+            setTimeout(() => {
+              window.close()
+            }, 1000)
           } else {
             window.close()
             this.showCloseText = true

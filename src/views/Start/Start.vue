@@ -2,11 +2,11 @@
   <v-container fluid fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <div v-if="isCustomVerifier" class="text_2--text font-weight-bold text-body-2 mb-10">
-          {{ t('login.constructYourKey') }}
-          <a :href="dappUrl" class="torusBrand1--text" target="_blank" rel="noreferrer noopener">{{ dappName }}</a>
-        </div>
         <BoxLoader :white-label="whiteLabel" :is-custom-verifier="isCustomVerifier" />
+
+        <i18n v-if="isCustomVerifier" tag="div" path="login.constructYourKeyCustom" class="text_2--text font-weight-bold text-body-2 mt-4">
+          <a :href="dappUrl" class="torusBrand1--text" target="_blank" rel="noreferrer noopener">{{ dappName }}</a>
+        </i18n>
       </v-flex>
       <!-- <div class="footer">
         <div class="powered-by">{{ t('login.selfCustodial') }}</div>
