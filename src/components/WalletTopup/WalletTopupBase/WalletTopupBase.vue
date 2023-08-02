@@ -314,7 +314,7 @@ export default {
           }).catch(async (error) => {
             this.snackbar = true
             this.snackbarColor = 'error'
-            this.snackbarText = error
+            this.snackbarText = error.statusText || error.message || 'Something went wrong'
             this.isQuoteFetched = false
             this.$emit('clearQuote', {
               selectedCurrency: this.selectedCurrency,

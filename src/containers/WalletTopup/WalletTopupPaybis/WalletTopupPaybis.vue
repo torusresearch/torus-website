@@ -43,24 +43,36 @@ export default {
           .dispatch('fetchPaybisQuote', payload)
           .then((result) => {
             log.info(result)
-            const { paymentMethods, currencyCodeFrom, currencyCodeTo, id: quoteId } = result.data
-            // get credit card payment or the first one
-            let details = paymentMethods.find((method) => method.id === 'exchanga-credit-card')
-            if (!details) details = paymentMethods[0]
-            self.cryptoCurrencyValue = details.amountTo.amount
-            self.currencyRate =
-              Number.parseFloat(details.amountToEquivalent.amount) > 0
-                ? Number.parseFloat(details.amountTo.amount) / Number.parseFloat(details.amountToEquivalent.amount)
-                : 0
-            self.currentOrder = {
-              quoteId,
-              target: currencyCodeTo,
-              from: currencyCodeFrom,
-              fiatAmount: details.amountFrom.amount,
-              targetAmount: details.amountTo.amount,
+            const { paymentMethods, paymentMethodErrors, currencyCodeFrom, currencyCodeTo, id: quoteId } = result.data
+            // handle error
+            if (paymentMethodErrors && paymentMethodErrors.length > 0) {
+              let errorDetails = paymentMethodErrors.find((method) => method.id === 'exchanga-credit-card')
+              if (!errorDetails) errorDetails = paymentMethodErrors[0]
+              this.fetchQuoteError = errorDetails.error.message
+              this.fetchingQuote = false
+
+              this.cryptoCurrencyValue = 0
+              this.currencyRate = 0
+              this.currentOrder = {}
+            } else {
+              // get credit card payment or the first one
+              let details = paymentMethods.find((method) => method.id === 'exchanga-credit-card')
+              if (!details) details = paymentMethods[0]
+              self.cryptoCurrencyValue = details.amountTo.amount
+              self.currencyRate =
+                Number.parseFloat(details.amountToEquivalent.amount) > 0
+                  ? Number.parseFloat(details.amountTo.amount) / Number.parseFloat(details.amountToEquivalent.amount)
+                  : 0
+              self.currentOrder = {
+                quoteId,
+                target: currencyCodeTo,
+                from: currencyCodeFrom,
+                fiatAmount: details.amountFrom.amount,
+                targetAmount: details.amountTo.amount,
+              }
+              this.fetchingQuote = false
+              this.fetchQuoteError = ''
             }
-            this.fetchingQuote = false
-            this.fetchQuoteError = ''
           })
           .catch(async (error) => {
             this.fetchQuoteError = await cleanTopupQuoteError(error)
