@@ -39,7 +39,7 @@
     "@metamask/eth-json-rpc-middleware": "^11.0.1",
     "@metamask/eth-json-rpc-provider": "^1.0.1",
     "@metamask/eth-sig-util": "^6.0.0",
-    "@sentry/browser": "^7.60.0",
+    "@sentry/browser": "^7.64.0",
     "@sentry/tracing": "^7.60.0",
     "@sentry/vue": "^7.60.0",
     "@toruslabs/broadcast-channel": "^7.0.0",
