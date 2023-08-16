@@ -633,7 +633,7 @@ export const paymentProviders = {
     },
     includeFees: true,
     api: true,
-    enforceMax: true,
+    enforceMax: false,
   },
   [PAYBIS]: {
     line1: 'multiple payment methods',
@@ -677,7 +677,7 @@ export const paymentProviders = {
     },
     includeFees: false,
     api: true,
-    enforceMax: true,
+    enforceMax: false,
   },
   // [BANXA]: {
   //   line1: 'Debit Card/ <br>Apple Pay/ Bank transfer',
