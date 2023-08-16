@@ -27,6 +27,7 @@
     }
   },
   "rules": {
+    "import/order": 0,
     "array-callback-return": 0,
     "unicorn/switch-case-braces": 0,
     "unicorn/prefer-event-target": 0,
@@ -113,7 +114,8 @@
       {
         "singleQuote": true,
         "printWidth": 150,
-        "semi": false
+        "semi": false,
+        "trailingComma": "es5"
       }
     ]
   },
