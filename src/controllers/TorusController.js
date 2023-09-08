@@ -6,7 +6,6 @@ import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import { debounce } from 'lodash'
 import log from 'loglevel'
-import pump from 'pump'
 
 import config from '../config'
 import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, RPC, TRANSACTION_STATUSES } from '../utils/enums'
@@ -35,8 +34,6 @@ import ComposableObservableStore from './utils/ComposableObservableStore'
 import createLoggerMiddleware from './utils/createLoggerMiddleware'
 import createOriginMiddleware from './utils/createOriginMiddleware'
 import createMethodMiddleware from './utils/methodMiddleware'
-import { ObservableStore } from './utils/ObservableStore'
-import { storeAsStream } from './utils/ObservableStoreStream'
 // import setupMultiplex from './utils/setupMultiplex'
 import WalletConnectController from './walletconnect/WalletConnectController'
 
@@ -241,7 +238,6 @@ export default class TorusController extends SafeEventEmitter {
     })
     this.memStore.subscribe(this.sendUpdate.bind(this))
 
-    this.publicConfigStore = this.initPublicConfigStore()
     this.prefsController.on('addEtherscanTransactions', (txs, network) => {
       this.txController.addEtherscanTransactions(txs, network)
     })
@@ -298,42 +294,6 @@ export default class TorusController extends SafeEventEmitter {
     }
     const providerProxy = this.networkController.initializeProvider(providerOptions)
     return providerProxy
-  }
-
-  /**
-   * Constructor helper: initialize a public config store.
-   * This store is used to make some config info available to Dapps synchronously.
-   */
-  initPublicConfigStore() {
-    // get init state
-    // setting stringified state  to keep it compatible with old versions of torus-embed
-    const publicConfigStore = new ObservableStore('{}')
-
-    const { networkController } = this
-
-    // setup memStore subscription hooks
-    this.on('update', updatePublicConfigStore)
-    // const providerState = this.getProviderState()
-    updatePublicConfigStore(this.getState())
-
-    function updatePublicConfigStore(memState) {
-      const chainId = networkController.getCurrentChainId()
-      if (memState.network !== 'loading') {
-        publicConfigStore.putState(selectPublicState(chainId, memState))
-      }
-    }
-
-    // eslint-disable-next-line unicorn/consistent-function-scoping
-    function selectPublicState(chainId, { isUnlocked, network, selectedAddress }) {
-      return JSON.stringify({
-        isUnlocked,
-        chainId,
-        networkVersion: network,
-        selectedAddress,
-      })
-    }
-
-    return publicConfigStore
   }
 
   /**
@@ -988,24 +948,6 @@ export default class TorusController extends SafeEventEmitter {
     // forward to metamask primary provider
     engine.push(providerAsMiddleware(provider))
     return engine
-  }
-
-  /**
-   * A method for providing our public config info over a stream.
-   * This includes info we like to be synchronous if possible, like
-   * the current selected account, and network ID.
-   *
-   * Since synchronous methods have been deprecated in web3,
-   * this is a good candidate for deprecation.
-   *
-   * @param {*} outStream - The stream to provide public config over.
-   */
-  setupPublicConfig(outStream) {
-    const configStream = storeAsStream(this.publicConfigStore)
-    pump(configStream, outStream, (error) => {
-      configStream.destroy()
-      if (error) log.error(error)
-    })
   }
 
   /**
