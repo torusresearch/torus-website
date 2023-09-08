@@ -99,10 +99,6 @@ if (!isMain) {
   const providerOutStream = torus.metamaskMux.getStream('provider')
 
   torusController.setupUntrustedCommunication(providerOutStream, iframeOrigin)
-
-  const publicConfOutStream = torus.metamaskMux.getStream('publicConfig')
-
-  torusController.setupPublicConfig(publicConfOutStream)
 }
 
 export default torus
