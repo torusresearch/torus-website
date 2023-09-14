@@ -3,7 +3,7 @@ import assert from 'assert'
 import { recoverPersonalSignature, recoverTypedSignature, encrypt } from '@metamask/eth-sig-util'
 import { TransactionFactory } from '@ethereumjs/tx'
 
-import { bufferToHex, ecrecover, pubToAddress, toBuffer, stripHexPrefix, bufferToBigInt } from '@ethereumjs/util'
+import { bytesToHex, ecrecover, pubToAddress, hexToBytes, stripHexPrefix, bytesToBigInt } from '@ethereumjs/util'
 import { RLP } from '@ethereumjs/rlp'
 import log from 'loglevel'
 
@@ -120,7 +120,7 @@ describe('torus-keyring', () => {
 
     it('reliably can decode messages it signs', async () => {
       const message = 'hello there!'
-      const messageHashHex = bufferToHex(keccak256(RLP.encode(message)))
+      const messageHashHex = bytesToHex(keccak256(RLP.encode(message)))
       await keyring.deserialize([privateKey])
       await keyring.addRandomAccounts(9)
       const addresses = await keyring.getAccounts()
@@ -128,10 +128,10 @@ describe('torus-keyring', () => {
       signatures.forEach((sgn, index) => {
         const address = addresses[index]
 
-        const r = toBuffer(sgn.slice(0, 66))
-        const s = toBuffer(`0x${sgn.slice(66, 130)}`)
-        const v = bufferToBigInt(toBuffer(`0x${sgn.slice(130, 132)}`))
-        const m = toBuffer(messageHashHex)
+        const r = hexToBytes(sgn.slice(0, 66))
+        const s = hexToBytes(`0x${sgn.slice(66, 130)}`)
+        const v = bytesToBigInt(hexToBytes(`0x${sgn.slice(130, 132)}`))
+        const m = hexToBytes(messageHashHex)
         const pub = ecrecover(m, v, r, s)
         const adr = `0x${pubToAddress(pub).toString('hex')}`
 
@@ -161,7 +161,7 @@ describe('torus-keyring', () => {
       // Push a mock wallet
       const desiredOutput = '0xa12164fed66719297d2cf407bb314d07feb12c02'
       keyring.wallets.push({
-        address: toBuffer(desiredOutput),
+        address: desiredOutput,
       })
 
       const output = await keyring.getAccounts()
@@ -217,7 +217,7 @@ describe('torus-keyring', () => {
 
   it('should sign personal message', async () => {
     const keyringController = new TorusKeyring([testAccount.key])
-    const data = bufferToHex(Buffer.from('Hello from test', 'utf8'))
+    const data = bytesToHex(Buffer.from('Hello from test', 'utf8'))
     const signature = await keyringController.signPersonalMessage(testAccount.address, data)
     const recovered = recoverPersonalSignature({ data, signature })
     assert(testAccount.address === recovered)

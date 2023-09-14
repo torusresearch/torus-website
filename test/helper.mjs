@@ -4,7 +4,6 @@ import Ganache from 'ganache'
 import JSDOM from 'jsdom-global'
 import log from 'loglevel'
 import nock from 'nock'
-import fetch, { Headers, Request, Response } from 'node-fetch'
 
 console.log('requiring helpers for tests in mocha')
 const allowedHosts = ['localhost', 'mainnet.infura.io:443', 'bsc-dataseed.binance.org:443', 'polygon-mumbai.infura.io:443']
@@ -50,12 +49,6 @@ globalThis.log = log
 //
 // polyfills
 //
-
-// fetch
-globalThis.fetch = fetch
-globalThis.Response = Response
-globalThis.Headers = Headers
-globalThis.Request = Request
 
 // dom
 JSDOM('', {

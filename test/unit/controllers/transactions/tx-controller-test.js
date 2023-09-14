@@ -1,7 +1,7 @@
 /* eslint-disable */
 import assert from 'assert'
 import EventEmitter from 'events'
-import { toBuffer } from '@ethereumjs/util'
+import { hexToBytes } from '@ethereumjs/util'
 import { Common } from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
 
@@ -741,7 +741,7 @@ describe('Transaction Controller', function () {
       txController
         .signTransaction('1')
         .then((rawTx) => {
-          const ethTx = TransactionFactory.fromSerializedData(toBuffer(rawTx))
+          const ethTx = TransactionFactory.fromSerializedData(hexToBytes(rawTx))
           assert.equal(ethTx.common.chainId(), BigInt(1337))
           done()
         })
@@ -765,8 +765,8 @@ describe('Transaction Controller', function () {
       txController
         .signTransaction('1')
         .then((rawTx) => {
-          const chain = Common.custom({ chainId: 100, name: 'xDai', defaultHardfork: 'istanbul', networkId: 100, url: 'https://xdai.poanetwork.dev' })
-          const ethTx = TransactionFactory.fromTxData(toBuffer(rawTx), { common: chain })
+          const chain = Common.custom({ chainId: 100, name: 'xDai', defaultHardfork: 'paris', networkId: 100, url: 'https://xdai.poanetwork.dev' })
+          const ethTx = TransactionFactory.fromTxData(rawTx, { common: chain })
           assert.equal(ethTx.common.chainId(), BigInt(100))
           done()
         })

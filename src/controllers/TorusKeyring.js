@@ -1,4 +1,4 @@
-import { bufferToHex, ecsign, stripHexPrefix } from '@ethereumjs/util'
+import { ecsign, stripHexPrefix } from '@ethereumjs/util'
 import { concatSig, decrypt, getEncryptionPublicKey, personalSign, signTypedData } from '@metamask/eth-sig-util'
 import { Wallet } from 'ethers'
 import { EventEmitter } from 'events'
@@ -57,13 +57,13 @@ export default class TorusKeyring extends EventEmitter {
       newWallets.push(Wallet.createRandom())
     }
     this.wallets = [...this.wallets, ...newWallets]
-    const hexWallets = newWallets.map((w) => bufferToHex(w.address))
+    const hexWallets = newWallets.map((w) => w.address)
     return hexWallets
   }
 
   // Not using
   async getAccounts() {
-    return this.wallets.map((w) => bufferToHex(w.address))
+    return this.wallets.map((w) => w.address)
   }
 
   // tx is an instance of the ethereumjs-transaction class.

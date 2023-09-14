@@ -131,7 +131,7 @@ class PreferencesController extends SafeEventEmitter {
       const messageToSign = await this.getMessageForSigning(address)
       if (!messageToSign.startsWith('Torus Signin')) throw new Error('Cannot sign on invalid message')
       const bufferedMessage = Buffer.from(messageToSign, 'utf8')
-      const hashedMessage = hashPersonalMessage(bufferedMessage).toString('hex')
+      const hashedMessage = Buffer.from(hashPersonalMessage(bufferedMessage)).toString('hex')
       const signedMessage = await this.signMessage(address, hashedMessage)
       response = await this.api.post(
         `${config.api}/auth/verify`,
