@@ -1,4 +1,4 @@
-import { safebtoa } from '@toruslabs/openlogin-utils'
+import { safebtoa, storageAvailable } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import config from '../../config'
@@ -60,6 +60,9 @@ class OpenLoginWindowHandler {
     if (!this.verifier || !typeOfLogin || !clientId) {
       throw new Error('Invalid params')
     }
+    if (storageAvailable('localStorage')) {
+      localStorage.setItem('broadcast_channel_id', this.nonce)
+    }
     const channelName = `redirect_openlogin_channel_${this.nonce}`
     log.info('channelname', channelName)
     const verifierWindow = new PopupWithBcHandler({
@@ -69,6 +72,9 @@ class OpenLoginWindowHandler {
       timeout: getTimeout({ typeOfLogin }),
     })
     const result = await verifierWindow.handle()
+    if (storageAvailable('localStorage')) {
+      localStorage.removeItem('broadcast_channel_id')
+    }
     return result
   }
 }
