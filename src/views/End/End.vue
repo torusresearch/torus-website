@@ -162,6 +162,9 @@ export default {
         await bc.postMessage({ data: this.broadcastData })
         bc.close()
         log.info('posted info')
+        if (storageAvailable('localStorage')) {
+          localStorage.removeItem('broadcast_channel_id')
+        }
         // wait for 100ms before closing window
         // this is mostly in case of facebook/line logins on mobile devices.
         setTimeout(() => {
