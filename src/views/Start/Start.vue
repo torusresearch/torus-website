@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { safeatob } from '@toruslabs/openlogin-utils'
+import { safeatob, storageAvailable } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import BoxLoader from '../../components/helpers/BoxLoader'
@@ -49,7 +49,10 @@ export default {
       const { loginProvider, state, mfaLevel, sessionNamespace, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))
       log.info('logging in with', loginProvider, state, rest, mfaLevel)
-      const { whiteLabel = {}, loginConfig = {}, origin } = stateParams
+      const { whiteLabel = {}, loginConfig = {}, origin, instanceId } = stateParams
+      if (storageAvailable('localStorage')) {
+        localStorage.setItem('broadcast_channel_id', instanceId)
+      }
       this.iframeOrigin = origin
       this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
