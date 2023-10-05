@@ -24,7 +24,17 @@ import {
 } from '../utils/enums'
 import { notifyUser } from '../utils/notifications'
 import { setSentryEnabled } from '../utils/sentry'
-import { formatDate, formatPastTx, formatTime, getEthTxStatus, getIFrameOrigin, getUserLanguage, isMain, waitForMs } from '../utils/utils'
+import {
+  formatDate,
+  formatPastTx,
+  formatTime,
+  getEthTxStatus,
+  getIFrameOrigin,
+  getUserLanguage,
+  isMain,
+  toChecksumAddressByChainId,
+  waitForMs,
+} from '../utils/utils'
 import { ObservableStore } from './utils/ObservableStore'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
@@ -311,8 +321,10 @@ class PreferencesController extends SafeEventEmitter {
     const selectedAddress = address || this.store.getState().selectedAddress
     const currentState = this.state(selectedAddress) || cloneDeep(DEFAULT_ACCOUNT_STATE)
     const mergedState = deepmerge(currentState, newPartialState, { arrayMerge: overwriteMerge })
+    const chainId = this.network.getCurrentChainId()
+    const checksumAddress = toChecksumAddressByChainId(selectedAddress, chainId)
     this.store.updateState({
-      [selectedAddress]: mergedState,
+      [checksumAddress]: mergedState,
     })
     return mergedState
   }
@@ -784,7 +796,7 @@ class PreferencesController extends SafeEventEmitter {
   normalizedAddChainParams(id, addChainParams) {
     /**
      * addChainParams interface
-     * 
+     *
      * interface AddEthereumChainParameter {
         chainId: string; // A 0x-prefixed hexadecimal string
         chainName: string;
