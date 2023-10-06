@@ -1,4 +1,4 @@
-import { isHexString, privateToAddress } from '@ethereumjs/util'
+import { isHexString } from '@ethereumjs/util'
 import { OpenloginSessionManager } from '@toruslabs/openlogin-session-manager'
 import { BrowserStorage, safeatob, safebtoa } from '@toruslabs/openlogin-utils'
 import deepmerge from 'deepmerge'
@@ -255,7 +255,7 @@ export default {
     dispatch('subscribeToControllers')
     commit('setUserInfo', userInfo)
 
-    const selectedAddress = `0x${privateToAddress(Buffer.from(privateKey.padStart(64, '0'), 'hex')).toString('hex')}`
+    const selectedAddress = generateAddressFromPrivateKey(privateKey)
     await dispatch('initTorusKeyring', {
       keys: [
         {

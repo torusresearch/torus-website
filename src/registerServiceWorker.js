@@ -62,7 +62,7 @@ export function register(config) {
 
 function registerValidSW(swUrl, config) {
   navigator.serviceWorker
-    .register(swUrl, { updateViaCache: 'all', scope: process.env.BASE_URL })
+    .register(swUrl, { updateViaCache: 'imports', scope: process.env.BASE_URL })
     .then((registration) => {
       registration.onupdatefound = () => {
         const installingWorker = registration.installing
@@ -104,6 +104,7 @@ function registerValidSW(swUrl, config) {
 function checkValidServiceWorker(swUrl, config) {
   // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl, {
+    cache: 'no-cache',
     headers: { 'Service-Worker': 'script' },
   })
     .then((response) => {
