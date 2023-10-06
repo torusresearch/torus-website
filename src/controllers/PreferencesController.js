@@ -227,6 +227,11 @@ class PreferencesController extends SafeEventEmitter {
           customNetworks,
         } = user.data || {}
 
+        // transform addresses that were saved as lowercase in our db
+        const chainId = this.network.getCurrentChainId()
+        const publicAddress = toChecksumAddressByChainId(public_address, chainId)
+        const defaultPublicAddress = toChecksumAddressByChainId(default_public_address) || publicAddress
+
         this.updateStore(
           {
             contacts,
@@ -236,11 +241,11 @@ class PreferencesController extends SafeEventEmitter {
             locale: locale || getUserLanguage(),
             permissions,
             accountType: account_type || ACCOUNT_TYPE.NORMAL,
-            defaultPublicAddress: default_public_address || public_address,
+            defaultPublicAddress,
             customTokens,
             customNfts,
           },
-          public_address
+          publicAddress
         )
 
         // update network controller with all the custom network updates.
@@ -321,10 +326,8 @@ class PreferencesController extends SafeEventEmitter {
     const selectedAddress = address || this.store.getState().selectedAddress
     const currentState = this.state(selectedAddress) || cloneDeep(DEFAULT_ACCOUNT_STATE)
     const mergedState = deepmerge(currentState, newPartialState, { arrayMerge: overwriteMerge })
-    const chainId = this.network.getCurrentChainId()
-    const checksumAddress = toChecksumAddressByChainId(selectedAddress, chainId)
     this.store.updateState({
-      [checksumAddress]: mergedState,
+      [selectedAddress]: mergedState,
     })
     return mergedState
   }
