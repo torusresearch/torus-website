@@ -3,3 +3,4 @@ printWidth: 150
 singleQuote: true
 semi: false
 htmlWhitespaceSensitivity: ignore
+trailingComma: es5

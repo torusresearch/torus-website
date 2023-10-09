@@ -1,6 +1,6 @@
-import { concatSig, decrypt, getEncryptionPublicKey, normalize, personalSign, signTypedData } from '@metamask/eth-sig-util'
-import { bufferToHex, ecsign, stripHexPrefix } from 'ethereumjs-util'
-import Wallet from 'ethereumjs-wallet'
+import { bufferToHex, ecsign, stripHexPrefix } from '@ethereumjs/util'
+import { concatSig, decrypt, getEncryptionPublicKey, personalSign, signTypedData } from '@metamask/eth-sig-util'
+import { Wallet } from 'ethers'
 import { EventEmitter } from 'events'
 import log from 'loglevel'
 
@@ -24,13 +24,16 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   generatePrivKey(wallet) {
-    return wallet.getPrivateKey().toString('hex')
+    return stripHexPrefix(wallet.privateKey)
+  }
+
+  getBufferPrivateKey(privateKey) {
+    const stripped = stripHexPrefix(privateKey)
+    return Buffer.from(stripped, 'hex')
   }
 
   generateWallet(privateKey) {
-    const stripped = stripHexPrefix(privateKey)
-    const buffer = Buffer.from(stripped, 'hex')
-    const wallet = Wallet.fromPrivateKey(buffer)
+    const wallet = new Wallet(privateKey)
     return wallet
   }
 
@@ -51,22 +54,22 @@ export default class TorusKeyring extends EventEmitter {
   async addRandomAccounts(n = 1) {
     const newWallets = []
     for (let i = 0; i < n; i += 1) {
-      newWallets.push(Wallet.generate())
+      newWallets.push(Wallet.createRandom())
     }
     this.wallets = [...this.wallets, ...newWallets]
-    const hexWallets = newWallets.map((w) => bufferToHex(w.getAddress()))
+    const hexWallets = newWallets.map((w) => bufferToHex(w.address))
     return hexWallets
   }
 
   // Not using
   async getAccounts() {
-    return this.wallets.map((w) => bufferToHex(w.getAddress()))
+    return this.wallets.map((w) => bufferToHex(w.address))
   }
 
   // tx is an instance of the ethereumjs-transaction class.
   async signTransaction(tx, address) {
     const wallet = this._getWalletForAccount(address)
-    const privKey = wallet.getPrivateKey()
+    const privKey = this.getBufferPrivateKey(wallet.privateKey)
     const signedTx = tx.sign(privKey)
     // Newer versions of Ethereumjs-tx are immutable and return a new tx object
     return signedTx === undefined ? tx : signedTx
@@ -76,7 +79,11 @@ export default class TorusKeyring extends EventEmitter {
   async signMessage(address, data) {
     const wallet = this._getWalletForAccount(address)
     const message = stripHexPrefix(data)
-    const privKey = wallet.getPrivateKey()
+    // const privKey = wallet.privateKey
+
+    // privKeyBuffer
+    const privKey = this.getBufferPrivateKey(wallet.privateKey)
+
     const messageSig = ecsign(Buffer.from(message, 'hex'), privKey)
     const rawMessageSig = concatSig(messageSig.v, messageSig.r, messageSig.s)
     return rawMessageSig
@@ -85,7 +92,7 @@ export default class TorusKeyring extends EventEmitter {
   // For personal_sign, we need to prefix the message:
   async signPersonalMessage(address, messageHex) {
     const wallet = this._getWalletForAccount(address)
-    const privKey = stripHexPrefix(wallet.getPrivateKeyString())
+    const privKey = stripHexPrefix(wallet.privateKey)
     const privKeyBuffer = Buffer.from(privKey, 'hex')
     const sig = personalSign({ privateKey: privKeyBuffer, data: messageHex })
     return sig
@@ -94,7 +101,7 @@ export default class TorusKeyring extends EventEmitter {
   // personal_signTypedData, signs data along with the schema
   async signTypedData(withAccount, typedData, version = 'V1') {
     const wallet = this._getWalletForAccount(withAccount)
-    const privKey = wallet.getPrivateKey()
+    const privKey = this.getBufferPrivateKey(wallet.privateKey)
     return signTypedData({ privateKey: privKey, data: typedData, version })
   }
 
@@ -102,34 +109,38 @@ export default class TorusKeyring extends EventEmitter {
   // exportAccount should return a hex-encoded private key:
   async exportAccount(address) {
     const wallet = this._getWalletForAccount(address)
-    return wallet.getPrivateKey().toString('hex')
+    return wallet.privateKey.toString('hex')
   }
 
   // not using
   removeAccount(address) {
-    if (!this.wallets.map((w) => w.getAddressString().toLowerCase()).includes(address.toLowerCase())) {
+    if (!this.wallets.map((w) => w.address.toLowerCase()).includes(address.toLowerCase())) {
       throw new Error(`Address ${address} not found in this keyring`)
     }
-    this.wallets = this.wallets.filter((w) => w.getAddressString().toLowerCase() !== address.toLowerCase())
+    this.wallets = this.wallets.filter((w) => w.address.toLowerCase() !== address.toLowerCase())
   }
 
   signEncryptionPublicKey(address) {
     const wallet = this._getWalletForAccount(address)
-    const privKey = wallet.getPrivateKey()
-    return getEncryptionPublicKey(privKey)
+    const privKey = wallet.privateKey
+    const stripped = stripHexPrefix(privKey)
+    const buffer = Buffer.from(stripped, 'hex')
+    return getEncryptionPublicKey(buffer)
   }
 
   decryptMessage(data, address) {
     const wallet = this._getWalletForAccount(address)
-    const privKey = wallet.getPrivateKey()
-    return decrypt({ encryptedData: data, privateKey: privKey })
+    const privKey = wallet.privateKey
+    const stripped = stripHexPrefix(privKey)
+    const buffer = Buffer.from(stripped, 'hex')
+    return decrypt({ encryptedData: data, privateKey: buffer })
   }
 
   /* PRIVATE METHODS */
 
   _getWalletForAccount(account) {
-    const address = normalize(account)
-    const wallet = this.wallets.find((w) => w.getAddressString() === address)
+    const address = account.toLowerCase()
+    const wallet = this.wallets.find((w) => w.address.toLowerCase() === address)
     if (!wallet) throw new Error('Torus Keyring - Unable to find matching address.')
     return wallet
   }

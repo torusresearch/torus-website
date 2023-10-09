@@ -1,7 +1,7 @@
 <template>
-  <v-container px-0 py-0 class="confirm-container">
+  <v-container px-0 py-0 :class="{ spinner: type === 'none' }">
     <template v-if="type === 'none'">
-      <PopupScreenLoader />
+      <BoxLoader :force-spinner="true" />
     </template>
     <ConfirmForm v-else :current-confirm-modal="currentConfirmModal" @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
   </v-container>
@@ -11,15 +11,15 @@
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 
 import ConfirmForm from '../../components/Confirm/ConfirmForm'
+import BoxLoader from '../../components/helpers/BoxLoader'
 // import DappCreateTkey from '../../components/helpers/DappCreateTkey'
-import { PopupScreenLoader } from '../../content-loader'
 import { POPUP_LOADED, POPUP_RESULT } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   name: 'Confirm',
   components: {
-    PopupScreenLoader,
+    BoxLoader,
     ConfirmForm,
     // DappCreateTkey,
   },
@@ -94,11 +94,17 @@ export default {
         },
       })
       bc.close()
+      setTimeout(() => {
+        window.close()
+      }, 1000)
     },
     async triggerDeny({ id }) {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({ data: { type: POPUP_RESULT, id, txType: this.type, approve: false } })
       bc.close()
+      setTimeout(() => {
+        window.close()
+      }, 1000)
     },
   },
 }

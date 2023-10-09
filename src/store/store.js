@@ -1,10 +1,10 @@
 import { setAPIKey } from '@toruslabs/http-helpers'
+import { formatEther, toUtf8String } from 'ethers'
 import { cloneDeep } from 'lodash'
 import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
-import { fromWei, hexToUtf8 } from 'web3-utils'
 
 import config from '../config'
 import PopupWithBcHandler from '../handlers/Popup/PopupWithBcHandler'
@@ -25,7 +25,7 @@ Vue.use(Vuex)
 
 let vuexPersist
 
-if (config.localStorageAvailable) {
+if (config.storageAvailability[storageUtils.storageType]) {
   vuexPersist = new VuexPersistence({
     key: storageUtils.storageKey,
     storage: storageUtils.storage,
@@ -113,7 +113,7 @@ const VuexStore = new Vuex.Store({
         handleDeny(windowId, popupPayload.type)
         return
       }
-      popupPayload.balance = fromWei(weiBalance.toString())
+      popupPayload.balance = formatEther(weiBalance.toString())
       popupPayload.gasFees = latestGasFee
       if (request.isWalletConnectRequest && isMain) {
         const originObj = { href: '', hostname: '' }
@@ -244,6 +244,10 @@ function handleConfirm(ev) {
     torusController.updateAndApproveTransaction(txMeta)
   } else if (ev.data.txType === MESSAGE_TYPE.WATCH_ASSET) {
     torusController.approveWatchAsset(ev.data.id)
+  } else if (ev.data.txType === MESSAGE_TYPE.ADD_CHAIN) {
+    torusController.approveAddChain(ev.data.id)
+  } else if (ev.data.txType === MESSAGE_TYPE.SWITCH_CHAIN) {
+    torusController.approveSwitchChain(ev.data.id)
   } else {
     throw new Error('No new transactions.')
   }
@@ -265,6 +269,10 @@ function handleDeny(id, txType) {
     torusController.cancelDecryptMessage(Number.parseInt(id, 10))
   } else if (txType === MESSAGE_TYPE.WATCH_ASSET) {
     torusController.cancelWatchAsset(Number.parseInt(id, 10))
+  } else if (txType === MESSAGE_TYPE.ADD_CHAIN) {
+    torusController.cancelAddChain(Number.parseInt(id, 10))
+  } else if (txType === MESSAGE_TYPE.SWITCH_CHAIN) {
+    torusController.cancelSwitchChain(Number.parseInt(id, 10))
   }
 }
 
@@ -283,7 +291,7 @@ function getLatestMessageParameters(id) {
   if (message) {
     let finalMessage
     try {
-      finalMessage = hexToUtf8(message.msgParams.data)
+      finalMessage = toUtf8String(message.msgParams.data)
     } catch {
       finalMessage = message.msgParams.data
     }
@@ -313,10 +321,23 @@ function getLatestMessageParameters(id) {
     type = MESSAGE_TYPE.WATCH_ASSET
   }
 
+  if (VuexStore.state.unapprovedAddChainRequests[id]) {
+    message = {
+      msgParams: VuexStore.state.unapprovedAddChainRequests[id],
+    }
+    type = MESSAGE_TYPE.ADD_CHAIN
+  }
+  if (VuexStore.state.unapprovedSwitchChainRequests[id]) {
+    message = {
+      msgParams: VuexStore.state.unapprovedSwitchChainRequests[id],
+    }
+    type = MESSAGE_TYPE.SWITCH_CHAIN
+  }
+
   return message ? { msgParams: message.msgParams, id, type } : {}
 }
 
-if (config.localStorageAvailable) {
+if (config.storageAvailability.local) {
   const torusTheme = localStorage.getItem('torus-theme')
   if (torusTheme) {
     VuexStore.commit('setTheme', torusTheme)
@@ -326,10 +347,12 @@ if (config.localStorageAvailable) {
     VuexStore.commit('setCrashReport', Boolean(torusEnableCrashReporter))
   }
 
-  const openLoginStore = localStorage.getItem('openlogin_store')
-  if (openLoginStore !== null) {
-    const { typeOfLogin, verifierId, aggregateVerifier, verifier, email } = JSON.parse(openLoginStore)
-    VuexStore.commit('setLastLoginInfo', { typeOfLogin, verifierId, aggregateVerifier, verifier, email })
+  if (config.storageAvailability[storageUtils.storageType]) {
+    const openLoginStore = storageUtils.storage.getItem(storageUtils.openloginStoreKey)
+    if (openLoginStore !== null) {
+      const { typeOfLogin, verifierId, aggregateVerifier, verifier, email } = JSON.parse(openLoginStore)
+      VuexStore.commit('setLastLoginInfo', { typeOfLogin, verifierId, aggregateVerifier, verifier, email })
+    }
   }
 }
 

@@ -1,0 +1,27 @@
+.swap-container {
+  :deep(.swap-amount.v-text-field) {
+    .v-input__slot {
+      background: none !important;
+      box-shadow: none !important;
+      margin-bottom: 0;
+    }
+    fieldset {
+      border: 0 !important;
+      background: none;
+    }
+  }
+  :deep(.swap-token.v-text-field) {
+    .v-input__slot {
+      background: none !important;
+      box-shadow: none !important;
+      margin-bottom: 0;
+    }
+    fieldset {
+      background: none;
+    }
+  }
+
+  &.not-supported {
+    opacity: 0.4;
+  }
+}

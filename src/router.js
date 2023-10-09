@@ -125,11 +125,6 @@ const router = new Router({
               component: () => import(/* webpackChunkName: "walletTopupMoonpay" */ './containers/WalletTopup/WalletTopupMoonpay'),
             },
             {
-              path: 'wyre',
-              name: 'walletTopupWyre',
-              component: () => import(/* webpackChunkName: "walletTopupWyre" */ './containers/WalletTopup/WalletTopupWyre'),
-            },
-            {
               path: 'xanpool',
               name: 'walletTopupXanpool',
               component: () => import(/* webpackChunkName: "walletTopupXanpool" */ './containers/WalletTopup/WalletTopupXanpool'),
@@ -157,6 +152,12 @@ const router = new Router({
           component: () => import(/* webpackChunkName: "walletDiscover" */ './containers/WalletDiscover'),
           meta: { title: 'Discover' },
         },
+        {
+          path: 'swap',
+          name: 'walletSwap',
+          component: () => import(/* webpackChunkName: "walletSwap" */ './containers/WalletSwap'),
+          meta: { title: 'Swap' },
+        },
       ],
     },
     { path: '*', component: () => import(/* webpackChunkName: "login" */ './views/Login') },
@@ -167,7 +168,7 @@ function hasQueryParameters(route) {
   return (
     Object.prototype.hasOwnProperty.call(route.query, 'instanceId') ||
     Object.prototype.hasOwnProperty.call(route.query, 'isCustomLogin') ||
-    Object.prototype.hasOwnProperty.call(route.query, 'namespace')
+    Object.prototype.hasOwnProperty.call(route.query, 'sessionNamespace')
   )
 }
 
@@ -187,7 +188,9 @@ router.beforeResolve((to, from, next) => {
   }
   if (!hasQueryParameters(to) && hasQueryParameters(from)) {
     if (!to.name.includes('Topup') && to.name !== 'walletTransfer') {
-      Object.keys(from.query).forEach((key) => key === 'instanceId' || key === 'namespace' || key === 'isCustomLogin' || delete from.query[key])
+      Object.keys(from.query).forEach(
+        (key) => key === 'instanceId' || key === 'sessionNamespace' || key === 'isCustomLogin' || delete from.query[key]
+      )
     }
     return next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
     // next()

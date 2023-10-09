@@ -1,8 +1,8 @@
-import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 
 import config from '../config'
 import { idleTimeTracker } from '../utils/utils'
+import { ObservableStore } from './utils/ObservableStore'
 
 // every ten minutes
 const POLLING_INTERVAL = 600_000

@@ -1,5 +1,5 @@
+import { createWalletMiddleware } from '@metamask/eth-json-rpc-middleware'
 import { createAsyncMiddleware, createScaffoldMiddleware, mergeMiddleware } from '@toruslabs/openlogin-jrpc'
-import { createWalletMiddleware } from 'eth-json-rpc-middleware'
 
 import { MESSAGE_TYPE, TRANSACTION_ENVELOPE_TYPES } from '../../utils/enums'
 
@@ -17,6 +17,8 @@ export default function createMetamaskMiddleware({
   processEncryptionPublicKey,
   processDecryptMessage,
   processWatchAsset,
+  processAddChain,
+  processSwitchChain,
 }) {
   const metamaskMiddleware = mergeMiddleware([
     createScaffoldMiddleware({
@@ -35,6 +37,8 @@ export default function createMetamaskMiddleware({
       processEncryptionPublicKey,
       processDecryptMessage,
     }),
+    createAddChainMiddleware({ processAddChain }),
+    createSwitchChainMiddleware({ processSwitchChain }),
     createWatchAssetMiddleware({ processWatchAsset }),
     createRequestAccountsMiddleware({ getAccounts }),
     createPendingNonceMiddleware({ getPendingNonce }),
@@ -43,6 +47,61 @@ export default function createMetamaskMiddleware({
   return metamaskMiddleware
 }
 
+export function createAddChainMiddleware({ processAddChain }) {
+  return createAsyncMiddleware(async (request, response, next) => {
+    if (request.method !== MESSAGE_TYPE.ADD_CHAIN) return next()
+
+    /**
+     * request.params interface
+     * 
+     * interface AddEthereumChainParameter {
+        chainId: string; // A 0x-prefixed hexadecimal string
+        chainName: string;
+        nativeCurrency: {
+          name: string;
+          symbol: string; // 2-6 characters long
+          decimals: 18;
+        };
+        rpcUrls: string[];
+        blockExplorerUrls?: string[];
+        iconUrls?: string[]; // Currently ignored.
+      }
+     */
+
+    const { chainId, rpcUrls, nativeCurrency } = request.params || {}
+    if (!chainId) throw new Error('createAddChainMiddleware - params.chainId not provided')
+    if (!rpcUrls || rpcUrls.length === 0) throw new Error('createAddChainMiddleware - params.rpcUrls not provided')
+    if (!nativeCurrency) throw new Error('createAddChainMiddleware - params.nativeCurrency not provided')
+    const { name, symbol, decimals } = nativeCurrency
+
+    if (!name) throw new Error('createAddChainMiddleware - params.nativeCurrency.name not provided')
+    if (!symbol) throw new Error('createAddChainMiddleware - params.nativeCurrency.symbol not provided')
+    if (decimals === undefined) throw new Error('createAddChainMiddleware - params.nativeCurrency.decimals not provided')
+
+    response.result = await processAddChain(request.params, request)
+    return undefined
+  })
+}
+
+export function createSwitchChainMiddleware({ processSwitchChain }) {
+  return createAsyncMiddleware(async (request, response, next) => {
+    if (request.method !== MESSAGE_TYPE.SWITCH_CHAIN) return next()
+
+    /**
+     * request.params interface
+     * 
+     * interface SwitchEthereumChainParameter {
+        chainId: string; // A 0x-prefixed hexadecimal string
+      }
+     */
+
+    const { chainId } = request.params || {}
+    if (!chainId) throw new Error('createSwitchChainMiddleware - params.chainId not provided')
+
+    response.result = await processSwitchChain(request.params, request)
+    return undefined
+  })
+}
 export function createWatchAssetMiddleware({ processWatchAsset }) {
   return createAsyncMiddleware(async (request, response, next) => {
     if (request.method !== MESSAGE_TYPE.WATCH_ASSET) return next()

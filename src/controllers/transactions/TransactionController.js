@@ -1,18 +1,15 @@
 /* eslint-disable require-atomic-updates */
-import Common from '@ethereumjs/common'
+import { Common } from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
-import { ObservableStore } from '@metamask/obs-store'
+import { addHexPrefix, bufferToHex, isHexString, stripHexPrefix } from '@ethereumjs/util'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import { ethErrors } from 'eth-rpc-errors'
-import { addHexPrefix, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
+import { formatEther, keccak256 } from 'ethers'
 import EthQuery from 'ethjs-query'
-import collectibleAbi from 'human-standard-collectible-abi'
-import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
-import { ERC1155 as erc1155Abi } from 'multi-token-standard-abi'
-import { fromWei, isHexStrict, sha3, toBN } from 'web3-utils'
 
 import AbiDecoder from '../../utils/abiDecoder'
+import { ecr20Abi, erc721Abi, erc1155Abi } from '../../utils/abis'
 import ApiHelpers from '../../utils/apiHelpers'
 import erc20Contracts from '../../utils/contractMetadata'
 import { decGWEIToHexWEI } from '../../utils/conversionUtils'
@@ -46,14 +43,15 @@ import {
 } from '../../utils/utils'
 import NonceTracker from '../NonceTracker'
 import cleanErrorStack from '../utils/cleanErrorStack'
+import { ObservableStore } from '../utils/ObservableStore'
 import PendingTransactionTracker from './PendingTransactionTracker'
 import TransactionStateManager from './TransactionStateManager'
 import TxGasUtil from './TxGasUtil'
 import * as txUtils from './txUtils'
 
-const tokenABIDecoder = new AbiDecoder(tokenAbi)
-const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
-const erc1155AbiDecoder = new AbiDecoder(erc1155Abi.abi)
+const tokenABIDecoder = new AbiDecoder(ecr20Abi)
+const collectibleABIDecoder = new AbiDecoder(erc721Abi)
+const erc1155AbiDecoder = new AbiDecoder(erc1155Abi)
 
 /**
   Transaction Controller is an aggregate of sub-controllers and trackers
@@ -156,7 +154,7 @@ class TransactionController extends SafeEventEmitter {
   getChainId() {
     const networkState = this.networkStore.getState()
     const chainId = this._getCurrentChainId()
-    const integerChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+    const integerChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
     if (networkState === 'loading' || Number.isNaN(integerChainId)) {
       return 0
     }
@@ -770,7 +768,7 @@ class TransactionController extends SafeEventEmitter {
       txHash = await this.query.sendRawTransaction(rawTx)
     } catch (error) {
       if (error.message.toLowerCase().includes('known transaction')) {
-        txHash = sha3(addHexPrefix(rawTx)).toString('hex')
+        txHash = keccak256(addHexPrefix(rawTx))
         txHash = addHexPrefix(txHash)
       } else {
         throw error
@@ -800,7 +798,7 @@ class TransactionController extends SafeEventEmitter {
 
       // It seems that sometimes the numerical values being returned from
       // this.query.getTransactionReceipt are BN instances and not strings.
-      const gasUsed = typeof txReceipt.gasUsed !== 'string' ? txReceipt.gasUsed.toString(16) : txReceipt.gasUsed
+      const gasUsed = typeof txReceipt.gasUsed === 'string' ? txReceipt.gasUsed : txReceipt.gasUsed.toString(16)
 
       txMeta.txReceipt = {
         ...txReceipt,
@@ -873,7 +871,7 @@ class TransactionController extends SafeEventEmitter {
     )
 
     const finalTxs = transactionPromises.reduce((accumulator, x) => {
-      const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
+      const totalAmount = x.value ? formatEther(x.value) : ''
       const etherscanTransaction = {
         etherscanLink: getEtherScanHashLink(x.hash, network),
         type: x.type || SUPPORTED_NETWORK_TYPES[network]?.ticker || CONTRACT_TYPE_ETH,

@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { BN } from 'ethereumjs-util'
+import BN from 'bn.js'
 
 const template = {
   status: 'submitted',

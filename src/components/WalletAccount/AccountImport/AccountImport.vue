@@ -149,13 +149,12 @@
 /* eslint-disable import/default */
 /* eslint-disable import/no-webpack-loader-syntax */
 /* eslint-disable import/extensions */
+import { stripHexPrefix } from '@ethereumjs/util'
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
-import { randomId } from '@toruslabs/openlogin-utils'
-import { bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import WalletWorker from 'worker-loader!../../../utils/wallet.worker.js'
 
-import { broadcastChannelOptions } from '../../../utils/utils'
+import { broadcastChannelOptions, randomId } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
 export default {
@@ -245,26 +244,11 @@ export default {
           this.setErrorState(new Error('Unable to parse keystore file'))
           return
         }
-        if (!window.Worker) {
-          this.$store
-            .dispatch('importAccount', { keyData: [keyData, this.jsonPassword], strategy: 'JSON File' })
-            .then((privKey) => {
-              this.onClose()
-              this.keyStoreFileContents = ''
-              this.jsonPassword = ''
-              this.showJsonPassword = false
-              this.isLoadingKeystore = false
-              this.informClients(privKey)
-              this.$refs.jsonFileForm.resetValidation()
-            })
-            .catch((error) => {
-              this.setErrorState(error)
-            })
-        } else {
+        if (window.Worker) {
           const worker = new WalletWorker()
           worker.addEventListener('message', (event) => {
-            const { privateKey: bufferPrivateKey } = event.data
-            const privKey = stripHexPrefix(bufferToHex(bufferPrivateKey))
+            const { privateKey: hexPrivateKey } = event.data
+            const privKey = stripHexPrefix(hexPrivateKey)
             this.$store
               .dispatch('finishImportAccount', { privKey })
               .then((privateKey) => {
@@ -286,11 +270,26 @@ export default {
             this.isLoadingKeystore = false
           })
           worker.postMessage({ type: 'unlockWallet', data: [keyData, this.jsonPassword] })
+        } else {
+          this.$store
+            .dispatch('importAccount', { keyData: [keyData, this.jsonPassword], strategy: 'JSON File' })
+            .then((privKey) => {
+              this.onClose()
+              this.keyStoreFileContents = ''
+              this.jsonPassword = ''
+              this.showJsonPassword = false
+              this.isLoadingKeystore = false
+              this.informClients(privKey)
+              this.$refs.jsonFileForm.resetValidation()
+            })
+            .catch((error) => {
+              this.setErrorState(error)
+            })
         }
       }
     },
     setErrorState(error) {
-      this.error = error && error.message && error.message.includes('wrong passphrase') ? this.t('accountMenu.incorrectPassword') : error
+      this.error = error && error.message && error.message.includes('incorrect password') ? this.t('accountMenu.incorrectPassword') : error
       this.canShowError = true
       log.error(error)
       this.isLoadingKeystore = false

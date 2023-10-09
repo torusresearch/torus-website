@@ -1,7 +1,7 @@
 <template>
-  <v-container px-0 py-0>
+  <v-container px-0 py-0 :class="{ spinner: type === 'none' }">
     <template v-if="type === 'none'">
-      <ChangeProviderScreenLoader />
+      <BoxLoader :force-spinner="true" />
     </template>
     <template v-else>
       <v-layout pa-6 class="provider-change-header" :class="{ 'theme--dark': $vuetify.theme.dark }">
@@ -22,9 +22,9 @@
         </v-flex>
       </v-layout>
       <v-divider class="mx-6"></v-divider>
-      <v-layout wrap align-center ma-6>
+      <v-layout wrap align-center pa-6>
         <v-flex xs12 mb-2>
-          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
+          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}</div>
 
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
@@ -79,14 +79,14 @@
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { mapGetters } from 'vuex'
 
-import { ChangeProviderScreenLoader } from '../../content-loader'
+import BoxLoader from '../../components/helpers/BoxLoader'
 import { POPUP_LOADED, POPUP_RESULT, RPC, SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   name: 'Confirm',
   components: {
-    ChangeProviderScreenLoader,
+    BoxLoader,
   },
   data() {
     return {
@@ -138,11 +138,17 @@ export default {
         data: { type: POPUP_RESULT, approve: true },
       })
       bc.close()
+      setTimeout(() => {
+        window.close()
+      }, 1000)
     },
     async triggerDeny() {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({ data: { type: POPUP_RESULT, approve: false } })
       bc.close()
+      setTimeout(() => {
+        window.close()
+      }, 1000)
     },
     editPermissions() {
       this.$router.push({ path: '/wallet/settings' }).catch((_) => {})

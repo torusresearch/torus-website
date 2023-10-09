@@ -81,6 +81,7 @@ const {
   VUE_APP_PASSWORDLESS_DOMAIN,
   VUE_APP_DEVELOPER_DASHBOARD_URL,
   VUE_APP_PROXY_NETWORK,
+  VUE_APP_WALLET_CONNECT_PROJECT_ID,
 } = process.env
 
 const baseUrl = window.location.origin
@@ -132,11 +133,11 @@ export function storageAvailable(type) {
 }
 
 const { hash, search } = window.location
-const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search}`)
+// search also has a ? in the value.
+const finalUrl = new URL(`${baseUrl}?${hash.slice(1)}&${search.slice(1)}`)
 
 const isCustomLogin = finalUrl.searchParams.get('isCustomLogin')
-const namespace = finalUrl.searchParams.get('namespace')
-const sessionId = finalUrl.searchParams.get('sessionId')
+const sessionNamespace = finalUrl.searchParams.get('sessionNamespace')
 
 // no reddit for binance.tor.us
 
@@ -154,15 +155,18 @@ export default {
   torusNetwork: VUE_APP_PROXY_NETWORK || 'mainnet',
   openLoginOriginSig: VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
   developerDashboardUrl: VUE_APP_DEVELOPER_DASHBOARD_URL,
-  storageServerUrl: 'https://broadcast-server.tor.us',
   hideTopup: VUE_APP_HIDE_TOPUP === 'true',
   ethTransferOnly: VUE_APP_ETH_TRANSFER_ONLY === 'true',
-  localStorageAvailable: storageAvailable('localStorage'),
-  sessionStorageAvailable: storageAvailable('sessionStorage'),
+
+  storageAvailability: {
+    local: storageAvailable('localStorage'),
+    session: storageAvailable('sessionStorage'),
+  },
+  // we do the isCustomDapp check to differentiate b/w app.tor.us and dapps without isCustomLogin flag
+  isCustomLogin: isCustomLogin === 'true' || !!sessionNamespace,
 
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
-  wyreApiHost: 'https://wyre-api.tor.us',
   rampApiHost: 'https://ramp-network-api.tor.us',
   xanpoolApiHost: 'https://xanpool-api.tor.us',
   mercuryoApiHost: 'https://mercuryo-api.tor.us',
@@ -174,9 +178,6 @@ export default {
   moonpayLiveAPIKEY: 'pk_live_Wg90NLnFst3ms7tiqnMDDO0yjlypMzYK',
   moonpayTestHost: 'https://buy-staging.moonpay.io',
   moonpayTestAPIKEY: 'pk_test_j6AnwGJD0XTJDg3bTO37OczjFsddYpS',
-
-  wyreHost: 'https://pay.sendwyre.com/purchase',
-  wyreAccountId: 'AC_RUQMPNP7QQY',
 
   rampHost: 'https://widget-instant.ramp.network',
   rampApiQuoteHost: `https://api-instant.ramp.network/api/host-api/quote?hostApiKey=${rampApiKey}`,
@@ -495,8 +496,7 @@ export default {
     //   },
     // }),
   },
+  sessionNamespace,
   loginsWithLightLogo: [APPLE, GITHUB, JWT],
-  isCustomLogin: isCustomLogin === 'true' ? true : isCustomLogin === 'false' ? false : null,
-  namespace,
-  sessionId,
+  walletConnectProjectId: VUE_APP_WALLET_CONNECT_PROJECT_ID,
 }

@@ -1,6 +1,5 @@
+import { addHexPrefix, isHexString, isValidAddress } from '@ethereumjs/util'
 import { ethErrors } from 'eth-rpc-errors'
-import { addHexPrefix, isHexString } from 'ethereumjs-util'
-import { isAddress } from 'web3-utils'
 
 import { TRANSACTION_ENVELOPE_TYPES, TRANSACTION_STATUSES } from '../../utils/enums'
 
@@ -121,7 +120,7 @@ export function validateTxParameters(txParams, eip1559Compatibility = true) {
  *  present in txParams.
  */
 export function ensureMutuallyExclusiveFieldsNotProvided(txParams, fieldBeingValidated, mutuallyExclusiveField) {
-  if (typeof txParams[mutuallyExclusiveField] !== 'undefined') {
+  if (txParams[mutuallyExclusiveField] !== undefined) {
     throw ethErrors.rpc.invalidParams(
       `Invalid transaction params: specified ${fieldBeingValidated} but also included ${mutuallyExclusiveField}, these cannot be mixed`
     )
@@ -182,7 +181,7 @@ export function validateFrom(txParams) {
   if (!(typeof txParams.from === 'string')) {
     throw ethErrors.rpc.invalidParams(`Invalid "from" address "${txParams.from}": not a string.`)
   }
-  if (!isAddress(txParams.from)) {
+  if (!isValidAddress(txParams.from)) {
     throw ethErrors.rpc.invalidParams('Invalid "from" address.')
   }
 }
@@ -198,7 +197,7 @@ export function validateRecipient(txParameters) {
     } else {
       throw ethErrors.rpc.invalidParams('Invalid "to" address.')
     }
-  } else if (txParameters.to !== undefined && !isAddress(txParameters.to)) {
+  } else if (txParameters.to !== undefined && !isValidAddress(txParameters.to)) {
     throw ethErrors.rpc.invalidParams('Invalid "to" address.')
   }
   return txParameters
@@ -217,7 +216,7 @@ export function getFinalStates() {
 }
 
 export function transactionMatchesNetwork(transaction, chainId, networkId) {
-  if (typeof transaction.chainId !== 'undefined') {
+  if (transaction.chainId !== undefined) {
     return transaction.chainId === chainId
   }
   return transaction.metamaskNetworkId === networkId
@@ -245,8 +244,8 @@ export function isEIP1559Transaction(transaction) {
  */
 export function isLegacyTransaction(transaction) {
   return (
-    typeof transaction.txParams.maxFeePerGas === 'undefined' &&
-    typeof transaction.txParams.maxPriorityFeePerGas === 'undefined' &&
-    (typeof transaction.txParams.gasPrice === 'undefined' || isHexString(addHexPrefix(transaction.txParams.gasPrice)))
+    transaction.txParams.maxFeePerGas === undefined &&
+    transaction.txParams.maxPriorityFeePerGas === undefined &&
+    (transaction.txParams.gasPrice === undefined || isHexString(addHexPrefix(transaction.txParams.gasPrice)))
   )
 }

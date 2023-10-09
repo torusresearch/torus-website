@@ -1,10 +1,9 @@
-import { randomId } from '@toruslabs/openlogin-utils'
-
 import config from '../../config'
 import PopupHandler from '../../handlers/Popup/PopupHandler'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import apis from '../../plugins/transak'
 import { TRANSAK } from '../../utils/enums'
+import { getTimeout, randomId } from '../../utils/utils'
 
 export default {
   fetchTransakQuote(context, payload) {
@@ -22,7 +21,7 @@ export default {
       if (!preopenInstanceId) {
         preopenInstanceId = randomId()
         const finalUrl = `${config.redirect_uri}?preopenInstanceId=${preopenInstanceId}`
-        const handledWindow = new PopupHandler({ url: finalUrl })
+        const handledWindow = new PopupHandler({ url: finalUrl, timeout: getTimeout({ isPaymentTx: true }) })
         handledWindow.open()
         handledWindow.once('close', () => {
           reject(new Error('user closed Transak popup'))
@@ -59,7 +58,12 @@ export default {
     })
   },
   async postTransakOrder(_, { finalUrl, preopenInstanceId, orderInstanceId }) {
-    const transakWindow = new PopupWithBcHandler({ url: finalUrl, preopenInstanceId, channelName: `redirect_channel_${orderInstanceId}` })
+    const transakWindow = new PopupWithBcHandler({
+      url: finalUrl,
+      preopenInstanceId,
+      channelName: `redirect_channel_${orderInstanceId}`,
+      timeout: getTimeout({ isPaymentTx: true }),
+    })
     const result = await transakWindow.handle()
     const { queryParams: { transactionStatus = '' } = {} } = result
     if (transactionStatus !== 'failed') return { success: true }

@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
+import { stripHexPrefix } from '@ethereumjs/util'
 import assert from 'assert'
-import { stripHexPrefix } from 'ethereumjs-util'
 
 import accountImporter from '../../../src/utils/accountImporter'
 
@@ -45,17 +45,19 @@ describe('Account Import Strategies', () => {
   describe('JSON keystore import', () => {
     it('fails when password is incorrect for keystore', async () => {
       const wrongPassword = 'password2'
+      const jsonFile = JSON.parse(json)
 
       try {
-        await accountImporter.importAccount('JSON File', [json, wrongPassword])
+        await accountImporter.importAccount('JSON File', [jsonFile, wrongPassword])
       } catch (error) {
-        assert.strictEqual(error.message, 'Key derivation failed - possibly wrong passphrase')
+        assert.ok(error.message.startsWith('incorrect password'))
       }
     })
 
     it('imports json string and password to return a private key', async () => {
       const fileContentsPassword = 'password1'
-      const importJson = await accountImporter.importAccount('JSON File', [json, fileContentsPassword])
+      const jsonFile = JSON.parse(json)
+      const importJson = await accountImporter.importAccount('JSON File', [jsonFile, fileContentsPassword])
       assert.strictEqual(importJson, '5733876abe94146069ce8bcbabbde2677f2e35fa33e875e92041ed2ac87e5bc7')
     })
   })

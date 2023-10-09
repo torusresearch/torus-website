@@ -202,7 +202,7 @@ export default {
       return finalTx.sort((a, b) => b.date - a.date) || []
     },
     currencyMultiplier() {
-      const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
+      const currencyMultiplierNumber = this.selectedCurrency === 'ETH' ? 1 : this.currencyData[this.selectedCurrency.toLowerCase()] || 1
       return new BigNumber(currencyMultiplierNumber)
     },
   },
@@ -222,8 +222,9 @@ export default {
         const { fastest: fastestTimes10 } = await resp.json()
         gasPrice = new BigNumber(fastestTimes10).div(new BigNumber('10'))
       } else {
-        const recommended = await torus.web3.eth.getGasPrice()
-        gasPrice = new BigNumber(recommended).div(new BigNumber(10).pow(new BigNumber(9))).plus(new BigNumber('5'))
+        const recommended = await torus.ethersProvider.send('eth_gasPrice')
+        log.info(recommended, 'fetched gas price from provider')
+        gasPrice = new BigNumber(recommended, 16).div(new BigNumber(10).pow(new BigNumber(9))).plus(new BigNumber('5'))
       }
       const percent10Extra = gasPrice.times(new BigNumber('1.1'))
       // Add 5 to fastest recommended by transfer page
@@ -270,11 +271,11 @@ export default {
         return this.t('walletActivity.contractDeployment')
       }
       if (activity.transaction_category === TRANSACTION_TYPES.TOKEN_METHOD_APPROVE) {
-        return `${this.t('walletActivity.approved')} ${activity.type_name !== 'n/a' ? activity.type_name.toUpperCase() : activity.type.toUpperCase()}`
+        return `${this.t('walletActivity.approved')} ${activity.type_name === 'n/a' ? activity.type.toUpperCase() : activity.type_name.toUpperCase()}`
       }
       if (activity.type_name === 'n/a' || activity.type === 'n/a') {
         return `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
-          activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
+          activity.type_name === 'n/a' ? activity.type.toUpperCase() : activity.type_name
         }`
       }
       if (activity.type_name || activity.type) {
@@ -315,17 +316,19 @@ export default {
       const { from, gas, nonce } = transaction
       const { cancelGasPrice } = this
       const sendingWei = 0
-      return torus.web3.eth.sendTransaction({
-        from,
-        to: from,
-        value: `0x${sendingWei.toString(16)}`,
-        gas,
-        gasPrice: `0x${cancelGasPrice
-          .times(new BigNumber(10).pow(new BigNumber(9)))
-          .dp(0, BigNumber.ROUND_DOWN)
-          .toString(16)}`,
-        customNonceValue: nonce,
-      })
+      return torus.ethersProvider.send('eth_sendTransaction', [
+        {
+          from,
+          to: from,
+          value: `0x${sendingWei.toString(16)}`,
+          gas,
+          gasPrice: `0x${cancelGasPrice
+            .times(new BigNumber(10).pow(new BigNumber(9)))
+            .dp(0, BigNumber.ROUND_DOWN)
+            .toString(16)}`,
+          customNonceValue: nonce,
+        },
+      ])
     },
   },
 }

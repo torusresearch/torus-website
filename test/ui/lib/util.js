@@ -1,7 +1,9 @@
-import { addHexPrefix, BN, isValidAddress as isValidAddressUtil, isValidChecksumAddress, stripHexPrefix, toChecksumAddress } from 'ethereumjs-util'
-import abi from 'human-standard-token-abi'
+import { addHexPrefix, isValidAddress as isValidAddressUtil, isValidChecksumAddress, stripHexPrefix, toChecksumAddress } from '@ethereumjs/util'
+import { normalize } from '@metamask/eth-sig-util'
+import BN from 'bn.js'
 import { DateTime } from 'luxon'
 
+import { ecr20Abi } from '../../../src/utils/abis'
 import hexToBn from './hex-to-bn'
 
 const MIN_GAS_PRICE_GWEI_BN = new BN(1)
@@ -113,7 +115,7 @@ function formatBalance(balance, decimalsToKeep, needsParse = true, ticker = 'ETH
       formatted = `${beforeDecimal}.${afterDecimal.slice(0, 3)} ${ticker}`
     }
   } else {
-    afterDecimal += new Array(decimalsToKeep).join('0')
+    afterDecimal += Array.from({ length: decimalsToKeep }).join('0')
     formatted = `${beforeDecimal}.${afterDecimal.slice(0, decimalsToKeep)} ${ticker}`
   }
   return formatted
@@ -143,8 +145,8 @@ function generateBalanceObject(formattedBalance, decimalsToKeep = 1) {
 function shortenBalance(balance, decimalsToKeep = 1) {
   let truncatedValue
   const convertedBalance = Number.parseFloat(balance)
-  if (convertedBalance > 1000000) {
-    truncatedValue = (balance / 1000000).toFixed(decimalsToKeep)
+  if (convertedBalance > 1_000_000) {
+    truncatedValue = (balance / 1_000_000).toFixed(decimalsToKeep)
     return `${truncatedValue}m`
   }
   if (convertedBalance > 1000) {
@@ -200,7 +202,7 @@ function normalizeEthStringToWei(string) {
 
 const multiple = new BN('10000', 10)
 function normalizeNumberToWei(n, currency) {
-  const enlarged = n * 10000
+  const enlarged = n * 10_000
   const amount = new BN(String(enlarged), 10)
   return normalizeToWei(amount, currency).div(multiple)
 }
@@ -238,7 +240,7 @@ function getTxFeeBn(gas, gasPrice = MIN_GAS_PRICE_BN.toString(16)) {
 }
 
 function getContractAtAddress(tokenAddress) {
-  return global.eth.contract(abi).at(tokenAddress)
+  return global.eth.contract(ecr20Abi).at(tokenAddress)
 }
 
 function exportAsFile(filename, data, type = 'text/csv') {
@@ -272,7 +274,7 @@ function getTokenAddressFromTokenObject(token) {
  * @returns {String} - checksummed address
  */
 function checksumAddress(address) {
-  return address ? toChecksumAddress(address) : ''
+  return address ? toChecksumAddress(normalize(address)) : ''
 }
 
 function addressSlicer(address = '') {
@@ -284,33 +286,33 @@ function addressSlicer(address = '') {
 }
 
 export {
-  valuesFor,
+  addressSlicer,
   addressSummary,
-  miniAddressSummary,
+  allNull,
+  bnMultiplyByFraction,
+  bnTable,
+  checksumAddress,
+  dataSize,
+  exportAsFile,
+  formatBalance,
+  formatDate,
+  generateBalanceObject,
+  getContractAtAddress,
+  getTokenAddressFromTokenObject,
+  getTxFeeBn,
   isAllOneCase,
+  isHex,
+  isInvalidChecksumAddress,
   isValidAddress,
   isValidENSAddress,
-  numericBalance,
-  parseBalance,
-  formatBalance,
-  generateBalanceObject,
-  dataSize,
-  readableDate,
-  normalizeToWei,
+  miniAddressSummary,
   normalizeEthStringToWei,
   normalizeNumberToWei,
-  valueTable,
-  bnTable,
-  isHex,
-  formatDate,
-  bnMultiplyByFraction,
-  getTxFeeBn,
+  normalizeToWei,
+  numericBalance,
+  parseBalance,
+  readableDate,
   shortenBalance,
-  getContractAtAddress,
-  exportAsFile,
-  isInvalidChecksumAddress,
-  allNull,
-  getTokenAddressFromTokenObject,
-  checksumAddress,
-  addressSlicer,
+  valuesFor,
+  valueTable,
 }

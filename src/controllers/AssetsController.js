@@ -5,12 +5,12 @@
  * Controller stores the assets and exposes some convienient methods
  */
 
-import { ObservableStore } from '@metamask/obs-store'
 import log from 'loglevel'
 
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155, COVALENT_SUPPORTED_CHAIN_IDS, OLD_ERC721_LIST, SUPPORTED_NFT_STANDARDS } from '../utils/enums'
 import { get } from '../utils/httpHelpers'
 import { isAddressByChainId, sanitizeNftMetdataUrl, toChecksumAddressByChainId, validateImageUrl } from '../utils/utils'
+import { ObservableStore } from './utils/ObservableStore'
 
 const initStateObject = { allCollectibleContracts: {}, allCollectibles: {}, allTokens: {}, collectibleContracts: [], collectibles: [], tokens: [] }
 
@@ -329,15 +329,15 @@ export default class AssetController {
         return {}
       }
     }
-    if (!normalizedContractInfo.logo) {
-      // fallback to asset image
-      normalizedContractInfo.logo = assetImage
-    } else {
+    if (normalizedContractInfo.logo) {
       try {
         await validateImageUrl(sanitizeNftMetdataUrl(normalizedContractInfo.logo))
       } catch {
         normalizedContractInfo.logo = assetImage
       }
+    } else {
+      // fallback to asset image
+      normalizedContractInfo.logo = assetImage
     }
     return normalizedContractInfo
   }

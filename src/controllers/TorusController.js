@@ -1,14 +1,11 @@
+import { stripHexPrefix, toChecksumAddress } from '@ethereumjs/util'
+import { providerAsMiddleware } from '@metamask/eth-json-rpc-middleware'
 import { normalize } from '@metamask/eth-sig-util'
-import { ObservableStore, storeAsStream } from '@metamask/obs-store'
 import { createEngineStream, JRPCEngine, SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
-import { providerAsMiddleware } from 'eth-json-rpc-middleware'
-import { stripHexPrefix } from 'ethereumjs-util'
 import { debounce } from 'lodash'
 import log from 'loglevel'
-import pump from 'pump'
-import { toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import { MAINNET_CHAIN_ID, NOTIFICATION_NAMES, RPC, TRANSACTION_STATUSES } from '../utils/enums'
@@ -90,6 +87,7 @@ export default class TorusController extends SafeEventEmitter {
       provider: this.provider,
       blockTracker: this.blockTracker,
       getCurrentChainId: this.networkController.getCurrentChainId.bind(this.networkController),
+      getCurrentNetworkUrl: this.networkController.getCurrentNetworkUrl.bind(this.networkController),
     })
 
     // start and stop polling for balances based on activeControllerConnections
@@ -109,6 +107,11 @@ export default class TorusController extends SafeEventEmitter {
       provider: this.provider,
       signMessage: this.keyringController.signMessage.bind(this.keyringController),
       storeDispatch: this.opts.storeDispatch,
+    })
+
+    this.prefsController.on('newUnapprovedAddChainRequest', (addChainData, request) => {
+      log.debug('add new chain')
+      options.showAddChain(addChainData.id, request)
     })
 
     this.prefsController.getBillboardContents()
@@ -139,6 +142,8 @@ export default class TorusController extends SafeEventEmitter {
       currency: this.currencyController.store,
       tokensStore: this.detectTokensController.detectedTokensStore,
     })
+
+    this.networkController.on('newUnapprovedSwitchChainRequest', (switchChainData, request) => options.showSwitchChain(switchChainData.id, request))
 
     // ensure accountTracker updates balances after network change
     this.networkController.on('networkDidChange', () => {
@@ -233,7 +238,6 @@ export default class TorusController extends SafeEventEmitter {
     })
     this.memStore.subscribe(this.sendUpdate.bind(this))
 
-    this.publicConfigStore = this.initPublicConfigStore()
     this.prefsController.on('addEtherscanTransactions', (txs, network) => {
       this.txController.addEtherscanTransactions(txs, network)
     })
@@ -285,45 +289,11 @@ export default class TorusController extends SafeEventEmitter {
       processEncryptionPublicKey: this.newUnsignedEncryptionPublicKey.bind(this),
       processDecryptMessage: this.newUnsignedDecryptMessage.bind(this),
       processWatchAsset: this.newUnapprovedAsset.bind(this),
+      processAddChain: this.newAddChainRequest.bind(this),
+      processSwitchChain: this.newSwitchChainRequest.bind(this),
     }
     const providerProxy = this.networkController.initializeProvider(providerOptions)
     return providerProxy
-  }
-
-  /**
-   * Constructor helper: initialize a public config store.
-   * This store is used to make some config info available to Dapps synchronously.
-   */
-  initPublicConfigStore() {
-    // get init state
-    // setting stringified state  to keep it compatible with old versions of torus-embed
-    const publicConfigStore = new ObservableStore('{}')
-
-    const { networkController } = this
-
-    // setup memStore subscription hooks
-    this.on('update', updatePublicConfigStore)
-    // const providerState = this.getProviderState()
-    updatePublicConfigStore(this.getState())
-
-    function updatePublicConfigStore(memState) {
-      const chainId = networkController.getCurrentChainId()
-      if (memState.network !== 'loading') {
-        publicConfigStore.putState(selectPublicState(chainId, memState))
-      }
-    }
-
-    // eslint-disable-next-line unicorn/consistent-function-scoping
-    function selectPublicState(chainId, { isUnlocked, network, selectedAddress }) {
-      return JSON.stringify({
-        isUnlocked,
-        chainId,
-        networkVersion: network,
-        selectedAddress,
-      })
-    }
-
-    return publicConfigStore
   }
 
   /**
@@ -445,6 +415,14 @@ export default class TorusController extends SafeEventEmitter {
     })
   }
 
+  async newUnsignedPersonalMessage(messageParameters, request) {
+    const messageId = createRandomId()
+    const promise = this.personalMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageId)
+    this.sendUpdate()
+    this.opts.showUnconfirmedMessage(messageId, request)
+    return promise
+  }
+
   /**
    * Called when a Dapp suggests a new tx to be signed.
    * this wrapper needs to exist so we can provide a reference to
@@ -530,27 +508,43 @@ export default class TorusController extends SafeEventEmitter {
     }
     return undefined
   }
+  // network methods
+
+  async newAddChainRequest(addChainParams, request) {
+    const id = createRandomId()
+    return this.prefsController.addChainRequestAsync(addChainParams, request, id)
+  }
+
+  approveAddChain(reqId) {
+    return this.prefsController.approveAddChainRequest(reqId).then(() => this.getState())
+  }
+
+  cancelAddChain(reqId, callback) {
+    this.prefsController.rejectAddChainRequest(reqId)
+    if (callback && typeof callback === 'function') {
+      return callback(null, this.getState())
+    }
+    return undefined
+  }
+
+  async newSwitchChainRequest(switchChainParams, request) {
+    const id = createRandomId()
+    return this.networkController.switchChainRequestAsync(switchChainParams, request, id)
+  }
+
+  approveSwitchChain(reqId) {
+    return this.networkController.approveSwitchChainRequest(reqId).then(() => this.getState())
+  }
+
+  cancelSwitchChain(reqId, callback) {
+    this.networkController.rejectSwitchChainRequest(reqId)
+    if (callback && typeof callback === 'function') {
+      return callback(null, this.getState())
+    }
+    return undefined
+  }
 
   // personal_sign methods:
-
-  /**
-   * Called when a dapp uses the personal_sign method.
-   * This is identical to the Geth eth_sign method, and may eventually replace
-   * eth_sign.
-   *
-   * We currently define our eth_sign and personal_sign mostly for legacy Dapps.
-   *
-   * @param {Object} msgParams - The params of the message to sign & return to the Dapp.
-   * @param {Function} cb - The callback function called with the signature.
-   * Passed back to the requesting Dapp.
-   */
-  async newUnsignedPersonalMessage(messageParameters, request) {
-    const messageId = createRandomId()
-    const promise = this.personalMessageManager.addUnapprovedMessageAsync(messageParameters, request, messageId)
-    this.sendUpdate()
-    this.opts.showUnconfirmedMessage(messageId, request)
-    return promise
-  }
 
   /**
    * Signifies a user's approval to sign a personal_sign message in queue.
@@ -631,7 +625,6 @@ export default class TorusController extends SafeEventEmitter {
       const signature = await this.keyringController.signTypedData(address, cleanMessageParameters.data, messageVersion)
       this.typedMessageManager.setMsgStatusSigned(messageId, signature)
       this.getState()
-      return
     } catch (error) {
       log.info('TorusController - eth_signTypedData failed.', error)
       this.typedMessageManager.errorMessage(messageId, error)
@@ -737,7 +730,6 @@ export default class TorusController extends SafeEventEmitter {
       const rawMess = this.keyringController.decryptMessage(cleanMessageParameters.data, address)
       this.decryptMessageManager.setMsgStatusDecrypted(messageId, rawMess)
       this.getState()
-      return
     } catch (error) {
       log.info('TorusController - eth_getEncryptionPublicKey failed.', error)
       this.encryptionPublicKeyManager.errorMessage(messageId, error)
@@ -956,24 +948,6 @@ export default class TorusController extends SafeEventEmitter {
     // forward to metamask primary provider
     engine.push(providerAsMiddleware(provider))
     return engine
-  }
-
-  /**
-   * A method for providing our public config info over a stream.
-   * This includes info we like to be synchronous if possible, like
-   * the current selected account, and network ID.
-   *
-   * Since synchronous methods have been deprecated in web3,
-   * this is a good candidate for deprecation.
-   *
-   * @param {*} outStream - The stream to provide public config over.
-   */
-  setupPublicConfig(outStream) {
-    const configStream = storeAsStream(this.publicConfigStore)
-    pump(configStream, outStream, (error) => {
-      configStream.destroy()
-      if (error) log.error(error)
-    })
   }
 
   /**

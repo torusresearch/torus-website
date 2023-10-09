@@ -1,8 +1,5 @@
-import { BN } from 'ethereumjs-util'
-import Web3 from 'web3'
-
-const web3 = new Web3()
-const { sha3 } = web3.utils
+import BN from 'bn.js'
+import { AbiCoder, keccak256 } from 'ethers'
 
 class AbiDecoder {
   constructor(abi) {
@@ -22,7 +19,7 @@ class AbiDecoder {
       // Iterate new abi to generate method id's
       abiArray.map((abi) => {
         if (abi.name) {
-          const signature = sha3(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
+          const signature = keccak256(Buffer.from(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`, 'utf8'))
           if (abi.type === 'event') {
             this.state.methodIDs[signature.slice(2)] = abi
           } else {
@@ -43,7 +40,7 @@ class AbiDecoder {
       // Iterate new abi to generate method id's
       abiArray.map((abi) => {
         if (abi.name) {
-          const signature = sha3(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
+          const signature = keccak256(Buffer.from(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`, 'utf8'))
           if (abi.type === 'event') {
             if (this.state.methodIDs[signature.slice(2)]) {
               delete this.state.methodIDs[signature.slice(2)]
@@ -68,15 +65,14 @@ class AbiDecoder {
     const abiItem = this.state.methodIDs[methodID]
     if (abiItem) {
       const parameters = abiItem.inputs.map((item) => item.type)
-      const decoded = web3.eth.abi.decodeParameters(parameters, data.slice(10))
+      const decoded = AbiCoder.defaultAbiCoder().decode(parameters, Buffer.from(data.slice(10), 'hex'))
 
       const returnValueData = {
         name: abiItem.name,
         params: [],
       }
 
-      for (let i = 0; i < decoded.__length__; i += 1) {
-        const parameter = decoded[i]
+      for (const [i, parameter] of decoded.entries()) {
         let parsedParameter = parameter
         const isUint = abiItem.inputs[i].type.indexOf('uint') === 0
         const isInt = abiItem.inputs[i].type.indexOf('int') === 0
@@ -84,11 +80,10 @@ class AbiDecoder {
 
         if (isUint || isInt) {
           const isArray = Array.isArray(parameter)
-
           if (isArray) {
-            parsedParameter = parameter.map((value) => new BN(value).toString())
+            parsedParameter = parameter.map((value) => new BN(value.toString(16), 'hex').toString())
           } else {
-            parsedParameter = new BN(parameter).toString()
+            parsedParameter = new BN(parameter.toString(16), 'hex').toString()
           }
         }
 
@@ -135,7 +130,7 @@ class AbiDecoder {
             return undefined
           })
 
-          const decodedData = web3.eth.abi.decodeParameters(dataTypes, logData.slice(2))
+          const decodedData = AbiCoder.defaultAbiCoder().decode(dataTypes, logData.slice(2))
 
           // Loop topic and data to get the params
           method.inputs.map((parameter) => {

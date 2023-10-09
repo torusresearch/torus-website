@@ -1,11 +1,30 @@
-/* eslint-disable import/no-extraneous-dependencies */
+import { providerFromEngine } from '@metamask/eth-json-rpc-provider'
+import { JRPCEngine } from '@toruslabs/openlogin-jrpc'
 import assert from 'assert'
-import HttpProvider from 'web3-providers-http'
 
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
+import { createInfuraClient } from '../../../src/controllers/network/createInfuraClient'
 import { CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ERC1155 } from '../../../src/utils/enums'
 
-const MAINNET_PROVIDER = new HttpProvider('https://mainnet.infura.io/v3/341eacb578dd44a1a049cbc5f6fd4035')
+const { networkMiddleware } = createInfuraClient({ network: 'mainnet', projectId: '341eacb578dd44a1a049cbc5f6fd4035' })
+const engine = new JRPCEngine()
+engine.push(networkMiddleware)
+const provider = providerFromEngine(engine)
+provider.request = async (args) => {
+  const req = {
+    ...args,
+    id: Math.random().toString(36).slice(2),
+    jsonrpc: '2.0',
+  }
+  return new Promise((resolve, reject) => {
+    provider.sendAsync(req, (err, res) => {
+      if (err) reject(err)
+      else if (res.error) reject(res.error)
+      else resolve(res.result)
+    })
+  })
+}
+
 const GODSADDRESS = '0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab'
 const CKADDRESS = '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d'
 const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
@@ -16,7 +35,7 @@ describe('AssetsContractController', () => {
   let assetsContract
 
   beforeEach(() => {
-    assetsContract = new AssetsContractController({ provider: MAINNET_PROVIDER })
+    assetsContract = new AssetsContractController({ provider })
   })
 
   it('should determine if contract supports interface correctly', async () => {

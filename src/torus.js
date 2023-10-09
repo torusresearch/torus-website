@@ -1,12 +1,11 @@
 import { BasePostMessageStream } from '@toruslabs/openlogin-jrpc'
-import { randomId } from '@toruslabs/openlogin-utils'
+import { BrowserProvider } from 'ethers'
 import log from 'loglevel'
-import Web3 from 'web3'
 
 import config from './config'
 import TorusController from './controllers/TorusController'
 import setupMultiplex from './controllers/utils/setupMultiplex'
-import { getDefaultNetwork, getIFrameOrigin, getIFrameOriginObject, isMain } from './utils/utils'
+import { getDefaultNetwork, getIFrameOrigin, isMain, randomId, storageUtils } from './utils/utils'
 // import store from './store'
 let storeReference
 let deferredDispatch = []
@@ -38,9 +37,8 @@ const torus = {
 }
 let sessionData
 
-if (config.localStorageAvailable) {
-  const storage = !isMain ? (config.isCustomLogin === null ? window.sessionStorage : window.localStorage) : window.localStorage
-  const storageKey = config.isCustomLogin === true ? `torus_app_${getIFrameOriginObject().hostname}` : 'torus-app'
+if (config.storageAvailability[storageUtils.storageType]) {
+  const { storage, storageKey } = storageUtils
   sessionData = storage.getItem(storageKey)
 }
 
@@ -58,6 +56,8 @@ const torusController = new TorusController({
   unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
   showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
   openPopup: triggerUi.bind(window, 'bindopenPopup'),
+  showSwitchChain: triggerUi.bind(window, 'showSwitchChain'),
+  showAddChain: triggerUi.bind(window, 'showAddChain'),
   storeProps: () => {
     const { state } = getStore()
     const { selectedAddress, wallet } = state || {}
@@ -69,7 +69,7 @@ const torusController = new TorusController({
 torus.torusController = torusController
 
 torusController.provider.setMaxListeners(100)
-torus.web3 = new Web3(torusController.provider)
+torus.ethersProvider = new BrowserProvider(torus.torusController.provider, 'any')
 log.info('torus network', process.env.VUE_APP_PROXY_NETWORK)
 
 // we use this to start accounttracker balances
@@ -99,10 +99,6 @@ if (!isMain) {
   const providerOutStream = torus.metamaskMux.getStream('provider')
 
   torusController.setupUntrustedCommunication(providerOutStream, iframeOrigin)
-
-  const publicConfOutStream = torus.metamaskMux.getStream('publicConfig')
-
-  torusController.setupPublicConfig(publicConfOutStream)
 }
 
 export default torus

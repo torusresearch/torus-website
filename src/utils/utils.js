@@ -1,10 +1,21 @@
-import { concatSig } from '@metamask/eth-sig-util'
-import * as rskUtils from '@rsksmart/rsk-utils'
+import {
+  addHexPrefix,
+  ecsign,
+  isHexString,
+  isValidAddress,
+  privateToAddress,
+  pubToAddress,
+  stripHexPrefix,
+  toChecksumAddress,
+} from '@ethereumjs/util'
+import { concatSig, normalize } from '@metamask/eth-sig-util'
+import { keccak256 } from '@toruslabs/metadata-helpers'
+import { safeatob } from '@toruslabs/openlogin-utils'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
-import { addHexPrefix, BN, ecsign, keccak, privateToAddress, pubToAddress, stripHexPrefix } from 'ethereumjs-util'
+import BN from 'bn.js'
+import bowser, { PLATFORMS_MAP } from 'bowser'
 import log from 'loglevel'
-import { isAddress, isHexStrict, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import { languageMap } from '../plugins/i18n-setup'
@@ -16,6 +27,7 @@ import {
   ACTIVITY_ACTION_SEND,
   ALLOWED_VERIFIERS,
   APPLE,
+  ARBITRUM_MAINNET,
   ARBITRUM_MAINNET_CHAIN_ID,
   ARBITRUM_MAINNET_CODE,
   ARBITRUM_TESTNET_CHAIN_ID,
@@ -31,6 +43,8 @@ import {
   BSC_MAINNET_CODE,
   BSC_TESTNET_CHAIN_ID,
   BSC_TESTNET_CODE,
+  CELO_MAINNET_CHAIN_ID,
+  CELO_MAINNET_CODE,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   CONTRACT_TYPE_ERC1155,
@@ -40,6 +54,7 @@ import {
   ENVIRONMENT_TYPE_NOTIFICATION,
   ENVIRONMENT_TYPE_POPUP,
   ETH,
+  FACEBOOK,
   getIpfsEndpoint,
   GITHUB,
   GOERLI,
@@ -66,6 +81,7 @@ import {
   OKC_MAINNET_CODE,
   OKC_TESTNET_CHAIN_ID,
   OKC_TESTNET_CODE,
+  OPTIMISM_MAINNET,
   OPTIMISM_MAINNET_CHAIN_ID,
   OPTIMISM_MAINNET_CODE,
   OPTIMISM_TESTNET_CHAIN_ID,
@@ -97,7 +113,6 @@ import {
   TWITTER,
   WECHAT,
   WEIBO,
-  WYRE,
   XANPOOL,
   // XDAI,
   XDAI_CHAIN_ID,
@@ -247,7 +262,7 @@ export function addressSlicer(address = '') {
 }
 
 export function significantDigits(number, perc = false, length_ = 2) {
-  let input = !BigNumber.isBigNumber(number) ? new BigNumber(number) : number
+  let input = BigNumber.isBigNumber(number) ? number : new BigNumber(number)
   if (input.isZero()) return input
   if (perc) {
     input = input.times(new BigNumber(100))
@@ -285,7 +300,7 @@ export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', th
     return `${
       negativeSign +
       (j ? i.slice(0, j) + thousands : '') +
-      i.slice(j).replace(/(\d{3})(?=\d)/g, `$1${thousands}`) +
+      i.slice(j).replaceAll(/(\d{3})(?=\d)/g, `$1${thousands}`) +
       (decimals
         ? decimal +
           Math.abs(amount - i)
@@ -297,13 +312,6 @@ export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', th
     log.error(error)
   }
   return null
-}
-
-export async function isSmartContractAddress(address, web3) {
-  const code = await web3.eth.getCode(address)
-  // Geth will return '0x', and ganache-core v2.2.1 will return '0x0'
-  const codeIsEmpty = !code || code === '0x' || code === '0x0'
-  return !codeIsEmpty
 }
 
 export function getEtherScanHashLink(txHash, network) {
@@ -332,7 +340,7 @@ export function getStatus(status) {
 }
 
 export async function getEthTxStatus(hash, web3) {
-  const receipt = await web3.eth.getTransactionReceipt(hash)
+  const receipt = await web3.getTransactionReceipt(hash)
   if (receipt === null) return 'pending'
   if (receipt && receipt.status) return 'confirmed'
   if (receipt && !receipt.status) return 'rejected'
@@ -340,17 +348,17 @@ export async function getEthTxStatus(hash, web3) {
 }
 
 export const broadcastChannelOptions = {
-  // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
+  type: 'server', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
   webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
 export function validateVerifierId(selectedTypeOfLogin, value, chainId) {
   if (selectedTypeOfLogin === ETH) {
-    const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+    const parsedChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
     if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
       return isAddressByChainId(value, chainId) || 'walletSettings.invalidEth'
     }
-    return isAddress(value) || 'walletSettings.invalidEth'
+    return isValidAddress(value) || 'walletSettings.invalidEth'
   }
   if (selectedTypeOfLogin === GOOGLE) {
     return (
@@ -452,50 +460,34 @@ export const paymentProviders = {
         { value: 'mkr', display: 'MKR' },
         { value: 'matic', display: 'MATIC' },
         { value: 'usdt', display: 'USDT' },
+        { value: 'uni', display: 'UNI' },
         { value: 'usdc', display: 'USDC' },
+        { value: 'weth', display: 'WETH' },
       ],
       [MATIC]: [
         { value: 'eth_polygon', display: 'ETH' },
         { value: 'matic_polygon', display: 'MATIC' },
         { value: 'usdc_polygon', display: 'USDC' },
+        { value: 'usdt_polygon', display: 'USDT' },
       ],
       [BSC_MAINNET]: [
         { value: 'bnb_bsc', display: 'BNB' },
         { value: 'busd_bsc', display: 'BUSD' },
       ],
-      [AVALANCHE_MAINNET]: [{ value: 'avax_cchain', display: 'AVAX' }],
+      [AVALANCHE_MAINNET]: [
+        { value: 'avax_cchain', display: 'AVAX' },
+        { value: 'usdc_cchain', display: 'USDC' },
+      ],
+      [ARBITRUM_MAINNET]: [
+        { value: 'eth_arbitrum', display: 'ETH' },
+        { value: 'usdc_arbitrum', display: 'USDC' },
+      ],
+      [OPTIMISM_MAINNET]: [
+        { value: 'eth_optimism', display: 'ETH' },
+        { value: 'usdc_optimism', display: 'USDC' },
+      ],
     },
     includeFees: true,
-    api: true,
-    enforceMax: false,
-  },
-  [WYRE]: {
-    line1: 'Apple Pay/ Debit/ Credit Card',
-    line2: '4.9% + 30¢ or 5 USD',
-    line3: '$250/day',
-    status: ACTIVE,
-    logoExtension: SVG,
-    supportPage: 'https://support.sendwyre.com/en/',
-    minOrderValue: 5,
-    maxOrderValue: 500,
-    validCurrencies: supportedFiatCurrencies(WYRE),
-    validCryptoCurrenciesByChain: {
-      [MAINNET]: [
-        { value: 'AAVE', display: 'AAVE' },
-        { value: 'BAT', display: 'BAT' },
-        { value: 'BUSD', display: 'BUSD' },
-        { value: 'DAI', display: 'DAI' },
-        { value: 'ETH', display: 'ETH' },
-        { value: 'MKR', display: 'MKR' },
-        { value: 'UNI', display: 'UNI' },
-        { value: 'USDC', display: 'USDC' },
-        { value: 'USDT', display: 'USDT' },
-      ],
-      [MATIC]: [{ value: 'MUSDC', display: 'USDC' }],
-      // AVAXC? or AVAX?
-      [AVALANCHE_MAINNET]: [{ value: 'AVAX', display: 'AVAX' }],
-    },
-    includeFees: false,
     api: true,
     enforceMax: false,
   },
@@ -513,16 +505,37 @@ export const paymentProviders = {
       [MAINNET]: [
         { value: 'ETH', display: 'ETH' },
         { value: 'DAI', display: 'DAI' },
+        { value: 'BAT', display: 'BAT' },
         { value: 'USDC', display: 'USDC' },
         { value: 'USDT', display: 'USDT' },
       ],
       [MATIC]: [
+        { value: 'MATIC_BAT', display: 'BAT' },
         { value: 'MATIC_DAI', display: 'DAI' },
         { value: 'MATIC_MATIC', display: 'MATIC' },
         { value: 'MATIC_USDC', display: 'USDC' },
+        { value: 'MATIC_USDT', display: 'USDT' },
       ],
-      // what about AVAXC?
-      [AVALANCHE_MAINNET]: [{ value: 'AVAX', display: 'AVAX' }],
+      [AVALANCHE_MAINNET]: [
+        { value: 'AVAX_AVAX', display: 'AVAX' },
+        { value: 'AVAX_USDC', display: 'USDC' },
+        { value: 'AVAX_USDT', display: 'USDT' },
+      ],
+      [ARBITRUM_MAINNET]: [
+        { value: 'ARBITRUM_ETH', display: 'ETH' },
+        { value: 'ARBITRUM_USDC.e	', display: 'USDC' },
+        { value: 'ARBITRUM_USDT', display: 'USDT' },
+      ],
+      [OPTIMISM_MAINNET]: [
+        { value: 'OPTIMISM_DAI', display: 'DAI' },
+        { value: 'OPTIMISM_OPTIMISM', display: 'OPTIMISM' },
+        { value: 'OPTIMISM_USDC', display: 'USDC' },
+        { value: 'OPTIMISM_USDT', display: 'USDT' },
+      ],
+      [BSC_MAINNET]: [
+        { value: 'BSC_BNB', display: 'BNB' },
+        { value: 'BSC_BUSD', display: 'BUSD' },
+      ],
       // Temporary unavailable
       // [XDAI]: [{ value: 'XDAI_XDAI', display: 'XDAI' }],
     },
@@ -545,6 +558,7 @@ export const paymentProviders = {
       [MAINNET]: [
         { value: 'ETH', display: 'ETH' },
         { value: 'USDT', display: 'USDT' },
+        { value: 'USDC', display: 'USDC' },
       ],
     },
     includeFees: true,
@@ -574,6 +588,8 @@ export const paymentProviders = {
         { value: 'BUSD', display: 'BUSD' },
         { value: '1INCH', display: '1INCH' },
       ],
+      [AVALANCHE_MAINNET]: [{ value: 'AVAX', display: 'AVAX' }],
+      [MATIC]: [{ value: 'MATIC', display: 'MATIC' }],
     },
     includeFees: true,
     api: true,
@@ -591,27 +607,37 @@ export const paymentProviders = {
     validCurrencies: supportedFiatCurrencies(TRANSAK),
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
+        { value: '1INCH', display: '1INCH' },
+        { value: 'BAT', display: 'BAT' },
         { value: 'AAVE', display: 'AAVE' },
         { value: 'DAI', display: 'DAI' },
         { value: 'ETH', display: 'ETH' },
         { value: 'USDC', display: 'USDC' },
         { value: 'USDT', display: 'USDT' },
-        { value: 'CHAIN', display: 'CHAIN' },
       ],
       [MATIC]: [
+        { value: 'BAT', display: 'BAT' },
         { value: 'AAVE', display: 'AAVE' },
         { value: 'DAI', display: 'DAI' },
         { value: 'MATIC', display: 'MATIC' },
         { value: 'USDC', display: 'USDC' },
         { value: 'USDT', display: 'USDT' },
         { value: 'WETH', display: 'WETH' },
-        { value: 'CHAIN', display: 'CHAIN' },
       ],
       [BSC_MAINNET]: [
+        { value: 'BAT', display: 'BAT' },
         { value: 'BNB', display: 'BNB' },
         { value: 'BUSD', display: 'BUSD' },
       ],
       [AVALANCHE_MAINNET]: [{ value: 'AVAX', display: 'AVAX' }],
+      [OPTIMISM_MAINNET]: [
+        { value: 'ETH', display: 'ETH' },
+        { value: 'USDC', display: 'USDC' },
+      ],
+      [ARBITRUM_MAINNET]: [
+        { value: 'USDC', display: 'USDC' },
+        { value: 'ETH', display: 'ETH' },
+      ],
     },
     includeFees: true,
     api: true,
@@ -630,16 +656,15 @@ export const paymentProviders = {
     validCryptoCurrenciesByChain: {
       [MAINNET]: [
         { value: 'ETH', display: 'ETH' },
+        { value: 'DAI', display: 'DAI' },
+        { value: 'MKR', display: 'MKR' },
         { value: 'USDT', display: 'USDT' },
         { value: 'BUSD', display: 'BUSD' },
-        { value: 'LINK', display: 'LINK' },
         { value: 'USDC', display: 'USDC' },
-        { value: 'CHZ', display: 'CHZ' },
         { value: 'BAT', display: 'BAT' },
-        { value: 'MANA', display: 'MANA' },
         { value: 'AAVE', display: 'AAVE' },
         { value: 'COMP', display: 'COMP' },
-        { value: 'ENJ', display: 'ENJ' },
+        { value: 'UNI', display: 'UNI' },
       ],
       [MATIC]: [{ value: 'MATIC', display: 'MATIC' }],
       // [BSC_MAINNET]: [{ value: 'BNB', display: 'BNB' }],
@@ -652,7 +677,7 @@ export const paymentProviders = {
 
 /**
  * {
- *   [MAINNET]: [SIMPLEX, TRANSAK, WYRE, ...],
+ *   [MAINNET]: [SIMPLEX, TRANSAK, ...],
  *   [BSC_MAINNET]: [SIMPLEX, ...],
  *   ...
  * }
@@ -711,6 +736,7 @@ export const standardNetworkId = {
   [ARBITRUM_TESTNET_CODE.toString()]: ARBITRUM_TESTNET_CHAIN_ID,
   [OPTIMISM_MAINNET_CODE.toString()]: OPTIMISM_MAINNET_CHAIN_ID,
   [OPTIMISM_TESTNET_CODE.toString()]: OPTIMISM_TESTNET_CHAIN_ID,
+  [CELO_MAINNET_CODE.toString()]: CELO_MAINNET_CHAIN_ID,
   [AVALANCHE_MAINNET_CODE.toString()]: AVALANCHE_MAINNET_CHAIN_ID,
   [AVALANCHE_TESTNET_CODE.toString()]: AVALANCHE_TESTNET_CHAIN_ID,
 }
@@ -734,12 +760,17 @@ export const getIFrameOriginObject = () => {
 }
 
 export const storageUtils = {
-  storage: !isMain ? (config.isCustomLogin === null ? window.sessionStorage : window.localStorage) : window.localStorage,
-  storageKey: config.isCustomLogin === true ? `torus_app_${config.namespace || getIFrameOriginObject().hostname}` : 'torus-app',
-  openloginStoreKey: config.isCustomLogin === true ? `openlogin_store_${config.namespace || getIFrameOriginObject().hostname}` : 'openlogin_store',
+  storage: config.storageAvailability.local ? window.localStorage : undefined,
+  storageType: 'local',
+  storageKey: config.isCustomLogin ? `torus_app_${config.sessionNamespace || getIFrameOriginObject().hostname}` : 'torus-app',
+  openloginStoreKey: config.isCustomLogin ? `openlogin_store_${config.sessionNamespace || getIFrameOriginObject().hostname}` : 'openlogin_store',
 }
 
-export const getSessionIdFromStorage = () => JSON.parse(storageUtils.storage.getItem(`${storageUtils.openloginStoreKey}`) || '{}').sessionId
+export const getSessionIdFromStorage = () => {
+  if (!config.storageAvailability[storageUtils.storageType]) return ''
+  const sessionData = storageUtils.storage.getItem(`${storageUtils.openloginStoreKey}`) || '{}'
+  return JSON.parse(sessionData).sessionId || ''
+}
 
 export const fakeStream = {
   write: () => {},
@@ -842,10 +873,10 @@ export const handleRedirectParameters = (hash, queryParameters) => {
   let error = ''
   if (!queryParameters.preopenInstanceId) {
     if (Object.keys(hashParameters).length > 0 && hashParameters.state) {
-      instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {}
+      instanceParameters = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {}
       error = hashParameters.error_description || hashParameters.error || error
     } else if (Object.keys(queryParameters).length > 0 && queryParameters.state) {
-      instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {}
+      instanceParameters = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {}
       if (queryParameters.error) error = queryParameters.error
     }
   }
@@ -857,24 +888,36 @@ export function generateAddressFromPubKey(point) {
 }
 
 export function generateAddressFromPrivateKey(privKey) {
-  return toChecksumAddress(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex'))
+  return toChecksumAddress(normalize(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex')))
+}
+
+export function rskToChecksumAddress(address, chainId) {
+  const address2 = stripHexPrefix(address).toLowerCase()
+  const chainId2 = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
+  const prefix = Number.isNaN(chainId2) ? '' : `${chainId2.toString()}0x`
+  const hash = keccak256(`${prefix}${address2}`).toString('hex')
+  return `0x${[...address2].map((b, i) => (Number.parseInt(hash[i], 16) >= 8 ? b.toUpperCase() : b)).join('')}`
+}
+
+export function rskIsValidChecksumAddress(address, chainId) {
+  return isValidAddress(address) && rskToChecksumAddress(address, chainId) === address
 }
 
 export function toChecksumAddressByChainId(address, chainId) {
-  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const parsedChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
   if (!isAddressByChainId(address, chainId)) return address
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
-    return rskUtils.toChecksumAddress(address, chainId)
+    return rskToChecksumAddress(address, chainId)
   }
-  return toChecksumAddress(address)
+  return toChecksumAddress(normalize(address))
 }
 
 export function isAddressByChainId(address, chainId) {
-  const parsedChainId = Number.parseInt(chainId, isHexStrict(chainId) ? 16 : 10)
+  const parsedChainId = Number.parseInt(chainId, isHexString(chainId) ? 16 : 10)
   if (parsedChainId === RSK_MAINNET_CODE || parsedChainId === RSK_TESTNET_CODE) {
-    return rskUtils.isValidChecksumAddress(address, chainId)
+    return rskIsValidChecksumAddress(address, chainId)
   }
-  return isAddress(address)
+  return isValidAddress(address)
 }
 
 export function downloadItem(filename, text) {
@@ -975,9 +1018,9 @@ export function getVerifierOptions() {
   }
 }
 
-export async function validateContractAddress(web3, address, chainId) {
+export async function validateContractAddress(ethersProvider, address, chainId) {
   if (isAddressByChainId(address, chainId)) {
-    const contractCode = await web3.eth.getCode(address.toLowerCase())
+    const contractCode = await ethersProvider.getCode(address.toLowerCase())
     // user account address will return 0x for networks , except ganache returns 0x0
     if (contractCode === '0x' || contractCode === '0x0') {
       return false
@@ -1039,7 +1082,7 @@ export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
     if (Number(maxPriorityFeePerGas) < Number(high.suggestedMaxPriorityFeePerGas)) {
       const finalTranslateKey = translateKey || 'walletTransfer.transferLessThan'
       // medium
-      return t(finalTranslateKey).replace(
+      return t(finalTranslateKey).replaceAll(
         /{time}/gi,
         translateKey ? `< ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}` : toHumanReadableTime(low.maxWaitTimeEstimate, t)
       )
@@ -1047,14 +1090,14 @@ export function gasTiming(maxPriorityFeePerGas, gasFees, t, translateKey) {
     const finalTranslateKey = translateKey || 'walletTransfer.transferLessThan'
 
     // high
-    return t(finalTranslateKey).replace(
+    return t(finalTranslateKey).replaceAll(
       /{time}/gi,
       translateKey ? `< ${toHumanReadableTime(high.minWaitTimeEstimate, t)}` : toHumanReadableTime(high.minWaitTimeEstimate, t)
     )
   }
   const finalTranslateKey = translateKey || 'walletTransfer.transferApprox'
 
-  return t(finalTranslateKey).replace(
+  return t(finalTranslateKey).replaceAll(
     /{time}/gi,
     translateKey ? `~ ${toHumanReadableTime(low.maxWaitTimeEstimate, t)}` : toHumanReadableTime(low.maxWaitTimeEstimate, t)
   )
@@ -1064,9 +1107,9 @@ const SECOND_CUTOFF = 90
 function toHumanReadableTime(milliseconds, t) {
   const seconds = Math.ceil((milliseconds || 1) / 1000)
   if (seconds <= SECOND_CUTOFF) {
-    return t('walletTransfer.fee-edit-time-sec').replace(/{time}/gi, seconds)
+    return t('walletTransfer.fee-edit-time-sec').replaceAll(/{time}/gi, seconds)
   }
-  return t('walletTransfer.fee-edit-time-min').replace(/{time}/gi, Math.ceil(seconds / 60))
+  return t('walletTransfer.fee-edit-time-min').replaceAll(/{time}/gi, Math.ceil(seconds / 60))
 }
 
 export function bnGreaterThan(a, b) {
@@ -1136,7 +1179,7 @@ export function generateTorusAuthHeaders(privateKey, publicAddress) {
   let challenge = Date.now()
   challenge = ((challenge - (challenge % 1000)) / 1000).toString()
   const message = getTorusMessage(Buffer.from(challenge, 'utf8'))
-  const hash = keccak(message)
+  const hash = keccak256(message)
   const messageSig = ecsign(hash, Buffer.from(privateKey.padStart(64, '0'), 'hex'))
   const signature = concatSig(messageSig.v, messageSig.r, messageSig.s)
   const authHeaders = {
@@ -1178,7 +1221,7 @@ export const parsePopupUrl = (url) => {
   if (localUrl.hostname !== window.location.hostname) return localUrl
   localUrl.searchParams.append('isCustomLogin', config.isCustomLogin)
   if (config.isCustomLogin) {
-    localUrl.searchParams.append('namespace', iframeOrigin.hostname)
+    localUrl.searchParams.append('sessionNamespace', iframeOrigin.hostname)
   }
   const sessionId = getSessionIdFromStorage()
   if (sessionId) {
@@ -1191,4 +1234,24 @@ export const getDefaultNetwork = () => {
   if (window.location.hostname === 'polygon.tor.us') return SUPPORTED_NETWORK_TYPES[MATIC]
   if (window.location.hostname === 'bnb.tor.us') return SUPPORTED_NETWORK_TYPES[BSC_MAINNET]
   return SUPPORTED_NETWORK_TYPES[MAINNET]
+}
+
+export const randomId = () => Math.random().toString(36).slice(2)
+
+export const getV3Filename = (address) => {
+  const ts = new Date()
+  return ['UTC--', ts.toJSON().replace(/:/g, '-'), '--', address.toString('hex')].join('')
+}
+
+export const isMobileOrTablet = () => {
+  const browser = bowser.getParser(window.navigator.userAgent)
+  const platform = browser.getPlatform()
+  return platform.type === PLATFORMS_MAP.tablet || platform.type === PLATFORMS_MAP.mobile
+}
+
+export function getTimeout({ typeOfLogin = undefined, isPaymentTx = false }) {
+  if ((typeOfLogin === FACEBOOK || typeOfLogin === LINE || isPaymentTx) && isMobileOrTablet()) {
+    return 1000 * 60 * 5 // 5 minutes to finish the login
+  }
+  return 1000 * 10 // 10 seconds
 }

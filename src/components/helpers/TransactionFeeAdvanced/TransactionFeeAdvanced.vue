@@ -325,7 +325,7 @@ export default {
     },
     gasFees(newValue, oldValue) {
       if (!isEqual(newValue, oldValue)) {
-        this.updateDetails(this.newSelectedSpeed !== '' ? this.newSelectedSpeed : this.oldSelectedSpeed)
+        this.updateDetails(this.newSelectedSpeed === '' ? this.oldSelectedSpeed : this.newSelectedSpeed)
       }
     },
     showAdvance(value) {

@@ -1,10 +1,10 @@
 import { normalize as normalizeAddress } from '@metamask/eth-sig-util'
-import { ObservableStore } from '@metamask/obs-store'
 import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 
 import { COINGECKO_PLATFORMS_CHAIN_CODE_MAP, COINGECKO_SUPPORTED_CURRENCIES } from '../utils/enums'
 import { idleTimeTracker } from '../utils/utils'
+import { ObservableStore } from './utils/ObservableStore'
 
 // By default, poll every 10 minutes
 const DEFAULT_INTERVAL = 600 * 1000
@@ -32,8 +32,9 @@ class TokenRatesController {
    */
   async updateExchangeRates() {
     const contractExchangeRates = {}
-    const currentChainId = typeof this.getChainId === 'function' ? this.getChainId() : null
-    const platform = COINGECKO_PLATFORMS_CHAIN_CODE_MAP[currentChainId]?.platform
+    const currentChainId = typeof this.getChainId === 'function' ? this.getChainId() : null // hex string
+    const currentChainIdNumber = Number.parseInt(currentChainId, 16)
+    const platform = COINGECKO_PLATFORMS_CHAIN_CODE_MAP[currentChainIdNumber]?.platform
     const nativeCurrency = this.currency ? this.currency.getState().nativeCurrency.toLowerCase() : 'eth'
     const supportedCurrency = COINGECKO_SUPPORTED_CURRENCIES.has(nativeCurrency)
       ? nativeCurrency

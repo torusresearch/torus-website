@@ -1,6 +1,5 @@
-import { addHexPrefix, isValidPrivate, stripHexPrefix, toBuffer } from 'ethereumjs-util'
-import Wallet, { thirdparty as ThirdParty } from 'ethereumjs-wallet'
-import log from 'loglevel'
+import { addHexPrefix, isValidPrivate, stripHexPrefix, toBuffer } from '@ethereumjs/util'
+import { Wallet } from 'ethers'
 
 const accountImporter = {
   async importAccount(strategy, arguments_) {
@@ -28,13 +27,11 @@ const accountImporter = {
     'JSON File': async (input, password) => {
       let wallet
       try {
-        wallet = ThirdParty.fromEtherWallet(input, password)
+        wallet = await Wallet.fromEncryptedJson(JSON.stringify(input), password)
       } catch (error) {
+        // eslint-disable-next-line no-undef
         log.info('Attempt to import as EtherWallet format failed, trying V3...', error)
-      }
-
-      if (!wallet) {
-        wallet = await Wallet.fromV3(input, password, true)
+        throw error
       }
 
       return walletToPrivateKey(wallet)
@@ -43,7 +40,7 @@ const accountImporter = {
 }
 
 function walletToPrivateKey(wallet) {
-  const privateKeyString = wallet.getPrivateKeyString()
+  const privateKeyString = wallet.privateKey
   return stripHexPrefix(privateKeyString)
 }
 

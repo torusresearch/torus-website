@@ -1,7 +1,8 @@
-import { ObservableStore } from '@metamask/obs-store'
 import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'
 import log from 'loglevel'
+
+import { ObservableStore } from './utils/ObservableStore'
 
 /**
  * Represents, and contains data about, an 'eth_getEncryptionPublicKey' type request. These are created when

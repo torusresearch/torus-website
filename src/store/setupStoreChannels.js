@@ -1,7 +1,7 @@
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import log from 'loglevel'
 import pump from 'pump'
-import stream from 'stream'
+import { PassThrough } from 'readable-stream'
 
 import torus, { injectStore as onloadInjection } from '../torus'
 import { SUPPORTED_NETWORK_TYPES } from '../utils/enums'
@@ -14,7 +14,7 @@ controllerInjection(VuexStore)
 
 if (!isMain) {
   // setup handlers for communicationStream
-  const passthroughStream = new stream.PassThrough({ objectMode: true })
+  const passthroughStream = new PassThrough({ objectMode: true })
   passthroughStream.on('data', (...arguments_) => {
     log.info('p data:', arguments_)
   })
@@ -61,14 +61,12 @@ if (!isMain) {
     const {
       name,
       data: {
-        enabledVerifiers = {},
         apiKey = 'torus-default',
         whiteLabel = {},
         buttonPosition = '',
         buttonSize = 56,
         torusWidgetVisibility = true,
         loginConfig = {},
-        skipTKey = false,
         mfaLevel = 'default',
         network = SUPPORTED_NETWORK_TYPES.mainnet,
       },
@@ -83,8 +81,7 @@ if (!isMain) {
         VuexStore.commit('setWhiteLabel', undefined)
       }
       VuexStore.commit('setTorusWidgetVisibility', torusWidgetVisibility)
-      VuexStore.commit('setLoginConfig', { enabledVerifiers, loginConfig })
-      VuexStore.commit('setSkipTKey', skipTKey)
+      VuexStore.commit('setLoginConfig', { loginConfig })
       VuexStore.commit('setMfaLevel', mfaLevel)
       const { isRehydrationComplete } = VuexStore.state
       if (isRehydrationComplete) {

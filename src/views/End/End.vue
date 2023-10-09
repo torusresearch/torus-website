@@ -44,7 +44,7 @@
 
 <script>
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
-import { safeatob } from '@toruslabs/openlogin-utils'
+import { safeatob, storageAvailable } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import BoxLoader from '../../components/helpers/BoxLoader'
@@ -63,6 +63,7 @@ export default {
       channelId: '',
       accounts: {},
       isCustomVerifier: false,
+      whiteLabel: {},
     }
   },
   async created() {
@@ -70,39 +71,30 @@ export default {
     try {
       const { hash } = this.$route
       const hashUrl = new URL(`${window.location.origin}?${hash.slice(1)}`)
-      const result = hashUrl.searchParams.get('result')
+      const error = hashUrl.searchParams.get('error') || ''
 
-      let whiteLabel = {}
-      let loginConfig = {}
-
-      let loginError = ''
-
-      let resultParams = {
-        store: {},
-      }
-      const sessionId = hashUrl.searchParams.get('sessionId') || ''
-      const sessionNamespace = hashUrl.searchParams.get('sessionNamespace') || ''
-      if (result) {
-        resultParams = JSON.parse(safeatob(result))
-        loginError = resultParams.error
-        const appStateParams = JSON.parse(safeatob(resultParams.store.appState))
-        whiteLabel = appStateParams.whiteLabel || {}
-        loginConfig = appStateParams.loginConfig || {}
-        this.isCustomVerifier = Object.keys(loginConfig).length > 0
+      if (error) {
+        if (storageAvailable('localStorage')) {
+          this.channelId = localStorage.getItem('broadcast_channel_id')
+        }
+        this.broadcastData = {
+          type: POPUP_RESULT,
+          error,
+        }
+        await this.continueToApp()
+        return
       }
 
-      this.whiteLabel = whiteLabel
+      const paramSessionNamespace = hashUrl.searchParams.get('sessionNamespace') || ''
 
-      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig, sessionNamespace)
-      await openLoginHandler.openLoginInstance._syncState({
-        ...resultParams,
-        store: {
-          ...resultParams.store,
-          sessionId,
-          sessionNamespace,
-        },
-      })
-      const { state } = openLoginHandler.openLoginInstance
+      const openLoginHandler = await OpenLoginHandler.getInstance({}, {}, paramSessionNamespace)
+      const { appState } = openLoginHandler.state.userInfo || {}
+      const parsedAppState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(appState || ''))) || '{}')
+      this.whiteLabel = parsedAppState.whiteLabel || {}
+      openLoginHandler.whiteLabel = this.whiteLabel
+      const loginConfig = parsedAppState.loginConfig || {}
+      openLoginHandler.loginConfig = this.loginConfig
+      this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
       const { keys, postboxKey } = openLoginHandler.getKeysInfo()
       const { keys: extraKeys, userDapps } = await openLoginHandler.getUserDapps(postboxKey)
@@ -126,10 +118,6 @@ export default {
 
       // set default selected account
       this.selectedAccount = Object.keys(this.accounts)[0] ?? ''
-
-      // broadcast channel ID
-      const { appState } = state.store.getStore()
-      const parsedAppState = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(appState))))
       this.channelId = parsedAppState.instanceId
 
       // prepare data
@@ -139,9 +127,8 @@ export default {
         keys,
         postboxKey,
         userDapps,
-        error: loginError,
-        sessionId: openLoginHandler.getSessionId(),
-        sessionNamespace: openLoginHandler.getSessionNamespace(),
+        error,
+        sessionId: openLoginHandler.sessionId,
       }
 
       // if there are no app accounts to choose, continue
@@ -161,18 +148,28 @@ export default {
       this.loading = true
       try {
         // move selected key to the first position of keys
-        const { keys } = this.broadcastData
-        const id = keys.findIndex((k) => k.ethAddress === this.selectedAccount)
-        if (id > -1) {
-          const selectedKey = keys[id]
-          keys.splice(id, 1)
-          keys.unshift(selectedKey)
+        const { keys = [], error } = this.broadcastData
+        if (!error) {
+          const id = keys.findIndex((k) => k.ethAddress === this.selectedAccount)
+          if (id > -1) {
+            const selectedKey = keys[id]
+            keys.splice(id, 1)
+            keys.unshift(selectedKey)
+          }
         }
 
         const bc = new BroadcastChannel(`redirect_openlogin_channel_${this.channelId}`, broadcastChannelOptions)
         await bc.postMessage({ data: this.broadcastData })
         bc.close()
         log.info('posted info')
+        if (storageAvailable('localStorage')) {
+          localStorage.removeItem('broadcast_channel_id')
+        }
+        // wait for 100ms before closing window
+        // this is mostly in case of facebook/line logins on mobile devices.
+        setTimeout(() => {
+          window.close()
+        }, 100)
       } catch (error) {
         log.error(error, 'something went wrong')
       }

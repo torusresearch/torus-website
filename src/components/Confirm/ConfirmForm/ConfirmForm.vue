@@ -223,6 +223,30 @@
         @triggerRejectCustomToken="triggerDeny"
       />
     </template>
+
+    <template v-if="type === MESSAGE_TYPE.SWITCH_CHAIN">
+      <NetworkSwitch
+        :origin="origin.href"
+        :new-network-host="switchChainParams.rpc_url"
+        :new-network-name="switchChainParams.network_name"
+        :current-network-host="switchChainParams.currentNetworkHost"
+        :current-network-name="switchChainParams.currentNetworkName"
+        :new-chain-id="switchChainParams.chain_id"
+        @triggerRejectNetworkSwitch="triggerDeny"
+        @triggerApproveNetworkSwitch="triggerSign"
+      />
+    </template>
+    <template v-if="type === MESSAGE_TYPE.ADD_CHAIN">
+      <AddNetwork
+        :origin="origin.href"
+        :network-host="addChainParams.rpc_url"
+        :network-name="addChainParams.network_name"
+        :chain-id="addChainParams.chain_id"
+        :symbol="addChainParams.symbol"
+        @triggerRejectAddNetwork="triggerDeny"
+        @triggerApproveAddNetwork="triggerSign"
+      />
+    </template>
     <template
       v-if="
         type === MESSAGE_TYPE.PERSONAL_SIGN ||
@@ -258,7 +282,7 @@
       </v-layout>
       <v-layout wrap align-center mx-6 my-6>
         <v-flex xs12 mb-2>
-          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
+          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}</div>
 
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
@@ -356,7 +380,7 @@
         </v-flex>
       </v-layout>
       <v-layout wrap>
-        <v-flex xs12 mt-8 mx-6>
+        <v-flex xs12 my-8 mx-6>
           <v-layout mx-n2>
             <v-flex xs6 px-2>
               <v-btn block text large class="text_2--text" @click="triggerDeny">
@@ -385,10 +409,10 @@
 
 <script>
 import BigNumber from 'bignumber.js'
+import { formatEther } from 'ethers'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
 import { mapActions, mapGetters } from 'vuex'
-import { fromWei } from 'web3-utils'
 
 import TokenHandler from '../../../handlers/Token/TokenHandler'
 import torus from '../../../torus'
@@ -417,6 +441,8 @@ import ShowToolTip from '../../helpers/ShowToolTip'
 import TransactionFee from '../../helpers/TransactionFee'
 import TransactionSpeedSelect from '../../helpers/TransactionSpeedSelect'
 import AddAssetConfirm from '../AddAssetConfirm'
+import AddNetwork from '../AddNetwork'
+import NetworkSwitch from '../NetworkSwitch'
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
 
@@ -429,6 +455,8 @@ export default {
     NetworkDisplay,
     ShowToolTip,
     AddAssetConfirm,
+    NetworkSwitch,
+    AddNetwork,
   },
   props: {
     currentConfirmModal: {
@@ -509,6 +537,26 @@ export default {
         type: '',
         options: {},
         metadata: {},
+      },
+
+      switchChainParams: {
+        origin: '',
+        currentNetworkName: '',
+        currentNetworkHost: '',
+        type: '',
+        rpc_url: '',
+        chain_id: 0,
+        ticker: '',
+        network_name: '',
+        id: '',
+      },
+      addChainParams: {
+        origin: '',
+        network_name: '',
+        rpc_url: '',
+        chain_id: 0,
+        symbol: '',
+        block_explorer_url: '',
       },
     }
   },
@@ -610,7 +658,7 @@ export default {
       return `~ ${totalCost} ${this.selectedCurrency}`
     },
     currencyMultiplier() {
-      const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
+      const currencyMultiplierNumber = this.selectedCurrency === 'ETH' ? 1 : this.currencyData[this.selectedCurrency.toLowerCase()] || 1
       return new BigNumber(currencyMultiplierNumber)
     },
     getCurrencyRate() {
@@ -655,30 +703,25 @@ export default {
       if (type === MESSAGE_TYPE.WATCH_ASSET) {
         this.assetParams = { ...msgParams.msgParams.assetParams }
       }
+      if (type === MESSAGE_TYPE.ADD_CHAIN) {
+        this.addChainParams = { origin: this.origin, ...msgParams.msgParams.addChainParams }
+      }
+      if (type === MESSAGE_TYPE.SWITCH_CHAIN) {
+        this.switchChainParams = { origin: this.origin, ...msgParams.msgParams.switchChainParams }
+      }
       if (type === MESSAGE_TYPE.ETH_DECRYPT) {
         const { msgParams: { data, from } = {}, id = '' } = msgParams || {}
         this.id = id
         this.message = data
         this.sender = from
-      } else if (type !== TRANSACTION_TYPES.STANDARD_TRANSACTION) {
-        const { msgParams: { message, typedMessages } = {}, id = '' } = msgParams || {}
-        let finalTypedMessages = typedMessages
-        try {
-          finalTypedMessages = typedMessages && JSON.parse(typedMessages)
-        } catch (error) {
-          log.error(error)
-        }
-        this.id = id
-        this.message = message
-        this.typedMessages = finalTypedMessages
-      } else {
+      } else if (type === TRANSACTION_TYPES.STANDARD_TRANSACTION) {
         let finalValue = new BigNumber('0')
         const { simulationFails, id, transactionCategory, methodParams, contractParams, txParams: txObject, userInfo } = txParams || {}
         const { value, to, data, from: sender, gas, gasPrice, maxFeePerGas, maxPriorityFeePerGas } = txObject || {}
         log.info(txParams, 'txParams')
         const { reason = '' } = simulationFails || {}
         if (value) {
-          finalValue = new BigNumber(fromWei(value.toString()))
+          finalValue = new BigNumber(formatEther(value.toString()))
         }
         let txDataParameters = ''
         if (contractParams.isSpecial && transactionCategory.toLowerCase() === TRANSACTION_TYPES.TOKEN_METHOD_TRANSFER) {
@@ -711,18 +754,29 @@ export default {
         const checkSummedTo = toChecksumAddressByChainId(to, network.chainId)
         const tokenObject = contractParams
         let decimals = new BigNumber('0')
+        let { symbol } = tokenObject
         if (tokenObject.decimals) {
           decimals = new BigNumber(tokenObject.decimals)
-        } else if (!tokenObject.decimals && tokenObject.erc20) {
+        }
+        if (tokenObject.erc20) {
           const tokenHandler = new TokenHandler({
             ...tokenObject,
             address: checkSummedTo,
-            web3: torus.web3,
+            provider: torus.ethersProvider,
           })
-          decimals = new BigNumber(await tokenHandler.getDecimals())
+          if (!tokenObject.decimals) {
+            decimals = new BigNumber(await tokenHandler.getDecimals())
+          }
+          if (!tokenObject.symbol || tokenObject.symbol === 'ERC20') {
+            try {
+              symbol = await tokenHandler.getSymbol()
+            } catch {
+              log.warn(`Failed to fetch token name for token: ${checkSummedTo}`)
+            }
+          }
         }
         this.userInfo = userInfo
-        this.selectedToken = tokenObject.erc20 ? getFungibleTokenStandard(txParams?.chainId) : tokenObject.symbol
+        this.selectedToken = tokenObject.erc20 ? symbol || getFungibleTokenStandard(txParams?.chainId) : 'ERC20'
         this.id = id
         this.network = network
         this.transactionCategory = transactionCategory
@@ -771,7 +825,7 @@ export default {
         this.gasEstimate = new BigNumber(gas, 16) // gas number
         this.gasEstimateDefault = new BigNumber(gas, 16) // gas number
         this.txData = data // data hex
-        this.txDataParams = txDataParameters !== '' ? JSON.stringify(txDataParameters, null, 2) : ''
+        this.txDataParams = txDataParameters === '' ? '' : JSON.stringify(txDataParameters, null, 2)
         this.sender = sender // address of sender
         this.gasCost = this.gasEstimate.times(gweiGasPrice).div(new BigNumber('10').pow(new BigNumber('9')))
         this.txFees = this.gasCost.times(this.currencyMultiplier)
@@ -793,6 +847,17 @@ export default {
           this.errorMsg = ''
           this.topUpErrorShow = false
         }
+      } else {
+        const { msgParams: { message, typedMessages } = {}, id = '' } = msgParams || {}
+        let finalTypedMessages = typedMessages
+        try {
+          finalTypedMessages = typedMessages && JSON.parse(typedMessages)
+        } catch (error) {
+          log.error(error)
+        }
+        this.id = id
+        this.message = message
+        this.typedMessages = finalTypedMessages
       }
       this.type = type // type of tx
     },
@@ -800,6 +865,18 @@ export default {
       return addressSlicer(user) || '0x'
     },
     triggerSign() {
+      if (this.type === MESSAGE_TYPE.ADD_CHAIN || this.type === MESSAGE_TYPE.SWITCH_CHAIN) {
+        const params = {
+          id: this.id,
+          txType: this.type,
+          approve: true,
+        }
+        if (this.isConfirmModal) {
+          this.$emit('triggerSign', params)
+        } else {
+          this.$emit('triggerSign', params)
+        }
+      }
       const gasPriceHex = `0x${this.gasPrice.times(weiInGwei).toString(16)}`
       const gasHex = this.gasEstimate.eq(new BigNumber('0')) ? undefined : `0x${this.gasEstimate.toString(16)}`
       const customNonceValue = this.nonce >= 0 ? `0x${this.nonce.toString(16)}` : undefined

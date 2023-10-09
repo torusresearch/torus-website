@@ -2,11 +2,11 @@
   <v-container fluid fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <div v-if="isCustomVerifier" class="text_2--text font-weight-bold text-body-2 mb-10">
-          {{ t('login.constructYourKey') }}
-          <a :href="dappUrl" class="torusBrand1--text" target="_blank" rel="noreferrer noopener">{{ dappName }}</a>
-        </div>
         <BoxLoader :white-label="whiteLabel" :is-custom-verifier="isCustomVerifier" />
+
+        <i18n v-if="isCustomVerifier" tag="div" path="login.constructYourKeyCustom" class="text_2--text font-weight-bold text-body-2 mt-4">
+          <a :href="dappUrl" class="torusBrand1--text" target="_blank" rel="noreferrer noopener">{{ dappName }}</a>
+        </i18n>
       </v-flex>
       <div class="footer">
         <div class="powered-by">{{ t('login.selfCustodial') }}</div>
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { safeatob } from '@toruslabs/openlogin-utils'
+import { safeatob, storageAvailable } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import BoxLoader from '../../components/helpers/BoxLoader'
@@ -46,20 +46,29 @@ export default {
   },
   async created() {
     try {
-      const { loginProvider, state, skipTKey, mfaLevel, namespace, ...rest } = this.$route.query
+      const { loginProvider, state, mfaLevel, sessionNamespace, ...rest } = this.$route.query
       const stateParams = JSON.parse(safeatob(state))
-      log.info('logging in with', loginProvider, state, skipTKey, rest, mfaLevel)
-      const { whiteLabel, loginConfig = {}, origin } = stateParams
-      this.whiteLabel = whiteLabel
+      log.info('logging in with', loginProvider, state, rest, mfaLevel)
+      const { whiteLabel = {}, loginConfig = {}, origin, instanceId } = stateParams
+      if (storageAvailable('localStorage')) {
+        localStorage.setItem('broadcast_channel_id', instanceId)
+      }
       this.iframeOrigin = origin
       this.isCustomVerifier = Object.keys(loginConfig).length > 0
 
-      const openLoginHandler = OpenLoginHandler.getInstance(whiteLabel, loginConfig, namespace)
+      if (!whiteLabel.isActive) {
+        if (!whiteLabel.theme) whiteLabel.theme = {}
+        whiteLabel.theme.isDark = this.$vuetify.theme.dark
+        whiteLabel.theme.colors = { torusBrand1: this.$vuetify.theme.currentTheme.torusBrand1 }
+        whiteLabel.defaultLanguage = this.$i18n.locale
+      }
+      this.whiteLabel = whiteLabel
+
+      const openLoginHandler = await OpenLoginHandler.getInstance(whiteLabel, loginConfig, sessionNamespace)
       await openLoginHandler.openLoginInstance.login({
         loginProvider,
         getWalletKey: true,
         appState: state,
-        skipTKey: skipTKey === 'true',
         mfaLevel,
         extraLoginOptions: {
           ...rest,

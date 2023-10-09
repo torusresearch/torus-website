@@ -11,35 +11,23 @@ jobs:
     name: Test release
     strategy:
       matrix:
-        node: ['16.x']
+        node: ['18.x']
         os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Get npm cache directory
-        id: npm-cache
-        run: |
-          echo "::set-output name=dir::$(npm config get cache)"
-
-      - name: Node dependency cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.npm-cache.outputs.dir }}
-          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ matrix.os }}-node-
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install
 
       - name: Pre-build setup
         run: npm run pre-build
@@ -57,7 +45,7 @@ jobs:
     name: Build & deploy testing.tor.us
     strategy:
       matrix:
-        node: ['16.x']
+        node: ['18.x']
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
@@ -65,33 +53,28 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Get npm cache directory
-        id: npm-cache
-        run: |
-          echo "::set-output name=dir::$(npm config get cache)"
-
-      - name: Node dependency cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.npm-cache.outputs.dir }}
-          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ matrix.os }}-node-
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install
 
       - name: Run build
         run: npm run build:testing
         env:
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
       # Upload to S3
       - name: sync s3
@@ -105,19 +88,18 @@ jobs:
 
       # Invalidate Cloudfront (this action)
       - name: invalidate
-        uses: chetan/invalidate-cloudfront-action@master
-        env:
-          DISTRIBUTION: ${{ secrets.DISTRIBUTION_TESTING_TOR_US }}
-          PATHS: '/*'
-          AWS_REGION: 'us-east-1'
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        uses: chaitanyapotti/cloudfront-update-distribution@v2
+        with:
+          cloudfront-distribution-id: ${{ secrets.DISTRIBUTION_TESTING_TOR_US }}
+          cloudfront-invalidation-path: '/*'
+          cloudfront-invalidation-required: true
+          cloudfront-wait-for-service-update: false
 
   build-deploy-lrc:
     name: Build & deploy lrc.tor.us
     strategy:
       matrix:
-        node: ['16.x']
+        node: ['18.x']
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
@@ -125,33 +107,28 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Get npm cache directory
-        id: npm-cache
-        run: |
-          echo "::set-output name=dir::$(npm config get cache)"
-
-      - name: Node dependency cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.npm-cache.outputs.dir }}
-          key: ${{ matrix.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ matrix.os }}-node-
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install
 
       - name: Run build
         run: npm run build:lrc
         env:
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
       # Upload to S3
       - name: sync s3
@@ -165,10 +142,9 @@ jobs:
 
       # Invalidate Cloudfront (this action)
       - name: invalidate
-        uses: chetan/invalidate-cloudfront-action@master
-        env:
-          DISTRIBUTION: ${{ secrets.DISTRIBUTION_LRC_TOR_US }}
-          PATHS: '/*'
-          AWS_REGION: 'us-east-1'
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        uses: chaitanyapotti/cloudfront-update-distribution@v2
+        with:
+          cloudfront-distribution-id: ${{ secrets.DISTRIBUTION_LRC_TOR_US }}
+          cloudfront-invalidation-path: '/*'
+          cloudfront-invalidation-required: true
+          cloudfront-wait-for-service-update: false

@@ -44,31 +44,7 @@ export default {
       const queryParameters = this.$router.currentRoute.query
       const { error, instanceParameters, hashParameters } = handleRedirectParameters(hash, queryParameters)
       log.info(hashParameters, queryParameters)
-      if (!queryParameters.preopenInstanceId) {
-        this.textVisible = true
-        bc = new BroadcastChannel(`redirect_channel_${instanceParameters.instanceId}`, broadcastChannelOptions)
-        bc.addEventListener('message', (ev) => {
-          if (ev.success) {
-            bc.close()
-            log.info('posted', { queryParameters, hashParameters, instanceParameters })
-          } else {
-            window.close()
-            this.showCloseText = true
-          }
-        })
-        await bc.postMessage({
-          data: {
-            instanceParams: instanceParameters,
-            hashParams: hashParameters,
-            queryParams: queryParameters,
-          },
-          error,
-        })
-
-        setTimeout(() => {
-          window.location.href = window.location.origin + window.location.search + window.location.hash
-        }, 5000)
-      } else {
+      if (queryParameters.preopenInstanceId) {
         bc = new BroadcastChannel(`preopen_channel_${queryParameters.preopenInstanceId}`, broadcastChannelOptions)
         bc.addEventListener('message', (ev) => {
           const { preopenInstanceId: oldId, payload, message } = ev.data
@@ -93,8 +69,38 @@ export default {
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             bc.close()
+            setTimeout(() => {
+              window.close()
+            }, 1000)
           }
         })
+      } else {
+        this.textVisible = true
+        bc = new BroadcastChannel(`redirect_channel_${instanceParameters.instanceId}`, broadcastChannelOptions)
+        bc.addEventListener('message', (ev) => {
+          if (ev.success) {
+            bc.close()
+            log.info('posted', { queryParameters, hashParameters, instanceParameters })
+            setTimeout(() => {
+              window.close()
+            }, 1000)
+          } else {
+            window.close()
+            this.showCloseText = true
+          }
+        })
+        await bc.postMessage({
+          data: {
+            instanceParams: instanceParameters,
+            hashParams: hashParameters,
+            queryParams: queryParameters,
+          },
+          error,
+        })
+
+        setTimeout(() => {
+          window.location.href = window.location.origin + window.location.search + window.location.hash
+        }, 5000)
       }
     } catch (error) {
       log.info(error, 'something went wrong')

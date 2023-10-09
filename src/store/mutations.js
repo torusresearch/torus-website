@@ -121,7 +121,7 @@ export default {
   },
   setMetaData(state, payload) {
     const keys = Object.keys(payload)
-    const key = keys[keys.length - 1] || ''
+    const key = keys.at(-1) || ''
     const value = payload[key] || { name: '', icon: '' }
     state.iframeMetadata = {
       origin: key,
@@ -129,12 +129,9 @@ export default {
     }
   },
   setLoginConfig(state, payload) {
-    const { enabledVerifiers, loginConfig } = payload
-    if (enabledVerifiers && loginConfig) {
+    const { loginConfig } = payload
+    if (loginConfig) {
       const finalLoginConfig = merge(config.loginConfig, loginConfig)
-      Object.keys(enabledVerifiers).forEach((x) => {
-        if (finalLoginConfig[x]) finalLoginConfig[x].showOnModal = !enabledVerifiers[x] ? false : finalLoginConfig[x].showOnModal
-      })
       Object.keys(finalLoginConfig).forEach((x) => {
         // Fallback to verifier name as login provider if not set
         if (!finalLoginConfig[x].loginProvider) finalLoginConfig[x].loginProvider = x
@@ -150,12 +147,6 @@ export default {
     state.embedState = {
       ...state.embedState,
       apiKey: payload || 'torus-default',
-    }
-  },
-  setSkipTKey(state, payload) {
-    state.embedState = {
-      ...state.embedState,
-      skipTKey: payload || false,
     }
   },
   setMfaLevel(state, payload) {
@@ -177,12 +168,11 @@ export default {
     state.embedState = { ...state.embedState, buttonSize: payload || 56 }
   },
   async setWhiteLabel(state, payload) {
-    if (!payload && config.sessionStorageAvailable) {
+    if (!payload) {
       state.whiteLabel = {
         isActive: false,
       }
       localThemeSet(THEME_LIGHT_BLUE_NAME, state)
-      sessionStorage.removeItem('torus-white-label')
       return
     }
     state.whiteLabel = {
@@ -192,7 +182,7 @@ export default {
     }
     localThemeSet(undefined, state)
     // Set locale here from defaultLanguage
-    if (config.sessionStorageAvailable && payload) {
+    if (payload) {
       // Checks if whitelabel defaultLanguage is supported
       const selectedLocale = LOCALES.find((localeInner) => localeInner.value === payload.defaultLanguage)
       if (selectedLocale) {
@@ -205,8 +195,6 @@ export default {
           i18n.mergeLocaleMessage(key, payload.customTranslations[key])
         })
       }
-
-      sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
     }
   },
   setOAuthModalStatus(state, payload) {
@@ -242,6 +230,12 @@ export default {
   setUnapprovedAssets(state, unApprovedAssets) {
     state.unApprovedAssets = unApprovedAssets
   },
+  setUnapprovedAddChainRequests(state, unapprovedAddChainRequests) {
+    state.unapprovedAddChainRequests = unapprovedAddChainRequests
+  },
+  setUnapprovedSwitchChainRequests(state, unapprovedSwitchChainRequests) {
+    state.unapprovedSwitchChainRequests = unapprovedSwitchChainRequests
+  },
   setPostboxKey(state, payload) {
     state.postboxKey = payload
   },
@@ -266,6 +260,9 @@ export default {
   setUserDapps(state, payload) {
     state.userDapps = payload
   },
+  setIsPlugin(state, payload) {
+    state.isPlugin = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
@@ -282,8 +279,8 @@ function localThemeSet(payload, state) {
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
   }
-  if (config.localStorageAvailable && payload) localStorage.setItem('torus-theme', payload)
-  if (config.localStorageAvailable && !localStorage.getItem('torus-theme')) localStorage.setItem('torus-theme', state.theme)
+  if (config.storageAvailability.local && payload) localStorage.setItem('torus-theme', payload)
+  if (config.storageAvailability.local && !localStorage.getItem('torus-theme')) localStorage.setItem('torus-theme', state.theme)
 }
 async function updateDefaultLanguage(state, language) {
   state.locale = language

@@ -152,6 +152,13 @@ export function unapprovedAssetMsgsHandler({ unApprovedAssets }) {
   getStore().commit('setUnapprovedAssets', unApprovedAssets)
 }
 
+export function unapprovedSwitchChainMsgsHandler({ unapprovedSwitchChainRequests }) {
+  getStore().commit('setUnapprovedSwitchChainRequests', unapprovedSwitchChainRequests)
+}
+
+export function unapprovedAddChainMsgsHandler({ unapprovedAddChainRequests }) {
+  getStore().commit('setUnapprovedAddChainRequests', unapprovedAddChainRequests)
+}
 export function announcementsHandler(state) {
   getStore().commit('setAnnouncements', state)
 }

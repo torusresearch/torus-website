@@ -21,11 +21,11 @@
       </v-list-item>
     </v-list>
 
-    <div class="px-3 mb-3 account-list">
+    <div class="px-3 mb-3 account-list d-flex flex-column">
       <div
         v-for="(acc, index) in wallets"
         :key="acc.address"
-        class="d-flex flex-column account-list__item mb-2 py-2 px-3"
+        class="d-flex flex-column account-list__item mb-2 py-4 px-3"
         :class="{ active: acc.address === selectedAddress, 'theme--dark': $vuetify.theme.dark }"
         @click="changeAccount(acc.address)"
       >
@@ -36,9 +36,7 @@
             </v-icon>
           </div>
           <div class="caption text_1--text font-weight-bold account-list__user-email" :style="{ paddingLeft: '2px' }">
-            <span>
-              {{ userEmail(acc) }}
-            </span>
+            <span>{{ userEmail(acc) }}</span>
           </div>
           <div class="caption ml-auto text_2--text text-right">
             <span>{{ acc.totalPortfolioValue }} {{ selectedCurrency }}</span>

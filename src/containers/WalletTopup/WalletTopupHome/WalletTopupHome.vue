@@ -1,21 +1,9 @@
 <template>
   <div>
-    <div
+    <SupportErrorBanner
       v-if="noSupportedProvidersForNetwork"
-      class="error-box d-md-flex align-center justify-center error lighten-4 py-3 py-sm-5 px-5"
-      :class="{ 'is-mobile': $vuetify.breakpoint.smAndDown }"
-    >
-      <div class="d-flex justify-md-center mb-2 mb-md-0">
-        <v-icon size="22" class="black--text mr-2">$vuetify.icons.alert</v-icon>
-        <div class="text-caption text-sm-body-2">{{ t('walletTopUp.topUpNotSupported', [networkType.networkName]) }}</div>
-      </div>
-
-      <div class="text-right" style="margin-top: -4px">
-        <router-link class="text-uppercase text-decoration-none text-body-2 ml-1" :to="{ name: 'walletSettings' }" :style="{ lineHeight: 0 }">
-          {{ t('walletTopUp.changeNetwork') }}
-        </router-link>
-      </div>
-    </div>
+      :message="t('walletTopUp.notSupportedBanner', [t('navBar.topUp'), networkType.networkName])"
+    />
 
     <NoSupportedProvidersForNetworkPlaceholder v-if="noSupportedProvidersForNetwork">
       <!-- Placeholder Topup Header -->
@@ -57,6 +45,7 @@
 <script>
 import { mapState } from 'vuex'
 
+import SupportErrorBanner from '../../../components/helpers/SupportErrorBanner'
 import TopupProviders from '../../../components/WalletTopup/TopupProviders'
 import WalletTopupHeader from '../../../components/WalletTopup/WalletTopupHeader'
 import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../../../utils/enums'
@@ -65,6 +54,7 @@ import NoSupportedProvidersForNetworkPlaceholder from './NoSupportedProvidersFor
 
 export default {
   components: {
+    SupportErrorBanner,
     TopupProviders,
     NoSupportedProvidersForNetworkPlaceholder,
     WalletTopupHeader,

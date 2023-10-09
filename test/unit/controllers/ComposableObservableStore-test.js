@@ -1,7 +1,7 @@
-import { ObservableStore } from '@metamask/obs-store'
 import assert from 'assert'
 
 import ComposableObservableStore from '../../../src/controllers/utils/ComposableObservableStore'
+import { ObservableStore } from '../../../src/controllers/utils/ObservableStore'
 
 describe('ComposableObservableStore', () => {
   it('should register initial state', () => {

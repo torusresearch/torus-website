@@ -1,31 +1,17 @@
-import { randomId } from '@toruslabs/openlogin-utils'
 import log from 'loglevel'
 
 import config from '../../config'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import {
-  BANXA,
-  BANXA_NETWORK_MAP,
-  MAINNET,
-  MERCURYO,
-  MOONPAY,
-  RAMPNETWORK,
-  TRANSAK,
-  TRANSAK_NETWORK_MAP,
-  WYRE,
-  WYRE_NETWORK_MAP,
-  XANPOOL,
-} from '../../utils/enums'
-import { fakeStream, paymentProviders } from '../../utils/utils'
+import { BANXA, BANXA_NETWORK_MAP, MAINNET, MERCURYO, MOONPAY, RAMPNETWORK, TRANSAK, TRANSAK_NETWORK_MAP, XANPOOL } from '../../utils/enums'
+import { fakeStream, getTimeout, paymentProviders, randomId } from '../../utils/utils'
 import banxa from './banxa'
 import mercuryo from './mercuryo'
 import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
 import simplex from './simplex'
 import transak from './transak'
-import wyre from './wyre'
 import xanpool from './xanpool'
 
 const topupStream = (torus && torus.communicationMux && torus.communicationMux.getStream('topup')) || fakeStream
@@ -54,7 +40,6 @@ export default {
   ...simplex,
   ...rampnetwork,
   ...moonpay,
-  ...wyre,
   ...xanpool,
   ...mercuryo,
   ...transak,
@@ -113,7 +98,7 @@ export default {
           // moonpay
           const currentOrder = {
             currency: { code: selectedParameters.selectedCryptoCurrency.toLowerCase() || '' },
-            baseCurrencyAmount: selectedParameters.fiatValue || '',
+            totalAmount: selectedParameters.fiatValue || '',
             baseCurrency: { code: selectedParameters.selectedCurrency || '' },
           }
 
@@ -122,20 +107,6 @@ export default {
             colorCode: vuetify.framework.theme.themes.light.primary.base,
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
-          })
-          handleSuccess(success)
-        } else if (provider === WYRE) {
-          // wyre
-          const network = WYRE_NETWORK_MAP[selectedParameters.chainNetwork]
-          const { success } = await dispatch('fetchWyreOrder', {
-            currentOrder: {
-              destCurrency: selectedParameters.selectedCryptoCurrency || undefined,
-              sourceAmount: selectedParameters.fiatValue || undefined,
-              sourceCurrency: selectedParameters.selectedCurrency || undefined,
-            },
-            preopenInstanceId,
-            selectedAddress: selectedParameters.selectedAddress,
-            network,
           })
           handleSuccess(success)
         } else if (provider === XANPOOL) {
@@ -204,7 +175,12 @@ export default {
           Object.keys(params).forEach((key) => {
             if (params[key]) finalUrl.searchParams.append(key, params[key])
           })
-        const handledWindow = new PopupWithBcHandler({ url: finalUrl, preopenInstanceId, channelName: `redirect_channel_${channelId}` })
+        const handledWindow = new PopupWithBcHandler({
+          url: finalUrl,
+          preopenInstanceId,
+          channelName: `redirect_channel_${channelId}`,
+          timeout: getTimeout({ isPaymentTx: true }),
+        })
         const result = await handledWindow.handle()
         const { queryParams: { transactionStatus = '' } = {} } = result
         log.info(result)
