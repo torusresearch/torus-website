@@ -32,7 +32,7 @@
   "dependencies": {
     "@ethereumjs/common": "^3.2.0",
     "@ethereumjs/tx": "^4.2.0",
-    "@ethereumjs/util": "^8.1.0",
+    "@ethereumjs/util": "^9.0.0",
     "@gtm-support/vue2-gtm": "^2.0.0",
     "@metamask/contract-metadata": "^2.3.1",
     "@metamask/eth-json-rpc-infura": "^8.1.1",
