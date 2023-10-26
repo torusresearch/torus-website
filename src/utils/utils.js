@@ -887,7 +887,7 @@ export function generateAddressFromPubKey(point) {
 }
 
 export function generateAddressFromPrivateKey(privKey) {
-  return toChecksumAddress(normalize(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex')).toString('hex')))
+  return toChecksumAddress(normalize(Buffer.from(privateToAddress(Buffer.from(privKey.padStart(64, '0'), 'hex'))).toString('hex')))
 }
 
 export function rskToChecksumAddress(address, chainId) {
