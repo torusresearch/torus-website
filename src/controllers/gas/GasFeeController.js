@@ -139,7 +139,6 @@ class GasFeeController {
 
     try {
       if (isEIP1559Compatible) {
-        // TODO: kovan is not working due to a bug in metamask api
         const estimates = await this.fetchGasEstimates(this.EIP1559APIEndpoint.replace('<chain_id>', `${chainId}`))
         const { suggestedMaxPriorityFeePerGas, suggestedMaxFeePerGas } = estimates.medium
         const estimatedGasFeeTimeBounds = this.getTimeEstimate(suggestedMaxPriorityFeePerGas, suggestedMaxFeePerGas)
@@ -160,6 +159,7 @@ class GasFeeController {
       }
     } catch {
       try {
+        log.log('fetching gas fee estimates from dqwd API')
         const estimates = await this.fetchEthGasPriceEstimate(this.ethQuery)
         newState = {
           gasFeeEstimates: estimates,

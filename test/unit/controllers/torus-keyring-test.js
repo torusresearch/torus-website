@@ -58,7 +58,11 @@ describe('torus-keyring', () => {
       const serialized = await keyring.serialize()
       assert.strictEqual(serialized[0], stripHexPrefix(testAccount.key))
       const accounts = await keyring.getAccounts()
-      assert.deepStrictEqual(accounts, [testAccount.address], 'accounts match expected')
+      assert.deepStrictEqual(
+        accounts.map((i) => i.toLowerCase()),
+        [testAccount.address],
+        'accounts match expected'
+      )
     })
   })
 
@@ -67,7 +71,11 @@ describe('torus-keyring', () => {
       const keyring = new TorusKeyring([testAccount.key])
       const accounts = await keyring.getAccounts()
       const expectedAccounts = [testAccount.address]
-      assert.deepStrictEqual(accounts, expectedAccounts, 'accounts match expected')
+      assert.deepStrictEqual(
+        accounts.map((i) => i.toLowerCase()),
+        expectedAccounts,
+        'accounts match expected'
+      )
     })
   })
 
@@ -78,7 +86,11 @@ describe('torus-keyring', () => {
       log.info(await keyring.getAccounts())
       const accounts = await keyring.getAccounts()
       const expectedAccounts = [testAccount.address, testAccount2.address]
-      assert.deepStrictEqual(accounts, expectedAccounts, 'accounts match expected')
+      assert.deepStrictEqual(
+        accounts.map((i) => i.toLowerCase()),
+        expectedAccounts,
+        'accounts match expected'
+      )
     })
   })
 
@@ -133,9 +145,8 @@ describe('torus-keyring', () => {
         const v = bytesToBigInt(hexToBytes(`0x${sgn.slice(130, 132)}`))
         const m = hexToBytes(messageHashHex)
         const pub = ecrecover(m, v, r, s)
-        const adr = `0x${pubToAddress(pub).toString('hex')}`
-
-        assert.strictEqual(adr, address, 'recovers address from signature correctly')
+        const adr = `0x${Buffer.from(pubToAddress(pub)).toString('hex')}`
+        assert.strictEqual(adr, address.toLowerCase(), 'recovers address from signature correctly')
       })
     })
   })
@@ -337,17 +348,21 @@ describe('torus-keyring', () => {
 
   it('should fail when sign typed message format is wrong', async () => {
     const keyringController = new TorusKeyring([testAccount.key])
-    const messageParameters = [{}]
+    // need to add this to the test as the signTypedData function is
+    // checking on type of messageParameters.
+    const messageParameters = [{ type: 'int' }]
     let error1
     try {
       await keyringController.signTypedData(testAccount.address, messageParameters, 'V1')
     } catch (error) {
+      console.log('error1', error)
       error1 = error
     }
     let error2
     try {
       await keyringController.signTypedData(testAccount.address, messageParameters, 'V3')
     } catch (error) {
+      console.log('error2', error)
       error2 = error
     }
     console.error(error1)

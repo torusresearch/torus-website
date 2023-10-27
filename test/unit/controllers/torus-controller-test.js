@@ -2,15 +2,15 @@
 import assert from 'assert'
 import clone from 'clone'
 import EthQuery from 'eth-query'
-import nock from 'nock'
 import sinon from 'sinon'
 import { obj as createThoughStream } from 'through2'
+import { MockAgent, setGlobalDispatcher } from 'undici'
 
+import config from '../../../src/config'
 import MetaMaskController from '../../../src/controllers/TorusController'
-import firstTimeState from '../../localhostState'
 // import createTxMeta from '../lib/createTxMeta'
 import setupMultiplex from '../../../src/controllers/utils/setupMultiplex'
-import config from '../../../src/config'
+import firstTimeState from '../../localhostState'
 
 const TORUS_API = config.api
 const TEST_ADDRESS = '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'
@@ -22,8 +22,8 @@ const testAccount = {
   address: '0xa12164fed66719297d2cf407bb314d07feb12c02',
 }
 
-const TEST_GAS_FEE_API = 'https://mock-gas-server.herokuapp.com/<chain_id>'
-const TEST_LEGACY_FEE_API = 'https://test/<chain_id>'
+const TEST_GAS_FEE_API = 'https://mock-gas-server.herokuapp.com'
+const TEST_LEGACY_FEE_API = 'https://test'
 
 describe('MetaMaskController', () => {
   let metamaskController
@@ -31,10 +31,14 @@ describe('MetaMaskController', () => {
   const noop = () => {}
 
   beforeEach(async () => {
-    nock.cleanAll()
-    // nock.enableNetConnect((host) => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
-    nock(TEST_GAS_FEE_API.replace('<chain_id>', '1'))
-      .get(/.+/u)
+    const mockAgent = new MockAgent()
+    setGlobalDispatcher(mockAgent)
+
+    const gasFeePool = mockAgent.get(TEST_GAS_FEE_API)
+    const legacyGasFeePool = mockAgent.get(TEST_LEGACY_FEE_API)
+    gasFeePool
+      .intercept({ path: '/1', method: 'get' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         low: {
           minWaitTimeEstimate: 60_000,
@@ -58,36 +62,46 @@ describe('MetaMaskController', () => {
       })
       .persist()
 
-    nock(TEST_LEGACY_FEE_API.replace('<chain_id>', '0x1'))
-      .get(/.+/u)
+    legacyGasFeePool
+      .intercept({ path: '/1', method: 'get' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         SafeGasPrice: '22',
         ProposeGasPrice: '25',
         FastGasPrice: '30',
       })
       .persist()
-    nock('https://min-api.cryptocompare.com')
-      .get('/data/price')
-      .query((url) => url['fsym'] === 'ETH' && url['tsyms'] === 'USD')
+    const cryptoAPI = mockAgent.get('https://min-api.cryptocompare.com')
+
+    cryptoAPI
+      .intercept({ path: '/data/price', method: 'get', query: { fsym: 'ETH', tsyms: 'USD' } })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(
         200,
         '{"base": "ETH", "quote": "USD", "bid": 288.45, "ask": 288.46, "volume": 112888.17569277, "exchange": "bitfinex", "total_volume": 272175.00106721005, "num_exchanges": 8, "timestamp": 1506444677}'
       )
 
-    nock('https://min-api.cryptocompare.com')
-      .get('/data/price')
-      .query((url) => url['fsym'] === 'ETH' && url['tsyms'] === 'JPY')
+    cryptoAPI
+      .intercept({ path: '/data/price', method: 'get', query: { fsym: 'ETH', tsyms: 'JPY' } })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(
         200,
         '{"base": "ETH", "quote": "JPY", "bid": 32300.0, "ask": 32400.0, "volume": 247.4616071, "exchange": "kraken", "total_volume": 247.4616071, "num_exchanges": 1, "timestamp": 1506444676}'
       )
 
-    nock('https://api.infura.io').persist().get(/.*/).reply(200)
+    const infuraAPI = mockAgent.get('https://api.infura.io')
+    infuraAPI.intercept({ method: 'get', path: /.*/ }).reply(200).persist()
 
-    nock('https://min-api.cryptocompare.com').persist().get(/.*/).reply(200, '{"JPY":12415.9}')
+    cryptoAPI
+      .intercept({ method: 'get', path: /.*/ })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
+      .reply(200, '{"JPY":12415.9}')
+      .persist()
 
-    nock(TORUS_API)
-      .post('/customnetwork/rpc')
+    const torusAPI = mockAgent.get(TORUS_API)
+    torusAPI
+      .intercept({ path: '/customnetwork/rpc', method: 'post' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(201, {
         data: {
           network_name: '',
@@ -103,11 +117,11 @@ describe('MetaMaskController', () => {
       showUnapprovedTx: noop,
       showUnconfirmedMessage: noop,
       encryptor: {
-        encrypt: function (_, object) {
+        encrypt(_, object) {
           this.object = object
           return Promise.resolve('mock-encrypted')
         },
-        decrypt: function () {
+        decrypt() {
           return Promise.resolve(this.object)
         },
       },
@@ -135,12 +149,11 @@ describe('MetaMaskController', () => {
   })
 
   afterEach(() => {
-    nock.cleanAll()
     sandbox.restore()
   })
 
-  describe('#getAccounts', function () {
-    it('returns first address when dapp calls web3.eth.getAccounts', async function () {
+  describe('#getAccounts', () => {
+    it('returns first address when dapp calls web3.eth.getAccounts', async () => {
       await metamaskController.addAccount(testAccount.key, testAccount.address)
       await metamaskController.setSelectedAccount(testAccount.address)
       const res = await metamaskController.networkController._baseProviderParams.getAccounts()
@@ -162,7 +175,7 @@ describe('MetaMaskController', () => {
       assert.strictEqual(balance, gotten)
     })
 
-    it('should ask the network for a balance when not known by accountTracker', async function () {
+    it('should ask the network for a balance when not known by accountTracker', async () => {
       const accounts = {}
       const balance = '0x14ced5122ce0a000'
       const ethQuery = new EthQuery()
@@ -170,7 +183,7 @@ describe('MetaMaskController', () => {
         callback(undefined, balance)
       })
 
-      metamaskController.accountTracker.store.putState({ accounts: accounts })
+      metamaskController.accountTracker.store.putState({ accounts })
 
       const gotten = await metamaskController.getBalance(TEST_ADDRESS, ethQuery)
 
@@ -200,18 +213,18 @@ describe('MetaMaskController', () => {
   //   })
   // })
 
-  describe('#setCustomRpc', function () {
+  describe('#setCustomRpc', () => {
     let rpcTarget
 
-    beforeEach(async function () {
+    beforeEach(async () => {
       rpcTarget = await metamaskController.setCustomRpc(CUSTOM_RPC_URL, CUSTOM_CHAIN_ID)
     })
 
-    it('returns custom RPC that when called', async function () {
+    it('returns custom RPC that when called', async () => {
       assert.strictEqual(rpcTarget, 1)
     })
 
-    it('changes the network controller rpc', function () {
+    it('changes the network controller rpc', () => {
       const networkControllerState = metamaskController.networkController.store.getState()
       assert.strictEqual(networkControllerState.provider.rpcUrl, CUSTOM_RPC_URL)
     })
@@ -244,7 +257,11 @@ describe('MetaMaskController', () => {
     it('errors when an primary keyring is does not exist', async () => {
       await addNewAccount
       const state = metamaskController.accountTracker.store.getState()
-      assert.deepStrictEqual(await metamaskController.keyringController.getAccounts(), [testAccount.address])
+      const accounts = await metamaskController.keyringController.getAccounts()
+      assert.deepStrictEqual(
+        accounts.map((i) => i.toLowerCase()),
+        [testAccount.address]
+      )
       assert.deepStrictEqual(await Object.keys(state.accounts), [testAccount.address])
     })
   })
@@ -255,7 +272,7 @@ describe('MetaMaskController', () => {
     let messages
     let messageId
 
-    const address = testAccount.address
+    const { address } = testAccount
     const data = '0x43727970746f6b697474696573'
 
     beforeEach(async () => {
@@ -280,7 +297,7 @@ describe('MetaMaskController', () => {
       metamaskMsgs = metamaskController.messageManager.getUnapprovedMsgs()
       messages = metamaskController.messageManager.messages
       messageId = Object.keys(metamaskMsgs)[0]
-      messages[0].msgParams.metamaskId = parseInt(messageId)
+      messages[0].msgParams.metamaskId = Number.parseInt(messageId)
     })
 
     it('persists address from msg params', () => {
@@ -300,12 +317,12 @@ describe('MetaMaskController', () => {
     })
 
     it('rejects the message', () => {
-      const messageIdInt = parseInt(messageId)
+      const messageIdInt = Number.parseInt(messageId)
       metamaskController.cancelMessage(messageIdInt, noop)
       assert.strictEqual(messages[0].status, 'rejected')
     })
 
-    it('errors when signing a message', async function () {
+    it('errors when signing a message', async () => {
       try {
         await metamaskController.signMessage(messages[0].msgParams)
       } catch (error) {
@@ -332,7 +349,7 @@ describe('MetaMaskController', () => {
     let personalMessages
     let messageId
 
-    const address = testAccount.address
+    const { address } = testAccount
     const data = '0x43727970746f6b697474696573'
 
     beforeEach(async () => {
@@ -354,7 +371,7 @@ describe('MetaMaskController', () => {
       metamaskPersonalMsgs = metamaskController.personalMessageManager.getUnapprovedMsgs()
       personalMessages = metamaskController.personalMessageManager.messages
       messageId = Object.keys(metamaskPersonalMsgs)[0]
-      personalMessages[0].msgParams.metamaskId = parseInt(messageId)
+      personalMessages[0].msgParams.metamaskId = Number.parseInt(messageId)
     })
 
     it('persists address from msg params', () => {
@@ -374,12 +391,12 @@ describe('MetaMaskController', () => {
     })
 
     it('rejects the message', () => {
-      const messageIdInt = parseInt(messageId)
+      const messageIdInt = Number.parseInt(messageId)
       metamaskController.cancelPersonalMessage(messageIdInt, noop)
       assert.strictEqual(personalMessages[0].status, 'rejected')
     })
 
-    it('errors when signing a message', async function () {
+    it('errors when signing a message', async () => {
       await metamaskController.signPersonalMessage(personalMessages[0].msgParams)
       assert.strictEqual(metamaskPersonalMsgs[messageId].status, 'signed') // Not signed cause no keyringcontroller
       log.info(metamaskPersonalMsgs[messageId].rawSig)
@@ -390,8 +407,8 @@ describe('MetaMaskController', () => {
     })
   })
 
-  describe('#setupUntrustedCommunication', function () {
-    it('adds an origin to requests with untrusted communication', function (done) {
+  describe('#setupUntrustedCommunication', () => {
+    it('adds an origin to requests with untrusted communication', (done) => {
       // debugger
       const messageSender = {
         url: 'https://mycrypto.com',
@@ -407,7 +424,7 @@ describe('MetaMaskController', () => {
       metamaskController.setupUntrustedCommunication(setupMultiplex(streamTest).createStream('provider'), messageSender.url)
 
       const message = {
-        id: 1999133338649204,
+        id: 1_999_133_338_649_204,
         jsonrpc: '2.0',
         params: [{ from: testAccount.address }],
         method: 'eth_sendTransaction',

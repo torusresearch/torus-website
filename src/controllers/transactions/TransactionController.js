@@ -748,7 +748,7 @@ class TransactionController extends SafeEventEmitter {
 
     // set state to signed
     this.txStateManager.setTxStatusSigned(txMeta.id)
-    const rawTx = Buffer.from(signedEthTx.serialize(), 'hex')
+    const rawTx = addHexPrefix(Buffer.from(signedEthTx.serialize(), 'hex').toString('hex'))
     return rawTx
   }
 

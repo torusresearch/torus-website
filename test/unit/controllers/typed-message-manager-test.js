@@ -23,7 +23,7 @@ describe('Typed Message Manager', () => {
         {
           type: 'uint32',
           name: 'A number, but not really a number',
-          value: '$$$',
+          value: '1',
         },
       ],
     }

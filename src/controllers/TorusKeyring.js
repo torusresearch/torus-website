@@ -1,4 +1,4 @@
-import { ecsign, stripHexPrefix } from '@ethereumjs/util'
+import { bigIntToBytes, ecsign, stripHexPrefix } from '@ethereumjs/util'
 import { concatSig, decrypt, getEncryptionPublicKey, personalSign, signTypedData } from '@metamask/eth-sig-util'
 import { Wallet } from 'ethers'
 import { EventEmitter } from 'events'
@@ -85,7 +85,7 @@ export default class TorusKeyring extends EventEmitter {
     const privKey = this.getBufferPrivateKey(wallet.privateKey)
 
     const messageSig = ecsign(Buffer.from(message, 'hex'), privKey)
-    const rawMessageSig = concatSig(messageSig.v, messageSig.r, messageSig.s)
+    const rawMessageSig = concatSig(Buffer.from(bigIntToBytes(messageSig.v)), Buffer.from(messageSig.r), Buffer.from(messageSig.s))
     return rawMessageSig
   }
 

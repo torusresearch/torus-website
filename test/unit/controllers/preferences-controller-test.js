@@ -1,7 +1,7 @@
 /* eslint-disable */
 import assert from 'assert'
-import nock from 'nock'
 import sinon from 'sinon'
+import { MockAgent, setGlobalDispatcher } from 'undici'
 
 import PreferencesController from '../../../src/controllers/PreferencesController'
 import NetworkController from '../../../src/controllers/network/NetworkController'
@@ -26,49 +26,59 @@ describe('Preferences Controller', () => {
   let network
   let sandbox = sinon.createSandbox()
   let storeUserLoginStub
+  let mockAgent
 
   const networkControllerProviderConfig = {
     getAccounts: noop,
   }
 
   beforeEach(() => {
-    nock.cleanAll()
     network = new NetworkController()
     sandbox.stub(network, 'getLatestBlock').returns({})
     network.initializeProvider(networkControllerProviderConfig)
     preferencesController = new PreferencesController({ signMessage: noop, network, provider: network.getProviderAndBlockTracker().provider })
     storeUserLoginStub = sandbox.stub(preferencesController, 'storeUserLogin')
+    mockAgent = new MockAgent()
+    setGlobalDispatcher(mockAgent)
 
-    nock(TORUS_API)
-      .post('/auth/message', (body) => body.public_address === testAccount.address || body.public_address === testAccount2.address)
+    const mockPool = mockAgent.get(TORUS_API)
+
+    mockPool
+      .intercept({
+        path: '/auth/message',
+        method: 'post',
+        body: (body) => JSON.parse(body).public_address === testAccount.address || JSON.parse(body).public_address === testAccount2.address,
+      })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         message: 'Torus Signin - 1099860997997549',
         success: true,
       })
-      .persist()
 
-    nock(TORUS_API)
-      .post('/auth/verify', (body) => body.public_address === testAccount.address)
+    mockPool
+      .intercept({ path: '/auth/verify', method: 'post', body: (body) => JSON.parse(body).public_address === testAccount.address })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         token: 'hello',
         success: true,
       })
 
-    nock(TORUS_API)
-      .post('/auth/verify', (body) => body.public_address === testAccount2.address)
+    mockPool
+      .intercept({ path: '/auth/verify', method: 'post', body: (body) => JSON.parse(body).public_address === testAccount2.address })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         token: 'hello2',
         success: true,
       })
 
-    nock(TORUS_API)
-      .post('/user', (_) => true)
+    mockPool
+      .intercept({ path: '/user', method: 'post', body: (_) => true })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {})
       .persist()
   })
 
   afterEach(() => {
-    nock.cleanAll()
     sandbox.restore()
   })
 
@@ -214,112 +224,34 @@ describe('Preferences Controller', () => {
     assert.strictEqual(preferencesController.errorStore.getState(), '')
   })
 
-  // describe('sync', () => {
-  //   beforeEach(() => {
-  //     sandbox.stub(preferencesController, 'calculatePaymentTx')
-  //     sandbox.stub(preferencesController, 'calculatePastTx')
-  //   })
-  //   afterEach(() => {
-  //     sandbox.restore()
-  //   })
-  //   it('user sync error', async () => {
-  //     nock(TORUS_API).get(/.*/).replyWithError(new TypeError('Invalid request'))
-
-  //     nock('https://common-api.tor.us').get('/transaction').reply(200, {
-  //       data: {},
-  //     })
-
-  //     const successCallback = sinon.fake()
-  //     const errorCallback = sinon.fake()
-  //     await preferencesController.sync(successCallback, errorCallback)
-  //     assert(errorCallback.calledOnce)
-  //     assert(successCallback.notCalled)
-  //   })
-
-  //   it('payment sync error', async () => {
-  //     sandbox.stub(preferencesController, 'setVerifier')
-
-  //     nock(TORUS_API)
-  //       .get(/transaction/)
-  //       .reply(400)
-
-  //     nock(TORUS_API)
-  //       .get(/etherscan/)
-  //       .reply(400)
-
-  //     nock(TORUS_API).get(/user/).reply(200, { data: {} })
-
-  //     nock('https://common-api.tor.us').get(/.*/).reply(400)
-
-  //     const successCallback = sinon.fake()
-  //     const errorCallback = sinon.fake()
-  //     await preferencesController.sync(successCallback, errorCallback)
-  //     assert(errorCallback.notCalled)
-  //     assert(successCallback.calledOnce)
-  //   })
-
-  //   it('sync success', async () => {
-  //     const userData = {
-  //       transactions: [],
-  //       default_currency: 'USD',
-  //       contacts: [],
-  //       theme: 'light',
-  //       locale: 'en',
-  //       verifier: 'google',
-  //       verifier_id: 'hc@njv.com',
-  //       permissions: {},
-  //     }
-  //     nock(TORUS_API).get(/user/).reply(200, {
-  //       data: userData,
-  //     })
-
-  //     nock(TORUS_API)
-  //       .get(/transaction/)
-  //       .reply(200, {
-  //         data: [],
-  //       })
-
-  //     nock(TORUS_API)
-  //       .get(/etherscan/)
-  //       .reply(200, {
-  //         data: [],
-  //       })
-
-  //     nock('https://common-api.tor.us').get('/transaction').reply(200, {
-  //       data: [],
-  //     })
-
-  //     await preferencesController.sync()
-  //     assert.deepStrictEqual(preferencesController.pastTransactionsStore.getState(), userData.transactions)
-  //     assert.deepStrictEqual(preferencesController.state.selectedCurrency, userData.default_currency)
-  //     assert.deepStrictEqual(preferencesController.state.contacts, userData.contacts)
-  //     assert.deepStrictEqual(preferencesController.state.theme, userData.theme)
-  //     assert.deepStrictEqual(preferencesController.state.locale, userData.locale)
-  //     assert.deepStrictEqual(preferencesController.state.theme, userData.theme)
-  //     assert.deepStrictEqual(preferencesController.state.permissions, userData.permissions)
-  //     assert.deepStrictEqual(preferencesController.paymentTxStore.getState(), [])
-  //   })
-  // })
-
   describe('theme, locale, currency, billboard, contact', () => {
     let handleSuccessStub
     beforeEach(async () => {
       await preferencesController.init({ address: testAccount.address, jwtToken: 'hello', dispatch: noop, commit: noop })
       preferencesController.setSelectedAddress(testAccount.address)
-      nock(TORUS_API)
-        .patch('/user/theme')
+      mockAgent = new MockAgent()
+      setGlobalDispatcher(mockAgent)
+
+      const mockPool = mockAgent.get(TORUS_API)
+
+      mockPool
+        .intercept({ path: '/user/theme', method: 'patch' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
         .reply(201, { data: { theme: '' } })
 
-      nock(TORUS_API)
-        .patch('/user/locale')
+      mockPool
+        .intercept({ path: '/user/locale', method: 'patch' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
         .reply(201, { data: { locale: '' } })
 
-      nock(TORUS_API)
-        .patch('/user')
+      mockPool
+        .intercept({ path: '/user', method: 'patch' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
         .reply(201, { data: { default_currency: '' } })
 
-      nock(TORUS_API)
-        .get('/billboard')
+      mockPool
+        .intercept({ path: '/billboard', method: 'get' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
         .reply(200, {
           data: [
             {
@@ -334,8 +266,9 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
-      nock(TORUS_API)
-        .post('/contact')
+      mockPool
+        .intercept({ path: '/contact', method: 'post' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
         .reply(201, {
           data: {
             id: 1,
@@ -346,8 +279,9 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
-      nock(TORUS_API)
-        .delete('/contact/1')
+      mockPool
+        .intercept({ path: '/contact/1', method: 'delete' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
         .reply(200, {
           data: {
             id: 1,
@@ -355,8 +289,9 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
-      nock(TORUS_API)
-        .post('/customtoken')
+      mockPool
+        .intercept({ path: '/customtoken', method: 'post' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
         .reply(201, {
           data: {
             token_address: '0x',
@@ -369,8 +304,9 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
-      nock(TORUS_API)
-        .delete('/customtoken/1')
+      mockPool
+        .intercept({ path: '/customtoken/1', method: 'delete' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
         .reply(200, {
           data: {
             id: 1,
@@ -378,8 +314,9 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
-      nock(TORUS_API)
-        .post('/customnft')
+      mockPool
+        .intercept({ path: '/customnft', method: 'post' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
         .reply(201, {
           data: {
             nft_address: '0xf0ee6b27b759c9893ce4f094b49ad28fd15a23e4',
@@ -394,8 +331,9 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
-      nock(TORUS_API)
-        .delete('/customnft/1')
+      mockPool
+        .intercept({ path: '/customnft/1', method: 'delete' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
         .reply(200, {
           data: {
             id: 1,
@@ -403,13 +341,14 @@ describe('Preferences Controller', () => {
           success: true,
         })
 
-      nock(TORUS_API).patch('/user/badge').reply(200, { success: true })
+      mockPool.intercept({ path: '/user/badge', method: 'patch' }).defaultReplyHeaders({ 'content-type': 'application/json' }).reply(200, {
+        success: true,
+      })
 
       handleSuccessStub = sandbox.stub(preferencesController, 'handleSuccess')
     })
     afterEach(() => {
       sandbox.restore()
-      nock.cleanAll()
     })
 
     it('set user theme fail', async () => {
