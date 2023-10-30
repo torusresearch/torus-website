@@ -10,6 +10,7 @@ import {
 } from '@ethereumjs/util'
 import { concatSig, normalize } from '@metamask/eth-sig-util'
 import { keccak256 } from '@toruslabs/metadata-helpers'
+import { safeatob } from '@toruslabs/openlogin-utils'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
 import BN from 'bn.js'
@@ -872,10 +873,10 @@ export const handleRedirectParameters = (hash, queryParameters) => {
   let error = ''
   if (!queryParameters.preopenInstanceId) {
     if (Object.keys(hashParameters).length > 0 && hashParameters.state) {
-      instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {}
+      instanceParameters = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(hashParameters.state)))) || {}
       error = hashParameters.error_description || hashParameters.error || error
     } else if (Object.keys(queryParameters).length > 0 && queryParameters.state) {
-      instanceParameters = JSON.parse(atob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {}
+      instanceParameters = JSON.parse(safeatob(decodeURIComponent(decodeURIComponent(queryParameters.state)))) || {}
       if (queryParameters.error) error = queryParameters.error
     }
   }

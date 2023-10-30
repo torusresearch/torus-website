@@ -24,7 +24,17 @@ import {
 } from '../utils/enums'
 import { notifyUser } from '../utils/notifications'
 import { setSentryEnabled } from '../utils/sentry'
-import { formatDate, formatPastTx, formatTime, getEthTxStatus, getIFrameOrigin, getUserLanguage, isMain, waitForMs } from '../utils/utils'
+import {
+  formatDate,
+  formatPastTx,
+  formatTime,
+  getEthTxStatus,
+  getIFrameOrigin,
+  getUserLanguage,
+  isMain,
+  toChecksumAddressByChainId,
+  waitForMs,
+} from '../utils/utils'
 import { ObservableStore } from './utils/ObservableStore'
 import { isErrorObject, prettyPrintData } from './utils/permissionUtils'
 
@@ -217,6 +227,11 @@ class PreferencesController extends SafeEventEmitter {
           customNetworks,
         } = user.data || {}
 
+        // transform addresses that were saved as lowercase in our db
+        const chainId = this.network.getCurrentChainId()
+        const publicAddress = toChecksumAddressByChainId(public_address, chainId)
+        const defaultPublicAddress = toChecksumAddressByChainId(default_public_address) || publicAddress
+
         this.updateStore(
           {
             contacts,
@@ -226,11 +241,11 @@ class PreferencesController extends SafeEventEmitter {
             locale: locale || getUserLanguage(),
             permissions,
             accountType: account_type || ACCOUNT_TYPE.NORMAL,
-            defaultPublicAddress: default_public_address || public_address,
+            defaultPublicAddress,
             customTokens,
             customNfts,
           },
-          public_address
+          publicAddress
         )
 
         // update network controller with all the custom network updates.
@@ -784,7 +799,7 @@ class PreferencesController extends SafeEventEmitter {
   normalizedAddChainParams(id, addChainParams) {
     /**
      * addChainParams interface
-     * 
+     *
      * interface AddEthereumChainParameter {
         chainId: string; // A 0x-prefixed hexadecimal string
         chainName: string;

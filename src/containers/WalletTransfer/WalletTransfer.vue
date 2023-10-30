@@ -54,7 +54,7 @@
                   <v-menu transition="slide-y-transition" bottom>
                     <template #activator="{ on }">
                       <v-btn class="select-coin" label :outlined="$vuetify.theme.dark" v-on="on">
-                        <span class="select-coin-name">{{ selectedItemDisplay && selectedItemDisplay.name }}</span>
+                        <span class="select-coin-name">{{ selectedItemDisplay && (selectedItemDisplay.name || selectedItemDisplay.symbol) }}</span>
                         <div class="flex-grow-1 text-right pr-2">
                           <v-icon right>$vuetify.icons.select</v-icon>
                         </div>
