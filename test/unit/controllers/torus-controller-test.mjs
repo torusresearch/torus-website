@@ -1,6 +1,6 @@
 /* eslint-disable */
 import assert from 'assert'
-import clone from 'clone'
+import { cloneDeep } from 'lodash-es'
 import EthQuery from 'eth-query'
 import sinon from 'sinon'
 import { obj as createThoughStream } from 'through2'
@@ -125,7 +125,7 @@ describe('MetaMaskController', () => {
           return Promise.resolve(this.object)
         },
       },
-      initState: clone(firstTimeState),
+      initState: cloneDeep(firstTimeState),
       platform: { showTransactionNotification: () => {} },
       requestTkeyInput: noop,
       requestTkeySeedPhraseInput: noop,

@@ -10,6 +10,7 @@ import {
   calculateTimeEstimate,
   fetchEthGasPriceEstimate as defaultFetchEthGasPriceEstimate,
   fetchGasEstimates as defaultFetchGasEstimates,
+  fetchGasEstimatesViaEthFeeHistory as defaultFetchGasEstimatesViaEthFeeHistory,
   fetchLegacyGasPriceEstimates as defaultFetchLegacyGasPriceEstimates,
 } from './gas-util'
 
@@ -59,6 +60,7 @@ class GasFeeController {
     fetchGasEstimates = defaultFetchGasEstimates,
     fetchEthGasPriceEstimate = defaultFetchEthGasPriceEstimate,
     fetchLegacyGasPriceEstimates = defaultFetchLegacyGasPriceEstimates,
+    fetchGasEstimatesViaEthFeeHistory = defaultFetchGasEstimatesViaEthFeeHistory,
     getCurrentNetworkEIP1559Compatibility,
     getCurrentAccountEIP1559Compatibility,
     getChainId,
@@ -72,6 +74,7 @@ class GasFeeController {
     this.fetchGasEstimates = fetchGasEstimates
     this.fetchEthGasPriceEstimate = fetchEthGasPriceEstimate
     this.fetchLegacyGasPriceEstimates = fetchLegacyGasPriceEstimates
+    this.fetchGasEstimatesViaEthFeeHistory = fetchGasEstimatesViaEthFeeHistory
     this.getProvider = getProvider
 
     this.getCurrentNetworkEIP1559Compatibility = getCurrentNetworkEIP1559Compatibility
@@ -139,7 +142,12 @@ class GasFeeController {
 
     try {
       if (isEIP1559Compatible) {
-        const estimates = await this.fetchGasEstimates(this.EIP1559APIEndpoint.replace('<chain_id>', `${chainId}`))
+        let estimates
+        try {
+          estimates = await this.fetchGasEstimates(this.config.EIP1559APIEndpoint.replace('<chain_id>', `${chainId}`))
+        } catch {
+          estimates = await this.fetchGasEstimatesViaEthFeeHistory(this.ethQuery)
+        }
         const { suggestedMaxPriorityFeePerGas, suggestedMaxFeePerGas } = estimates.medium
         const estimatedGasFeeTimeBounds = this.getTimeEstimate(suggestedMaxPriorityFeePerGas, suggestedMaxFeePerGas)
         newState = {
@@ -159,7 +167,6 @@ class GasFeeController {
       }
     } catch {
       try {
-        log.log('fetching gas fee estimates from dqwd API')
         const estimates = await this.fetchEthGasPriceEstimate(this.ethQuery)
         newState = {
           gasFeeEstimates: estimates,

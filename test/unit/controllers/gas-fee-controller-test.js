@@ -82,6 +82,29 @@ describe('GasFeeController', () => {
 
   it('should getGasFeeEstimatesAndStartPolling', async () => {
     sandbox.stub(gasFeeController, 'getCurrentAccountEIP1559Compatibility').returns(true)
+    sandbox.stub(gasFeeController, 'fetchGasEstimatesViaEthFeeHistory').returns(
+      Promise.resolve({
+        estimatedBaseFee: '1',
+        high: {
+          maxWaitTimeEstimate: 30_000,
+          minWaitTimeEstimate: 15_000,
+          suggestedMaxFeePerGas: '1',
+          suggestedMaxPriorityFeePerGas: '1',
+        },
+        medium: {
+          maxWaitTimeEstimate: 45_000,
+          minWaitTimeEstimate: 15_000,
+          suggestedMaxFeePerGas: '1',
+          suggestedMaxPriorityFeePerGas: '1',
+        },
+        low: {
+          maxWaitTimeEstimate: 60_000,
+          minWaitTimeEstimate: 15_000,
+          suggestedMaxFeePerGas: '1',
+          suggestedMaxPriorityFeePerGas: '1',
+        },
+      })
+    )
     assert.deepStrictEqual(gasFeeController.state.gasFeeEstimates, {})
     await gasFeeController.getGasFeeEstimatesAndStartPolling(undefined)
     assert('low' in gasFeeController.state.gasFeeEstimates)
@@ -138,6 +161,29 @@ describe('GasFeeController', () => {
       sandbox.stub(gasFeeController, 'getCurrentAccountEIP1559Compatibility').returns(true)
       sandbox.stub(gasFeeController, 'getCurrentNetworkEIP1559Compatibility').returns(() => Promise.resolve(true))
       sandbox.stub(gasFeeController, 'getCurrentNetworkLegacyGasAPICompatibility').returns(true)
+      sandbox.stub(gasFeeController, 'fetchGasEstimatesViaEthFeeHistory').returns(
+        Promise.resolve({
+          estimatedBaseFee: '1',
+          high: {
+            maxWaitTimeEstimate: 30_000,
+            minWaitTimeEstimate: 15_000,
+            suggestedMaxFeePerGas: '1',
+            suggestedMaxPriorityFeePerGas: '1',
+          },
+          medium: {
+            maxWaitTimeEstimate: 45_000,
+            minWaitTimeEstimate: 15_000,
+            suggestedMaxFeePerGas: '1',
+            suggestedMaxPriorityFeePerGas: '1',
+          },
+          low: {
+            maxWaitTimeEstimate: 60_000,
+            minWaitTimeEstimate: 15_000,
+            suggestedMaxFeePerGas: '1',
+            suggestedMaxPriorityFeePerGas: '1',
+          },
+        })
+      )
       assert.deepStrictEqual(gasFeeController.state.gasFeeEstimates, {})
       const estimates = await gasFeeController._fetchGasFeeEstimateData()
       assert('gasFeeEstimates' in estimates)

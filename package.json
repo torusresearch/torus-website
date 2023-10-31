@@ -59,7 +59,6 @@
     "bignumber.js": "^9.1.2",
     "bn.js": "^5.2.1",
     "bowser": "^2.11.0",
-    "clone": "^2.1.2",
     "copy-to-clipboard": "^3.3.3",
     "core-js": "^3.33.1",
     "das-sdk": "^1.9.3",
