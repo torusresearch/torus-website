@@ -1,4 +1,4 @@
-import { addHexPrefix, isValidPrivate, stripHexPrefix, toBuffer } from '@ethereumjs/util'
+import { addHexPrefix, hexToBytes, isValidPrivate, stripHexPrefix } from '@ethereumjs/util'
 import { Wallet } from 'ethers'
 
 const accountImporter = {
@@ -15,7 +15,7 @@ const accountImporter = {
       }
 
       const prefixed = addHexPrefix(privateKey)
-      const buffer = toBuffer(prefixed)
+      const buffer = hexToBytes(prefixed)
 
       if (!isValidPrivate(buffer)) {
         throw new Error('Cannot import invalid private key.')

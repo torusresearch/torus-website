@@ -1,15 +1,15 @@
-/* eslint-disable */
+import { toChecksumAddress } from '@ethereumjs/util'
 import assert from 'assert'
-import nock from 'nock'
+import log from 'loglevel'
 import { createSandbox } from 'sinon'
+import { MockAgent, setGlobalDispatcher } from 'undici'
 
 import config from '../../../src/config'
-import * as utils from '../../../src/utils/utils'
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
 import AssetsController from '../../../src/controllers/AssetsController'
 import NetworkController from '../../../src/controllers/network/NetworkController'
 import PreferencesController from '../../../src/controllers/PreferencesController'
-import { toChecksumAddress } from '@ethereumjs/util'
+import * as utils from '../../../src/utils/utils'
 
 const noop = () => {}
 const KUDOSADDRESS = '0x2aea4add166ebf38b63d09a75de1a7b94aa24163'
@@ -70,8 +70,13 @@ describe('AssetsController', () => {
       validateImageUrlStub = sandbox.stub(utils, 'validateImageUrl').returns(true)
     }
 
-    nock(COVALENT_API)
-      .get(`/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/1/')}`)
+    const mockAgent = new MockAgent()
+    setGlobalDispatcher(mockAgent)
+    const mockPool = mockAgent.get(COVALENT_API)
+
+    mockPool
+      .intercept({ path: `/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/1/')}`, method: 'get' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         data: {
           data: {
@@ -115,8 +120,9 @@ describe('AssetsController', () => {
       })
       .persist(true)
 
-    nock(COVALENT_API)
-      .get(`/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/2/')}`)
+    mockPool
+      .intercept({ path: `/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/foo/nft_metadata/2/')}`, method: 'get' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         data: {
           data: {
@@ -160,8 +166,9 @@ describe('AssetsController', () => {
       })
       .persist(true)
 
-    nock(COVALENT_API)
-      .get(`/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/fou/nft_metadata/1/')}`)
+    mockPool
+      .intercept({ path: `/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/fou/nft_metadata/1/')}`, method: 'get' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         data: {
           data: {
@@ -205,8 +212,12 @@ describe('AssetsController', () => {
       })
       .persist(true)
 
-    nock(COVALENT_API)
-      .get(`/covalent?url=${encodeURIComponent(`https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1203/`)}`)
+    mockPool
+      .intercept({
+        path: `/covalent?url=${encodeURIComponent(`https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1203/`)}`,
+        method: 'get',
+      })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         data: {
           data: {
@@ -248,9 +259,14 @@ describe('AssetsController', () => {
           error_code: null,
         },
       })
-      .persist(true)
-    nock(COVALENT_API)
-      .get(`/covalent?url=${encodeURIComponent(`https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1/`)}`)
+      .persist()
+
+    mockPool
+      .intercept({
+        path: `/covalent?url=${encodeURIComponent(`https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1/`)}`,
+        method: 'get',
+      })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         data: {
           data: {
@@ -292,30 +308,45 @@ describe('AssetsController', () => {
           error_code: null,
         },
       })
-      .persist(true)
-    nock('https://ipfs.gitcoin.co:443')
-      .get('/api/v0/cat/QmPmt6EAaioN78ECnW5oCL8v2YvVSpoBjLCjrXhhsAvoov')
+      .persist()
+
+    const ipfsMockPool = mockAgent.get('https://ipfs.gitcoin.co:443')
+
+    ipfsMockPool
+      .intercept({ path: '/api/v0/cat/QmPmt6EAaioN78ECnW5oCL8v2YvVSpoBjLCjrXhhsAvoov', method: 'get' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         image: 'Kudos Image',
         name: 'Kudos Name',
       })
-      .persist(true)
-    nock(COVALENT_API)
-      .get(
-        `/covalent?url=${encodeURIComponent(
+      .persist()
+
+    mockPool
+      .intercept({
+        path: `/covalent?url=${encodeURIComponent(
           'https://api.covalenthq.com/v1/1/tokens/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/nft_metadata/798958393/'
-        )}`
-      )
+        )}`,
+        method: 'get',
+      })
       .replyWithError(new TypeError('failed to fetch'))
       .persist(true)
 
-    nock(COVALENT_API)
-      .get(`/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/nft_metadata/1/')}`)
+    mockPool
+      .intercept({
+        path: `/covalent?url=${encodeURIComponent(
+          'https://api.covalenthq.com/v1/1/tokens/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/nft_metadata/1/'
+        )}`,
+        method: 'get',
+      })
       .replyWithError(new TypeError('failed to fetch'))
       .persist(true)
 
-    nock(COVALENT_API)
-      .get(`/covalent?url=${encodeURIComponent('https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1/')}`)
+    mockPool
+      .intercept({
+        path: `/covalent?url=${encodeURIComponent(`https://api.covalenthq.com/v1/1/tokens/${KUDOSADDRESS}/nft_metadata/1/`)}`,
+        method: 'get',
+      })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         data: {
           data: {
@@ -357,12 +388,11 @@ describe('AssetsController', () => {
           error_code: null,
         },
       })
-      .persist(true)
+      .persist()
   })
 
   afterEach(() => {
     sandbox.reset()
-    nock.cleanAll()
   })
 
   it('should set default state', () => {
@@ -502,30 +532,6 @@ describe('AssetsController', () => {
     })
   })
 
-  // it('should add collectible and get collectible contract information from contract', async () => {
-  //   sandbox.stub(assetsController, 'getCollectibleContractInformationFromApi').returns(undefined)
-  //   sandbox.stub(assetsController, 'getCollectibleInformationFromApi').returns(undefined)
-  //   nock.enableNetConnect()
-  //   await assetsController.addCollectible(KUDOSADDRESS, 1203)
-  //   assert.deepStrictEqual(assetsController.state.collectibles[0], {
-  //     address: '0x2aea4add166ebf38b63d09a75de1a7b94aa24163',
-  //     description: undefined,
-  //     image: 'Kudos Image',
-  //     name: 'Kudos Name',
-  //     tokenId: 1203
-  //   })
-  //   assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
-  //     address: '0x2aea4add166ebf38b63d09a75de1a7b94aa24163',
-  //     description: undefined,
-  //     logo: undefined,
-  //     name: 'KudosToken',
-  //     symbol: 'KDO',
-  //     totalSupply: undefined
-  //   })
-  //   nock.disableNetConnect()
-  //   nock.enableNetConnect(host => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
-  // })
-
   it('should add collectible by selected address', async () => {
     const firstAddress = TEST_ADDRESS_2
     const secondAddress = TEST_ADDRESS_3
@@ -594,7 +600,7 @@ describe('AssetsController', () => {
         tokenId: '1203',
         standard: 'erc721',
         tokenBalance: 1,
-        collectibleIndex: checkSummedAddress + '_1203',
+        collectibleIndex: `${checkSummedAddress}_1203`,
         video: undefined,
       },
     ])
@@ -654,7 +660,7 @@ describe('AssetsController', () => {
   it('should add replace contract logo and asset image url with placeholder url if fallback url is not given', async () => {
     validateImageUrlStub.restore()
     sandbox.stub(utils, 'validateImageUrl').throws()
-    const stubbedCollectibleInfo = sandbox.stub(assetsController, 'getCollectibleInfo').returns({})
+    sandbox.stub(assetsController, 'getCollectibleInfo').returns({})
     await assetsController.addCollectibles([
       {
         contractAddress: 'foo',

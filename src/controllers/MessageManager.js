@@ -1,4 +1,4 @@
-import { bufferToHex } from '@ethereumjs/util'
+import { bytesToHex } from '@ethereumjs/util'
 import { keccak256 } from '@toruslabs/metadata-helpers'
 import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'
@@ -290,5 +290,5 @@ function normalizeMessageData(data) {
     return data
   }
   // data is unicode, convert to hex
-  return bufferToHex(Buffer.from(data, 'utf8'))
+  return bytesToHex(Buffer.from(data, 'utf8'))
 }

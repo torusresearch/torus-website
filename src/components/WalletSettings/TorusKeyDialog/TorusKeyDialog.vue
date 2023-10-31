@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import { addHexPrefix, isValidPrivate, stripHexPrefix, toBuffer } from '@ethereumjs/util'
+import { addHexPrefix, isValidPrivate, stripHexPrefix } from '@ethereumjs/util'
 import BN from 'bn.js'
 import log from 'loglevel'
 
@@ -129,7 +129,7 @@ export default {
           return this.t('walletSettings.customKey.privateKeyCannotBeZero') // 'Private key cannot be 0'
         }
         const prefixed = addHexPrefix(v)
-        const buffer = toBuffer(prefixed)
+        const buffer = Buffer.from(prefixed.slice(2), 'hex')
         if (!isValidPrivate(buffer)) {
           return this.t('walletSettings.customKey.invalidPrivateKey') // 'Invalid private key'
         }

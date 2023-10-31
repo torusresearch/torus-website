@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import BN from 'bn.js'
 
 import { decGWEIToHexWEI, hexWEIToDecGWEI } from '../../utils/conversionUtils'
@@ -30,6 +31,49 @@ export async function fetchGasEstimates(url) {
     },
   }
   return normalizedEstimates
+}
+
+export async function fetchGasEstimatesViaEthFeeHistory(ethQuery) {
+  const noOfBlocks = 10
+  const newestBlock = 'latest'
+  // get the 10, 50 and 95th percentile of the tip fees from the last 10 blocks
+  const percentileValues = [10, 50, 95]
+  const feeHistory = await ethQuery.sendAsync({
+    method: 'eth_feeHistory',
+    params: [noOfBlocks, newestBlock, percentileValues],
+  })
+  // this is in hex wei
+  const finalBaseFeePerGas = feeHistory.baseFeePerGas.at(-1)
+  // this is in hex wei
+  const priorityFeeCalcs = feeHistory.reward.reduce(
+    (acc, curr) => ({
+      slow: acc.slow.plus(new BigNumber(curr[0], 16)),
+      average: acc.average.plus(new BigNumber(curr[1], 16)),
+      fast: acc.fast.plus(new BigNumber(curr[2], 16)),
+    }),
+    { slow: new BigNumber(0), average: new BigNumber(0), fast: new BigNumber(0) }
+  )
+  return {
+    estimatedBaseFee: hexWEIToDecGWEI(finalBaseFeePerGas).toString(10),
+    high: {
+      maxWaitTimeEstimate: 30_000,
+      minWaitTimeEstimate: 15_000,
+      suggestedMaxFeePerGas: hexWEIToDecGWEI(priorityFeeCalcs.fast.plus(finalBaseFeePerGas).toString(16)).toString(),
+      suggestedMaxPriorityFeePerGas: hexWEIToDecGWEI(priorityFeeCalcs.fast.toString(16)).toString(),
+    },
+    medium: {
+      maxWaitTimeEstimate: 45_000,
+      minWaitTimeEstimate: 15_000,
+      suggestedMaxFeePerGas: hexWEIToDecGWEI(priorityFeeCalcs.average.plus(finalBaseFeePerGas).toString(16)).toString(),
+      suggestedMaxPriorityFeePerGas: hexWEIToDecGWEI(priorityFeeCalcs.average.toString(16)).toString(),
+    },
+    low: {
+      maxWaitTimeEstimate: 60_000,
+      minWaitTimeEstimate: 15_000,
+      suggestedMaxFeePerGas: hexWEIToDecGWEI(priorityFeeCalcs.slow.plus(finalBaseFeePerGas).toString(16)).toString(),
+      suggestedMaxPriorityFeePerGas: hexWEIToDecGWEI(priorityFeeCalcs.slow.toString(16)).toString(),
+    },
+  }
 }
 
 /**
