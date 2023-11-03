@@ -699,6 +699,7 @@ class TransactionController extends SafeEventEmitter {
       if (customNonceValue) {
         txMeta.nonceDetails.customNonceValue = customNonceValue
       }
+      if (txMeta.txParams.input && !txMeta.txParams.data) txMeta.txParams.data = txMeta.txParams.input
       this.txStateManager.updateTransaction(txMeta, 'transactions#approveTransaction')
       // sign transaction
       const rawTx = await this.signTransaction(txId)
