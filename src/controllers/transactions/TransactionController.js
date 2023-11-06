@@ -1,7 +1,7 @@
 /* eslint-disable require-atomic-updates */
-import { Common } from '@ethereumjs/common'
+import { Common, Hardfork } from '@ethereumjs/common'
 import { TransactionFactory } from '@ethereumjs/tx'
-import { addHexPrefix, bufferToHex, isHexString, stripHexPrefix } from '@ethereumjs/util'
+import { addHexPrefix, bigIntToHex, isHexString, stripHexPrefix } from '@ethereumjs/util'
 import { SafeEventEmitter } from '@toruslabs/openlogin-jrpc'
 import { ethErrors } from 'eth-rpc-errors'
 import { formatEther, keccak256 } from 'ethers'
@@ -20,7 +20,6 @@ import {
   CONTRACT_TYPE_ERC1155,
   CONTRACT_TYPE_ETH,
   GAS_ESTIMATE_TYPES,
-  HARDFORKS,
   INFURA_PROVIDER_TYPES,
   OLD_ERC721_LIST,
   RPC,
@@ -182,7 +181,7 @@ class TransactionController extends SafeEventEmitter {
     // This logic below will have to be updated each time a hardfork happens
     // that carries with it a new Transaction type. It is inconsequential for
     // hardforks that do not include new types.
-    const hardfork = supportsEIP1559 ? HARDFORKS.LONDON : HARDFORKS.BERLIN
+    const hardfork = supportsEIP1559 ? Hardfork.Paris : Hardfork.Berlin
 
     // type will be one of our default network names or 'rpc'. the default
     // network names are sufficient configuration, simply pass the name as the
@@ -700,6 +699,7 @@ class TransactionController extends SafeEventEmitter {
       if (customNonceValue) {
         txMeta.nonceDetails.customNonceValue = customNonceValue
       }
+      if (txMeta.txParams.input && !txMeta.txParams.data) txMeta.txParams.data = txMeta.txParams.input
       this.txStateManager.updateTransaction(txMeta, 'transactions#approveTransaction')
       // sign transaction
       const rawTx = await this.signTransaction(txId)
@@ -741,15 +741,15 @@ class TransactionController extends SafeEventEmitter {
 
     // add r,s,v values for provider request purposes see createMetamaskMiddleware
     // and JSON rpc standard for further explanation
-    txMeta.r = bufferToHex(signedEthTx.r)
-    txMeta.s = bufferToHex(signedEthTx.s)
-    txMeta.v = bufferToHex(signedEthTx.v)
+    txMeta.r = bigIntToHex(signedEthTx.r)
+    txMeta.s = bigIntToHex(signedEthTx.s)
+    txMeta.v = bigIntToHex(signedEthTx.v)
 
     this.txStateManager.updateTransaction(txMeta, 'transactions#signTransaction: add r, s, v values')
 
     // set state to signed
     this.txStateManager.setTxStatusSigned(txMeta.id)
-    const rawTx = bufferToHex(signedEthTx.serialize())
+    const rawTx = addHexPrefix(Buffer.from(signedEthTx.serialize(), 'hex').toString('hex'))
     return rawTx
   }
 

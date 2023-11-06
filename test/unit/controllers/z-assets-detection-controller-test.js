@@ -1,6 +1,6 @@
 import assert from 'assert'
-import nock from 'nock'
 import { createSandbox } from 'sinon'
+import { MockAgent, setGlobalDispatcher } from 'undici'
 
 import config from '../../../src/config'
 import AssetsContractController from '../../../src/controllers/AssetsContractController'
@@ -73,40 +73,52 @@ describe('AssetsDetectionController', () => {
     if (!utils.validateImageUrl.restore && !utils.validateImageUrl.restore?.sinon) {
       sandbox.stub(utils, 'validateImageUrl').returns(true)
     }
+    const mockAgent = new MockAgent()
+    setGlobalDispatcher(mockAgent)
+    const torusMockPool = mockAgent.get(TORUS_API)
     // eth mainnet
-    nock(TORUS_API)
-      .get('/nfts?userAddress=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&network=mainnet')
+    torusMockPool
+      .intercept({ path: '/nfts?userAddress=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&network=mainnet', method: 'get' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
-      .persist(true)
+      .persist()
 
     // polygon
-    nock(TORUS_API)
-      .get('/nfts?userAddress=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&network=matic')
+    torusMockPool
+      .intercept({ path: '/nfts?userAddress=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&network=matic', method: 'get' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
       .persist(true)
 
     // polygon mumbai
-    nock(TORUS_API)
-      .get('/nfts?userAddress=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&network=mumbai')
+    torusMockPool
+      .intercept({ path: '/nfts?userAddress=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&network=mumbai', method: 'get' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
       .persist(true)
 
     // bsc mainnet
-    nock(TORUS_API)
-      .get('/nfts?userAddress=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&network=bsc_mainnet')
+    torusMockPool
+      .intercept({ path: '/nfts?userAddress=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&network=bsc_mainnet', method: 'get' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         data: userBalances['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
       .persist(true)
 
-    nock(OPEN_SEA_API)
-      .get(/opensea\?url=https:\/\/api.opensea.io\/api\/v1\/assets\?owner=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&limit=300/)
+    const openseaMockPool = mockAgent.get(OPEN_SEA_API)
+    openseaMockPool
+      .intercept({
+        path: /opensea\?url=https:\/\/api.opensea.io\/api\/v1\/assets\?owner=0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc&limit=300/,
+        method: 'get',
+      })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         data: openseaNfts['0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'],
       })
@@ -115,7 +127,6 @@ describe('AssetsDetectionController', () => {
 
   afterEach(() => {
     sandbox.reset()
-    nock.cleanAll()
   })
 
   it('should poll and detect assets on interval while on mainnet, binance net, matic mainnet and matic testnet', () =>

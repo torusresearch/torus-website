@@ -1,4 +1,4 @@
-import { addHexPrefix, bufferToHex, stripHexPrefix } from '@ethereumjs/util'
+import { addHexPrefix, bytesToHex, stripHexPrefix } from '@ethereumjs/util'
 import { ethErrors } from 'eth-rpc-errors'
 import EventEmitter from 'events'
 import log from 'loglevel'
@@ -290,6 +290,6 @@ export default class PersonalMessageManager extends EventEmitter {
       log.debug('Message was not hex encoded, interpreting as utf8.', error)
     }
 
-    return bufferToHex(Buffer.from(data, 'utf8'))
+    return bytesToHex(Buffer.from(data, 'utf8'))
   }
 }

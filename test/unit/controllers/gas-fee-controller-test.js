@@ -1,33 +1,31 @@
 import assert from 'assert'
-import nock from 'nock'
 import { createSandbox, stub } from 'sinon'
+import { MockAgent, setGlobalDispatcher } from 'undici'
 
 import GasFeeController from '../../../src/controllers/gas/GasFeeController'
 
-const TEST_GAS_FEE_API = 'https://mock-gas-server.herokuapp.com/<chain_id>'
-const TEST_LEGACY_FEE_API = 'https://test/<chain_id>'
+const TEST_GAS_FEE_API = 'https://mock-gas-server.herokuapp.com'
+const TEST_LEGACY_FEE_API = 'https://test'
 
 describe('GasFeeController', () => {
   let gasFeeController
   let getCurrentNetworkLegacyGasAPICompatibility
   let getIsEIP1559Compatible
   let getChainId
+  let mockAgent
   const sandbox = createSandbox()
-
-  //   before(() => {
-  //     nock.disableNetConnect()
-  //   })
-
-  //   after(() => {
-  //     nock.enableNetConnect()
-  //   })
 
   beforeEach(() => {
     getChainId = () => '0x1'
     getCurrentNetworkLegacyGasAPICompatibility = () => false
     getIsEIP1559Compatible = () => Promise.resolve(true)
-    nock(TEST_GAS_FEE_API.replace('<chain_id>', '1'))
-      .get(/.+/u)
+    mockAgent = new MockAgent()
+    setGlobalDispatcher(mockAgent)
+    const mockPool1 = mockAgent.get(TEST_GAS_FEE_API)
+    const mockPool2 = mockAgent.get(TEST_LEGACY_FEE_API)
+    mockPool1
+      .intercept({ path: '/1', method: 'get' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         low: {
           minWaitTimeEstimate: 60_000,
@@ -51,20 +49,22 @@ describe('GasFeeController', () => {
       })
       .persist()
 
-    nock(TEST_LEGACY_FEE_API.replace('<chain_id>', '0x1'))
-      .get(/.+/u)
+    mockPool2
+      .intercept({ method: 'get', path: '/1' })
+      .defaultReplyHeaders({ 'content-type': 'application/json' })
       .reply(200, {
         SafeGasPrice: '22',
         ProposeGasPrice: '25',
         FastGasPrice: '30',
       })
       .persist()
+
     gasFeeController = new GasFeeController({
       interval: 10_000,
       getProvider: () => stub(),
       getChainId,
-      legacyAPIEndpoint: TEST_LEGACY_FEE_API,
-      EIP1559APIEndpoint: TEST_GAS_FEE_API,
+      legacyAPIEndpoint: `${TEST_LEGACY_FEE_API}/<chain_id>`,
+      EIP1559APIEndpoint: `${TEST_GAS_FEE_API}/<chain_id>`,
       getCurrentNetworkLegacyGasAPICompatibility,
       getCurrentAccountEIP1559Compatibility: () => false,
       getCurrentNetworkEIP1559Compatibility: getIsEIP1559Compatible, // change this for networkController.state.properties.isEIP1559Compatible ???
@@ -72,17 +72,39 @@ describe('GasFeeController', () => {
   })
 
   afterEach(() => {
-    nock.cleanAll()
     gasFeeController.destroy()
     sandbox.reset()
   })
 
   it('should initialize', async () => {
-    assert.strictEqual(gasFeeController.legacyAPIEndpoint, TEST_LEGACY_FEE_API)
+    assert.strictEqual(gasFeeController.legacyAPIEndpoint, `${TEST_LEGACY_FEE_API}/<chain_id>`)
   })
 
   it('should getGasFeeEstimatesAndStartPolling', async () => {
     sandbox.stub(gasFeeController, 'getCurrentAccountEIP1559Compatibility').returns(true)
+    sandbox.stub(gasFeeController, 'fetchGasEstimatesViaEthFeeHistory').returns(
+      Promise.resolve({
+        estimatedBaseFee: '1',
+        high: {
+          maxWaitTimeEstimate: 30_000,
+          minWaitTimeEstimate: 15_000,
+          suggestedMaxFeePerGas: '1',
+          suggestedMaxPriorityFeePerGas: '1',
+        },
+        medium: {
+          maxWaitTimeEstimate: 45_000,
+          minWaitTimeEstimate: 15_000,
+          suggestedMaxFeePerGas: '1',
+          suggestedMaxPriorityFeePerGas: '1',
+        },
+        low: {
+          maxWaitTimeEstimate: 60_000,
+          minWaitTimeEstimate: 15_000,
+          suggestedMaxFeePerGas: '1',
+          suggestedMaxPriorityFeePerGas: '1',
+        },
+      })
+    )
     assert.deepStrictEqual(gasFeeController.state.gasFeeEstimates, {})
     await gasFeeController.getGasFeeEstimatesAndStartPolling(undefined)
     assert('low' in gasFeeController.state.gasFeeEstimates)
@@ -139,6 +161,29 @@ describe('GasFeeController', () => {
       sandbox.stub(gasFeeController, 'getCurrentAccountEIP1559Compatibility').returns(true)
       sandbox.stub(gasFeeController, 'getCurrentNetworkEIP1559Compatibility').returns(() => Promise.resolve(true))
       sandbox.stub(gasFeeController, 'getCurrentNetworkLegacyGasAPICompatibility').returns(true)
+      sandbox.stub(gasFeeController, 'fetchGasEstimatesViaEthFeeHistory').returns(
+        Promise.resolve({
+          estimatedBaseFee: '1',
+          high: {
+            maxWaitTimeEstimate: 30_000,
+            minWaitTimeEstimate: 15_000,
+            suggestedMaxFeePerGas: '1',
+            suggestedMaxPriorityFeePerGas: '1',
+          },
+          medium: {
+            maxWaitTimeEstimate: 45_000,
+            minWaitTimeEstimate: 15_000,
+            suggestedMaxFeePerGas: '1',
+            suggestedMaxPriorityFeePerGas: '1',
+          },
+          low: {
+            maxWaitTimeEstimate: 60_000,
+            minWaitTimeEstimate: 15_000,
+            suggestedMaxFeePerGas: '1',
+            suggestedMaxPriorityFeePerGas: '1',
+          },
+        })
+      )
       assert.deepStrictEqual(gasFeeController.state.gasFeeEstimates, {})
       const estimates = await gasFeeController._fetchGasFeeEstimateData()
       assert('gasFeeEstimates' in estimates)

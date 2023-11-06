@@ -1,5 +1,5 @@
 import assert from 'assert'
-import nock from 'nock'
+import { MockAgent, setGlobalDispatcher } from 'undici'
 
 import { fetchGasEstimates, fetchLegacyGasPriceEstimates, normalizeGWEIDecimalNumbers } from '../../../src/controllers/gas/gas-util'
 
@@ -51,12 +51,16 @@ const mockEIP1559ApiResponses = [
 describe('gas utils', () => {
   describe('fetchGasEstimates', () => {
     it('should fetch external gasFeeEstimates when data is valid', async () => {
-      const scope = nock('https://not-a-real-url/').get(/.+/u).reply(200, mockEIP1559ApiResponses[0]).persist()
+      const mockAgent = new MockAgent()
+      setGlobalDispatcher(mockAgent)
+      const mockPool = mockAgent.get('https://not-a-real-url')
+      mockPool
+        .intercept({ path: /.+/u, method: 'get' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
+        .reply(200, mockEIP1559ApiResponses[0])
+        .persist()
       const result = await fetchGasEstimates('https://not-a-real-url/')
       assert.deepStrictEqual(result, mockEIP1559ApiResponses[0], 'invalid gas estimates')
-
-      scope.done()
-      nock.cleanAll()
     })
 
     it('should fetch and normalize external gasFeeEstimates when data is has an invalid number of decimals', async () => {
@@ -82,24 +86,35 @@ describe('gas utils', () => {
         estimatedBaseFee: '32.000000017',
       }
 
-      const scope = nock('https://not-a-real-url/').get(/.+/u).reply(200, mockEIP1559ApiResponses[1]).persist()
+      const mockAgent = new MockAgent()
+      setGlobalDispatcher(mockAgent)
+      const mockPool = mockAgent.get('https://not-a-real-url')
+      mockPool
+        .intercept({ path: /.+/u, method: 'get' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
+        .reply(200, mockEIP1559ApiResponses[1])
+        .persist()
+
       const result = await fetchGasEstimates('https://not-a-real-url/')
       assert.deepStrictEqual(result, expectedResult, 'failed to normalize gas estimates')
-      scope.done()
-      nock.cleanAll()
     })
   })
 
   describe('fetchLegacyGasPriceEstimates', () => {
     it('should fetch external gasPrices and return high/medium/low', async () => {
-      const scope = nock('https://not-a-real-url/')
-        .get(/.+/u)
+      const mockAgent = new MockAgent()
+      setGlobalDispatcher(mockAgent)
+      const mockPool = mockAgent.get('https://not-a-real-url')
+      mockPool
+        .intercept({ path: /.+/u, method: 'get' })
+        .defaultReplyHeaders({ 'content-type': 'application/json' })
         .reply(200, {
           SafeGasPrice: '22',
           ProposeGasPrice: '25',
           FastGasPrice: '30',
         })
         .persist()
+
       const result = await fetchLegacyGasPriceEstimates('https://not-a-real-url/')
       assert.deepStrictEqual(
         result,
@@ -110,9 +125,6 @@ describe('gas utils', () => {
         },
         'failed to fetch external gasPrices and return high/medium/lo'
       )
-
-      scope.done()
-      nock.cleanAll()
     })
   })
 
