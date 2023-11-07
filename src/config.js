@@ -78,7 +78,6 @@ const {
   VUE_APP_INFURA_KEY,
   VUE_APP_ETH_TRANSFER_ONLY,
   VUE_APP_OPENLOGIN_ORIGIN_SIGNATURE,
-  VUE_APP_PASSWORDLESS_DOMAIN,
   VUE_APP_DEVELOPER_DASHBOARD_URL,
   VUE_APP_PROXY_NETWORK,
   VUE_APP_WALLET_CONNECT_PROJECT_ID,
@@ -467,9 +466,8 @@ export default {
         showOnDesktop: true,
         showOnMobile: true,
         jwtParameters: {
-          domain: VUE_APP_PASSWORDLESS_DOMAIN,
           verifierIdField: 'name',
-          connection: '',
+          connection: 'email',
           isVerifierIdCaseSensitive: false,
         },
         // For torus only
