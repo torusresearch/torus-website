@@ -993,6 +993,7 @@ export const AVAILABLE_WEBSITES = {
   Solana: 'https://solana.tor.us',
   Polygon: 'https://polygon.tor.us',
   Binance: 'https://bnb.tor.us',
+  'XRP Ledger': 'https://xrpl.tor.us',
 }
 
 export const FORCE_POPUP_LOGIN_MODE = [FACEBOOK_LOGIN_PROVIDER, LINE_LOGIN_PROVIDER]

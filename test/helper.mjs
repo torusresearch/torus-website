@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import { atob, btoa } from 'node:buffer'
+
 import Register from '@babel/register'
 import Ganache from 'ganache'
 import JSDOM from 'jsdom-global'
@@ -67,6 +69,9 @@ const storeFn = {
 }
 globalThis.localStorage = { ...storeFn }
 globalThis.sessionStorage = { ...storeFn }
+
+globalThis.atob = atob
+globalThis.btoa = btoa
 
 Register({
   extensions: ['.js'],

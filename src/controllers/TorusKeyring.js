@@ -124,8 +124,7 @@ export default class TorusKeyring extends EventEmitter {
     const wallet = this._getWalletForAccount(address)
     const privKey = wallet.privateKey
     const stripped = stripHexPrefix(privKey)
-    const buffer = Buffer.from(stripped, 'hex')
-    return getEncryptionPublicKey(buffer)
+    return getEncryptionPublicKey(stripped)
   }
 
   decryptMessage(data, address) {
