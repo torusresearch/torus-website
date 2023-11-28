@@ -274,8 +274,8 @@
                     amount <= 0
                       ? ''
                       : convertedAmount
-                      ? `~ ${convertedAmount} ${!!toggle_exclusive && selectedItem ? selectedItem.symbol : selectedCurrency}`
-                      : ''
+                        ? `~ ${convertedAmount} ${!!toggle_exclusive && selectedItem ? selectedItem.symbol : selectedCurrency}`
+                        : ''
                   "
                   persistent-hint
                   type="number"

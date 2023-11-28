@@ -41,6 +41,7 @@ module.exports = {
       '#': path.resolve(__dirname, 'src/'),
       lodash: path.resolve(__dirname, 'node_modules/lodash-es'),
       wasmcurves: path.resolve(__dirname, 'node_modules/empty-module'),
+      '@sentry/replay': path.resolve(__dirname, 'src/replay.js'),
     }
     config.plugins.push(new IgnorePlugin({ resourceRegExp: /^\.\/wordlists\/(?!english)/, contextRegExp: /bip39\/src$/ }))
     config.plugins.push(

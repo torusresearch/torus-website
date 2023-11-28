@@ -208,8 +208,8 @@
           assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20
             ? parseInt(assetParams.options.balance)
             : assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC721
-            ? 1
-            : parseInt(assetParams.options.balance)
+              ? 1
+              : parseInt(assetParams.options.balance)
         "
         :explorerlink="assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20 ? '' : assetParams.options.explorerLink"
         :symbol="assetParams.type.toLowerCase() === CONTRACT_TYPE_ERC20 ? assetParams.options.symbol : ''"
@@ -264,8 +264,8 @@
               type === MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY
                 ? t('dappProvider.encryptionRequest')
                 : type === MESSAGE_TYPE.ETH_DECRYPT
-                ? t('dappProvider.decryptionRequest')
-                : t('dappTransfer.permission')
+                  ? t('dappProvider.decryptionRequest')
+                  : t('dappTransfer.permission')
             }}
           </div>
         </v-flex>
