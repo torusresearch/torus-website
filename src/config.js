@@ -167,7 +167,6 @@ export default {
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
   rampApiHost: 'https://ramp-network-api.tor.us',
-  xanpoolApiHost: 'https://xanpool-api.tor.us',
   mercuryoApiHost: 'https://mercuryo-api.tor.us',
   transakApiHost: 'https://transak-api.tor.us',
   banxaApiHost: 'https://banxa-api.tor.us',
@@ -181,12 +180,6 @@ export default {
   rampHost: 'https://widget-instant.ramp.network',
   rampApiQuoteHost: `https://api-instant.ramp.network/api/host-api/quote?hostApiKey=${rampApiKey}`,
   rampAPIKEY: rampApiKey,
-
-  xanpoolHost: 'https://checkout.xanpool.com',
-  xanpoolLiveAPIKEY: '778522fccc19a010f100f437c4aca60j',
-  xanpoolTestHost: 'https://checkout.sandbox.xanpool.com',
-  xanpoolTestAPIKEY: 'sandbox_778522fccc19a010f100f437c4aca60j',
-  xanpoolApiQuoteHost: 'https://xanpool.com/api/transactions/estimate',
 
   mercuryoHost: 'https://exchange.mercuryo.io',
   mercuryoLiveAPIKEY: '8e531c49-2f64-4e7e-b1d4-16aa4958c291',

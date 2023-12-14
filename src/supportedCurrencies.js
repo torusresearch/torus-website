@@ -1,4 +1,4 @@
-import { BANXA, MERCURYO, MOONPAY, RAMPNETWORK, SIMPLEX, TRANSAK, XANPOOL } from './utils/enums'
+import { BANXA, MERCURYO, MOONPAY, RAMPNETWORK, SIMPLEX, TRANSAK } from './utils/enums'
 
 /**
  * From https://min-api.cryptocompare.com/data/v2/pair/mapping/fsym?fsym=BTC&extraParams=YourSite
@@ -492,8 +492,6 @@ const PROVIDER_SUPPORTED_FIAT_CURRENCIES = {
     'THB',
     'UYU',
   ],
-  // From https://xanpool.com/ fiat select dropdown
-  [XANPOOL]: ['SGD', 'HKD', 'THB', 'PHP', 'INR', 'IDR', 'MYR', 'AUD', 'NZD', 'KRW'],
   // https://help.mercuryo.io/en/articles/6121246-which-fiat-currencies-are-supported
   // RUB / UAH currently not supported
   [MERCURYO]: [

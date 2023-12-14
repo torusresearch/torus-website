@@ -657,7 +657,6 @@ export const ALLOWED_VERIFIERS = [
   },
 ]
 
-export const XANPOOL = 'xanpool'
 export const RAMPNETWORK = 'rampnetwork'
 export const SIMPLEX = 'simplex'
 export const MOONPAY = 'moonpay'

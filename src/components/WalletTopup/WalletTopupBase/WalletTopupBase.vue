@@ -33,8 +33,7 @@
               <div class="mb-2 d-flex align-center">
                 <span class="body-2">{{ t('walletTopUp.youSend') }}</span>
                 <span class="caption ml-auto">
-                  {{ t('walletTopUp.min') }} {{ selectedProvider === XANPOOL ? '0.1 ETH' : minOrderValue }}, {{ t('walletTopUp.max') }}
-                  {{ maxOrderValue }} USD*
+                  {{ t('walletTopUp.min') }} {{ minOrderValue }}, {{ t('walletTopUp.max') }} {{ maxOrderValue }} USD*
                 </span>
               </div>
               <v-text-field
@@ -145,7 +144,6 @@
 import { BroadcastChannel } from '@toruslabs/broadcast-channel'
 import { mapState } from 'vuex'
 
-import { XANPOOL } from '../../../utils/enums'
 import { broadcastChannelOptions, formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
 import ComponentLoader from '../../helpers/ComponentLoader'
 import HelpTooltip from '../../helpers/HelpTooltip'
@@ -195,7 +193,6 @@ export default {
       snackbarText: 'Sample',
       snackbarColor: 'success',
       selectedCurrency: '',
-      XANPOOL,
     }
   },
   computed: {
