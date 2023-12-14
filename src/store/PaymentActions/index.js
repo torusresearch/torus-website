@@ -4,7 +4,7 @@ import config from '../../config'
 import PopupWithBcHandler from '../../handlers/Popup/PopupWithBcHandler'
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { BANXA, BANXA_NETWORK_MAP, MAINNET, MERCURYO, MOONPAY, RAMPNETWORK, TRANSAK, TRANSAK_NETWORK_MAP, XANPOOL } from '../../utils/enums'
+import { BANXA, BANXA_NETWORK_MAP, MAINNET, MERCURYO, MOONPAY, RAMPNETWORK, TRANSAK, TRANSAK_NETWORK_MAP } from '../../utils/enums'
 import { fakeStream, getTimeout, paymentProviders, randomId } from '../../utils/utils'
 import banxa from './banxa'
 import mercuryo from './mercuryo'
@@ -12,7 +12,6 @@ import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
 import simplex from './simplex'
 import transak from './transak'
-import xanpool from './xanpool'
 
 const topupStream = (torus && torus.communicationMux && torus.communicationMux.getStream('topup')) || fakeStream
 
@@ -40,7 +39,6 @@ export default {
   ...simplex,
   ...rampnetwork,
   ...moonpay,
-  ...xanpool,
   ...mercuryo,
   ...transak,
   async initiateTopup({ state, dispatch }, { provider, params, preopenInstanceId }) {
@@ -105,18 +103,6 @@ export default {
           const { success } = await dispatch('fetchMoonpayOrder', {
             currentOrder,
             colorCode: vuetify.framework.theme.themes.light.primary.base,
-            preopenInstanceId,
-            selectedAddress: selectedParameters.selectedAddress,
-          })
-          handleSuccess(success)
-        } else if (provider === XANPOOL) {
-          // xanpool
-          const { success } = await dispatch('fetchXanpoolOrder', {
-            currentOrder: {
-              selectedCryptoCurrency: selectedParameters.selectedCryptoCurrency || 'ETH',
-              fiatValue: selectedParameters.fiatValue || '',
-              selectedCurrency: selectedParameters.selectedCurrency || '',
-            },
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
           })

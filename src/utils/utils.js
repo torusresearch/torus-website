@@ -113,7 +113,6 @@ import {
   TWITTER,
   WECHAT,
   WEIBO,
-  XANPOOL,
   // XDAI,
   XDAI_CHAIN_ID,
   XDAI_CODE,
@@ -542,28 +541,6 @@ export const paymentProviders = {
     includeFees: true,
     api: true,
     receiveHint: 'walletTopUp.receiveHintRamp',
-    enforceMax: false,
-  },
-  [XANPOOL]: {
-    line1: 'PayNow/ InstaPay/ FPS/ GoJekPay/ UPI/ PromptPay/ <br>ViettelPay/ DuitNow',
-    line2: '2.5% buying, 3% selling',
-    line3: '$2,500 / day',
-    status: ACTIVE,
-    logoExtension: SVG,
-    supportPage: 'mailto:support@xanpool.com',
-    minOrderValue: 100,
-    maxOrderValue: 2500,
-    validCurrencies: supportedFiatCurrencies(XANPOOL),
-    validCryptoCurrenciesByChain: {
-      [MAINNET]: [
-        { value: 'ETH', display: 'ETH' },
-        { value: 'USDT', display: 'USDT' },
-        { value: 'USDC', display: 'USDC' },
-      ],
-    },
-    includeFees: true,
-    api: true,
-    sell: true,
     enforceMax: false,
   },
   [MERCURYO]: {
@@ -1222,10 +1199,6 @@ export const parsePopupUrl = (url) => {
   localUrl.searchParams.append('isCustomLogin', config.isCustomLogin)
   if (config.isCustomLogin) {
     localUrl.searchParams.append('sessionNamespace', iframeOrigin.hostname)
-  }
-  const sessionId = getSessionIdFromStorage()
-  if (sessionId) {
-    localUrl.searchParams.append('sessionId', sessionId)
   }
   return localUrl
 }
