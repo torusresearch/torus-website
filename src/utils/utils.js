@@ -1200,10 +1200,6 @@ export const parsePopupUrl = (url) => {
   if (config.isCustomLogin) {
     localUrl.searchParams.append('sessionNamespace', iframeOrigin.hostname)
   }
-  const sessionId = getSessionIdFromStorage()
-  if (sessionId) {
-    localUrl.searchParams.append('sessionId', sessionId)
-  }
   return localUrl
 }
 
