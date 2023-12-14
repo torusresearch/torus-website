@@ -1199,6 +1199,8 @@ export const parsePopupUrl = (url) => {
   localUrl.searchParams.append('isCustomLogin', config.isCustomLogin)
   if (config.isCustomLogin) {
     localUrl.searchParams.append('sessionNamespace', iframeOrigin.hostname)
+  }
+  if (config.isPlugin) {
     const sessionId = getSessionIdFromStorage()
     // this is for torus wallet plugin
     if (sessionId) {
