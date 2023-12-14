@@ -262,6 +262,7 @@ export default {
   },
   setIsPlugin(state, payload) {
     state.isPlugin = payload
+    config.isPlugin = payload
   },
 }
 function localThemeSet(payload, state) {

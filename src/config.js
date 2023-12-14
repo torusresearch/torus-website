@@ -163,6 +163,7 @@ export default {
   },
   // we do the isCustomDapp check to differentiate b/w app.tor.us and dapps without isCustomLogin flag
   isCustomLogin: isCustomLogin === 'true' || !!sessionNamespace,
+  isPlugin: false,
 
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
