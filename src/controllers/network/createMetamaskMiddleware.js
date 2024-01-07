@@ -83,7 +83,7 @@ export function createAddChainMiddleware({ processAddChain }) {
     if (!symbol) throw new Error('createAddChainMiddleware - params.nativeCurrency.symbol not provided')
     if (decimals === undefined) throw new Error('createAddChainMiddleware - params.nativeCurrency.decimals not provided')
 
-    response.result = await processAddChain(request.params, request)
+    response.result = await processAddChain(finalObj, request)
     return undefined
   })
 }
@@ -108,7 +108,7 @@ export function createSwitchChainMiddleware({ processSwitchChain }) {
     const { chainId } = finalObj || {}
     if (!chainId) throw new Error('createSwitchChainMiddleware - params.chainId not provided')
 
-    response.result = await processSwitchChain(request.params, request)
+    response.result = await processSwitchChain(finalObj, request)
     return undefined
   })
 }
