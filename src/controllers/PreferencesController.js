@@ -920,7 +920,7 @@ class PreferencesController extends SafeEventEmitter {
         blockExplorer: block_explorer_url || undefined,
       }
 
-      await this.addCustomNetwork(RPC, customNetwork)
+      this.addCustomNetwork(RPC, customNetwork)
       this._setAddChainReqStatus(addChainReqId, 'approved')
     } catch (error) {
       log.error('error while approving add chain', error)
