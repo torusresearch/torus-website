@@ -131,7 +131,7 @@ export default class NetworkController extends EventEmitter {
         const req = this.getSwitchChainRequest(id)
         switch (data.status) {
           case 'approved':
-            return resolve()
+            return resolve('null')
           case 'rejected':
             return reject(ethErrors.provider.userRejectedRequest(`Torus switch chain method: ${req.errorMsg || 'User denied switch chain request.'}`))
           default:

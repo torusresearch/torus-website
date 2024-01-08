@@ -839,7 +839,7 @@ class PreferencesController extends SafeEventEmitter {
         const req = this.getAddChainRequest(id)
         switch (data.status) {
           case 'approved':
-            return resolve()
+            return resolve('null') // https://docs.metamask.io/wallet/reference/wallet_addethereumchain/
           case 'rejected':
             return reject(ethErrors.provider.userRejectedRequest(`Torus add chain: ${req.errorMsg || 'User denied add chain request.'}`))
           default:
@@ -920,7 +920,7 @@ class PreferencesController extends SafeEventEmitter {
         blockExplorer: block_explorer_url || undefined,
       }
 
-      await this.addCustomNetwork(RPC, customNetwork)
+      this.addCustomNetwork(RPC, customNetwork)
       this._setAddChainReqStatus(addChainReqId, 'approved')
     } catch (error) {
       log.error('error while approving add chain', error)

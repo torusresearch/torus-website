@@ -68,7 +68,12 @@ export function createAddChainMiddleware({ processAddChain }) {
       }
      */
 
-    const { chainId, rpcUrls, nativeCurrency } = request.params || {}
+    let finalObj = {}
+
+    if (Array.isArray(request.params)) finalObj = request.params[0]
+    else finalObj = request.params
+
+    const { chainId, rpcUrls, nativeCurrency } = finalObj || {}
     if (!chainId) throw new Error('createAddChainMiddleware - params.chainId not provided')
     if (!rpcUrls || rpcUrls.length === 0) throw new Error('createAddChainMiddleware - params.rpcUrls not provided')
     if (!nativeCurrency) throw new Error('createAddChainMiddleware - params.nativeCurrency not provided')
@@ -78,7 +83,7 @@ export function createAddChainMiddleware({ processAddChain }) {
     if (!symbol) throw new Error('createAddChainMiddleware - params.nativeCurrency.symbol not provided')
     if (decimals === undefined) throw new Error('createAddChainMiddleware - params.nativeCurrency.decimals not provided')
 
-    response.result = await processAddChain(request.params, request)
+    response.result = await processAddChain(finalObj, request)
     return undefined
   })
 }
@@ -95,10 +100,15 @@ export function createSwitchChainMiddleware({ processSwitchChain }) {
       }
      */
 
-    const { chainId } = request.params || {}
+    let finalObj = {}
+
+    if (Array.isArray(request.params)) finalObj = request.params[0]
+    else finalObj = request.params
+
+    const { chainId } = finalObj || {}
     if (!chainId) throw new Error('createSwitchChainMiddleware - params.chainId not provided')
 
-    response.result = await processSwitchChain(request.params, request)
+    response.result = await processSwitchChain(finalObj, request)
     return undefined
   })
 }
