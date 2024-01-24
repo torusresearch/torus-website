@@ -52,6 +52,7 @@
               fab
               title="Open Transfer Page"
               aria-label="Open Transfer Page"
+              :disabled="isPlugin()"
               @click="showWalletPopup({ path: '/transfer' })"
             >
               <v-icon size="20">$vuetify.icons.send</v-icon>
@@ -64,7 +65,8 @@
               small
               class="ml-2 torus-btn1 torusBrand1--text"
               title="Open Topup Page"
-              aria-label="Open Topupu Page"
+              aria-label="Open Topup Page"
+              :disabled="isPlugin()"
               @click="showWalletPopup({ path: '/topup' })"
             >
               <v-icon>$vuetify.icons.add</v-icon>
@@ -76,7 +78,7 @@
           <span class="network-name ml-1">{{ networkType.networkName || networkType.host }}</span>
         </div>
         <div class="torus-widget__transaction-details mt-5">
-          <div class="d-flex">
+          <div v-if="!isPlugin()" class="d-flex">
             <span class="caption text_2--text">{{ t('dappPopup.recentActivity') }}</span>
             <span class="caption primary--text ml-auto wallet-open" @click="showWalletPopup({ path: '/home' })">
               {{ t('dappPopup.openWallet') }}
@@ -322,6 +324,9 @@ export default {
       toggleWidgetVisibility: 'toggleWidgetVisibility',
       showWalletPopup: 'showWalletPopup',
     }),
+    isPlugin() {
+      return config.isPlugin
+    },
     login() {
       this.$emit('onLogin')
     },
