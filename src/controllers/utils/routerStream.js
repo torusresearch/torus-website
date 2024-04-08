@@ -1,7 +1,7 @@
 import log from 'loglevel'
 import { Duplex, PassThrough } from 'readable-stream'
 
-export default (...arguments_) => {
+const routerStream = (...arguments_) => {
   let sources = []
   const routerMapping = {}
   const output = new PassThrough({
@@ -67,3 +67,4 @@ export default (...arguments_) => {
     }
   }
 }
+export default routerStream
