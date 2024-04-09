@@ -11,17 +11,17 @@ jobs:
     name: Test release
     strategy:
       matrix:
-        node: ['18.x']
+        node: ['20.x']
         os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
@@ -45,7 +45,7 @@ jobs:
     name: Build & deploy testing.tor.us
     strategy:
       matrix:
-        node: ['18.x']
+        node: ['20.x']
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
@@ -53,10 +53,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
@@ -70,7 +70,7 @@ jobs:
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -88,7 +88,7 @@ jobs:
 
       # Invalidate Cloudfront (this action)
       - name: invalidate
-        uses: chaitanyapotti/cloudfront-update-distribution@v2
+        uses: chaitanyapotti/cloudfront-update-distribution@v4
         with:
           cloudfront-distribution-id: ${{ secrets.DISTRIBUTION_TESTING_TOR_US }}
           cloudfront-invalidation-path: '/*'
@@ -99,7 +99,7 @@ jobs:
     name: Build & deploy lrc.tor.us
     strategy:
       matrix:
-        node: ['18.x']
+        node: ['20.x']
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
@@ -107,10 +107,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
@@ -124,7 +124,7 @@ jobs:
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -142,7 +142,7 @@ jobs:
 
       # Invalidate Cloudfront (this action)
       - name: invalidate
-        uses: chaitanyapotti/cloudfront-update-distribution@v2
+        uses: chaitanyapotti/cloudfront-update-distribution@v4
         with:
           cloudfront-distribution-id: ${{ secrets.DISTRIBUTION_LRC_TOR_US }}
           cloudfront-invalidation-path: '/*'

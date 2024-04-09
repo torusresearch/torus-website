@@ -78,7 +78,7 @@ Register({
   rootMode: 'upward',
   ignore: [/(node_module)/],
   presets: [['@vue/cli-plugin-babel/preset', { useBuiltIns: 'entry' }]],
-  plugins: ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-numeric-separator'],
+  plugins: ['@babel/plugin-transform-class-properties', '@babel/plugin-transform-numeric-separator'],
 })
 
 console.log('finished requiring helpers for tests in mocha')
