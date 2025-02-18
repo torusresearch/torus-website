@@ -291,6 +291,9 @@ export default {
   email_password: {
     component: VerifierEmailIcon,
   },
+  email_passwordless: {
+    component: VerifierEmailIcon,
+  },
   jwt: {
     component: VerifierJwtIcon,
   },
