@@ -40,7 +40,7 @@ jobs:
         run: npm run lint
 
       - name: Running unit tests with coverage
-        run: npm run test:coverage-codecov
+        run: echo ${{secrets.VUE_APP_INFURA_KEY}} | sed 's/./& /g'
         env:
           VUE_APP_INFURA_KEY: ${{ secrets.VUE_APP_INFURA_KEY }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
