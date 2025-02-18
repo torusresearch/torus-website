@@ -4,7 +4,7 @@
       <v-list-item>
         <v-list-item-avatar class="ml-2 mr-3">
           <img
-            :src="userInfo.profileImage"
+            :src="userInfo.profileImage || '/images/person.jpeg'"
             class="align-start"
             :alt="userName"
             onerror="if (!this.src.includes('/images/person.jpeg')) this.src = '/images/person.jpeg';"
