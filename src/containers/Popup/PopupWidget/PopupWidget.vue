@@ -10,7 +10,7 @@
               </div>
               <img
                 v-else
-                :src="userInfo.profileImage"
+                :src="userInfo.profileImage || '/images/person.jpeg'"
                 :alt="`${userInfo.verifierId} Avatar`"
                 onerror="if (!this.src.includes('/images/person.jpeg')) this.src = '/images/person.jpeg';"
               />
