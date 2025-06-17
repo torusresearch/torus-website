@@ -10,6 +10,16 @@
         :class="$vuetify.theme.dark ? 'torus-dark' : ''"
       >
         <div xs12 sm8 md6 style="max-width: 600px">
+          <div class="deprecation-alert" :class="{ 'deprecation-alert--desktop': $vuetify.breakpoint.smAndUp }">
+            <div class="deprecation-alert__text">
+              <i18n path="login.deprecationAlert" tag="p" class="mb-0">
+                <template #0><span class="font-weight-bold">July 31, 2025</span></template>
+                <template #1>
+                  <a href="https://wallet.web3auth.io/" target="_blank" rel="noreferrer noopener" class="font-weight-bold white--text">Web3Auth</a>
+                </template>
+              </i18n>
+            </div>
+          </div>
           <v-layout v-if="!isLogout" wrap>
             <v-flex v-if="$vuetify.breakpoint.xsOnly" class="mobile-login-container" xs12>
               <section class="py-10 py-sm-12">
