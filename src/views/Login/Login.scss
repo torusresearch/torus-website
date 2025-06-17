@@ -107,3 +107,24 @@ html {
   max-width: 230px;
   min-width: 100px;
 }
+
+.deprecation-alert {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #e02424;
+  color: #fefefe;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  width: 100%;
+  &--desktop {
+    position: absolute;
+    font-size: 16px;
+  }
+  &__text {
+    text-align: left;
+    margin: auto;
+    width: fit-content;
+  }
+}
